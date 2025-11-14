@@ -17,7 +17,6 @@ import { useRole } from '@/context/role-context';
 import type { NavItem, UserRole } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useUser } from '@/firebase';
-import { doc } from 'firebase/firestore';
 
 function isNavItemVisible(item: NavItem, role: UserRole) {
   return item.roles === 'all' || item.roles.includes(role);
@@ -42,16 +41,13 @@ export default function AppSidebar() {
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
-                <Link href={`${item.path}?role=${role}`} passHref>
+                <Link href={`${item.path}?role=${role}`}>
                   <SidebarMenuButton
-                    asChild
                     isActive={pathname === item.path}
                     tooltip={{ children: item.title }}
                   >
-                    <>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </>
+                    <item.icon />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
