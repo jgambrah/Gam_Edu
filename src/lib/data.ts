@@ -9,6 +9,7 @@ import {
   Library,
   CookingPot,
   Banknote,
+  UserPlus,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -17,6 +18,12 @@ export const navItems: NavItem[] = [
     title: 'Dashboard',
     icon: LayoutDashboard,
     roles: 'all',
+  },
+  {
+    path: '/dashboard/staff',
+    title: 'Staff',
+    icon: UserPlus,
+    roles: ['Director', 'Administrator'],
   },
   {
     path: '/dashboard/students',

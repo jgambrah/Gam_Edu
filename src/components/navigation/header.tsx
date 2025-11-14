@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import {
   DropdownMenu,
@@ -16,11 +16,20 @@ import { LogOut, Settings } from 'lucide-react';
 import RoleSwitcher from './role-switcher';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { navItems } from '@/lib/data';
+import { useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const auth = useAuth();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
   const pageTitle = navItems.find((item) => item.path === pathname)?.title || 'Dashboard';
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/');
+  };
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
@@ -52,7 +61,7 @@ export default function Header() {
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

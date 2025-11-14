@@ -16,6 +16,8 @@ import { AppLogo } from '@/components/icons/app-logo';
 import { useRole } from '@/context/role-context';
 import type { NavItem, UserRole } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useUser } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 function isNavItemVisible(item: NavItem, role: UserRole) {
   return item.roles === 'all' || item.roles.includes(role);
@@ -24,6 +26,7 @@ function isNavItemVisible(item: NavItem, role: UserRole) {
 export default function AppSidebar() {
   const pathname = usePathname();
   const { role } = useRole();
+  const { user } = useUser();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
   return (
@@ -39,16 +42,18 @@ export default function AppSidebar() {
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.path}
-                  tooltip={{ children: item.title }}
-                >
-                  <Link href={`${item.path}?role=${role}`}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
+                <Link href={`${item.path}?role=${role}`} passHref>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.path}
+                    tooltip={{ children: item.title }}
+                  >
+                    <>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </>
+                  </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
             ) : null
           )}
@@ -65,7 +70,7 @@ export default function AppSidebar() {
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium">Demo User</span>
+            <span className="text-sm font-medium truncate">{user?.email ?? 'Demo User'}</span>
             <span className="text-xs text-muted-foreground">{role}</span>
           </div>
         </div>
