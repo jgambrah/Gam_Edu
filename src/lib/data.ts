@@ -1,0 +1,85 @@
+import type { NavItem } from '@/lib/types';
+import {
+  LayoutDashboard,
+  Users,
+  BookOpen,
+  MessageSquare,
+  CalendarCheck,
+  GraduationCap,
+  Library,
+  CookingPot,
+  Banknote,
+} from 'lucide-react';
+
+export const navItems: NavItem[] = [
+  {
+    path: '/dashboard',
+    title: 'Dashboard',
+    icon: LayoutDashboard,
+    roles: 'all',
+  },
+  {
+    path: '/dashboard/students',
+    title: 'Students',
+    icon: Users,
+    roles: ['Director', 'Administrator', 'Teacher'],
+  },
+  {
+    path: '/dashboard/academics',
+    title: 'Academics',
+    icon: BookOpen,
+    roles: ['Director', 'Administrator', 'Teacher'],
+  },
+  {
+    path: '/dashboard/communication',
+    title: 'Communication',
+    icon: MessageSquare,
+    roles: 'all',
+  },
+  {
+    path: '/dashboard/attendance',
+    title: 'Attendance',
+    icon: CalendarCheck,
+    roles: ['Administrator', 'Teacher'],
+  },
+  {
+    path: '/dashboard/grades',
+    title: 'Grades',
+    icon: GraduationCap,
+    roles: ['Teacher', 'Student', 'Parent'],
+  },
+  {
+    path: '/dashboard/accounts',
+    title: 'Accounts',
+    icon: Banknote,
+    roles: ['Director', 'Accountant'],
+  },
+  {
+    path: '/dashboard/library',
+    title: 'Library',
+    icon: Library,
+    roles: ['Librarian', 'Student'],
+  },
+];
+
+export const sampleAnnouncements = [
+  {
+    id: 1,
+    title: 'Annual Sports Day Postponed',
+    date: '2024-10-15',
+    content: `Dear Parents and Students,
+Please note that the Annual Sports Day, originally scheduled for October 20th, has been postponed due to forecasted heavy rain. The new date will be November 5th. All event timings and venues remain the same. We apologize for any inconvenience this may cause and appreciate your understanding. Field trip permission slips for the science museum are due by this Friday, October 18th. Also, the parent-teacher conference is scheduled for next month.`,
+  },
+  {
+    id: 2,
+    title: 'Parent-Teacher Conference Schedule',
+    date: '2024-10-12',
+    content: `We are pleased to announce the schedule for the upcoming Parent-Teacher Conferences on November 10th and 11th. Please log in to the portal to book your slots with the respective teachers. Bookings will be open from October 15th to November 5th. This is a valuable opportunity to discuss your child's progress.`,
+  },
+  {
+    id: 3,
+    title: 'School Policy Update: Mobile Phones',
+    date: '2024-10-10',
+    content: `Effective immediately, there is an update to the school's mobile phone policy. Students are no longer permitted to use mobile phones during lunch breaks to encourage more social interaction. Phones must be kept in lockers during school hours. This policy change will be strictly enforced by all staff. Teachers are required to attend a brief meeting on this policy change this Friday after school in the staff room.`,
+  },
+];
