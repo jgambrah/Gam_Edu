@@ -41,9 +41,8 @@ export default function AppSidebar() {
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
-                <Link href={`${item.path}?role=${role}`} passHref legacyBehavior>
+                <Link href={`${item.path}?role=${role}`}>
                   <SidebarMenuButton
-                    as="a"
                     isActive={pathname === item.path}
                     tooltip={{ children: item.title }}
                   >
