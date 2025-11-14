@@ -10,6 +10,7 @@ import {
   CookingPot,
   Banknote,
   UserPlus,
+  HeartHandshake,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -29,6 +30,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard/students',
     title: 'Students',
     icon: Users,
+    roles: ['Director', 'Administrator'],
+  },
+  {
+    path: '/dashboard/parents',
+    title: 'Parents',
+    icon: HeartHandshake,
     roles: ['Director', 'Administrator'],
   },
   {
@@ -90,3 +97,5 @@ Please note that the Annual Sports Day, originally scheduled for October 20th, h
     content: `Effective immediately, there is an update to the school's mobile phone policy. Students are no longer permitted to use mobile phones during lunch breaks to encourage more social interaction. Phones must be kept in lockers during school hours. This policy change will be strictly enforced by all staff. Teachers are required to attend a brief meeting on this policy change this Friday after school in the staff room.`,
   },
 ];
+
+    
