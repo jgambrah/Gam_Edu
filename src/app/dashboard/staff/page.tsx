@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ALL_ROLES, UserRole } from '@/lib/types';
+import { ALL_ROLES } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
@@ -67,7 +67,7 @@ export default function StaffPage() {
 
   useEffect(() => {
     if (firstName || lastName) {
-      const email = `${firstName.toLowerCase()}${lastName.toLowerCase().replace(/\s/g, '')}@sunnyside.com`;
+      const email = `${firstName.toLowerCase().replace(/\s/g, '')}${lastName.toLowerCase().replace(/\s/g, '')}@sunnyside.com`;
       form.setValue('email', email);
     } else {
         form.setValue('email', '');
@@ -161,10 +161,10 @@ export default function StaffPage() {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="hidden">
+                <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="staff@campusconnect.edu" {...field} readOnly />
+                    <Input placeholder="staff@sunnyside.com" {...field} readOnly />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -187,13 +187,13 @@ export default function StaffPage() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem className="hidden">
+                <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} readOnly />
                   </FormControl>
                   <FormDescription>
-                    The new staff member will use this to log in.
+                    This is the default password for the new staff member.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
