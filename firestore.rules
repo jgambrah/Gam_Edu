@@ -15,7 +15,7 @@
  * - Only admins can create, update, or delete roles.
  * - Staff can only read their own profiles; admins can manage all staff profiles.
  * - Listing of roles is allowed only for admins.
- * - Listing of staff is allowed only for admins.
+ * - Listing of staff is allowed for any signed-in user for now.
  * - The existence of a document in `/roles_admin/{uid}` grants admin privileges to the user.
  *
  * Denormalization for Authorization:
@@ -56,8 +56,8 @@ service cloud.firestore {
      * @allow (get) User with a document in /roles_admin/{uid} gets a staff profile.
      * @allow (get) Staff member gets their own profile.
      * @deny (get) Staff member attempts to get another staff member's profile.
-     * @allow (list) User with a document in /roles_admin/{uid} lists staff profiles.
-     * @deny (list) User without admin privileges attempts to list staff profiles.
+     * @allow (list) Any signed-in user can list staff profiles.
+     * @deny (list) Anonymous user attempts to list staff profiles.
      * @allow (update) User with a document in /roles_admin/{uid} updates a staff profile.
      * @deny (update) User without admin privileges attempts to update a staff profile.
      * @allow (delete) User with a document in /roles_admin/{uid} deletes a staff profile.
@@ -67,7 +67,7 @@ service cloud.firestore {
     match /staff/{staffId} {
       allow create: if isAdmin();
       allow get: if isAdmin() || isOwner(staffId);
-      allow list: if isAdmin();
+      allow list: if isSignedIn();
       allow update: if isAdmin() && resource != null;
       allow delete: if isAdmin() && resource != null;
     }
