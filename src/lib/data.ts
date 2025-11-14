@@ -29,7 +29,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/students',
     title: 'Students',
     icon: Users,
-    roles: ['Director', 'Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator'],
   },
   {
     path: '/dashboard/academics',

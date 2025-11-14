@@ -10,12 +10,15 @@
  * - /roles/{roleId}: Stores role definitions, accessible only to admins.
  * - /staff/{staffId}: Stores staff profiles, accessible to admins for management and individual staff members for their own profiles.
  * - /roles_admin/{uid}: Documents in this collection indicate admin privileges for the given user.
+ * - /students/{studentId}: Stores student profiles, accessible only to admins.
+ * - /classes/{classId}: Stores class information, accessible only to admins.
  *
  * Key Security Decisions:
- * - Only admins can create, update, or delete roles.
+ * - Only admins can create, update, or delete roles, students, and classes.
  * - Staff can only read their own profiles; admins can manage all staff profiles.
  * - Listing of roles is allowed only for admins.
  * - Listing of staff is allowed for any signed-in user for now.
+ * - Listing of students and classes is allowed only for admins.
  * - The existence of a document in `/roles_admin/{uid}` grants admin privileges to the user.
  *
  * Denormalization for Authorization:
@@ -28,17 +31,6 @@ service cloud.firestore {
     /**
      * @description Grants administrators full access to manage roles.
      * @path /roles/{roleId}
-     * @allow (create) User with a document in /roles_admin/{uid} creates a new role.
-     * @deny (create) User without admin privileges attempts to create a role.
-     * @allow (get) User with a document in /roles_admin/{uid} gets a role.
-     * @deny (get) User without admin privileges attempts to get a role.
-     * @allow (list) User with a document in /roles_admin/{uid} lists roles.
-     * @deny (list) User without admin privileges attempts to list roles.
-     * @allow (update) User with a document in /roles_admin/{uid} updates a role.
-     * @deny (update) User without admin privileges attempts to update a role.
-     * @allow (delete) User with a document in /roles_admin/{uid} deletes a role.
-     * @deny (delete) User without admin privileges attempts to delete a role.
-     * @principle Enforces role-based access control; only admins can manage roles.
      */
     match /roles/{roleId} {
       allow create: if isAdmin();
@@ -51,18 +43,6 @@ service cloud.firestore {
     /**
      * @description Allows admins to manage staff profiles and staff to view their own profile.
      * @path /staff/{staffId}
-     * @allow (create) User with a document in /roles_admin/{uid} creates a new staff profile.
-     * @deny (create) User without admin privileges attempts to create a staff profile.
-     * @allow (get) User with a document in /roles_admin/{uid} gets a staff profile.
-     * @allow (get) Staff member gets their own profile.
-     * @deny (get) Staff member attempts to get another staff member's profile.
-     * @allow (list) Any signed-in user can list staff profiles.
-     * @deny (list) Anonymous user attempts to list staff profiles.
-     * @allow (update) User with a document in /roles_admin/{uid} updates a staff profile.
-     * @deny (update) User without admin privileges attempts to update a staff profile.
-     * @allow (delete) User with a document in /roles_admin/{uid} deletes a staff profile.
-     * @deny (delete) User without admin privileges attempts to delete a staff profile.
-     * @principle Enforces role-based access control; admins manage all staff, staff can only view their own profile.
      */
     match /staff/{staffId} {
       allow create: if isAdmin();
@@ -73,19 +53,32 @@ service cloud.firestore {
     }
 
     /**
+     * @description Grants administrators full access to manage student profiles.
+     * @path /students/{studentId}
+     */
+    match /students/{studentId} {
+      allow create: if isAdmin();
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+    
+    /**
+     * @description Grants administrators full access to manage classes.
+     * @path /classes/{classId}
+     */
+    match /classes/{classId} {
+      allow create: if isAdmin();
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
      * @description Grants admin privileges to a user by creating a document with their UID.
      * @path /roles_admin/{uid}
-     * @allow (create) User with a document in /roles_admin/{uid} creates a new admin document.
-     * @deny (create) User without admin privileges attempts to create a new admin document.
-     * @allow (get) User with a document in /roles_admin/{uid} gets the admin document.
-     * @deny (get) User without admin privileges attempts to get the admin document.
-     * @allow (list) User with a document in /roles_admin/{uid} lists admin document.
-     * @deny (list) User without admin privileges attempts to list admin documents.
-     * @allow (update) User with a document in /roles_admin/{uid} updates the admin document.
-     * @deny (update) User without admin privileges attempts to update the admin document.
-     * @allow (delete) User with a document in /roles_admin/{uid} deletes the admin document.
-     * @deny (delete) User without admin privileges attempts to delete the admin document.
-     * @principle Only admins can manage the admin role.
      */
     match /roles_admin/{uid} {
       allow create: if isAdmin();

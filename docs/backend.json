@@ -88,6 +88,79 @@
         "name",
         "description"
       ]
+    },
+    "Student": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Student",
+      "type": "object",
+      "description": "Represents a student in the school system.",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique identifier for the student (matches Firebase Auth UID)."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the student."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the student."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the student.",
+          "format": "email"
+        },
+        "classId": {
+          "type": "string",
+          "description": "The ID of the class the student is assigned to."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "description": "Date of birth of the student."
+        },
+        "gender": {
+          "type": "string",
+          "description": "Gender of the student."
+        },
+        "address": {
+          "type": "string",
+          "description": "Home address of the student."
+        }
+      },
+      "required": [
+        "uid",
+        "firstName",
+        "lastName",
+        "email",
+        "classId"
+      ]
+    },
+    "Class": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Class",
+      "type": "object",
+      "description": "Represents a class in the school.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the class."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the class (e.g., Grade 5A, Grade 10B)."
+        },
+        "teacherId": {
+          "type": "string",
+          "description": "The UID of the teacher assigned to this class."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
     }
   },
   "auth": {
@@ -142,6 +215,38 @@
             {
               "name": "uid",
               "description": "The Firebase UID of the user with admin privileges."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/students/{studentId}",
+        "definition": {
+          "entityName": "Student",
+          "schema": {
+            "$ref": "#/backend/entities/Student"
+          },
+          "description": "Stores student profiles. Managed by administrators and directors.",
+          "params": [
+            {
+              "name": "studentId",
+              "description": "Unique identifier for the student, matching their Firebase Auth UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/classes/{classId}",
+        "definition": {
+          "entityName": "Class",
+          "schema": {
+            "$ref": "#/backend/entities/Class"
+          },
+          "description": "Stores class information. Managed by administrators and directors.",
+          "params": [
+            {
+              "name": "classId",
+              "description": "Unique identifier for the class."
             }
           ]
         }
