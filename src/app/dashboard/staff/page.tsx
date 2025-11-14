@@ -29,7 +29,7 @@ import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -97,7 +97,7 @@ export default function StaffPage() {
         uid: user.uid,
       };
 
-      await addDocumentNonBlocking(doc(firestore, 'staff', user.uid), staffData);
+      setDocumentNonBlocking(doc(firestore, 'staff', user.uid), staffData, { merge: true });
 
       toast({
         title: 'Staff Added',
