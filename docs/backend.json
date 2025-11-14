@@ -30,6 +30,23 @@
         "role": {
           "type": "string",
           "description": "The assigned role of the staff member."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "description": "Date of birth of the staff member."
+        },
+        "gender": {
+          "type": "string",
+          "description": "Gender of the staff member."
+        },
+        "nationality": {
+          "type": "string",
+          "description": "Nationality of the staff member."
+        },
+        "address": {
+          "type": "string",
+          "description": "Home address of the staff member."
         }
       },
       "required": [

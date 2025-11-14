@@ -51,6 +51,10 @@ const formSchema = z.object({
     message: 'Password must be at least 6 characters.',
   }),
   role: z.enum(ALL_ROLES),
+  dateOfBirth: z.string().optional(),
+  gender: z.string().optional(),
+  nationality: z.string().optional(),
+  address: z.string().optional(),
 });
 
 function StaffList() {
@@ -115,6 +119,10 @@ export default function StaffPage() {
       phone: '',
       password: 'password123',
       role: 'Teacher',
+      dateOfBirth: '',
+      gender: '',
+      nationality: '',
+      address: '',
     },
   });
 
@@ -141,12 +149,16 @@ export default function StaffPage() {
       const user = userCredential.user;
 
       const staffData = {
+        uid: user.uid,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
         phone: values.phone,
         role: values.role,
-        uid: user.uid,
+        dateOfBirth: values.dateOfBirth,
+        gender: values.gender,
+        nationality: values.nationality,
+        address: values.address,
       };
 
       setDocumentNonBlocking(doc(firestore, 'staff', user.uid), staffData, { merge: true });
@@ -231,6 +243,69 @@ export default function StaffPage() {
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
                         <Input placeholder="(123) 456-7890" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <FormField
+                  control={form.control}
+                  name="dateOfBirth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Date of Birth</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                       <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+                <FormField
+                  control={form.control}
+                  name="nationality"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nationality</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. American" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123 Main St, Anytown USA" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
