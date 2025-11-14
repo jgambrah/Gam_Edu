@@ -190,21 +190,27 @@
       "type": "object",
       "description": "Represents a class in the school.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the class."
-        },
         "name": {
           "type": "string",
           "description": "Name of the class (e.g., Grade 5A, Grade 10B)."
         },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the class."
+        },
         "teacherId": {
           "type": "string",
           "description": "The UID of the teacher assigned to this class."
+        },
+        "studentIds": {
+          "type": "array",
+          "description": "An array of student UIDs enrolled in this class.",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
-        "id",
         "name"
       ]
     }

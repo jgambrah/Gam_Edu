@@ -82,11 +82,10 @@ service cloud.firestore {
      * @path /classes/{classId}
      */
     match /classes/{classId} {
+      allow read: if isSignedIn();
       allow create: if isAdmin();
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     /**
@@ -129,5 +128,4 @@ service cloud.firestore {
     }
   }
 }
-
     
