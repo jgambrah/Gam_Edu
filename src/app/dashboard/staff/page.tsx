@@ -27,7 +27,7 @@ import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
@@ -57,10 +57,22 @@ export default function StaffPage() {
       lastName: '',
       email: '',
       phone: '',
-      password: '',
+      password: 'password123',
       role: 'Teacher',
     },
   });
+
+  const firstName = form.watch('firstName');
+  const lastName = form.watch('lastName');
+
+  useEffect(() => {
+    if (firstName || lastName) {
+      const email = `${firstName.toLowerCase()}${lastName.toLowerCase().replace(/\s/g, '')}@sunnyside.com`;
+      form.setValue('email', email);
+    } else {
+        form.setValue('email', '');
+    }
+  }, [firstName, lastName, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -149,10 +161,10 @@ export default function StaffPage() {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="staff@campusconnect.edu" {...field} />
+                    <Input placeholder="staff@campusconnect.edu" {...field} readOnly />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,10 +187,10 @@ export default function StaffPage() {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="hidden">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder="••••••••" {...field} readOnly />
                   </FormControl>
                   <FormDescription>
                     The new staff member will use this to log in.
