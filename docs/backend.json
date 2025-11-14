@@ -6,9 +6,9 @@
       "type": "object",
       "description": "Represents a staff member in the school system.",
       "properties": {
-        "id": {
+        "uid": {
           "type": "string",
-          "description": "Unique identifier for the staff member."
+          "description": "Unique identifier for the staff member (matches Firebase Auth UID)."
         },
         "firstName": {
           "type": "string",
@@ -27,17 +27,17 @@
           "type": "string",
           "description": "Phone number of the staff member."
         },
-        "roleId": {
+        "role": {
           "type": "string",
-          "description": "Reference to Role. (Relationship: Role 1:N Staff)"
+          "description": "The assigned role of the staff member."
         }
       },
       "required": [
-        "id",
+        "uid",
         "firstName",
         "lastName",
         "email",
-        "roleId"
+        "role"
       ]
     },
     "Role": {
@@ -104,11 +104,11 @@
           "schema": {
             "$ref": "#/backend/entities/Staff"
           },
-          "description": "Stores staff member profiles, including a denormalized `roleId` for authorization independence. An administrator or director can add a staff member and assign them to a role such that they can access features relating to their role when they log in.",
+          "description": "Stores staff member profiles, including a denormalized `role` for authorization. An administrator or director can add a staff member and assign them to a role such that they can access features relating to their role when they log in.",
           "params": [
             {
               "name": "staffId",
-              "description": "Unique identifier for the staff member."
+              "description": "Unique identifier for the staff member, matching their Firebase Auth UID."
             }
           ]
         }
