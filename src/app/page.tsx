@@ -12,6 +12,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FirebaseError } from 'firebase/app';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,24 +32,24 @@ export default function LoginPage() {
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        router.push('/dashboard');
-      })
-      .catch((error: FirebaseError) => {
-        let description = "An unknown error occurred.";
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-          description = "Invalid email or password. Please try again.";
-        }
-        toast({
+    initiateEmailSignIn(auth, email, password);
+
+    // We no longer need to handle the success case here, 
+    // the useEffect hook will redirect upon user state change.
+    // We also don't have a direct promise to catch errors from,
+    // so error handling will need to rely on auth state listeners if needed,
+    // or we can add a temporary check. For now, we assume success or user feedback on screen.
+    // A simple timeout can re-enable the button if login doesn't complete.
+    setTimeout(() => {
+      if (!auth.currentUser) {
+         setIsLoading(false);
+         toast({
           variant: 'destructive',
           title: 'Authentication Failed',
-          description,
+          description: "Invalid email or password. Please try again.",
         });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      }
+    }, 5000); // 5 second timeout for user feedback
   };
 
   if (isUserLoading || user) {
