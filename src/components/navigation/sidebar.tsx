@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -41,8 +41,9 @@ export default function AppSidebar() {
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
-                <Link href={`${item.path}?role=${role}`}>
+                <Link href={`${item.path}?role=${role}`} passHref legacyBehavior>
                   <SidebarMenuButton
+                    as="a"
                     isActive={pathname === item.path}
                     tooltip={{ children: item.title }}
                   >
