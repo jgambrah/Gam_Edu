@@ -7,8 +7,8 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
   SidebarFooter,
+  sidebarMenuButtonVariants,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
@@ -17,6 +17,13 @@ import { useRole } from '@/context/role-context';
 import type { NavItem, UserRole } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useUser } from '@/firebase';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { useSidebar } from '@/components/ui/sidebar';
 
 function isNavItemVisible(item: NavItem, role: UserRole) {
   return item.roles === 'all' || item.roles.includes(role);
@@ -26,6 +33,7 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { role } = useRole();
   const { user } = useUser();
+  const { isMobile, state } = useSidebar();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
   return (
@@ -41,15 +49,28 @@ export default function AppSidebar() {
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
-                <Link href={`${item.path}?role=${role}`} asChild>
-                  <SidebarMenuButton
-                    isActive={pathname === item.path}
-                    tooltip={{ children: item.title }}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={`${item.path}?role=${role}`}
+                      className={cn(
+                        sidebarMenuButtonVariants({ size: 'default' }),
+                        pathname === item.path &&
+                          'bg-sidebar-accent text-sidebar-accent-foreground'
+                      )}
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    align="center"
+                    hidden={state !== 'collapsed' || isMobile}
                   >
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </Link>
+                    {item.title}
+                  </TooltipContent>
+                </Tooltip>
               </SidebarMenuItem>
             ) : null
           )}
@@ -66,7 +87,9 @@ export default function AppSidebar() {
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium truncate">{user?.email ?? 'Demo User'}</span>
+            <span className="text-sm font-medium truncate">
+              {user?.email ?? 'Demo User'}
+            </span>
             <span className="text-xs text-muted-foreground">{role}</span>
           </div>
         </div>
