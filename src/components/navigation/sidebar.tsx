@@ -8,8 +8,8 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarFooter,
+  sidebarMenuButtonVariants,
 } from '@/components/ui/sidebar';
-import { sidebarMenuButtonVariants } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import { AppLogo } from '@/components/icons/app-logo';
