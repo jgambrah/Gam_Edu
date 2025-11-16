@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarFooter,
+  sidebarMenuButtonVariants,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
@@ -17,7 +18,7 @@ import type { NavItem, UserRole } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
-import { useSidebar, sidebarMenuButtonVariants } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 
 function isNavItemVisible(item: NavItem, role: UserRole) {
   return item.roles === 'all' || item.roles.includes(role);
@@ -43,16 +44,16 @@ export default function AppSidebar() {
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
-                 <Link
-                    href={`${item.path}?role=${role}`}
-                    className={cn(
-                        sidebarMenuButtonVariants(),
-                        pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
-                    )}
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
+                <Link
+                  href={`${item.path}?role=${role}`}
+                  className={cn(
+                    sidebarMenuButtonVariants({ variant: 'default' }),
+                    pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                  )}
+                >
+                  <item.icon />
+                  <span>{item.title}</span>
+                </Link>
               </SidebarMenuItem>
             ) : null
           )}
