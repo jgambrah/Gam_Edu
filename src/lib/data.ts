@@ -21,6 +21,7 @@ import {
   UserCheck,
   Plane,
   Star,
+  Landmark,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -165,6 +166,38 @@ export const navItems: NavItem[] = [
     title: 'Library',
     icon: Library,
     roles: ['Librarian', 'Student', 'Teacher', 'Administrator', 'Director'],
+  },
+  {
+    path: '/dashboard/payroll',
+    title: 'Payroll',
+    icon: Landmark,
+    roles: ['Director', 'Administrator', 'Accountant'],
+    subItems: [
+        {
+            path: '/dashboard/payroll',
+            title: 'Run Payroll',
+            icon: Landmark,
+            roles: ['Director', 'Administrator', 'Accountant'],
+        },
+        {
+            path: '/dashboard/payroll/staff-config',
+            title: 'Staff Config',
+            icon: Users,
+            roles: ['Director', 'Administrator', 'Accountant'],
+        },
+        {
+            path: '/dashboard/payroll/settings',
+            title: 'Settings',
+            icon: FileText,
+            roles: ['Director', 'Administrator', 'Accountant'],
+        },
+    ]
+  },
+  {
+    path: '/dashboard/my-payslips',
+    title: 'My Payslips',
+    icon: FileText,
+    roles: ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Director', 'Administrator'],
   },
 ];
 

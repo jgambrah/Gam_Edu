@@ -675,6 +675,25 @@
         },
         "required": ["name", "date"]
     },
+    "PerformanceReview": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PerformanceReview",
+      "type": "object",
+      "description": "Represents a performance review for a staff member.",
+      "properties": {
+        "staffId": { "type": "string" },
+        "reviewerId": { "type": "string" },
+        "reviewerName": { "type": "string" },
+        "reviewDate": { "type": "string", "format": "date" },
+        "rating": { "type": "number" },
+        "strengths": { "type": "string" },
+        "improvementAreas": { "type": "string" },
+        "goals": { "type": "string" },
+        "staffComments": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["staffId", "reviewerId", "reviewDate", "rating", "strengths", "improvementAreas", "goals"]
+    },
     "FinancialRecord": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "FinancialRecord",
@@ -695,6 +714,99 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["studentId", "studentName", "type", "description", "billedAmount", "status", "dueDate", "createdAt"]
+    },
+    "PayrollSettings": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PayrollSettings",
+      "type": "object",
+      "description": "Global settings for payroll processing, including tax and statutory contribution rates.",
+      "properties": {
+        "ssnitEmployeeContributionRate": { "type": "number" },
+        "ssnitEmployerContributionRate": { "type": "number" },
+        "payeeBrackets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": { "type": "number" },
+              "to": { "type": "number" },
+              "rate": { "type": "number" }
+            },
+            "required": ["from", "rate"]
+          }
+        }
+      },
+      "required": ["ssnitEmployeeContributionRate", "ssnitEmployerContributionRate", "payeeBrackets"]
+    },
+    "StaffPayrollConfig": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StaffPayrollConfig",
+      "type": "object",
+      "description": "Individual payroll configuration for a staff member.",
+      "properties": {
+        "basicSalary": { "type": "number" },
+        "allowances": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "name": { "type": "string" }, "amount": { "type": "number" } },
+            "required": ["name", "amount"]
+          }
+        },
+        "deductions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "name": { "type": "string" }, "amount": { "type": "number" } },
+            "required": ["name", "amount"]
+          }
+        },
+        "ssnitNumber": { "type": "string" },
+        "tinNumber": { "type": "string" },
+        "bankName": { "type": "string" },
+        "accountNumber": { "type": "string" }
+      },
+      "required": ["basicSalary", "ssnitNumber", "tinNumber", "bankName", "accountNumber"]
+    },
+    "PayrollRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PayrollRecord",
+      "type": "object",
+      "description": "A record of a single payroll transaction for a staff member for a specific period.",
+      "properties": {
+        "staffId": { "type": "string" },
+        "staffName": { "type": "string" },
+        "period": { "type": "string", "description": "The payroll period, e.g., '2024-07'." },
+        "grossSalary": { "type": "number" },
+        "netSalary": { "type": "number" },
+        "basicSalary": { "type": "number" },
+        "totalAllowances": { "type": "number" },
+        "totalDeductions": { "type": "number" },
+        "allowances": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "name": { "type": "string" }, "amount": { "type": "number" } }
+          }
+        },
+        "deductions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": { "name": { "type": "string" }, "amount": { "type": "number" } }
+          }
+        },
+        "statutory": {
+          "type": "object",
+          "properties": {
+            "ssnitEmployee": { "type": "number" },
+            "ssnitEmployer": { "type": "number" },
+            "paye": { "type": "number" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["staffId", "staffName", "period", "grossSalary", "netSalary"]
     }
   },
   "auth": {
@@ -955,11 +1067,47 @@
         }
       },
       {
+        "path": "/performanceReviews/{reviewId}",
+        "definition": {
+          "entityName": "PerformanceReview",
+          "schema": { "$ref": "#/backend/entities/PerformanceReview" },
+          "description": "Stores staff performance reviews.",
+          "params": [{ "name": "reviewId" }]
+        }
+      },
+      {
         "path": "/financialRecords/{recordId}",
         "definition": {
           "entityName": "FinancialRecord",
           "schema": { "$ref": "#/backend/entities/FinancialRecord" },
           "description": "Stores all student financial records, including tuition bills and fines.",
+          "params": [{ "name": "recordId" }]
+        }
+      },
+      {
+        "path": "/payrollSettings/{settingsId}",
+        "definition": {
+          "entityName": "PayrollSettings",
+          "schema": { "$ref": "#/backend/entities/PayrollSettings" },
+          "description": "Stores global payroll settings like tax brackets.",
+          "params": [{ "name": "settingsId" }]
+        }
+      },
+      {
+        "path": "/staff/{staffId}/payroll/{configId}",
+        "definition": {
+          "entityName": "StaffPayrollConfig",
+          "schema": { "$ref": "#/backend/entities/StaffPayrollConfig" },
+          "description": "Stores individual payroll settings for a staff member.",
+          "params": [{ "name": "staffId" }, { "name": "configId" }]
+        }
+      },
+      {
+        "path": "/payrollRecords/{recordId}",
+        "definition": {
+          "entityName": "PayrollRecord",
+          "schema": { "$ref": "#/backend/entities/PayrollRecord" },
+          "description": "Stores generated payslips for each staff member for each payroll period.",
           "params": [{ "name": "recordId" }]
         }
       }

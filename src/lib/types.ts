@@ -476,3 +476,62 @@ export type FinancialRecord = {
     dueDate: any;
     createdAt: any;
 };
+
+export type Staff = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+    email: string;
+};
+
+// Payroll Schemas
+export const payrollSettingsFormSchema = z.object({
+    ssnitEmployeeContributionRate: z.coerce.number().min(0).max(1),
+    ssnitEmployerContributionRate: z.coerce.number().min(0).max(1),
+    payeeBrackets: z.array(z.object({
+        from: z.coerce.number().min(0),
+        to: z.coerce.number().min(0).nullable(),
+        rate: z.coerce.number().min(0).max(1)
+    }))
+});
+
+export type PayrollSettings = z.infer<typeof payrollSettingsFormSchema> & { id: string };
+
+const allowanceSchema = z.object({ name: z.string().min(1), amount: z.coerce.number().min(0) });
+const deductionSchema = z.object({ name: z.string().min(1), amount: z.coerce.number().min(0) });
+
+export const staffPayrollConfigSchema = z.object({
+    basicSalary: z.coerce.number().min(0),
+    allowances: z.array(allowanceSchema).optional(),
+    deductions: z.array(deductionSchema).optional(),
+    ssnitNumber: z.string().min(1),
+    tinNumber: z.string().min(1),
+    bankName: z.string().min(1),
+    accountNumber: z.string().min(1),
+});
+
+export type StaffPayrollConfig = z.infer<typeof staffPayrollConfigSchema> & {
+    id?: string;
+    staffId: string;
+}
+
+export type PayrollRecord = {
+    id: string;
+    staffId: string;
+    staffName: string;
+    period: string; // "YYYY-MM"
+    grossSalary: number;
+    netSalary: number;
+    basicSalary: number;
+    totalAllowances: number;
+    totalDeductions: number;
+    allowances: Array<{name: string, amount: number}>;
+    deductions: Array<{name: string, amount: number}>;
+    statutory: {
+        ssnitEmployee: number;
+        ssnitEmployer: number;
+        paye: number;
+    },
+    createdAt: any;
+}

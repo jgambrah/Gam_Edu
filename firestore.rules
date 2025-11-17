@@ -242,6 +242,18 @@ service cloud.firestore {
       allow read, write: if isFinanceStaff();
     }
 
+    match /payrollSettings/{settingsId} {
+      allow read, write: if isFinanceStaff();
+    }
+
+    match /staff/{staffId}/payroll/{configId} {
+      allow read, write: if isFinanceStaff();
+    }
+
+    match /payrollRecords/{recordId} {
+      allow read: if isFinanceStaff() || isOwner(resource.data.staffId);
+    }
+
     // ------ Helper Functions ------
 
     /**
