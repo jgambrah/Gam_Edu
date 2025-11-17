@@ -1,5 +1,5 @@
 
-import type { NavItem } from '@/lib/types';
+import type { NavItem, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
   Users,
@@ -23,6 +23,7 @@ import {
   Star,
   Landmark,
   Boxes,
+  Route as RouteIcon,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -161,6 +162,12 @@ export const navItems: NavItem[] = [
     title: 'Inventory',
     icon: Boxes,
     roles: ['Administrator', 'Director'],
+  },
+  {
+    path: '/dashboard/transport',
+    title: 'Transport',
+    icon: RouteIcon,
+    roles: ['Administrator', 'Director', 'Transport Staff'],
   },
   {
     path: '/dashboard/accounts',
@@ -303,4 +310,41 @@ export const MOCK_JOURNAL_ENTRIES = [
     { id: 2, ref: 'PAY-001', date: '2024-08-01', description: 'Received tuition payment from John Doe', debits: [{ accountId: '1010', amount: 5000 }], credits: [{ accountId: '1200', amount: 5000 }] },
     { id: 3, ref: 'BILL-001', date: '2024-08-05', description: 'Electricity bill for July', debits: [{ accountId: '5020', amount: 800 }], credits: [{ accountId: '2100', amount: 800 }] },
     { id: 4, ref: 'PAY-002', date: '2024-08-10', description: 'Paid electricity bill', debits: [{ accountId: '2100', amount: 800 }], credits: [{ accountId: '1010', amount: 800 }] },
+];
+
+export const MOCK_BUSES: Bus[] = [
+    { id: 'bus-01', name: 'Yellow Eagle', capacity: 48, assignedDriverId: 'driver-01' },
+    { id: 'bus-02', name: 'Blue Sparrow', capacity: 36, assignedDriverId: 'driver-02' },
+];
+
+export let MOCK_ROUTES: Route[] = [
+    {
+        id: 'route-A',
+        name: 'Morning Route A - North',
+        busId: 'bus-01',
+        driverId: 'driver-01',
+        stops: [
+            { id: 'stop-A1', name: 'Oak Street & 1st', address: '100 Oak St', order: 1, assignedStudentIds: ['student-01'] },
+            { id: 'stop-A2', name: 'Maple Avenue', address: '250 Maple Ave', order: 2, assignedStudentIds: ['student-02', 'student-03'] },
+        ]
+    },
+    {
+        id: 'route-B',
+        name: 'Afternoon Route B - South',
+        busId: 'bus-02',
+        driverId: 'driver-02',
+        stops: [
+            { id: 'stop-B1', name: 'Pine & Main', address: '300 Pine St', order: 1, assignedStudentIds: [] },
+            { id: 'stop-B2', name: 'Elm Street Plaza', address: '450 Elm St', order: 2, assignedStudentIds: ['student-04'] },
+        ]
+    }
+];
+
+export const MOCK_STUDENTS_FOR_TRANSPORT = [
+    { uid: 'student-01', firstName: 'Alice', lastName: 'Smith', classId: 'g5', transportStopId: 'stop-A1' },
+    { uid: 'student-02', firstName: 'Bob', lastName: 'Johnson', classId: 'g5', transportStopId: 'stop-A2' },
+    { uid: 'student-03', firstName: 'Charlie', lastName: 'Brown', classId: 'g6', transportStopId: 'stop-A2' },
+    { uid: 'student-04', firstName: 'Diana', lastName: 'Prince', classId: 'g6', transportStopId: 'stop-B2' },
+    { uid: 'student-05', firstName: 'Eve', lastName: 'Adams', classId: 'g7', transportStopId: undefined },
+    { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
 ];

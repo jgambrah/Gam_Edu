@@ -10,7 +10,8 @@ export type UserRole =
   | 'Student'
   | 'Parent'
   | 'Librarian'
-  | 'Cook';
+  | 'Cook'
+  | 'Transport Staff';
 
 export const ALL_ROLES: UserRole[] = [
   'Director',
@@ -21,6 +22,7 @@ export const ALL_ROLES: UserRole[] = [
   'Parent',
   'Librarian',
   'Cook',
+  'Transport Staff',
 ];
 
 export type NavItem = {
@@ -368,6 +370,7 @@ export type Student = {
     enrollmentStatus?: 'Active' | 'Graduated';
     graduationYear?: number;
     alumniDetails?: AlumniDetails;
+    transportStopId?: string;
 };
 
 // Leave Management Schemas
@@ -640,3 +643,32 @@ export type InventoryTransaction = {
     staffId?: string; // Who performed the action or who it was checked out to
     notes?: string;
 };
+
+// Transport Schemas
+export type Bus = {
+    id: string;
+    name: string;
+    capacity: number;
+    assignedDriverId?: string;
+};
+  
+export type Stop = {
+    id: string;
+    name: string;
+    address: string;
+    order: number;
+    assignedStudentIds: string[];
+};
+  
+export type Route = {
+    id: string;
+    name: string;
+    busId: string;
+    driverId: string;
+    stops: Stop[];
+};
+
+export const studentAssignmentSchema = z.object({
+    studentId: z.string().min(1, "You must select a student."),
+    stopId: z.string().min(1, "You must select a stop."),
+});
