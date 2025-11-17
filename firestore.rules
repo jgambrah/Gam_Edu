@@ -212,6 +212,11 @@ service cloud.firestore {
       allow create, delete: if isLibrarianOrAdmin();
       allow update: if isLibrarianOrAdmin() || (isBorrower() && canRequest(itemId));
     }
+    
+    match /attendance/{attendanceId} {
+      allow read: if isTeacher() || isAdmin() || isOwner(resource.data.studentId);
+      allow create: if isTeacher() || isAdmin();
+    }
 
     // ------ Helper Functions ------
 

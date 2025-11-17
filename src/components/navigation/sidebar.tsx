@@ -9,6 +9,11 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   sidebarMenuButtonVariants,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
@@ -19,6 +24,8 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/components/ui/sidebar';
+import { ChevronRight } from 'lucide-react';
+import React from 'react';
 
 function isNavItemVisible(item: NavItem, role: UserRole) {
   return item.roles === 'all' || item.roles.includes(role);
@@ -28,7 +35,6 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { role } = useRole();
   const { user } = useUser();
-  const { state } = useSidebar();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
   return (
@@ -44,16 +50,42 @@ export default function AppSidebar() {
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
-                <Link
-                  href={item.path + '?role=' + role}
-                  className={cn(
-                    sidebarMenuButtonVariants({ variant: 'default' }),
-                    pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
-                  )}
-                >
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
+                {item.subItems ? (
+                   <Collapsible>
+                    <CollapsibleTrigger className={cn(
+                      sidebarMenuButtonVariants({ variant: 'default' }), 'w-full justify-between'
+                    )}>
+                       <div className='flex items-center gap-2'>
+                        <item.icon />
+                        <span>{item.title}</span>
+                       </div>
+                       <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                          {item.subItems.map(subItem => isNavItemVisible(subItem, role) && (
+                            <SidebarMenuItem key={subItem.path}>
+                                <Link href={subItem.path + '?role=' + role} className={cn(sidebarMenuButtonVariants({variant: 'default', size: 'sm'}), 'w-full',  pathname === subItem.path && 'bg-sidebar-accent text-sidebar-accent-foreground')}>
+                                     <subItem.icon />
+                                    <span>{subItem.title}</span>
+                                </Link>
+                            </SidebarMenuItem>
+                          ))}
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                   </Collapsible>
+                ) : (
+                  <Link
+                    href={item.path + '?role=' + role}
+                    className={cn(
+                      sidebarMenuButtonVariants({ variant: 'default' }),
+                      pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                    )}
+                  >
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </Link>
+                )}
               </SidebarMenuItem>
             ) : null
           )}

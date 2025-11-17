@@ -7,7 +7,6 @@ import {
   CalendarCheck,
   GraduationCap,
   Library,
-  CookingPot,
   Banknote,
   UserPlus,
   HeartHandshake,
@@ -16,6 +15,7 @@ import {
   FileText,
   CalendarDays,
   ClipboardList,
+  ScanFace,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -90,6 +90,14 @@ export const navItems: NavItem[] = [
     title: 'Attendance',
     icon: CalendarCheck,
     roles: ['Administrator', 'Teacher'],
+    subItems: [
+        {
+            path: '/dashboard/attendance/face-recognition',
+            title: 'Face Recognition Kiosk',
+            icon: ScanFace,
+            roles: ['Administrator', 'Teacher'],
+        }
+    ]
   },
   {
     path: '/dashboard/grades',

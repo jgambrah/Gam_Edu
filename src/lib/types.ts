@@ -27,6 +27,7 @@ export type NavItem = {
   title: string;
   icon: LucideIcon;
   roles: UserRole[] | 'all';
+  subItems?: NavItem[];
 };
 
 export const assignmentSchema = z.object({
@@ -234,4 +235,16 @@ export type LibraryItem = z.infer<typeof libraryItemSchema> & {
     currentHolderName?: string;
     dueDate?: any;
     createdAt: any;
+};
+
+// Attendance Schemas
+export const attendanceRecordSchema = z.object({
+  studentId: z.string(),
+  date: z.date(),
+  status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
+  markedBy: z.string(), // UID of teacher or 'kiosk'
+});
+
+export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
+    id: string;
 };
