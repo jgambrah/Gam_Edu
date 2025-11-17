@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
   SidebarContent,
   SidebarHeader,
@@ -33,25 +32,26 @@ function isNavItemVisible(item: NavItem, role: UserRole) {
 }
 
 function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserRole, isSubItem?: boolean }) {
-  const pathname = usePathname();
   const router = useRouter();
-  const { setOpenMobile } = useSidebar();
+  const pathname = usePathname();
+  const { setOpenMobile, isMobile } = useSidebar();
 
-  const handleNavigate = () => {
-    const newPath = `${item.path}?role=${role}`;
-    console.log(`[Nav] Attempting to navigate to: ${newPath}`);
-    console.log(`[Nav] Current path: ${pathname}`);
-    router.push(newPath);
-    // Close mobile sidebar on navigation
-    setOpenMobile(false); 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation(); // Prevent parent handlers from capturing the event
+    console.log(`[NavLink Click] Attempting to navigate to: ${item.path}?role=${role}`);
+    
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+    router.push(`${item.path}?role=${role}`);
   };
-  
+
   return (
     <button
-      onClick={handleNavigate}
+      onClick={handleClick}
       className={cn(
         sidebarMenuButtonVariants({ variant: 'default', size: isSubItem ? 'sm' : 'default' }),
-        'w-full',
+        'w-full justify-start',
         pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
       )}
     >
@@ -86,16 +86,17 @@ export default function AppSidebar() {
               <SidebarMenuItem key={item.path}>
                 {item.subItems ? (
                   <Collapsible defaultOpen={isSubItemActive(item)}>
-                    <CollapsibleTrigger asChild>
-                       <div className={cn(
-                        sidebarMenuButtonVariants({ variant: 'default' }), 'w-full justify-between'
-                      )}>
+                    <CollapsibleTrigger
+                      className={cn(
+                        sidebarMenuButtonVariants({ variant: 'default' }),
+                        'w-full justify-between'
+                      )}
+                    >
                        <div className='flex items-center gap-2'>
                         <item.icon />
                         <span>{item.title}</span>
                        </div>
-                       <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
-                       </div>
+                       <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-90" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
