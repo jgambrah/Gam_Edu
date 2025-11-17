@@ -1,3 +1,4 @@
+
 import type { NavItem } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -157,7 +158,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/accounts',
     title: 'Accounts',
     icon: Banknote,
-    roles: ['Director', 'Accountant'],
+    roles: ['Director', 'Administrator', 'Accountant'],
   },
   {
     path: '/dashboard/library',
