@@ -76,6 +76,7 @@ export type QuizQuestion = {
     questionText: string;
     options: string[];
     correctAnswer: string;
+    explanation?: string;
 }
 
 export type Quiz = {
@@ -86,6 +87,7 @@ export type Quiz = {
     topic: string;
     questions: QuizQuestion[];
     createdAt: any;
+    forGradeLevel?: string;
 }
 
 export type QuizAttempt = {
@@ -97,4 +99,42 @@ export type QuizAttempt = {
     completedAt: any;
 }
 
-    
+
+// Assessment & Gradebook Schemas
+export const assessmentFeedbackSchema = z.object({
+  academicYear: z.string().min(1, "Academic year is required."),
+  term: z.string().min(1, "Term is required."),
+  classId: z.string().min(1, "Class is required."),
+  studentId: z.string().min(1, "Student is required."),
+  subjectId: z.string().min(1, "Subject is required."),
+  assessmentName: z.string().min(1, "Assessment name is required."),
+  assessmentType: z.enum(['Quiz', 'Assignment', 'Activity', 'Exam']),
+  assessmentDate: z.date(),
+  score: z.coerce.number().optional(),
+  maxScore: z.coerce.number().optional(),
+  feedback: z.string().optional(),
+  teacherId: z.string().optional(),
+}).refine(data => !data.score || !data.maxScore || data.score <= data.maxScore, {
+  message: "Score cannot exceed max score",
+  path: ["score"],
+});
+
+
+export type Assessment = z.infer<typeof assessmentFeedbackSchema> & {
+    id: string;
+    createdAt: any;
+};
+
+export const behavioralRecordSchema = z.object({
+    studentId: z.string().min(1, "Student is required."),
+    incidentType: z.enum(['Infraction', 'Positive Behavior', 'Counseling Note', 'Disciplinary Action', 'Teacher Note']),
+    date: z.date(),
+    description: z.string().min(1, "Description is required."),
+    actionTaken: z.string().optional(),
+    recordedById: z.string(),
+});
+
+export type BehavioralRecord = z.infer<typeof behavioralRecordSchema> & {
+    id: string;
+    createdAt: any;
+};

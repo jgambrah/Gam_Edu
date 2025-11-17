@@ -11,7 +11,8 @@ import {
   Banknote,
   UserPlus,
   HeartHandshake,
-  BookMarked
+  BookMarked,
+  ClipboardCheck,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -43,6 +44,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard/academics',
     title: 'Academics',
     icon: BookOpen,
+    roles: ['Director', 'Administrator', 'Teacher'],
+  },
+  {
+    path: '/dashboard/assessments',
+    title: 'Assessments',
+    icon: ClipboardCheck,
     roles: ['Director', 'Administrator', 'Teacher'],
   },
   {
@@ -105,4 +112,14 @@ Please note that the Annual Sports Day, originally scheduled for October 20th, h
   },
 ];
 
-    
+
+export const MOCK_SUBJECTS = [
+    { id: 'math-01', name: 'Mathematics' },
+    { id: 'sci-01', name: 'Science' },
+    { id: 'eng-01', name: 'English Language Arts' },
+    { id: 'hist-01', name: 'History' },
+    { id: 'art-01', name: 'Art' },
+];
+
+export const MOCK_ACADEMIC_YEARS = ['2023-2024', '2024-2025'];
+export const MOCK_TERMS = ['Fall', 'Spring', 'Summer'];

@@ -59,8 +59,7 @@ service cloud.firestore {
      */
     match /students/{studentId} {
       allow create: if isAdmin();
-      allow get: if isAdmin();
-      allow list: if isAdmin();
+      allow read: if isSignedIn();
       allow update: if isAdmin() && resource != null;
       allow delete: if isAdmin() && resource != null;
     }
@@ -139,6 +138,24 @@ service cloud.firestore {
         allow create: if isStudent();
     }
 
+    /**
+     * @description Rules for manual assessments and grade entries.
+     * @path /assessments/{assessmentId}
+     */
+    match /assessments/{assessmentId} {
+      allow read: if isSignedIn();
+      allow create, update: if isTeacher() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    /**
+     * @description Rules for behavioral and incident logs.
+     * @path /behavioral_records/{recordId}
+     */
+    match /behavioral_records/{recordId} {
+      allow read, create, update: if isTeacher() || isAdmin();
+      allow delete: if isAdmin();
+    }
 
     // ------ Helper Functions ------
 
@@ -164,7 +181,8 @@ service cloud.firestore {
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+      return userRole == 'Administrator' || userRole == 'Director';
     }
 
     function isTeacher() {
@@ -186,5 +204,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
