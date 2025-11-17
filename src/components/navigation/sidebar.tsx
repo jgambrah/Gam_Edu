@@ -1,4 +1,3 @@
-
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -35,10 +34,21 @@ function isNavItemVisible(item: NavItem, role: UserRole) {
 
 function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserRole, isSubItem?: boolean }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { setOpenMobile } = useSidebar();
+
+  const handleNavigate = () => {
+    const newPath = `${item.path}?role=${role}`;
+    console.log(`[Nav] Attempting to navigate to: ${newPath}`);
+    console.log(`[Nav] Current path: ${pathname}`);
+    router.push(newPath);
+    // Close mobile sidebar on navigation
+    setOpenMobile(false); 
+  };
   
   return (
-    <Link
-      href={`${item.path}?role=${role}`}
+    <button
+      onClick={handleNavigate}
       className={cn(
         sidebarMenuButtonVariants({ variant: 'default', size: isSubItem ? 'sm' : 'default' }),
         'w-full',
@@ -47,7 +57,7 @@ function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserR
     >
       <item.icon />
       <span>{item.title}</span>
-    </Link>
+    </button>
   );
 }
 
