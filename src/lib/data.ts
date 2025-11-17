@@ -22,6 +22,7 @@ import {
   Plane,
   Star,
   Landmark,
+  Boxes,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -154,6 +155,12 @@ export const navItems: NavItem[] = [
     title: 'Report Cards',
     icon: FileText,
     roles: ['Teacher', 'Administrator', 'Director'],
+  },
+  {
+    path: '/dashboard/inventory',
+    title: 'Inventory',
+    icon: Boxes,
+    roles: ['Administrator', 'Director'],
   },
   {
     path: '/dashboard/accounts',

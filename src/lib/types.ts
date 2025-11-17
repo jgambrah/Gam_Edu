@@ -608,3 +608,35 @@ export const journalEntrySchema = z.object({
     path: ['creditAccountId'],
 });
     
+// Inventory Schemas
+export const inventoryItemSchema = z.object({
+    name: z.string().min(1, "Item name is required."),
+    category: z.enum(['IT Equipment', 'Furniture', 'Office Supplies', 'Lab Equipment', 'Sports Gear', 'Other']),
+    quantity: z.coerce.number().int().min(1),
+    location: z.string().min(1, "Location is required."),
+    supplier: z.string().optional(),
+    purchaseDate: z.date().optional(),
+    unitPrice: z.coerce.number().optional(),
+    condition: z.enum(['New', 'Good', 'Fair', 'Poor', 'For Repair']),
+});
+
+export type InventoryItem = z.infer<typeof inventoryItemSchema> & {
+    id: string;
+    status: 'Available' | 'In Use' | 'Under Maintenance';
+    currentHolderId?: string;
+    currentHolderName?: string;
+    lastCheckedOut?: any;
+};
+
+export const checkoutSchema = z.object({
+    staffId: z.string().min(1, "You must select a staff member."),
+});
+
+export type InventoryTransaction = {
+    id: string;
+    itemId: string;
+    transactionType: 'Creation' | 'Check-Out' | 'Check-In' | 'Audit';
+    timestamp: any;
+    staffId?: string; // Who performed the action or who it was checked out to
+    notes?: string;
+};
