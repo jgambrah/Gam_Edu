@@ -478,6 +478,60 @@
         "url": { "type": "string", "format": "uri", "description": "The URL pointing to the resource." }
       },
       "required": ["title", "courseName", "resourceType", "url"]
+    },
+    "LessonPlan": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LessonPlan",
+      "type": "object",
+      "description": "Represents a teacher's lesson plan for a specific class on a specific date.",
+      "properties": {
+        "teacherId": {
+          "type": "string",
+          "description": "The UID of the teacher who created the lesson plan."
+        },
+        "classId": {
+          "type": "string",
+          "description": "ID of the class this lesson plan is for."
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "The date the lesson will take place."
+        },
+        "topic": {
+          "type": "string",
+          "description": "The main topic or title of the lesson."
+        },
+        "objectives": {
+          "type": "string",
+          "description": "The learning objectives for the lesson."
+        },
+        "activities": {
+          "type": "string",
+          "description": "The activities planned for the lesson."
+        },
+        "materials": {
+          "type": "string",
+          "description": "A list of materials and resources needed for the lesson."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Private notes or reflections for the teacher."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "teacherId",
+        "classId",
+        "date",
+        "topic",
+        "objectives",
+        "activities",
+        "materials"
+      ]
     }
   },
   "auth": {
@@ -674,13 +728,22 @@
           "params": [{ "name": "timetableEntryId" }]
         }
       },
-       {
+      {
         "path": "/resources/{resourceId}",
         "definition": {
           "entityName": "Resource",
           "schema": { "$ref": "#/backend/entities/Resource" },
           "description": "Stores learning resources for courses.",
           "params": [{ "name": "resourceId" }]
+        }
+      },
+      {
+        "path": "/lesson-plans/{lessonPlanId}",
+        "definition": {
+          "entityName": "LessonPlan",
+          "schema": { "$ref": "#/backend/entities/LessonPlan" },
+          "description": "Stores teachers' lesson plans for their classes.",
+          "params": [{ "name": "lessonPlanId" }]
         }
       }
     ],

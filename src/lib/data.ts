@@ -15,6 +15,7 @@ import {
   ClipboardCheck,
   FileText,
   CalendarDays,
+  ClipboardList,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -46,6 +47,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard/academics',
     title: 'Academics',
     icon: BookOpen,
+    roles: ['Director', 'Administrator', 'Teacher'],
+  },
+  {
+    path: '/dashboard/lesson-planning',
+    title: 'Lesson Planning',
+    icon: ClipboardList,
     roles: ['Director', 'Administrator', 'Teacher'],
   },
   {
@@ -143,3 +150,4 @@ export const MOCK_SUBJECTS = [
 
 export const MOCK_ACADEMIC_YEARS = ['2023-2024', '2024-2025'];
 export const MOCK_TERMS = ['Fall', 'Spring', 'Summer'];
+
