@@ -565,11 +565,23 @@ export type AccountsPayableRecord = z.infer<typeof payableSchema> & {
 };
 
 // General Ledger Schemas
+export const ACCOUNT_TYPES = ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'] as const;
+export type AccountType = typeof ACCOUNT_TYPES[number];
+
+export const accountSchema = z.object({
+    name: z.string().min(1, 'Account name is required.'),
+    type: z.enum(ACCOUNT_TYPES),
+    parentAccountId: z.string().optional(),
+    description: z.string().optional(),
+});
+
 export type ChartOfAccount = {
     accountId: string;
     name: string;
-    type: 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+    type: AccountType;
     isControlAccount: boolean;
+    parentAccountId?: string;
+    description?: string;
 };
 
 export type JournalEntryItem = {

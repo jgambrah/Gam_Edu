@@ -184,6 +184,12 @@ export const navItems: NavItem[] = [
         title: 'General Ledger',
         icon: BookOpen,
         roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/accounts/chart-of-accounts',
+        title: 'Chart of Accounts',
+        icon: BookMarked,
+        roles: ['Director', 'Administrator', 'Accountant'],
       }
     ]
   },
@@ -272,14 +278,17 @@ export const MOCK_PUBLIC_HOLIDAYS = [
 ];
 
 export const MOCK_CHART_OF_ACCOUNTS = [
-    { accountId: '1010', name: 'Cash at Bank', type: 'Asset', isControlAccount: false },
+    { accountId: '1010', name: 'Cash at Bank', type: 'Asset', isControlAccount: false, parentAccountId: '1000' },
     { accountId: '1200', name: 'Accounts Receivable', type: 'Asset', isControlAccount: true },
     { accountId: '2100', name: 'Accounts Payable', type: 'Liability', isControlAccount: true },
-    { accountId: '4010', name: 'Tuition Fees', type: 'Revenue', isControlAccount: false },
-    { accountId: '4020', name: 'Library Fines', type: 'Revenue', isControlAccount: false },
-    { accountId: '5010', name: 'Salaries Expense', type: 'Expense', isControlAccount: false },
-    { accountId: '5020', name: 'Utilities Expense', type: 'Expense', isControlAccount: false },
-    { accountId: '5030', name: 'Maintenance Expense', type: 'Expense', isControlAccount: false },
+    { accountId: '4000', name: 'Operating Revenue', type: 'Revenue', isControlAccount: true },
+    { accountId: '4010', name: 'Tuition Fees', type: 'Revenue', isControlAccount: false, parentAccountId: '4000' },
+    { accountId: '4020', name: 'Library Fines', type: 'Revenue', isControlAccount: false, parentAccountId: '4000' },
+    { accountId: '5000', name: 'Operating Expenses', type: 'Expense', isControlAccount: true },
+    { accountId: '5010', name: 'Salaries Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
+    { accountId: '5020', name: 'Utilities Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
+    { accountId: '5030', name: 'Maintenance Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
+    { accountId: '1000', name: 'Current Assets', type: 'Asset', isControlAccount: true },
 ];
 
 export const MOCK_JOURNAL_ENTRIES = [
