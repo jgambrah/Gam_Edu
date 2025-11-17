@@ -67,7 +67,14 @@ export default function AppSidebar() {
                       <SidebarMenuSub>
                           {item.subItems.map(subItem => isNavItemVisible(subItem, role) && (
                             <SidebarMenuItem key={subItem.path}>
-                                <Link href={subItem.path + '?role=' + role} className={cn(sidebarMenuButtonVariants({variant: 'default', size: 'sm'}), 'w-full',  pathname === subItem.path && 'bg-sidebar-accent text-sidebar-accent-foreground')}>
+                                <Link
+                                  href={`${subItem.path}?role=${role}`}
+                                  onClick={(e) => {
+                                    console.log('Sub-Link clicked:', subItem.path);
+                                    console.log('Current pathname:', pathname);
+                                    console.log('Role:', role);
+                                  }}
+                                  className={cn(sidebarMenuButtonVariants({variant: 'default', size: 'sm'}), 'w-full',  pathname === subItem.path && 'bg-sidebar-accent text-sidebar-accent-foreground')}>
                                      <subItem.icon />
                                     <span>{subItem.title}</span>
                                 </Link>
@@ -78,7 +85,12 @@ export default function AppSidebar() {
                    </Collapsible>
                 ) : (
                   <Link
-                    href={item.path + '?role=' + role}
+                    href={`${item.path}?role=${role}`}
+                    onClick={(e) => {
+                      console.log('Link clicked:', item.path);
+                      console.log('Current pathname:', pathname);
+                      console.log('Role:', role);
+                    }}
                     className={cn(
                       sidebarMenuButtonVariants({ variant: 'default' }),
                       pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
