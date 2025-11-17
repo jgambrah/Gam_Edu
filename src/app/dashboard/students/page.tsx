@@ -37,6 +37,7 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
+import ClientBoundary from '../client-boundary';
 
 const studentFormSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -181,7 +182,7 @@ function ClassManager() {
     )
 }
 
-export default function StudentsPage() {
+function StudentsPageContent() {
   const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -416,4 +417,13 @@ export default function StudentsPage() {
       <StudentList />
     </div>
   );
+}
+
+
+export default function StudentsPage() {
+    return (
+        <ClientBoundary>
+            <StudentsPageContent />
+        </ClientBoundary>
+    )
 }

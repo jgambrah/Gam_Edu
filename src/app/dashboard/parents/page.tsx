@@ -31,6 +31,7 @@ import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
+import ClientBoundary from '../client-boundary';
 
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -89,7 +90,7 @@ function ParentList() {
   );
 }
 
-export default function ParentsPage() {
+function ParentsPageContent() {
   const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -321,4 +322,10 @@ export default function ParentsPage() {
   );
 }
 
-    
+export default function ParentsPage() {
+    return (
+        <ClientBoundary>
+            <ParentsPageContent />
+        </ClientBoundary>
+    )
+}

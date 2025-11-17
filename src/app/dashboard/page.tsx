@@ -3,6 +3,7 @@
 import { useRole } from '@/context/role-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Bell, Calendar, DollarSign, GraduationCap, Users } from 'lucide-react';
+import ClientBoundary from './client-boundary';
 
 function ParentDashboard() {
   return (
@@ -102,7 +103,7 @@ function GenericDashboard() {
   );
 }
 
-export default function DashboardPage() {
+function DashboardPageContent() {
   const { role } = useRole();
 
   const renderDashboard = () => {
@@ -117,4 +118,12 @@ export default function DashboardPage() {
   };
 
   return <div className="space-y-4">{renderDashboard()}</div>;
+}
+
+export default function DashboardPage() {
+  return (
+    <ClientBoundary>
+      <DashboardPageContent />
+    </ClientBoundary>
+  );
 }
