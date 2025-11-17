@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -18,6 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Vendor, vendorSchema } from '@/lib/types';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 
 function VendorForm({ setOpen, onVendorAdded }: { setOpen: (open: boolean) => void; onVendorAdded: () => void }) {
@@ -35,7 +38,7 @@ function VendorForm({ setOpen, onVendorAdded }: { setOpen: (open: boolean) => vo
         setIsSubmitting(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'vendors'), values);
-            toast({ title: 'Success', description: 'Vendor has been added.' });
+            toast({ title: 'Success', description: `Vendor '${values.name}' has been created.` });
             onVendorAdded();
             form.reset();
             setOpen(false);
@@ -54,10 +57,10 @@ function VendorForm({ setOpen, onVendorAdded }: { setOpen: (open: boolean) => vo
                     <FormItem><FormLabel>Vendor Name</FormLabel><FormControl><Input placeholder="e.g., Office Supplies Co." {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="category" render={({ field }) => (
-                    <FormItem><FormLabel>Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{['Office Supplies', 'Maintenance', 'IT Services', 'Catering', 'Transportation', 'Other'].map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Category</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{['Office Supplies', 'Maintenance', 'IT Services', 'Catering', 'Transportation', 'Utilities', 'Other'].map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="email" render={({ field }) => (
-                    <FormItem><FormLabel>Contact Email</FormLabel><FormControl><Input placeholder="contact@officeco.com" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Contact Email</FormLabel><FormControl><Input type="email" placeholder="contact@officeco.com" {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem><FormLabel>Contact Phone</FormLabel><FormControl><Input placeholder="(123) 456-7890" {...field} /></FormControl><FormMessage /></FormItem>
@@ -93,7 +96,7 @@ export default function VendorsPage() {
                             <CardDescription>Add, view, and manage school suppliers.</CardDescription>
                         </div>
                         <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-                            <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Add New Vendor</Button></DialogTrigger>
+                            <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> New Vendor</Button></DialogTrigger>
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Add New Vendor</DialogTitle><DialogDescription>Enter the details for the new supplier.</DialogDescription></DialogHeader>
                                 <VendorForm setOpen={setFormOpen} onVendorAdded={forceRefetch} />
@@ -106,14 +109,18 @@ export default function VendorsPage() {
                         <Table>
                             <TableHeader><TableRow><TableHead>Vendor Name</TableHead><TableHead>Category</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead></TableRow></TableHeader>
                             <TableBody>
-                                {vendors?.map(vendor => (
+                                {vendors && vendors.length > 0 ? vendors.map(vendor => (
                                     <TableRow key={vendor.id}>
                                         <TableCell className="font-medium">{vendor.name}</TableCell>
-                                        <TableCell>{vendor.category}</TableCell>
-                                        <TableCell>{vendor.email}</TableCell>
-                                        <TableCell>{vendor.phone}</TableCell>
+                                        <TableCell><Badge variant="secondary">{vendor.category}</Badge></TableCell>
+                                        <TableCell><Link href={`mailto:${vendor.email}`} className="text-primary hover:underline">{vendor.email}</Link></TableCell>
+                                        <TableCell><Link href={`tel:${vendor.phone}`} className="text-primary hover:underline">{vendor.phone}</Link></TableCell>
                                     </TableRow>
-                                ))}
+                                )) : (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="h-24 text-center">No vendors found. Click "New Vendor" to add one.</TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                         </Table>
                     )}
@@ -122,3 +129,5 @@ export default function VendorsPage() {
         </div>
     );
 }
+
+    

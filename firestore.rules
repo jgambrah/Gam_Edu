@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Firestore Security Rules for CampusConnect application.
  *
@@ -343,3 +344,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
