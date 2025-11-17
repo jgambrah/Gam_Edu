@@ -1,11 +1,21 @@
 
 "use client";
 
-import { createContext, useState, useContext, type ReactNode, type Dispatch, type SetStateAction, useEffect } from 'react';
+import { 
+  createContext, 
+  useState, 
+  useContext, 
+  type ReactNode, 
+  type Dispatch, 
+  type SetStateAction, 
+  useEffect,
+  Suspense 
+} from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { UserRole } from '@/lib/types';
 import { useDoc, useFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { Loader2 } from 'lucide-react';
 
 type RoleContextType = {
   role: UserRole;
@@ -14,7 +24,7 @@ type RoleContextType = {
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
-export function RoleProvider({ children }: { children: ReactNode }) {
+function RoleProviderContent({ children }: { children: ReactNode }) {
   const params = useSearchParams();
   const initialRole = (params.get('role') as UserRole) || 'Parent';
   const [role, setRole] = useState<UserRole>(initialRole);
@@ -38,6 +48,14 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       {children}
     </RoleContext.Provider>
   );
+}
+
+export function RoleProvider({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<div className="flex min-h-[80vh] w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
+      <RoleProviderContent>{children}</RoleProviderContent>
+    </Suspense>
+  )
 }
 
 export function useRole() {
