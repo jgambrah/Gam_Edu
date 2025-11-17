@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -34,19 +35,10 @@ function isNavItemVisible(item: NavItem, role: UserRole) {
 
 function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserRole, isSubItem?: boolean }) {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault(); // Prevent default link behavior
-    const href = `${item.path}?role=${role}`;
-    console.log(`Navigating to: ${href}`);
-    router.push(href);
-  };
   
   return (
     <Link
       href={`${item.path}?role=${role}`}
-      onClick={handleClick}
       className={cn(
         sidebarMenuButtonVariants({ variant: 'default', size: isSubItem ? 'sm' : 'default' }),
         'w-full',
