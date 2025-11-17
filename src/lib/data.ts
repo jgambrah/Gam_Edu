@@ -160,6 +160,26 @@ export const navItems: NavItem[] = [
     title: 'Accounts',
     icon: Banknote,
     roles: ['Director', 'Administrator', 'Accountant'],
+    subItems: [
+      {
+        path: '/dashboard/accounts',
+        title: 'Student Billing',
+        icon: Banknote,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/accounts/payables',
+        title: 'Accounts Payable',
+        icon: Landmark,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/accounts/vendors',
+        title: 'Vendors',
+        icon: Users,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      }
+    ]
   },
   {
     path: '/dashboard/library',

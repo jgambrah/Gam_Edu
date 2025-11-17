@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -17,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, Eye, FileCog } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -45,6 +45,7 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
   });
 
   async function onSubmit(values: z.infer<typeof financialRecordSchema>) {
+    if (!firestore) return;
     setIsSubmitting(true);
     try {
         const student = students.find(s => s.uid === values.studentId);
@@ -84,7 +85,7 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
         )}/>
         <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                <FormItem><FormLabel>Billed Amount</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Billed Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="dueDate" render={({ field }) => (
                 <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -109,6 +110,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
     });
   
     async function onSubmit(values: z.infer<typeof bulkBillingSchema>) {
+      if (!firestore) return;
       setIsSubmitting(true);
       const studentsInClass = students.filter(s => s.classId === values.classId);
       if(studentsInClass.length === 0) {
@@ -157,7 +159,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
             )}/>
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                    <FormItem><FormLabel>Amount per Student</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Amount per Student</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="dueDate" render={({ field }) => (
                     <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -183,6 +185,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     });
 
     async function onSubmit(values: z.infer<typeof recordPaymentSchema>) {
+        if (!firestore) return;
         if(values.amount > balance) {
             form.setError('amount', { message: 'Payment cannot exceed balance.' });
             return;
@@ -214,7 +217,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem><FormLabel>Payment Amount</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Payment Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <FormField control={form.control} name="method" render={({ field }) => (
                         <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
@@ -238,6 +241,7 @@ function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRec
     const form = useForm<z.infer<typeof applyWaiverSchema>>({ resolver: zodResolver(applyWaiverSchema) });
 
     async function onSubmit(values: z.infer<typeof applyWaiverSchema>) {
+        if (!firestore) return;
         if(values.amount > balance) {
             form.setError('amount', { message: 'Waiver cannot exceed balance.' });
             return;
@@ -271,7 +275,7 @@ function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRec
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <FormField control={form.control} name="reason" render={({ field }) => (
                         <FormItem><FormLabel>Reason for Waiver</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
@@ -294,10 +298,10 @@ export default function AccountsPage() {
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver'; record: FinancialRecord | null }>({ type: 'payment', record: null });
 
 
-  const finQuery = useMemoFirebase(() => collection(firestore, 'financialRecords'), [firestore]);
+  const finQuery = useMemoFirebase(() => firestore ? collection(firestore, 'financialRecords') : null, [firestore]);
   const { data: records, isLoading, forceRefetch } = useCollection<FinancialRecord>(finQuery);
-  const { data: students } = useCollection<Student>(useMemoFirebase(() => collection(firestore, 'students'), [firestore]));
-  const { data: classes } = useCollection(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+  const { data: students } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
+  const { data: classes } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
   const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
 
@@ -379,7 +383,7 @@ export default function AccountsPage() {
                                 <TableCell>${rec.billedAmount.toFixed(2)}</TableCell>
                                 <TableCell>${rec.amountPaid.toFixed(2)}</TableCell>
                                 <TableCell className="font-semibold">${balance.toFixed(2)}</TableCell>
-                                <TableCell>{format(rec.dueDate.toDate(), 'PPP')}</TableCell>
+                                <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
                                 <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
                                 <TableCell>
                                     <DropdownMenu>

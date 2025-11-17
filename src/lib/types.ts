@@ -535,3 +535,30 @@ export type PayrollRecord = {
     },
     createdAt: any;
 }
+
+// Accounts Payable Schemas
+export const vendorSchema = z.object({
+    name: z.string().min(1, 'Vendor name is required.'),
+    category: z.string().min(1, 'Category is required.'),
+    email: z.string().email('Invalid email address.'),
+    phone: z.string().min(1, 'Phone number is required.'),
+});
+
+export type Vendor = z.infer<typeof vendorSchema> & { id: string };
+
+export const payableSchema = z.object({
+    vendorId: z.string().min(1, 'A vendor must be selected.'),
+    expenseAccountId: z.string().min(1, 'An expense account must be selected.'),
+    description: z.string().min(1, 'A description is required.'),
+    invoiceNumber: z.string().optional(),
+    amount: z.coerce.number().min(0.01, 'Amount must be greater than zero.'),
+    dueDate: z.date({ required_error: 'A due date is required.'}),
+});
+
+export type AccountsPayableRecord = z.infer<typeof payableSchema> & {
+    id: string;
+    status: 'Unpaid' | 'Paid';
+    createdAt: any;
+    paidAt?: any;
+    paymentAccountId?: string;
+};
