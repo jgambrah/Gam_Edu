@@ -213,6 +213,174 @@
       "required": [
         "name"
       ]
+    },
+    "Assignment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Assignment",
+      "type": "object",
+      "description": "Represents an assignment created by a teacher for a class.",
+      "properties": {
+        "classId": {
+          "type": "string",
+          "description": "ID of the class this assignment is for."
+        },
+        "teacherId": {
+          "type": "string",
+          "description": "UID of the teacher who created the assignment."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the assignment."
+        },
+        "description": {
+          "type": "string",
+          "description": "Instructions for the assignment."
+        },
+        "dueDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the assignment is due."
+        },
+        "gradingType": {
+          "type": "string",
+          "enum": [
+            "points",
+            "letter",
+            "pass_fail",
+            "standards"
+          ]
+        },
+        "attachments": {
+          "type": "string",
+          "description": "URL to any attachments for the assignment."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "classId",
+        "teacherId",
+        "title",
+        "description",
+        "dueDate",
+        "gradingType",
+        "createdAt"
+      ]
+    },
+    "StudentSubmission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StudentSubmission",
+      "type": "object",
+      "description": "Represents a student's submission for an assignment.",
+      "properties": {
+        "assignmentId": {
+          "type": "string"
+        },
+        "studentId": {
+          "type": "string"
+        },
+        "studentName": {
+          "type": "string"
+        },
+        "submissionType": {
+          "type": "string",
+          "enum": [
+            "file",
+            "text"
+          ]
+        },
+        "content": {
+          "type": "string",
+          "description": "URL for file, or text content for text submission."
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Submitted",
+            "Late",
+            "Graded"
+          ]
+        },
+        "grade": {
+          "type": "string"
+        },
+        "teacherFeedback": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "assignmentId",
+        "studentId",
+        "studentName",
+        "submissionType",
+        "content",
+        "submittedAt",
+        "status"
+      ]
+    },
+    "Quiz": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Quiz",
+      "type": "object",
+      "description": "Represents an AI-generated quiz for a class.",
+      "properties": {
+        "classId": {
+          "type": "string"
+        },
+        "teacherId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "questionText": { "type": "string" },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "correctAnswer": { "type": "string" }
+            },
+            "required": ["questionText", "options", "correctAnswer"]
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "classId",
+        "teacherId",
+        "title",
+        "topic",
+        "questions",
+        "createdAt"
+      ]
+    },
+    "QuizAttempt": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "QuizAttempt",
+      "type": "object",
+      "description": "Represents a student's attempt at a quiz.",
+      "properties": {
+        "quizId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "score": { "type": "number" },
+        "total": { "type": "number" },
+        "completedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["quizId", "studentId", "score", "total", "completedAt"]
     }
   },
   "auth": {
@@ -318,9 +486,46 @@
             }
           ]
         }
+      },
+      {
+        "path": "/assignments/{assignmentId}",
+        "definition": {
+          "entityName": "Assignment",
+          "schema": { "$ref": "#/backend/entities/Assignment" },
+          "description": "Stores assignments created by teachers.",
+          "params": [{ "name": "assignmentId" }]
+        }
+      },
+      {
+        "path": "/assignments/{assignmentId}/submissions/{submissionId}",
+        "definition": {
+          "entityName": "StudentSubmission",
+          "schema": { "$ref": "#/backend/entities/StudentSubmission" },
+          "description": "Stores student submissions for assignments.",
+          "params": [{ "name": "assignmentId" }, { "name": "submissionId" }]
+        }
+      },
+      {
+        "path": "/quizzes/{quizId}",
+        "definition": {
+          "entityName": "Quiz",
+          "schema": { "$ref": "#/backend/entities/Quiz" },
+          "description": "Stores AI-generated quizzes created by teachers.",
+          "params": [{ "name": "quizId" }]
+        }
+      },
+      {
+        "path": "/quizzes/{quizId}/attempts/{attemptId}",
+        "definition": {
+          "entityName": "QuizAttempt",
+          "schema": { "$ref": "#/backend/entities/QuizAttempt" },
+          "description": "Stores student attempts for quizzes.",
+          "params": [{ "name": "quizId" }, { "name": "attemptId" }]
+        }
       }
     ],
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `/roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
   }
 }
+
     
