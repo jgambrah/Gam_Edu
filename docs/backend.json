@@ -807,6 +807,38 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["staffId", "staffName", "period", "grossSalary", "netSalary"]
+    },
+    "Vendor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Vendor",
+      "type": "object",
+      "description": "Represents a school supplier or vendor.",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" }
+      },
+      "required": ["name", "category", "email", "phone"]
+    },
+    "AccountsPayableRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AccountsPayableRecord",
+      "type": "object",
+      "description": "Represents a single bill from a vendor.",
+      "properties": {
+        "vendorId": { "type": "string" },
+        "expenseAccountId": { "type": "string" },
+        "description": { "type": "string" },
+        "invoiceNumber": { "type": "string" },
+        "amount": { "type": "number" },
+        "dueDate": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["Unpaid", "Paid"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "paidAt": { "type": "string", "format": "date-time" },
+        "paymentAccountId": { "type": "string" }
+      },
+      "required": ["vendorId", "expenseAccountId", "description", "amount", "dueDate", "status"]
     }
   },
   "auth": {
@@ -1109,6 +1141,24 @@
           "schema": { "$ref": "#/backend/entities/PayrollRecord" },
           "description": "Stores generated payslips for each staff member for each payroll period.",
           "params": [{ "name": "recordId" }]
+        }
+      },
+      {
+        "path": "/vendors/{vendorId}",
+        "definition": {
+          "entityName": "Vendor",
+          "schema": { "$ref": "#/backend/entities/Vendor" },
+          "description": "Stores school vendors and suppliers.",
+          "params": [{ "name": "vendorId" }]
+        }
+      },
+      {
+        "path": "/accountsPayable/{payableId}",
+        "definition": {
+          "entityName": "AccountsPayableRecord",
+          "schema": { "$ref": "#/backend/entities/AccountsPayableRecord" },
+          "description": "Stores bills and invoices from vendors.",
+          "params": [{ "name": "payableId" }]
         }
       }
     ],

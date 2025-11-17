@@ -254,6 +254,15 @@ service cloud.firestore {
       allow read: if isFinanceStaff() || isOwner(resource.data.staffId);
     }
 
+    match /vendors/{vendorId} {
+      allow read, write: if isFinanceStaff();
+    }
+    
+    match /accountsPayable/{payableId} {
+      allow read, write: if isFinanceStaff();
+    }
+
+
     // ------ Helper Functions ------
 
     /**
