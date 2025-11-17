@@ -72,9 +72,9 @@ export const navItems: NavItem[] = [
   },
   {
     path: '/dashboard/grades',
-    title: 'Grades',
+    title: 'Gradebook',
     icon: GraduationCap,
-    roles: ['Teacher', 'Student', 'Parent'],
+    roles: ['Teacher', 'Administrator', 'Director'],
   },
   {
     path: '/dashboard/accounts',
