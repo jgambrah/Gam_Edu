@@ -11,17 +11,17 @@ export default function DashboardLayout({
 }) {
   return (
     <RoleProvider>
-      <SidebarProvider>
-        <Sidebar>
-          <AppSidebar />
-        </Sidebar>
-        <SidebarInset>
-          <Header />
-          <main className="p-4 lg:p-6">
-            <ClientBoundary>{children}</ClientBoundary>
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
+      <ClientBoundary>
+        <SidebarProvider>
+          <Sidebar>
+            <AppSidebar />
+          </Sidebar>
+          <SidebarInset>
+            <Header />
+            <main className="p-4 lg:p-6">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+      </ClientBoundary>
     </RoleProvider>
   );
 }
