@@ -178,6 +178,12 @@ export const navItems: NavItem[] = [
         title: 'Vendors',
         icon: Users,
         roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/accounts/general-ledger',
+        title: 'General Ledger',
+        icon: BookOpen,
+        roles: ['Director', 'Administrator', 'Accountant'],
       }
     ]
   },
@@ -265,4 +271,21 @@ export const MOCK_PUBLIC_HOLIDAYS = [
     { name: 'Christmas Day', date: new Date('2024-12-25') },
 ];
 
+export const MOCK_CHART_OF_ACCOUNTS = [
+    { accountId: '1010', name: 'Cash at Bank', type: 'Asset', isControlAccount: false },
+    { accountId: '1200', name: 'Accounts Receivable', type: 'Asset', isControlAccount: true },
+    { accountId: '2100', name: 'Accounts Payable', type: 'Liability', isControlAccount: true },
+    { accountId: '4010', name: 'Tuition Fees', type: 'Revenue', isControlAccount: false },
+    { accountId: '4020', name: 'Library Fines', type: 'Revenue', isControlAccount: false },
+    { accountId: '5010', name: 'Salaries Expense', type: 'Expense', isControlAccount: false },
+    { accountId: '5020', name: 'Utilities Expense', type: 'Expense', isControlAccount: false },
+    { accountId: '5030', name: 'Maintenance Expense', type: 'Expense', isControlAccount: false },
+];
+
+export const MOCK_JOURNAL_ENTRIES = [
+    { id: 1, ref: 'INV-001', date: '2024-07-15', description: 'Billed John Doe for Fall Term', debits: [{ accountId: '1200', amount: 5000 }], credits: [{ accountId: '4010', amount: 5000 }] },
+    { id: 2, ref: 'PAY-001', date: '2024-08-01', description: 'Received tuition payment from John Doe', debits: [{ accountId: '1010', amount: 5000 }], credits: [{ accountId: '1200', amount: 5000 }] },
+    { id: 3, ref: 'BILL-001', date: '2024-08-05', description: 'Electricity bill for July', debits: [{ accountId: '5020', amount: 800 }], credits: [{ accountId: '2100', amount: 800 }] },
+    { id: 4, ref: 'PAY-002', date: '2024-08-10', description: 'Paid electricity bill', debits: [{ accountId: '2100', amount: 800 }], credits: [{ accountId: '1010', amount: 800 }] },
+];
     

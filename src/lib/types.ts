@@ -564,4 +564,35 @@ export type AccountsPayableRecord = z.infer<typeof payableSchema> & {
     paymentAccountId?: string;
 };
 
+// General Ledger Schemas
+export type ChartOfAccount = {
+    accountId: string;
+    name: string;
+    type: 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+    isControlAccount: boolean;
+};
+
+export type JournalEntryItem = {
+    accountId: string;
+    amount: number;
+};
+
+export type GeneralLedgerTransaction = {
+    id: number;
+    ref: string;
+    date: string;
+    description: string;
+    debits: JournalEntryItem[];
+    credits: JournalEntryItem[];
+};
+
+export const journalEntrySchema = z.object({
+    description: z.string().min(1, 'Description is required.'),
+    amount: z.coerce.number().positive('Amount must be positive.'),
+    debitAccountId: z.string().min(1, 'Debit account is required.'),
+    creditAccountId: z.string().min(1, 'Credit account is required.'),
+}).refine(data => data.debitAccountId !== data.creditAccountId, {
+    message: 'Debit and Credit accounts cannot be the same.',
+    path: ['creditAccountId'],
+});
     
