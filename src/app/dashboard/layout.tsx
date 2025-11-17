@@ -10,8 +10,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RoleProvider>
-      <ClientBoundary>
+    <ClientBoundary>
+      <RoleProvider>
         <SidebarProvider>
           <Sidebar>
             <AppSidebar />
@@ -21,7 +21,7 @@ export default function DashboardLayout({
             <main className="p-4 lg:p-6">{children}</main>
           </SidebarInset>
         </SidebarProvider>
-      </ClientBoundary>
-    </RoleProvider>
+      </RoleProvider>
+    </ClientBoundary>
   );
 }
