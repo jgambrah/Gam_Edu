@@ -170,3 +170,17 @@ export type ReportCard = {
     finalGrade?: string;
     finalPercentage?: number;
 }
+
+// Timetable Schemas
+export type Subject = { id: string; name: string; teacherIds: string[] };
+export type Room = { id: string; name: string; capacity: number };
+export type TimeSlot = { id: string; day: string; startTime: string; endTime: string };
+export type TimetableEntry = {
+  id: string;
+  classId: string;
+  subjectId: string;
+  teacherId: string;
+  roomId: string;
+  day: string;
+  timeSlotId: string;
+};

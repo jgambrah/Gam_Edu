@@ -176,6 +176,26 @@ service cloud.firestore {
         allow delete: if isTeacher() && get(/databases/$(database)/documents/report-cards/$(reportCardId)).data.status == 'Draft';
     }
 
+    match /subjects/{subjectId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /rooms/{roomId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /timeSlots/{timeSlotId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /timetables/{timetableEntryId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
     // ------ Helper Functions ------
 
     /**

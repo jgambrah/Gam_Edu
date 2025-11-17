@@ -14,6 +14,7 @@ import {
   BookMarked,
   ClipboardCheck,
   FileText,
+  CalendarDays,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -58,6 +59,12 @@ export const navItems: NavItem[] = [
     title: 'Assignments',
     icon: BookMarked,
     roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+  },
+  {
+    path: '/dashboard/timetable',
+    title: 'Timetable',
+    icon: CalendarDays,
+    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
   },
   {
     path: '/dashboard/communication',

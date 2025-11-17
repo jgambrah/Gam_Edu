@@ -416,6 +416,55 @@
             "updatedAt": { "type": "string", "format": "date-time" }
         },
         "required": ["studentId", "subjectId", "comment", "teacherId", "term", "academicYear"]
+    },
+    "Subject": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Subject",
+      "type": "object",
+      "description": "Represents a school subject.",
+      "properties": {
+        "name": { "type": "string" },
+        "teacherIds": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name"]
+    },
+    "Room": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Room",
+      "type": "object",
+      "description": "Represents a physical room in the school.",
+      "properties": {
+        "name": { "type": "string" },
+        "capacity": { "type": "number" }
+      },
+      "required": ["name"]
+    },
+    "TimeSlot": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TimeSlot",
+      "type": "object",
+      "description": "Represents a time slot in the school day.",
+      "properties": {
+        "day": { "type": "string", "enum": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]},
+        "startTime": { "type": "string", "format": "time" },
+        "endTime": { "type": "string", "format": "time" }
+      },
+      "required": ["day", "startTime", "endTime"]
+    },
+    "TimetableEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TimetableEntry",
+      "type": "object",
+      "description": "Represents a single entry in the school timetable.",
+      "properties": {
+        "classId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "roomId": { "type": "string" },
+        "day": { "type": "string" },
+        "timeSlotId": { "type": "string" }
+      },
+      "required": ["classId", "subjectId", "teacherId", "roomId", "day", "timeSlotId"]
     }
   },
   "auth": {
@@ -574,6 +623,42 @@
           "schema": { "$ref": "#/backend/entities/ReportCardComment" },
           "description": "Stores teacher comments for specific subjects on a report card.",
           "params": [{ "name": "reportCardId" }, { "name": "commentId" }]
+        }
+      },
+      {
+        "path": "/subjects/{subjectId}",
+        "definition": {
+          "entityName": "Subject",
+          "schema": { "$ref": "#/backend/entities/Subject" },
+          "description": "Stores school subjects.",
+          "params": [{ "name": "subjectId" }]
+        }
+      },
+      {
+        "path": "/rooms/{roomId}",
+        "definition": {
+          "entityName": "Room",
+          "schema": { "$ref": "#/backend/entities/Room" },
+          "description": "Stores school rooms.",
+          "params": [{ "name": "roomId" }]
+        }
+      },
+      {
+        "path": "/timeSlots/{timeSlotId}",
+        "definition": {
+          "entityName": "TimeSlot",
+          "schema": { "$ref": "#/backend/entities/TimeSlot" },
+          "description": "Stores time slots for the school day.",
+          "params": [{ "name": "timeSlotId" }]
+        }
+      },
+      {
+        "path": "/timetables/{timetableEntryId}",
+        "definition": {
+          "entityName": "TimetableEntry",
+          "schema": { "$ref": "#/backend/entities/TimetableEntry" },
+          "description": "Stores individual timetable entries.",
+          "params": [{ "name": "timetableEntryId" }]
         }
       }
     ],
