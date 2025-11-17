@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   SidebarContent,
@@ -10,6 +10,7 @@ import {
   SidebarFooter,
   sidebarMenuButtonVariants,
   SidebarMenuSub,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import {
   Collapsible,
@@ -29,6 +30,33 @@ import React from 'react';
 
 function isNavItemVisible(item: NavItem, role: UserRole) {
   return item.roles === 'all' || item.roles.includes(role);
+}
+
+function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserRole, isSubItem?: boolean }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault(); // Prevent default link behavior
+    const href = `${item.path}?role=${role}`;
+    console.log(`Navigating to: ${href}`);
+    router.push(href);
+  };
+  
+  return (
+    <Link
+      href={`${item.path}?role=${role}`}
+      onClick={handleClick}
+      className={cn(
+        sidebarMenuButtonVariants({ variant: 'default', size: isSubItem ? 'sm' : 'default' }),
+        'w-full',
+        pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
+      )}
+    >
+      <item.icon />
+      <span>{item.title}</span>
+    </Link>
+  );
 }
 
 export default function AppSidebar() {
@@ -55,8 +83,9 @@ export default function AppSidebar() {
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
                 {item.subItems ? (
-                   <Collapsible defaultOpen={isSubItemActive(item)}>
-                    <CollapsibleTrigger className={cn(
+                  <Collapsible defaultOpen={isSubItemActive(item)}>
+                    <CollapsibleTrigger asChild>
+                       <div className={cn(
                         sidebarMenuButtonVariants({ variant: 'default' }), 'w-full justify-between'
                       )}>
                        <div className='flex items-center gap-2'>
@@ -64,38 +93,20 @@ export default function AppSidebar() {
                         <span>{item.title}</span>
                        </div>
                        <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
+                       </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                          {item.subItems.map(subItem => isNavItemVisible(subItem, role) && (
-                            <SidebarMenuItem key={subItem.path}>
-                                <Link
-                                  href={`${subItem.path}?role=${role}`}
-                                  className={cn(
-                                    sidebarMenuButtonVariants({variant: 'default', size: 'sm'}), 
-                                    'w-full',  
-                                    pathname === subItem.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
-                                  )}
-                                >
-                                  <subItem.icon />
-                                  <span>{subItem.title}</span>
-                                </Link>
-                            </SidebarMenuItem>
-                          ))}
+                        {item.subItems.map(subItem => isNavItemVisible(subItem, role) && (
+                          <SidebarMenuItem key={subItem.path}>
+                            <NavLink item={subItem} role={role} isSubItem />
+                          </SidebarMenuItem>
+                        ))}
                       </SidebarMenuSub>
                     </CollapsibleContent>
-                   </Collapsible>
+                  </Collapsible>
                 ) : (
-                  <Link
-                    href={`${item.path}?role=${role}`}
-                    className={cn(
-                      sidebarMenuButtonVariants({ variant: 'default' }),
-                      pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
-                    )}
-                  >
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
+                  <NavLink item={item} role={role} />
                 )}
               </SidebarMenuItem>
             ) : null
