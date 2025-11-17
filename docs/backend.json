@@ -581,6 +581,9 @@
             "submittedAt": { "type": "string", "format": "date-time" },
             "rejectionReason": { "type": "string" },
             "challengeNotes": { "type": "string" },
+            "assessmentTestScore": { "type": "number" },
+            "assessmentInterviewNotes": { "type": "string" },
+            "adminFeedback": { "type": "string" },
             "student": { 
                 "type": "object",
                 "properties": {

@@ -335,4 +335,7 @@ export type AdmissionApplication = StudentRegistrationData & {
     submittedAt: any;
     rejectionReason?: string;
     challengeNotes?: string;
+    assessmentTestScore?: number;
+    assessmentInterviewNotes?: string;
+    adminFeedback?: string;
 };

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useAuth } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useCollection, useFirestore, useAuth } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -39,24 +40,60 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { AdmissionApplication } from '@/lib/types';
 import { format } from 'date-fns';
-import { Loader2, ShieldCheck, ThumbsDown } from 'lucide-react';
-import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Loader2, ShieldCheck, ThumbsDown, FilePenLine } from 'lucide-react';
+import { updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 
 function ApplicationReviewDialog({ application }: { application: AdmissionApplication }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [rejectionReason, setRejectionReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [challengeNotes, setChallengeNotes] = useState(application.challengeNotes || '');
+  const [assessmentScore, setAssessmentScore] = useState(application.assessmentTestScore || '');
+  const [interviewNotes, setInterviewNotes] = useState(application.assessmentInterviewNotes || '');
+  const [adminFeedback, setAdminFeedback] = useState(application.adminFeedback || '');
+
+
+  const handleUpdateAssessment = async () => {
+    setIsProcessing(true);
+    try {
+      const appRef = doc(firestore, 'admissionApplications', application.id);
+      await updateDocumentNonBlocking(appRef, {
+        assessmentTestScore: Number(assessmentScore),
+        assessmentInterviewNotes: interviewNotes,
+        adminFeedback: adminFeedback,
+      });
+      toast({ title: 'Success', description: 'Internal assessment has been updated.' });
+    } catch (error) {
+      console.error('Error updating assessment:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not update assessment.' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+  
+  const handleChallenge = async () => {
+    setIsProcessing(true);
+    try {
+      const appRef = doc(firestore, 'admissionApplications', application.id);
+      await updateDocumentNonBlocking(appRef, { challengeNotes });
+      toast({ title: 'Success', description: 'Challenge notes have been saved.' });
+    } catch (error) {
+      console.error('Error saving challenge notes:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not save challenge notes.' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleAdmit = async () => {
     setIsProcessing(true);
     try {
-      // 1. Update application status
       const appRef = doc(firestore, 'admissionApplications', application.id);
       await updateDocumentNonBlocking(appRef, { status: 'Admitted' });
 
-      // 2. Create new student and parent accounts (simplified)
-      // In a real app, this would involve createUserWithEmailAndPassword, etc.
       const studentId = application.student.email?.split('@')[0] || `student-${Math.random().toString(36).substring(2,9)}`;
       const studentRef = doc(firestore, 'students', studentId);
       await setDocumentNonBlocking(studentRef, {
@@ -65,7 +102,9 @@ function ApplicationReviewDialog({ application }: { application: AdmissionApplic
         lastName: application.student.fullName.split(' ').slice(1).join(' '),
         email: application.student.email,
         classId: application.student.desiredGrade.toLowerCase().replace(/\s+/g, '-'),
-        ...application.student
+        dateOfBirth: application.student.dateOfBirth,
+        gender: application.student.gender,
+        address: application.student.address
       }, { merge: true });
 
       const parentId = application.parent1.email.split('@')[0] || `parent-${Math.random().toString(36).substring(2,9)}`;
@@ -75,8 +114,9 @@ function ApplicationReviewDialog({ application }: { application: AdmissionApplic
         firstName: application.parent1.name.split(' ')[0],
         lastName: application.parent1.name.split(' ').slice(1).join(' '),
         email: application.parent1.email,
+        phone: application.parent1.phone,
+        address: application.parent1.address,
         studentIds: [studentId],
-        ...application.parent1
       }, { merge: true });
 
       toast({
@@ -118,58 +158,98 @@ function ApplicationReviewDialog({ application }: { application: AdmissionApplic
   return (
     <DialogContent className="max-w-4xl">
       <DialogHeader>
-        <DialogTitle>Reviewing Application: {application.student.fullName}</DialogTitle>
-        <DialogDescription>Application ID: {application.applicationId}</DialogDescription>
+        <DialogTitle>Review Application: {application.student.fullName}</DialogTitle>
+        <DialogDescription>Application ID: {application.applicationId} | Submitted: {format(application.submittedAt.toDate(), 'PPP p')}</DialogDescription>
       </DialogHeader>
       <div className="max-h-[70vh] overflow-y-auto p-4 space-y-6">
-        {/* Render application details here */}
-        <p><strong>Student:</strong> {application.student.fullName}</p>
-        <p><strong>Grade Applied For:</strong> {application.student.desiredGrade}</p>
-        <p><strong>Parent:</strong> {application.parent1.name} ({application.parent1.email})</p>
-        <p><strong>Submitted At:</strong> {format(application.submittedAt.toDate(), 'PPP p')}</p>
-        {/* ... full details */}
-      </div>
-      <div className="flex justify-end gap-2 pt-4 border-t">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" disabled={isProcessing}>
-              <ThumbsDown className="mr-2 h-4 w-4" />
-              Reject Application
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Reason for Rejection</AlertDialogTitle>
-              <AlertDialogDescription>
-                Please provide a clear reason for rejecting this application. This will be recorded internally.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="grid gap-4 py-4">
-              <Label htmlFor="rejection-reason">Rejection Reason</Label>
-              <Input
-                id="rejection-reason"
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-              />
+        {/* Student Details */}
+        <div className="space-y-2">
+            <h4 className="text-lg font-semibold">Student Information</h4>
+            <p><strong>Grade Applied For:</strong> {application.student.desiredGrade}</p>
+            <p><strong>Date of Birth:</strong> {format(application.student.dateOfBirth, 'PPP')}</p>
+            <p><strong>Gender:</strong> {application.student.gender}</p>
+            <p><strong>Address:</strong> {application.student.address}</p>
+            {application.student.previousSchool && <p><strong>Previous School:</strong> {application.student.previousSchool}</p>}
+        </div>
+        <Separator />
+        {/* Parent Details */}
+        <div className="space-y-2">
+            <h4 className="text-lg font-semibold">Parent / Guardian Information</h4>
+            <p><strong>Name:</strong> {application.parent1.name} ({application.parent1.relationship})</p>
+            <p><strong>Contact:</strong> {application.parent1.email} | {application.parent1.phone}</p>
+        </div>
+        <Separator />
+        {/* Internal Assessment Section */}
+        <div className="space-y-4 rounded-md bg-muted/50 p-4">
+             <h4 className="text-lg font-semibold flex items-center gap-2"><FilePenLine /> Internal Assessment</h4>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="assessment-score">Assessment Test Score</Label>
+                    <Input id="assessment-score" type="number" value={assessmentScore} onChange={e => setAssessmentScore(e.target.value)} />
+                </div>
+             </div>
+              <div className="space-y-2">
+                <Label htmlFor="interview-notes">Assessment Interview Notes</Label>
+                <Textarea id="interview-notes" value={interviewNotes} onChange={e => setInterviewNotes(e.target.value)} rows={4} />
             </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleReject}>Confirm Rejection</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-        <Button onClick={handleAdmit} disabled={isProcessing}>
-          {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-          Admit Student
-        </Button>
+            <div className="space-y-2">
+                <Label htmlFor="admin-feedback">General Admin Feedback</Label>
+                <Textarea id="admin-feedback" value={adminFeedback} onChange={e => setAdminFeedback(e.target.value)} rows={4} />
+            </div>
+            <Button onClick={handleUpdateAssessment} disabled={isProcessing}>Update Assessment</Button>
+        </div>
+        
+        {application.status === 'Rejected' && (
+            <div className="space-y-4 rounded-md bg-yellow-100 dark:bg-yellow-900/50 p-4">
+                <h4 className="text-lg font-semibold">Rejection Details</h4>
+                <p><strong>Rejection Reason:</strong> {application.rejectionReason}</p>
+                 <div className="space-y-2">
+                    <Label htmlFor="challenge-notes">Challenge/Follow-up Notes</Label>
+                    <Textarea id="challenge-notes" value={challengeNotes} onChange={e => setChallengeNotes(e.target.value)} />
+                    <Button onClick={handleChallenge} disabled={isProcessing}>Save Challenge Notes</Button>
+                </div>
+            </div>
+        )}
+
       </div>
+      <DialogFooter>
+        {application.status === 'Pending Review' && (
+            <>
+                <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive" disabled={isProcessing}>
+                    <ThumbsDown className="mr-2 h-4 w-4" /> Reject Application
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Reason for Rejection</AlertDialogTitle>
+                    <AlertDialogDescription>Please provide a clear reason for rejecting this application. This will be recorded internally.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="grid gap-4 py-4">
+                    <Label htmlFor="rejection-reason">Rejection Reason</Label>
+                    <Input id="rejection-reason" value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
+                    </div>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleReject}>Confirm Rejection</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
+                <Button onClick={handleAdmit} disabled={isProcessing}>
+                {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+                Admit Student
+                </Button>
+            </>
+        )}
+      </DialogFooter>
     </DialogContent>
   );
 }
 
 function ApplicationsTable({ status }: { status: AdmissionApplication['status'] }) {
   const firestore = useFirestore();
-  const applicationsQuery = useMemoFirebase(
+  const applicationsQuery = useMemo(
     () => query(collection(firestore, 'admissionApplications'), where('status', '==', status)),
     [firestore, status]
   );
@@ -177,6 +257,10 @@ function ApplicationsTable({ status }: { status: AdmissionApplication['status'] 
 
   if (isLoading) {
     return <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin" />;
+  }
+  
+  if (!applications || applications.length === 0) {
+    return <p className="text-center text-muted-foreground py-8">No {status.toLowerCase()} applications found.</p>;
   }
 
   return (
@@ -191,7 +275,7 @@ function ApplicationsTable({ status }: { status: AdmissionApplication['status'] 
         </TableRow>
       </TableHeader>
       <TableBody>
-        {applications?.map((app) => (
+        {applications.map((app) => (
           <TableRow key={app.id}>
             <TableCell>{app.student.fullName}</TableCell>
             <TableCell>{app.student.desiredGrade}</TableCell>
