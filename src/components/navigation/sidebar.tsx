@@ -36,34 +36,36 @@ function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserR
   const { setOpenMobile, isMobile } = useSidebar();
   
   const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    console.log(`🔴 CLICK event fired for: ${item.path}`);
+    console.log('🔴 CLICK DETECTED - Navigating to:', item.path);
+    console.log('🔴 Current role:', role);
     
+    // Close mobile sidebar if open
     if (isMobile) {
       setOpenMobile(false);
     }
     
+    // Navigate programmatically
     router.push(`${item.path}?role=${role}`);
   };
-
-  React.useEffect(() => {
-    console.log(`🔵 NavLink for "${item.title}" rendered.`);
-  }, [item.title]);
   
   return (
     <button
       onClick={handleClick}
-      onMouseDown={() => console.log(`🟡 MOUSEDOWN on ${item.path}`)}
-      onMouseUp={() => console.log(`🟢 MOUSEUP on ${item.path}`)}
+      onMouseDown={() => console.log('🟡 MOUSE DOWN on:', item.title)}
+      onMouseUp={() => console.log('🟢 MOUSE UP on:', item.title)}
+      style={{ pointerEvents: 'auto', cursor: 'pointer', zIndex: 50 }}
       className={cn(
-        'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2',
-        isSubItem ? 'h-7 text-xs' : 'h-8 text-sm',
-        pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
+        'flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none transition-colors',
+        'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+        'focus-visible:ring-2 focus-visible:ring-sidebar-ring',
+        isSubItem && 'h-7 text-xs',
+        pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
       )}
-      style={{ pointerEvents: 'auto', zIndex: 100 }}
     >
-      <item.icon />
-      <span>{item.title}</span>
+      <item.icon className="h-4 w-4 shrink-0" />
+      <span className="truncate">{item.title}</span>
     </button>
   );
 }
@@ -77,48 +79,46 @@ export default function AppSidebar() {
   const isSubItemActive = (item: NavItem) => {
     return item.subItems?.some(sub => pathname === sub.path) ?? false;
   };
-  
-  React.useEffect(() => {
-    console.log(`🔵 AppSidebar rendered.`);
-  }, []);
+
+  console.log('🔵 Sidebar rendered, current role:', role);
+  console.log('🔵 Current pathname:', pathname);
 
   return (
     <>
-      <SidebarHeader style={{ pointerEvents: 'auto', zIndex: 100 }}>
-        <div className="flex items-center gap-2">
+      <SidebarHeader>
+        <div className="flex items-center gap-2 p-2">
           <AppLogo className="h-8 w-8 text-primary" />
           <span className="text-lg font-semibold text-primary">CampusConnect</span>
         </div>
       </SidebarHeader>
-      <SidebarContent style={{ pointerEvents: 'auto', zIndex: 100 }}>
+      <SidebarContent style={{ pointerEvents: 'auto' }}>
         <SidebarMenu>
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
-              <SidebarMenuItem key={item.path}>
+              <SidebarMenuItem key={item.path} style={{ pointerEvents: 'auto' }}>
                 {item.subItems ? (
                   <Collapsible defaultOpen={isSubItemActive(item)}>
                     <CollapsibleTrigger asChild>
                        <button 
-                        className={cn(
-                          'flex w-full items-center justify-between gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2',
-                          'h-8 text-sm'
-                          )}
-                        style={{ pointerEvents: 'auto', zIndex: 100 }}
-                        onMouseDown={() => console.log(`🟡 MOUSEDOWN on Collapsible: ${item.title}`)}
+                         className={cn(
+                           'flex w-full items-center justify-between gap-2 rounded-md p-2 text-left text-sm',
+                           'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors'
+                         )}
+                         style={{ pointerEvents: 'auto', cursor: 'pointer' }}
                        >
-                         <div className='flex items-center gap-2' style={{ pointerEvents: 'none' }}>
-                          <item.icon />
-                          <span>{item.title}</span>
+                         <div className='flex items-center gap-2'>
+                           <item.icon className="h-4 w-4 shrink-0" />
+                           <span className="truncate">{item.title}</span>
                          </div>
-                         <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-90" style={{ pointerEvents: 'none' }} />
+                         <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-90" />
                        </button>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.subItems.map(subItem => isNavItemVisible(subItem, role) && (
-                          <SidebarMenuItem key={subItem.path}>
+                          <li key={subItem.path} className="list-none">
                             <NavLink item={subItem} role={role} isSubItem />
-                          </SidebarMenuItem>
+                          </li>
                         ))}
                       </SidebarMenuSub>
                     </CollapsibleContent>
@@ -131,8 +131,8 @@ export default function AppSidebar() {
           )}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter style={{ pointerEvents: 'auto', zIndex: 100 }}>
-        <div className="flex items-center gap-3">
+      <SidebarFooter>
+        <div className="flex items-center gap-3 p-2">
           <Avatar className="h-10 w-10">
             <AvatarImage
               src={userAvatar?.imageUrl}
