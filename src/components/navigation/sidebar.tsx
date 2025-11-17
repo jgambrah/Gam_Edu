@@ -1,4 +1,3 @@
-
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -11,7 +10,6 @@ import {
   SidebarFooter,
   sidebarMenuButtonVariants,
   SidebarMenuSub,
-  useSidebar,
 } from '@/components/ui/sidebar';
 import {
   Collapsible,
@@ -39,7 +37,6 @@ export default function AppSidebar() {
   const { user } = useUser();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
-  // Check if any sub-item is active
   const isSubItemActive = (item: NavItem) => {
     return item.subItems?.some(sub => pathname === sub.path) ?? false;
   };
@@ -59,16 +56,14 @@ export default function AppSidebar() {
               <SidebarMenuItem key={item.path}>
                 {item.subItems ? (
                    <Collapsible defaultOpen={isSubItemActive(item)}>
-                    <CollapsibleTrigger asChild>
-                      <div className={cn(
-                        sidebarMenuButtonVariants({ variant: 'default' }), 'w-full justify-between cursor-pointer'
+                    <CollapsibleTrigger className={cn(
+                        sidebarMenuButtonVariants({ variant: 'default' }), 'w-full justify-between'
                       )}>
                        <div className='flex items-center gap-2'>
                         <item.icon />
                         <span>{item.title}</span>
                        </div>
                        <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
-                      </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
