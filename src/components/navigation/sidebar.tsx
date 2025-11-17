@@ -11,7 +11,6 @@ import {
   SidebarFooter,
   sidebarMenuButtonVariants,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
