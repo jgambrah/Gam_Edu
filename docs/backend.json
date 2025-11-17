@@ -381,6 +381,41 @@
         "completedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["quizId", "studentId", "score", "total", "completedAt"]
+    },
+    "ReportCard": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ReportCard",
+        "type": "object",
+        "description": "Represents the overall status and summary of a student's report card for a specific term.",
+        "properties": {
+            "studentId": { "type": "string" },
+            "classId": { "type": "string" },
+            "academicYear": { "type": "string" },
+            "term": { "type": "string" },
+            "status": { "type": "string", "enum": ["Draft", "AwaitingFinalApproval", "Published"] },
+            "generalComment": { "type": "string" },
+            "publishedAt": { "type": "string", "format": "date-time" },
+            "finalGrade": { "type": "string" },
+            "finalPercentage": { "type": "number" }
+        },
+        "required": ["studentId", "classId", "academicYear", "term", "status"]
+    },
+    "ReportCardComment": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "ReportCardComment",
+        "type": "object",
+        "description": "Represents a teacher's comment for a specific subject on a student's report card.",
+        "properties": {
+            "studentId": { "type": "string" },
+            "subjectId": { "type": "string" },
+            "comment": { "type": "string" },
+            "teacherId": { "type": "string" },
+            "term": { "type": "string" },
+            "academicYear": { "type": "string" },
+            "createdAt": { "type": "string", "format": "date-time" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["studentId", "subjectId", "comment", "teacherId", "term", "academicYear"]
     }
   },
   "auth": {
@@ -522,10 +557,26 @@
           "description": "Stores student attempts for quizzes.",
           "params": [{ "name": "quizId" }, { "name": "attemptId" }]
         }
+      },
+      {
+        "path": "/report-cards/{reportCardId}",
+        "definition": {
+          "entityName": "ReportCard",
+          "schema": { "$ref": "#/backend/entities/ReportCard" },
+          "description": "Stores the overall status and summary for a student's report card.",
+          "params": [{ "name": "reportCardId" }]
+        }
+      },
+      {
+        "path": "/report-cards/{reportCardId}/comments/{commentId}",
+        "definition": {
+          "entityName": "ReportCardComment",
+          "schema": { "$ref": "#/backend/entities/ReportCardComment" },
+          "description": "Stores teacher comments for specific subjects on a report card.",
+          "params": [{ "name": "reportCardId" }, { "name": "commentId" }]
+        }
       }
     ],
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `/roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
   }
 }
-
-    

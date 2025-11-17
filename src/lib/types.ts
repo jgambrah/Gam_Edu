@@ -138,3 +138,35 @@ export type BehavioralRecord = z.infer<typeof behavioralRecordSchema> & {
     id: string;
     createdAt: any;
 };
+
+export const reportCardCommentSchema = z.object({
+    comment: z.string().min(1, "Comment cannot be empty."),
+    subjectId: z.string().min(1, "Subject is required."),
+});
+
+export type ReportCardComment = {
+    id: string;
+    studentId: string;
+    subjectId: string;
+    comment: string;
+    teacherId: string;
+    term: string;
+    academicYear: string;
+    createdAt: any;
+    updatedAt: any;
+}
+
+export type ReportCardStatus = 'Draft' | 'AwaitingFinalApproval' | 'Published';
+
+export type ReportCard = {
+    id: string; // Typically studentId-academicYear-term
+    studentId: string;
+    classId: string;
+    academicYear: string;
+    term: string;
+    status: ReportCardStatus;
+    generalComment?: string;
+    publishedAt?: any;
+    finalGrade?: string;
+    finalPercentage?: number;
+}

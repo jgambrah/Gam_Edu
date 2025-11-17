@@ -13,6 +13,7 @@ import {
   HeartHandshake,
   BookMarked,
   ClipboardCheck,
+  FileText,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -74,6 +75,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard/grades',
     title: 'Gradebook',
     icon: GraduationCap,
+    roles: ['Teacher', 'Administrator', 'Director'],
+  },
+   {
+    path: '/dashboard/report-cards',
+    title: 'Report Cards',
+    icon: FileText,
     roles: ['Teacher', 'Administrator', 'Director'],
   },
   {

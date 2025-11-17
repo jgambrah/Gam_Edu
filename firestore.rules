@@ -157,6 +157,25 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    /**
+     * @description Rules for report cards.
+     * @path /report-cards/{reportCardId}
+     */
+    match /report-cards/{reportCardId} {
+        allow read: if isSignedIn();
+        allow create, update: if isTeacher() || isAdmin();
+    }
+
+     /**
+     * @description Rules for report card comments.
+     * @path /report-cards/{reportCardId}/comments/{commentId}
+     */
+    match /report-cards/{reportCardId}/comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create, update: if isTeacher() && get(/databases/$(database)/documents/report-cards/$(reportCardId)).data.status == 'Draft';
+        allow delete: if isTeacher() && get(/databases/$(database)/documents/report-cards/$(reportCardId)).data.status == 'Draft';
+    }
+
     // ------ Helper Functions ------
 
     /**
