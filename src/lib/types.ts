@@ -214,3 +214,24 @@ export type LessonPlan = z.infer<typeof lessonPlanSchema> & {
     createdAt: any;
 };
 
+// Library Schemas
+export const libraryItemSchema = z.object({
+    name: z.string().min(1, "Item name is required."),
+    category: z.enum(['Book', 'Magazine', 'DVD', 'Other']),
+    quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
+    location: z.string().min(1, "Location is required."),
+    author: z.string().optional(),
+    isbn: z.string().optional(),
+    publisher: z.string().optional(),
+    unitPrice: z.coerce.number().optional(),
+    purchaseDate: z.date().optional(),
+});
+
+export type LibraryItem = z.infer<typeof libraryItemSchema> & {
+    id: string;
+    status: 'Available' | 'Requested' | 'Borrowed' | 'Pending Return';
+    currentHolderId?: string;
+    currentHolderName?: string;
+    dueDate?: any;
+    createdAt: any;
+};

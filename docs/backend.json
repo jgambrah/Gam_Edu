@@ -532,6 +532,29 @@
         "activities",
         "materials"
       ]
+    },
+     "LibraryItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LibraryItem",
+      "type": "object",
+      "description": "Represents an item in the school library.",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["Book", "Magazine", "DVD", "Other"] },
+        "quantity": { "type": "number" },
+        "location": { "type": "string" },
+        "status": { "type": "string", "enum": ["Available", "Requested", "Borrowed", "Pending Return"] },
+        "currentHolderId": { "type": "string" },
+        "currentHolderName": { "type": "string" },
+        "dueDate": { "type": "string", "format": "date-time" },
+        "author": { "type": "string" },
+        "isbn": { "type": "string" },
+        "publisher": { "type": "string" },
+        "unitPrice": { "type": "number" },
+        "purchaseDate": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "category", "quantity", "location", "status"]
     }
   },
   "auth": {
@@ -744,6 +767,15 @@
           "schema": { "$ref": "#/backend/entities/LessonPlan" },
           "description": "Stores teachers' lesson plans for their classes.",
           "params": [{ "name": "lessonPlanId" }]
+        }
+      },
+      {
+        "path": "/library/{itemId}",
+        "definition": {
+          "entityName": "LibraryItem",
+          "schema": { "$ref": "#/backend/entities/LibraryItem" },
+          "description": "Stores all items in the library catalog.",
+          "params": [{ "name": "itemId" }]
         }
       }
     ],

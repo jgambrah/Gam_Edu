@@ -207,6 +207,12 @@ service cloud.firestore {
       allow update, delete: if isTeacher() && resource.data.teacherId == request.auth.uid;
     }
 
+    match /library/{itemId} {
+      allow read: if isSignedIn();
+      allow create, delete: if isLibrarianOrAdmin();
+      allow update: if isLibrarianOrAdmin() || (isBorrower() && canRequest(itemId));
+    }
+
     // ------ Helper Functions ------
 
     /**
@@ -238,9 +244,18 @@ service cloud.firestore {
     function isTeacher() {
       return get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role == 'Teacher';
     }
+    
+    function isLibrarianOrAdmin() {
+      let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+      return userRole == 'Librarian' || userRole == 'Administrator' || userRole == 'Director';
+    }
 
     function isStudent() {
       return exists(/databases/$(database)/documents/students/$(request.auth.uid));
+    }
+
+    function isBorrower() {
+      return isStudent() || isTeacher();
     }
     
     function isAssignmentOwner(assignmentId) {
@@ -251,6 +266,17 @@ service cloud.firestore {
     function isQuizOwner(quizId) {
         let quiz = get(/databases/$(database)/documents/quizzes/$(quizId)).data;
         return quiz.teacherId == request.auth.uid;
+    }
+
+    function canRequest(itemId) {
+      let currentStatus = resource.data.status;
+      let incomingStatus = request.resource.data.status;
+      // Allow a borrower to change status from 'Available' to 'Requested'
+      return currentStatus == 'Available' && incomingStatus == 'Requested'
+        // And allow them to change status from 'Borrowed' to 'Pending Return'
+        || currentStatus == 'Borrowed' && incomingStatus == 'Pending Return'
+        // And ensure they are the owner of the item they are trying to return
+        && resource.data.currentHolderId == request.auth.uid;
     }
   }
 }

@@ -113,7 +113,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/library',
     title: 'Library',
     icon: Library,
-    roles: ['Librarian', 'Student'],
+    roles: ['Librarian', 'Student', 'Teacher', 'Administrator', 'Director'],
   },
 ];
 
@@ -122,8 +122,7 @@ export const sampleAnnouncements = [
     id: 1,
     title: 'Annual Sports Day Postponed',
     date: '2024-10-15',
-    content: `Dear Parents and Students,
-Please note that the Annual Sports Day, originally scheduled for October 20th, has been postponed due to forecasted heavy rain. The new date will be November 5th. All event timings and venues remain the same. We apologize for any inconvenience this may cause and appreciate your understanding. Field trip permission slips for the science museum are due by this Friday, October 18th. Also, the parent-teacher conference is scheduled for next month.`,
+    content: `Dear Parents and Students,\nPlease note that the Annual Sports Day, originally scheduled for October 20th, has been postponed due to forecasted heavy rain. The new date will be November 5th. All event timings and venues remain the same. We apologize for any inconvenience this may cause and appreciate your understanding. Field trip permission slips for the science museum are due by this Friday, October 18th. Also, the parent-teacher conference is scheduled for next month.`,
   },
   {
     id: 2,
@@ -150,4 +149,3 @@ export const MOCK_SUBJECTS = [
 
 export const MOCK_ACADEMIC_YEARS = ['2023-2024', '2024-2025'];
 export const MOCK_TERMS = ['Fall', 'Spring', 'Summer'];
-
