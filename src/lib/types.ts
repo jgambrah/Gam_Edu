@@ -431,3 +431,48 @@ export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
   reviewerName: string;
   createdAt: any;
 };
+
+
+// Financial Schemas
+export const financialRecordSchema = z.object({
+  studentId: z.string().min(1, "A student must be selected."),
+  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other']),
+  description: z.string().min(1, "Description is required."),
+  billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
+  dueDate: z.date({ required_error: "Due date is required." }),
+});
+
+export const bulkBillingSchema = z.object({
+  classId: z.string().min(1, "A class must be selected."),
+  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other']),
+  description: z.string().min(1, "Description is required."),
+  billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
+  dueDate: z.date({ required_error: "Due date is required." }),
+});
+
+export const recordPaymentSchema = z.object({
+    amount: z.coerce.number().min(0.01, "Payment amount must be positive."),
+    method: z.enum(['Cash', 'Card', 'Bank Transfer', 'Other']),
+    notes: z.string().optional(),
+});
+
+export const applyWaiverSchema = z.object({
+    amount: z.coerce.number().min(0.01, "Waiver amount must be positive."),
+    reason: z.string().min(1, "A reason for the waiver is required."),
+});
+
+export type FinancialRecord = {
+    id: string;
+    studentId: string;
+    studentName: string;
+    classId: string;
+    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Other';
+    description: string;
+    billedAmount: number;
+    amountPaid: number;
+    waiverAmount?: number;
+    waiverReason?: string;
+    status: 'Paid' | 'Unpaid' | 'Overdue';
+    dueDate: any;
+    createdAt: any;
+};

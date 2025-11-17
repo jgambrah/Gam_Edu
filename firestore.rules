@@ -238,6 +238,10 @@ service cloud.firestore {
         allow read, write: if isAdmin();
     }
 
+    match /financialRecords/{recordId} {
+      allow read, write: if isFinanceStaff();
+    }
+
     // ------ Helper Functions ------
 
     /**
@@ -273,6 +277,11 @@ service cloud.firestore {
     function isLibrarianOrAdmin() {
       let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
       return userRole == 'Librarian' || userRole == 'Administrator' || userRole == 'Director';
+    }
+
+    function isFinanceStaff() {
+        let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+        return userRole == 'Accountant' || userRole == 'Administrator' || userRole == 'Director';
     }
 
     function isStudent() {

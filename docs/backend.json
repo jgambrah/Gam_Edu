@@ -674,6 +674,27 @@
             "date": { "type": "string", "format": "date" }
         },
         "required": ["name", "date"]
+    },
+    "FinancialRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FinancialRecord",
+      "type": "object",
+      "description": "Represents a single financial record for a student, such as an invoice for tuition or a fine.",
+      "properties": {
+        "studentId": { "type": "string" },
+        "studentName": { "type": "string", "description": "Denormalized for easy display." },
+        "classId": { "type": "string" },
+        "type": { "type": "string", "enum": ["Tuition Fee", "Library Fine", "Lab Fee", "Sports Fee", "Other"] },
+        "description": { "type": "string" },
+        "billedAmount": { "type": "number" },
+        "amountPaid": { "type": "number", "default": 0 },
+        "waiverAmount": { "type": "number", "default": 0 },
+        "waiverReason": { "type": "string" },
+        "status": { "type": "string", "enum": ["Paid", "Unpaid", "Overdue"] },
+        "dueDate": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentId", "studentName", "type", "description", "billedAmount", "status", "dueDate", "createdAt"]
     }
   },
   "auth": {
@@ -931,6 +952,15 @@
           "schema": { "$ref": "#/backend/entities/PublicHoliday" },
           "description": "Stores public holidays for the school.",
           "params": [{ "name": "holidayId" }]
+        }
+      },
+      {
+        "path": "/financialRecords/{recordId}",
+        "definition": {
+          "entityName": "FinancialRecord",
+          "schema": { "$ref": "#/backend/entities/FinancialRecord" },
+          "description": "Stores all student financial records, including tuition bills and fines.",
+          "params": [{ "name": "recordId" }]
         }
       }
     ],
