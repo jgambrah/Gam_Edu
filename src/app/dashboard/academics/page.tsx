@@ -1,3 +1,7 @@
+
+import { Suspense } from 'react';
+import ClientBoundary from '../client-boundary';
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -208,9 +212,10 @@ function AcademicsPageContent() {
   );
 }
 
-
 export default function AcademicsPage() {
   return (
+    <ClientBoundary>
       <AcademicsPageContent />
+    </ClientBoundary>
   );
 }
