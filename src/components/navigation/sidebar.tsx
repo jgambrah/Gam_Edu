@@ -7,7 +7,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarFooter,
-  sidebarMenuButtonVariants,
   SidebarMenuSub,
   useSidebar,
 } from '@/components/ui/sidebar';
@@ -32,28 +31,36 @@ function isNavItemVisible(item: NavItem, role: UserRole) {
 }
 
 function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserRole, isSubItem?: boolean }) {
-  const router = useRouter();
   const pathname = usePathname();
+  const router = useRouter();
   const { setOpenMobile, isMobile } = useSidebar();
-
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // Prevent parent handlers from capturing the event
-    console.log(`[NavLink Click] Attempting to navigate to: ${item.path}?role=${role}`);
+  
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log(`🔴 CLICK event fired for: ${item.path}`);
     
     if (isMobile) {
       setOpenMobile(false);
     }
+    
     router.push(`${item.path}?role=${role}`);
   };
 
+  React.useEffect(() => {
+    console.log(`🔵 NavLink for "${item.title}" rendered.`);
+  }, [item.title]);
+  
   return (
     <button
       onClick={handleClick}
+      onMouseDown={() => console.log(`🟡 MOUSEDOWN on ${item.path}`)}
+      onMouseUp={() => console.log(`🟢 MOUSEUP on ${item.path}`)}
       className={cn(
-        sidebarMenuButtonVariants({ variant: 'default', size: isSubItem ? 'sm' : 'default' }),
-        'w-full justify-start',
+        'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2',
+        isSubItem ? 'h-7 text-xs' : 'h-8 text-sm',
         pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
       )}
+      style={{ pointerEvents: 'auto', zIndex: 100 }}
     >
       <item.icon />
       <span>{item.title}</span>
@@ -70,33 +77,41 @@ export default function AppSidebar() {
   const isSubItemActive = (item: NavItem) => {
     return item.subItems?.some(sub => pathname === sub.path) ?? false;
   };
+  
+  React.useEffect(() => {
+    console.log(`🔵 AppSidebar rendered.`);
+  }, []);
 
   return (
     <>
-      <SidebarHeader>
+      <SidebarHeader style={{ pointerEvents: 'auto', zIndex: 100 }}>
         <div className="flex items-center gap-2">
           <AppLogo className="h-8 w-8 text-primary" />
           <span className="text-lg font-semibold text-primary">CampusConnect</span>
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent style={{ pointerEvents: 'auto', zIndex: 100 }}>
         <SidebarMenu>
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
                 {item.subItems ? (
                   <Collapsible defaultOpen={isSubItemActive(item)}>
-                    <CollapsibleTrigger
-                      className={cn(
-                        sidebarMenuButtonVariants({ variant: 'default' }),
-                        'w-full justify-between'
-                      )}
-                    >
-                       <div className='flex items-center gap-2'>
-                        <item.icon />
-                        <span>{item.title}</span>
-                       </div>
-                       <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-90" />
+                    <CollapsibleTrigger asChild>
+                       <button 
+                        className={cn(
+                          'flex w-full items-center justify-between gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2',
+                          'h-8 text-sm'
+                          )}
+                        style={{ pointerEvents: 'auto', zIndex: 100 }}
+                        onMouseDown={() => console.log(`🟡 MOUSEDOWN on Collapsible: ${item.title}`)}
+                       >
+                         <div className='flex items-center gap-2' style={{ pointerEvents: 'none' }}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                         </div>
+                         <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-90" style={{ pointerEvents: 'none' }} />
+                       </button>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
@@ -116,7 +131,7 @@ export default function AppSidebar() {
           )}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter style={{ pointerEvents: 'auto', zIndex: 100 }}>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage
