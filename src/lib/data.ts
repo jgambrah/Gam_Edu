@@ -49,6 +49,12 @@ export const navItems: NavItem[] = [
     roles: ['Director', 'Administrator', 'Teacher'],
   },
   {
+    path: '/dashboard/resources',
+    title: 'Resources',
+    icon: BookOpen,
+    roles: 'all',
+  },
+  {
     path: '/dashboard/assessments',
     title: 'Assessments',
     icon: ClipboardCheck,

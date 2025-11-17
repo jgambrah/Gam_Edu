@@ -184,3 +184,15 @@ export type TimetableEntry = {
   day: string;
   timeSlotId: string;
 };
+
+// Resource Schemas
+export const resourceSchema = z.object({
+    title: z.string().min(1, 'Title is required.'),
+    courseName: z.string().min(1, 'Course is required.'),
+    resourceType: z.enum(['Document', 'Video', 'Presentation', 'Link']),
+    url: z.string().url('Must be a valid URL.'),
+});
+
+export type Resource = z.infer<typeof resourceSchema> & {
+    id: string;
+};

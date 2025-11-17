@@ -465,6 +465,19 @@
         "timeSlotId": { "type": "string" }
       },
       "required": ["classId", "subjectId", "teacherId", "roomId", "day", "timeSlotId"]
+    },
+    "Resource": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Resource",
+      "type": "object",
+      "description": "Represents a learning resource for a course.",
+      "properties": {
+        "title": { "type": "string", "description": "The name of the resource." },
+        "courseName": { "type": "string", "description": "The name of the course this resource belongs to." },
+        "resourceType": { "type": "string", "enum": ["Document", "Video", "Presentation", "Link"] },
+        "url": { "type": "string", "format": "uri", "description": "The URL pointing to the resource." }
+      },
+      "required": ["title", "courseName", "resourceType", "url"]
     }
   },
   "auth": {
@@ -659,6 +672,15 @@
           "schema": { "$ref": "#/backend/entities/TimetableEntry" },
           "description": "Stores individual timetable entries.",
           "params": [{ "name": "timetableEntryId" }]
+        }
+      },
+       {
+        "path": "/resources/{resourceId}",
+        "definition": {
+          "entityName": "Resource",
+          "schema": { "$ref": "#/backend/entities/Resource" },
+          "description": "Stores learning resources for courses.",
+          "params": [{ "name": "resourceId" }]
         }
       }
     ],
