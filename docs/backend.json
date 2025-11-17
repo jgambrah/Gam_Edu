@@ -128,6 +128,33 @@
         "address": {
           "type": "string",
           "description": "Home address of the student."
+        },
+        "enrollmentStatus": {
+          "type": "string",
+          "enum": [
+            "Active",
+            "Graduated"
+          ],
+          "description": "The student's current enrollment status."
+        },
+        "graduationYear": {
+          "type": "number",
+          "description": "The year the student graduated."
+        },
+        "alumniDetails": {
+          "type": "object",
+          "description": "Details for graduated students.",
+          "properties": {
+            "currentOccupation": {
+              "type": "string"
+            },
+            "employer": {
+              "type": "string"
+            },
+            "mentorshipWillingness": {
+              "type": "boolean"
+            }
+          }
         }
       },
       "required": [

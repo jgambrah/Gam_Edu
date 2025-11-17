@@ -339,3 +339,32 @@ export type AdmissionApplication = StudentRegistrationData & {
     assessmentInterviewNotes?: string;
     adminFeedback?: string;
 };
+
+// Alumni Schemas
+export const graduateStudentSchema = z.object({
+    studentId: z.string().min(1, "You must select a student."),
+    graduationYear: z.coerce.number().min(new Date().getFullYear() - 10).max(new Date().getFullYear() + 1),
+});
+
+export const editAlumniSchema = z.object({
+    currentOccupation: z.string().optional(),
+    employer: z.string().optional(),
+    mentorshipWillingness: z.boolean().default(false),
+});
+
+export type AlumniDetails = z.infer<typeof editAlumniSchema>;
+
+// This extends the existing Student type for alumni management
+export type Student = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    classId: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    enrollmentStatus?: 'Active' | 'Graduated';
+    graduationYear?: number;
+    alumniDetails?: AlumniDetails;
+};

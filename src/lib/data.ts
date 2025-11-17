@@ -17,6 +17,7 @@ import {
   ClipboardList,
   ScanFace,
   FilePen,
+  UserCheck,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -42,6 +43,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard/students',
     title: 'Students',
     icon: Users,
+    roles: ['Director', 'Administrator'],
+  },
+    {
+    path: '/dashboard/alumni',
+    title: 'Alumni',
+    icon: UserCheck,
     roles: ['Director', 'Administrator'],
   },
   {
