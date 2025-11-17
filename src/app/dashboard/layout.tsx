@@ -11,18 +11,18 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClientBoundary>
-      <RoleProvider>
-        <SidebarProvider>
-          <Sidebar>
-            <AppSidebar />
-          </Sidebar>
-          <SidebarInset>
-            <Header />
+    <RoleProvider>
+      <SidebarProvider>
+        <Sidebar>
+          <AppSidebar />
+        </Sidebar>
+        <SidebarInset>
+          <Header />
+          <ClientBoundary>
             <main className="p-4 lg:p-6">{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-      </RoleProvider>
-    </ClientBoundary>
+          </ClientBoundary>
+        </SidebarInset>
+      </SidebarProvider>
+    </RoleProvider>
   );
 }
