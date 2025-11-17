@@ -39,6 +39,11 @@ export default function AppSidebar() {
   const { user } = useUser();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
+  // Check if any sub-item is active
+  const isSubItemActive = (item: NavItem) => {
+    return item.subItems?.some(sub => pathname === sub.path) ?? false;
+  };
+
   return (
     <>
       <SidebarHeader>
@@ -53,15 +58,17 @@ export default function AppSidebar() {
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
                 {item.subItems ? (
-                   <Collapsible>
-                    <CollapsibleTrigger className={cn(
-                      sidebarMenuButtonVariants({ variant: 'default' }), 'w-full justify-between'
-                    )}>
+                   <Collapsible defaultOpen={isSubItemActive(item)}>
+                    <CollapsibleTrigger asChild>
+                      <div className={cn(
+                        sidebarMenuButtonVariants({ variant: 'default' }), 'w-full justify-between cursor-pointer'
+                      )}>
                        <div className='flex items-center gap-2'>
                         <item.icon />
                         <span>{item.title}</span>
                        </div>
                        <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 [&[data-state=open]]:rotate-90" />
+                      </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
@@ -69,14 +76,14 @@ export default function AppSidebar() {
                             <SidebarMenuItem key={subItem.path}>
                                 <Link
                                   href={`${subItem.path}?role=${role}`}
-                                  onClick={(e) => {
-                                    console.log('Sub-Link clicked:', subItem.path);
-                                    console.log('Current pathname:', pathname);
-                                    console.log('Role:', role);
-                                  }}
-                                  className={cn(sidebarMenuButtonVariants({variant: 'default', size: 'sm'}), 'w-full',  pathname === subItem.path && 'bg-sidebar-accent text-sidebar-accent-foreground')}>
-                                     <subItem.icon />
-                                    <span>{subItem.title}</span>
+                                  className={cn(
+                                    sidebarMenuButtonVariants({variant: 'default', size: 'sm'}), 
+                                    'w-full',  
+                                    pathname === subItem.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                                  )}
+                                >
+                                  <subItem.icon />
+                                  <span>{subItem.title}</span>
                                 </Link>
                             </SidebarMenuItem>
                           ))}
@@ -86,11 +93,6 @@ export default function AppSidebar() {
                 ) : (
                   <Link
                     href={`${item.path}?role=${role}`}
-                    onClick={(e) => {
-                      console.log('Link clicked:', item.path);
-                      console.log('Current pathname:', pathname);
-                      console.log('Role:', role);
-                    }}
                     className={cn(
                       sidebarMenuButtonVariants({ variant: 'default' }),
                       pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
