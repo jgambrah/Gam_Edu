@@ -1,7 +1,7 @@
+
 'use client';
 
 import { Suspense } from 'react';
-import ClientBoundary from '../client-boundary';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -212,8 +212,8 @@ function AcademicsPageContent() {
 
 export default function AcademicsPage() {
   return (
-    <ClientBoundary>
+    <Suspense fallback={<div className="flex min-h-[80vh] w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
       <AcademicsPageContent />
-    </ClientBoundary>
+    </Suspense>
   );
 }
