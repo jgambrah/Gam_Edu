@@ -85,7 +85,7 @@ export const navItems: NavItem[] = [
   },
   {
     path: '/dashboard/academics',
-    title: 'Academics',
+    title: 'Classes',
     icon: BookOpen,
     roles: ['Director', 'Administrator', 'Teacher'],
   },

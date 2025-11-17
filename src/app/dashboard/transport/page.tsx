@@ -112,7 +112,8 @@ function StudentAssignmentDialog({ route, onAssignmentChange }: { route: Route; 
               )} />
               <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Assign</Button>
             </form>
-          </div>
+          </Form>
+        </div>
         <div>
           <h3 className="font-semibold mb-4">Currently Assigned Students</h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">

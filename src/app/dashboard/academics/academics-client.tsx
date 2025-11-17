@@ -202,6 +202,7 @@ export default function AcademicsPageContent() {
           ) : (
             <div className="text-center py-10">
               <p className="text-muted-foreground">No classes have been created yet.</p>
+              {canManageClasses && <p className='text-sm text-muted-foreground'>Click "Create Class" to get started.</p>}
             </div>
           )}
         </CardContent>
