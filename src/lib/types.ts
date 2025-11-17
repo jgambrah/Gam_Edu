@@ -368,3 +368,48 @@ export type Student = {
     graduationYear?: number;
     alumniDetails?: AlumniDetails;
 };
+
+// Leave Management Schemas
+export const LEAVE_TYPES = ['Sick Leave', 'Vacation', 'Personal', 'Study Leave', 'Unpaid Leave'] as const;
+export type LeaveType = typeof LEAVE_TYPES[number];
+export type LeaveStatus = 'Pending' | 'Approved' | 'Rejected';
+
+export const leaveApplicationSchema = z.object({
+  leaveType: z.enum(LEAVE_TYPES),
+  startDate: z.date({ required_error: 'Start date is required.' }),
+  endDate: z.date({ required_error: 'End date is required.' }),
+  reason: z.string().min(10, 'Please provide a brief reason for your leave.'),
+}).refine(data => data.endDate >= data.startDate, {
+  message: 'End date cannot be before the start date.',
+  path: ['endDate'],
+});
+
+export type LeaveRequest = {
+  id: string;
+  staffId: string;
+  staffName: string;
+  leaveType: LeaveType;
+  startDate: any;
+  endDate: any;
+  reason: string;
+  status: LeaveStatus;
+  approverId?: string;
+  approverName?: string;
+  approverNotes?: string;
+  createdAt: any;
+};
+
+export const managerApprovalSchema = z.object({
+    notes: z.string().optional(),
+});
+
+export const managerRejectionSchema = z.object({
+    notes: z.string().min(1, "A reason for rejection is required."),
+});
+
+
+export type PublicHoliday = {
+    id: string;
+    name: string;
+    date: any;
+};

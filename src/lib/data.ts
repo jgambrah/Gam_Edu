@@ -18,6 +18,7 @@ import {
   ScanFace,
   FilePen,
   UserCheck,
+  Plane,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -74,6 +75,12 @@ export const navItems: NavItem[] = [
     title: 'Lesson Planning',
     icon: ClipboardList,
     roles: ['Director', 'Administrator', 'Teacher'],
+  },
+  {
+    path: '/dashboard/leave-management',
+    title: 'Leave Management',
+    icon: Plane,
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
   },
   {
     path: '/dashboard/resources',
@@ -177,3 +184,14 @@ export const MOCK_SUBJECTS = [
 
 export const MOCK_ACADEMIC_YEARS = ['2023-2024', '2024-2025'];
 export const MOCK_TERMS = ['Fall', 'Spring', 'Summer'];
+
+export const LEAVE_TYPES = ['Sick Leave', 'Vacation', 'Personal', 'Study Leave', 'Unpaid Leave'] as const;
+
+export const MOCK_PUBLIC_HOLIDAYS = [
+    { name: "New Year's Day", date: new Date('2024-01-01') },
+    { name: 'Memorial Day', date: new Date('2024-05-27') },
+    { name: 'Independence Day', date: new Date('2024-07-04') },
+    { name: 'Labor Day', date: new Date('2024-09-02') },
+    { name: 'Thanksgiving Day', date: new Date('2024-11-28') },
+    { name: 'Christmas Day', date: new Date('2024-12-25') },
+];

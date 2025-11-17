@@ -222,6 +222,17 @@ service cloud.firestore {
         allow create: if isParent();
         allow read, update: if isAdmin();
     }
+    
+    match /leaveRequests/{requestId} {
+      allow read: if isStaff() || isAdmin();
+      allow create: if isStaff() && isOwner(request.resource.data.staffId);
+      allow update: if isAdmin();
+    }
+
+    match /publicHolidays/{holidayId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
 
     // ------ Helper Functions ------
 
@@ -270,6 +281,10 @@ service cloud.firestore {
 
     function isBorrower() {
       return isStudent() || isTeacher();
+    }
+
+    function isStaff() {
+        return exists(/databases/$(database)/documents/staff/$(request.auth.uid));
     }
     
     function isAssignmentOwner(assignmentId) {

@@ -643,6 +643,37 @@
             }
         },
         "required": ["applicationId", "status", "submittedByParentId", "submittedAt", "student", "parent1", "emergencyContact"]
+    },
+    "LeaveRequest": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "LeaveRequest",
+        "type": "object",
+        "description": "Represents a staff member's request for time off.",
+        "properties": {
+            "staffId": { "type": "string" },
+            "staffName": { "type": "string" },
+            "leaveType": { "type": "string", "enum": ["Sick Leave", "Vacation", "Personal", "Study Leave", "Unpaid Leave"] },
+            "startDate": { "type": "string", "format": "date" },
+            "endDate": { "type": "string", "format": "date" },
+            "reason": { "type": "string" },
+            "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+            "approverId": { "type": "string" },
+            "approverName": { "type": "string" },
+            "approverNotes": { "type": "string" },
+            "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["staffId", "staffName", "leaveType", "startDate", "endDate", "reason", "status", "createdAt"]
+    },
+    "PublicHoliday": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "PublicHoliday",
+        "type": "object",
+        "description": "Represents a public holiday recognized by the school.",
+        "properties": {
+            "name": { "type": "string" },
+            "date": { "type": "string", "format": "date" }
+        },
+        "required": ["name", "date"]
     }
   },
   "auth": {
@@ -882,6 +913,24 @@
           "schema": { "$ref": "#/backend/entities/AdmissionApplication" },
           "description": "Stores student admission applications submitted by parents.",
           "params": [{ "name": "applicationId" }]
+        }
+      },
+      {
+        "path": "/leaveRequests/{requestId}",
+        "definition": {
+          "entityName": "LeaveRequest",
+          "schema": { "$ref": "#/backend/entities/LeaveRequest" },
+          "description": "Stores staff leave requests.",
+          "params": [{ "name": "requestId" }]
+        }
+      },
+      {
+        "path": "/publicHolidays/{holidayId}",
+        "definition": {
+          "entityName": "PublicHoliday",
+          "schema": { "$ref": "#/backend/entities/PublicHoliday" },
+          "description": "Stores public holidays for the school.",
+          "params": [{ "name": "holidayId" }]
         }
       }
     ],
