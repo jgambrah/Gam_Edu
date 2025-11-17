@@ -413,3 +413,21 @@ export type PublicHoliday = {
     name: string;
     date: any;
 };
+
+// Performance Review Schemas
+export const performanceReviewSchema = z.object({
+  staffId: z.string().min(1, 'You must select a staff member.'),
+  reviewDate: z.date({ required_error: 'Review date is required.' }),
+  rating: z.number().min(1, 'Rating is required.').max(5),
+  strengths: z.string().min(1, 'Strengths section cannot be empty.'),
+  improvementAreas: z.string().min(1, 'Areas for Improvement cannot be empty.'),
+  goals: z.string().min(1, 'Goals for next period cannot be empty.'),
+  staffComments: z.string().optional(),
+});
+
+export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
+  id: string;
+  reviewerId: string;
+  reviewerName: string;
+  createdAt: any;
+};

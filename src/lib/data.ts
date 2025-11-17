@@ -19,6 +19,7 @@ import {
   FilePen,
   UserCheck,
   Plane,
+  Star,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -39,6 +40,20 @@ export const navItems: NavItem[] = [
     title: 'Staff',
     icon: UserPlus,
     roles: ['Director', 'Administrator'],
+    subItems: [
+        {
+            path: '/dashboard/staff',
+            title: 'Staff Management',
+            icon: UserPlus,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/staff/performance',
+            title: 'Performance Reviews',
+            icon: Star,
+            roles: ['Director', 'Administrator'],
+        },
+    ]
   },
   {
     path: '/dashboard/students',
