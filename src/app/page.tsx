@@ -1,17 +1,22 @@
-"use client";
+'use client';
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AppLogo } from '@/components/icons/app-logo';
 import { useAuth, useUser } from '@/firebase';
-import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { FormEvent, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { FirebaseError } from 'firebase/app';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
@@ -32,24 +37,22 @@ export default function LoginPage() {
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    initiateEmailSignIn(auth, email, password);
-
-    // We no longer need to handle the success case here, 
-    // the useEffect hook will redirect upon user state change.
-    // We also don't have a direct promise to catch errors from,
-    // so error handling will need to rely on auth state listeners if needed,
-    // or we can add a temporary check. For now, we assume success or user feedback on screen.
-    // A simple timeout can re-enable the button if login doesn't complete.
-    setTimeout(() => {
-      if (!auth.currentUser) {
-         setIsLoading(false);
-         toast({
+    
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // The useEffect will handle the redirect on user state change.
+        // No need to do anything here, but you could add a success toast if you wanted.
+      })
+      .catch((error) => {
+        toast({
           variant: 'destructive',
           title: 'Authentication Failed',
           description: "Invalid email or password. Please try again.",
         });
-      }
-    }, 5000); // 5 second timeout for user feedback
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   if (isUserLoading || user) {
@@ -75,16 +78,37 @@ export default function LoginPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Sign In'}
+            <Button
+              type="submit"
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                'Sign In'
+              )}
             </Button>
             <p className="text-xs text-muted-foreground text-center">
               Use demo@campusconnect.edu and password to sign in.
