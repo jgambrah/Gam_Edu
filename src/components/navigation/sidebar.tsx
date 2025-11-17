@@ -45,7 +45,7 @@ export default function AppSidebar() {
             isNavItemVisible(item, role) ? (
               <SidebarMenuItem key={item.path}>
                 <Link
-                  href={`${item.path}?role=${role}`}
+                  href={item.path + '?role=' + role}
                   className={cn(
                     sidebarMenuButtonVariants({ variant: 'default' }),
                     pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground'
