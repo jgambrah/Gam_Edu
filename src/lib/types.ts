@@ -248,3 +248,91 @@ export const attendanceRecordSchema = z.object({
 export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
     id: string;
 };
+
+
+// Admission Schemas
+const parentGuardianSchema = z.object({
+    name: z.string().min(1, 'Name is required.'),
+    relationship: z.string().min(1, 'Relationship is required.'),
+    phone: z.string().min(1, 'Phone number is required.'),
+    email: z.string().email('Invalid email address.'),
+    addressSameAsStudent: z.boolean().default(false),
+    address: z.string().optional(),
+});
+  
+export const studentRegistrationSchema = z.object({
+    // Student Information
+    student: z.object({
+        fullName: z.string().min(1, 'Full name is required.'),
+        dateOfBirth: z.date({ required_error: 'Date of birth is required.' }),
+        gender: z.string().min(1, 'Gender is required.'),
+        phone: z.string().optional(),
+        email: z.string().email('Invalid email address.').optional(),
+        address: z.string().min(1, 'Address is required.'),
+        previousSchool: z.string().optional(),
+        desiredGrade: z.string().min(1, 'Desired grade is required.'),
+    }),
+    
+    // Parent/Guardian Information
+    parent1: parentGuardianSchema,
+    addParent2: z.boolean().default(false),
+    parent2: parentGuardianSchema.optional(),
+
+    // Emergency Contact
+    emergencyContact: z.object({
+        name: z.string().min(1, 'Emergency contact name is required.'),
+        relationship: z.string().min(1, 'Relationship is required.'),
+        phone: z.string().min(1, 'Phone number is required.'),
+    }),
+
+    // Medical Information
+    addMedicalInfo: z.boolean().default(false),
+    medical: z.object({
+        allergies: z.string().optional(),
+        conditions: z.string().optional(),
+        physicianName: z.string().optional(),
+        physicianPhone: z.string().optional(),
+    }).optional(),
+
+}).superRefine((data, ctx) => {
+    // Conditional validation for Parent 1's address
+    if (!data.parent1.addressSameAsStudent && !data.parent1.address) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Address is required.',
+            path: ['parent1', 'address'],
+        });
+    }
+    // Conditional validation for Parent 2
+    if (data.addParent2 && data.parent2) {
+        if (!data.parent2.addressSameAsStudent && !data.parent2.address) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'Address is required.',
+                path: ['parent2', 'address'],
+            });
+        }
+    }
+    // Conditional validation for medical info
+    if (data.addMedicalInfo && data.medical) {
+        if (!data.medical.allergies && !data.medical.conditions && !data.medical.physicianName) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'Please provide at least one piece of medical information.',
+                path: ['medical', 'allergies'],
+            });
+        }
+    }
+});
+  
+export type StudentRegistrationData = z.infer<typeof studentRegistrationSchema>;
+
+export type AdmissionApplication = StudentRegistrationData & {
+    id: string;
+    applicationId: string; // A user-friendly, unique ID
+    status: 'Pending Review' | 'Admitted' | 'Rejected';
+    submittedByParentId: string;
+    submittedAt: any;
+    rejectionReason?: string;
+    challengeNotes?: string;
+};

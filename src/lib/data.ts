@@ -16,6 +16,7 @@ import {
   CalendarDays,
   ClipboardList,
   ScanFace,
+  FilePen,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -24,6 +25,12 @@ export const navItems: NavItem[] = [
     title: 'Dashboard',
     icon: LayoutDashboard,
     roles: 'all',
+  },
+  {
+    path: '/dashboard/admissions',
+    title: 'Admissions',
+    icon: FilePen,
+    roles: ['Director', 'Administrator'],
   },
   {
     path: '/dashboard/staff',
@@ -42,6 +49,12 @@ export const navItems: NavItem[] = [
     title: 'Parents',
     icon: HeartHandshake,
     roles: ['Director', 'Administrator'],
+  },
+  {
+    path: '/dashboard/student-registration',
+    title: 'Apply for Admission',
+    icon: FilePen,
+    roles: ['Parent'],
   },
   {
     path: '/dashboard/academics',

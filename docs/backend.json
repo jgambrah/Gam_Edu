@@ -568,6 +568,51 @@
         "markedBy": { "type": "string", "description": "UID of teacher or 'kiosk'." }
       },
       "required": ["studentId", "date", "status", "markedBy"]
+    },
+    "AdmissionApplication": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "AdmissionApplication",
+        "type": "object",
+        "description": "Stores a parent's application for a student's admission.",
+        "properties": {
+            "applicationId": { "type": "string", "description": "A user-friendly, unique ID for the application." },
+            "status": { "type": "string", "enum": ["Pending Review", "Admitted", "Rejected"] },
+            "submittedByParentId": { "type": "string" },
+            "submittedAt": { "type": "string", "format": "date-time" },
+            "rejectionReason": { "type": "string" },
+            "challengeNotes": { "type": "string" },
+            "student": { 
+                "type": "object",
+                "properties": {
+                    "fullName": { "type": "string" }, "dateOfBirth": { "type": "string", "format": "date" }, "gender": { "type": "string" }, "phone": { "type": "string" }, "email": { "type": "string", "format": "email" }, "address": { "type": "string" }, "previousSchool": { "type": "string" }, "desiredGrade": { "type": "string" }
+                }
+            },
+            "parent1": { 
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" }, "relationship": { "type": "string" }, "phone": { "type": "string" }, "email": { "type": "string", "format": "email" }, "address": { "type": "string" }
+                }
+            },
+            "parent2": { 
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" }, "relationship": { "type": "string" }, "phone": { "type": "string" }, "email": { "type": "string", "format": "email" }, "address": { "type": "string" }
+                }
+            },
+            "emergencyContact": { 
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" }, "relationship": { "type": "string" }, "phone": { "type": "string" }
+                }
+            },
+            "medical": { 
+                "type": "object",
+                "properties": {
+                    "allergies": { "type": "string" }, "conditions": { "type": "string" }, "physicianName": { "type": "string" }, "physicianPhone": { "type": "string" }
+                }
+            }
+        },
+        "required": ["applicationId", "status", "submittedByParentId", "submittedAt", "student", "parent1", "emergencyContact"]
     }
   },
   "auth": {
@@ -798,6 +843,15 @@
           "schema": { "$ref": "#/backend/entities/AttendanceRecord" },
           "description": "Stores daily attendance records for students.",
           "params": [{ "name": "attendanceId" }]
+        }
+      },
+      {
+        "path": "/admissionApplications/{applicationId}",
+        "definition": {
+          "entityName": "AdmissionApplication",
+          "schema": { "$ref": "#/backend/entities/AdmissionApplication" },
+          "description": "Stores student admission applications submitted by parents.",
+          "params": [{ "name": "applicationId" }]
         }
       }
     ],

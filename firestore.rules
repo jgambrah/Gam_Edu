@@ -218,6 +218,11 @@ service cloud.firestore {
       allow create: if isTeacher() || isAdmin();
     }
 
+    match /admissionApplications/{applicationId} {
+        allow create: if isParent();
+        allow read, update: if isAdmin();
+    }
+
     // ------ Helper Functions ------
 
     /**
@@ -257,6 +262,10 @@ service cloud.firestore {
 
     function isStudent() {
       return exists(/databases/$(database)/documents/students/$(request.auth.uid));
+    }
+    
+    function isParent() {
+        return exists(/databases/$(database)/documents/parents/$(request.auth.uid));
     }
 
     function isBorrower() {
