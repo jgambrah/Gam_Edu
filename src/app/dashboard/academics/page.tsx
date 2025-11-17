@@ -37,7 +37,6 @@ import { Loader2, PlusCircle } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
-import ClientBoundary from '../client-boundary';
 
 const classFormSchema = z.object({
   name: z.string().min(1, { message: 'Class name is required.' }),
@@ -212,8 +211,6 @@ function AcademicsPageContent() {
 
 export default function AcademicsPage() {
   return (
-    <ClientBoundary>
       <AcademicsPageContent />
-    </ClientBoundary>
   );
 }

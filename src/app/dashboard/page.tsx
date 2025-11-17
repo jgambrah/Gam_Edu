@@ -3,7 +3,6 @@
 import { useRole } from '@/context/role-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Bell, Calendar, DollarSign, GraduationCap, Users } from 'lucide-react';
-import ClientBoundary from './client-boundary';
 
 function ParentDashboard() {
   return (
@@ -122,8 +121,6 @@ function DashboardPageContent() {
 
 export default function DashboardPage() {
   return (
-    <ClientBoundary>
-      <DashboardPageContent />
-    </ClientBoundary>
+    <DashboardPageContent />
   );
 }

@@ -31,7 +31,6 @@ import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
-import ClientBoundary from '../client-boundary';
 
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -324,8 +323,6 @@ function ParentsPageContent() {
 
 export default function ParentsPage() {
     return (
-        <ClientBoundary>
-            <ParentsPageContent />
-        </ClientBoundary>
+        <ParentsPageContent />
     )
 }

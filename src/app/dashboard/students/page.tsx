@@ -37,7 +37,6 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
-import ClientBoundary from '../client-boundary';
 
 const studentFormSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -422,8 +421,6 @@ function StudentsPageContent() {
 
 export default function StudentsPage() {
     return (
-        <ClientBoundary>
-            <StudentsPageContent />
-        </ClientBoundary>
+        <StudentsPageContent />
     )
 }
