@@ -1,3 +1,4 @@
+
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/navigation/sidebar';
 import Header from '@/components/navigation/header';
