@@ -273,8 +273,8 @@ service cloud.firestore {
     }
     
     match /announcements/{announcementId} {
-      allow read: if isSignedIn();
       allow write: if isAdmin();
+      allow read: if isSignedIn() && (isAdmin() || canReadAnnouncement(resource.data.audience));
     }
 
 
@@ -334,6 +334,13 @@ service cloud.firestore {
 
     function isStaff() {
         return exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+    }
+
+    function canReadAnnouncement(audience) {
+      let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+      // Default to Staff role if no specific role found (e.g. for parents, students)
+      let roleToCheck = userRole != null ? userRole : (isStudent() ? 'Student' : (isParent() ? 'Parent' : ''));
+      return 'Everybody' in audience || roleToCheck in audience;
     }
     
     function isAssignmentOwner(assignmentId) {

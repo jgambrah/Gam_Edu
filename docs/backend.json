@@ -22,9 +22,16 @@
         "authorId": {
           "type": "string",
           "description": "The UID of the administrator who published the announcement."
+        },
+        "audience": {
+          "type": "array",
+          "description": "List of roles that should see this announcement (e.g., ['Student', 'Parent']). 'Everybody' targets all roles.",
+          "items": {
+            "type": "string"
+          }
         }
       },
-      "required": ["title", "content", "publishedAt", "authorId"]
+      "required": ["title", "content", "publishedAt", "authorId", "audience"]
     },
     "Staff": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1202,4 +1209,5 @@
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `/roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
   }
 }
+
     

@@ -11,6 +11,11 @@ import { useFirestore, useUser, errorEmitter, FirestorePermissionError } from '@
 import { useRole } from '@/context/role-context';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+
+const AUDIENCE_OPTIONS = ['Everybody', 'Staff', 'Students', 'Parents'] as const;
+type AudienceOption = typeof AUDIENCE_OPTIONS[number];
 
 export function NoticeSummarizer() {
   const [title, setTitle] = useState('');
@@ -18,12 +23,21 @@ export function NoticeSummarizer() {
   const [summary, setSummary] = useState('');
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const [audience, setAudience] = useState<AudienceOption[]>(['Everybody']);
   const { toast } = useToast();
   const { role } = useRole();
   const { user } = useUser();
   const firestore = useFirestore();
 
   const canPost = role === 'Administrator' || role === 'Director';
+
+  const handleAudienceChange = (option: AudienceOption) => {
+    setAudience(prev => 
+      prev.includes(option) 
+        ? prev.filter(item => item !== option) 
+        : [...prev, option]
+    );
+  };
 
   const handleSummarize = async () => {
     if (!noticeText.trim()) {
@@ -62,11 +76,11 @@ export function NoticeSummarizer() {
       toast({ variant: 'destructive', title: 'Error', description: 'User not authenticated or database not available.' });
       return;
     }
-    if (!title.trim() || !noticeText.trim()) {
+    if (!title.trim() || !noticeText.trim() || audience.length === 0) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
-        description: 'Please provide a title and content for the announcement.',
+        description: 'Please provide a title, content, and select an audience for the announcement.',
       });
       return;
     }
@@ -77,6 +91,7 @@ export function NoticeSummarizer() {
       content: noticeText,
       authorId: user.uid,
       publishedAt: serverTimestamp(),
+      audience: audience,
     };
 
     const announcementsRef = collection(firestore, 'announcements');
@@ -90,6 +105,7 @@ export function NoticeSummarizer() {
         setTitle('');
         setNoticeText('');
         setSummary('');
+        setAudience(['Everybody']);
       })
       .catch((error) => {
         errorEmitter.emit(
@@ -100,7 +116,6 @@ export function NoticeSummarizer() {
             requestResourceData: announcementData,
           })
         );
-        // Also show a generic error to the user
         toast({
             variant: 'destructive',
             title: 'Error',
@@ -127,11 +142,28 @@ export function NoticeSummarizer() {
       </CardHeader>
       <CardContent className="space-y-4">
         {canPost && (
-          <Input
-            placeholder="Announcement Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+          <>
+            <Input
+              placeholder="Announcement Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <div className="space-y-2">
+                <Label>Target Audience</Label>
+                <div className="flex flex-wrap gap-4">
+                    {AUDIENCE_OPTIONS.map(option => (
+                        <div key={option} className="flex items-center space-x-2">
+                            <Checkbox 
+                                id={`audience-${option}`} 
+                                checked={audience.includes(option)}
+                                onCheckedChange={() => handleAudienceChange(option)}
+                            />
+                            <Label htmlFor={`audience-${option}`}>{option}</Label>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          </>
         )}
         <Textarea
           placeholder="Paste or write school announcement here..."
@@ -174,3 +206,5 @@ export function NoticeSummarizer() {
     </Card>
   );
 }
+
+    

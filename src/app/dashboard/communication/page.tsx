@@ -3,24 +3,34 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { NoticeSummarizer } from './summarizer';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRole } from '@/context/role-context';
 
 type Announcement = {
   id: string;
   title: string;
   content: string;
   publishedAt: any;
+  audience: string[];
 };
 
 export default function CommunicationPage() {
   const firestore = useFirestore();
+  const { role } = useRole();
+
   const announcementsQuery = useMemoFirebase(
-    () => query(collection(firestore, 'announcements'), orderBy('publishedAt', 'desc')),
-    [firestore]
+    () =>
+      query(
+        collection(firestore, 'announcements'),
+        where('audience', 'array-contains-any', ['Everybody', role]),
+        orderBy('publishedAt', 'desc')
+      ),
+    [firestore, role]
   );
+  
   const { data: announcements, isLoading } = useCollection<Announcement>(announcementsQuery);
 
   return (
@@ -70,3 +80,5 @@ export default function CommunicationPage() {
     </div>
   );
 }
+
+    
