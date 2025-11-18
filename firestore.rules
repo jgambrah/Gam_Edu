@@ -259,7 +259,7 @@ service cloud.firestore {
     }
     
     match /accountsPayable/{payableId} {
-      allow read, write: if isFinanceStaff();
+      allow read, write: if request.auth != null;
     }
 
     match /inventory/{itemId} {
