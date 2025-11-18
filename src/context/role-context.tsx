@@ -12,9 +12,10 @@ import {
   Suspense
 } from 'react';
 import type { UserRole } from '@/lib/types';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { doc } from 'firebase/firestore';
 
 type RoleContextType = {
   role: UserRole;
@@ -24,39 +25,56 @@ type RoleContextType = {
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
-function RoleProviderContent({ children }: { children: ReactNode }) {
+export function RoleProvider({ children }: { children: ReactNode }) {
     const [role, setRole] = useState<UserRole>('Parent');
-    const { isUserLoading } = useUser();
-    const searchParams = useSearchParams();
+    const { user, isUserLoading } = useUser();
+    const firestore = useFirestore();
+
+    // Fetch staff role
+    const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
+    const { data: staffData, isLoading: isStaffLoading } = useDoc<{ role: UserRole }>(staffDocRef);
+
+    // Fetch parent role
+    const parentDocRef = useMemoFirebase(() => user ? doc(firestore, 'parents', user.uid) : null, [firestore, user]);
+    const { data: parentData, isLoading: isParentLoading } = useDoc(parentDocRef);
+    
+    // Fetch student role
+    const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
+    const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
+
+
+    const isLoading = isUserLoading || isStaffLoading || isParentLoading || isStudentLoading;
 
     useEffect(() => {
-        const roleFromURL = searchParams.get('role');
-        if (roleFromURL) {
-            setRole(roleFromURL as UserRole);
+        if (isLoading || !user) return;
+        
+        // Special override for the admin user
+        if (user.email === 'jamesgambrah@sunnyside.com') {
+            setRole('Director');
+            return;
         }
-    }, [searchParams]);
 
-    if (isUserLoading) {
-      return (
-        <div className="flex min-h-screen w-full items-center justify-center">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
-      )
-    }
+        if (staffData) {
+            setRole(staffData.role);
+        } else if (studentData) {
+            setRole('Student');
+        } else if (parentData) {
+            setRole('Parent');
+        } else {
+            // Default role if no specific profile is found
+            setRole('Parent');
+        }
+
+    }, [user, staffData, parentData, studentData, isLoading]);
+
 
     return (
-        <RoleContext.Provider value={{ role, setRole, isRoleLoading: isUserLoading }}>
-            {children}
+        <RoleContext.Provider value={{ role, setRole, isRoleLoading: isLoading }}>
+            <RoleGuard>
+                {children}
+            </RoleGuard>
         </RoleContext.Provider>
     );
-}
-
-export function RoleProvider({ children }: { children: ReactNode }) {
-  return (
-    <Suspense>
-      <RoleProviderContent>{children}</RoleProviderContent>
-    </Suspense>
-  )
 }
 
 export function useRole() {
@@ -69,16 +87,19 @@ export function useRole() {
 
 export function RoleGuard({ children }: { children: ReactNode }) {
   const { user, isUserLoading } = useUser();
+  const { isRoleLoading } = useRole();
   const router = useRouter();
   const pathname = usePathname();
 
+  const isLoading = isUserLoading || isRoleLoading;
+
   useEffect(() => {
-      if (!isUserLoading && !user && pathname !== '/') {
+      if (!isLoading && !user && pathname !== '/') {
         router.push('/');
       }
-  }, [isUserLoading, user, pathname, router]);
+  }, [isLoading, user, pathname, router]);
 
-  if (isUserLoading && pathname !== '/') {
+  if (isLoading && pathname !== '/') {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
           <Loader2 className="h-16 w-16 animate-spin text-primary" />

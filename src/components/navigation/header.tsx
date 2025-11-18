@@ -17,7 +17,6 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { navItems } from '@/lib/data';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import RoleSwitcher from './role-switcher';
 import { useRole } from '@/context/role-context';
 
 export default function Header() {
@@ -33,8 +32,6 @@ export default function Header() {
     await signOut(auth);
     router.push('/');
   };
-  
-  const showRoleSwitcher = user?.email === 'jamesgambrah@sunnyside.com';
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
@@ -44,7 +41,6 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        <RoleSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
