@@ -11,7 +11,7 @@ import {
   useEffect
 } from 'react';
 import type { UserRole } from '@/lib/types';
-import { useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { useDoc, useFirestore, useUser, useMemoFirebase, FirebaseContext } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -27,39 +27,27 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole>('Parent');
   const { user, isUserLoading: isAuthLoading } = useUser();
-  const { firestore } = useFirestore();
+  const { firestore, areServicesAvailable } = useContext(FirebaseContext)!; // Use context directly to get availability
 
   // Fetch staff role
-  const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
+  const staffDocRef = useMemoFirebase(() => (areServicesAvailable && user) ? doc(firestore, 'staff', user.uid) : null, [firestore, user, areServicesAvailable]);
   const { data: staffData, isLoading: isStaffLoading } = useDoc<{ role: UserRole }>(staffDocRef);
 
   // Fetch parent role
-  const parentDocRef = useMemoFirebase(() => user ? doc(firestore, 'parents', user.uid) : null, [firestore, user]);
+  const parentDocRef = useMemoFirebase(() => (areServicesAvailable && user) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, areServicesAvailable]);
   const { data: parentData, isLoading: isParentLoading } = useDoc(parentDocRef);
 
   // Fetch student role
-  const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
+  const studentDocRef = useMemoFirebase(() => (areServicesAvailable && user) ? doc(firestore, 'students', user.uid) : null, [firestore, user, areServicesAvailable]);
   const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
 
-  useEffect(() => {
-    if (user) {
-      // Special override for the admin user
-      if (user.email === 'jamesgambrah@sunnyside.com') {
-        setRole('Director');
-        return;
-      }
-
-      if (staffData) setRole(staffData.role);
-      else if (parentData) setRole('Parent');
-      else if (studentData) setRole('Student');
-    }
-  }, [user, staffData, parentData, studentData]);
-  
   const isRoleLoading = isAuthLoading || isStaffLoading || isParentLoading || isStudentLoading;
 
   return (
     <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
-       {children}
+      <RoleGuard>
+        {children}
+      </RoleGuard>
     </RoleContext.Provider>
   );
 }
@@ -73,16 +61,40 @@ export function useRole() {
 }
 
 export function RoleGuard({ children }: { children: ReactNode }) {
-  const { isRoleLoading } = useRole();
-  const { user } = useUser();
-  const router = useRouter();
-  const pathname = usePathname();
+    const { role, setRole, isRoleLoading } = useRole();
+    const { user, isUserLoading: isAuthLoading } = useUser();
+    const { firestore, areServicesAvailable } = useContext(FirebaseContext)!;
+    const router = useRouter();
+    const pathname = usePathname();
 
-  useEffect(() => {
-    if (!isRoleLoading && !user && pathname !== '/') {
-      router.push('/');
-    }
-  }, [isRoleLoading, user, pathname, router]);
+    const staffDocRef = useMemoFirebase(() => (areServicesAvailable && user) ? doc(firestore, 'staff', user.uid) : null, [firestore, user, areServicesAvailable]);
+    const { data: staffData } = useDoc<{ role: UserRole }>(staffDocRef);
+
+    const parentDocRef = useMemoFirebase(() => (areServicesAvailable && user) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, areServicesAvailable]);
+    const { data: parentData } = useDoc(parentDocRef);
+    
+    const studentDocRef = useMemoFirebase(() => (areServicesAvailable && user) ? doc(firestore, 'students', user.uid) : null, [firestore, user, areServicesAvailable]);
+    const { data: studentData } = useDoc(studentDocRef);
+
+    useEffect(() => {
+        if (!isRoleLoading && !user && pathname !== '/') {
+          router.push('/');
+        }
+    }, [isRoleLoading, user, pathname, router]);
+
+    useEffect(() => {
+        if (user) {
+          // Special override for the admin user
+          if (user.email === 'jamesgambrah@sunnyside.com') {
+            setRole('Director');
+            return;
+          }
+    
+          if (staffData) setRole(staffData.role);
+          else if (parentData) setRole('Parent');
+          else if (studentData) setRole('Student');
+        }
+      }, [user, staffData, parentData, studentData, setRole]);
 
   if (isRoleLoading && user) {
     return (
