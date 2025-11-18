@@ -41,6 +41,10 @@ export function NoticeSummarizer() {
     try {
       const result = await summarizeSchoolNotices({ announcements: noticeText });
       setSummary(result.summary);
+      toast({
+        title: 'Summary Generated',
+        description: 'The AI summary is now available below.',
+      });
     } catch (error) {
       console.error('Error summarizing notice:', error);
       toast({
@@ -116,14 +120,26 @@ export function NoticeSummarizer() {
           onChange={(e) => setNoticeText(e.target.value)}
           rows={10}
         />
-        <Button onClick={handleSummarize} disabled={isSummarizing || !noticeText.trim()} className="w-full">
-          {isSummarizing ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Wand2 className="mr-2 h-4 w-4" />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button onClick={handleSummarize} disabled={isSummarizing || !noticeText.trim()} className="w-full sm:w-auto">
+            {isSummarizing ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Wand2 className="mr-2 h-4 w-4" />
+            )}
+            Summarize
+          </Button>
+          {canPost && (
+             <Button onClick={handlePost} disabled={isPosting || !title.trim() || !noticeText.trim()} className="w-full sm:w-auto">
+                {isPosting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                <Send className="mr-2 h-4 w-4" />
+                )}
+                Post Announcement
+            </Button>
           )}
-          Summarize
-        </Button>
+        </div>
 
         {summary && (
           <Card className="bg-muted/50">
@@ -132,16 +148,6 @@ export function NoticeSummarizer() {
             </CardHeader>
             <CardContent>
               <p className="text-sm">{summary}</p>
-              {canPost && (
-                <Button onClick={handlePost} disabled={isPosting} className="w-full mt-4">
-                  {isPosting ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="mr-2 h-4 w-4" />
-                  )}
-                  Post Announcement
-                </Button>
-              )}
             </CardContent>
           </Card>
         )}
@@ -149,5 +155,3 @@ export function NoticeSummarizer() {
     </Card>
   );
 }
-
-    
