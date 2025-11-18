@@ -13,8 +13,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AppLogo } from '@/components/icons/app-logo';
-import { useAuth, useUser } from '@/firebase';
-import { FormEvent, useEffect, useState } from 'react';
+import { useAuth } from '@/firebase';
+import { FormEvent, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -22,29 +22,19 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 export default function LoginPage() {
   const router = useRouter();
   const auth = useAuth();
-  const { user, isUserLoading } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push('/dashboard');
-    }
-  }, [user, isUserLoading, router]);
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        toast({
-          title: 'Login Successful',
-          description: 'Welcome back!',
-        });
-        // The useEffect hook will handle the redirect
+      .then((userCredential) => {
+        // On successful login, redirect to the dashboard.
+        router.push('/dashboard');
       })
       .catch((error) => {
         toast({
@@ -57,14 +47,6 @@ export default function LoginPage() {
         setIsLoading(false);
       });
   };
-
-  if (isUserLoading || user) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
@@ -88,6 +70,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
             </div>
             <div className="space-y-2">
@@ -98,6 +81,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
               />
             </div>
           </CardContent>

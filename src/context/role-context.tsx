@@ -30,13 +30,13 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
-  const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
+  const staffDocRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
   const { data: staffData, isLoading: isStaffLoading } = useDoc<{ role: UserRole }>(staffDocRef);
 
-  const parentDocRef = useMemoFirebase(() => user ? doc(firestore, 'parents', user.uid) : null, [firestore, user]);
+  const parentDocRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user]);
   const { data: parentData, isLoading: isParentLoading } = useDoc(parentDocRef);
   
-  const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
+  const studentDocRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
   const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
 
   const isRoleDataLoading = isStaffLoading || isParentLoading || isStudentLoading;
@@ -44,7 +44,6 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isUserLoading || isRoleDataLoading || !user) return;
 
-    // Special override for the admin user
     if (user.email === 'jamesgambrah@sunnyside.com') {
         setRole('Director');
         return;
@@ -94,10 +93,10 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   const isLoading = isUserLoading || isRoleLoading;
 
   useEffect(() => {
-      if (!isLoading && !user && pathname !== '/') {
+      if (!isUserLoading && !user && pathname.startsWith('/dashboard')) {
         router.push('/');
       }
-  }, [isLoading, user, pathname, router]);
+  }, [isUserLoading, user, pathname, router]);
 
   if (isLoading && pathname.startsWith('/dashboard')) {
     return (
