@@ -11,7 +11,7 @@ import {
   useEffect
 } from 'react';
 import type { UserRole } from '@/lib/types';
-import { useDoc, useFirebase, useUser, useMemoFirebase } from '@/firebase';
+import { useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -27,7 +27,7 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole>('Parent');
   const { user, isUserLoading: isAuthLoading } = useUser();
-  const { firestore } = useFirebase();
+  const { firestore } = useFirestore();
 
   // Fetch staff role
   const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
@@ -43,6 +43,12 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user) {
+      // Special override for the admin user
+      if (user.email === 'jamesgambrah@sunnyside.com') {
+        setRole('Director');
+        return;
+      }
+
       if (staffData) setRole(staffData.role);
       else if (parentData) setRole('Parent');
       else if (studentData) setRole('Student');

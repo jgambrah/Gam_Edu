@@ -13,12 +13,9 @@ import { ALL_ROLES, type UserRole } from '@/lib/types';
 
 export default function RoleSwitcher() {
   const { role, setRole } = useRole();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const handleRoleChange = (newRole: UserRole) => {
     setRole(newRole);
-    router.push(`${pathname}?role=${newRole}`);
   };
 
   return (
