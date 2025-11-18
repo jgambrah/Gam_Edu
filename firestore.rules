@@ -154,8 +154,7 @@ service cloud.firestore {
      * @path /behavioral_records/{recordId}
      */
     match /behavioral_records/{recordId} {
-      allow read: if request.auth != null;
-      allow write: if isTeacher() || isAdmin();
+      allow read, write: if request.auth != null;
     }
 
     /**
@@ -272,6 +271,11 @@ service cloud.firestore {
         allow read: if isAdmin();
         allow create: if isAdmin();
     }
+    
+    match /announcements/{announcementId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
 
 
     // ------ Helper Functions ------
@@ -354,3 +358,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
