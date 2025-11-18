@@ -13,7 +13,7 @@ import {
 } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { UserRole } from '@/lib/types';
-import { useDoc, useFirebase, useUser } from '@/firebase';
+import { useDoc, useFirebase, useUser, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 
