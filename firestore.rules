@@ -66,7 +66,7 @@ service cloud.firestore {
     }
     
     /**
-     * @description Grants administrators full access to manage parent profiles.
+     * @description Grants any signed-in user read access to parent profiles.
      * @path /parents/{parentId}
      */
     match /parents/{parentId} {
