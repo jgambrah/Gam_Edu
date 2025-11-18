@@ -222,7 +222,8 @@ service cloud.firestore {
 
     match /admissionApplications/{applicationId} {
         allow create: if isParent();
-        allow read, update, list: if isAdmin();
+        allow read, list: if isSignedIn();
+        allow update: if isAdmin();
     }
     
     match /leaveRequests/{requestId} {
