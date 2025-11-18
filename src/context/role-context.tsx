@@ -14,7 +14,7 @@ import {
 import type { UserRole } from '@/lib/types';
 import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { Loader2 } from 'lucide-react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { doc } from 'firebase/firestore';
 
 type RoleContextType = {
@@ -26,8 +26,7 @@ type RoleContextType = {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 function RoleProviderContent({ children }: { children: ReactNode }) {
-  const searchParams = useSearchParams();
-  const [role, setRole] = useState<UserRole>((searchParams.get('role') as UserRole) || 'Parent');
+  const [role, setRole] = useState<UserRole>('Parent');
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
@@ -40,33 +39,30 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
   const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
 
-  const isRoleLoading = isUserLoading || isStaffLoading || isParentLoading || isStudentLoading;
+  const isRoleDataLoading = isStaffLoading || isParentLoading || isStudentLoading;
 
   useEffect(() => {
-    const urlRole = searchParams.get('role') as UserRole;
-    if (urlRole) {
-      setRole(urlRole);
-    } else {
-      if (isRoleLoading || !user) return;
-      
-      if (user.email === 'jamesgambrah@sunnyside.com') {
-          setRole('Director');
-          return;
-      }
-      if (staffData) {
-          setRole(staffData.role);
-      } else if (studentData) {
-          setRole('Student');
-      } else if (parentData) {
-          setRole('Parent');
-      } else {
-          setRole('Parent'); // Default
-      }
+    if (isUserLoading || isRoleDataLoading || !user) return;
+
+    // Special override for the admin user
+    if (user.email === 'jamesgambrah@sunnyside.com') {
+        setRole('Director');
+        return;
     }
-  }, [searchParams, user, staffData, parentData, studentData, isRoleLoading]);
+    
+    if (staffData) {
+        setRole(staffData.role);
+    } else if (studentData) {
+        setRole('Student');
+    } else if (parentData) {
+        setRole('Parent');
+    } else {
+        setRole('Parent'); // Fallback to a default role if no profile is found
+    }
+  }, [user, staffData, parentData, studentData, isUserLoading, isRoleDataLoading]);
 
   return (
-    <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
+    <RoleContext.Provider value={{ role, setRole, isRoleLoading: isUserLoading || isRoleDataLoading }}>
       {children}
     </RoleContext.Provider>
   );
@@ -103,7 +99,7 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       }
   }, [isLoading, user, pathname, router]);
 
-  if (isLoading && pathname !== '/') {
+  if (isLoading && pathname.startsWith('/dashboard')) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
           <Loader2 className="h-16 w-16 animate-spin text-primary" />

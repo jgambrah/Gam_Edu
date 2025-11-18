@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,9 +17,7 @@ import { useAuth, useUser } from '@/firebase';
 import { FormEvent, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { signInWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
-import type { UserRole } from '@/lib/types';
-import { Separator } from '@/components/ui/separator';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,56 +30,33 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
-      const searchParams = new URLSearchParams(window.location.search);
-      const role = searchParams.get('role');
-      router.push(role ? `/dashboard?role=${role}` : '/dashboard');
+      router.push('/dashboard');
     }
   }, [user, isUserLoading, router]);
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         toast({
           title: 'Login Successful',
-          description: "Welcome back!",
+          description: 'Welcome back!',
         });
+        // The useEffect hook will handle the redirect
       })
       .catch((error) => {
         toast({
           variant: 'destructive',
           title: 'Authentication Failed',
-          description: "Invalid email or password. Please try again.",
+          description: 'Invalid email or password. Please try again.',
         });
       })
       .finally(() => {
         setIsLoading(false);
       });
   };
-
-  const handleDemoLogin = async (role: UserRole) => {
-    setIsLoading(true);
-    try {
-        if (role === 'Director' || role === 'Administrator') {
-            await signInWithEmailAndPassword(auth, 'jamesgambrah@sunnyside.com', 'password123');
-        } else {
-            await signInAnonymously(auth);
-        }
-        router.push(`/dashboard?role=${role}`);
-    } catch(error) {
-        console.error("Demo login failed:", error);
-        toast({
-          variant: 'destructive',
-          title: 'Demo Login Failed',
-          description: "Could not sign in with demo credentials.",
-        });
-    } finally {
-        setIsLoading(false);
-    }
-  };
-
 
   if (isUserLoading || user) {
     return (
@@ -127,37 +102,11 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading && !email ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                'Sign In'
-              )}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Sign In'}
             </Button>
           </CardFooter>
         </form>
-        <div className="px-6 pb-6">
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                    Or sign in as
-                    </span>
-                </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4 pt-4">
-                <Button variant="outline" onClick={() => handleDemoLogin('Director')} disabled={isLoading}>Director</Button>
-                <Button variant="outline" onClick={() => handleDemoLogin('Teacher')} disabled={isLoading}>Teacher</Button>
-                <Button variant="outline" onClick={() => handleDemoLogin('Student')} disabled={isLoading}>Student</Button>
-                <Button variant="outline" onClick={() => handleDemoLogin('Parent')} disabled={isLoading}>Parent</Button>
-            </div>
-        </div>
       </Card>
     </main>
   );
