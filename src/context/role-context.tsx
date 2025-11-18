@@ -19,16 +19,15 @@ import { usePathname, useRouter } from 'next/navigation';
 type RoleContextType = {
   role: UserRole;
   setRole: Dispatch<SetStateAction<UserRole>>;
+  isRoleLoading: boolean;
 };
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>('Parent'); // Default role
+  const [role, setRole] = useState<UserRole>('Parent');
   const { user, isUserLoading: isAuthLoading } = useUser();
   const { firestore } = useFirebase();
-  const router = useRouter();
-  const pathname = usePathname();
 
   // Fetch staff role
   const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
@@ -42,38 +41,18 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
   const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
 
-
   useEffect(() => {
-    if (isAuthLoading) return; // Wait for auth state to be determined
-
-    if (!user && pathname !== '/') {
-        router.push('/');
-        return;
-    }
-
     if (user) {
-      if (staffData) {
-        setRole(staffData.role);
-      } else if (parentData) {
-        setRole('Parent');
-      } else if (studentData) {
-        setRole('Student');
-      }
+      if (staffData) setRole(staffData.role);
+      else if (parentData) setRole('Parent');
+      else if (studentData) setRole('Student');
     }
-  }, [user, isAuthLoading, staffData, parentData, studentData, router, pathname]);
+  }, [user, staffData, parentData, studentData]);
   
-  const isRoleDataLoading = isStaffLoading || isParentLoading || isStudentLoading;
-
-  if (isAuthLoading || (user && isRoleDataLoading)) {
-      return (
-        <div className="flex min-h-screen w-full items-center justify-center">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
-      )
-  }
+  const isRoleLoading = isAuthLoading || isStaffLoading || isParentLoading || isStudentLoading;
 
   return (
-    <RoleContext.Provider value={{ role, setRole }}>
+    <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
        {children}
     </RoleContext.Provider>
   );
@@ -85,4 +64,27 @@ export function useRole() {
     throw new Error('useRole must be used within a RoleProvider');
   }
   return context;
+}
+
+export function RoleGuard({ children }: { children: ReactNode }) {
+  const { isRoleLoading } = useRole();
+  const { user } = useUser();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!isRoleLoading && !user && pathname !== '/') {
+      router.push('/');
+    }
+  }, [isRoleLoading, user, pathname, router]);
+
+  if (isRoleLoading && user) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center">
+          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      </div>
+    )
+  }
+  
+  return <>{children}</>;
 }
