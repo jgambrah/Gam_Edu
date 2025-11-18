@@ -22,8 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
@@ -31,6 +30,7 @@ import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
+import { createNewUser } from '@/app/actions/create-user';
 
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -90,7 +90,6 @@ function ParentList() {
 }
 
 function ParentsPageContent() {
-  const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -126,15 +125,16 @@ function ParentsPageContent() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
-      const user = userCredential.user;
+      const result = await createNewUser(values.email, values.password);
+
+      if ('error' in result) {
+        throw new Error(result.error);
+      }
+
+      const { uid } = result;
 
       const parentData = {
-        uid: user.uid,
+        uid: uid,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
@@ -143,7 +143,7 @@ function ParentsPageContent() {
         studentIds: values.studentIds || [],
       };
 
-      await setDocumentNonBlocking(doc(firestore, 'parents', user.uid), parentData, { merge: true });
+      await setDocumentNonBlocking(doc(firestore, 'parents', uid), parentData, { merge: true });
 
       toast({
         title: 'Parent Added',
@@ -152,7 +152,7 @@ function ParentsPageContent() {
       form.reset();
     } catch (error: any) {
       let errorMessage = 'An error occurred while adding the parent.';
-      if (error.code === 'auth/email-already-in-use') {
+      if (error.message.includes('EMAIL_EXISTS')) {
         errorMessage = 'This email is already in use by another account.';
       }
       toast({

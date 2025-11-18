@@ -32,13 +32,13 @@ import {
 } from '@/components/ui/table';
 import { ALL_ROLES } from '@/lib/types';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
+import { createNewUser } from '@/app/actions/create-user';
 
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -105,7 +105,6 @@ function StaffList() {
 }
 
 function StaffPageContent() {
-  const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,15 +140,17 @@ function StaffPageContent() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
-      const user = userCredential.user;
+      // Use the server action to create the user
+      const result = await createNewUser(values.email, values.password);
+
+      if ('error' in result) {
+        throw new Error(result.error);
+      }
+      
+      const { uid } = result;
 
       const staffData = {
-        uid: user.uid,
+        uid: uid,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
@@ -161,7 +162,7 @@ function StaffPageContent() {
         address: values.address,
       };
 
-      setDocumentNonBlocking(doc(firestore, 'staff', user.uid), staffData, { merge: true });
+      await setDocumentNonBlocking(doc(firestore, 'staff', uid), staffData, { merge: true });
 
       toast({
         title: 'Staff Added',
@@ -170,7 +171,7 @@ function StaffPageContent() {
       form.reset();
     } catch (error: any) {
       let errorMessage = 'An error occurred while adding the staff member.';
-      if (error.code === 'auth/email-already-in-use') {
+      if (error.message.includes('EMAIL_EXISTS')) {
         errorMessage = 'This email is already in use by another account.';
       }
       toast({

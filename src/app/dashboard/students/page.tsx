@@ -29,14 +29,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
+import { createNewUser } from '@/app/actions/create-user';
 
 const studentFormSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -182,7 +182,6 @@ function ClassManager() {
 }
 
 function StudentsPageContent() {
-  const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -219,15 +218,16 @@ function StudentsPageContent() {
   async function onSubmit(values: z.infer<typeof studentFormSchema>) {
     setIsSubmitting(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
-      const user = userCredential.user;
+      const result = await createNewUser(values.email, values.password);
+
+      if ('error' in result) {
+        throw new Error(result.error);
+      }
+
+      const { uid } = result;
 
       const studentData = {
-        uid: user.uid,
+        uid: uid,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
@@ -237,7 +237,7 @@ function StudentsPageContent() {
         address: values.address,
       };
 
-      await setDocumentNonBlocking(doc(firestore, 'students', user.uid), studentData, { merge: true });
+      await setDocumentNonBlocking(doc(firestore, 'students', uid), studentData, { merge: true });
 
       toast({
         title: 'Student Added',
@@ -246,7 +246,7 @@ function StudentsPageContent() {
       form.reset();
     } catch (error: any) {
       let errorMessage = 'An error occurred while adding the student.';
-      if (error.code === 'auth/email-already-in-use') {
+       if (error.message.includes('EMAIL_EXISTS')) {
         errorMessage = 'This email is already in use by another account.';
       }
       toast({
