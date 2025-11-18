@@ -121,14 +121,6 @@ export function NoticeSummarizer() {
           rows={10}
         />
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button onClick={handleSummarize} disabled={isSummarizing || !noticeText.trim()} className="w-full sm:w-auto">
-            {isSummarizing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Wand2 className="mr-2 h-4 w-4" />
-            )}
-            Summarize
-          </Button>
           {canPost && (
              <Button onClick={handlePost} disabled={isPosting || !title.trim() || !noticeText.trim()} className="w-full sm:w-auto">
                 {isPosting ? (
@@ -139,6 +131,14 @@ export function NoticeSummarizer() {
                 Post Announcement
             </Button>
           )}
+          <Button onClick={handleSummarize} disabled={isSummarizing || !noticeText.trim()} className="w-full sm:w-auto">
+            {isSummarizing ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Wand2 className="mr-2 h-4 w-4" />
+            )}
+            Summarize
+          </Button>
         </div>
 
         {summary && (
