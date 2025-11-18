@@ -45,7 +45,7 @@ export default function CommunicationPage() {
                       <div className="flex flex-col items-start text-left">
                         <span className="font-semibold">{announcement.title}</span>
                         <span className="text-sm text-muted-foreground">
-                          {format(announcement.publishedAt.toDate(), 'PPP')}
+                          {announcement.publishedAt ? format(announcement.publishedAt.toDate(), 'PPP') : 'Posting...'}
                         </span>
                       </div>
                     </AccordionTrigger>
@@ -70,5 +70,3 @@ export default function CommunicationPage() {
     </div>
   );
 }
-
-    
