@@ -144,7 +144,7 @@ service cloud.firestore {
      * @path /assessments/{assessmentId}
      */
     match /assessments/{assessmentId} {
-      allow read: if isSignedIn();
+      allow list, read: if isSignedIn();
       allow create, update: if isTeacher() || isAdmin();
       allow delete: if isAdmin();
     }
