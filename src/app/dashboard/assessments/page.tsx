@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -28,6 +27,16 @@ function AssessmentsLog() {
     const assessmentsQuery = useMemoFirebase(() => query(collection(firestore, 'assessments'), orderBy('assessmentDate', 'desc')), [firestore]);
     const { data: assessments, isLoading } = useCollection<Assessment>(assessmentsQuery);
 
+    const toDate = (dateValue: any): Date | null => {
+        if (!dateValue) return null;
+        if (dateValue.toDate) return dateValue.toDate(); // It's a Firestore Timestamp
+        if (typeof dateValue === 'string' || typeof dateValue === 'number') {
+            const d = new Date(dateValue);
+            if (!isNaN(d.getTime())) return d;
+        }
+        return null;
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -54,15 +63,18 @@ function AssessmentsLog() {
                                 <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                             </TableRow>
                         ))}
-                        {assessments?.map((item) => (
-                            <TableRow key={item.id}>
-                                <TableCell>{format(new Date(item.assessmentDate), 'PPP')}</TableCell>
-                                <TableCell>{item.studentId}</TableCell>
-                                <TableCell>{item.assessmentName}</TableCell>
-                                <TableCell>{item.assessmentType}</TableCell>
-                                <TableCell>{item.score !== undefined && item.maxScore !== undefined ? `${item.score}/${item.maxScore}` : 'N/A'}</TableCell>
-                            </TableRow>
-                        ))}
+                        {assessments?.map((item) => {
+                            const assessmentDate = toDate(item.assessmentDate);
+                            return (
+                                <TableRow key={item.id}>
+                                    <TableCell>{assessmentDate ? format(assessmentDate, 'PPP') : 'Invalid Date'}</TableCell>
+                                    <TableCell>{item.studentId}</TableCell>
+                                    <TableCell>{item.assessmentName}</TableCell>
+                                    <TableCell>{item.assessmentType}</TableCell>
+                                    <TableCell>{item.score !== undefined && item.maxScore !== undefined ? `${item.score}/${item.maxScore}` : 'N/A'}</TableCell>
+                                </TableRow>
+                            )
+                        })}
                     </TableBody>
                 </Table>
             </CardContent>
@@ -74,6 +86,16 @@ function BehavioralLog() {
     const firestore = useFirestore();
     const recordsQuery = useMemoFirebase(() => query(collection(firestore, 'behavioral_records'), orderBy('date', 'desc')), [firestore]);
     const { data: records, isLoading } = useCollection<BehavioralRecord>(recordsQuery);
+
+    const toDate = (dateValue: any): Date | null => {
+        if (!dateValue) return null;
+        if (dateValue.toDate) return dateValue.toDate(); // It's a Firestore Timestamp
+        if (typeof dateValue === 'string' || typeof dateValue === 'number') {
+            const d = new Date(dateValue);
+            if (!isNaN(d.getTime())) return d;
+        }
+        return null;
+    }
 
     return (
         <Card>
@@ -99,14 +121,17 @@ function BehavioralLog() {
                                 <TableCell><Skeleton className="h-4 w-full" /></TableCell>
                             </TableRow>
                         ))}
-                        {records?.map((item) => (
-                            <TableRow key={item.id}>
-                                <TableCell>{format(new Date(item.date), 'PPP')}</TableCell>
-                                <TableCell>{item.studentId}</TableCell>
-                                <TableCell>{item.incidentType}</TableCell>
-                                <TableCell className="truncate max-w-sm">{item.description}</TableCell>
-                            </TableRow>
-                        ))}
+                        {records?.map((item) => {
+                             const incidentDate = toDate(item.date);
+                             return (
+                                <TableRow key={item.id}>
+                                    <TableCell>{incidentDate ? format(incidentDate, 'PPP') : 'Invalid Date'}</TableCell>
+                                    <TableCell>{item.studentId}</TableCell>
+                                    <TableCell>{item.incidentType}</TableCell>
+                                    <TableCell className="truncate max-w-sm">{item.description}</TableCell>
+                                </TableRow>
+                             )
+                        })}
                     </TableBody>
                 </Table>
             </CardContent>
