@@ -7,9 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2, Send } from 'lucide-react';
-import { useFirestore, useUser } from '@/firebase';
+import { useFirestore, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 
 export function NoticeSummarizer() {
@@ -58,7 +58,11 @@ export function NoticeSummarizer() {
   };
 
   const handlePost = async () => {
-    if (!title.trim() || !noticeText.trim() || !user) {
+    if (!firestore || !user) {
+      toast({ variant: 'destructive', title: 'Error', description: 'User not authenticated or database not available.' });
+      return;
+    }
+    if (!title.trim() || !noticeText.trim()) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
@@ -67,30 +71,45 @@ export function NoticeSummarizer() {
       return;
     }
     setIsPosting(true);
-    try {
-      await addDoc(collection(firestore, 'announcements'), {
-        title: title,
-        content: noticeText,
-        authorId: user.uid,
-        publishedAt: serverTimestamp(),
+
+    const announcementData = {
+      title: title,
+      content: noticeText,
+      authorId: user.uid,
+      publishedAt: serverTimestamp(),
+    };
+
+    const announcementsRef = collection(firestore, 'announcements');
+
+    addDoc(announcementsRef, announcementData)
+      .then(() => {
+        toast({
+          title: 'Announcement Posted!',
+          description: 'The announcement is now live for all users.',
+        });
+        setTitle('');
+        setNoticeText('');
+        setSummary('');
+      })
+      .catch((error) => {
+        errorEmitter.emit(
+          'permission-error',
+          new FirestorePermissionError({
+            path: announcementsRef.path,
+            operation: 'create',
+            requestResourceData: announcementData,
+          })
+        );
+        // Also show a generic error to the user
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not post announcement. Check permissions.',
+        });
+      })
+      .finally(() => {
+        setIsPosting(false);
       });
-      toast({
-        title: 'Announcement Posted!',
-        description: 'The announcement is now live for all users.',
-      });
-      setTitle('');
-      setNoticeText('');
-      setSummary('');
-    } catch (error) {
-      console.error('Error posting announcement:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Could not post the announcement.',
-      });
-    } finally {
-      setIsPosting(false);
-    }
   };
 
   return (
