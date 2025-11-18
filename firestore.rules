@@ -72,7 +72,7 @@ service cloud.firestore {
     match /parents/{parentId} {
       allow create: if isAdmin();
       allow read: if isSignedIn();
-      allow update: if (isAdmin() || isOwner(parentId)) && resource != null;
+      allow update: if isAdmin() && resource != null;
       allow delete: if isAdmin() && resource != null;
     }
 
