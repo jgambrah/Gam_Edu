@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2, Send } from 'lucide-react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,7 @@ export function NoticeSummarizer() {
   const [isPosting, setIsPosting] = useState(false);
   const { toast } = useToast();
   const { role } = useRole();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
 
   const canPost = role === 'Administrator' || role === 'Director';
@@ -121,6 +121,14 @@ export function NoticeSummarizer() {
           rows={10}
         />
         <div className="flex flex-col sm:flex-row gap-2">
+           <Button onClick={handleSummarize} disabled={isSummarizing || !noticeText.trim()} className="w-full sm:w-auto">
+            {isSummarizing ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Wand2 className="mr-2 h-4 w-4" />
+            )}
+            Summarize
+          </Button>
           {canPost && (
              <Button onClick={handlePost} disabled={isPosting || !title.trim() || !noticeText.trim()} className="w-full sm:w-auto">
                 {isPosting ? (
@@ -131,14 +139,6 @@ export function NoticeSummarizer() {
                 Post Announcement
             </Button>
           )}
-          <Button onClick={handleSummarize} disabled={isSummarizing || !noticeText.trim()} className="w-full sm:w-auto">
-            {isSummarizing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Wand2 className="mr-2 h-4 w-4" />
-            )}
-            Summarize
-          </Button>
         </div>
 
         {summary && (
