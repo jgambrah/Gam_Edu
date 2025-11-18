@@ -71,9 +71,9 @@ service cloud.firestore {
      */
     match /parents/{parentId} {
       allow create: if isAdmin();
-      allow get: if isAdmin();
+      allow get: if isAdmin() || isOwner(parentId);
       allow list: if isAdmin();
-      allow update: if isAdmin() && resource != null;
+      allow update: if (isAdmin() || isOwner(parentId)) && resource != null;
       allow delete: if isAdmin() && resource != null;
     }
 
@@ -383,3 +383,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
