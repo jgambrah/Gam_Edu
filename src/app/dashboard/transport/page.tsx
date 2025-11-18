@@ -24,7 +24,7 @@ const assignmentSchema = z.object({
   stopId: z.string().min(1, 'Please select a stop.'),
 });
 
-function StudentAssignmentDialog({ route, onAssignmentChange }: { route: Route; onAssignmentChange: () => void }) {
+function StudentAssignmentDialog({ route, onAssignmentChange, open, onOpenChange }: { route: Route; onAssignmentChange: () => void; open: boolean; onOpenChange: (open: boolean) => void; }) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -94,43 +94,45 @@ function StudentAssignmentDialog({ route, onAssignmentChange }: { route: Route; 
 
 
   return (
-    <DialogContent className="max-w-4xl">
-      <DialogHeader>
-        <DialogTitle>Assign Students to Route: {route.name}</DialogTitle>
-        <DialogDescription>Manage student assignments for this transport route.</DialogDescription>
-      </DialogHeader>
-      <div className="grid md:grid-cols-2 gap-8">
-        <div>
-          <h3 className="font-semibold mb-4">Assign New Student</h3>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onAssignSubmit)} className="space-y-4">
-              <FormField control={form.control} name="studentId" render={({ field }) => (
-                <FormItem><FormLabel>Unassigned Student</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a student" /></SelectTrigger></FormControl><SelectContent>{unassignedStudents.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-              )} />
-              <FormField control={form.control} name="stopId" render={({ field }) => (
-                <FormItem><FormLabel>Assign to Stop</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a stop" /></SelectTrigger></FormControl><SelectContent>{route.stops.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-              )} />
-              <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Assign</Button>
-            </form>
-          </Form>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-4">Currently Assigned Students</h3>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {assignedStudents.map(({student, stop}) => (
-                <div key={student?.uid} className="flex justify-between items-center p-2 border rounded-md">
-                    <div>
-                        <p className="font-medium">{student?.firstName} {student?.lastName}</p>
-                        <p className="text-sm text-muted-foreground">{stop.name}</p>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl">
+        <DialogHeader>
+            <DialogTitle>Assign Students to Route: {route.name}</DialogTitle>
+            <DialogDescription>Manage student assignments for this transport route.</DialogDescription>
+        </DialogHeader>
+        <div className="grid md:grid-cols-2 gap-8">
+            <div>
+            <h3 className="font-semibold mb-4">Assign New Student</h3>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onAssignSubmit)} className="space-y-4">
+                <FormField control={form.control} name="studentId" render={({ field }) => (
+                    <FormItem><FormLabel>Unassigned Student</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a student" /></SelectTrigger></FormControl><SelectContent>{unassignedStudents.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="stopId" render={({ field }) => (
+                    <FormItem><FormLabel>Assign to Stop</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a stop" /></SelectTrigger></FormControl><SelectContent>{route.stops.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                )} />
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Assign</Button>
+                </form>
+            </Form>
+            </div>
+            <div>
+            <h3 className="font-semibold mb-4">Currently Assigned Students</h3>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+                {assignedStudents.map(({student, stop}) => (
+                    <div key={student?.uid} className="flex justify-between items-center p-2 border rounded-md">
+                        <div>
+                            <p className="font-medium">{student?.firstName} {student?.lastName}</p>
+                            <p className="text-sm text-muted-foreground">{stop.name}</p>
+                        </div>
+                        <Button variant="ghost" size="sm" onClick={() => handleUnassign(student!.uid)}>Unassign</Button>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => handleUnassign(student!.uid)}>Unassign</Button>
-                </div>
-            ))}
-             {assignedStudents.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No students assigned to this route.</p>}
-          </div>
+                ))}
+                {assignedStudents.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No students assigned to this route.</p>}
+            </div>
+            </div>
         </div>
-      </div>
-    </DialogContent>
+        </DialogContent>
+    </Dialog>
   );
 }
 
@@ -180,12 +182,7 @@ export default function TransportPage() {
               <CardDescription>Manage bus routes, stops, and student assignments.</CardDescription>
             </div>
             <div className="flex gap-2">
-                 <Dialog open={assignmentDialogOpen} onOpenChange={setAssignmentDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button disabled={!selectedRoute}>Assign Students</Button>
-                    </DialogTrigger>
-                    {selectedRoute && <StudentAssignmentDialog route={selectedRoute} onAssignmentChange={() => setDataVersion(v => v + 1)} />}
-                </Dialog>
+                 <Button onClick={() => setAssignmentDialogOpen(true)} disabled={!selectedRoute}>Assign Students</Button>
                 <Button variant="outline">Manage Buses</Button>
                 <Button variant="outline">Manage Routes</Button>
             </div>
@@ -235,6 +232,15 @@ export default function TransportPage() {
             </Card>
           </div>
         </div>
+      )}
+      
+      {selectedRoute && (
+        <StudentAssignmentDialog 
+            route={selectedRoute} 
+            onAssignmentChange={() => setDataVersion(v => v + 1)}
+            open={assignmentDialogOpen}
+            onOpenChange={setAssignmentDialogOpen}
+        />
       )}
     </div>
   );
