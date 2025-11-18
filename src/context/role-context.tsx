@@ -8,10 +8,8 @@ import {
   type ReactNode, 
   type Dispatch, 
   type SetStateAction, 
-  useEffect,
-  Suspense 
+  useEffect
 } from 'react';
-import { useSearchParams } from 'next/navigation';
 import type { UserRole } from '@/lib/types';
 import { useDoc, useFirebase, useUser, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -24,7 +22,7 @@ type RoleContextType = {
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
-function RoleProviderContent({ children }: { children: ReactNode }) {
+export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole>('Parent'); // Default role
   const { user } = useUser();
   const { firestore } = useFirebase();
@@ -61,14 +59,6 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
        {isLoading ? <div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div> : children}
     </RoleContext.Provider>
   );
-}
-
-export function RoleProvider({ children }: { children: ReactNode }) {
-  return (
-    <Suspense fallback={<div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
-      <RoleProviderContent>{children}</RoleProviderContent>
-    </Suspense>
-  )
 }
 
 export function useRole() {

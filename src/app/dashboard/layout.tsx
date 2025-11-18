@@ -4,6 +4,8 @@ import AppSidebar from '@/components/navigation/sidebar';
 import Header from '@/components/navigation/header';
 import { RoleProvider } from '@/context/role-context';
 import ClientBoundary from './client-boundary';
+import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export default function DashboardLayout({
   children,
@@ -11,18 +13,20 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RoleProvider>
-      <SidebarProvider>
-        <Sidebar>
-          <AppSidebar />
-        </Sidebar>
-        <SidebarInset>
-          <Header />
-          <ClientBoundary>
-            <main className="p-4 lg:p-6">{children}</main>
-          </ClientBoundary>
-        </SidebarInset>
-      </SidebarProvider>
-    </RoleProvider>
+    <Suspense fallback={<div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
+      <RoleProvider>
+        <SidebarProvider>
+          <Sidebar>
+            <AppSidebar />
+          </Sidebar>
+          <SidebarInset>
+            <Header />
+            <ClientBoundary>
+              <main className="p-4 lg:p-6">{children}</main>
+            </ClientBoundary>
+          </SidebarInset>
+        </SidebarProvider>
+      </RoleProvider>
+    </Suspense>
   );
 }
