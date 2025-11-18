@@ -154,7 +154,7 @@ service cloud.firestore {
      * @path /behavioral_records/{recordId}
      */
     match /behavioral_records/{recordId} {
-      allow read, create, update: if isTeacher() || isAdmin();
+      allow list, read, create, update: if isTeacher() || isAdmin();
       allow delete: if isAdmin();
     }
 
