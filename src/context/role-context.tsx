@@ -14,6 +14,7 @@ import type { UserRole } from '@/lib/types';
 import { useDoc, useFirebase, useUser, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 type RoleContextType = {
   role: UserRole;
@@ -24,8 +25,10 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole>('Parent'); // Default role
-  const { user } = useUser();
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const { firestore } = useFirebase();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Fetch staff role
   const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
@@ -41,6 +44,13 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
+    if (isAuthLoading) return; // Wait for auth state to be determined
+
+    if (!user && pathname !== '/') {
+        router.push('/');
+        return;
+    }
+
     if (user) {
       if (staffData) {
         setRole(staffData.role);
@@ -50,13 +60,21 @@ export function RoleProvider({ children }: { children: ReactNode }) {
         setRole('Student');
       }
     }
-  }, [user, staffData, parentData, studentData]);
+  }, [user, isAuthLoading, staffData, parentData, studentData, router, pathname]);
   
-  const isLoading = isStaffLoading || isParentLoading || isStudentLoading;
+  const isRoleDataLoading = isStaffLoading || isParentLoading || isStudentLoading;
+
+  if (isAuthLoading || (user && isRoleDataLoading)) {
+      return (
+        <div className="flex min-h-screen w-full items-center justify-center">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+      )
+  }
 
   return (
     <RoleContext.Provider value={{ role, setRole }}>
-       {isLoading ? <div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div> : children}
+       {children}
     </RoleContext.Provider>
   );
 }
