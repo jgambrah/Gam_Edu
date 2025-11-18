@@ -1,140 +1,74 @@
 
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   SidebarContent,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
   SidebarFooter,
-  SidebarMenuSub,
-  useSidebar,
 } from '@/components/ui/sidebar';
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from '@/components/ui/collapsible';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { navItems } from '@/lib/data';
-import { AppLogo } from '@/components/icons/app-logo';
-import { useRole } from '@/context/role-context';
-import type { NavItem, UserRole } from '@/lib/types';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useUser } from '@/firebase';
-import { cn } from '@/lib/utils';
-import { ChevronRight } from 'lucide-react';
-import React from 'react';
-
-function isNavItemVisible(item: NavItem, role: UserRole) {
-  return item.roles === 'all' || item.roles.includes(role);
-}
-
-function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserRole, isSubItem?: boolean }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { setOpenMobile, isMobile } = useSidebar();
-  
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isMobile) {
-      setOpenMobile(false);
-    }
-    router.push(`${item.path}?role=${role}`);
-  };
-  
-  return (
-    <button
-      onClick={handleClick}
-      className={cn(
-        'flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none transition-colors',
-        'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-        'focus-visible:ring-2 focus-visible:ring-sidebar-ring',
-        isSubItem && 'h-7 text-xs',
-        pathname === item.path && 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
-      )}
-    >
-      <item.icon className="h-4 w-4 shrink-0" />
-      <span className="truncate">{item.title}</span>
-    </button>
-  );
-}
 
 export default function AppSidebar() {
-  const pathname = usePathname();
-  const { role } = useRole();
-  const { user } = useUser();
-  const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
+  const router = useRouter();
 
-  const isSubItemActive = (item: NavItem) => {
-    return item.subItems?.some(sub => pathname === sub.path) ?? false;
+  const testClick = () => {
+    alert('BUTTON CLICKED!');
+    console.log('Button was clicked!');
+    router.push('/dashboard/students');
   };
 
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-          <AppLogo className="h-8 w-8 text-primary" />
-          <span className="text-lg font-semibold text-primary">CampusConnect</span>
+        <div className="p-4 bg-red-500 text-white">
+          <h1>TEST SIDEBAR</h1>
         </div>
       </SidebarHeader>
+      
       <SidebarContent>
-        <SidebarMenu>
-          {navItems.map((item) =>
-            isNavItemVisible(item, role) ? (
-              <SidebarMenuItem key={item.path}>
-                {item.subItems ? (
-                  <Collapsible defaultOpen={isSubItemActive(item)}>
-                    <CollapsibleTrigger asChild>
-                       <button 
-                         className={cn(
-                           'flex w-full items-center justify-between gap-2 rounded-md p-2 text-left text-sm',
-                           'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors'
-                         )}
-                       >
-                         <div className='flex items-center gap-2'>
-                           <item.icon className="h-4 w-4 shrink-0" />
-                           <span className="truncate">{item.title}</span>
-                         </div>
-                         <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-90" />
-                       </button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.subItems.map(subItem => isNavItemVisible(subItem, role) && (
-                          <li key={subItem.path} className="list-none">
-                            <NavLink item={subItem} role={role} isSubItem />
-                          </li>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </Collapsible>
-                ) : (
-                  <NavLink item={item} role={role} />
-                )}
-              </SidebarMenuItem>
-            ) : null
-          )}
-        </SidebarMenu>
+        <div className="p-4 space-y-4">
+          {/* Test 1: Plain button with inline styles */}
+          <button
+            onClick={testClick}
+            style={{
+              backgroundColor: 'blue',
+              color: 'white',
+              padding: '16px',
+              width: '100%',
+              cursor: 'pointer',
+              border: '2px solid yellow',
+              zIndex: 99999,
+              position: 'relative',
+              pointerEvents: 'auto'
+            }}
+          >
+            CLICK ME - Test Button 1
+          </button>
+
+          {/* Test 2: Another test button */}
+          <button
+            onClick={() => {
+              alert('Button 2 clicked!');
+              window.location.href = '/dashboard/students';
+            }}
+            className="w-full p-4 bg-green-500 text-white font-bold border-4 border-red-500"
+          >
+            CLICK ME - Test Button 2
+          </button>
+
+          {/* Test 3: Link test */}
+          <a 
+            href="/dashboard/students"
+            className="block w-full p-4 bg-purple-500 text-white text-center font-bold"
+          >
+            CLICK ME - Test Link
+          </a>
+        </div>
       </SidebarContent>
+      
       <SidebarFooter>
-        <div className="flex items-center gap-3 p-2">
-          <Avatar className="h-10 w-10">
-            <AvatarImage
-              src={userAvatar?.imageUrl}
-              alt="User Avatar"
-              data-ai-hint={userAvatar?.imageHint}
-            />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium truncate">
-              {user?.email ?? 'Demo User'}
-            </span>
-            <span className="text-xs text-muted-foreground">{role}</span>
-          </div>
+        <div className="p-4 bg-green-500 text-white">
+          <p>Footer</p>
         </div>
       </SidebarFooter>
     </>
