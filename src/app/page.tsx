@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,8 +19,62 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
+function DemoLoginButtons() {
+    const router = useRouter();
+    const auth = useAuth();
+    const [isLoading, setIsLoading] = useState<string | null>(null);
+    const { toast } = useToast();
+    const searchParams = useSearchParams();
+
+    const demoUsers = {
+        Director: 'jamesgambrah@sunnyside.com',
+        Teacher: 'teacher@sunnyside.com',
+        Student: 'student@sunnyside-student.com',
+        Parent: 'parent@sunnyside-parent.com',
+    };
+
+    const handleDemoLogin = (role: keyof typeof demoUsers) => {
+        setIsLoading(role);
+        signInWithEmailAndPassword(auth, demoUsers[role], 'password123')
+            .then(() => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('role', role);
+                router.push(`/dashboard?${params.toString()}`);
+            })
+            .catch((error) => {
+                toast({
+                    variant: 'destructive',
+                    title: 'Demo Login Failed',
+                    description: `Could not log in as ${role}. Please ensure the demo user exists.`,
+                });
+                console.error(`Demo login error for ${role}:`, error);
+            })
+            .finally(() => {
+                setIsLoading(null);
+            });
+    };
+
+    return (
+        <div className="grid grid-cols-2 gap-4">
+            {Object.keys(demoUsers).map((role) => (
+                <Button 
+                    key={role}
+                    variant="outline"
+                    onClick={() => handleDemoLogin(role as keyof typeof demoUsers)}
+                    disabled={!!isLoading}
+                >
+                    {isLoading === role ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Log in as {role}
+                </Button>
+            ))}
+        </div>
+    );
+}
+
+
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const [email, setEmail] = useState('');
@@ -30,16 +84,19 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isUserLoading && user) {
-      router.push('/dashboard');
+      const roleFromURL = searchParams.get('role') || 'Parent';
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('role', roleFromURL);
+      router.push(`/dashboard?${params.toString()}`);
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, searchParams]);
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(() => {
         // The useEffect will handle the redirect on user state change.
       })
       .catch((error) => {
@@ -64,7 +121,7 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex items-center justify-center gap-2">
             <AppLogo className="h-8 w-8 text-primary" />
@@ -111,6 +168,19 @@ export default function LoginPage() {
             </Button>
           </CardFooter>
         </form>
+        <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            </div>
+        </div>
+        <CardContent>
+          <Suspense fallback={<Loader2 className="mx-auto h-6 w-6 animate-spin" />}>
+            <DemoLoginButtons />
+          </Suspense>
+        </CardContent>
       </Card>
     </main>
   );

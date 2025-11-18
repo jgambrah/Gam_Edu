@@ -44,7 +44,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        {showRoleSwitcher && <RoleSwitcher />}
+        <RoleSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
