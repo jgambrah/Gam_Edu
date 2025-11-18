@@ -82,20 +82,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-/* Force sidebar to be on top */
-[data-sidebar="sidebar"] {
-  position: relative;
-  z-index: 100 !important;
-}
-
-/* Ensure sidebar content is clickable */
-[data-sidebar="content"] * {
-  pointer-events: auto !important;
-}
-
-/* Make sure selects don't overlay sidebar */
-[role="combobox"] {
-  position: relative;
-  z-index: 10 !important;
-}

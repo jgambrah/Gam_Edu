@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -38,24 +39,15 @@ function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserR
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('🔴 CLICK DETECTED - Navigating to:', item.path);
-    console.log('🔴 Current role:', role);
-    
-    // Close mobile sidebar if open
     if (isMobile) {
       setOpenMobile(false);
     }
-    
-    // Navigate programmatically
     router.push(`${item.path}?role=${role}`);
   };
   
   return (
     <button
       onClick={handleClick}
-      onMouseDown={() => console.log('🟡 MOUSE DOWN on:', item.title)}
-      onMouseUp={() => console.log('🟢 MOUSE UP on:', item.title)}
-      style={{ pointerEvents: 'auto', cursor: 'pointer', zIndex: 50 }}
       className={cn(
         'flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none transition-colors',
         'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
@@ -80,9 +72,6 @@ export default function AppSidebar() {
     return item.subItems?.some(sub => pathname === sub.path) ?? false;
   };
 
-  console.log('🔵 Sidebar rendered, current role:', role);
-  console.log('🔵 Current pathname:', pathname);
-
   return (
     <>
       <SidebarHeader>
@@ -91,11 +80,11 @@ export default function AppSidebar() {
           <span className="text-lg font-semibold text-primary">CampusConnect</span>
         </div>
       </SidebarHeader>
-      <SidebarContent style={{ pointerEvents: 'auto' }}>
+      <SidebarContent>
         <SidebarMenu>
           {navItems.map((item) =>
             isNavItemVisible(item, role) ? (
-              <SidebarMenuItem key={item.path} style={{ pointerEvents: 'auto' }}>
+              <SidebarMenuItem key={item.path}>
                 {item.subItems ? (
                   <Collapsible defaultOpen={isSubItemActive(item)}>
                     <CollapsibleTrigger asChild>
@@ -104,7 +93,6 @@ export default function AppSidebar() {
                            'flex w-full items-center justify-between gap-2 rounded-md p-2 text-left text-sm',
                            'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors'
                          )}
-                         style={{ pointerEvents: 'auto', cursor: 'pointer' }}
                        >
                          <div className='flex items-center gap-2'>
                            <item.icon className="h-4 w-4 shrink-0" />
