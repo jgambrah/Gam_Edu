@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useAuth } from '@/firebase';
+import { useCollection, useFirestore, useAuth, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -166,7 +166,7 @@ function ApplicationReviewDialog({ application }: { application: AdmissionApplic
         <div className="space-y-2">
             <h4 className="text-lg font-semibold">Student Information</h4>
             <p><strong>Grade Applied For:</strong> {application.student.desiredGrade}</p>
-            <p><strong>Date of Birth:</strong> {format(application.student.dateOfBirth, 'PPP')}</p>
+            <p><strong>Date of Birth:</strong> {format(new Date(application.student.dateOfBirth), 'PPP')}</p>
             <p><strong>Gender:</strong> {application.student.gender}</p>
             <p><strong>Address:</strong> {application.student.address}</p>
             {application.student.previousSchool && <p><strong>Previous School:</strong> {application.student.previousSchool}</p>}
@@ -249,7 +249,7 @@ function ApplicationReviewDialog({ application }: { application: AdmissionApplic
 
 function ApplicationsTable({ status }: { status: AdmissionApplication['status'] }) {
   const firestore = useFirestore();
-  const applicationsQuery = useMemo(
+  const applicationsQuery = useMemoFirebase(
     () => query(collection(firestore, 'admissionApplications'), where('status', '==', status)),
     [firestore, status]
   );
