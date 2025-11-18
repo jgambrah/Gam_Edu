@@ -23,8 +23,8 @@ export default function LoginPage() {
   const router = useRouter();
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
-  const [email, setEmail] = useState('demo@campusconnect.edu');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -41,7 +41,6 @@ export default function LoginPage() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // The useEffect will handle the redirect on user state change.
-        // No need to do anything here, but you could add a success toast if you wanted.
       })
       .catch((error) => {
         toast({
@@ -101,7 +100,7 @@ export default function LoginPage() {
           <CardFooter className="flex flex-col gap-4">
             <Button
               type="submit"
-              className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+              className="w-full"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -110,9 +109,6 @@ export default function LoginPage() {
                 'Sign In'
               )}
             </Button>
-            <p className="text-xs text-muted-foreground text-center">
-              Use demo@campusconnect.edu and password to sign in.
-            </p>
           </CardFooter>
         </form>
       </Card>

@@ -13,7 +13,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings } from 'lucide-react';
-import RoleSwitcher from './role-switcher';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { navItems } from '@/lib/data';
 import { useAuth } from '@/firebase';
@@ -39,7 +38,6 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        <RoleSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">

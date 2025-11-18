@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   SidebarContent,
   SidebarHeader,
@@ -29,24 +30,21 @@ function isNavItemVisible(item: NavItem, role: UserRole) {
   return item.roles === 'all' || item.roles.includes(role);
 }
 
-function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserRole, isSubItem?: boolean }) {
+function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boolean }) {
   const pathname = usePathname();
   const { setOpenMobile, isMobile } = useSidebar();
   
-  const handleClick = () => {
-    // Close mobile sidebar if open
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (isMobile) {
       setOpenMobile(false);
     }
-    
-    // Navigate using window.location instead of router.push
-    window.location.href = `${item.path}?role=${role}`;
   };
   
   const isActive = pathname === item.path;
   
   return (
-    <button
+    <Link
+      href={item.path}
       onClick={handleClick}
       className={cn(
         'flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none transition-colors',
@@ -58,7 +56,7 @@ function NavLink({ item, role, isSubItem = false }: { item: NavItem, role: UserR
     >
       <item.icon className="h-4 w-4 shrink-0" />
       <span className="truncate">{item.title}</span>
-    </button>
+    </Link>
   );
 }
 
@@ -106,14 +104,14 @@ export default function AppSidebar() {
                       <SidebarMenuSub>
                         {item.subItems.map(subItem => isNavItemVisible(subItem, role) && (
                           <li key={subItem.path} className="list-none">
-                            <NavLink item={subItem} role={role} isSubItem />
+                            <NavLink item={subItem} isSubItem />
                           </li>
                         ))}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </Collapsible>
                 ) : (
-                  <NavLink item={item} role={role} />
+                  <NavLink item={item} />
                 )}
               </SidebarMenuItem>
             ) : null

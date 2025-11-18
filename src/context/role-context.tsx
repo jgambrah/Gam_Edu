@@ -25,34 +25,47 @@ type RoleContextType = {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 function RoleProviderContent({ children }: { children: ReactNode }) {
-  const params = useSearchParams();
-  const initialRole = (params.get('role') as UserRole) || 'Parent';
-  const [role, setRole] = useState<UserRole>(initialRole);
+  const [role, setRole] = useState<UserRole>('Parent'); // Default role
   const { user } = useUser();
   const { firestore } = useFirebase();
 
-  const staffDocRef = user ? doc(firestore, 'staff', user.uid) : null;
-  const { data: staffData } = useDoc<{ role: UserRole }>(staffDocRef);
+  // Fetch staff role
+  const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
+  const { data: staffData, isLoading: isStaffLoading } = useDoc<{ role: UserRole }>(staffDocRef);
+
+  // Fetch parent role
+  const parentDocRef = useMemoFirebase(() => user ? doc(firestore, 'parents', user.uid) : null, [firestore, user]);
+  const { data: parentData, isLoading: isParentLoading } = useDoc(parentDocRef);
+
+  // Fetch student role
+  const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
+  const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
+
 
   useEffect(() => {
-    const roleFromUrl = params.get('role') as UserRole;
-    if (roleFromUrl) {
-      setRole(roleFromUrl);
-    } else if (staffData?.role) {
-      setRole(staffData.role);
+    if (user) {
+      if (staffData) {
+        setRole(staffData.role);
+      } else if (parentData) {
+        setRole('Parent');
+      } else if (studentData) {
+        setRole('Student');
+      }
     }
-  }, [params, staffData]);
+  }, [user, staffData, parentData, studentData]);
+  
+  const isLoading = isStaffLoading || isParentLoading || isStudentLoading;
 
   return (
     <RoleContext.Provider value={{ role, setRole }}>
-      {children}
+       {isLoading ? <div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div> : children}
     </RoleContext.Provider>
   );
 }
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={<div className="flex min-h-[80vh] w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
+    <Suspense fallback={<div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
       <RoleProviderContent>{children}</RoleProviderContent>
     </Suspense>
   )
