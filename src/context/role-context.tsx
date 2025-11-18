@@ -25,56 +25,60 @@ type RoleContextType = {
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
+function RoleProviderContent({ children }: { children: ReactNode }) {
+  const searchParams = useSearchParams();
+  const [role, setRole] = useState<UserRole>((searchParams.get('role') as UserRole) || 'Parent');
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+  const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
+  const { data: staffData, isLoading: isStaffLoading } = useDoc<{ role: UserRole }>(staffDocRef);
+
+  const parentDocRef = useMemoFirebase(() => user ? doc(firestore, 'parents', user.uid) : null, [firestore, user]);
+  const { data: parentData, isLoading: isParentLoading } = useDoc(parentDocRef);
+  
+  const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
+  const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
+
+  const isRoleLoading = isUserLoading || isStaffLoading || isParentLoading || isStudentLoading;
+
+  useEffect(() => {
+    const urlRole = searchParams.get('role') as UserRole;
+    if (urlRole) {
+      setRole(urlRole);
+    } else {
+      if (isRoleLoading || !user) return;
+      
+      if (user.email === 'jamesgambrah@sunnyside.com') {
+          setRole('Director');
+          return;
+      }
+      if (staffData) {
+          setRole(staffData.role);
+      } else if (studentData) {
+          setRole('Student');
+      } else if (parentData) {
+          setRole('Parent');
+      } else {
+          setRole('Parent'); // Default
+      }
+    }
+  }, [searchParams, user, staffData, parentData, studentData, isRoleLoading]);
+
+  return (
+    <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
+      {children}
+    </RoleContext.Provider>
+  );
+}
+
+
 export function RoleProvider({ children }: { children: ReactNode }) {
-    const [role, setRole] = useState<UserRole>('Parent');
-    const { user, isUserLoading } = useUser();
-    const firestore = useFirestore();
-
-    // Fetch staff role
-    const staffDocRef = useMemoFirebase(() => user ? doc(firestore, 'staff', user.uid) : null, [firestore, user]);
-    const { data: staffData, isLoading: isStaffLoading } = useDoc<{ role: UserRole }>(staffDocRef);
-
-    // Fetch parent role
-    const parentDocRef = useMemoFirebase(() => user ? doc(firestore, 'parents', user.uid) : null, [firestore, user]);
-    const { data: parentData, isLoading: isParentLoading } = useDoc(parentDocRef);
-    
-    // Fetch student role
-    const studentDocRef = useMemoFirebase(() => user ? doc(firestore, 'students', user.uid) : null, [firestore, user]);
-    const { data: studentData, isLoading: isStudentLoading } = useDoc(studentDocRef);
-
-
-    const isLoading = isUserLoading || isStaffLoading || isParentLoading || isStudentLoading;
-
-    useEffect(() => {
-        if (isLoading || !user) return;
-        
-        // Special override for the admin user
-        if (user.email === 'jamesgambrah@sunnyside.com') {
-            setRole('Director');
-            return;
-        }
-
-        if (staffData) {
-            setRole(staffData.role);
-        } else if (studentData) {
-            setRole('Student');
-        } else if (parentData) {
-            setRole('Parent');
-        } else {
-            // Default role if no specific profile is found
-            setRole('Parent');
-        }
-
-    }, [user, staffData, parentData, studentData, isLoading]);
-
-
     return (
-        <RoleContext.Provider value={{ role, setRole, isRoleLoading: isLoading }}>
-            <RoleGuard>
-                {children}
-            </RoleGuard>
-        </RoleContext.Provider>
-    );
+        <Suspense fallback={<div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
+            <RoleProviderContent>{children}</RoleProviderContent>
+        </Suspense>
+    )
 }
 
 export function useRole() {

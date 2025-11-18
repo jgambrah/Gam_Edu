@@ -18,6 +18,7 @@ import { navItems } from '@/lib/data';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRole } from '@/context/role-context';
+import RoleSwitcher from './role-switcher';
 
 export default function Header() {
   const pathname = usePathname();
@@ -41,6 +42,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
+        <RoleSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
