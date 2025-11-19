@@ -4,12 +4,13 @@
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, App } from 'firebase-admin/app';
 
-// This function ensures that we initialize the app only once.
+// This function ensures that we initialize the app only once per server instance.
 function getAdminApp(): App {
+  // If the app is already initialized, return the existing instance.
   if (getApps().length > 0) {
     return getApps()[0]!;
   }
-  // Call initializeApp() with no arguments. 
+  // Otherwise, initialize the app with no arguments.
   // The hosting environment automatically provides the necessary credentials.
   return initializeApp();
 }
