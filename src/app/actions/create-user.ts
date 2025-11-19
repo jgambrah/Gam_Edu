@@ -6,9 +6,11 @@ import { initializeApp, getApps, App } from 'firebase-admin/app';
 
 // This function ensures that we initialize the app only once.
 function getAdminApp(): App {
-  if (getApps().length) {
+  if (getApps().length > 0) {
     return getApps()[0]!;
   }
+  // Call initializeApp() with no arguments. 
+  // The hosting environment automatically provides the necessary credentials.
   return initializeApp();
 }
 
