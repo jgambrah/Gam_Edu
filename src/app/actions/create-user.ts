@@ -17,26 +17,33 @@ function getAdminApp(): App {
   // 1. Check for the service account key in environment variables
   const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
-  if (serviceAccountKey) {
-    try {
-      // 2. Parse the JSON string into a ServiceAccount object, handling escaped newlines
-      const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey.replace(/\\n/g, '\n'));
-
-      // 3. Initialize the app using the explicit credentials
-      return initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-      });
-
-    } catch (e) {
-      console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Is the variable correctly formatted and escaped?', e);
-      // Fallback or throw if explicit initialization fails
-      throw new Error("Invalid Firebase Service Account Configuration.");
-    }
+  if (!serviceAccountKey) {
+     // This will be the case for environments that DO provide credentials (like GCF/Cloud Run)
+     // This is the original behavior, kept as a fallback.
+     try {
+       return initializeApp();
+     } catch(e) {
+        console.error('ERROR: Automatic Firebase Admin SDK initialization failed. Is the app running in a Google Cloud environment or is the service account key missing?', e);
+        throw new Error("Firebase Admin SDK initialization failed.");
+     }
   }
 
-  // 4. Fallback for environments that *do* provide credentials (like GCF/Cloud Run)
-  // This is the original behavior, kept as a fallback.
-  return initializeApp(); 
+  try {
+    // 2. Parse the JSON string into a ServiceAccount object
+    // It's crucial that the env variable is a valid JSON string.
+    // Newlines within the private key should be `\n` in the .env file.
+    const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey);
+
+    // 3. Initialize the app using the explicit credentials
+    return initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+
+  } catch (e: any) {
+    console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Make sure the environment variable is a valid, single-line JSON string.', e);
+    // Throw a more specific error if parsing fails
+    throw new Error(`Invalid Firebase Service Account Configuration: ${e.message}`);
+  }
 
   // --- END FIX ---
 }
