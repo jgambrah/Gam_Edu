@@ -2,24 +2,16 @@
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, App, ServiceAccount } from 'firebase-admin/app';
-import * as admin from 'firebase-admin';
+import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 
-// This function ensures that we initialize the app only once per server instance.
 function getAdminApp(): App {
-  // If the app is already initialized, return the existing instance.
   if (getApps().length > 0) {
     return getApps()[0]!;
   }
 
-  // --- START FIX ---
-
-  // 1. Check for the service account key in environment variables
   const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
   if (!serviceAccountKey) {
-     // This will be the case for environments that DO provide credentials (like GCF/Cloud Run)
-     // This is the original behavior, kept as a fallback.
      try {
        return initializeApp();
      } catch(e) {
@@ -29,23 +21,18 @@ function getAdminApp(): App {
   }
 
   try {
-    // 2. Parse the JSON string into a ServiceAccount object
-    // It's crucial that the env variable is a valid JSON string.
-    // Newlines within the private key should be `\n` in the .env file.
-    const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey);
+    // Correctly handle the escaped newlines in the private key
+    const parsedServiceAccountKey = serviceAccountKey.replace(/\\n/g, '\n');
+    const serviceAccount: ServiceAccount = JSON.parse(parsedServiceAccountKey);
 
-    // 3. Initialize the app using the explicit credentials
     return initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+      credential: cert(serviceAccount),
     });
 
   } catch (e: any) {
     console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Make sure the environment variable is a valid, single-line JSON string.', e);
-    // Throw a more specific error if parsing fails
     throw new Error(`Invalid Firebase Service Account Configuration: ${e.message}`);
   }
-
-  // --- END FIX ---
 }
 
 export async function createNewUser(
