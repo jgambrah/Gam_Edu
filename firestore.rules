@@ -49,7 +49,7 @@ service cloud.firestore {
     match /staff/{staffId} {
         allow create: if isAdmin();
         allow read: if isSignedIn();
-        allow update: if isAdmin() && resource != null;
+        allow update: if isAdmin() || isOwner(staffId);
         allow delete: if isAdmin() && resource != null;
     }
 
@@ -396,3 +396,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
