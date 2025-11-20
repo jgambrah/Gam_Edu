@@ -4,37 +4,30 @@
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 
+// This function now correctly initializes the app with service account credentials from environment variables.
 function getAdminApp(): App {
+  // If the app is already initialized, return the existing instance.
   if (getApps().length > 0) {
     return getApps()[0]!;
   }
 
-  // Use individual environment variables to construct the credential
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  // Replace the literal `\n` in the private key with actual newline characters.
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  // Construct the service account object from individual environment variables.
+  const serviceAccount: ServiceAccount = {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    // The private key needs to have its escaped newlines replaced with actual newlines.
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  };
 
-  if (projectId && clientEmail && privateKey) {
-    const serviceAccount: ServiceAccount = {
-      projectId,
-      clientEmail,
-      privateKey,
-    };
-    
-    return initializeApp({
-      credential: cert(serviceAccount),
-    });
+  // Validate that all necessary service account details are present.
+  if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
+      throw new Error("Invalid Firebase Service Account Configuration. Please check your .env file for FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.");
   }
-
-  // Fallback for environments with default credentials (like Google Cloud Run/Functions)
-   try {
-     // This will succeed in a Google Cloud environment with default credentials
-     return initializeApp();
-   } catch(e) {
-      console.error('ERROR: Automatic Firebase Admin SDK initialization failed. Is the app running in a Google Cloud environment or are the FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY environment variables missing?', e);
-      throw new Error("Firebase Admin SDK initialization failed: No credentials found.");
-   }
+  
+  // Initialize the Firebase Admin SDK with the constructed credential.
+  return initializeApp({
+    credential: cert(serviceAccount),
+  });
 }
 
 export async function createNewUser(
@@ -50,16 +43,16 @@ export async function createNewUser(
     return { uid: userRecord.uid };
   } catch (error: any) {
     console.error('Error creating new user:', error);
-    // Return a serializable error message
-    let errorMessage = 'An unknown error occurred.';
-    if (typeof error.message === 'string') {
-        if (error.message.includes('EMAIL_EXISTS')) {
-            errorMessage = 'This email is already in use by another account.';
-        } else if (error.message.includes('invalid-credential')) {
-            errorMessage = 'Invalid Firebase Admin credentials. Please check your .env file configuration.';
-        } else {
-            errorMessage = error.message;
-        }
+    // Provide a more specific and helpful error message to the client.
+    let errorMessage = 'An unknown error occurred during user creation.';
+    if (error.code === 'auth/email-already-exists') {
+        errorMessage = 'This email is already in use by another account.';
+    } else if (error.message.includes('invalid_grant')) {
+        errorMessage = 'Invalid Firebase credentials. Please ensure your service account key in the .env file is correct and has not been revoked.';
+    } else if (error.message.includes("Invalid Firebase Service Account Configuration")) {
+        errorMessage = error.message;
+    } else {
+        errorMessage = error.message;
     }
     return { error: errorMessage };
   }
