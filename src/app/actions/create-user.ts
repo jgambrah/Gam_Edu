@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
@@ -18,8 +19,8 @@ function getAdminApp(): App {
 
   if (serviceAccountKey) {
     try {
-      // 2. Parse the JSON string into a ServiceAccount object
-      const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey);
+      // 2. Parse the JSON string into a ServiceAccount object, handling escaped newlines
+      const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey.replace(/\\n/g, '\n'));
 
       // 3. Initialize the app using the explicit credentials
       return initializeApp({
