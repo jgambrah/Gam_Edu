@@ -47,8 +47,7 @@ service cloud.firestore {
      * @path /staff/{staffId}
      */
     match /staff/{staffId} {
-      // Allow creation if the user is an admin OR if the staff collection is empty (to bootstrap the first admin)
-      allow create: if isAdmin() || !exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+      allow create: if isAdmin();
       allow get: if isAdmin() || isOwner(staffId);
       allow list: if isSignedIn();
       allow update: if isAdmin() && resource != null;
@@ -302,16 +301,24 @@ service cloud.firestore {
     }
 
     /**
-     * @description Checks if the user has admin privileges by verifying the existence of a document in /roles_admin/{uid}.
+     * @description Checks if the user has admin privileges.
+     * This now checks for a specific email or falls back to checking the role in the user's staff document.
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
-      // Before checking role, ensure the staff document exists to prevent errors on first-time setup
-      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) {
+      if (!isSignedIn()) {
         return false;
       }
-      let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
-      return userRole == 'Administrator' || userRole == 'Director';
+      // Super admin check for initial setup
+      if (request.auth.token.email == 'jamesgambrah@sunnyside.com') {
+        return true;
+      }
+      // Standard role check for other admins
+      if (exists(/databases/$(database)/documents/staff/$(request.auth.uid))) {
+        let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+        return userRole == 'Administrator' || userRole == 'Director';
+      }
+      return false;
     }
 
     function isTeacher() {
@@ -391,3 +398,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
