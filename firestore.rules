@@ -47,7 +47,8 @@ service cloud.firestore {
      * @path /staff/{staffId}
      */
     match /staff/{staffId} {
-      allow create: if isAdmin();
+      // Allow creation if the user is an admin OR if the staff collection is empty (to bootstrap the first admin)
+      allow create: if isAdmin() || get(/databases/$(database)/documents/staff).size == 0;
       allow get: if isAdmin() || isOwner(staffId);
       allow list: if isSignedIn();
       allow update: if isAdmin() && resource != null;
