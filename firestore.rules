@@ -306,18 +306,17 @@ service cloud.firestore {
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
-      if (!isSignedIn()) {
-        return false;
-      }
-      // Super admin check for initial setup
-      if (request.auth.token.email == 'jamesgambrah@sunnyside.com') {
+      // Super admin check for initial setup or a specific high-privilege account.
+      if (request.auth != null && request.auth.token.email == 'jamesgambrah@sunnyside.com') {
         return true;
       }
-      // Standard role check for other admins
-      if (exists(/databases/$(database)/documents/staff/$(request.auth.uid))) {
+      
+      // Standard role-based check for other administrators or directors.
+      if (isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid))) {
         let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
         return userRole == 'Administrator' || userRole == 'Director';
       }
+      
       return false;
     }
 
@@ -398,5 +397,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
