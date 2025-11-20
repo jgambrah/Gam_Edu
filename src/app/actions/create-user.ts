@@ -13,28 +13,24 @@ function getAdminApp(): App {
 
   if (!serviceAccountKey) {
      try {
+       // This will succeed in a Google Cloud environment with default credentials
        return initializeApp();
      } catch(e) {
-        console.error('ERROR: Automatic Firebase Admin SDK initialization failed. Is the app running in a Google Cloud environment or is the service account key missing?', e);
-        throw new Error("Firebase Admin SDK initialization failed.");
+        console.error('ERROR: Automatic Firebase Admin SDK initialization failed. Is the app running in a Google Cloud environment or is the FIREBASE_SERVICE_ACCOUNT_KEY environment variable missing?', e);
+        throw new Error("Firebase Admin SDK initialization failed: No credentials found.");
      }
   }
 
   try {
-    // The service account key might be wrapped in quotes if copied directly from some terminals.
-    // This removes the outer quotes before parsing.
-    const keyString = serviceAccountKey.startsWith("'") && serviceAccountKey.endsWith("'") 
-      ? serviceAccountKey.substring(1, serviceAccountKey.length - 1)
-      : serviceAccountKey;
-
-    const serviceAccount: ServiceAccount = JSON.parse(keyString);
+    // Directly parse the environment variable as JSON
+    const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey);
 
     return initializeApp({
       credential: cert(serviceAccount),
     });
 
   } catch (e: any) {
-    console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Make sure the environment variable is a valid, single-line JSON string.', e);
+    console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Make sure the environment variable is a valid, single-line JSON string with no outer quotes.', e);
     throw new Error(`Invalid Firebase Service Account Configuration: ${e.message}`);
   }
 }
