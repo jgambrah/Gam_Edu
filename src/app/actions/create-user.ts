@@ -11,23 +11,23 @@ function getAdminApp(): App {
     return getApps()[0]!;
   }
 
-  // Construct the service account object from individual environment variables.
-  const serviceAccount: ServiceAccount = {
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    // The private key needs to have its escaped newlines replaced with actual newlines.
-    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  };
-
-  // Validate that all necessary service account details are present.
-  if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
-      throw new Error("Invalid Firebase Service Account Configuration. Please check your .env file for FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.");
+  const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+  
+  if (!serviceAccountBase64) {
+    throw new Error("Invalid Firebase Service Account Configuration. The FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable is not set.");
   }
   
-  // Initialize the Firebase Admin SDK with the constructed credential.
-  return initializeApp({
-    credential: cert(serviceAccount),
-  });
+  try {
+    const decodedServiceAccount = Buffer.from(serviceAccountBase64, 'base64').toString('utf8');
+    const serviceAccount: ServiceAccount = JSON.parse(decodedServiceAccount);
+
+    // Initialize the Firebase Admin SDK with the constructed credential.
+    return initializeApp({
+      credential: cert(serviceAccount),
+    });
+  } catch (error: any) {
+    throw new Error(`Invalid Firebase Service Account Configuration: Could not parse the Base64-encoded service account key. Please ensure it is a valid Base64 string. Error: ${error.message}`);
+  }
 }
 
 export async function createNewUser(
