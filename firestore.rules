@@ -17,7 +17,7 @@
  *
  * Key Security Decisions:
  * - Only admins can create, update, or delete roles, students, parents, and classes.
- * - Staff can only read their own profiles; admins can manage all staff profiles.
+ * - Staff can only read their own profile; admins can manage all staff profiles.
  * - Listing of roles is allowed only for admins.
  * - Listing of staff is allowed for any signed-in user for now.
  * - Listing of students, parents, and classes is allowed only for admins.
@@ -48,7 +48,7 @@ service cloud.firestore {
      */
     match /staff/{staffId} {
       // Allow creation if the user is an admin OR if the staff collection is empty (to bootstrap the first admin)
-      allow create: if isAdmin() || get(/databases/$(database)/documents/staff).size == 0;
+      allow create: if isAdmin() || !exists(/databases/$(database)/documents/staff/$(request.auth.uid));
       allow get: if isAdmin() || isOwner(staffId);
       allow list: if isSignedIn();
       allow update: if isAdmin() && resource != null;
@@ -306,20 +306,27 @@ service cloud.firestore {
      * @return {boolean} True if the user is an admin, false otherwise.
      */
     function isAdmin() {
+      // Before checking role, ensure the staff document exists to prevent errors on first-time setup
+      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) {
+        return false;
+      }
       let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
       return userRole == 'Administrator' || userRole == 'Director';
     }
 
     function isTeacher() {
+      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
       return get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role == 'Teacher';
     }
     
     function isLibrarianOrAdmin() {
+      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
       let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
       return userRole == 'Librarian' || userRole == 'Administrator' || userRole == 'Director';
     }
 
     function isFinanceStaff() {
+        if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
         let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
         return userRole == 'Accountant' || userRole == 'Administrator' || userRole == 'Director';
     }
@@ -357,6 +364,7 @@ service cloud.firestore {
         return true;
       }
       // Check for staff role
+      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
       let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
       return userRole in audience;
     }
