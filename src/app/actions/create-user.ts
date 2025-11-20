@@ -18,7 +18,7 @@ function getAdminApp(): App {
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   if (!projectId || !clientEmail || !privateKey) {
-    throw new Error("Firebase admin credentials are not set in the environment. Please check your .env file for FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.");
+    throw new Error("Firebase admin credentials are not set correctly in the environment. Please check your .env file for FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.");
   }
 
   const serviceAccount: ServiceAccount = {
