@@ -9,30 +9,32 @@ function getAdminApp(): App {
     return getApps()[0]!;
   }
 
-  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  // Use individual environment variables to construct the credential
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  // Replace the literal `\n` in the private key with actual newline characters.
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-  if (!serviceAccountKey) {
-     try {
-       // This will succeed in a Google Cloud environment with default credentials
-       return initializeApp();
-     } catch(e) {
-        console.error('ERROR: Automatic Firebase Admin SDK initialization failed. Is the app running in a Google Cloud environment or is the FIREBASE_SERVICE_ACCOUNT_KEY environment variable missing?', e);
-        throw new Error("Firebase Admin SDK initialization failed: No credentials found.");
-     }
-  }
-
-  try {
-    // The environment variable should be a raw JSON string without outer quotes.
-    const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey);
-
+  if (projectId && clientEmail && privateKey) {
+    const serviceAccount: ServiceAccount = {
+      projectId,
+      clientEmail,
+      privateKey,
+    };
+    
     return initializeApp({
       credential: cert(serviceAccount),
     });
-
-  } catch (e: any) {
-    console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Make sure the environment variable is a valid, unquoted, single-line JSON string.', e);
-    throw new Error(`Invalid Firebase Service Account Configuration: ${e.message}`);
   }
+
+  // Fallback for environments with default credentials (like Google Cloud Run/Functions)
+   try {
+     // This will succeed in a Google Cloud environment with default credentials
+     return initializeApp();
+   } catch(e) {
+      console.error('ERROR: Automatic Firebase Admin SDK initialization failed. Is the app running in a Google Cloud environment or are the FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY environment variables missing?', e);
+      throw new Error("Firebase Admin SDK initialization failed: No credentials found.");
+   }
 }
 
 export async function createNewUser(
@@ -49,6 +51,16 @@ export async function createNewUser(
   } catch (error: any) {
     console.error('Error creating new user:', error);
     // Return a serializable error message
-    return { error: error.message || 'An unknown error occurred.' };
+    let errorMessage = 'An unknown error occurred.';
+    if (typeof error.message === 'string') {
+        if (error.message.includes('EMAIL_EXISTS')) {
+            errorMessage = 'This email is already in use by another account.';
+        } else if (error.message.includes('invalid-credential')) {
+            errorMessage = 'Invalid Firebase Admin credentials. Please check your .env file configuration.';
+        } else {
+            errorMessage = error.message;
+        }
+    }
+    return { error: errorMessage };
   }
 }
