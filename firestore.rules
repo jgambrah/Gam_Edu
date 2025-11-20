@@ -47,9 +47,8 @@ service cloud.firestore {
      * @path /staff/{staffId}
      */
     match /staff/{staffId} {
-        allow read: if isSignedIn();
-        allow create: if isAdmin();
-        allow update, delete: if isAdmin() || isOwner(staffId);
+        // Temporarily allow authenticated users to write
+        allow read, write: if request.auth != null;
     }
 
     /**
