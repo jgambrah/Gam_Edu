@@ -14,7 +14,7 @@ function getAdminApp(): App {
   const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
   
   if (!serviceAccountBase64) {
-    throw new Error("Invalid Firebase Service Account Configuration. The FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable is not set.");
+    throw new Error("Invalid Firebase Service Account Configuration. The FIREBASE_SERVICE_ACCOUNT_BASE64 environment variable is not set. Please ensure it is correctly defined in your .env file.");
   }
   
   try {
@@ -26,7 +26,7 @@ function getAdminApp(): App {
       credential: cert(serviceAccount),
     });
   } catch (error: any) {
-    throw new Error(`Invalid Firebase Service Account Configuration: Could not parse the Base64-encoded service account key. Please ensure it is a valid Base64 string. Error: ${error.message}`);
+    throw new Error(`Invalid Firebase Service Account Configuration: Could not parse the Base64-encoded service account key. Please ensure it is a valid Base64 string and was encoded correctly. Error: ${error.message}`);
   }
 }
 
