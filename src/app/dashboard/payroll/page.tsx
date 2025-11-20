@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, writeBatch, getDocs, doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 
 export default function PayrollPage() {
   const { role } = useRole();
+  const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   
@@ -31,8 +32,8 @@ export default function PayrollPage() {
   const [selectedPayslip, setSelectedPayslip] = useState<PayrollRecord | null>(null);
 
   // Data fetching
-  const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => collection(firestore, 'staff'), [firestore]));
-  const { data: payrollSettingsList } = useCollection<PayrollSettings>(useMemoFirebase(() => collection(firestore, 'payrollSettings'), [firestore]));
+  const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
+  const { data: payrollSettingsList } = useCollection<PayrollSettings>(useMemoFirebase(() => user ? collection(firestore, 'payrollSettings') : null, [firestore, user]));
   const payrollSettings = payrollSettingsList?.[0]; // Assuming singleton
 
   const hasRequiredData = staffList && payrollSettings;

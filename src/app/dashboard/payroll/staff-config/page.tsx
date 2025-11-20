@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc, query, getDocs } from 'firebase/firestore';
 import { Loader2, PlusCircle, Trash2, Users } from 'lucide-react';
 import { Staff, StaffPayrollConfig, staffPayrollConfigSchema } from '@/lib/types';
@@ -149,10 +149,11 @@ function StaffPayrollForm({ staff }: { staff: Staff }) {
 
 export default function StaffPayrollConfigPage() {
     const { role } = useRole();
+    const { user } = useAuth();
     const firestore = useFirestore();
     const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
-    const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => collection(firestore, 'staff'), [firestore]));
+    const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
     
     if (!['Administrator', 'Accountant'].includes(role)) {
         return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;

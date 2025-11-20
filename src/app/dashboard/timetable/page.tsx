@@ -29,12 +29,12 @@ export default function TimetablePage() {
   const [customConstraint, setCustomConstraint] = useState('');
 
   // Data fetching
-  const { data: classes } = useCollection<ClassData>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
-  const { data: teachers } = useCollection<Teacher>(useMemoFirebase(() => collection(firestore, 'staff'), [firestore]));
-  const { data: subjects } = useCollection<Subject>(useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]));
-  const { data: rooms } = useCollection<Room>(useMemoFirebase(() => collection(firestore, 'rooms'), [firestore]));
-  const { data: timeSlots } = useCollection<TimeSlot>(useMemoFirebase(() => collection(firestore, 'timeSlots'), [firestore]));
-  const { data: timetable, isLoading: isTimetableLoading } = useCollection<TimetableEntry>(useMemoFirebase(() => collection(firestore, 'timetables'), [firestore]));
+  const { data: classes } = useCollection<ClassData>(useMemoFirebase(() => user ? collection(firestore, 'classes') : null, [firestore, user]));
+  const { data: teachers } = useCollection<Teacher>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
+  const { data: subjects } = useCollection<Subject>(useMemoFirebase(() => user ? collection(firestore, 'subjects') : null, [firestore, user]));
+  const { data: rooms } = useCollection<Room>(useMemoFirebase(() => user ? collection(firestore, 'rooms') : null, [firestore, user]));
+  const { data: timeSlots } = useCollection<TimeSlot>(useMemoFirebase(() => user ? collection(firestore, 'timeSlots') : null, [firestore, user]));
+  const { data: timetable, isLoading: isTimetableLoading } = useCollection<TimetableEntry>(useMemoFirebase(() => user ? collection(firestore, 'timetables') : null, [firestore, user]));
   const { data: studentData } = useCollection<Student>(useMemoFirebase(() => user ? collection(firestore, 'students') : null, [firestore, user]));
 
   useEffect(() => {

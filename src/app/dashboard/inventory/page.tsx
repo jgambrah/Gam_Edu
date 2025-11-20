@@ -20,6 +20,7 @@ import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function InventoryPage() {
     const { role } = useRole();
+    const { user } = useAuth();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [refetchKey, setRefetchKey] = useState(0);
@@ -31,10 +32,10 @@ export default function InventoryPage() {
 
     const forceRefetch = useCallback(() => setRefetchKey(prev => prev + 1), []);
 
-    const inventoryQuery = useMemoFirebase(() => query(collection(firestore, 'inventory'), orderBy('name')), [firestore, refetchKey]);
+    const inventoryQuery = useMemoFirebase(() => user ? query(collection(firestore, 'inventory'), orderBy('name')) : null, [firestore, user, refetchKey]);
     const { data: inventory, isLoading } = useCollection<InventoryItem>(inventoryQuery);
 
-    const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => collection(firestore, 'staff'), [firestore]));
+    const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
 
     const canAccess = role === 'Administrator' || role === 'Director';
 

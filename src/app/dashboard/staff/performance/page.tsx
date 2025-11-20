@@ -51,9 +51,10 @@ function PerformanceReviewForm({ setOpen }: { setOpen: (open: boolean) => void }
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const staffQuery = useMemoFirebase(() => {
+    if (!user) return null;
     const excludedRoles: UserRole[] = ['Administrator', 'Director'];
     return query(collection(firestore, 'staff'), where('role', 'not-in', excludedRoles));
-  }, [firestore]);
+  }, [firestore, user]);
   const { data: staffList } = useCollection<Staff>(staffQuery);
 
   const form = useForm<z.infer<typeof performanceReviewSchema>>({
@@ -121,19 +122,21 @@ function PerformanceReviewForm({ setOpen }: { setOpen: (open: boolean) => void }
 // Main page component
 export default function PerformanceReviewsPage() {
   const { role } = useRole();
+  const { user } = useAuth();
   const firestore = useFirestore();
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [isFormOpen, setFormOpen] = useState(false);
 
   const staffQuery = useMemoFirebase(() => {
+    if (!user) return null;
     const excludedRoles: UserRole[] = ['Administrator', 'Director'];
     return query(collection(firestore, 'staff'), where('role', 'not-in', excludedRoles));
-  }, [firestore]);
+  }, [firestore, user]);
   const { data: staffList } = useCollection<Staff>(staffQuery);
 
   const reviewsQuery = useMemoFirebase(
-    () => selectedStaffId ? query(collection(firestore, 'performanceReviews'), where('staffId', '==', selectedStaffId), orderBy('reviewDate', 'desc')) : null,
-    [firestore, selectedStaffId]
+    () => (user && selectedStaffId) ? query(collection(firestore, 'performanceReviews'), where('staffId', '==', selectedStaffId), orderBy('reviewDate', 'desc')) : null,
+    [firestore, user, selectedStaffId]
   );
   const { data: reviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
   

@@ -58,8 +58,8 @@ export default function LessonPlanningPage() {
   }, [firestore, user, role]);
 
   const { data: lessonPlans, isLoading } = useCollection<LessonPlan>(lessonPlansQuery);
-  const { data: classes } = useCollection<ClassData>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
-  const { data: staff } = useCollection<StaffData>(useMemoFirebase(() => collection(firestore, 'staff'), [firestore]));
+  const { data: classes } = useCollection<ClassData>(useMemoFirebase(() => user ? collection(firestore, 'classes') : null, [firestore, user]));
+  const { data: staff } = useCollection<StaffData>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
   
   const enrichedLessonPlans = useMemo(() => {
     if (!lessonPlans || !classes || !staff) return [];

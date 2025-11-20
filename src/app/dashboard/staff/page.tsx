@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,8 +58,9 @@ const formSchema = z.object({
 });
 
 function StaffList() {
+  const { user } = useAuth();
   const firestore = useFirestore();
-  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
+  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]);
   const { data: staff, isLoading } = useCollection(staffCollectionRef);
 
   if (isLoading) {
