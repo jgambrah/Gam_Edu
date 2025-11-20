@@ -4,7 +4,7 @@
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 
-// This function now correctly initializes the app with service account credentials from environment variables.
+// This function now correctly initializes the app with service account credentials from a Base64 encoded environment variable.
 function getAdminApp(): App {
   // If the app is already initialized, return the existing instance.
   if (getApps().length > 0) {
@@ -47,7 +47,7 @@ export async function createNewUser(
     let errorMessage = 'An unknown error occurred during user creation.';
     if (error.code === 'auth/email-already-exists') {
         errorMessage = 'This email is already in use by another account.';
-    } else if (error.message.includes('invalid_grant')) {
+    } else if (error.message.includes('invalid-grant')) {
         errorMessage = 'Invalid Firebase credentials. Please ensure your service account key in the .env file is correct and has not been revoked.';
     } else if (error.message.includes("Invalid Firebase Service Account Configuration")) {
         errorMessage = error.message;
