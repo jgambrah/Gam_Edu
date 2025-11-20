@@ -141,7 +141,7 @@ function StaffPageContent() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const result = await createNewUser(values.email, values.password);
+      const result = await createNewUser(values.email, values.password, values.role);
 
       if ('error' in result) {
         throw new Error(result.error);

@@ -36,7 +36,8 @@ function getAdminApp(): App {
 
 export async function createNewUser(
   email: string,
-  password: string
+  password: string,
+  role: string
 ): Promise<{ uid: string } | { error: string }> {
   const auth = getAuth(getAdminApp());
   try {
@@ -44,17 +45,21 @@ export async function createNewUser(
       email: email,
       password: password,
     });
+    // Set custom claims for the user's role
+    await auth.setCustomUserClaims(userRecord.uid, { role: role });
     return { uid: userRecord.uid };
   } catch (error: any) {
     console.error('Error creating new user:', error);
-    // If the user already exists, find and return their UID.
+    // If the user already exists, find their UID and set their custom claim.
     if (error.code === 'auth/email-already-exists') {
         try {
             const userRecord = await auth.getUserByEmail(email);
+            // Set custom claims for the existing user
+            await auth.setCustomUserClaims(userRecord.uid, { role: role });
             return { uid: userRecord.uid };
         } catch (lookupError: any) {
-            console.error('Error looking up existing user:', lookupError);
-            return { error: 'An existing user was found, but their details could not be retrieved.' };
+            console.error('Error looking up existing user or setting claims:', lookupError);
+            return { error: 'An existing user was found, but their details could not be updated.' };
         }
     }
     // For other errors, return the original error message.
