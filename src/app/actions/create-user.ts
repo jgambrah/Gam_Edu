@@ -21,9 +21,13 @@ function getAdminApp(): App {
   }
 
   try {
-    // Correctly handle the escaped newlines in the private key
-    const parsedServiceAccountKey = serviceAccountKey.replace(/\\n/g, '\n');
-    const serviceAccount: ServiceAccount = JSON.parse(parsedServiceAccountKey);
+    // The service account key might be wrapped in quotes if copied directly from some terminals.
+    // This removes the outer quotes before parsing.
+    const keyString = serviceAccountKey.startsWith("'") && serviceAccountKey.endsWith("'") 
+      ? serviceAccountKey.substring(1, serviceAccountKey.length - 1)
+      : serviceAccountKey;
+
+    const serviceAccount: ServiceAccount = JSON.parse(keyString);
 
     return initializeApp({
       credential: cert(serviceAccount),
