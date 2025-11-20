@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -142,18 +143,11 @@ function StaffPageContent() {
     try {
       const result = await createNewUser(values.email, values.password);
 
-      let uid = '';
       if ('error' in result) {
-        // If the error is that the email already exists, we can try to get the user's UID.
-        // This is a workaround for the case where user auth was created but firestore doc failed.
-        // For a real production app, you would want a more robust way to get the UID.
-        // For this demo, we can't get the UID directly, so we can't proceed. We'll show an error.
-        // A better server action would return the UID even if the user exists.
-        // For now, we will just show the error.
         throw new Error(result.error);
-      } else {
-        uid = result.uid;
       }
+      
+      const { uid } = result;
       
       const staffData = {
         uid: uid,
@@ -176,20 +170,10 @@ function StaffPageContent() {
       });
       form.reset();
     } catch (error: any) {
-      // The current simple server action doesn't give us the UID of an existing user.
-      // A more robust implementation would. For now, we'll ask the user to try a different email
-      // if this specific error occurs, as we can't link the existing auth user to a new firestore doc.
-      let errorMessage = 'An error occurred while adding the staff member.';
-      if (error.message.includes('This email is already in use')) {
-        errorMessage = 'This email already exists. The previous attempt to save the staff profile may have failed. Please try a different email or contact support to resolve the existing user.';
-      } else {
-        errorMessage = error.message;
-      }
-
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: errorMessage,
+        description: error.message,
       });
       console.error('Error adding staff:', error);
     } finally {

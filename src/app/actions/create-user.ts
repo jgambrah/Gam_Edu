@@ -18,13 +18,13 @@ function getAdminApp(): App {
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   if (!projectId || !clientEmail || !privateKey) {
-    throw new Error("Firebase admin credentials are not set correctly in the environment. Please check your .env file for FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.");
+    throw new Error("Firebase admin credentials are not set in the environment. Please check your .env file for FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.");
   }
 
   const serviceAccount: ServiceAccount = {
     projectId,
     clientEmail,
-    // The private key must have its newlines properly escaped in the .env file.
+    // The private key must have its newlines properly escaped.
     privateKey: privateKey.replace(/\\n/g, '\n'),
   };
 
@@ -38,8 +38,8 @@ export async function createNewUser(
   email: string,
   password: string
 ): Promise<{ uid: string } | { error: string }> {
+  const auth = getAuth(getAdminApp());
   try {
-    const auth = getAuth(getAdminApp());
     const userRecord = await auth.createUser({
       email: email,
       password: password,
@@ -47,11 +47,19 @@ export async function createNewUser(
     return { uid: userRecord.uid };
   } catch (error: any) {
     console.error('Error creating new user:', error);
-    // Provide a more specific and helpful error message to the client.
-    let errorMessage = 'An unknown error occurred during user creation.';
+    // If the user already exists, find and return their UID.
     if (error.code === 'auth/email-already-exists') {
-        errorMessage = 'This email is already in use by another account.';
-    } else if (error.code === 'auth/invalid-credential' || error.message.includes('invalid_grant')) {
+        try {
+            const userRecord = await auth.getUserByEmail(email);
+            return { uid: userRecord.uid };
+        } catch (lookupError: any) {
+            console.error('Error looking up existing user:', lookupError);
+            return { error: 'An existing user was found, but their details could not be retrieved.' };
+        }
+    }
+    // For other errors, return the original error message.
+    let errorMessage = 'An unknown error occurred during user creation.';
+    if (error.code === 'auth/invalid-credential' || error.message.includes('invalid_grant')) {
         errorMessage = 'Invalid Firebase credentials. Please ensure your service account key in the .env file is correct and has not been revoked.';
     } else {
         errorMessage = error.message;
