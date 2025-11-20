@@ -22,7 +22,7 @@ function getAdminApp(): App {
   }
 
   try {
-    // Directly parse the environment variable as JSON
+    // The environment variable should be a raw JSON string without outer quotes.
     const serviceAccount: ServiceAccount = JSON.parse(serviceAccountKey);
 
     return initializeApp({
@@ -30,7 +30,7 @@ function getAdminApp(): App {
     });
 
   } catch (e: any) {
-    console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Make sure the environment variable is a valid, single-line JSON string with no outer quotes.', e);
+    console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY JSON. Make sure the environment variable is a valid, unquoted, single-line JSON string.', e);
     throw new Error(`Invalid Firebase Service Account Configuration: ${e.message}`);
   }
 }
