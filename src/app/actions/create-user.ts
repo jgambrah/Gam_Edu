@@ -38,7 +38,7 @@ function getAdminApp(): App {
 export async function createNewUser(
   email: string,
   password: string,
-  role: string
+  role?: UserRole
 ): Promise<{ uid: string } | { error: string }> {
   const adminApp = getAdminApp();
   const auth = getAuth(adminApp);
@@ -63,20 +63,41 @@ export async function createNewUser(
     }
     
     // Set custom claims for the user's role
-    await auth.setCustomUserClaims(userRecord.uid, { role: role });
+    const selectedRole = role || 'Parent'; // Default to 'Parent' if no role is provided
+    await auth.setCustomUserClaims(userRecord.uid, { role: selectedRole });
 
-    // Create a corresponding staff document in Firestore
-    const staffRef = firestore.collection('staff').doc(userRecord.uid);
-    const firstName = email.split('@')[0].split('.')[0] || 'Admin';
-    const lastName = email.split('@')[0].split('.')[1] || 'User';
+    // Create a corresponding document in Firestore based on the role
+    const [firstName, ...lastNameParts] = (userRecord.displayName || email.split('@')[0]).split(' ');
+    const lastName = lastNameParts.join(' ') || 'User';
 
-    await staffRef.set({
-      uid: userRecord.uid,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      role: role,
-    }, { merge: true });
+    if (['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'].includes(selectedRole)) {
+        const staffRef = firestore.collection('staff').doc(userRecord.uid);
+        await staffRef.set({
+          uid: userRecord.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          role: selectedRole,
+        }, { merge: true });
+    } else if (selectedRole === 'Student') {
+        const studentRef = firestore.collection('students').doc(userRecord.uid);
+        await studentRef.set({
+          uid: userRecord.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          classId: 'unassigned' // Default class
+        }, { merge: true });
+    } else { // Parent
+        const parentRef = firestore.collection('parents').doc(userRecord.uid);
+         await parentRef.set({
+          uid: userRecord.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+        }, { merge: true });
+    }
+
 
     return { uid: userRecord.uid };
 
@@ -102,3 +123,13 @@ export async function createNewUser(
     return { error: errorMessage };
   }
 }
+
+type UserRole =
+  | 'Director'
+  | 'Administrator'
+  | 'Teacher'
+  | 'Accountant'
+  | 'Student'
+  | 'Parent'
+  | 'Librarian'
+  | 'Cook';
