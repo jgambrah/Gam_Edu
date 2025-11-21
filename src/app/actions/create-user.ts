@@ -2,6 +2,7 @@
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 
 // This function initializes the Firebase Admin SDK.
@@ -39,7 +40,10 @@ export async function createNewUser(
   password: string,
   role: string
 ): Promise<{ uid: string } | { error: string }> {
-  const auth = getAuth(getAdminApp());
+  const adminApp = getAdminApp();
+  const auth = getAuth(adminApp);
+  const firestore = getFirestore(adminApp);
+
   try {
     let userRecord;
     try {
@@ -60,6 +64,20 @@ export async function createNewUser(
     
     // Set custom claims for the user's role
     await auth.setCustomUserClaims(userRecord.uid, { role: role });
+
+    // Create a corresponding staff document in Firestore
+    const staffRef = firestore.collection('staff').doc(userRecord.uid);
+    const firstName = email.split('@')[0].split('.')[0] || 'Admin';
+    const lastName = email.split('@')[0].split('.')[1] || 'User';
+
+    await staffRef.set({
+      uid: userRecord.uid,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      role: role,
+    }, { merge: true });
+
     return { uid: userRecord.uid };
 
   } catch (error: any) {
