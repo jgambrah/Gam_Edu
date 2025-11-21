@@ -306,7 +306,7 @@ service cloud.firestore {
      */
     function isAdmin() {
       // Super admin check for initial setup or a specific high-privilege account.
-      if (request.auth != null && request.auth.token.email == 'jamesgambrah@sunnyside.com') {
+      if (request.auth != null && request.auth.token.email == 'jgambrah@sunnyside.com') {
         return true;
       }
       
@@ -396,5 +396,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
