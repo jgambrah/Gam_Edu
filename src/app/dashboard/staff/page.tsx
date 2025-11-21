@@ -57,11 +57,16 @@ const formSchema = z.object({
   address: z.string().optional(),
 });
 
-function StaffList() {
+function StaffList({ forceRefetch }: { forceRefetch: () => void }) {
   const { user } = useAuth();
   const firestore = useFirestore();
   const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]);
   const { data: staff, isLoading } = useCollection(staffCollectionRef);
+  
+  useEffect(() => {
+    forceRefetch();
+  }, [staff, forceRefetch]);
+
 
   if (isLoading) {
     return (
@@ -109,6 +114,8 @@ function StaffPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
+  const { forceRefetch } = useCollection(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -169,6 +176,7 @@ function StaffPageContent() {
         description: `${values.email} has been added as a ${values.role}.`,
       });
       form.reset();
+      forceRefetch();
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -357,7 +365,7 @@ function StaffPageContent() {
         </CardContent>
       </Card>
 
-      <StaffList />
+      <StaffList forceRefetch={forceRefetch} />
     </div>
   );
 }
