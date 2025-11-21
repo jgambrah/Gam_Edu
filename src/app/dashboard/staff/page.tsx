@@ -30,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ALL_ROLES } from '@/lib/types';
+import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -57,17 +57,15 @@ const formSchema = z.object({
   address: z.string().optional(),
 });
 
-function StaffList({ forceRefetch }: { forceRefetch: () => void }) {
-  const { user } = useAuth();
-  const firestore = useFirestore();
-  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]);
-  const { data: staff, isLoading } = useCollection(staffCollectionRef);
-  
-  useEffect(() => {
-    forceRefetch();
-  }, [staff, forceRefetch]);
+type StaffData = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: UserRole;
+}
 
-
+function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading: boolean }) {
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -111,11 +109,13 @@ function StaffList({ forceRefetch }: { forceRefetch: () => void }) {
 }
 
 function StaffPageContent() {
+  const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
-  const { forceRefetch } = useCollection(staffCollectionRef);
+  
+  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]);
+  const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -176,7 +176,7 @@ function StaffPageContent() {
         description: `${values.email} has been added as a ${values.role}.`,
       });
       form.reset();
-      forceRefetch();
+      forceRefetch(); // This will now refetch the data for the StaffList
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -365,7 +365,7 @@ function StaffPageContent() {
         </CardContent>
       </Card>
 
-      <StaffList forceRefetch={forceRefetch} />
+      <StaffList staff={staff} isLoading={isLoading} />
     </div>
   );
 }
