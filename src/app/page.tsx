@@ -17,7 +17,8 @@ import { useAuth } from '@/firebase';
 import { FormEvent, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { createNewUser } from './actions/create-user';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,27 +26,60 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const { toast } = useToast();
 
-  const handleLogin = (e: FormEvent) => {
+  const handleAuthAction = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // On successful login, redirect to the dashboard.
-        router.push('/dashboard');
-      })
-      .catch((error) => {
+    try {
+      if (isSignUp) {
+        // Sign Up Logic
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const result = await createNewUser(email, password, 'Director');
+        if ('error' in result) {
+            throw new Error(result.error);
+        }
+        
         toast({
-          variant: 'destructive',
-          title: 'Authentication Failed',
-          description: 'Invalid email or password. Please try again.',
+          title: 'Account Created',
+          description: "You've been successfully signed up. Please log in.",
         });
-      })
-      .finally(() => {
-        setIsLoading(false);
+        setIsSignUp(false); // Switch back to login view
+      } else {
+        // Sign In Logic
+        await signInWithEmailAndPassword(auth, email, password);
+        router.push('/dashboard');
+      }
+    } catch (error: any) {
+      let message = 'An unknown error occurred.';
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            message = 'This email is already in use. Please log in.';
+            break;
+          case 'auth/invalid-email':
+            message = 'Please enter a valid email address.';
+            break;
+          case 'auth/wrong-password':
+          case 'auth/user-not-found':
+          case 'auth/invalid-credential':
+            message = 'Invalid email or password. Please try again.';
+            break;
+          default:
+            message = error.message;
+            break;
+        }
+      }
+      toast({
+        variant: 'destructive',
+        title: isSignUp ? 'Sign Up Failed' : 'Authentication Failed',
+        description: message,
       });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,10 +90,12 @@ export default function LoginPage() {
             <AppLogo className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-primary">CampusConnect</h1>
           </div>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+          <CardTitle>{isSignUp ? 'Create an Account' : 'Welcome Back'}</CardTitle>
+          <CardDescription>
+            {isSignUp ? 'Fill in the details to create your admin account.' : 'Enter your credentials to access your account'}
+          </CardDescription>
         </CardHeader>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleAuthAction}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -81,13 +117,16 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
+                autoComplete={isSignUp ? 'new-password' : 'current-password'}
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Sign In'}
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (isSignUp ? 'Sign Up' : 'Sign In')}
+            </Button>
+            <Button variant="link" type="button" onClick={() => setIsSignUp(!isSignUp)}>
+              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
             </Button>
           </CardFooter>
         </form>

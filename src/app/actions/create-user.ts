@@ -41,34 +41,46 @@ export async function createNewUser(
 ): Promise<{ uid: string } | { error: string }> {
   const auth = getAuth(getAdminApp());
   try {
-    const userRecord = await auth.createUser({
-      email: email,
-      password: password,
-    });
+    let userRecord;
+    try {
+        // First try to get user, they might have been created on the client
+        userRecord = await auth.getUserByEmail(email);
+    } catch (error: any) {
+        if (error.code === 'auth/user-not-found') {
+            // If user doesn't exist, create them
+            userRecord = await auth.createUser({
+                email: email,
+                password: password,
+            });
+        } else {
+            // Re-throw other errors
+            throw error;
+        }
+    }
+    
     // Set custom claims for the user's role
     await auth.setCustomUserClaims(userRecord.uid, { role: role });
     return { uid: userRecord.uid };
+
   } catch (error: any) {
-    console.error('Error creating new user:', error);
-    // If the user already exists, find their UID and set their custom claim.
-    if (error.code === 'auth/email-already-exists') {
-        try {
-            const userRecord = await auth.getUserByEmail(email);
-            // Set custom claims for the existing user
-            await auth.setCustomUserClaims(userRecord.uid, { role: role });
-            return { uid: userRecord.uid };
-        } catch (lookupError: any) {
-            console.error('Error looking up existing user or setting claims:', lookupError);
-            return { error: 'An existing user was found, but their details could not be updated.' };
+    console.error('Error creating/updating user:', error);
+    
+    let errorMessage = 'An unknown error occurred during user processing.';
+    if (error.code) {
+        switch(error.code) {
+            case 'auth/email-already-exists':
+                errorMessage = 'This email is already in use by another account.';
+                break;
+            case 'auth/invalid-credential':
+            case 'auth/invalid-grant':
+                 errorMessage = 'Invalid Firebase credentials. Please ensure your service account key in the .env file is correct and has not been revoked.';
+                 break;
+            default:
+                errorMessage = error.message;
+                break;
         }
     }
-    // For other errors, return the original error message.
-    let errorMessage = 'An unknown error occurred during user creation.';
-    if (error.code === 'auth/invalid-credential' || error.message.includes('invalid_grant')) {
-        errorMessage = 'Invalid Firebase credentials. Please ensure your service account key in the .env file is correct and has not been revoked.';
-    } else {
-        errorMessage = error.message;
-    }
+    
     return { error: errorMessage };
   }
 }
