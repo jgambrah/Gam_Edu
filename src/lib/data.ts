@@ -103,30 +103,6 @@ export const navItems: NavItem[] = [
     roles: ['Director', 'Administrator', 'Teacher'],
   },
   {
-    path: '/dashboard/academics/attendance',
-    title: 'Attendance',
-    icon: CalendarCheck,
-    roles: ['Director', 'Administrator', 'Teacher'],
-  },
-  {
-    path: '/dashboard/leave-management',
-    title: 'Leave Management',
-    icon: Plane,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
-  },
-  {
-    path: '/dashboard/resources',
-    title: 'Resources',
-    icon: BookOpen,
-    roles: 'all',
-  },
-  {
-    path: '/dashboard/assessments',
-    title: 'Assessments',
-    icon: ClipboardCheck,
-    roles: ['Director', 'Administrator', 'Teacher'],
-  },
-  {
     path: '/dashboard/assignments',
     title: 'Assignments',
     icon: BookMarked,
@@ -179,6 +155,12 @@ export const navItems: NavItem[] = [
         title: 'Enrollment Reports',
         icon: Users,
         roles: ['Director', 'Administrator'],
+      },
+      {
+        path: '/dashboard/reports/financials',
+        title: 'Financial Reports',
+        icon: Banknote,
+        roles: ['Director', 'Administrator', 'Accountant'],
       },
     ]
   },
@@ -329,6 +311,9 @@ export const MOCK_CHART_OF_ACCOUNTS: ChartOfAccount[] = [
     { accountId: '5030', name: 'Maintenance Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
     { accountId: '1000', name: 'Current Assets', type: 'Asset', isControlAccount: true },
     { accountId: '2000', name: 'Current Liabilities', type: 'Liability', isControlAccount: true },
+    { accountId: '3000', name: 'Equity', type: 'Equity', isControlAccount: true },
+    { accountId: '3010', name: 'Retained Earnings', type: 'Equity', isControlAccount: false, parentAccountId: '3000' },
+
 ];
 
 export const MOCK_JOURNAL_ENTRIES: GeneralLedgerTransaction[] = [
@@ -336,6 +321,7 @@ export const MOCK_JOURNAL_ENTRIES: GeneralLedgerTransaction[] = [
     { id: 2, ref: 'PAY-001', date: '2024-08-01', description: 'Received tuition payment from John Doe', debits: [{ accountId: '1010', amount: 5000 }], credits: [{ accountId: '1200', amount: 5000 }] },
     { id: 3, ref: 'BILL-001', date: '2024-08-05', description: 'Electricity bill for July', debits: [{ accountId: '5020', amount: 800 }], credits: [{ accountId: '2100', amount: 800 }] },
     { id: 4, ref: 'PAY-002', date: '2024-08-10', description: 'Paid electricity bill', debits: [{ accountId: '2100', amount: 800 }], credits: [{ accountId: '1010', amount: 800 }] },
+    { id: 5, ref: 'SAL-01', date: '2024-08-31', description: 'August salaries', debits: [{ accountId: '5010', amount: 15000 }], credits: [{ accountId: '1010', amount: 15000 }] },
 ];
 
 export const MOCK_BUSES: Bus[] = [
