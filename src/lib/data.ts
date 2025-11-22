@@ -139,24 +139,10 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
-    path: '/dashboard/attendance',
-    title: 'Attendance',
-    icon: CalendarCheck,
+    path: '/dashboard/attendance/face-recognition',
+    title: 'Attendance Kiosk',
+    icon: ScanFace,
     roles: ['Director', 'Administrator', 'Teacher'],
-    subItems: [
-        {
-            path: '/dashboard/attendance',
-            title: 'Manual Attendance',
-            icon: FilePen,
-            roles: ['Director', 'Administrator', 'Teacher'],
-        },
-        {
-            path: '/dashboard/attendance/face-recognition',
-            title: 'Face Recognition Kiosk',
-            icon: ScanFace,
-            roles: ['Director', 'Administrator', 'Teacher'],
-        }
-    ]
   },
   {
     path: '/dashboard/grades',
@@ -361,5 +347,7 @@ export const MOCK_STUDENTS_FOR_TRANSPORT = [
     { uid: 'student-05', firstName: 'Eve', lastName: 'Adams', classId: 'g7', transportStopId: undefined },
     { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
 ];
+
+    
 
     
