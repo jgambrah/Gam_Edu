@@ -32,11 +32,12 @@ export default function ManualAttendancePage() {
   // Fetch classes for the current teacher or all classes for admin/director
   const classesQuery = useMemoFirebase(
     () => {
-      if (!user) return null;
+      if (!user || !firestore) return null;
       if (role === 'Teacher') {
         return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
       } else if (role === 'Administrator' || role === 'Director') {
-        return collection(firestore, 'classes');
+        // Correctly wrap the collection in a query for all roles
+        return query(collection(firestore, 'classes'));
       }
       return null;
     },
@@ -53,7 +54,7 @@ export default function ManualAttendancePage() {
   
   // Fetch today's attendance records for the selected class
   useEffect(() => {
-    if (!selectedClassId) return;
+    if (!selectedClassId || !firestore) return;
 
     const fetchTodaysAttendance = async () => {
       setIsLoading(true);
@@ -100,7 +101,7 @@ export default function ManualAttendancePage() {
   };
 
   const handleSaveAttendance = async () => {
-    if (!selectedClassId || !students || !user) return;
+    if (!selectedClassId || !students || !user || !firestore) return;
     setIsSaving(true);
     try {
       const batch = writeBatch(firestore);
