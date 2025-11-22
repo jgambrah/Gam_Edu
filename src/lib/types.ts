@@ -1,4 +1,5 @@
 
+
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -684,4 +685,19 @@ export const attendanceRecordSchema = z.object({
 
 export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
     id: string;
+};
+
+
+// Audit Log Schema
+export const auditLogSchema = z.object({
+  userId: z.string(),
+  userName: z.string(),
+  action: z.string(), // e.g., 'CREATE_STUDENT', 'UPDATE_GRADE'
+  details: z.string(), // e.g., 'Created student John Doe'
+  targetId: z.string().optional(), // ID of the entity that was affected
+  timestamp: z.date(),
+});
+
+export type AuditLog = z.infer<typeof auditLogSchema> & {
+  id: string;
 };

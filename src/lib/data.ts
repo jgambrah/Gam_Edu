@@ -1,4 +1,5 @@
 
+
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -26,6 +27,7 @@ import {
   BarChart,
   CalendarCheck,
   UserCog,
+  Shield,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -43,7 +45,7 @@ export const navItems: NavItem[] = [
   },
   {
     path: '/dashboard/people',
-    title: 'People',
+    title: 'People Management',
     icon: Users,
     roles: ['Director', 'Administrator', 'Teacher', 'Parent'],
     subItems: [
@@ -159,7 +161,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/financials',
     title: 'Financials',
     icon: Banknote,
-    roles: ['Director', 'Administrator', 'Accountant'],
+    roles: ['Director', 'Administrator', 'Accountant', 'Teacher', 'Librarian', 'Cook'],
      subItems: [
       {
         path: '/dashboard/accounts',
@@ -191,7 +193,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/operations',
     title: 'Operations',
     icon: Boxes,
-    roles: ['Director', 'Administrator', 'Librarian', 'Transport Staff'],
+    roles: ['Director', 'Administrator', 'Librarian', 'Transport Staff', 'Student', 'Teacher'],
      subItems: [
         {
             path: '/dashboard/library',
@@ -215,7 +217,7 @@ export const navItems: NavItem[] = [
   },
   {
     path: '/dashboard/reports',
-    title: 'Reports',
+    title: 'Reporting & Analytics',
     icon: BarChart,
     roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
      subItems: [
@@ -255,6 +257,20 @@ export const navItems: NavItem[] = [
         icon: Boxes,
         roles: ['Director', 'Administrator'],
       },
+    ]
+  },
+  {
+    path: '/dashboard/system',
+    title: 'System & Administration',
+    icon: Shield,
+    roles: ['Director', 'Administrator'],
+    subItems: [
+        {
+            path: '/dashboard/audit-log',
+            title: 'Audit Log',
+            icon: FileText,
+            roles: ['Director', 'Administrator'],
+        },
     ]
   },
 ];

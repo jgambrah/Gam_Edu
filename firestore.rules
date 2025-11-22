@@ -1,4 +1,5 @@
 
+
 /**
  * @fileoverview Firestore Security Rules for CampusConnect application.
  *
@@ -272,6 +273,12 @@ service cloud.firestore {
     match /announcements/{announcementId} {
       allow create, update, delete: if isAdmin();
       allow read: if isSignedIn() && (isAdmin() || canReadAnnouncement(resource.data.audience));
+    }
+
+    match /auditLogs/{logId} {
+      allow read, list: if isAdmin();
+      // Writes to audit logs should be handled by a secure backend function, not directly by clients.
+      allow write: if false; 
     }
 
 

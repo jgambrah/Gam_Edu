@@ -1,4 +1,5 @@
 
+
 {
   "entities": {
     "Announcement": {
@@ -879,6 +880,21 @@
         "paymentAccountId": { "type": "string" }
       },
       "required": ["vendorId", "expenseAccountId", "description", "amount", "dueDate", "status"]
+    },
+     "AuditLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AuditLog",
+      "type": "object",
+      "description": "Represents a single entry in the system's audit log, tracking user actions.",
+      "properties": {
+        "userId": { "type": "string", "description": "The UID of the user who performed the action." },
+        "userName": { "type": "string", "description": "The name of the user who performed the action." },
+        "action": { "type": "string", "description": "A short, machine-readable code for the action (e.g., 'CREATE_STUDENT')." },
+        "details": { "type": "string", "description": "A human-readable description of the action (e.g., 'Created student John Doe')." },
+        "targetId": { "type": "string", "description": "The ID of the document or entity that was affected by the action." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the action occurred." }
+      },
+      "required": ["userId", "userName", "action", "details", "timestamp"]
     }
   },
   "auth": {
@@ -1201,6 +1217,15 @@
           "schema": { "$ref": "#/backend/entities/AccountsPayableRecord" },
           "description": "Stores bills and invoices from vendors.",
           "params": [{ "name": "payableId" }]
+        }
+      },
+       {
+        "path": "/auditLogs/{logId}",
+        "definition": {
+          "entityName": "AuditLog",
+          "schema": { "$ref": "#/backend/entities/AuditLog" },
+          "description": "Stores a log of all important user actions within the system.",
+          "params": [{ "name": "logId" }]
         }
       }
     ],
