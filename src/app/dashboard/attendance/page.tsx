@@ -16,6 +16,7 @@ import { Student, AttendanceRecord } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 type AttendanceStatus = 'Present' | 'Absent' | 'Late' | 'Excused';
+type ClassData = { id: string, name: string };
 
 export default function ManualAttendancePage() {
   const { user } = useAuth();
@@ -34,12 +35,14 @@ export default function ManualAttendancePage() {
       if (!user) return null;
       if (role === 'Teacher') {
         return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+      } else if (role === 'Administrator' || role === 'Director') {
+        return collection(firestore, 'classes');
       }
-      return collection(firestore, 'classes');
+      return null;
     },
     [firestore, user, role]
   );
-  const { data: classes, isLoading: isLoadingClasses } = useCollection(classesQuery);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
 
   // Fetch students for the selected class
   const studentsQuery = useMemoFirebase(
@@ -57,9 +60,16 @@ export default function ManualAttendancePage() {
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
+      const studentIds = students?.map(s => s.uid) || [];
+      if (studentIds.length === 0) {
+        setAttendance({});
+        setIsLoading(false);
+        return;
+      }
+      
       const attendanceQuery = query(
         collection(firestore, 'attendance'),
-        where('classId', '==', selectedClassId),
+        where('studentId', 'in', studentIds),
         where('date', '>=', Timestamp.fromDate(todayStart))
       );
 
@@ -80,7 +90,9 @@ export default function ManualAttendancePage() {
       setIsLoading(false);
     };
 
-    fetchTodaysAttendance();
+    if (students) {
+      fetchTodaysAttendance();
+    }
   }, [selectedClassId, firestore, students]);
 
   const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
@@ -201,5 +213,3 @@ export default function ManualAttendancePage() {
     </div>
   );
 }
-
-    
