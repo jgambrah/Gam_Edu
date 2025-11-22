@@ -25,7 +25,7 @@ import {
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -93,9 +93,17 @@ function ParentsPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [studentSearchTerm, setStudentSearchTerm] = useState('');
 
   const studentsCollectionRef = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
   const { data: students } = useCollection(studentsCollectionRef);
+
+  const filteredStudents = useMemo(() => {
+    if (!students) return [];
+    return students.filter(student =>
+      `${student.firstName} ${student.lastName}`.toLowerCase().includes(studentSearchTerm.toLowerCase())
+    );
+  }, [students, studentSearchTerm]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -266,40 +274,48 @@ function ParentsPageContent() {
                       <FormLabel className="text-base">Link Students</FormLabel>
                       <CardDescription>Select the students associated with this parent.</CardDescription>
                     </div>
-                    <div className="space-y-2">
-                    {students?.map((student) => (
-                      <FormField
-                        key={student.id}
-                        control={form.control}
-                        name="studentIds"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={student.id}
-                              className="flex flex-row items-start space-x-3 space-y-0"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(student.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...(field.value || []), student.id])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== student.id
-                                          )
-                                        )
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {student.firstName} {student.lastName}
-                              </FormLabel>
-                            </FormItem>
-                          )
-                        }}
+                    <div className="space-y-4">
+                      <Input
+                        placeholder="Search for a student..."
+                        value={studentSearchTerm}
+                        onChange={(e) => setStudentSearchTerm(e.target.value)}
+                        className="mb-4"
                       />
-                    ))}
+                      <div className="max-h-60 overflow-y-auto space-y-2 rounded-md border p-4">
+                        {filteredStudents.map((student) => (
+                          <FormField
+                            key={student.id}
+                            control={form.control}
+                            name="studentIds"
+                            render={({ field }) => {
+                              return (
+                                <FormItem
+                                  key={student.id}
+                                  className="flex flex-row items-start space-x-3 space-y-0"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(student.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...(field.value || []), student.id])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== student.id
+                                              )
+                                            )
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    {student.firstName} {student.lastName}
+                                  </FormLabel>
+                                </FormItem>
+                              )
+                            }}
+                          />
+                        ))}
+                      </div>
                     </div>
                     <FormMessage />
                   </FormItem>
