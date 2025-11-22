@@ -1,3 +1,4 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -21,7 +22,6 @@ import { navItems } from '@/lib/data';
 import { AppLogo } from '@/components/icons/app-logo';
 import { useRole } from '@/context/role-context';
 import type { NavItem, UserRole } from '@/lib/types';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useUser } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
@@ -64,11 +64,16 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { role } = useRole();
   const { user } = useUser();
-  const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
   const isSubItemActive = (item: NavItem) => {
     return item.subItems?.some(sub => pathname === sub.path) ?? false;
   };
+  
+  const getInitials = (email?: string | null) => {
+    if (!email) return 'U';
+    return email.substring(0, 2).toUpperCase();
+  }
+
 
   return (
     <>
@@ -123,11 +128,10 @@ export default function AppSidebar() {
         <div className="flex items-center gap-3 p-2">
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src={userAvatar?.imageUrl}
+              src={user?.photoURL || ''}
               alt="User Avatar"
-              data-ai-hint={userAvatar?.imageHint}
             />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarFallback>{getInitials(user?.email)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
             <span className="text-sm font-medium truncate">

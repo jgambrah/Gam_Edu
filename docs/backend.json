@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Announcement": {
@@ -80,6 +81,11 @@
         "address": {
           "type": "string",
           "description": "Home address of the staff member."
+        },
+        "profilePictureUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the staff member's profile picture."
         }
       },
       "required": [
@@ -188,6 +194,11 @@
               "type": "boolean"
             }
           }
+        },
+        "profilePictureUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the student's profile picture."
         }
       },
       "required": [
@@ -235,6 +246,11 @@
         "address": {
           "type": "string",
           "description": "Home address of the parent."
+        },
+        "profilePictureUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the parent's profile picture."
         }
       },
       "required": [

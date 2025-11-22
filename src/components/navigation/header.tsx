@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -13,7 +14,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { navItems } from '@/lib/data';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -25,13 +25,17 @@ export default function Header() {
   const auth = useAuth();
   const { user } = useUser();
   const { role } = useRole();
-  const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
   const pageTitle = navItems.find((item) => item.path === pathname)?.title || 'Dashboard';
 
   const handleLogout = async () => {
     await signOut(auth);
     router.push('/');
   };
+  
+  const getInitials = (email?: string | null) => {
+    if (!email) return 'U';
+    return email.substring(0, 2).toUpperCase();
+  }
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 md:px-6">
@@ -46,11 +50,10 @@ export default function Header() {
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={userAvatar?.imageUrl}
+                  src={user?.photoURL || ''}
                   alt="User Avatar"
-                  data-ai-hint={userAvatar?.imageHint}
                 />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{getInitials(user?.email)}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
