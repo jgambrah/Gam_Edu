@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { FileText, Printer, BarChart2 } from 'lucide-react';
+import { FileText, Printer, BarChart2, Users } from 'lucide-react';
 import { Class, Subject, Student, Assessment } from '@/lib/types';
 import Link from 'next/link';
 
@@ -98,14 +98,14 @@ export default function AcademicReportsPage() {
     
     return (
         <div className="space-y-6" id="report-content">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between print:hidden">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-2"><FileText /> Academic Reports</h1>
                     <p className="text-muted-foreground">Analyze student performance and grade distributions.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button asChild variant="outline"><Link href="#">Enrollment</Link></Button>
-                    <Button asChild variant="outline"><Link href="#">Attendance</Link></Button>
+                    <Button asChild variant="outline"><Link href="/dashboard/reports/enrollment">Enrollment</Link></Button>
+                    <Button asChild variant="outline"><Link href="/dashboard/reports/attendance">Attendance</Link></Button>
                     <Button asChild variant="outline"><Link href="#">Financials</Link></Button>
                     <Button onClick={() => window.print()}><Printer className="mr-2"/>Print</Button>
                 </div>
@@ -191,6 +191,9 @@ export default function AcademicReportsPage() {
                 @media print {
                     body * {
                         visibility: hidden;
+                    }
+                    .print\\:hidden {
+                        display: none;
                     }
                     #report-content, #report-content * {
                         visibility: visible;
