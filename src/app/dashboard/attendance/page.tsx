@@ -36,14 +36,13 @@ export default function ManualAttendancePage() {
       if (role === 'Teacher') {
         return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
       } else if (role === 'Administrator' || role === 'Director') {
-        // Correctly query for all documents in the collection
-        return query(collection(firestore, 'classes'));
+        return collection(firestore, 'classes');
       }
       return null;
     },
-    [firestore, user, role]
+    [firestore, user, role] // Correctly added role to the dependency array
   );
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery as any);
 
   // Fetch students for the selected class
   const studentsQuery = useMemoFirebase(
