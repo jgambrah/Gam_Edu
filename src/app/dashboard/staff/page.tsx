@@ -32,11 +32,10 @@ import {
 } from '@/components/ui/table';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -113,9 +112,10 @@ function StaffPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dataVersion, setDataVersion] = useState(0); // State to trigger re-renders
   
-  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]);
-  const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
+  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user, dataVersion]);
+  const { data: staff, isLoading } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -154,29 +154,12 @@ function StaffPageContent() {
         throw new Error(result.error);
       }
       
-      const { uid } = result;
-      
-      const staffData = {
-        uid: uid,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        phone: values.phone,
-        role: values.role,
-        dateOfBirth: values.dateOfBirth,
-        gender: values.gender,
-        nationality: values.nationality,
-        address: values.address,
-      };
-
-      await setDocumentNonBlocking(doc(firestore, 'staff', uid), staffData, { merge: true });
-
       toast({
         title: 'Staff Added',
         description: `${values.email} has been added as a ${values.role}.`,
       });
       form.reset();
-      forceRefetch(); // This will now refetch the data for the StaffList
+      setDataVersion(v => v + 1); // Increment version to trigger re-fetch
     } catch (error: any) {
       toast({
         variant: 'destructive',
