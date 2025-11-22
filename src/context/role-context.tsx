@@ -35,24 +35,34 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const determineRole = async () => {
-      if (isUserLoading || isStaffLoading) return;
+      // Don't do anything until both user and staff data loading is settled.
+      if (isUserLoading || isStaffLoading) {
+        setIsRoleLoading(true);
+        return;
+      }
 
+      // If there's no user, they are not logged in.
       if (!user) {
+        setRole('Parent'); // Default for non-logged-in users
         setIsRoleLoading(false);
         return;
       }
 
-      if (user.email === 'jamesgambrah@sunnyside.com') {
+      // Start role detection logic
+      if (user.email === 'jgambrah@sunnyside.com') {
         setRole('Director');
       } else if (staffData) {
+        // This is the most reliable check. If a staff document exists, use its role.
         setRole(staffData.role);
       } else if (user.email?.endsWith('@sunnyside-student.com')) {
         setRole('Student');
       } else if (user.email?.endsWith('@sunnyside-parent.com')) {
         setRole('Parent');
       } else {
-        setRole('Parent'); // Default fallback
+        // Fallback for any other authenticated user.
+        setRole('Parent'); 
       }
+      
       setIsRoleLoading(false);
     };
 
