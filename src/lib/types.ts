@@ -361,6 +361,16 @@ export type Student = {
     transportStopId?: string;
 };
 
+export type Class = {
+    id: string;
+    name: string;
+    description?: string;
+    teacherId?: string;
+    studentIds?: string[];
+    capacity?: number;
+};
+
+
 // Leave Management Schemas
 export const LEAVE_TYPES = ['Sick Leave', 'Vacation', 'Personal', 'Study Leave', 'Unpaid Leave'] as const;
 export type LeaveType = typeof LEAVE_TYPES[number];
@@ -660,5 +670,18 @@ export const studentAssignmentSchema = z.object({
     studentId: z.string().min(1, "You must select a student."),
     stopId: z.string().min(1, "You must select a stop."),
 });
+
+// Attendance Schemas
+export const attendanceRecordSchema = z.object({
+    id: z.string().optional(),
+    studentId: z.string(),
+    studentName: z.string(),
+    classId: z.string(),
+    date: z.date(),
+    status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
+    notes: z.string().optional(),
+});
+
+export type AttendanceRecord = z.infer<typeof attendanceRecordSchema>;
 
     
