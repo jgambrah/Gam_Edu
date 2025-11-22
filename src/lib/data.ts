@@ -102,6 +102,12 @@ export const navItems: NavItem[] = [
     icon: ClipboardList,
     roles: ['Director', 'Administrator', 'Teacher'],
   },
+    {
+    path: '/dashboard/attendance',
+    title: 'Attendance',
+    icon: CalendarCheck,
+    roles: ['Director', 'Administrator', 'Teacher'],
+  },
   {
     path: '/dashboard/leave-management',
     title: 'Leave Management',
@@ -137,12 +143,6 @@ export const navItems: NavItem[] = [
     title: 'Communication',
     icon: MessageSquare,
     roles: 'all',
-  },
-  {
-    path: '/dashboard/attendance/face-recognition',
-    title: 'Attendance Kiosk',
-    icon: ScanFace,
-    roles: ['Director', 'Administrator', 'Teacher'],
   },
   {
     path: '/dashboard/grades',
