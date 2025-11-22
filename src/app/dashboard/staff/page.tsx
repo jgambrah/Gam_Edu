@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -344,7 +345,7 @@ function StaffPageContent() {
       };
       
       // Use the UID from the auth user as the document ID
-      await setDoc(doc(firestore, 'staff', result.uid), newStaffDoc);
+      await doc(firestore, 'staff', result.uid).set(newStaffDoc);
       
       toast({
         title: 'Staff Added',

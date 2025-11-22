@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -101,14 +102,14 @@ function StaffLeaveView() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-end">
-                 <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Apply for Leave</Button></DialogTrigger>
-                    <DialogContent><DialogHeader><DialogTitle>New Leave Application</DialogTitle><DialogDescription>Fill out the form below to request time off.</DialogDescription></DialogHeader><LeaveApplicationForm setOpen={setFormOpen} /></DialogContent>
-                </Dialog>
-            </div>
             <Card>
-                <CardHeader><CardTitle>My Leave Requests</CardTitle></CardHeader>
+                <CardHeader className='flex flex-row justify-between items-center'>
+                    <CardTitle>My Leave Requests</CardTitle>
+                    <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Apply for Leave</Button></DialogTrigger>
+                        <DialogContent><DialogHeader><DialogTitle>New Leave Application</DialogTitle><DialogDescription>Fill out the form below to request time off.</DialogDescription></DialogHeader><LeaveApplicationForm setOpen={setFormOpen} /></DialogContent>
+                    </Dialog>
+                </CardHeader>
                 <CardContent>
                      {isLoading ? <div className='flex justify-center p-8'><Loader2 className="h-8 w-8 animate-spin" /></div> : (
                         <Table>

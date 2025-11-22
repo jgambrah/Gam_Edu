@@ -25,6 +25,7 @@ import {
   BookCopy,
   BarChart,
   CalendarCheck,
+  UserCog,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -35,165 +36,131 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
-    path: '/dashboard/admissions',
-    title: 'Admissions',
-    icon: FilePen,
-    roles: ['Director', 'Administrator'],
-  },
-  {
-    path: '/dashboard/staff',
-    title: 'Staff',
-    icon: UserPlus,
-    roles: ['Director', 'Administrator'],
-    subItems: [
-        {
-            path: '/dashboard/staff',
-            title: 'Staff Management',
-            icon: UserPlus,
-            roles: ['Director', 'Administrator'],
-        },
-        {
-            path: '/dashboard/staff/performance',
-            title: 'Performance Reviews',
-            icon: Star,
-            roles: ['Director', 'Administrator'],
-        },
-    ]
-  },
-  {
-    path: '/dashboard/students',
-    title: 'Students',
-    icon: Users,
-    roles: ['Director', 'Administrator'],
-  },
-    {
-    path: '/dashboard/alumni',
-    title: 'Alumni',
-    icon: UserCheckIcon,
-    roles: ['Director', 'Administrator'],
-  },
-  {
-    path: '/dashboard/parents',
-    title: 'Parents',
-    icon: HeartHandshake,
-    roles: ['Director', 'Administrator'],
-  },
-  {
-    path: '/dashboard/student-registration',
-    title: 'Apply for Admission',
-    icon: FilePen,
-    roles: ['Parent'],
-  },
-  {
-    path: '/dashboard/academics',
-    title: 'Classes',
-    icon: BookOpen,
-    roles: ['Director', 'Administrator', 'Teacher'],
-  },
-  {
-    path: '/dashboard/subjects',
-    title: 'Subjects',
-    icon: BookCopy,
-    roles: ['Director', 'Administrator'],
-  },
-  {
-    path: '/dashboard/lesson-planning',
-    title: 'Lesson Planning',
-    icon: ClipboardList,
-    roles: ['Director', 'Administrator', 'Teacher'],
-  },
-  {
-    path: '/dashboard/assignments',
-    title: 'Assignments',
-    icon: BookMarked,
-    roles: ['Director', 'Administrator', 'Teacher', 'Student'],
-  },
-  {
-    path: '/dashboard/timetable',
-    title: 'Timetable',
-    icon: CalendarDays,
-    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-  },
-  {
     path: '/dashboard/communication',
     title: 'Communication',
     icon: MessageSquare,
     roles: 'all',
   },
   {
-    path: '/dashboard/grades',
-    title: 'Gradebook',
-    icon: GraduationCap,
-    roles: ['Teacher', 'Administrator', 'Director'],
-  },
-   {
-    path: '/dashboard/report-cards',
-    title: 'Report Cards',
-    icon: FileText,
-    roles: ['Teacher', 'Administrator', 'Director'],
-  },
-  {
-    path: '/dashboard/reports/academics',
-    title: 'Reports',
-    icon: FileText,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
-     subItems: [
-      {
-        path: '/dashboard/reports/academics',
-        title: 'Academic Reports',
-        icon: GraduationCap,
-        roles: ['Director', 'Administrator', 'Teacher'],
-      },
-      {
-        path: '/dashboard/reports/attendance',
-        title: 'Attendance Reports',
-        icon: BarChart,
-        roles: ['Director', 'Administrator', 'Teacher'],
-      },
-      {
-        path: '/dashboard/reports/enrollment',
-        title: 'Enrollment Reports',
-        icon: Users,
-        roles: ['Director', 'Administrator'],
-      },
-      {
-        path: '/dashboard/reports/inventory',
-        title: 'Inventory Reports',
-        icon: Boxes,
-        roles: ['Director', 'Administrator'],
-      },
-      {
-        path: '/dashboard/reports/financials',
-        title: 'Financial Reports',
-        icon: Banknote,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
-       {
-        path: '/dashboard/reports/payroll',
-        title: 'Payroll Reports',
-        icon: Landmark,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
+    path: '/dashboard/people',
+    title: 'People',
+    icon: Users,
+    roles: ['Director', 'Administrator', 'Teacher', 'Parent'],
+    subItems: [
+        {
+            path: '/dashboard/admissions',
+            title: 'Admissions',
+            icon: FilePen,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/students',
+            title: 'Students',
+            icon: GraduationCap,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/staff',
+            title: 'Staff',
+            icon: UserCog,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/parents',
+            title: 'Parents',
+            icon: HeartHandshake,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/alumni',
+            title: 'Alumni',
+            icon: UserCheckIcon,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/student-registration',
+            title: 'Apply for Admission',
+            icon: FilePen,
+            roles: ['Parent'],
+        },
     ]
   },
   {
-    path: '/dashboard/inventory',
-    title: 'Inventory',
-    icon: Boxes,
-    roles: ['Administrator', 'Director'],
+    path: '/dashboard/academics',
+    title: 'Academics',
+    icon: BookOpen,
+    roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+    subItems: [
+        {
+            path: '/dashboard/academics',
+            title: 'Classes',
+            icon: Users,
+            roles: ['Director', 'Administrator', 'Teacher'],
+        },
+        {
+            path: '/dashboard/subjects',
+            title: 'Subjects',
+            icon: BookCopy,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/assignments',
+            title: 'Assignments & Quizzes',
+            icon: BookMarked,
+            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+        },
+        {
+            path: '/dashboard/lesson-planning',
+            title: 'Lesson Planning',
+            icon: ClipboardList,
+            roles: ['Director', 'Administrator', 'Teacher'],
+        },
+        {
+            path: '/dashboard/grades',
+            title: 'Gradebook',
+            icon: GraduationCap,
+            roles: ['Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/report-cards',
+            title: 'Report Cards',
+            icon: FileText,
+            roles: ['Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/timetable',
+            title: 'Timetable',
+            icon: CalendarDays,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+    ]
+  },
+   {
+    path: '/dashboard/hr',
+    title: 'Human Resources',
+    icon: UserCog,
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
+    subItems: [
+        {
+            path: '/dashboard/leave-management',
+            title: 'Leave Management',
+            icon: Plane,
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
+        },
+        {
+            path: '/dashboard/staff/performance',
+            title: 'Performance',
+            icon: Star,
+            roles: ['Director', 'Administrator'],
+        },
+    ]
   },
   {
-    path: '/dashboard/transport',
-    title: 'Transport',
-    icon: RouteIcon,
-    roles: ['Administrator', 'Director', 'Transport Staff'],
-  },
-  {
-    path: '/dashboard/accounts',
-    title: 'Accounts',
+    path: '/dashboard/financials',
+    title: 'Financials',
     icon: Banknote,
     roles: ['Director', 'Administrator', 'Accountant'],
-    subItems: [
+     subItems: [
       {
         path: '/dashboard/accounts',
         title: 'Student Billing',
@@ -206,63 +173,89 @@ export const navItems: NavItem[] = [
         icon: Landmark,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+       {
+        path: '/dashboard/payroll',
+        title: 'Payroll',
+        icon: Landmark,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
       {
-        path: '/dashboard/accounts/vendors',
-        title: 'Vendors',
+        path: '/dashboard/my-payslips',
+        title: 'My Payslips',
+        icon: FileText,
+        roles: ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Director', 'Administrator'],
+      },
+    ]
+  },
+   {
+    path: '/dashboard/operations',
+    title: 'Operations',
+    icon: Boxes,
+    roles: ['Director', 'Administrator', 'Librarian', 'Transport Staff'],
+     subItems: [
+        {
+            path: '/dashboard/library',
+            title: 'Library',
+            icon: Library,
+            roles: ['Librarian', 'Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/inventory',
+            title: 'Inventory',
+            icon: Boxes,
+            roles: ['Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/transport',
+            title: 'Transport',
+            icon: RouteIcon,
+            roles: ['Administrator', 'Director', 'Transport Staff'],
+        },
+    ]
+  },
+  {
+    path: '/dashboard/reports',
+    title: 'Reports',
+    icon: BarChart,
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
+     subItems: [
+      {
+        path: '/dashboard/reports/academics',
+        title: 'Academic',
+        icon: GraduationCap,
+        roles: ['Director', 'Administrator', 'Teacher'],
+      },
+      {
+        path: '/dashboard/reports/attendance',
+        title: 'Attendance',
+        icon: CalendarCheck,
+        roles: ['Director', 'Administrator', 'Teacher'],
+      },
+      {
+        path: '/dashboard/reports/enrollment',
+        title: 'Enrollment',
         icon: Users,
+        roles: ['Director', 'Administrator'],
+      },
+       {
+        path: '/dashboard/reports/financials',
+        title: 'Financial',
+        icon: Banknote,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+       {
+        path: '/dashboard/reports/payroll',
+        title: 'Payroll',
+        icon: Landmark,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
       {
-        path: '/dashboard/accounts/general-ledger',
-        title: 'General Ledger',
-        icon: BookOpen,
-        roles: ['Director', 'Administrator', 'Accountant'],
+        path: '/dashboard/reports/inventory',
+        title: 'Inventory',
+        icon: Boxes,
+        roles: ['Director', 'Administrator'],
       },
-      {
-        path: '/dashboard/accounts/chart-of-accounts',
-        title: 'Chart of Accounts',
-        icon: BookMarked,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      }
     ]
-  },
-  {
-    path: '/dashboard/library',
-    title: 'Library',
-    icon: Library,
-    roles: ['Librarian', 'Student', 'Teacher', 'Administrator', 'Director'],
-  },
-  {
-    path: '/dashboard/payroll',
-    title: 'Payroll',
-    icon: Landmark,
-    roles: ['Director', 'Administrator', 'Accountant'],
-    subItems: [
-        {
-            path: '/dashboard/payroll',
-            title: 'Run Payroll',
-            icon: Landmark,
-            roles: ['Director', 'Administrator', 'Accountant'],
-        },
-        {
-            path: '/dashboard/payroll/staff-config',
-            title: 'Staff Config',
-            icon: Users,
-            roles: ['Director', 'Administrator', 'Accountant'],
-        },
-        {
-            path: '/dashboard/payroll/settings',
-            title: 'Settings',
-            icon: FileText,
-            roles: ['Director', 'Administrator', 'Accountant'],
-        },
-    ]
-  },
-  {
-    path: '/dashboard/my-payslips',
-    title: 'My Payslips',
-    icon: FileText,
-    roles: ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Director', 'Administrator'],
   },
 ];
 
