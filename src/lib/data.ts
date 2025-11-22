@@ -142,13 +142,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/attendance',
     title: 'Attendance',
     icon: CalendarCheck,
-    roles: ['Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator', 'Teacher'],
     subItems: [
         {
             path: '/dashboard/attendance/face-recognition',
             title: 'Face Recognition Kiosk',
             icon: ScanFace,
-            roles: ['Administrator', 'Teacher'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         }
     ]
   },
