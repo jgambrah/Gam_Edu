@@ -33,32 +33,6 @@ export type NavItem = {
   subItems?: NavItem[];
 };
 
-// Attendance Schemas
-export const ATTENDANCE_STATUSES = ['Present', 'Absent', 'Late', 'Excused'] as const;
-export type AttendanceStatus = typeof ATTENDANCE_STATUSES[number];
-
-export const attendanceRecordSchema = z.object({
-  studentId: z.string(),
-  status: z.enum(ATTENDANCE_STATUSES),
-  notes: z.string().optional(),
-});
-
-export const attendanceFormSchema = z.object({
-  classId: z.string().min(1, 'Please select a class.'),
-  date: z.date(),
-  students: z.array(attendanceRecordSchema),
-});
-
-export type AttendanceRecord = {
-  id: string;
-  studentId: string;
-  classId: string;
-  date: any; // Firestore Timestamp
-  status: AttendanceStatus;
-  notes?: string;
-  markedBy: string; // teacherId or 'kiosk'
-};
-
 export const assignmentSchema = z.object({
     classId: z.string().min(1, 'Class is required.'),
     title: z.string().min(1, 'Title is required.'),
