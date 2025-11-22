@@ -36,7 +36,6 @@ export default function ManualAttendancePage() {
       if (role === 'Teacher') {
         return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
       } else if (role === 'Administrator' || role === 'Director') {
-        // Correctly wrap the collection in a query for all roles
         return query(collection(firestore, 'classes'));
       }
       return null;
