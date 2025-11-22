@@ -213,6 +213,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
         defaultValues: {
             teacherId: classData.teacherId || '',
             capacity: classData.capacity || 30,
+            description: classData.description || '',
         }
     });
 
@@ -233,7 +234,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
         });
     }, [timetable, subjects, teachers, classData.id]);
 
-    async function onUpdate(values: { teacherId: string; capacity: number; }) {
+    async function onUpdate(values: { teacherId: string; capacity: number; description?: string; }) {
         if (!firestore) return;
         setIsSubmitting(true);
         try {
@@ -253,7 +254,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
         <DialogContent className="max-w-4xl">
             <DialogHeader>
                 <DialogTitle>Class Details: {classData.name}</DialogTitle>
-                <DialogDescription>{classData.description || "View and manage class details below."}</DialogDescription>
+                <DialogDescription>View and manage class details below.</DialogDescription>
             </DialogHeader>
              <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto p-1">
                 {/* Left Column: Details & Management */}
@@ -270,6 +271,9 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                     )}/>
                                     <FormField control={form.control} name="capacity" render={({ field }) => (
                                         <FormItem><FormLabel>Class Capacity</FormLabel><FormControl><Input type="number" {...field} disabled={!canManage} /></FormControl></FormItem>
+                                    )}/>
+                                    <FormField control={form.control} name="description" render={({ field }) => (
+                                        <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} disabled={!canManage} /></FormControl></FormItem>
                                     )}/>
                                     {canManage && <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Save Changes</Button>}
                                 </form>
