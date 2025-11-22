@@ -48,20 +48,24 @@ export async function createNewUser(
   try {
     let userRecord;
     try {
-        // First try to get user, they might have been created on the client
+        // First, check if a user with this email already exists.
         userRecord = await auth.getUserByEmail(email);
+        // If we found a user, it's a duplicate.
+        return { error: `A user with email '${email}' already exists. Please use a different email address.` };
     } catch (error: any) {
-        if (error.code === 'auth/user-not-found') {
-            // If user doesn't exist, create them
-            userRecord = await auth.createUser({
-                email: email,
-                password: password,
-            });
-        } else {
-            // Re-throw other errors
+        // 'auth/user-not-found' is the expected error if the user doesn't exist.
+        // In that case, we can proceed with creation.
+        if (error.code !== 'auth/user-not-found') {
+            // For any other error (e.g., network issues), we should stop and report it.
             throw error;
         }
     }
+
+    // If we've reached here, it means the user does not exist, so we can create them.
+    userRecord = await auth.createUser({
+        email: email,
+        password: password,
+    });
     
     // Set custom claims for the user's role
     const selectedRole = role || 'Parent'; // Default to 'Parent' if no role is provided
@@ -76,7 +80,7 @@ export async function createNewUser(
     if (error.code) {
         switch(error.code) {
             case 'auth/email-already-exists':
-                errorMessage = 'This email is already in use by another account.';
+                errorMessage = 'A user with this email address already exists. Please use a different email.';
                 break;
             case 'auth/invalid-credential':
             case 'auth/invalid-grant':
