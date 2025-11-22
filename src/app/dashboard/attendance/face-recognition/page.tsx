@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, ScanFace, UserCheck } from 'lucide-react';
+import { Loader2, ScanFace, UserCheck, Video, VideoOff } from 'lucide-react';
 import { identifyAndMarkAttendance } from '@/ai/flows/identify-and-mark-attendance-flow';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
-type KioskStatus = 'initializing' | 'scanning' | 'processing' | 'success' | 'failure' | 'no-camera';
+type KioskStatus = 'initializing' | 'scanning' | 'processing' | 'success' | 'failure' | 'no-camera' | 'off';
 
 const statusMessages: Record<KioskStatus, string> = {
   initializing: 'Initializing Camera...',
@@ -17,48 +17,78 @@ const statusMessages: Record<KioskStatus, string> = {
   success: 'Welcome!',
   failure: 'Face not recognized. Please try again.',
   'no-camera': 'Camera access denied or unavailable.',
+  off: 'Camera is off.',
 };
 
 export default function FaceRecognitionPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
 
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
-  const [status, setStatus] = useState<KioskStatus>('initializing');
+  const [status, setStatus] = useState<KioskStatus>('off');
   const [recognizedStudent, setRecognizedStudent] = useState<{name: string, id: string} | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCameraOn, setIsCameraOn] = useState(false);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraOn(false);
+    setStatus('off');
+  }, []);
+
+  const startCamera = useCallback(async () => {
+    setStatus('initializing');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      setHasCameraPermission(true);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setStatus('scanning');
+      setIsCameraOn(true);
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setHasCameraPermission(false);
+      setStatus('no-camera');
+      setIsCameraOn(false);
+      toast({
+        variant: 'destructive',
+        title: 'Camera Access Denied',
+        description: 'Please enable camera permissions in your browser settings.',
+      });
+    }
+  }, [toast]);
+  
+  const handleToggleCamera = () => {
+    if (isCameraOn) {
+      stopCamera();
+    } else {
+      startCamera();
+    }
+  };
 
   useEffect(() => {
-    const getCameraPermission = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        setHasCameraPermission(true);
-
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-        setStatus('scanning');
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-        setStatus('no-camera');
-        toast({
-          variant: 'destructive',
-          title: 'Camera Access Denied',
-          description: 'Please enable camera permissions in your browser settings.',
-        });
-      }
+    // Cleanup on unmount
+    return () => {
+      stopCamera();
     };
-
-    getCameraPermission();
-  }, [toast]);
+  }, [stopCamera]);
 
   useEffect(() => {
     if (status !== 'scanning' || isProcessing) return;
 
     const intervalId = setInterval(async () => {
-      if (videoRef.current && canvasRef.current) {
+      if (videoRef.current && canvasRef.current && streamRef.current) {
         setIsProcessing(true);
         setStatus('processing');
 
@@ -134,7 +164,7 @@ export default function FaceRecognitionPage() {
                 )}
             </div>
           </div>
-          {!hasCameraPermission && (
+          {status === 'no-camera' && (
             <Alert variant="destructive" className="mt-4">
               <AlertTitle>Camera Access Required</AlertTitle>
               <AlertDescription>
@@ -143,6 +173,12 @@ export default function FaceRecognitionPage() {
             </Alert>
           )}
         </CardContent>
+        <CardFooter>
+            <Button onClick={handleToggleCamera} className="w-full">
+                {isCameraOn ? <VideoOff className="mr-2 h-4 w-4" /> : <Video className="mr-2 h-4 w-4" />}
+                {isCameraOn ? 'Turn Off Camera' : 'Start Camera'}
+            </Button>
+        </CardFooter>
       </Card>
     </div>
   );
