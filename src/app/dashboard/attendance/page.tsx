@@ -40,7 +40,7 @@ export default function ManualAttendancePage() {
       }
       return null;
     },
-    [firestore, user, role] // Correctly added role to the dependency array
+    [firestore, user, role] 
   );
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
 

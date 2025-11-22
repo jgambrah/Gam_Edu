@@ -23,11 +23,11 @@ export default function CommunicationPage() {
 
   const announcementsQuery = useMemoFirebase(
     () =>
-      query(
+      firestore && role ? query(
         collection(firestore, 'announcements'),
         where('audience', 'array-contains-any', ['Everybody', role]),
         orderBy('publishedAt', 'desc')
-      ),
+      ) : null,
     [firestore, role]
   );
   
@@ -80,5 +80,3 @@ export default function CommunicationPage() {
     </div>
   );
 }
-
-    
