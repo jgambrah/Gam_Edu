@@ -128,7 +128,6 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onEditSubmit)} className="space-y-4">
-        {/* Form fields for editing */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField control={form.control} name="firstName" render={({ field }) => (
                 <FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -148,6 +147,30 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
                 </Select>
             <FormMessage /></FormItem>
         )}/>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
+                <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="gender" render={({ field }) => (
+                <FormItem><FormLabel>Gender</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="Select a gender"/></SelectTrigger></FormControl>
+                        <SelectContent>
+                            <SelectItem value="Male">Male</SelectItem>
+                            <SelectItem value="Female">Female</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                    </Select>
+                <FormMessage /></FormItem>
+            )}/>
+        </div>
+        <FormField control={form.control} name="nationality" render={({ field }) => (
+            <FormItem><FormLabel>Nationality</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+        )}/>
+        <FormField control={form.control} name="address" render={({ field }) => (
+            <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+        )}/>
+
          <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
@@ -157,7 +180,7 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
   )
 }
 
-function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading: boolean }) {
+function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | null, isLoading: boolean, forceRefetch: () => void }) {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -171,6 +194,7 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
         // Note: This does not delete the user from Firebase Auth to prevent accidental lockouts.
         // That should be a separate, more deliberate administrative action.
         toast({ title: 'Success', description: 'Staff member has been deleted.'});
+        forceRefetch();
     } catch(error) {
         console.error(error);
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete staff member.' });
@@ -246,12 +270,12 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
     </Card>
 
     {editingStaff && (
-        <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
+        <Dialog open={!!editingStaff} onOpenChange={(open) => { if (!open) { setEditingStaff(null); forceRefetch(); }}}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Edit Staff: {editingStaff.firstName} {editingStaff.lastName}</DialogTitle>
                 </DialogHeader>
-                <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} />
+                <EditStaffForm staff={editingStaff} setOpen={() => { setEditingStaff(null); forceRefetch(); }} />
             </DialogContent>
         </Dialog>
     )}
@@ -263,8 +287,9 @@ function StaffPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
   
-  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
+  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]);
   const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -323,6 +348,7 @@ function StaffPageContent() {
         description: `${values.email} has been added as a ${values.role}.`,
       });
       
+      forceRefetch();
       form.reset();
     } catch (error: any) {
       toast({
@@ -512,7 +538,7 @@ function StaffPageContent() {
         </CardContent>
       </Card>
 
-      <StaffList staff={staff} isLoading={isLoading} />
+      <StaffList staff={staff} isLoading={isLoading} forceRefetch={forceRefetch} />
     </div>
   );
 }
