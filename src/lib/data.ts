@@ -24,6 +24,7 @@ import {
   Landmark,
   Boxes,
   Route as RouteIcon,
+  BookCopy,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -88,6 +89,12 @@ export const navItems: NavItem[] = [
     title: 'Classes',
     icon: BookOpen,
     roles: ['Director', 'Administrator', 'Teacher'],
+  },
+  {
+    path: '/dashboard/subjects',
+    title: 'Subjects',
+    icon: BookCopy,
+    roles: ['Director', 'Administrator'],
   },
   {
     path: '/dashboard/lesson-planning',
