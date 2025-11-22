@@ -74,10 +74,6 @@ const studentFormSchema = z.object({
 
 const editStudentFormSchema = studentFormSchema.omit({ password: true, email: true });
 
-const classFormSchema = z.object({
-    name: z.string().min(1, { message: 'Class name is required.' }),
-});
-
 type StudentData = z.infer<typeof studentFormSchema> & { id: string };
 
 function EditStudentForm({ student, classes, setOpen }: { student: StudentData, classes: any[] | null, setOpen: (open: boolean) => void }) {
@@ -238,82 +234,6 @@ function StudentList({ students, classes, isLoading, searchTerm, classFilter, fo
   );
 }
 
-
-function ClassManager() {
-    const firestore = useFirestore();
-    const classesCollectionRef = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
-    const { data: classes, isLoading } = useCollection<{id: string, name: string}>(classesCollectionRef);
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const classForm = useForm<z.infer<typeof classFormSchema>>({
-        resolver: zodResolver(classFormSchema),
-        defaultValues: {
-            name: '',
-        },
-    });
-
-    async function onClassSubmit(values: z.infer<typeof classFormSchema>) {
-        setIsSubmitting(true);
-        try {
-            const classId = values.name.toLowerCase().replace(/\s+/g, '-');
-            await setDocumentNonBlocking(doc(firestore, 'classes', classId), { name: values.name }, { merge: true });
-            toast({
-                title: 'Class Added',
-                description: `Class "${values.name}" has been created.`,
-            });
-            classForm.reset();
-        } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not create class.',
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Class Management</CardTitle>
-                <CardDescription>Create and view classes.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                 <Form {...classForm}>
-                    <form onSubmit={classForm.handleSubmit(onClassSubmit)} className="flex items-end gap-4">
-                        <FormField
-                        control={classForm.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem className="flex-grow">
-                            <FormLabel>New Class Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="e.g., Grade 10-A" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Add Class'}
-                        </Button>
-                    </form>
-                </Form>
-                <div>
-                    <h4 className="font-medium mb-2">Existing Classes</h4>
-                    {isLoading ? <Skeleton className="h-8 w-full" /> : (
-                        <div className="flex flex-wrap gap-2">
-                            {classes?.map(c => <span key={c.id} className="text-sm p-2 bg-muted rounded-md">{c.name}</span>)}
-                        </div>
-                    )}
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
-
 function StudentsPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -399,7 +319,6 @@ function StudentsPageContent() {
 
   return (
     <div className="space-y-6">
-       <ClassManager />
       <Card>
         <CardHeader>
           <CardTitle>Add New Student</CardTitle>
