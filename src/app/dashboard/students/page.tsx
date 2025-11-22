@@ -58,14 +58,16 @@ const classFormSchema = z.object({
 });
 
 
-function StudentList({ students, isLoading, searchTerm }: { students: any[] | null, isLoading: boolean, searchTerm: string }) {
+function StudentList({ students, isLoading, searchTerm, classFilter }: { students: any[] | null, isLoading: boolean, searchTerm: string, classFilter: string }) {
   
   const filteredStudents = useMemo(() => {
     if (!students) return [];
-    return students.filter(student =>
-      `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [students, searchTerm]);
+    return students.filter(student => {
+        const nameMatch = `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
+        const classMatch = classFilter === 'all' || student.classId === classFilter;
+        return nameMatch && classMatch;
+    });
+  }, [students, searchTerm, classFilter]);
 
   if (isLoading) {
     return (
@@ -182,6 +184,7 @@ function StudentsPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [classFilter, setClassFilter] = useState('all');
   
   const classesCollectionRef = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
   const { data: classes } = useCollection<{id: string, name: string}>(classesCollectionRef);
@@ -415,16 +418,30 @@ function StudentsPageContent() {
         <CardHeader>
           <CardTitle>Student List</CardTitle>
           <CardDescription>A list of all students in the system.</CardDescription>
-          <div className="pt-4">
+          <div className="pt-4 flex gap-4">
             <Input 
               placeholder="Search by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm"
             />
+            <Select value={classFilter} onValueChange={setClassFilter}>
+                <SelectTrigger className="w-[280px]">
+                    <SelectValue placeholder="Filter by class" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">All Classes</SelectItem>
+                    {classes?.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent>
-            <StudentList students={students} isLoading={isLoading} searchTerm={searchTerm} />
+            <StudentList students={students} isLoading={isLoading} searchTerm={searchTerm} classFilter={classFilter} />
         </CardContent>
       </Card>
     </div>
