@@ -240,32 +240,6 @@ export type LibraryItem = z.infer<typeof libraryItemSchema> & {
     createdAt: any;
 };
 
-// Attendance Schemas
-const attendanceRecordEntrySchema = z.object({
-    studentId: z.string(),
-    studentName: z.string(),
-    status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
-    notes: z.string().optional(),
-});
-
-export const dailyAttendanceFormSchema = z.object({
-    classId: z.string().min(1, "Please select a class."),
-    date: z.date(),
-    records: z.array(attendanceRecordEntrySchema),
-});
-
-
-export type AttendanceRecord = {
-    id: string;
-    studentId: string;
-    classId: string;
-    date: any;
-    status: 'Present' | 'Absent' | 'Late' | 'Excused';
-    notes?: string;
-    markedBy: string; // UID of teacher or 'kiosk'
-};
-
-
 // Admission Schemas
 const parentGuardianSchema = z.object({
     name: z.string().min(1, 'Name is required.'),

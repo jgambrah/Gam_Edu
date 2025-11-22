@@ -102,12 +102,6 @@ export const navItems: NavItem[] = [
     icon: ClipboardList,
     roles: ['Director', 'Administrator', 'Teacher'],
   },
-    {
-    path: '/dashboard/attendance',
-    title: 'Attendance',
-    icon: CalendarCheck,
-    roles: ['Director', 'Administrator', 'Teacher'],
-  },
   {
     path: '/dashboard/leave-management',
     title: 'Leave Management',

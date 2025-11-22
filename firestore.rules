@@ -213,11 +213,6 @@ service cloud.firestore {
       allow update: if isLibrarianOrAdmin() || (isBorrower() && canRequest(itemId));
     }
     
-    match /attendance/{attendanceId} {
-      allow read: if isTeacher() || isAdmin() || isOwner(resource.data.studentId);
-      allow create: if isTeacher() || isAdmin();
-    }
-
     match /admissionApplications/{applicationId} {
       allow read: if isAdmin();
       allow create: if isParent();

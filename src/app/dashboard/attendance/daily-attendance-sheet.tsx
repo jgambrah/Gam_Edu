@@ -1,250 +1,661 @@
-'use client';
-
-import { useState, useMemo } from 'react';
-import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
-import { dailyAttendanceFormSchema, AttendanceRecord } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/firebase';
 
-type Student = { uid: string; firstName: string; lastName: string; };
+export type UserRole =
+  | 'Director'
+  | 'Administrator'
+  | 'Teacher'
+  | 'Accountant'
+  | 'Student'
+  | 'Parent'
+  | 'Librarian'
+  | 'Cook'
+  | 'Transport Staff';
 
-async function getStudentsByClass(classId: string, firestore: any): Promise<Student[]> {
-    const studentsQuery = query(collection(firestore, 'students'), where('classId', '==', classId));
-    const snapshot = await getDocs(studentsQuery);
-    return snapshot.docs.map(doc => ({ uid: doc.data().uid, firstName: doc.data().firstName, lastName: doc.data().lastName }));
+export const ALL_ROLES: UserRole[] = [
+  'Director',
+  'Administrator',
+  'Teacher',
+  'Accountant',
+  'Student',
+  'Parent',
+  'Librarian',
+  'Cook',
+  'Transport Staff',
+];
+
+export type NavItem = {
+  path: string;
+  title: string;
+  icon: LucideIcon;
+  roles: UserRole[] | 'all';
+  subItems?: NavItem[];
+};
+
+export const assignmentSchema = z.object({
+    classId: z.string().min(1, 'Class is required.'),
+    title: z.string().min(1, 'Title is required.'),
+    description: z.string().min(1, 'Description is required.'),
+    dueDate: z.date(),
+    gradingType: z.enum(['points', 'letter', 'pass_fail', 'standards']),
+    attachments: z.string().optional(),
+});
+
+export type Assignment = z.infer<typeof assignmentSchema> & {
+    id: string;
+    teacherId: string;
+    createdAt: any;
+};
+
+export const studentSubmissionSchema = z.object({
+    content: z.string().min(1, 'Content is required.'),
+});
+
+export type StudentSubmission = {
+    id: string;
+    assignmentId: string;
+    studentId: string;
+    studentName: string;
+    submissionType: 'file' | 'text';
+    content: string;
+    submittedAt: any;
+    status: 'Submitted' | 'Late' | 'Graded';
+    grade?: string;
+    teacherFeedback?: string;
+};
+
+export const gradeSubmissionSchema = z.object({
+    grade: z.string().min(1, 'Grade is required.'),
+    teacherFeedback: z.string().optional(),
+});
+
+export const quizSchema = z.object({
+    topic: z.string().min(3, "Topic must be at least 3 characters long."),
+    numQuestions: z.coerce.number().min(1).max(10),
+    classId: z.string().min(1, "Please select a class."),
+});
+
+export type QuizQuestion = {
+    questionText: string;
+    options: string[];
+    correctAnswer: string;
+    explanation?: string;
 }
 
-async function getAttendanceForClassOnDate(classId: string, date: Date, firestore: any): Promise<AttendanceRecord[]> {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const attendanceQuery = query(
-        collection(firestore, 'attendance'),
-        where('classId', '==', classId),
-        where('date', '>=', startOfDay),
-        where('date', '<=', endOfDay)
-    );
-    const snapshot = await getDocs(attendanceQuery);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceRecord));
+export type Quiz = {
+    id: string;
+    classId: string;
+    teacherId: string;
+    title: string;
+    topic: string;
+    questions: QuizQuestion[];
+    createdAt: any;
+    forGradeLevel?: string;
 }
 
-export function DailyAttendanceSheet() {
-  const { role } = useRole();
-  const firestore = useFirestore();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  
-  const [isLoadingStudents, setIsLoadingStudents] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [studentsLoaded, setStudentsLoaded] = useState(false);
-  
-  const classesQuery = useMemoFirebase(() => {
-    if (!user) return null;
-    if (role === 'Teacher') {
-        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    if (role === 'Administrator' || role === 'Director') {
-        return query(collection(firestore, 'classes'));
-    }
-    return null;
-  }, [firestore, user, role]);
-  const { data: classes } = useCollection(classesQuery);
-  
-  const form = useForm<z.infer<typeof dailyAttendanceFormSchema>>({
-    resolver: zodResolver(dailyAttendanceFormSchema),
-    defaultValues: {
-      date: new Date(),
-      records: [],
-    },
-  });
+export type QuizAttempt = {
+    id: string;
+    quizId: string;
+    studentId: string;
+    score: number;
+    total: number;
+    completedAt: any;
+}
 
-  const { fields, replace } = useFieldArray({
-    control: form.control,
-    name: 'records',
-  });
 
-  const handleLoadStudents = async () => {
-    const { classId, date } = form.getValues();
-    if (!classId || !date) {
-        toast({ variant: 'destructive', title: 'Selection Required', description: 'Please select a class and a date.' });
-        return;
-    }
-    setIsLoadingStudents(true);
-    setStudentsLoaded(false);
+// Assessment & Gradebook Schemas
+export const assessmentFeedbackSchema = z.object({
+  academicYear: z.string().min(1, "Academic year is required."),
+  term: z.string().min(1, "Term is required."),
+  classId: z.string().min(1, "Class is required."),
+  studentId: z.string().min(1, "Student is required."),
+  subjectId: z.string().min(1, "Subject is required."),
+  assessmentName: z.string().min(1, "Assessment name is required."),
+  assessmentType: z.enum(['Quiz', 'Assignment', 'Activity', 'Exam']),
+  assessmentDate: z.date(),
+  score: z.coerce.number().optional(),
+  maxScore: z.coerce.number().optional(),
+  feedback: z.string().optional(),
+  teacherId: z.string().optional(),
+}).refine(data => !data.score || !data.maxScore || data.score <= data.maxScore, {
+  message: "Score cannot exceed max score",
+  path: ["score"],
+});
+
+
+export type Assessment = z.infer<typeof assessmentFeedbackSchema> & {
+    id: string;
+    createdAt: any;
+};
+
+export const behavioralRecordSchema = z.object({
+    studentId: z.string().min(1, "Student is required."),
+    incidentType: z.enum(['Infraction', 'Positive Behavior', 'Counseling Note', 'Disciplinary Action', 'Teacher Note']),
+    date: z.date(),
+    description: z.string().min(1, "Description is required."),
+    actionTaken: z.string().optional(),
+    recordedById: z.string(),
+});
+
+export type BehavioralRecord = z.infer<typeof behavioralRecordSchema> & {
+    id: string;
+    createdAt: any;
+};
+
+export const reportCardCommentSchema = z.object({
+    comment: z.string().min(1, "Comment cannot be empty."),
+    subjectId: z.string().min(1, "Subject is required."),
+});
+
+export type ReportCardComment = {
+    id: string;
+    studentId: string;
+    subjectId: string;
+    comment: string;
+    teacherId: string;
+    term: string;
+    academicYear: string;
+    createdAt: any;
+    updatedAt: any;
+}
+
+export type ReportCardStatus = 'Draft' | 'AwaitingFinalApproval' | 'Published';
+
+export type ReportCard = {
+    id: string; // Typically studentId-academicYear-term
+    studentId: string;
+    classId: string;
+    academicYear: string;
+    term: string;
+    status: ReportCardStatus;
+    generalComment?: string;
+    publishedAt?: any;
+    finalGrade?: string;
+    finalPercentage?: number;
+}
+
+// Timetable Schemas
+export type Subject = { id: string; name: string; teacherIds: string[] };
+export type Room = { id: string; name: string; capacity: number };
+export type TimeSlot = { id: string; day: string; startTime: string; endTime: string };
+export type TimetableEntry = {
+  id: string;
+  classId: string;
+  subjectId: string;
+  teacherId: string;
+  roomId: string;
+  day: string;
+  timeSlotId: string;
+};
+
+// Resource Schemas
+export const resourceSchema = z.object({
+    title: z.string().min(1, 'Title is required.'),
+    courseName: z.string().min(1, 'Course is required.'),
+    resourceType: z.enum(['Document', 'Video', 'Presentation', 'Link']),
+    url: z.string().url('Must be a valid URL.'),
+});
+
+export type Resource = z.infer<typeof resourceSchema> & {
+    id: string;
+};
+
+// Lesson Planning Schemas
+export const lessonPlanSchema = z.object({
+    classId: z.string().min(1, 'Class is required.'),
+    date: z.date({ required_error: 'A date for the lesson is required.'}),
+    topic: z.string().min(1, 'Topic is required.'),
+    objectives: z.string().min(1, 'Learning objectives are required.'),
+    activities: z.string().min(1, 'Activities are required.'),
+    materials: z.string().min(1, 'Materials and resources are required.'),
+    notes: z.string().optional(),
+});
+
+export type LessonPlan = z.infer<typeof lessonPlanSchema> & {
+    id: string;
+    teacherId: string;
+    createdAt: any;
+};
+
+// Library Schemas
+export const libraryItemSchema = z.object({
+    name: z.string().min(1, "Item name is required."),
+    category: z.enum(['Book', 'Magazine', 'DVD', 'Other']),
+    quantity: z.coerce.number().min(1, "Quantity must be at least 1."),
+    location: z.string().min(1, "Location is required."),
+    author: z.string().optional(),
+    isbn: z.string().optional(),
+    publisher: z.string().optional(),
+    unitPrice: z.coerce.number().optional(),
+    purchaseDate: z.date().optional(),
+});
+
+export type LibraryItem = z.infer<typeof libraryItemSchema> & {
+    id: string;
+    status: 'Available' | 'Requested' | 'Borrowed' | 'Pending Return';
+    currentHolderId?: string;
+    currentHolderName?: string;
+    dueDate?: any;
+    createdAt: any;
+};
+
+// Admission Schemas
+const parentGuardianSchema = z.object({
+    name: z.string().min(1, 'Name is required.'),
+    relationship: z.string().min(1, 'Relationship is required.'),
+    phone: z.string().min(1, 'Phone number is required.'),
+    email: z.string().email('Invalid email address.'),
+    addressSameAsStudent: z.boolean().default(false),
+    address: z.string().optional(),
+});
+  
+export const studentRegistrationSchema = z.object({
+    // Student Information
+    student: z.object({
+        fullName: z.string().min(1, 'Full name is required.'),
+        dateOfBirth: z.date({ required_error: 'Date of birth is required.' }),
+        gender: z.string().min(1, 'Gender is required.'),
+        phone: z.string().optional(),
+        email: z.string().email('Invalid email address.').optional(),
+        address: z.string().min(1, 'Address is required.'),
+        previousSchool: z.string().optional(),
+        desiredGrade: z.string().min(1, 'Desired grade is required.'),
+    }),
     
-    try {
-        const studentList = await getStudentsByClass(classId, firestore);
-        if (studentList.length === 0) {
-            toast({
-                variant: 'destructive',
-                title: 'No Students Found',
-                description: 'There are no students enrolled in the selected class.',
+    // Parent/Guardian Information
+    parent1: parentGuardianSchema,
+    addParent2: z.boolean().default(false),
+    parent2: parentGuardianSchema.optional(),
+
+    // Emergency Contact
+    emergencyContact: z.object({
+        name: z.string().min(1, 'Emergency contact name is required.'),
+        relationship: z.string().min(1, 'Relationship is required.'),
+        phone: z.string().min(1, 'Phone number is required.'),
+    }),
+
+    // Medical Information
+    addMedicalInfo: z.boolean().default(false),
+    medical: z.object({
+        allergies: z.string().optional(),
+        conditions: z.string().optional(),
+        physicianName: z.string().optional(),
+        physicianPhone: z.string().optional(),
+    }).optional(),
+
+}).superRefine((data, ctx) => {
+    // Conditional validation for Parent 1's address
+    if (!data.parent1.addressSameAsStudent && !data.parent1.address) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Address is required.',
+            path: ['parent1', 'address'],
+        });
+    }
+    // Conditional validation for Parent 2
+    if (data.addParent2 && data.parent2) {
+        if (!data.parent2.addressSameAsStudent && !data.parent2.address) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'Address is required.',
+                path: ['parent2', 'address'],
             });
-            replace([]);
-            setStudentsLoaded(true);
-            setIsLoadingStudents(false);
-            return;
         }
-
-        const existingRecords = await getAttendanceForClassOnDate(classId, date, firestore);
-        
-        const attendanceData = studentList.map(student => {
-            const existingRecord = existingRecords.find(rec => rec.studentId === student.uid);
-            return {
-                studentId: student.uid,
-                studentName: `${student.firstName} ${student.lastName}`,
-                status: existingRecord?.status || 'Present',
-                notes: existingRecord?.notes || ''
-            };
-        });
-        
-        replace(attendanceData);
-        setStudentsLoaded(true);
-
-    } catch (e) {
-        console.error(e);
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to load students.'});
-    } finally {
-        setIsLoadingStudents(false);
     }
-  };
-
-  const onSubmit = async (values: z.infer<typeof dailyAttendanceFormSchema>) => {
-    if (!user) return;
-    setIsSubmitting(true);
-    const { classId, date, records } = values;
-
-    try {
-        const batch = writeBatch(firestore);
-        const existingRecords = await getAttendanceForClassOnDate(classId, date, firestore);
-
-        records.forEach(record => {
-            const existing = existingRecords.find(er => er.studentId === record.studentId);
-            const recordData = {
-                studentId: record.studentId,
-                classId,
-                date,
-                status: record.status,
-                notes: record.notes,
-                markedBy: user.uid,
-            };
-
-            if (existing?.id) {
-                // Update existing record
-                const docRef = doc(firestore, 'attendance', existing.id);
-                batch.update(docRef, recordData);
-            } else {
-                // Create new record
-                const docRef = doc(collection(firestore, 'attendance'));
-                batch.set(docRef, recordData);
-            }
-
-            if (record.status === 'Absent' || record.status === 'Late') {
-                // Placeholder for real notification logic
-                console.log(`NOTIFICATION: Parent of ${record.studentName} to be notified of ${record.status} status.`);
-            }
-        });
-        
-        await batch.commit();
-        toast({ title: 'Success!', description: 'Attendance has been saved.'});
-
-    } catch(e) {
-        console.error(e);
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to save attendance records.'});
-    } finally {
-        setIsSubmitting(false);
+    // Conditional validation for medical info
+    if (data.addMedicalInfo && data.medical) {
+        if (!data.medical.allergies && !data.medical.conditions && !data.medical.physicianName) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: 'Please provide at least one piece of medical information.',
+                path: ['medical', 'allergies'],
+            });
+        }
     }
-  };
+});
   
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card>
-          <CardContent className="pt-6 grid md:grid-cols-3 gap-4 items-end">
-            <FormField control={form.control} name="classId" render={({ field }) => (
-                <FormItem><FormLabel>Class</FormLabel>
-                    <Select onValueChange={(value) => {
-                        field.onChange(value);
-                        setStudentsLoaded(false); // Reset when class changes
-                        replace([]);
-                    }} defaultValue={field.value}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                    </Select>
-                </FormItem>
-            )}/>
-             <FormField control={form.control} name="date" render={({ field }) => (
-                <FormItem className="flex flex-col"><FormLabel>Date</FormLabel>
-                <Popover><PopoverTrigger asChild><FormControl>
-                    <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
-                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={field.value} onSelect={(date) => {
-                        field.onChange(date);
-                        setStudentsLoaded(false); // Reset when date changes
-                        replace([]);
-                    }} initialFocus />
-                </PopoverContent></Popover></FormItem>
-             )}/>
-             <Button type="button" onClick={handleLoadStudents} disabled={isLoadingStudents || !form.watch('classId') || !form.watch('date')}>
-                {isLoadingStudents ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                Load Students
-             </Button>
-          </CardContent>
-        </Card>
-        
-        {studentsLoaded && fields.length > 0 && (
-            <div className="space-y-4">
-                {fields.map((field, index) => (
-                    <Card key={field.id}>
-                        <CardContent className="pt-6 grid md:grid-cols-3 gap-6 items-center">
-                            <p className="font-medium">{field.studentName}</p>
-                            <FormField control={form.control} name={`records.${index}.status`} render={({ field }) => (
-                                <FormItem><FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-4">
-                                    <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Present" /></FormControl><FormLabel className="font-normal">Present</FormLabel></FormItem>
-                                    <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Absent" /></FormControl><FormLabel className="font-normal">Absent</FormLabel></FormItem>
-                                    <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Late" /></FormControl><FormLabel className="font-normal">Late</FormLabel></FormItem>
-                                    <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Excused" /></FormControl><FormLabel className="font-normal">Excused</FormLabel></FormItem>
-                                </RadioGroup></FormControl></FormItem>
-                            )}/>
-                            <FormField control={form.control} name={`records.${index}.notes`} render={({ field }) => (
-                                <FormItem><FormControl><Input placeholder="Optional notes..." {...field} /></FormControl></FormItem>
-                            )}/>
-                        </CardContent>
-                    </Card>
-                ))}
-                <Button type="submit" disabled={isSubmitting} className="w-full">
-                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                    Submit Attendance
-                </Button>
-            </div>
-        )}
-         {studentsLoaded && fields.length === 0 && !isLoadingStudents && (
-            <div className="text-center py-10 text-muted-foreground">
-                <p>No students found for this class.</p>
-            </div>
-        )}
-      </form>
-    </Form>
-  );
+export type StudentRegistrationData = z.infer<typeof studentRegistrationSchema>;
+
+export type AdmissionApplication = StudentRegistrationData & {
+    id: string;
+    applicationId: string; // A user-friendly, unique ID
+    status: 'Pending Review' | 'Admitted' | 'Rejected';
+    submittedByParentId: string;
+    submittedAt: any;
+    rejectionReason?: string;
+    challengeNotes?: string;
+    assessmentTestScore?: number;
+    assessmentInterviewNotes?: string;
+    adminFeedback?: string;
+};
+
+// Alumni Schemas
+export const graduateStudentSchema = z.object({
+    studentId: z.string().min(1, "You must select a student."),
+    graduationYear: z.coerce.number().min(new Date().getFullYear() - 10).max(new Date().getFullYear() + 1),
+});
+
+export const editAlumniSchema = z.object({
+    currentOccupation: z.string().optional(),
+    employer: z.string().optional(),
+    mentorshipWillingness: z.boolean().default(false),
+});
+
+export type AlumniDetails = z.infer<typeof editAlumniSchema>;
+
+// This extends the existing Student type for alumni management
+export type Student = {
+    id: string;
+    uid: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    classId: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: string;
+    enrollmentStatus?: 'Active' | 'Graduated';
+    graduationYear?: number;
+    alumniDetails?: AlumniDetails;
+    transportStopId?: string;
+};
+
+// Leave Management Schemas
+export const LEAVE_TYPES = ['Sick Leave', 'Vacation', 'Personal', 'Study Leave', 'Unpaid Leave'] as const;
+export type LeaveType = typeof LEAVE_TYPES[number];
+export type LeaveStatus = 'Pending' | 'Approved' | 'Rejected';
+
+export const leaveApplicationSchema = z.object({
+  leaveType: z.enum(LEAVE_TYPES),
+  startDate: z.date({ required_error: 'Start date is required.' }),
+  endDate: z.date({ required_error: 'End date is required.' }),
+  reason: z.string().min(10, 'Please provide a brief reason for your leave.'),
+}).refine(data => data.endDate >= data.startDate, {
+  message: 'End date cannot be before the start date.',
+  path: ['endDate'],
+});
+
+export type LeaveRequest = {
+  id: string;
+  staffId: string;
+  staffName: string;
+  leaveType: LeaveType;
+  startDate: any;
+  endDate: any;
+  reason: string;
+  status: LeaveStatus;
+  approverId?: string;
+  approverName?: string;
+  approverNotes?: string;
+  createdAt: any;
+};
+
+export const managerApprovalSchema = z.object({
+    notes: z.string().optional(),
+});
+
+export const managerRejectionSchema = z.object({
+    notes: z.string().min(1, "A reason for rejection is required."),
+});
+
+
+export type PublicHoliday = {
+    id: string;
+    name: string;
+    date: any;
+};
+
+// Performance Review Schemas
+export const performanceReviewSchema = z.object({
+  staffId: z.string().min(1, 'You must select a staff member.'),
+  reviewDate: z.date({ required_error: 'Review date is required.' }),
+  rating: z.number().min(1, 'Rating is required.').max(5),
+  strengths: z.string().min(1, 'Strengths section cannot be empty.'),
+  improvementAreas: z.string().min(1, 'Areas for Improvement cannot be empty.'),
+  goals: z.string().min(1, 'Goals for next period cannot be empty.'),
+  staffComments: z.string().optional(),
+});
+
+export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
+  id: string;
+  reviewerId: string;
+  reviewerName: string;
+  createdAt: any;
+};
+
+
+// Financial Schemas
+export const financialRecordSchema = z.object({
+  studentId: z.string().min(1, "A student must be selected."),
+  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other']),
+  description: z.string().min(1, "Description is required."),
+  billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
+  dueDate: z.date({ required_error: "Due date is required." }),
+});
+
+export const bulkBillingSchema = z.object({
+  classId: z.string().min(1, "A class must be selected."),
+  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other']),
+  description: z.string().min(1, "Description is required."),
+  billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
+  dueDate: z.date({ required_error: "Due date is required." }),
+});
+
+export const recordPaymentSchema = z.object({
+    amount: z.coerce.number().min(0.01, "Payment amount must be positive."),
+    method: z.enum(['Cash', 'Card', 'Bank Transfer', 'Other']),
+    notes: z.string().optional(),
+});
+
+export const applyWaiverSchema = z.object({
+    amount: z.coerce.number().min(0.01, "Waiver amount must be positive."),
+    reason: z.string().min(1, "A reason for the waiver is required."),
+});
+
+export type FinancialRecord = {
+    id: string;
+    studentId: string;
+    studentName: string;
+    classId: string;
+    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Other';
+    description: string;
+    billedAmount: number;
+    amountPaid: number;
+    waiverAmount?: number;
+    waiverReason?: string;
+    status: 'Paid' | 'Unpaid' | 'Overdue';
+    dueDate: any;
+    createdAt: any;
+};
+
+export type Staff = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+    email: string;
+};
+
+// Payroll Schemas
+export const payrollSettingsFormSchema = z.object({
+    ssnitEmployeeContributionRate: z.coerce.number().min(0).max(1),
+    ssnitEmployerContributionRate: z.coerce.number().min(0).max(1),
+    payeeBrackets: z.array(z.object({
+        from: z.coerce.number().min(0),
+        to: z.coerce.number().min(0).nullable(),
+        rate: z.coerce.number().min(0).max(1)
+    }))
+});
+
+export type PayrollSettings = z.infer<typeof payrollSettingsFormSchema> & { id: string };
+
+const allowanceSchema = z.object({ name: z.string().min(1), amount: z.coerce.number().min(0) });
+const deductionSchema = z.object({ name: z.string().min(1), amount: z.coerce.number().min(0) });
+
+export const staffPayrollConfigSchema = z.object({
+    basicSalary: z.coerce.number().min(0),
+    allowances: z.array(allowanceSchema).optional(),
+    deductions: z.array(deductionSchema).optional(),
+    ssnitNumber: z.string().min(1),
+    tinNumber: z.string().min(1),
+    bankName: z.string().min(1),
+    accountNumber: z.string().min(1),
+});
+
+export type StaffPayrollConfig = z.infer<typeof staffPayrollConfigSchema> & {
+    id?: string;
+    staffId: string;
 }
+
+export type PayrollRecord = {
+    id: string;
+    staffId: string;
+    staffName: string;
+    period: string; // "YYYY-MM"
+    grossSalary: number;
+    netSalary: number;
+    basicSalary: number;
+    totalAllowances: number;
+    totalDeductions: number;
+    allowances: Array<{name: string, amount: number}>;
+    deductions: Array<{name: string, amount: number}>;
+    statutory: {
+        ssnitEmployee: number;
+        ssnitEmployer: number;
+        paye: number;
+    },
+    createdAt: any;
+}
+
+// Accounts Payable Schemas
+export const vendorSchema = z.object({
+    name: z.string().min(1, 'Vendor name is required.'),
+    category: z.string().min(1, 'Category is required.'),
+    email: z.string().email('Invalid email address.'),
+    phone: z.string().min(1, 'Phone number is required.'),
+});
+
+export type Vendor = z.infer<typeof vendorSchema> & { id: string };
+
+export const payableSchema = z.object({
+    vendorId: z.string().min(1, 'A vendor must be selected.'),
+    expenseAccountId: z.string().min(1, 'An expense account must be selected.'),
+    description: z.string().min(1, 'A description is required.'),
+    invoiceNumber: z.string().optional(),
+    amount: z.coerce.number().min(0.01, 'Amount must be greater than zero.'),
+    dueDate: z.date({ required_error: 'A due date is required.'}),
+});
+
+export type AccountsPayableRecord = z.infer<typeof payableSchema> & {
+    id: string;
+    status: 'Unpaid' | 'Paid';
+    createdAt: any;
+    paidAt?: any;
+    paymentAccountId?: string;
+};
+
+// General Ledger Schemas
+export const ACCOUNT_TYPES = ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'] as const;
+export type AccountType = typeof ACCOUNT_TYPES[number];
+
+export const accountSchema = z.object({
+    name: z.string().min(1, 'Account name is required.'),
+    type: z.enum(ACCOUNT_TYPES),
+    parentAccountId: z.string().optional(),
+    description: z.string().optional(),
+});
+
+export type ChartOfAccount = {
+    accountId: string;
+    name: string;
+    type: AccountType;
+    isControlAccount: boolean;
+    parentAccountId?: string;
+    description?: string;
+};
+
+export type JournalEntryItem = {
+    accountId: string;
+    amount: number;
+};
+
+export type GeneralLedgerTransaction = {
+    id: number;
+    ref: string;
+    date: string;
+    description: string;
+    debits: JournalEntryItem[];
+    credits: JournalEntryItem[];
+};
+
+export const journalEntrySchema = z.object({
+    description: z.string().min(1, 'Description is required.'),
+    amount: z.coerce.number().positive('Amount must be positive.'),
+    debitAccountId: z.string().min(1, 'Debit account is required.'),
+    creditAccountId: z.string().min(1, 'Credit account is required.'),
+}).refine(data => data.debitAccountId !== data.creditAccountId, {
+    message: 'Debit and Credit accounts cannot be the same.',
+    path: ['creditAccountId'],
+});
+    
+// Inventory Schemas
+export const inventoryItemSchema = z.object({
+    name: z.string().min(1, "Item name is required."),
+    category: z.enum(['IT Equipment', 'Furniture', 'Office Supplies', 'Lab Equipment', 'Sports Gear', 'Other']),
+    quantity: z.coerce.number().int().min(1),
+    location: z.string().min(1, "Location is required."),
+    supplier: z.string().optional(),
+    purchaseDate: z.date().optional(),
+    unitPrice: z.coerce.number().optional(),
+    condition: z.enum(['New', 'Good', 'Fair', 'Poor', 'For Repair']),
+});
+
+export type InventoryItem = z.infer<typeof inventoryItemSchema> & {
+    id: string;
+    status: 'Available' | 'In Use' | 'Under Maintenance';
+    currentHolderId?: string;
+    currentHolderName?: string;
+    lastCheckedOut?: any;
+};
+
+export const checkoutSchema = z.object({
+    staffId: z.string().min(1, "You must select a staff member."),
+});
+
+export type InventoryTransaction = {
+    id: string;
+    itemId: string;
+    transactionType: 'Creation' | 'Check-Out' | 'Check-In' | 'Audit';
+    timestamp: any;
+    staffId?: string; // Who performed the action or who it was checked out to
+    notes?: string;
+};
+
+// Transport Schemas
+export type Bus = {
+    id: string;
+    name: string;
+    capacity: number;
+    assignedDriverId?: string;
+};
+  
+export type Stop = {
+    id: string;
+    name: string;
+    address: string;
+    order: number;
+    assignedStudentIds: string[];
+};
+  
+export type Route = {
+    id: string;
+    name: string;
+    busId: string;
+    driverId: string;
+    stops: Stop[];
+};
+
+export const studentAssignmentSchema = z.object({
+    studentId: z.string().min(1, "You must select a student."),
+    stopId: z.string().min(1, "You must select a stop."),
+});
