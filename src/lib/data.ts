@@ -103,7 +103,7 @@ export const navItems: NavItem[] = [
     roles: ['Director', 'Administrator', 'Teacher'],
   },
   {
-    path: '/dashboard/attendance',
+    path: '/dashboard/activities/attendance',
     title: 'Attendance',
     icon: CalendarCheck,
     roles: ['Director', 'Administrator', 'Teacher'],
