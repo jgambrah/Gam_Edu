@@ -36,6 +36,7 @@ export default function ManualAttendancePage() {
       if (role === 'Teacher') {
         return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
       } else if (role === 'Administrator' || role === 'Director') {
+        // Correctly query for all documents in the collection
         return query(collection(firestore, 'classes'));
       }
       return null;
@@ -53,7 +54,7 @@ export default function ManualAttendancePage() {
   
   // Fetch today's attendance records for the selected class
   useEffect(() => {
-    if (!selectedClassId || !firestore) return;
+    if (!selectedClassId || !firestore || !students) return;
 
     const fetchTodaysAttendance = async () => {
       setIsLoading(true);

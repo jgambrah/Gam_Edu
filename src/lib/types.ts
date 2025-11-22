@@ -359,6 +359,7 @@ export type AlumniDetails = z.infer<typeof editAlumniSchema>;
 
 // This extends the existing Student type for alumni management
 export type Student = {
+    id: string;
     uid: string;
     firstName: string;
     lastName: string;
