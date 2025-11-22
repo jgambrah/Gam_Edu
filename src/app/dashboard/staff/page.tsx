@@ -108,14 +108,12 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
 }
 
 function StaffPageContent() {
-  const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [dataVersion, setDataVersion] = useState(0); // State to trigger re-renders
   
-  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user, dataVersion]);
-  const { data: staff, isLoading } = useCollection<StaffData>(staffCollectionRef);
+  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
+  const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -158,8 +156,8 @@ function StaffPageContent() {
         title: 'Staff Added',
         description: `${values.email} has been added as a ${values.role}.`,
       });
+      forceRefetch(); // Explicitly refetch the data.
       form.reset();
-      setDataVersion(v => v + 1); // Increment version to trigger re-fetch
     } catch (error: any) {
       toast({
         variant: 'destructive',
