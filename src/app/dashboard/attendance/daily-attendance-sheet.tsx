@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -20,6 +21,7 @@ import { format } from 'date-fns';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/firebase';
 
 type Student = { uid: string; firstName: string; lastName: string; };
 
@@ -48,13 +50,23 @@ async function getAttendanceForClassOnDate(classId: string, date: Date, firestor
 export function DailyAttendanceSheet() {
   const { role } = useRole();
   const firestore = useFirestore();
+  const { user } = useAuth();
   const { toast } = useToast();
   
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [studentsLoaded, setStudentsLoaded] = useState(false);
   
-  const classesQuery = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
+  const classesQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    if (role === 'Teacher') {
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    if (role === 'Administrator' || role === 'Director') {
+        return query(collection(firestore, 'classes'));
+    }
+    return null;
+  }, [firestore, user, role]);
   const { data: classes } = useCollection(classesQuery);
   
   const form = useForm<z.infer<typeof dailyAttendanceFormSchema>>({
@@ -81,6 +93,18 @@ export function DailyAttendanceSheet() {
     
     try {
         const studentList = await getStudentsByClass(classId, firestore);
+        if (studentList.length === 0) {
+            toast({
+                variant: 'destructive',
+                title: 'No Students Found',
+                description: 'There are no students enrolled in the selected class.',
+            });
+            replace([]);
+            setStudentsLoaded(true);
+            setIsLoadingStudents(false);
+            return;
+        }
+
         const existingRecords = await getAttendanceForClassOnDate(classId, date, firestore);
         
         const attendanceData = studentList.map(student => {
@@ -97,6 +121,7 @@ export function DailyAttendanceSheet() {
         setStudentsLoaded(true);
 
     } catch (e) {
+        console.error(e);
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to load students.'});
     } finally {
         setIsLoadingStudents(false);
@@ -104,6 +129,7 @@ export function DailyAttendanceSheet() {
   };
 
   const onSubmit = async (values: z.infer<typeof dailyAttendanceFormSchema>) => {
+    if (!user) return;
     setIsSubmitting(true);
     const { classId, date, records } = values;
 
@@ -119,7 +145,7 @@ export function DailyAttendanceSheet() {
                 date,
                 status: record.status,
                 notes: record.notes,
-                markedBy: role,
+                markedBy: user.uid,
             };
 
             if (existing?.id) {
@@ -133,6 +159,7 @@ export function DailyAttendanceSheet() {
             }
 
             if (record.status === 'Absent' || record.status === 'Late') {
+                // Placeholder for real notification logic
                 console.log(`NOTIFICATION: Parent of ${record.studentName} to be notified of ${record.status} status.`);
             }
         });
@@ -155,7 +182,11 @@ export function DailyAttendanceSheet() {
           <CardContent className="pt-6 grid md:grid-cols-3 gap-4 items-end">
             <FormField control={form.control} name="classId" render={({ field }) => (
                 <FormItem><FormLabel>Class</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={(value) => {
+                        field.onChange(value);
+                        setStudentsLoaded(false); // Reset when class changes
+                        replace([]);
+                    }} defaultValue={field.value}>
                         <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
                         <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                     </Select>
@@ -169,17 +200,21 @@ export function DailyAttendanceSheet() {
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                 </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                    <Calendar mode="single" selected={field.value} onSelect={(date) => {
+                        field.onChange(date);
+                        setStudentsLoaded(false); // Reset when date changes
+                        replace([]);
+                    }} initialFocus />
                 </PopoverContent></Popover></FormItem>
              )}/>
-             <Button type="button" onClick={handleLoadStudents} disabled={isLoadingStudents}>
+             <Button type="button" onClick={handleLoadStudents} disabled={isLoadingStudents || !form.watch('classId') || !form.watch('date')}>
                 {isLoadingStudents ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                 Load Students
              </Button>
           </CardContent>
         </Card>
         
-        {studentsLoaded && (
+        {studentsLoaded && fields.length > 0 && (
             <div className="space-y-4">
                 {fields.map((field, index) => (
                     <Card key={field.id}>
@@ -205,7 +240,15 @@ export function DailyAttendanceSheet() {
                 </Button>
             </div>
         )}
+         {studentsLoaded && fields.length === 0 && !isLoadingStudents && (
+            <div className="text-center py-10 text-muted-foreground">
+                <p>No students found for this class.</p>
+            </div>
+        )}
       </form>
     </Form>
   );
 }
+
+
+    
