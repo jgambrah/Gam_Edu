@@ -30,9 +30,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -58,10 +58,14 @@ const classFormSchema = z.object({
 });
 
 
-function StudentList() {
-  const firestore = useFirestore();
-  const studentsCollectionRef = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
-  const { data: students, isLoading } = useCollection(studentsCollectionRef);
+function StudentList({ students, isLoading, searchTerm }: { students: any[] | null, isLoading: boolean, searchTerm: string }) {
+  
+  const filteredStudents = useMemo(() => {
+    if (!students) return [];
+    return students.filter(student =>
+      `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [students, searchTerm]);
 
   if (isLoading) {
     return (
@@ -74,34 +78,26 @@ function StudentList() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Student List</CardTitle>
-        <CardDescription>A list of all students in the system.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>First Name</TableHead>
-              <TableHead>Last Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Class</TableHead>
+    <Table>
+        <TableHeader>
+        <TableRow>
+            <TableHead>First Name</TableHead>
+            <TableHead>Last Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Class</TableHead>
+        </TableRow>
+        </TableHeader>
+        <TableBody>
+        {filteredStudents.map((student) => (
+            <TableRow key={student.id}>
+            <TableCell>{student.firstName}</TableCell>
+            <TableCell>{student.lastName}</TableCell>
+            <TableCell>{student.email}</TableCell>
+            <TableCell>{student.classId}</TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {students?.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell>{student.firstName}</TableCell>
-                <TableCell>{student.lastName}</TableCell>
-                <TableCell>{student.email}</TableCell>
-                <TableCell>{student.classId}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+        ))}
+        </TableBody>
+    </Table>
   );
 }
 
@@ -185,9 +181,13 @@ function StudentsPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   
   const classesCollectionRef = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
   const { data: classes } = useCollection<{id: string, name: string}>(classesCollectionRef);
+  
+  const studentsCollectionRef = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
+  const { data: students, isLoading } = useCollection(studentsCollectionRef);
 
   const form = useForm<z.infer<typeof studentFormSchema>>({
     resolver: zodResolver(studentFormSchema),
@@ -224,10 +224,8 @@ function StudentsPageContent() {
         throw new Error(result.error);
       }
 
-      const { uid } = result;
-
       const studentData = {
-        uid: uid,
+        uid: result.uid,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
@@ -237,7 +235,7 @@ function StudentsPageContent() {
         address: values.address,
       };
 
-      await setDocumentNonBlocking(doc(firestore, 'students', uid), studentData, { merge: true });
+      await addDoc(collection(firestore, 'students'), studentData);
 
       toast({
         title: 'Student Added',
@@ -413,7 +411,22 @@ function StudentsPageContent() {
         </CardContent>
       </Card>
 
-      <StudentList />
+      <Card>
+        <CardHeader>
+          <CardTitle>Student List</CardTitle>
+          <CardDescription>A list of all students in the system.</CardDescription>
+          <div className="pt-4">
+            <Input 
+              placeholder="Search by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+            <StudentList students={students} isLoading={isLoading} searchTerm={searchTerm} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
