@@ -1,10 +1,10 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useRole } from '@/context/role-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
 import { DailyAttendanceSheet } from './daily-attendance-sheet';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 function AttendancePageContent() {
   const { role } = useRole();
@@ -23,6 +23,12 @@ function AttendancePageContent() {
 
   return (
     <div className="space-y-6">
+       <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Manual Attendance</h1>
+        <Button asChild variant="outline">
+            <Link href="#">Switch to Face Recognition Kiosk</Link>
+        </Button>
+       </div>
       <DailyAttendanceSheet />
     </div>
   );
@@ -30,8 +36,6 @@ function AttendancePageContent() {
 
 export default function AttendancePage() {
   return (
-    <Suspense fallback={<div className="flex min-h-[80vh] w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
-        <AttendancePageContent />
-    </Suspense>
+      <AttendancePageContent />
   );
 }
