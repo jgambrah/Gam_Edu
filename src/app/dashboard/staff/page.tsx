@@ -30,14 +30,34 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Edit, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
+import { useRole } from '@/context/role-context';
 
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
@@ -56,15 +76,107 @@ const formSchema = z.object({
   address: z.string().optional(),
 });
 
+const editFormSchema = formSchema.omit({ password: true, email: true });
+
 type StaffData = {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
   role: UserRole;
+  phone?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  nationality?: string;
+  address?: string;
+};
+
+function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: boolean) => void }) {
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<z.infer<typeof editFormSchema>>({
+    resolver: zodResolver(editFormSchema),
+    defaultValues: {
+      firstName: staff.firstName,
+      lastName: staff.lastName,
+      phone: staff.phone || '',
+      role: staff.role,
+      dateOfBirth: staff.dateOfBirth || '',
+      gender: staff.gender || '',
+      nationality: staff.nationality || '',
+      address: staff.address || '',
+    },
+  });
+
+  async function onEditSubmit(values: z.infer<typeof editFormSchema>) {
+    setIsSubmitting(true);
+    try {
+      const staffRef = doc(firestore, 'staff', staff.id);
+      await updateDoc(staffRef, values);
+      toast({ title: 'Success', description: 'Staff details updated successfully.' });
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to update staff details.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onEditSubmit)} className="space-y-4">
+        {/* Form fields for editing */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField control={form.control} name="firstName" render={({ field }) => (
+                <FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+            <FormField control={form.control} name="lastName" render={({ field }) => (
+                <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+        </div>
+        <FormField control={form.control} name="phone" render={({ field }) => (
+            <FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+        )}/>
+        <FormField control={form.control} name="role" render={({ field }) => (
+            <FormItem><FormLabel>Role</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
+                    <SelectContent>{ALL_ROLES.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}</SelectContent>
+                </Select>
+            <FormMessage /></FormItem>
+        )}/>
+         <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save Changes
+        </Button>
+      </form>
+    </Form>
+  )
 }
 
 function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading: boolean }) {
+  const { role } = useRole();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [editingStaff, setEditingStaff] = useState<StaffData | null>(null);
+
+  const canManage = role === 'Director' || role === 'Administrator';
+
+  const handleDelete = async (staffId: string) => {
+    try {
+        await deleteDoc(doc(firestore, 'staff', staffId));
+        // Note: This does not delete the user from Firebase Auth to prevent accidental lockouts.
+        // That should be a separate, more deliberate administrative action.
+        toast({ title: 'Success', description: 'Staff member has been deleted.'});
+    } catch(error) {
+        console.error(error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete staff member.' });
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -76,6 +188,7 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>Existing Staff</CardTitle>
@@ -89,6 +202,7 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
               <TableHead>Last Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
+              {canManage && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -98,12 +212,50 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
                 <TableCell>{staffMember.lastName}</TableCell>
                 <TableCell>{staffMember.email}</TableCell>
                 <TableCell>{staffMember.role}</TableCell>
+                {canManage && (
+                    <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" onClick={() => setEditingStaff(staffMember)}>
+                            <Edit className="h-4 w-4" />
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                 <Button variant="ghost" size="icon">
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action will delete the staff member's profile from the database. It will not delete their login account. This cannot be undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Confirm Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </CardContent>
     </Card>
+
+    {editingStaff && (
+        <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit Staff: {editingStaff.firstName} {editingStaff.lastName}</DialogTitle>
+                </DialogHeader>
+                <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} />
+            </DialogContent>
+        </Dialog>
+    )}
+    </>
   );
 }
 
@@ -112,7 +264,7 @@ function StaffPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const staffCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'staff') : null, [firestore]);
+  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
   const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -165,14 +317,12 @@ function StaffPageContent() {
         address: values.address || '',
         createdAt: serverTimestamp(),
       });
-
+      
       toast({
         title: 'Staff Added',
         description: `${values.email} has been added as a ${values.role}.`,
       });
       
-      // The real-time listener from useCollection should handle the update, but forceRefetch can be a backup
-      forceRefetch();
       form.reset();
     } catch (error: any) {
       toast({
