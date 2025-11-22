@@ -18,7 +18,7 @@ import {
   ClipboardList,
   ScanFace,
   FilePen,
-  UserCheck,
+  UserCheck as UserCheckIcon,
   Plane,
   Star,
   Landmark,
@@ -69,7 +69,7 @@ export const navItems: NavItem[] = [
     {
     path: '/dashboard/alumni',
     title: 'Alumni',
-    icon: UserCheck,
+    icon: UserCheckIcon,
     roles: ['Director', 'Administrator'],
   },
   {
@@ -144,6 +144,12 @@ export const navItems: NavItem[] = [
     icon: CalendarCheck,
     roles: ['Director', 'Administrator', 'Teacher'],
     subItems: [
+        {
+            path: '/dashboard/attendance',
+            title: 'Manual Attendance',
+            icon: FilePen,
+            roles: ['Director', 'Administrator', 'Teacher'],
+        },
         {
             path: '/dashboard/attendance/face-recognition',
             title: 'Face Recognition Kiosk',
@@ -355,3 +361,5 @@ export const MOCK_STUDENTS_FOR_TRANSPORT = [
     { uid: 'student-05', firstName: 'Eve', lastName: 'Adams', classId: 'g7', transportStopId: undefined },
     { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
 ];
+
+    
