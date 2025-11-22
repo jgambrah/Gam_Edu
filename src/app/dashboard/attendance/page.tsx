@@ -32,17 +32,17 @@ export default function ManualAttendancePage() {
   // Fetch classes for the current teacher or all classes for admin/director
   const classesQuery = useMemoFirebase(
     () => {
-      if (!user || !firestore) return null;
+      if (!user || !firestore || !role) return null;
       if (role === 'Teacher') {
         return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
       } else if (role === 'Administrator' || role === 'Director') {
-        return collection(firestore, 'classes');
+        return query(collection(firestore, 'classes'));
       }
       return null;
     },
     [firestore, user, role] // Correctly added role to the dependency array
   );
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery as any);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
 
   // Fetch students for the selected class
   const studentsQuery = useMemoFirebase(
