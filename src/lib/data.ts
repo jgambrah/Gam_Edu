@@ -96,12 +96,6 @@ export const navItems: NavItem[] = [
     icon: BookCopy,
     roles: ['Director', 'Administrator'],
   },
-   {
-    path: '/dashboard/attendance',
-    title: 'Attendance',
-    icon: CalendarCheck,
-    roles: ['Teacher', 'Administrator', 'Director'],
-  },
   {
     path: '/dashboard/lesson-planning',
     title: 'Lesson Planning',

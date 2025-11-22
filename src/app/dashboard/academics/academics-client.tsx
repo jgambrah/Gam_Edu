@@ -31,11 +31,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo } from 'react';
 import { collection, doc, query, where } from 'firebase/firestore';
-import { Loader2, PlusCircle, User, Users, Ratio, Building, BookOpen, UserCircle } from 'lucide-react';
+import { Loader2, PlusCircle, User, Users, Ratio, Building, BookOpen, UserCircle, CalendarCheck } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
@@ -56,6 +56,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DailyAttendanceSheet } from './daily-attendance-sheet';
 
 
 const classFormSchema = z.object({
@@ -208,6 +210,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { role } = useRole();
+    const { user } = useAuth();
 
     const form = useForm({
         defaultValues: {
@@ -249,6 +252,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
     }
 
     const canManage = role === 'Director' || role === 'Administrator';
+    const isClassTeacher = user?.uid === classData.teacherId;
+    const canTakeAttendance = canManage || isClassTeacher;
 
     return (
         <DialogContent className="max-w-4xl">
@@ -256,66 +261,88 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                 <DialogTitle>Class Details: {classData.name}</DialogTitle>
                 <DialogDescription>View and manage class details below.</DialogDescription>
             </DialogHeader>
-             <div className="grid md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto p-1">
-                {/* Left Column: Details & Management */}
-                <div className="space-y-6">
+             <Tabs defaultValue="details" className="w-full">
+                <TabsList>
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="students">Students</TabsTrigger>
+                    {canTakeAttendance && <TabsTrigger value="attendance">Attendance</TabsTrigger>}
+                </TabsList>
+                <TabsContent value="details">
+                     <div className="grid md:grid-cols-2 gap-6 max-h-[60vh] overflow-y-auto p-1 mt-4">
+                        <div className="space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Class Information</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <Form {...form}>
+                                        <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
+                                            <FormField control={form.control} name="teacherId" render={({ field }) => (
+                                                <FormItem><FormLabel>Class Teacher</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canManage}><FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl><SelectContent>{teachers.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}</SelectContent></Select></FormItem>
+                                            )}/>
+                                            <FormField control={form.control} name="capacity" render={({ field }) => (
+                                                <FormItem><FormLabel>Class Capacity</FormLabel><FormControl><Input type="number" {...field} disabled={!canManage} /></FormControl></FormItem>
+                                            )}/>
+                                            <FormField control={form.control} name="description" render={({ field }) => (
+                                                <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} disabled={!canManage} /></FormControl></FormItem>
+                                            )}/>
+                                            {canManage && <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Save Changes</Button>}
+                                        </form>
+                                    </Form>
+                                </CardContent>
+                            </Card>
+                             <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2"><BookOpen/> Subject Teachers</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    {subjectTeachers.length > 0 ? (
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow><TableHead>Subject</TableHead><TableHead>Teacher</TableHead></TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {subjectTeachers.map(st => (
+                                                    <TableRow key={st.subjectName}><TableCell>{st.subjectName}</TableCell><TableCell>{st.teacherName}</TableCell></TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    ): <p className="text-sm text-muted-foreground">No subject teachers assigned via timetable.</p>}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </TabsContent>
+                 <TabsContent value="students">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Class Information</CardTitle>
+                            <CardTitle className="flex items-center gap-2"><Users/>Enrolled Students ({enrolledStudents.length})</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
-                                    <FormField control={form.control} name="teacherId" render={({ field }) => (
-                                        <FormItem><FormLabel>Class Teacher</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canManage}><FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl><SelectContent>{teachers.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}</SelectContent></Select></FormItem>
-                                    )}/>
-                                    <FormField control={form.control} name="capacity" render={({ field }) => (
-                                        <FormItem><FormLabel>Class Capacity</FormLabel><FormControl><Input type="number" {...field} disabled={!canManage} /></FormControl></FormItem>
-                                    )}/>
-                                    <FormField control={form.control} name="description" render={({ field }) => (
-                                        <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} disabled={!canManage} /></FormControl></FormItem>
-                                    )}/>
-                                    {canManage && <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Save Changes</Button>}
-                                </form>
-                            </Form>
+                            <div className="max-h-96 overflow-y-auto pr-2">
+                            {enrolledStudents.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {enrolledStudents.map(s => <li key={s.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50"><UserCircle className="h-5 w-5"/>{s.firstName} {s.lastName}</li>)}
+                                </ul>
+                            ) : <p className="text-sm text-muted-foreground">No students are enrolled in this class.</p>}
+                            </div>
                         </CardContent>
                     </Card>
-                    <Card>
-                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><BookOpen/> Subject Teachers</CardTitle>
-                        </CardHeader>
-                         <CardContent>
-                            {subjectTeachers.length > 0 ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow><TableHead>Subject</TableHead><TableHead>Teacher</TableHead></TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {subjectTeachers.map(st => (
-                                            <TableRow key={st.subjectName}><TableCell>{st.subjectName}</TableCell><TableCell>{st.teacherName}</TableCell></TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            ): <p className="text-sm text-muted-foreground">No subject teachers assigned via timetable.</p>}
-                         </CardContent>
-                    </Card>
-                </div>
-                 {/* Right Column: Student List */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Users/>Enrolled Students ({enrolledStudents.length})</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="max-h-96 overflow-y-auto pr-2">
-                        {enrolledStudents.length > 0 ? (
-                            <ul className="space-y-2">
-                                {enrolledStudents.map(s => <li key={s.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50"><UserCircle className="h-5 w-5"/>{s.firstName} {s.lastName}</li>)}
-                            </ul>
-                        ) : <p className="text-sm text-muted-foreground">No students are enrolled in this class.</p>}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                </TabsContent>
+                {canTakeAttendance && (
+                    <TabsContent value="attendance">
+                        <Card>
+                             <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><CalendarCheck/>Daily Attendance</CardTitle>
+                                <CardDescription>Select a date and take attendance for this class.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <DailyAttendanceSheet classId={classData.id} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                )}
+             </Tabs>
         </DialogContent>
     )
 }
