@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -154,7 +153,7 @@ export function DailyAttendanceSheet({ classId }: { classId: string }) {
             {studentsLoaded && (
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
-                         <div className="space-y-4">
+                         <div className="max-h-[40vh] overflow-y-auto pr-2 space-y-4">
                             {fields.map((field, index) => (
                                 <Card key={field.id} className="p-4">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
