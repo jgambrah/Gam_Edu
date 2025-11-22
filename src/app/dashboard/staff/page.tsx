@@ -80,6 +80,7 @@ const editFormSchema = formSchema.omit({ password: true, email: true });
 
 type StaffData = {
   id: string;
+  uid: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -287,9 +288,8 @@ function StaffPageContent() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user } = useAuth();
   
-  const staffCollectionRef = useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]);
+  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
   const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -329,7 +329,7 @@ function StaffPageContent() {
         throw new Error(result.error);
       }
       
-      await addDoc(collection(firestore, 'staff'), {
+      const newStaffDoc = {
         uid: result.uid,
         firstName: values.firstName,
         lastName: values.lastName,
@@ -341,7 +341,10 @@ function StaffPageContent() {
         nationality: values.nationality || '',
         address: values.address || '',
         createdAt: serverTimestamp(),
-      });
+      };
+      
+      // Use the UID from the auth user as the document ID
+      await setDoc(doc(firestore, 'staff', result.uid), newStaffDoc);
       
       toast({
         title: 'Staff Added',

@@ -4,6 +4,7 @@
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
+import type { UserRole } from '@/lib/types';
 
 // This function initializes the Firebase Admin SDK.
 function getAdminApp(): App {
@@ -42,6 +43,7 @@ export async function createNewUser(
 ): Promise<{ uid: string } | { error: string }> {
   const adminApp = getAdminApp();
   const auth = getAuth(adminApp);
+  const firestore = getFirestore(adminApp);
 
   try {
     let userRecord;
@@ -89,13 +91,3 @@ export async function createNewUser(
     return { error: errorMessage };
   }
 }
-
-type UserRole =
-  | 'Director'
-  | 'Administrator'
-  | 'Teacher'
-  | 'Accountant'
-  | 'Student'
-  | 'Parent'
-  | 'Librarian'
-  | 'Cook';
