@@ -670,4 +670,18 @@ export const studentAssignmentSchema = z.object({
     studentId: z.string().min(1, "You must select a student."),
     stopId: z.string().min(1, "You must select a stop."),
 });
-    
+
+// Attendance Schemas
+export const attendanceRecordSchema = z.object({
+  id: z.string().optional(),
+  studentId: z.string(),
+  studentName: z.string().optional(), // For display only, not stored
+  classId: z.string(),
+  date: z.date(),
+  status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
+  notes: z.string().optional(),
+});
+
+export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {
+    id: string;
+};

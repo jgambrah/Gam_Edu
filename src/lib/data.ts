@@ -96,6 +96,12 @@ export const navItems: NavItem[] = [
     icon: BookCopy,
     roles: ['Director', 'Administrator'],
   },
+   {
+    path: '/dashboard/attendance',
+    title: 'Attendance',
+    icon: CalendarCheck,
+    roles: ['Teacher', 'Administrator', 'Director'],
+  },
   {
     path: '/dashboard/lesson-planning',
     title: 'Lesson Planning',
@@ -341,5 +347,3 @@ export const MOCK_STUDENTS_FOR_TRANSPORT = [
     { uid: 'student-05', firstName: 'Eve', lastName: 'Adams', classId: 'g7', transportStopId: undefined },
     { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
 ];
-
-    

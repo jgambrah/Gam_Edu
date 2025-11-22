@@ -10,7 +10,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@/components/ui/form';
 import {
   Select,
@@ -33,6 +32,7 @@ import { attendanceRecordSchema, type Student, type AttendanceRecord, type Class
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useRole } from '@/context/role-context';
+import { Label } from '@/components/ui/label';
 
 const attendanceFormSchema = z.object({
     records: z.array(attendanceRecordSchema)
@@ -52,7 +52,7 @@ export function DailyAttendanceSheet() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const classesQuery = useMemoFirebase(() => {
-        if (!user) return null;
+        if (!user || !firestore) return null;
         if (role === 'Teacher') {
           return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
         }
@@ -80,13 +80,15 @@ export function DailyAttendanceSheet() {
             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class first.' });
             return;
         }
+        if (!firestore) return;
         setIsLoading(true);
+        setStudentsLoaded(false);
 
         try {
             // 1. Fetch students for the class
             const studentQuery = query(collection(firestore, 'students'), where('classId', '==', selectedClassId));
             const studentSnapshot = await getDocs(studentQuery);
-            const studentList = studentSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Student[];
+            const studentList = studentSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
 
             if (studentList.length === 0) {
                 toast({ title: 'No Students', description: 'No students found in the selected class.' });
@@ -96,7 +98,7 @@ export function DailyAttendanceSheet() {
                 return;
             }
 
-            // 2. Fetch existing attendance for that date
+            // 2. Fetch existing attendance for that date and class
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('classId', '==', selectedClassId),
@@ -105,11 +107,11 @@ export function DailyAttendanceSheet() {
             const attendanceSnapshot = await getDocs(attendanceQuery);
             const existingRecords = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AttendanceRecord[];
 
-            // 3. Populate form
+            // 3. Populate form with students, pre-filling with existing data or defaulting to 'Present'
             const formRecords = studentList.map(student => {
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
                 return {
-                    id: existingRecord?.id,
+                    id: existingRecord?.id, // This will be used to identify if we update or create
                     studentId: student.uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
@@ -123,31 +125,39 @@ export function DailyAttendanceSheet() {
             setStudentsLoaded(true);
         } catch (error) {
             console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to load students.' });
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to load student data.' });
         } finally {
             setIsLoading(false);
         }
     };
     
     async function onSubmit(data: AttendanceFormData) {
+        if (!firestore) return;
         setIsLoading(true);
         try {
             const batch = writeBatch(firestore);
             data.records.forEach(record => {
+                // If a record has an ID, it means it existed before. We update it.
+                // If it doesn't have an ID, we create a new one.
                 const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-                batch.set(recordRef, { ...record, studentName: undefined, id: undefined }, { merge: true });
+                
+                // We don't want to save the 'studentName' or 'id' field to Firestore
+                const { studentName, id, ...dataToSave } = record;
+                
+                batch.set(recordRef, dataToSave, { merge: true });
 
+                // Placeholder for parent notification
                 if (record.status === 'Absent' || record.status === 'Late') {
-                    console.log(`Placeholder: Sending notification to parent of ${record.studentName}`);
+                    console.log(`Placeholder: Sending notification to parent of ${record.studentName} for being ${record.status}.`);
                 }
             });
 
             await batch.commit();
-            toast({ title: 'Success', description: 'Attendance has been saved.' });
+            toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
 
         } catch (error) {
             console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to save attendance.' });
+            toast({ variant: 'destructive', title: 'Error', description: 'An error occurred while saving attendance.' });
         } finally {
             setIsLoading(false);
         }
@@ -157,8 +167,8 @@ export function DailyAttendanceSheet() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Daily Attendance</CardTitle>
-                <CardDescription>Select a class and date to take attendance.</CardDescription>
+                <CardTitle>Take Daily Attendance</CardTitle>
+                <CardDescription>Select a class and date, then load the roster to mark attendance.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -202,7 +212,7 @@ export function DailyAttendanceSheet() {
                                                 name={`records.${index}.status`}
                                                 render={({ field }) => (
                                                     <FormItem><FormControl>
-                                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex gap-4">
+                                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-wrap gap-4">
                                                             <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Present" /></FormControl><FormLabel className="font-normal">Present</FormLabel></FormItem>
                                                             <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Absent" /></FormControl><FormLabel className="font-normal">Absent</FormLabel></FormItem>
                                                             <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Late" /></FormControl><FormLabel className="font-normal">Late</FormLabel></FormItem>

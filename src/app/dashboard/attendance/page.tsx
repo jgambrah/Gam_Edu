@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DailyAttendanceSheet } from './daily-attendance-sheet';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { ScanFace } from 'lucide-react';
 
 function AttendancePageContent() {
   const { role } = useRole();
@@ -24,10 +25,16 @@ function AttendancePageContent() {
   return (
     <div className="space-y-6">
        <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Manual Attendance</h1>
-        <Button asChild variant="outline">
-            <Link href="#">Switch to Face Recognition Kiosk</Link>
-        </Button>
+            <div>
+                <h1 className="text-3xl font-bold">Manual Attendance</h1>
+                <p className="text-muted-foreground">Take daily attendance for your classes.</p>
+            </div>
+            <Button asChild variant="outline">
+                <Link href="#">
+                    <ScanFace className="mr-2 h-4 w-4" />
+                    Switch to Face Recognition Kiosk
+                </Link>
+            </Button>
        </div>
       <DailyAttendanceSheet />
     </div>
