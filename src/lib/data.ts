@@ -1,11 +1,10 @@
 
-import type { NavItem, Bus, Route } from '@/lib/types';
+import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction } from '@/lib/types';
 import {
   LayoutDashboard,
   Users,
   BookOpen,
   MessageSquare,
-  CalendarCheck,
   GraduationCap,
   Library,
   Banknote,
@@ -16,7 +15,6 @@ import {
   FileText,
   CalendarDays,
   ClipboardList,
-  ScanFace,
   FilePen,
   UserCheck as UserCheckIcon,
   Plane,
@@ -25,6 +23,8 @@ import {
   Boxes,
   Route as RouteIcon,
   BookCopy,
+  BarChart,
+  CalendarCheck,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -103,6 +103,12 @@ export const navItems: NavItem[] = [
     roles: ['Director', 'Administrator', 'Teacher'],
   },
   {
+    path: '/dashboard/attendance',
+    title: 'Attendance',
+    icon: CalendarCheck,
+    roles: ['Director', 'Administrator', 'Teacher'],
+  },
+  {
     path: '/dashboard/leave-management',
     title: 'Leave Management',
     icon: Plane,
@@ -155,6 +161,20 @@ export const navItems: NavItem[] = [
     title: 'Reports',
     icon: FileText,
     roles: ['Director', 'Administrator', 'Teacher'],
+     subItems: [
+      {
+        path: '/dashboard/reports/academics',
+        title: 'Academic Reports',
+        icon: GraduationCap,
+        roles: ['Director', 'Administrator', 'Teacher'],
+      },
+      {
+        path: '/dashboard/reports/attendance',
+        title: 'Attendance Reports',
+        icon: BarChart,
+        roles: ['Director', 'Administrator', 'Teacher'],
+      },
+    ]
   },
   {
     path: '/dashboard/inventory',
@@ -290,10 +310,10 @@ export const MOCK_PUBLIC_HOLIDAYS = [
     { name: 'Christmas Day', date: new Date('2024-12-25') },
 ];
 
-export const MOCK_CHART_OF_ACCOUNTS = [
+export const MOCK_CHART_OF_ACCOUNTS: ChartOfAccount[] = [
     { accountId: '1010', name: 'Cash at Bank', type: 'Asset', isControlAccount: false, parentAccountId: '1000' },
-    { accountId: '1200', name: 'Accounts Receivable', type: 'Asset', isControlAccount: true },
-    { accountId: '2100', name: 'Accounts Payable', type: 'Liability', isControlAccount: true },
+    { accountId: '1200', name: 'Accounts Receivable', type: 'Asset', isControlAccount: true, parentAccountId: '1000' },
+    { accountId: '2100', name: 'Accounts Payable', type: 'Liability', isControlAccount: true, parentAccountId: '2000' },
     { accountId: '4000', name: 'Operating Revenue', type: 'Revenue', isControlAccount: true },
     { accountId: '4010', name: 'Tuition Fees', type: 'Revenue', isControlAccount: false, parentAccountId: '4000' },
     { accountId: '4020', name: 'Library Fines', type: 'Revenue', isControlAccount: false, parentAccountId: '4000' },
@@ -302,9 +322,10 @@ export const MOCK_CHART_OF_ACCOUNTS = [
     { accountId: '5020', name: 'Utilities Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
     { accountId: '5030', name: 'Maintenance Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
     { accountId: '1000', name: 'Current Assets', type: 'Asset', isControlAccount: true },
+    { accountId: '2000', name: 'Current Liabilities', type: 'Liability', isControlAccount: true },
 ];
 
-export const MOCK_JOURNAL_ENTRIES = [
+export const MOCK_JOURNAL_ENTRIES: GeneralLedgerTransaction[] = [
     { id: 1, ref: 'INV-001', date: '2024-07-15', description: 'Billed John Doe for Fall Term', debits: [{ accountId: '1200', amount: 5000 }], credits: [{ accountId: '4010', amount: 5000 }] },
     { id: 2, ref: 'PAY-001', date: '2024-08-01', description: 'Received tuition payment from John Doe', debits: [{ accountId: '1010', amount: 5000 }], credits: [{ accountId: '1200', amount: 5000 }] },
     { id: 3, ref: 'BILL-001', date: '2024-08-05', description: 'Electricity bill for July', debits: [{ accountId: '5020', amount: 800 }], credits: [{ accountId: '2100', amount: 800 }] },
@@ -347,3 +368,17 @@ export const MOCK_STUDENTS_FOR_TRANSPORT = [
     { uid: 'student-05', firstName: 'Eve', lastName: 'Adams', classId: 'g7', transportStopId: undefined },
     { uid: 'student-06', firstName: 'Frank', lastName: 'White', classId: 'g7', transportStopId: undefined },
 ];
+
+export const mockAttendanceRecords = [
+  { id: '1', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Present', notes: '' },
+  { id: '2', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Absent', notes: 'Feeling unwell' },
+  { id: '3', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Late', notes: 'Traffic' },
+  { id: '4', studentId: 'student-04', studentName: 'Diana Prince', classId: 'grade-10-b', date: new Date('2024-05-20'), status: 'Present', notes: '' },
+  { id: '5', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
+  { id: '6', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
+  { id: '7', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Excused', notes: "Doctor's appointment" },
+  { id: '8', studentId: 'student-04', studentName: 'Diana Prince', classId: 'grade-10-b', date: new Date('2024-05-21'), status: 'Absent', notes: '' },
+  { id: '9', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-19'), status: 'Late', notes: 'Missed bus' },
+];
+
+    
