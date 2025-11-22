@@ -136,7 +136,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/reports/academics',
     title: 'Reports',
     icon: FileText,
-    roles: ['Director', 'Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
      subItems: [
       {
         path: '/dashboard/reports/academics',
@@ -166,6 +166,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/reports/financials',
         title: 'Financial Reports',
         icon: Banknote,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+       {
+        path: '/dashboard/reports/payroll',
+        title: 'Payroll Reports',
+        icon: Landmark,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
     ]
