@@ -291,7 +291,7 @@ export const MOCK_SUBJECTS = [
 ];
 
 export const MOCK_ACADEMIC_YEARS = ['2023-2024', '2024-2025'];
-export const MOCK_TERMS = ['Fall', 'Spring', 'Summer'];
+export const MOCK_TERMS = ['First Term', 'Second Term', 'Third Term'];
 
 export const LEAVE_TYPES = ['Sick Leave', 'Vacation', 'Personal', 'Study Leave', 'Unpaid Leave'] as const;
 
