@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/table';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -112,7 +112,7 @@ function StaffPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
+  const staffCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'staff') : null, [firestore]);
   const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -152,11 +152,27 @@ function StaffPageContent() {
         throw new Error(result.error);
       }
       
+      await addDoc(collection(firestore, 'staff'), {
+        uid: result.uid,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        role: values.role,
+        phone: values.phone || '',
+        dateOfBirth: values.dateOfBirth || '',
+        gender: values.gender || '',
+        nationality: values.nationality || '',
+        address: values.address || '',
+        createdAt: serverTimestamp(),
+      });
+
       toast({
         title: 'Staff Added',
         description: `${values.email} has been added as a ${values.role}.`,
       });
-      forceRefetch(); // Explicitly refetch the data.
+      
+      // The real-time listener from useCollection should handle the update, but forceRefetch can be a backup
+      forceRefetch();
       form.reset();
     } catch (error: any) {
       toast({
