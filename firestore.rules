@@ -284,6 +284,28 @@ service cloud.firestore {
     match /coding-club-projects/{userId} {
       allow read, write: if isOwner(userId);
     }
+    
+    // --- Maths Club Rules ---
+    match /math_problems/{problemId} {
+        allow read: if isSignedIn();
+        allow write: if isTeacher() || isAdmin(); // Teachers and Admins can create problems
+    }
+
+    match /user_results/{resultId} {
+        // Students can only create their own results
+        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+        // Students can only read their own results
+        allow read: if isOwner(resource.data.userId);
+        // Nobody can update/delete results from the client to ensure data integrity
+        allow update, delete: if false;
+    }
+
+    match /global_leaderboard/{userId} {
+        // Everyone can read the leaderboard
+        allow read: if isSignedIn();
+        // Only a backend process (Cloud Function) should write to the leaderboard
+        allow write: if false;
+    }
 
 
     // ------ Helper Functions ------

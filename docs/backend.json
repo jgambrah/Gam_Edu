@@ -895,6 +895,108 @@
         "timestamp": { "type": "string", "format": "date-time", "description": "When the action occurred." }
       },
       "required": ["userId", "userName", "action", "details", "timestamp"]
+    },
+    "MathProblem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MathProblem",
+      "type": "object",
+      "description": "Stores a maths problem for students to practice.",
+      "properties": {
+        "topic": {
+          "type": "string",
+          "description": "The topic of the math problem (e.g., 'Algebra', 'Fractions')."
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["Easy", "Medium", "Hard"],
+          "description": "The difficulty level of the problem."
+        },
+        "question_text": {
+          "type": "string",
+          "description": "The text of the question."
+        },
+        "correct_answer": {
+          "type": ["string", "number"],
+          "description": "The correct answer to the problem."
+        },
+        "options": {
+          "type": "array",
+          "description": "An array of options for multiple-choice questions.",
+          "items": {
+            "type": ["string", "number"]
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata like source or grade level.",
+          "properties": {
+            "source": { "type": "string" },
+            "gradeLevel": { "type": "string" }
+          }
+        }
+      },
+      "required": ["topic", "difficulty", "question_text", "correct_answer"]
+    },
+    "UserResult": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserResult",
+      "type": "object",
+      "description": "Records a student's result for a completed maths practice session or quiz.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The UID of the student who completed the session."
+        },
+        "topic": {
+          "type": "string"
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["Easy", "Medium", "Hard"]
+        },
+        "score": {
+          "type": "number",
+          "description": "The score achieved, e.g., 8 out of 10 would be 8."
+        },
+        "time_taken_seconds": {
+          "type": "number",
+          "description": "The total time in seconds to complete the session."
+        },
+        "date_completed": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "correct_count": {
+          "type": "number",
+          "description": "The number of correctly answered questions."
+        }
+      },
+      "required": ["userId", "topic", "difficulty", "score", "time_taken_seconds", "date_completed", "correct_count"]
+    },
+    "GlobalLeaderboard": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GlobalLeaderboard",
+      "type": "object",
+      "description": "Stores aggregated scores for each student for the global leaderboard.",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "total_correct_answers": {
+          "type": "number"
+        },
+        "total_quizzes_completed": {
+          "type": "number"
+        }
+      },
+      "required": ["userId", "userName", "total_correct_answers", "total_quizzes_completed"]
     }
   },
   "auth": {
@@ -1253,8 +1355,36 @@
           "description": "Stores individual student projects for the coding club.",
           "params": [{ "name": "userId", "description": "The UID of the user." }]
         }
+      },
+      {
+        "path": "/math_problems/{problemId}",
+        "definition": {
+          "entityName": "MathProblem",
+          "schema": { "$ref": "#/backend/entities/MathProblem" },
+          "description": "Stores maths problems created by teachers.",
+          "params": [{ "name": "problemId" }]
+        }
+      },
+      {
+        "path": "/user_results/{resultId}",
+        "definition": {
+          "entityName": "UserResult",
+          "schema": { "$ref": "#/backend/entities/UserResult" },
+          "description": "Stores individual student results from maths practice sessions.",
+          "params": [{ "name": "resultId" }]
+        }
+      },
+      {
+        "path": "/global_leaderboard/{userId}",
+        "definition": {
+          "entityName": "GlobalLeaderboard",
+          "schema": { "$ref": "#/backend/entities/GlobalLeaderboard" },
+          "description": "Aggregated leaderboard data for each student.",
+          "params": [{ "name": "userId" }]
+        }
       }
     ],
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `/roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
   }
 }
+
