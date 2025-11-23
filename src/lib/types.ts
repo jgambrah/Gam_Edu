@@ -811,5 +811,3 @@ export type ElaUserSubmission = {
     teacher_score?: number | null;
     teacher_feedback?: string | null;
 };
-
-    
