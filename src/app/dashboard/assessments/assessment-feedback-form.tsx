@@ -33,9 +33,13 @@ import { assessmentFeedbackSchema } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { MOCK_ACADEMIC_YEARS, MOCK_SUBJECTS, MOCK_TERMS } from '@/lib/data';
+import { useRole } from '@/context/role-context';
+import type { Class } from '@/lib/types';
+
 
 export function AssessmentFeedbackForm() {
     const { user } = useAuth();
+    const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,11 +56,17 @@ export function AssessmentFeedbackForm() {
 
     const selectedClassId = form.watch('classId');
 
-    const classesQuery = useMemoFirebase(
-        () => user ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid)) : null,
-        [firestore, user]
-    );
-    const { data: classes } = useCollection(classesQuery);
+    const classesQuery = useMemoFirebase(() => {
+        if (!user || !firestore) return null;
+        if (role === 'Teacher') {
+          return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        }
+        if (role === 'Administrator' || role === 'Director') {
+          return collection(firestore, 'classes');
+        }
+        return null;
+    }, [firestore, user, role]);
+    const { data: classes } = useCollection<Class>(classesQuery);
 
     const studentsQuery = useMemoFirebase(
         () => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
