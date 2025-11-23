@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,6 +34,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const attendanceFormSchema = z.object({
     records: z.array(attendanceRecordSchema)
@@ -213,36 +215,38 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 {studentsLoaded && (
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
-                             <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <Card key={field.id} className="p-4">
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                                            <p className="font-medium">{field.studentName}</p>
-                                            <FormField
-                                                control={form.control}
-                                                name={`records.${index}.status`}
-                                                render={({ field }) => (
-                                                    <FormItem><FormControl>
-                                                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-wrap gap-4">
-                                                            <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Present" /></FormControl><FormLabel className="font-normal">Present</FormLabel></FormItem>
-                                                            <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Absent" /></FormControl><FormLabel className="font-normal">Absent</FormLabel></FormItem>
-                                                            <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Late" /></FormControl><FormLabel className="font-normal">Late</FormLabel></FormItem>
-                                                            <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Excused" /></FormControl><FormLabel className="font-normal">Excused</FormLabel></FormItem>
-                                                        </RadioGroup>
-                                                    </FormControl></FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name={`records.${index}.notes`}
-                                                render={({ field }) => (
-                                                    <FormItem><FormControl><Input placeholder="Optional notes..." {...field} /></FormControl></FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
+                             <ScrollArea className="h-72 w-full pr-4">
+                                <div className="space-y-4">
+                                    {fields.map((field, index) => (
+                                        <Card key={field.id} className="p-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                                                <p className="font-medium">{field.studentName}</p>
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`records.${index}.status`}
+                                                    render={({ field }) => (
+                                                        <FormItem><FormControl>
+                                                            <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-wrap gap-4">
+                                                                <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Present" /></FormControl><FormLabel className="font-normal">Present</FormLabel></FormItem>
+                                                                <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Absent" /></FormControl><FormLabel className="font-normal">Absent</FormLabel></FormItem>
+                                                                <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Late" /></FormControl><FormLabel className="font-normal">Late</FormLabel></FormItem>
+                                                                <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="Excused" /></FormControl><FormLabel className="font-normal">Excused</FormLabel></FormItem>
+                                                            </RadioGroup>
+                                                        </FormControl></FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`records.${index}.notes`}
+                                                    render={({ field }) => (
+                                                        <FormItem><FormControl><Input placeholder="Optional notes..." {...field} /></FormControl></FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                             </ScrollArea>
                             {fields.length > 0 && <Button type="submit" className="mt-6 w-full" disabled={isLoading}>{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Submit Attendance</Button>}
                             {fields.length === 0 && <p className="text-center text-muted-foreground p-8">No students found in this class.</p>}
                         </form>
