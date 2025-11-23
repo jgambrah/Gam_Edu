@@ -1121,6 +1121,105 @@
         }
       },
       "required": ["factText", "createdAt", "postedBy"]
+    },
+    "ElaGrammarDrill": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ElaGrammarDrill",
+      "type": "object",
+      "description": "A single grammar or mechanics drill for the ELA Club.",
+      "properties": {
+        "topic": {
+          "type": "string",
+          "description": "The specific grammar topic, e.g., 'Verbs', 'Punctuation'."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["MCQ", "Drag and Drop"],
+          "description": "The type of drill."
+        },
+        "question_prompt": {
+          "type": "string",
+          "description": "The main text or prompt for the question."
+        },
+        "options": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "An array of options for multiple-choice questions."
+        },
+        "correct_answer": {
+          "type": ["string", "array"],
+          "description": "The correct answer or an array of correct answers for sequencing."
+        }
+      },
+      "required": ["topic", "type", "question_prompt", "correct_answer"]
+    },
+    "ElaReadingPassage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ElaReadingPassage",
+      "type": "object",
+      "description": "A reading passage with associated comprehension questions.",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the passage."
+        },
+        "passage_text": {
+          "type": "string",
+          "description": "The full text of the reading passage."
+        },
+        "reading_level": {
+          "type": "string",
+          "description": "The target reading level, e.g., 'Year 9'."
+        },
+        "question_set": {
+          "type": "array",
+          "description": "An array of questions related to the passage.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "type": { "type": "string", "enum": ["MCQ", "Short Answer"] },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "correct_answer_key": { "type": "string" }
+            },
+            "required": ["question", "type", "correct_answer_key"]
+          }
+        }
+      },
+      "required": ["title", "passage_text", "reading_level", "question_set"]
+    },
+    "ElaUserSubmission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ElaUserSubmission",
+      "type": "object",
+      "description": "A student's submission for a writing or summarizing challenge that requires teacher review.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The UID of the student who submitted the work."
+        },
+        "challenge_id": {
+          "type": "string",
+          "description": "The ID of the ELA challenge this submission is for."
+        },
+        "submission_text": {
+          "type": "string",
+          "description": "The student's written answer."
+        },
+        "date_submitted": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "teacher_score": {
+          "type": ["number", "null"],
+          "description": "The score assigned by the teacher, null if not yet graded."
+        },
+        "teacher_feedback": {
+          "type": ["string", "null"],
+          "description": "Qualitative feedback from the teacher, null if not yet graded."
+        }
+      },
+      "required": ["userId", "challenge_id", "submission_text", "date_submitted"]
     }
   },
   "auth": {
@@ -1541,6 +1640,33 @@
           "schema": { "$ref": "#/backend/entities/DailyFact" },
           "description": "Stores daily science facts for the Science Club.",
           "params": [{ "name": "factId" }]
+        }
+      },
+      {
+        "path": "/ela_grammar_drills/{drillId}",
+        "definition": {
+          "entityName": "ElaGrammarDrill",
+          "schema": { "$ref": "#/backend/entities/ElaGrammarDrill" },
+          "description": "Stores ELA grammar drills.",
+          "params": [{ "name": "drillId" }]
+        }
+      },
+      {
+        "path": "/ela_reading_passages/{passageId}",
+        "definition": {
+          "entityName": "ElaReadingPassage",
+          "schema": { "$ref": "#/backend/entities/ElaReadingPassage" },
+          "description": "Stores ELA reading passages and comprehension questions.",
+          "params": [{ "name": "passageId" }]
+        }
+      },
+      {
+        "path": "/ela_user_submissions/{submissionId}",
+        "definition": {
+          "entityName": "ElaUserSubmission",
+          "schema": { "$ref": "#/backend/entities/ElaUserSubmission" },
+          "description": "Stores student submissions for ELA writing challenges.",
+          "params": [{ "name": "submissionId" }]
         }
       }
     ],

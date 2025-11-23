@@ -329,6 +329,25 @@ service cloud.firestore {
       allow write: if isTeacher() || isAdmin();
     }
 
+    // --- ELA Club Rules ---
+    match /ela_grammar_drills/{drillId} {
+        allow read: if isSignedIn();
+        allow write: if isTeacher() || isAdmin();
+    }
+
+    match /ela_reading_passages/{passageId} {
+        allow read: if isSignedIn();
+        allow write: if isTeacher() || isAdmin();
+    }
+    
+    match /ela_user_submissions/{submissionId} {
+        allow create: if isOwner(request.resource.data.userId);
+        allow read: if isOwner(request.resource.data.userId) || isTeacher() || isAdmin();
+        // Allow teacher to update only score and feedback
+        allow update: if (isTeacher() || isAdmin()) && request.resource.data.keys().hasOnly(['teacher_score', 'teacher_feedback']);
+        allow delete: if false;
+    }
+
 
     // ------ Helper Functions ------
 
@@ -382,7 +401,7 @@ service cloud.firestore {
 
     function isFinanceStaff() {
         if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
-        let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+        let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid));
         return userRole == 'Accountant' || userRole == 'Administrator' || userRole == 'Director';
     }
 
