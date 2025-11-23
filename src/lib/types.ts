@@ -740,7 +740,7 @@ export type GlobalLeaderboardEntry = {
 
 // Science Club Schemas
 export const scienceProblemSchema = z.object({
-    topic: z.enum(['Physics', 'Biology', 'Chemistry']),
+    topic: z.enum(['Physics', 'Biology', 'Chemistry', 'Lab Safety']),
     difficulty: z.enum(['Easy', 'Medium', 'Hard']),
     question_text: z.string().min(1, "Question text is required."),
     correct_answer: z.string().min(1, "Correct answer is required."),
@@ -772,4 +772,11 @@ export type ScienceLeaderboardEntry = {
     profilePictureUrl?: string;
     total_correct_answers: number;
     total_quizzes_completed: number;
+};
+
+export type DailyFact = {
+    id: string;
+    factText: string;
+    createdAt: any;
+    postedBy: string;
 };

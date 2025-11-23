@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { FlaskConical, Trophy, PencilRuler, PlusCircle } from 'lucide-react';
+import { FlaskConical, Trophy, PencilRuler, PlusCircle, Lightbulb } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -21,8 +21,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, orderBy, query, addDoc } from 'firebase/firestore';
-import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema } from '@/lib/types';
+import { collection, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,6 +37,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { format } from 'date-fns';
 
 function Leaderboard() {
     const firestore = useFirestore();
@@ -122,7 +123,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                  <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
-                        <FormItem><FormLabel>Topic</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Biology">Biology</SelectItem><SelectItem value="Chemistry">Chemistry</SelectItem><SelectItem value="Physics">Physics</SelectItem></SelectContent></Select><FormMessage/></FormItem>
+                        <FormItem><FormLabel>Topic</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Biology">Biology</SelectItem><SelectItem value="Chemistry">Chemistry</SelectItem><SelectItem value="Physics">Physics</SelectItem><SelectItem value="Lab Safety">Lab Safety</SelectItem></SelectContent></Select><FormMessage/></FormItem>
                     )}/>
                     <FormField control={form.control} name="difficulty" render={({ field }) => (
                         <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
@@ -187,6 +188,64 @@ function ManageProblems() {
     )
 }
 
+function FactOfTheDay() {
+    const firestore = useFirestore();
+    const { role, user } = useRole();
+    const { toast } = useToast();
+    const [factText, setFactText] = useState('');
+    const [isPosting, setIsPosting] = useState(false);
+    const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+
+    const factsQuery = useMemoFirebase(() => query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')), [firestore]);
+    const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
+    const latestFact = facts?.[0];
+
+    const handlePostFact = async () => {
+        if (!factText.trim() || !user) return;
+        setIsPosting(true);
+        try {
+            await addDoc(collection(firestore, 'daily_facts'), {
+                factText,
+                createdAt: serverTimestamp(),
+                postedBy: user.uid,
+            });
+            toast({ title: 'Success!', description: 'The new science fact has been posted.' });
+            setFactText('');
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not post the fact.' });
+        } finally {
+            setIsPosting(false);
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Lightbulb/> Science Fact of the Day</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
+                    <blockquote className="border-l-4 pl-4 italic">
+                        {latestFact.factText}
+                        <footer className="text-xs text-muted-foreground mt-2">Posted on {format(latestFact.createdAt.toDate(), 'PPP')}</footer>
+                    </blockquote>
+                ) : <p className="text-muted-foreground text-sm">No fact has been posted for today yet.</p>}
+
+                {isTeacherOrAdmin && (
+                    <div className="space-y-2 pt-4 border-t">
+                        <Label>Post a New Fact</Label>
+                        <Textarea value={factText} onChange={e => setFactText(e.target.value)} placeholder="Enter a new interesting science fact..."/>
+                        <Button onClick={handlePostFact} disabled={isPosting || !factText.trim()}>
+                            {isPosting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Post Fact
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
 export default function ScienceClubPage() {
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState('');
@@ -213,6 +272,9 @@ export default function ScienceClubPage() {
             Welcome to the Science Club! Explore topics, practice problems, and climb the leaderboard.
           </CardDescription>
         </CardHeader>
+         <CardContent>
+            <FactOfTheDay />
+        </CardContent>
       </Card>
       <Tabs defaultValue="practice">
         <TabsList className="grid w-full grid-cols-3">
@@ -234,6 +296,7 @@ export default function ScienceClubPage() {
                             <SelectItem value="Biology">Biology</SelectItem>
                             <SelectItem value="Chemistry">Chemistry</SelectItem>
                             <SelectItem value="Physics">Physics</SelectItem>
+                             <SelectItem value="Lab Safety">Lab Safety</SelectItem>
                         </SelectContent>
                     </Select>
                      <Select onValueChange={setDifficulty}>

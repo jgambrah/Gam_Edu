@@ -324,6 +324,11 @@ service cloud.firestore {
         allow write: if false; // To be updated by a Cloud Function
     }
 
+    match /daily_facts/{factId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
 
     // ------ Helper Functions ------
 
