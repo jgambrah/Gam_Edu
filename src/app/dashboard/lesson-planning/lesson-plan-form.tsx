@@ -29,10 +29,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { lessonPlanSchema } from '@/lib/types';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useRole } from '@/context/role-context';
+import { generateLessonIdeas } from '@/ai/flows/generate-lesson-ideas-flow';
 
 type LessonPlanFormProps = {
   setOpen: (open: boolean) => void;
@@ -46,6 +47,7 @@ export function LessonPlanForm({ setOpen }: LessonPlanFormProps) {
   const { role } = useRole();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const form = useForm<z.infer<typeof lessonPlanSchema>>({
     resolver: zodResolver(lessonPlanSchema),
@@ -57,6 +59,8 @@ export function LessonPlanForm({ setOpen }: LessonPlanFormProps) {
       notes: '',
     },
   });
+
+  const topicValue = form.watch('topic');
 
   const classesQuery = useMemoFirebase(() => {
     if (!user) return null;
@@ -70,6 +74,27 @@ export function LessonPlanForm({ setOpen }: LessonPlanFormProps) {
   }, [firestore, user, role]);
 
   const { data: classes } = useCollection<ClassData>(classesQuery);
+
+  const handleAskAI = async () => {
+    if (!topicValue) {
+        toast({ variant: 'destructive', title: 'Topic Required', description: 'Please enter a topic before using the AI assistant.' });
+        return;
+    }
+    setIsGenerating(true);
+    toast({ title: 'AI is thinking...', description: 'Generating lesson ideas for your topic.' });
+    try {
+        const result = await generateLessonIdeas({ topic: topicValue });
+        form.setValue('objectives', result.objectives, { shouldValidate: true });
+        form.setValue('activities', result.activities, { shouldValidate: true });
+        form.setValue('materials', result.materials, { shouldValidate: true });
+        toast({ title: 'Success!', description: 'AI has populated the lesson plan fields.' });
+    } catch (error) {
+        console.error("AI Error:", error);
+        toast({ variant: 'destructive', title: 'AI Error', description: 'Could not generate lesson ideas.' });
+    } finally {
+        setIsGenerating(false);
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof lessonPlanSchema>) {
     if (!user) return;
@@ -162,7 +187,13 @@ export function LessonPlanForm({ setOpen }: LessonPlanFormProps) {
           name="topic"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Lesson Topic</FormLabel>
+              <div className="flex justify-between items-center">
+                <FormLabel>Lesson Topic</FormLabel>
+                <Button type="button" variant="outline" size="sm" onClick={handleAskAI} disabled={isGenerating || !topicValue}>
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4" />}
+                    Ask AI
+                </Button>
+              </div>
               <FormControl>
                 <Input placeholder="e.g., Introduction to Photosynthesis" {...field} />
               </FormControl>
@@ -231,4 +262,3 @@ export function LessonPlanForm({ setOpen }: LessonPlanFormProps) {
     </Form>
   );
 }
-
