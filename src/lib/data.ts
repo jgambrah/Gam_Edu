@@ -31,6 +31,7 @@ import {
   Sigma,
   FlaskConical,
   BookOpenCheck,
+  Activity,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -141,28 +142,36 @@ export const navItems: NavItem[] = [
     ]
   },
   {
-    path: '/dashboard/maths-club',
-    title: 'Maths Club',
-    icon: Sigma,
+    path: '/dashboard/clubs',
+    title: 'Clubs & Activities',
+    icon: Activity,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-  },
-  {
-    path: '/dashboard/science-club',
-    title: 'Science Club',
-    icon: FlaskConical,
-    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-  },
-  {
-    path: '/dashboard/ela-club',
-    title: 'ELA Club',
-    icon: BookOpenCheck,
-    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-  },
-  {
-    path: '/dashboard/coding-club',
-    title: 'Coding Club',
-    icon: Code,
-    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+    subItems: [
+        {
+            path: '/dashboard/maths-club',
+            title: 'Maths Club',
+            icon: Sigma,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/science-club',
+            title: 'Science Club',
+            icon: FlaskConical,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/ela-club',
+            title: 'ELA Club',
+            icon: BookOpenCheck,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/coding-club',
+            title: 'Coding Club',
+            icon: Code,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+    ]
   },
    {
     path: '/dashboard/hr',
