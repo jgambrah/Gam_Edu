@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -7,10 +6,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { MOCK_ACADEMIC_YEARS, MOCK_SUBJECTS, MOCK_TERMS } from '@/lib/data';
-import { Assessment, ReportCardComment } from '@/lib/types';
-import { collection, query, where } from 'firebase/firestore';
-import { useState, useMemo } from 'react';
+import { MOCK_SUBJECTS } from '@/lib/data';
+import { Assessment, ReportCardComment, ReportCard } from '@/lib/types';
+import { collection, query, where, doc } from 'firebase/firestore';
+import { useMemo } from 'react';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -33,10 +32,8 @@ function calculateStudentGradeForSubject(studentId: string, subjectId: string, a
     return { finalGrade, percentage: parseFloat(percentage.toFixed(1)) };
 }
 
-export function StudentReportCard({ student }: { student: Student }) {
+export function StudentReportCard({ student, term, year }: { student: Student, term: string, year: string }) {
     const firestore = useFirestore();
-    const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
-    const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
 
     // Fetch all assessments for the student
     const assessmentsQuery = useMemoFirebase(
@@ -45,7 +42,7 @@ export function StudentReportCard({ student }: { student: Student }) {
     );
     const { data: assessments } = useCollection<Assessment>(assessmentsQuery);
 
-    const reportCardId = `${student.uid}-${selectedYear}-${selectedTerm}`;
+    const reportCardId = `${student.uid}-${year}-${term}`;
     const commentsQuery = useMemoFirebase(
       () => query(collection(firestore, `report-cards/${reportCardId}/comments`)),
       [firestore, reportCardId]
@@ -89,14 +86,14 @@ export function StudentReportCard({ student }: { student: Student }) {
                 <AppLogo className="h-12 w-12 text-primary" />
                 <div>
                     <CardTitle className="text-3xl">SunnySide High School</CardTitle>
-                    <p className="text-muted-foreground">Student Report Card - {selectedYear}</p>
+                    <p className="text-muted-foreground">Student Report Card - {year}</p>
                 </div>
             </div>
             <Separator className="my-4"/>
             <div className='text-left text-sm'>
                 <p><span className='font-semibold'>Student Name:</span> {student.firstName} {student.lastName}</p>
                 <p><span className='font-semibold'>Class:</span> {student.classId}</p>
-                <p><span className='font-semibold'>Term:</span> {selectedTerm}</p>
+                <p><span className='font-semibold'>Term:</span> {term}</p>
             </div>
         </CardHeader>
         <CardContent>
@@ -156,5 +153,3 @@ export function StudentReportCard({ student }: { student: Student }) {
     );
   }
   
-
-    
