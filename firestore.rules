@@ -281,6 +281,10 @@ service cloud.firestore {
       allow write: if false; 
     }
 
+    match /coding-club-projects/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
 
     // ------ Helper Functions ------
 

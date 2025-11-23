@@ -1227,6 +1227,32 @@
           "description": "Stores a log of all important user actions within the system.",
           "params": [{ "name": "logId" }]
         }
+      },
+      {
+        "path": "/coding-club-projects/{userId}",
+        "definition": {
+          "entityName": "CodingClubProject",
+          "schema": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "title": "CodingClubProject",
+            "type": "object",
+            "description": "Stores a student's Blockly project.",
+            "properties": {
+              "xml": {
+                "type": "string",
+                "description": "The Blockly workspace state as an XML string."
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The last time the project was updated."
+              }
+            },
+            "required": ["xml", "updatedAt"]
+          },
+          "description": "Stores individual student projects for the coding club.",
+          "params": [{ "name": "userId", "description": "The UID of the user." }]
+        }
       }
     ],
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `/roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
