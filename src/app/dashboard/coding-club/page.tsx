@@ -10,8 +10,18 @@ import {
 } from '@/components/ui/card';
 import { Code, MousePointerClick, Youtube } from 'lucide-react';
 import Link from 'next/link';
-import { BlocklyEditor } from './blockly-editor';
 import { Separator } from '@/components/ui/separator';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const BlocklyEditor = dynamic(
+  () => import('./blockly-editor').then((mod) => mod.BlocklyEditor),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[600px] w-full" />,
+  }
+);
+
 
 export default function CodingClubPage() {
   return (
