@@ -116,7 +116,6 @@ export const assessmentFeedbackSchema = z.object({
   assessmentDate: z.date(),
   score: z.coerce.number().optional(),
   maxScore: z.coerce.number().optional(),
-  feedback: z.string().optional(),
   teacherId: z.string().optional(),
 }).refine(data => !data.score || !data.maxScore || data.score <= data.maxScore, {
   message: "Score cannot exceed max score",
@@ -812,3 +811,5 @@ export type ElaUserSubmission = {
     teacher_score?: number | null;
     teacher_feedback?: string | null;
 };
+
+    
