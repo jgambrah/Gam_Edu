@@ -737,3 +737,39 @@ export type GlobalLeaderboardEntry = {
     total_correct_answers: number;
     total_quizzes_completed: number;
 };
+
+// Science Club Schemas
+export const scienceProblemSchema = z.object({
+    topic: z.enum(['Physics', 'Biology', 'Chemistry']),
+    difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+    question_text: z.string().min(1, "Question text is required."),
+    correct_answer: z.string().min(1, "Correct answer is required."),
+    options: z.array(z.string().min(1, "Option cannot be empty.")).length(4, "You must provide 4 options."),
+    metadata: z.object({
+        source: z.string().optional(),
+        gradeLevel: z.string().optional(),
+    }).optional(),
+});
+
+export type ScienceProblem = z.infer<typeof scienceProblemSchema> & {
+    id: string;
+};
+
+export type ScienceResult = {
+    id: string;
+    userId: string;
+    topic: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    score: number;
+    time_taken_seconds: number;
+    date_completed: any;
+    correct_count: number;
+};
+
+export type ScienceLeaderboardEntry = {
+    userId: string;
+    userName: string;
+    profilePictureUrl?: string;
+    total_correct_answers: number;
+    total_quizzes_completed: number;
+};

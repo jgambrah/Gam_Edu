@@ -29,6 +29,7 @@ import {
   Shield,
   Code,
   Sigma,
+  FlaskConical,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -142,6 +143,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard/maths-club',
     title: 'Maths Club',
     icon: Sigma,
+    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+  },
+  {
+    path: '/dashboard/science-club',
+    title: 'Science Club',
+    icon: FlaskConical,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
   },
   {
