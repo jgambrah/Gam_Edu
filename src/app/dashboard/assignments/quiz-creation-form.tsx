@@ -51,7 +51,7 @@ export function QuizCreationForm({ setOpen }: QuizCreationFormProps) {
     setIsSubmitting(true);
     try {
       toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
-      const quizData = await generateQuiz({ topic: values.topic, numQuestions: values.numQuestions });
+      const quizData = await generateQuiz({ topic: values.topic, numQuestions: values.numQuestions, forGradeLevel: 'Grade 9' });
 
       await addDoc(collection(firestore, 'quizzes'), {
         ...quizData,
@@ -153,5 +153,3 @@ export function QuizCreationForm({ setOpen }: QuizCreationFormProps) {
     </div>
   );
 }
-
-    

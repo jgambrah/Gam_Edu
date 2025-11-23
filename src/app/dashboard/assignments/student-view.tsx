@@ -52,9 +52,9 @@ export default function StudentAssignmentsView() {
       submissionType: 'file',
       content: 'placeholder-file.pdf',
       submittedAt: new Date(),
-      status: new Date() > new Date(assignment.dueDate) ? 'Late' : 'Submitted',
+      status: new Date() > new Date(assignment.dueDate.toDate()) ? 'Late' : 'Submitted',
     };
-    const newDocRef = collection(firestore, `assignments/${assignment.id}/submissions`);
+    const newDocRef = doc(collection(firestore, `assignments/${assignment.id}/submissions`));
     setDocumentNonBlocking(newDocRef, submission, {});
     toast({ title: 'Success', description: 'File submitted.' });
   };
@@ -101,7 +101,7 @@ export default function StudentAssignmentsView() {
                             {item.title}
                           </CardTitle>
                           <CardDescription>
-                            {isAssignment ? `Due: ${format(new Date(item.dueDate), 'PPP')}` : `Topic: ${item.topic}`}
+                            {isAssignment ? `Due: ${format(new Date(item.dueDate.toDate()), 'PPP')}` : `Topic: ${item.topic}`}
                           </CardDescription>
                         </div>
                          <Badge variant={isAssignment ? 'secondary' : 'default'}>{item.type}</Badge>
@@ -169,5 +169,3 @@ export default function StudentAssignmentsView() {
     </div>
   );
 }
-
-    

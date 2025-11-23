@@ -141,5 +141,3 @@ export function AssignmentSubmissionsList({ assignment, readOnly = false }: Assi
     </>
   );
 }
-
-    

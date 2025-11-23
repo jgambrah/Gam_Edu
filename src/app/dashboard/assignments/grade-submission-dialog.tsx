@@ -175,5 +175,3 @@ export function GradeSubmissionDialog({
     </Dialog>
   );
 }
-
-    

@@ -205,5 +205,3 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
     </div>
   );
 }
-
-    
