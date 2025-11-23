@@ -57,8 +57,20 @@ export default function LessonPlanningPage() {
   }, [firestore, user, role]);
 
   const { data: lessonPlans, isLoading } = useCollection<LessonPlan>(lessonPlansQuery);
-  const { data: classes } = useCollection<ClassData>(useMemoFirebase(() => user ? collection(firestore, 'classes') : null, [firestore, user]));
-  const { data: staff } = useCollection<StaffData>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
+
+  const classesQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    if (role === 'Teacher') {
+      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    if (role === 'Administrator' || role === 'Director') {
+      return collection(firestore, 'classes');
+    }
+    return null;
+  }, [firestore, user, role]);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
+
+  const { data: staff, isLoading: isLoadingStaff } = useCollection<StaffData>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
   
   const enrichedLessonPlans = useMemo(() => {
     if (!lessonPlans || !classes || !staff) return [];
@@ -104,7 +116,7 @@ export default function LessonPlanningPage() {
                 <DialogTitle>Create New Lesson Plan</DialogTitle>
                 <DialogDescription>Fill out the form below to create a new lesson plan.</DialogDescription>
               </DialogHeader>
-              <LessonPlanForm setOpen={setFormOpen} />
+              <LessonPlanForm setOpen={setFormOpen} classes={classes || []} />
             </DialogContent>
           </Dialog>
         </CardHeader>

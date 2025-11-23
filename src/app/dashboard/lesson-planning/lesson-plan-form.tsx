@@ -24,28 +24,27 @@ import {
 } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { lessonPlanSchema } from '@/lib/types';
 import { CalendarIcon, Loader2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { useRole } from '@/context/role-context';
 import { generateLessonIdeas } from '@/ai/flows/generate-lesson-ideas-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-type LessonPlanFormProps = {
-  setOpen: (open: boolean) => void;
-};
-
 type ClassData = { id: string; name: string };
 
-export function LessonPlanForm({ setOpen }: LessonPlanFormProps) {
+type LessonPlanFormProps = {
+  setOpen: (open: boolean) => void;
+  classes: ClassData[];
+};
+
+export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   const firestore = useFirestore();
   const { user } = useAuth();
-  const { role } = useRole();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -62,19 +61,6 @@ export function LessonPlanForm({ setOpen }: LessonPlanFormProps) {
   });
 
   const topicValue = form.watch('topic');
-
-  const classesQuery = useMemoFirebase(() => {
-    if (!user) return null;
-    if (role === 'Teacher') {
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
-    }
-    return null;
-  }, [firestore, user, role]);
-
-  const { data: classes } = useCollection<ClassData>(classesQuery);
 
   const handleAskAI = async () => {
     if (!topicValue) {
