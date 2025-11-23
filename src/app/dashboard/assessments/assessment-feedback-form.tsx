@@ -57,15 +57,16 @@ export function AssessmentFeedbackForm() {
     const selectedClassId = form.watch('classId');
 
     const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
-        if (role === 'Teacher') {
-          return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-        }
-        if (role === 'Administrator' || role === 'Director') {
-          return collection(firestore, 'classes');
-        }
-        return null;
+      if (!user || !firestore) return null;
+      if (role === 'Administrator' || role === 'Director') {
+        return collection(firestore, 'classes');
+      }
+      if (role === 'Teacher') {
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+      }
+      return null;
     }, [firestore, user, role]);
+
     const { data: classes } = useCollection<Class>(classesQuery);
 
     const studentsQuery = useMemoFirebase(
