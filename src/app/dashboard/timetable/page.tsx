@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, writeBatch } from 'firebase/firestore';
+import { collection, doc, writeBatch, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TimetableDisplay } from './timetable-display';
@@ -16,7 +17,7 @@ import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 type ClassData = { id: string; name: string };
-type Student = { classId: string; };
+type Student = { classId: string; id: string; };
 
 export default function TimetablePage() {
   const { user } = useAuth();
@@ -29,17 +30,28 @@ export default function TimetablePage() {
   const [customConstraint, setCustomConstraint] = useState('');
 
   // Data fetching
-  const { data: classes } = useCollection<ClassData>(useMemoFirebase(() => user ? collection(firestore, 'classes') : null, [firestore, user]));
-  const { data: teachers } = useCollection<Teacher>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
+  const classesQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    if (role === 'Administrator' || role === 'Director') {
+      return collection(firestore, 'classes');
+    }
+    if (role === 'Teacher') {
+      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    return null;
+  }, [firestore, user, role]);
+  const { data: classes } = useCollection<ClassData>(classesQuery);
+
+  const { data: allTeachers } = useCollection<Teacher>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
   const { data: subjects } = useCollection<Subject>(useMemoFirebase(() => user ? collection(firestore, 'subjects') : null, [firestore, user]));
   const { data: rooms } = useCollection<Room>(useMemoFirebase(() => user ? collection(firestore, 'rooms') : null, [firestore, user]));
   const { data: timeSlots } = useCollection<TimeSlot>(useMemoFirebase(() => user ? collection(firestore, 'timeSlots') : null, [firestore, user]));
   const { data: timetable, isLoading: isTimetableLoading } = useCollection<TimetableEntry>(useMemoFirebase(() => user ? collection(firestore, 'timetables') : null, [firestore, user]));
-  const { data: studentData } = useCollection<Student>(useMemoFirebase(() => user ? collection(firestore, 'students') : null, [firestore, user]));
+  const { data: studentData } = useCollection<Student>(useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user]));
 
   useEffect(() => {
     if (role === 'Student' && studentData && studentData.length > 0) {
-      const currentStudent = studentData.find(s => s.id === user?.uid);
+      const currentStudent = studentData[0];
       if (currentStudent) {
         setSelectedClassId(currentStudent.classId);
       }
@@ -50,12 +62,12 @@ export default function TimetablePage() {
   const canGenerate = ['Administrator', 'Director'].includes(role);
 
   const handleGenerateTimetable = async () => {
-    if (!canGenerate || !teachers || !subjects || !classes || !rooms || !timeSlots) return;
+    if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots) return;
     setIsGenerating(true);
     toast({ title: "AI is on the job!", description: "Generating a new timetable. This may take a moment." });
 
     try {
-      const simplifiedTeachers = teachers.map(t => ({
+      const simplifiedTeachers = allTeachers.map(t => ({
         uid: t.uid,
         firstName: t.firstName,
         lastName: t.lastName,
@@ -82,7 +94,7 @@ export default function TimetablePage() {
       
       // Add new timetable entries
       result.timetable.forEach(entry => {
-        const newDocRef = doc(collection(firestore, 'timetable'));
+        const newDocRef = doc(collection(firestore, 'timetables'));
         batch.set(newDocRef, entry);
       });
       
@@ -138,7 +150,7 @@ export default function TimetablePage() {
             <TimetableDisplay 
                 timetable={filteredTimetable}
                 subjects={subjects || []}
-                teachers={teachers || []}
+                teachers={allTeachers || []}
                 rooms={rooms || []}
                 timeSlots={timeSlots || []}
             />

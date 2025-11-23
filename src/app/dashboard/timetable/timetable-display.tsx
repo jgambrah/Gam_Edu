@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -24,10 +25,10 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
     const originalTimeSlot = timeSlots.find(ts => ts.id === timeSlotId);
     if (!originalTimeSlot) return null;
 
-    const slot = timeSlots.find(ts => ts.day === day && ts.startTime === originalTimeSlot.startTime);
-    if (!slot) return null;
+    const slotInDay = timeSlots.find(ts => ts.day === day && ts.startTime === originalTimeSlot.startTime);
+    if (!slotInDay) return null;
     
-    return timetable.find(entry => entry.day === day && entry.timeSlotId === slot.id);
+    return timetable.find(entry => entry.timeSlotId === slotInDay.id);
   };
 
   return (
