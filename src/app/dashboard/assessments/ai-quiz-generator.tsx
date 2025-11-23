@@ -58,7 +58,10 @@ export function AiQuizGenerator() {
     if (role === 'Administrator' || role === 'Director') {
       return collection(firestore, 'classes');
     }
-    return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    if (role === 'Teacher') {
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    return null;
   }, [firestore, user, role]);
 
   const { data: classes } = useCollection<Class>(classesQuery);
