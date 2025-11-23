@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,6 +31,8 @@ import { Loader2, Wand2 } from 'lucide-react';
 import { generateQuiz, GenerateQuizOutput } from '@/ai/flows/generate-quiz-flow';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
+import { useRole } from '@/context/role-context';
+import type { Class } from '@/lib/types';
 
 const generateQuizSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
@@ -42,6 +45,7 @@ type GenerateQuizFormData = z.infer<typeof generateQuizSchema>;
 
 export function AiQuizGenerator() {
   const { user } = useAuth();
+  const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -49,11 +53,15 @@ export function AiQuizGenerator() {
   const [generatedQuiz, setGeneratedQuiz] = useState<GenerateQuizOutput | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
-  const classesQuery = useMemoFirebase(
-    () => user ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid)) : null,
-    [firestore, user]
-  );
-  const { data: classes } = useCollection(classesQuery);
+  const classesQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    if (role === 'Administrator' || role === 'Director') {
+      return collection(firestore, 'classes');
+    }
+    return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+  }, [firestore, user, role]);
+
+  const { data: classes } = useCollection<Class>(classesQuery);
 
   const form = useForm<GenerateQuizFormData>({
     resolver: zodResolver(generateQuizSchema),
