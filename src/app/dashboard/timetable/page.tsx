@@ -17,7 +17,7 @@ import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 type ClassData = { id: string; name: string };
-type Student = { classId: string; id: string; };
+type Student = { classId: string; id: string; uid: string; };
 
 export default function TimetablePage() {
   const { user } = useAuth();
@@ -31,12 +31,12 @@ export default function TimetablePage() {
 
   // Data fetching
   const classesQuery = useMemoFirebase(() => {
-    if (!user) return null;
+    if (!user || !firestore) return null;
     if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
+        return collection(firestore, 'classes');
     }
     if (role === 'Teacher') {
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
     }
     return null;
   }, [firestore, user, role]);
