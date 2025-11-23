@@ -25,7 +25,7 @@ import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
 import { attendanceRecordSchema, type Student, type AttendanceRecord, type Class } from '@/lib/types';
@@ -40,7 +40,11 @@ const attendanceFormSchema = z.object({
 
 type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
 
-export function DailyAttendanceSheet() {
+type DailyAttendanceSheetProps = {
+    classId?: string; // Optional prop to pre-select a class
+};
+
+export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSheetProps) {
     const { user } = useAuth();
     const { role } = useRole();
     const firestore = useFirestore();
@@ -48,7 +52,7 @@ export function DailyAttendanceSheet() {
     const [isLoading, setIsLoading] = useState(false);
     const [studentsLoaded, setStudentsLoaded] = useState(false);
     
-    const [selectedClassId, setSelectedClassId] = useState<string>('');
+    const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const classesQuery = useMemoFirebase(() => {
@@ -75,9 +79,9 @@ export function DailyAttendanceSheet() {
         name: "records",
     });
 
-    const handleLoadStudents = async () => {
+    const handleLoadStudents = useCallback(async () => {
         if (!selectedClassId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Please select a class first.' });
+            if (!propClassId) toast({ variant: 'destructive', title: 'Error', description: 'Please select a class first.' });
             return;
         }
         if (!firestore) return;
@@ -85,7 +89,6 @@ export function DailyAttendanceSheet() {
         setStudentsLoaded(false);
 
         try {
-            // 1. Fetch students for the class
             const studentQuery = query(collection(firestore, 'students'), where('classId', '==', selectedClassId));
             const studentSnapshot = await getDocs(studentQuery);
             const studentList = studentSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
@@ -98,7 +101,6 @@ export function DailyAttendanceSheet() {
                 return;
             }
 
-            // 2. Fetch existing attendance for that date and class
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('classId', '==', selectedClassId),
@@ -107,11 +109,10 @@ export function DailyAttendanceSheet() {
             const attendanceSnapshot = await getDocs(attendanceQuery);
             const existingRecords = attendanceSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AttendanceRecord[];
 
-            // 3. Populate form with students, pre-filling with existing data or defaulting to 'Present'
             const formRecords = studentList.map(student => {
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
                 return {
-                    id: existingRecord?.id, // This will be used to identify if we update or create
+                    id: existingRecord?.id,
                     studentId: student.uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
@@ -129,7 +130,14 @@ export function DailyAttendanceSheet() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [selectedClassId, selectedDate, firestore, toast, replace, propClassId]);
+
+    // Automatically load students if classId is passed as a prop or when date changes for a pre-selected class
+    useEffect(() => {
+        if (selectedClassId) {
+            handleLoadStudents();
+        }
+    }, [selectedClassId, selectedDate, handleLoadStudents]);
     
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore) return;
@@ -137,16 +145,10 @@ export function DailyAttendanceSheet() {
         try {
             const batch = writeBatch(firestore);
             data.records.forEach(record => {
-                // If a record has an ID, it means it existed before. We update it.
-                // If it doesn't have an ID, we create a new one.
                 const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-                
-                // We don't want to save the 'studentName' or 'id' field to Firestore
                 const { studentName, id, ...dataToSave } = record;
-                
                 batch.set(recordRef, dataToSave, { merge: true });
 
-                // Placeholder for parent notification
                 if (record.status === 'Absent' || record.status === 'Late') {
                     console.log(`Placeholder: Sending notification to parent of ${record.studentName} for being ${record.status}.`);
                 }
@@ -163,7 +165,6 @@ export function DailyAttendanceSheet() {
         }
     }
 
-
     return (
         <Card>
             <CardHeader>
@@ -172,13 +173,15 @@ export function DailyAttendanceSheet() {
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
-                    <div className="flex-1">
-                        <Label>Class</Label>
-                        <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
-                            <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
+                    {!propClassId && ( // Only show class selector if not embedded in a specific class context
+                        <div className="flex-1">
+                            <Label>Class</Label>
+                            <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
+                                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+                    )}
                     <div className="flex-1">
                         <Label>Date</Label>
                         <Popover>
@@ -191,13 +194,21 @@ export function DailyAttendanceSheet() {
                             <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
                         </Popover>
                     </div>
-                    <div className="flex items-end">
-                        <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Load Students
-                        </Button>
-                    </div>
+                    {!propClassId && ( // Only show manual load button on standalone page
+                        <div className="flex items-end">
+                            <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
+                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Load Students
+                            </Button>
+                        </div>
+                    )}
                 </div>
+
+                {isLoading && !studentsLoaded && (
+                    <div className="flex justify-center p-8">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                    </div>
+                )}
 
                 {studentsLoaded && (
                     <Form {...form}>
@@ -233,6 +244,7 @@ export function DailyAttendanceSheet() {
                                 ))}
                             </div>
                             {fields.length > 0 && <Button type="submit" className="mt-6 w-full" disabled={isLoading}>{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Submit Attendance</Button>}
+                            {fields.length === 0 && <p className="text-center text-muted-foreground p-8">No students found in this class.</p>}
                         </form>
                     </Form>
                 )}
