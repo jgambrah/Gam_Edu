@@ -1,5 +1,3 @@
-
-
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -28,6 +26,7 @@ import {
   CalendarCheck,
   UserCog,
   Shield,
+  Code,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -136,6 +135,12 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
     ]
+  },
+  {
+    path: '/dashboard/coding-club',
+    title: 'Coding Club',
+    icon: Code,
+    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
   },
    {
     path: '/dashboard/hr',
