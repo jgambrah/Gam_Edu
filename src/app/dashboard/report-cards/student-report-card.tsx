@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -155,3 +156,5 @@ export function StudentReportCard({ student }: { student: Student }) {
     );
   }
   
+
+    
