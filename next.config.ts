@@ -34,7 +34,8 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
         allowedOrigins: ["localhost:9002"]
-    }
+    },
+    allowedDevOrigins: ["6000-firebase-studio-1763129377766.cluster-fbfjltn375c6wqxlhoehbz44sk.cloudworkstations.dev"]
   }
 };
 
