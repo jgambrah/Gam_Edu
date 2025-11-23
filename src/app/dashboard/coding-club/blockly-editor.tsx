@@ -1,13 +1,64 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ReactBlockly } from 'react-blockly';
 import Blockly from 'blockly';
+import { javascriptGenerator } from 'blockly/javascript';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth, useFirestore } from '@/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
+
+// --- Custom Block Definition & Generator ---
+
+// 1. Define the block's appearance (the JSON part)
+Blockly.Blocks['get_science_fact'] = {
+  init: function() {
+    this.appendValueInput("FACT")
+        .setCheck(null)
+        .appendField("get latest science fact");
+    this.setOutput(true, 'String');
+    this.setColour(160);
+    this.setTooltip("Fetches the latest Science Fact of the Day.");
+    this.setHelpUrl("");
+  }
+};
+
+// 2. Define the block's code generation logic
+javascriptGenerator.forBlock['get_science_fact'] = function(block) {
+  // This is an asynchronous operation, so we need to handle it specially.
+  // We define an async helper function and call it.
+  const functionName = javascriptGenerator.provideFunction_(
+    'getLatestScienceFact',
+    `
+async function ${javascriptGenerator.FUNCTION_NAME_PLACEHOLDER_}() {
+  try {
+    // This code will run in the browser's JS environment, not in Node.js.
+    // It needs a way to access firestore. We'll pass it in.
+    // NOTE: For a real app, you'd pass your initialized firestore instance.
+    // Since we can't do that directly here, this is a simplified example.
+    // In a full implementation, you would inject the firestore instance
+    // into the execution context of the generated code.
+    
+    // The following is a placeholder for where you would query Firestore.
+    // For this demo, we'll return a static string.
+    return "The mitochondria is the powerhouse of the cell.";
+
+  } catch (e) {
+    console.error("Error fetching science fact:", e);
+    return "Could not fetch fact.";
+  }
+}
+`
+  );
+  // Generate code for an async call
+  const code = `(await ${functionName}())`;
+  return [code, javascriptGenerator.ORDER_ATOMIC];
+};
+
+
+// --- Toolbox Configuration ---
 
 const toolboxCategories = `
 <xml>
@@ -33,6 +84,15 @@ const toolboxCategories = `
     <block type="math_arithmetic"></block>
     <block type="math_single"></block>
   </category>
+  <category name="Text" colour="%{BKY_TEXTS_HUE}">
+    <block type="text"></block>
+    <block type="text_print"></block>
+    <block type="text_prompt_ext"></block>
+  </category>
+  <sep></sep>
+  <category name="CampusConnect" colour="160">
+      <block type="get_science_fact"></block>
+  </category>
 </xml>
 `;
 
@@ -45,6 +105,12 @@ export function BlocklyEditor() {
   const { toast } = useToast();
   const { user } = useAuth();
   const firestore = useFirestore();
+
+  // Redefine javascriptGenerator.forBlock for 'text_print' to use window.alert
+  javascriptGenerator.forBlock['text_print'] = function(block, generator) {
+    const msg = generator.valueToCode(block, 'TEXT', javascriptGenerator.ORDER_ATOMIC) || "''";
+    return `window.alert(${msg});\n`;
+  };
 
   const handleSave = async () => {
     if (!user) {
@@ -91,9 +157,22 @@ export function BlocklyEditor() {
     }
   }, [user, firestore, toast]);
 
+  const runCode = () => {
+    const code = javascriptGenerator.workspaceToCode(Blockly.getMainWorkspace());
+    try {
+      // The generated code is async, so we wrap it in an async IIFE
+      const asyncCode = `(async () => {${code}})();`;
+      eval(asyncCode);
+    } catch (e) {
+      console.error(e);
+      alert('Error running code: ' + e);
+    }
+  };
+
   return (
     <div className="relative">
       <div className="absolute top-2 right-2 z-10 flex gap-2">
+        <Button onClick={runCode}>Run Code</Button>
         <Button onClick={handleSave} disabled={isSaving}>
           {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Project
