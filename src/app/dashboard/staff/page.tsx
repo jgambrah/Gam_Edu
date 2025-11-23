@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,27 +31,26 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription
-} from '@/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription
+  } from '@/components/ui/dialog';
+  import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+  } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2, Edit, Trash2 } from 'lucide-react';
@@ -345,7 +343,7 @@ function StaffPageContent() {
       };
       
       // Use the UID from the auth user as the document ID
-      await doc(firestore, 'staff', result.uid).set(newStaffDoc);
+      await setDoc(doc(firestore, 'staff', result.uid), newStaffDoc);
       
       toast({
         title: 'Staff Added',

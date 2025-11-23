@@ -49,10 +49,8 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
       }
 
       // Start role detection logic
-      if (user.email === 'jgambrah@sunnyside.com') {
-        setRole('Director');
-      } else if (staffData) {
-        // This is the most reliable check. If a staff document exists, use its role.
+      // This is the most reliable check. If a staff document exists, use its role.
+      if (staffData) {
         setRole(staffData.role);
       } else if (user.email?.endsWith('@sunnyside-student.com')) {
         setRole('Student');
