@@ -701,3 +701,36 @@ export const auditLogSchema = z.object({
 export type AuditLog = z.infer<typeof auditLogSchema> & {
   id: string;
 };
+
+// Maths Club Schemas
+export type MathProblem = {
+    id: string;
+    topic: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    question_text: string;
+    correct_answer: string | number;
+    options?: (string | number)[];
+    metadata?: {
+        source?: string;
+        gradeLevel?: string;
+    }
+};
+
+export type UserResult = {
+    id: string;
+    userId: string;
+    topic: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    score: number;
+    time_taken_seconds: number;
+    date_completed: any;
+    correct_count: number;
+};
+
+export type GlobalLeaderboardEntry = {
+    userId: string;
+    userName: string;
+    profilePictureUrl?: string;
+    total_correct_answers: number;
+    total_quizzes_completed: number;
+};
