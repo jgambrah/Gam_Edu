@@ -59,13 +59,16 @@ export default function LessonPlanningPage() {
   const { data: lessonPlans, isLoading } = useCollection<LessonPlan>(lessonPlansQuery);
 
   const classesQuery = useMemoFirebase(() => {
-    if (!user) return null;
-    if (role === 'Teacher') {
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
+    if (!user || !firestore) return null;
+    // For Admins/Directors, fetch all classes
     if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
+        return collection(firestore, 'classes');
     }
+    // For Teachers, fetch only the classes they are assigned to
+    if (role === 'Teacher') {
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    // Return null if no role matches, preventing unnecessary fetches
     return null;
   }, [firestore, user, role]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
@@ -106,8 +109,8 @@ export default function LessonPlanningPage() {
           </div>
           <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild>
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
+              <Button disabled={isLoadingClasses}>
+                {isLoadingClasses ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
                 Create New Lesson Plan
               </Button>
             </DialogTrigger>
