@@ -703,17 +703,20 @@ export type AuditLog = z.infer<typeof auditLogSchema> & {
 };
 
 // Maths Club Schemas
-export type MathProblem = {
+export const mathProblemSchema = z.object({
+    topic: z.string().min(1, "Topic is required."),
+    difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+    question_text: z.string().min(1, "Question text is required."),
+    correct_answer: z.string().min(1, "Correct answer is required."),
+    options: z.array(z.string().min(1, "Option cannot be empty.")).length(4, "You must provide 4 options."),
+    metadata: z.object({
+        source: z.string().optional(),
+        gradeLevel: z.string().optional(),
+    }).optional(),
+});
+
+export type MathProblem = z.infer<typeof mathProblemSchema> & {
     id: string;
-    topic: string;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
-    question_text: string;
-    correct_answer: string | number;
-    options?: (string | number)[];
-    metadata?: {
-        source?: string;
-        gradeLevel?: string;
-    }
 };
 
 export type UserResult = {
