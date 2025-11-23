@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/card';
 import { Code, MousePointerClick } from 'lucide-react';
 import Link from 'next/link';
+import { BlocklyEditor } from './blockly-editor';
+import { Separator } from '@/components/ui/separator';
 
 export default function CodingClubPage() {
   return (
@@ -25,7 +27,7 @@ export default function CodingClubPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Card className="w-full">
+          <Card className="w-full mb-6">
             <CardHeader>
               <CardTitle>Option 1: Scratch Platform</CardTitle>
               <CardDescription>
@@ -44,6 +46,18 @@ export default function CodingClubPage() {
                   Go to Scratch Platform
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+          <Separator className="my-8" />
+          <Card className="w-full">
+             <CardHeader>
+                <CardTitle>Option 2: Integrated Blockly Editor</CardTitle>
+                <CardDescription>
+                    Use our built-in block-based editor to create and save your projects directly in CampusConnect.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <BlocklyEditor />
             </CardContent>
           </Card>
         </CardContent>
