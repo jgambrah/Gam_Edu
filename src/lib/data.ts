@@ -1,3 +1,4 @@
+
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -27,6 +28,7 @@ import {
   UserCog,
   Shield,
   Code,
+  Sigma,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -135,6 +137,12 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
     ]
+  },
+  {
+    path: '/dashboard/maths-club',
+    title: 'Maths Club',
+    icon: Sigma,
+    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
   },
   {
     path: '/dashboard/coding-club',
