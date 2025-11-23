@@ -30,6 +30,7 @@ import {
   Code,
   Sigma,
   FlaskConical,
+  BookOpenCheck,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -149,6 +150,12 @@ export const navItems: NavItem[] = [
     path: '/dashboard/science-club',
     title: 'Science Club',
     icon: FlaskConical,
+    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+  },
+  {
+    path: '/dashboard/ela-club',
+    title: 'ELA Club',
+    icon: BookOpenCheck,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
   },
   {

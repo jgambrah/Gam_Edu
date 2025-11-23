@@ -780,3 +780,36 @@ export type DailyFact = {
     createdAt: any;
     postedBy: string;
 };
+
+// ELA Club Schemas
+export type ElaGrammarDrill = {
+    id: string;
+    topic: string;
+    type: 'MCQ' | 'Drag and Drop';
+    question_prompt: string;
+    options?: string[];
+    correct_answer: string | string[];
+};
+
+export type ElaReadingPassage = {
+    id: string;
+    title: string;
+    passage_text: string;
+    reading_level: string;
+    question_set: Array<{
+        question: string;
+        type: 'MCQ' | 'Short Answer';
+        options?: string[];
+        correct_answer_key: string;
+    }>;
+};
+
+export type ElaUserSubmission = {
+    id: string;
+    userId: string;
+    challenge_id: string;
+    submission_text: string;
+    date_submitted: any;
+    teacher_score?: number | null;
+    teacher_feedback?: string | null;
+};
