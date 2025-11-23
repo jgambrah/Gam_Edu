@@ -3,8 +3,8 @@
 
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -28,13 +28,10 @@ const COLORS = {
     Excused: '#64748b'
 };
 
-const MOCK_CLASSES = [
-    { id: 'grade-10-a', name: 'Grade 10 - A' },
-    { id: 'grade-10-b', name: 'Grade 10 - B' }
-];
-
 export default function AttendanceReportsPage() {
     const { role } = useRole();
+    const firestore = useFirestore();
+    const { user } = useUser();
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: addDays(new Date(), -30),
         to: new Date(),
@@ -43,6 +40,18 @@ export default function AttendanceReportsPage() {
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
     const canAccess = ['Administrator', 'Director', 'Teacher'].includes(role);
+
+    const classesQuery = useMemoFirebase(() => {
+        if (!user || !firestore) return null;
+        if (role === 'Administrator' || role === 'Director') {
+            return collection(firestore, 'classes');
+        }
+        if (role === 'Teacher') {
+            return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        }
+        return null;
+    }, [firestore, user, role]);
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     const filteredData = useMemo(() => {
         let data = mockAttendanceRecords;
@@ -151,11 +160,11 @@ export default function AttendanceReportsPage() {
                             <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
                         </PopoverContent>
                     </Popover>
-                    <Select onValueChange={setSelectedClassId} defaultValue="all">
+                    <Select onValueChange={setSelectedClassId} defaultValue="all" disabled={isLoadingClasses}>
                         <SelectTrigger className="w-[280px]"><SelectValue /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Classes</SelectItem>
-                            {MOCK_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <Select onValueChange={setSelectedStatus} defaultValue="all">
@@ -220,7 +229,7 @@ export default function AttendanceReportsPage() {
                                 {filteredData.map(record => (
                                     <TableRow key={record.id}>
                                         <TableCell>{record.studentName}</TableCell>
-                                        <TableCell>{MOCK_CLASSES.find(c => c.id === record.classId)?.name}</TableCell>
+                                        <TableCell>{classes?.find(c => c.id === record.classId)?.name}</TableCell>
                                         <TableCell>{format(record.date, 'PPP')}</TableCell>
                                         <TableCell><Badge style={{ backgroundColor: COLORS[record.status as keyof typeof COLORS]}}>{record.status}</Badge></TableCell>
                                         <TableCell>{record.notes}</TableCell>
