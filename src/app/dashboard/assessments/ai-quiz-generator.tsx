@@ -54,7 +54,7 @@ export function AiQuizGenerator() {
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
   const classesQuery = useMemoFirebase(() => {
-    if (!user) return null;
+    if (!user || !firestore) return null;
     if (role === 'Administrator' || role === 'Director') {
       return collection(firestore, 'classes');
     }

@@ -29,7 +29,6 @@ export default function TimetablePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [customConstraint, setCustomConstraint] = useState('');
 
-  // Data fetching
   const classesQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
     if (role === 'Administrator' || role === 'Director') {

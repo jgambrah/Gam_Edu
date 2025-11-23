@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -60,15 +61,12 @@ export default function LessonPlanningPage() {
 
   const classesQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
-    // For Admins/Directors, fetch all classes
     if (role === 'Administrator' || role === 'Director') {
         return collection(firestore, 'classes');
     }
-    // For Teachers, fetch only the classes they are assigned to
     if (role === 'Teacher') {
         return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
     }
-    // Return null if no role matches, preventing unnecessary fetches
     return null;
   }, [firestore, user, role]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
