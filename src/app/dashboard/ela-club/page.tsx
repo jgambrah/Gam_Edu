@@ -11,22 +11,7 @@ import {
 import { BookOpenCheck, Edit, FileText, ChevronRight } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
-
-function GrammarPracticeTab() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Grammar & Mechanics Drills</CardTitle>
-        <CardDescription>
-          Sharpen your grammar skills with targeted exercises. (Coming Soon)
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="text-center text-muted-foreground py-12">
-        <p>Interactive grammar quizzes will be available here.</p>
-      </CardContent>
-    </Card>
-  );
-}
+import { GrammarPractice } from './grammar-practice';
 
 function ReadingPracticeTab() {
   return (
@@ -96,7 +81,7 @@ export default function ElaClubPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="grammar">
-          <GrammarPracticeTab />
+          <GrammarPractice />
         </TabsContent>
         <TabsContent value="reading">
           <ReadingPracticeTab />
