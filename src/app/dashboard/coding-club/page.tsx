@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Code, MousePointerClick } from 'lucide-react';
+import { Code, MousePointerClick, Youtube } from 'lucide-react';
 import Link from 'next/link';
 import { BlocklyEditor } from './blockly-editor';
 import { Separator } from '@/components/ui/separator';
@@ -35,7 +35,7 @@ export default function CodingClubPage() {
                 Create stories, games, and animations.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-col sm:flex-row gap-4 items-start">
               <Link
                 href="https://scratch.mit.edu/projects/editor/"
                 target="_blank"
@@ -44,6 +44,16 @@ export default function CodingClubPage() {
                 <Button>
                   <MousePointerClick className="mr-2 h-4 w-4" />
                   Go to Scratch Platform
+                </Button>
+              </Link>
+              <Link
+                href="https://www.youtube.com/watch?v=y2y5A5n5h9o"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline">
+                    <Youtube className="mr-2 h-4 w-4" />
+                    Watch a Beginner's Tutorial
                 </Button>
               </Link>
             </CardContent>
@@ -57,6 +67,18 @@ export default function CodingClubPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
+                <div className="mb-4">
+                     <Link
+                        href="https://www.youtube.com/watch?v=S2_v371hrpY"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Button variant="outline">
+                            <Youtube className="mr-2 h-4 w-4" />
+                            How to Use Blockly
+                        </Button>
+                    </Link>
+                </div>
                 <BlocklyEditor />
             </CardContent>
           </Card>
