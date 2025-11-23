@@ -1,14 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { useAuth, useFirestore } from '@/firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { Assignment } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
 import { AssignmentCreationForm } from './assignment-creation-form';
 import { AssignmentSubmissionsList } from './assignment-submissions-list';
 import { QuizCreationForm } from './quiz-creation-form';
@@ -20,11 +19,24 @@ export default function TeacherAssignmentsView() {
   const [isAssignmentFormOpen, setAssignmentFormOpen] = useState(false);
   const [isQuizFormOpen, setQuizFormOpen] = useState(false);
 
-  const assignmentsQuery = useMemoFirebase(
-    () => user && query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid)),
-    [firestore, user]
-  );
-  const { data: assignments, isLoading } = useCollection<Assignment>(assignmentsQuery);
+  const [assignments, setAssignments] = useState<Assignment[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user || !firestore) return;
+
+    const assignmentsQuery = query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid));
+    const unsubscribe = onSnapshot(assignmentsQuery, (snapshot) => {
+        const fetchedAssignments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Assignment));
+        setAssignments(fetchedAssignments);
+        setIsLoading(false);
+    }, (error) => {
+        console.error("Failed to fetch assignments:", error);
+        setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user, firestore]);
 
   const sortedAssignments = assignments?.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
 

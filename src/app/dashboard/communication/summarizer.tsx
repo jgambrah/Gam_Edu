@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2, Send } from 'lucide-react';
-import { useFirestore, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
@@ -94,10 +94,8 @@ export function NoticeSummarizer() {
       audience: audience,
     };
 
-    const announcementsRef = collection(firestore, 'announcements');
-
-    addDoc(announcementsRef, announcementData)
-      .then(() => {
+    try {
+        await addDoc(collection(firestore, 'announcements'), announcementData)
         toast({
           title: 'Announcement Posted!',
           description: 'The announcement is now live for all users.',
@@ -106,25 +104,16 @@ export function NoticeSummarizer() {
         setNoticeText('');
         setSummary('');
         setAudience(['Everybody']);
-      })
-      .catch((error) => {
-        errorEmitter.emit(
-          'permission-error',
-          new FirestorePermissionError({
-            path: announcementsRef.path,
-            operation: 'create',
-            requestResourceData: announcementData,
-          })
-        );
+      } catch (error) {
+        console.error("Error posting announcement:", error);
         toast({
             variant: 'destructive',
             title: 'Error',
             description: 'Could not post announcement. Check permissions.',
         });
-      })
-      .finally(() => {
+      } finally {
         setIsPosting(false);
-      });
+      }
   };
 
   return (
@@ -206,5 +195,3 @@ export function NoticeSummarizer() {
     </Card>
   );
 }
-
-    

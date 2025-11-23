@@ -22,9 +22,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { useAuth, useFirestore } from '@/firebase';
+import { collection, query, where, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Wand2 } from 'lucide-react';
@@ -53,18 +53,31 @@ export function AiQuizGenerator() {
   const [generatedQuiz, setGeneratedQuiz] = useState<GenerateQuizOutput | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
-  const classesQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
-    if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
-    }
-    if (role === 'Teacher') {
-        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    return null;
-  }, [firestore, user, role]);
+  const [classes, setClasses] = useState<Class[]>([]);
 
-  const { data: classes } = useCollection<Class>(classesQuery);
+  useEffect(() => {
+    if (!user || !firestore) return;
+
+    let classesQuery;
+    if (role === 'Administrator' || role === 'Director') {
+      classesQuery = collection(firestore, 'classes');
+    } else if (role === 'Teacher') {
+      classesQuery = query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    } else {
+        return;
+    }
+
+    const unsubscribe = onSnapshot(classesQuery, (snapshot) => {
+        const fetchedClasses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Class));
+        setClasses(fetchedClasses);
+    }, (error) => {
+        console.error("Failed to fetch classes:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch classes.' });
+    });
+
+    return () => unsubscribe();
+  }, [firestore, user, role, toast]);
+
 
   const form = useForm<GenerateQuizFormData>({
     resolver: zodResolver(generateQuizSchema),

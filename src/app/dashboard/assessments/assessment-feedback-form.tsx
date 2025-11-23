@@ -27,15 +27,15 @@ import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { useAuth, useFirestore } from '@/firebase';
+import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc, onSnapshot } from 'firebase/firestore';
 import { assessmentFeedbackSchema } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { MOCK_ACADEMIC_YEARS, MOCK_SUBJECTS, MOCK_TERMS } from '@/lib/data';
 import { useRole } from '@/context/role-context';
-import type { Class } from '@/lib/types';
+import type { Class, Student } from '@/lib/types';
 
 
 export function AssessmentFeedbackForm() {
@@ -44,6 +44,9 @@ export function AssessmentFeedbackForm() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const [classes, setClasses] = useState<Class[]>([]);
+    const [students, setStudents] = useState<Student[]>([]);
   
     const form = useForm<z.infer<typeof assessmentFeedbackSchema>>({
       resolver: zodResolver(assessmentFeedbackSchema),
@@ -57,29 +60,42 @@ export function AssessmentFeedbackForm() {
 
     const selectedClassId = form.watch('classId');
 
-    const classesQuery = useMemoFirebase(() => {
-      if (!user || !firestore) return null;
-      if (role === 'Administrator' || role === 'Director') {
-        return collection(firestore, 'classes');
-      }
-      if (role === 'Teacher') {
-        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-      }
-      return null;
+    useEffect(() => {
+        if (!user || !firestore) return;
+        let classesQuery;
+        if (role === 'Administrator' || role === 'Director') {
+            classesQuery = collection(firestore, 'classes');
+        } else if (role === 'Teacher') {
+            classesQuery = query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        } else {
+            return;
+        }
+
+        const unsubscribe = onSnapshot(classesQuery, (snapshot) => {
+            setClasses(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Class)));
+        });
+
+        return () => unsubscribe();
     }, [firestore, user, role]);
 
-    const { data: classes } = useCollection<Class>(classesQuery);
+    useEffect(() => {
+        if (!selectedClassId || !firestore) {
+            setStudents([]);
+            return;
+        };
 
-    const studentsQuery = useMemoFirebase(
-        () => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
-        [firestore, selectedClassId]
-    );
-    const { data: students } = useCollection(studentsQuery);
+        const studentsQuery = query(collection(firestore, 'students'), where('classId', '==', selectedClassId));
+        const unsubscribe = onSnapshot(studentsQuery, (snapshot) => {
+            setStudents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Student)));
+        });
+
+        return () => unsubscribe();
+    }, [selectedClassId, firestore]);
   
   
     async function onSubmit(values: z.infer<typeof assessmentFeedbackSchema>) {
         setIsSubmitting(true);
-        if (!user) return;
+        if (!user || !firestore) return;
     
         try {
             const querySnapshot = await getDocs(query(

@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useState, useMemo, useEffect } from 'react';
+import { useAuth, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -43,36 +43,53 @@ export default function LessonPlanningPage() {
   const { user } = useAuth();
   const firestore = useFirestore();
   const [isFormOpen, setFormOpen] = useState(false);
+  
+  const [lessonPlans, setLessonPlans] = useState<LessonPlan[] | null>(null);
+  const [classes, setClasses] = useState<ClassData[] | null>(null);
+  const [staff, setStaff] = useState<StaffData[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user || !firestore) return;
+
+    let plansQuery;
+    if (role === 'Teacher') {
+      plansQuery = query(collection(firestore, 'lesson-plans'), where('teacherId', '==', user.uid), orderBy('date', 'desc'));
+    } else if (role === 'Administrator' || role === 'Director') {
+      plansQuery = query(collection(firestore, 'lesson-plans'), orderBy('date', 'desc'));
+    } else {
+        setIsLoading(false);
+        return;
+    }
+    const unsubscribePlans = onSnapshot(plansQuery, (snapshot) => {
+        setLessonPlans(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as LessonPlan)));
+        setIsLoading(false);
+    });
+
+    let classesQuery;
+     if (role === 'Administrator' || role === 'Director') {
+        classesQuery = collection(firestore, 'classes');
+    } else if (role === 'Teacher') {
+        classesQuery = query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    const unsubscribeClasses = classesQuery ? onSnapshot(classesQuery, (snapshot) => {
+        setClasses(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClassData)));
+    }) : () => {};
+
+    const unsubscribeStaff = onSnapshot(collection(firestore, 'staff'), (snapshot) => {
+        setStaff(snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as StaffData)));
+    });
+
+
+    return () => {
+        unsubscribePlans();
+        unsubscribeClasses();
+        unsubscribeStaff();
+    }
+  }, [user, firestore, role]);
 
   const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-  const lessonPlansQuery = useMemoFirebase(() => {
-    if (!user) return null;
-    if (role === 'Teacher') {
-      return query(collection(firestore, 'lesson-plans'), where('teacherId', '==', user.uid), orderBy('date', 'desc'));
-    }
-    if (role === 'Administrator' || role === 'Director') {
-      return query(collection(firestore, 'lesson-plans'), orderBy('date', 'desc'));
-    }
-    return null;
-  }, [firestore, user, role]);
-
-  const { data: lessonPlans, isLoading } = useCollection<LessonPlan>(lessonPlansQuery);
-
-  const classesQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
-    if (role === 'Administrator' || role === 'Director') {
-        return collection(firestore, 'classes');
-    }
-    if (role === 'Teacher') {
-        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    return null;
-  }, [firestore, user, role]);
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
-
-  const { data: staff, isLoading: isLoadingStaff } = useCollection<StaffData>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
-  
   const enrichedLessonPlans = useMemo(() => {
     if (!lessonPlans || !classes || !staff) return [];
     return lessonPlans.map(plan => {
@@ -107,8 +124,8 @@ export default function LessonPlanningPage() {
           </div>
           <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild>
-              <Button disabled={isLoadingClasses}>
-                {isLoadingClasses ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
+              <Button disabled={!classes}>
+                {!classes ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
                 Create New Lesson Plan
               </Button>
             </DialogTrigger>

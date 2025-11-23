@@ -3,11 +3,12 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { NoticeSummarizer } from './summarizer';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, orderBy, where } from 'firebase/firestore';
+import { useFirestore, useUser } from '@/firebase';
+import { collection, query, orderBy, where, onSnapshot } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
+import { useEffect, useState } from 'react';
 
 type Announcement = {
   id: string;
@@ -20,18 +21,28 @@ type Announcement = {
 export default function CommunicationPage() {
   const firestore = useFirestore();
   const { role } = useRole();
+  const [announcements, setAnnouncements] = useState<Announcement[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const announcementsQuery = useMemoFirebase(
-    () =>
-      firestore && role ? query(
+  useEffect(() => {
+    if (!firestore || !role) return;
+
+    const announcementsQuery = query(
         collection(firestore, 'announcements'),
         where('audience', 'array-contains-any', ['Everybody', role]),
         orderBy('publishedAt', 'desc')
-      ) : null,
-    [firestore, role]
-  );
-  
-  const { data: announcements, isLoading } = useCollection<Announcement>(announcementsQuery);
+    );
+      
+    const unsubscribe = onSnapshot(announcementsQuery, (snapshot) => {
+        setAnnouncements(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Announcement)));
+        setIsLoading(false);
+    }, (error) => {
+        console.error("Failed to fetch announcements:", error);
+        setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [firestore, role]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">

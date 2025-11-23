@@ -70,7 +70,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/staff',
             title: 'Staff',
             icon: UserCog,
-            roles: ['Director', 'Administrator'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
             path: '/dashboard/parents',
