@@ -1,175 +1,123 @@
 
-/**
- * @fileoverview Firestore Security Rules for CampusConnect application.
- *
- * Core Philosophy:
- * This ruleset implements role-based access control (RBAC) where access is determined by a user's role.
- * Only authenticated users can access data, with admin users having elevated privileges. Data validation
- * is relaxed to allow for rapid prototyping.
- *
- * Data Structure:
- * - /roles/{roleId}: Stores role definitions, accessible only to admins.
- * - /staff/{staffId}: Stores staff profiles, accessible to admins for management and individual staff members for their own profiles.
- * - /roles_admin/{uid}: Documents in this collection indicate admin privileges for the given user.
- * - /students/{studentId}: Stores student profiles, accessible only to admins.
- * - /parents/{parentId}: Stores parent profiles, accessible only to admins.
- * - /classes/{classId}: Stores class information, accessible only to admins.
- *
- * Key Security Decisions:
- * - Only admins can create, update, or delete roles, students, parents, and classes.
- * - Staff can only read their own profile; admins can manage all staff profiles.
- * - Listing of roles is allowed only for admins.
- * - Listing of staff is allowed for any signed-in user for now.
- * - Listing of students, parents, and classes is allowed only for admins.
- * - The existence of a document in `/roles_admin/{uid}` grants admin privileges to the user.
- *
- * Denormalization for Authorization:
- * - The `staff` documents include a `roleId` field, denormalizing the role assignment. This allows rules to check a user's role directly on the staff document without needing a separate `get()` call to the `roles` collection.
- */
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Grants administrators full access to manage roles.
-     * @path /roles/{roleId}
-     */
-    match /roles/{roleId} {
-      allow create: if isAdmin();
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+    // --- Helper Functions ---
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    /**
-     * @description Allows admins to manage staff profiles and staff to view their own profile.
-     * @path /staff/{staffId}
-     */
-    match /staff/{staffId} {
-        allow create: if isAdmin();
-        allow read: if isSignedIn();
-        allow update: if isAdmin();
-        allow delete: if isAdmin();
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * @description Grants administrators full access to manage student profiles.
-     * @path /students/{studentId}
-     */
-    match /students/{studentId} {
-      allow create: if isAdmin();
-      allow read: if isSignedIn();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+    function getUserRole() {
+      // Assumes a 'staff' collection where documents are keyed by user UID
+      // and contain a 'role' field.
+      return get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      // Super admin check for initial setup.
+      if (isSignedIn() && request.auth.token.email == 'jgambrah@sunnyside.com') {
+        return true;
+      }
+      // Standard role-based check.
+      return isSignedIn() && getUserRole() in ['Director', 'Administrator'];
+    }
+
+    function isTeacher() {
+      return isSignedIn() && getUserRole() == 'Teacher';
     }
     
-    /**
-     * @description Grants any signed-in user read access to parent profiles.
-     * @path /parents/{parentId}
-     */
+    function isStudent() {
+      return exists(/databases/$(database)/documents/students/$(request.auth.uid));
+    }
+
+    function isParent() {
+      return exists(/databases/$(database)/documents/parents/$(request.auth.uid));
+    }
+    
+    function isStaff() {
+        return exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+    }
+
+    function isLibrarianOrAdmin() {
+      let userRole = getUserRole();
+      return userRole in ['Librarian', 'Administrator', 'Director'];
+    }
+
+    function isFinanceStaff() {
+        let userRole = getUserRole();
+        return userRole in ['Accountant', 'Administrator', 'Director'];
+    }
+
+    // --- Collection Rules ---
+
+    match /roles/{roleId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /staff/{staffId} {
+        allow create, update, delete: if isAdmin();
+        allow read: if isSignedIn();
+    }
+
+    match /students/{studentId} {
+      allow create, update, delete: if isAdmin();
+      allow read: if isSignedIn();
+    }
+    
     match /parents/{parentId} {
-      allow create: if isAdmin();
+      allow create, update, delete: if isAdmin();
       allow read: if isSignedIn();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
     }
 
-    /**
-     * @description Grants administrators full access to manage classes.
-     * @path /classes/{classId}
-     */
     match /classes/{classId} {
+      allow create, update, delete: if isAdmin();
       allow read: if isSignedIn();
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
     }
-
-    /**
-     * @description Grants admin privileges to a user by creating a document with their UID.
-     * @path /roles_admin/{uid}
-     */
-    match /roles_admin/{uid} {
-      allow create: if isAdmin();
-      allow get: if isAdmin();
-      allow list: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-    }
-
-    /**
-     * @description Rules for assignments.
-     * @path /assignments/{assignmentId}
-     */
+    
     match /assignments/{assignmentId} {
       allow read: if isSignedIn();
       allow create: if isTeacher();
-      allow update, delete: if isTeacher() && isAssignmentOwner(assignmentId);
+      allow update, delete: if isTeacher() && get(/databases/$(database)/documents/assignments/$(assignmentId)).data.teacherId == request.auth.uid;
     }
 
-    /**
-     * @description Rules for student submissions.
-     * @path /assignments/{assignmentId}/submissions/{submissionId}
-     */
     match /assignments/{assignmentId}/submissions/{submissionId} {
       allow read: if isSignedIn();
       allow create: if isStudent();
       allow update: if isTeacher() || isOwner(request.resource.data.studentId);
     }
-
-    /**
-     * @description Rules for quizzes.
-     * @path /quizzes/{quizId}
-     */
+    
     match /quizzes/{quizId} {
       allow read: if isSignedIn();
       allow create: if isTeacher();
-      allow update, delete: if isTeacher() && isQuizOwner(quizId);
+      allow update, delete: if isTeacher() && get(/databases/$(database)/documents/quizzes/$(quizId)).data.teacherId == request.auth.uid;
     }
     
-    /**
-     * @description Rules for quiz attempts.
-     * @path /quizzes/{quizId}/attempts/{attemptId}
-     */
     match /quizzes/{quizId}/attempts/{attemptId} {
         allow read: if isTeacher() || isOwner(request.resource.data.studentId);
         allow create: if isStudent();
     }
 
-    /**
-     * @description Rules for manual assessments and grade entries.
-     * @path /assessments/{assessmentId}
-     */
     match /assessments/{assessmentId} {
       allow list, read: if isSignedIn();
       allow create, update: if isTeacher() || isAdmin();
       allow delete: if isAdmin();
     }
 
-    /**
-     * @description Rules for behavioral and incident logs.
-     * @path /behavioral_records/{recordId}
-     */
     match /behavioral_records/{recordId} {
-      allow read: if request.auth != null;
-      allow list: if request.auth != null;
-      allow write: if request.auth != null;
+      allow read, list, write: if request.auth != null;
     }
 
-    /**
-     * @description Rules for report cards.
-     * @path /report-cards/{reportCardId}
-     */
     match /report-cards/{reportCardId} {
         allow read: if isSignedIn();
         allow create, update: if isTeacher() || isAdmin();
     }
 
-     /**
-     * @description Rules for report card comments.
-     * @path /report-cards/{reportCardId}/comments/{commentId}
-     */
     match /report-cards/{reportCardId}/comments/{commentId} {
         allow read: if isSignedIn();
         allow create, update: if isTeacher() && get(/databases/$(database)/documents/report-cards/$(reportCardId)).data.status == 'Draft';
@@ -210,7 +158,7 @@ service cloud.firestore {
     match /library/{itemId} {
       allow read: if isSignedIn();
       allow create, delete: if isLibrarianOrAdmin();
-      allow update: if isLibrarianOrAdmin() || (isBorrower() && canRequest(itemId));
+      allow update: if isLibrarianOrAdmin();
     }
     
     match /admissionApplications/{applicationId} {
@@ -240,11 +188,11 @@ service cloud.firestore {
     }
 
     match /payrollSettings/{settingsId} {
-      allow read, write, list: if request.auth != null;
+      allow read, write, list: if isFinanceStaff() || isAdmin();
     }
 
     match /staff/{staffId}/payroll/{configId} {
-      allow read, write: if isFinanceStaff();
+      allow read, write: if isFinanceStaff() || isAdmin();
     }
 
     match /payrollRecords/{recordId} {
@@ -252,11 +200,11 @@ service cloud.firestore {
     }
 
     match /vendors/{vendorId} {
-      allow read, write, list: if request.auth != null;
+      allow read, write, list: if isFinanceStaff() || isAdmin();
     }
     
     match /accountsPayable/{payableId} {
-      allow read, write, list: if request.auth != null;
+      allow read, write, list: if isFinanceStaff() || isAdmin();
     }
 
     match /inventory/{itemId} {
@@ -271,12 +219,11 @@ service cloud.firestore {
     
     match /announcements/{announcementId} {
       allow create, update, delete: if isAdmin();
-      allow read: if isSignedIn() && (isAdmin() || canReadAnnouncement(resource.data.audience));
+      allow read: if isSignedIn();
     }
 
     match /auditLogs/{logId} {
       allow read, list: if isAdmin();
-      // Writes to audit logs should be handled by a secure backend function, not directly by clients.
       allow write: if false; 
     }
 
@@ -284,29 +231,22 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     
-    // --- Maths Club Rules ---
     match /math_problems/{problemId} {
         allow get, list: if isSignedIn();
-        allow write: if isTeacher() || isAdmin(); // Teachers and Admins can create problems
+        allow write: if isTeacher() || isAdmin();
     }
 
     match /user_results/{resultId} {
-        // Students can only create their own results
         allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-        // Students can only read their own results
         allow read: if isOwner(resource.data.userId);
-        // Nobody can update/delete results from the client to ensure data integrity
         allow update, delete: if false;
     }
 
     match /global_leaderboard/{userId} {
-        // Everyone can read the leaderboard
         allow read: if isSignedIn();
-        // Only a backend process (Cloud Function) should write to the leaderboard
         allow write: if false;
     }
 
-    // --- Science Club Rules ---
     match /science_problems/{problemId} {
         allow read: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
@@ -320,7 +260,7 @@ service cloud.firestore {
 
     match /science_leaderboard/{userId} {
         allow read: if isSignedIn();
-        allow write: if false; // To be updated by a Cloud Function
+        allow write: if false;
     }
 
     match /daily_facts/{factId} {
@@ -328,7 +268,6 @@ service cloud.firestore {
       allow write: if isTeacher() || isAdmin();
     }
 
-    // --- ELA Club Rules ---
     match /ela_grammar_drills/{drillId} {
         allow read: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
@@ -342,125 +281,13 @@ service cloud.firestore {
     match /ela_user_submissions/{submissionId} {
         allow create: if isOwner(request.resource.data.userId);
         allow read: if isOwner(request.resource.data.userId) || isTeacher() || isAdmin();
-        // Allow teacher to update only score and feedback
         allow update: if (isTeacher() || isAdmin()) && request.resource.data.keys().hasOnly(['teacher_score', 'teacher_feedback']);
         allow delete: if false;
     }
 
-
-    // ------ Helper Functions ------
-
-    /**
-     * @description Checks if the request is made by an authenticated user.
-     * @return {boolean} True if the user is signed in, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the user is the owner of the document based on the provided userId.
-     * @param {string} userId - The user ID to compare against the request's authentication UID.
-     * @return {boolean} True if the user is the owner, false otherwise.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the user has admin privileges.
-     * This now checks for a specific email or falls back to checking the role in the user's staff document.
-     * @return {boolean} True if the user is an admin, false otherwise.
-     */
-    function isAdmin() {
-      // Super admin check for initial setup or a specific high-privilege account.
-      if (request.auth != null && request.auth.token.email == 'jgambrah@sunnyside.com') {
-        return true;
-      }
-      
-      // Standard role-based check for other administrators or directors.
-      if (isSignedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid))) {
-        let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
-        return userRole == 'Administrator' || userRole == 'Director';
-      }
-      
-      return false;
-    }
-
-    function isTeacher() {
-      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
-      return get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role == 'Teacher';
-    }
-    
-    function isLibrarianOrAdmin() {
-      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
-      let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
-      return userRole == 'Librarian' || userRole == 'Administrator' || userRole == 'Director';
-    }
-
-    function isFinanceStaff() {
-        if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
-        let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid));
-        return userRole == 'Accountant' || userRole == 'Administrator' || userRole == 'Director';
-    }
-
-    function isStudent() {
-      return exists(/databases/$(database)/documents/students/$(request.auth.uid));
-    }
-    
-    function isParent() {
-        return exists(/databases/$(database)/documents/parents/$(request.auth.uid));
-    }
-
-    function isBorrower() {
-      return isStudent() || isTeacher();
-    }
-
-    function isStaff() {
-        return exists(/databases/$(database)/documents/staff/$(request.auth.uid));
-    }
-
-    function canReadAnnouncement(audience) {
-      // This function can be improved by checking a `role` custom claim in the auth token.
-      // For now, it requires a GET, which is not ideal for performance.
-      if ('Everybody' in audience) {
-        return true;
-      }
-      if (request.auth == null) {
-        return false;
-      }
-      // Check for student or parent role from their respective collections
-      if (isStudent() && 'Student' in audience) {
-        return true;
-      }
-      if (isParent() && 'Parent' in audience) {
-        return true;
-      }
-      // Check for staff role
-      if (!exists(/databases/$(database)/documents/staff/$(request.auth.uid))) { return false; }
-      let userRole = get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
-      return userRole in audience;
-    }
-    
-    function isAssignmentOwner(assignmentId) {
-        let assignment = get(/databases/$(database)/documents/assignments/$(assignmentId)).data;
-        return assignment.teacherId == request.auth.uid;
-    }
-
-    function isQuizOwner(quizId) {
-        let quiz = get(/databases/$(database)/documents/quizzes/$(quizId)).data;
-        return quiz.teacherId == request.auth.uid;
-    }
-
-    function canRequest(itemId) {
-      let currentStatus = resource.data.status;
-      let incomingStatus = request.resource.data.status;
-      // Allow a borrower to change status from 'Available' to 'Requested'
-      return currentStatus == 'Available' && incomingStatus == 'Requested'
-        // And allow them to change status from 'Borrowed' to 'Pending Return'
-        || currentStatus == 'Borrowed' && incomingStatus == 'Pending Return'
-        // And ensure they are the owner of the item they are trying to return
-        && resource.data.currentHolderId == request.auth.uid;
+    // Default deny all access to other collections
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
