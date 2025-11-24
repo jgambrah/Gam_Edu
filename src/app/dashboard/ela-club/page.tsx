@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -32,6 +33,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import Link from 'next/link';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function ReadingPracticeTab() {
   const firestore = useFirestore();
@@ -119,28 +121,35 @@ function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem><FormLabel>Passage Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                 <FormField control={form.control} name="reading_level" render={({ field }) => (
-                    <FormItem><FormLabel>Reading Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name="passage_text" render={({ field }) => (
-                    <FormItem><FormLabel>Passage Text</FormLabel><FormControl><Textarea rows={8} {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
+                 <ScrollArea className="h-[60vh] w-full pr-4">
+                    <div className="space-y-4">
+                        <FormField control={form.control} name="title" render={({ field }) => (
+                            <FormItem><FormLabel>Passage Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="reading_level" render={({ field }) => (
+                            <FormItem><FormLabel>Reading Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="passage_text" render={({ field }) => (
+                            <FormItem><FormLabel>Passage Text</FormLabel><FormControl><Textarea rows={8} {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
 
-                <div className="space-y-4">
-                    {fields.map((field, index) => (
-                        <div key={field.id} className="p-4 border rounded-md space-y-3">
-                            <h4 className="font-semibold">Question {index + 1}</h4>
-                            <FormField control={form.control} name={`question_set.${index}.question`} render={({ field }) => (
-                                <FormItem><FormLabel>Question</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <Button type="button" variant="destructive" size="sm" onClick={() => remove(index)}>Remove Question</Button>
+                        <div className="space-y-4">
+                            <h4 className="font-semibold">Comprehension Questions</h4>
+                            {fields.map((field, index) => (
+                                <div key={field.id} className="p-4 border rounded-md space-y-3 bg-muted/50">
+                                    <FormField control={form.control} name={`question_set.${index}.question`} render={({ field }) => (
+                                        <FormItem><FormLabel>Question {index + 1}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                                    )} />
+                                     <FormField control={form.control} name={`question_set.${index}.correct_answer_key`} render={({ field }) => (
+                                        <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                                    )} />
+                                    <Button type="button" variant="destructive" size="sm" onClick={() => remove(index)}>Remove Question</Button>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                <Button type="button" variant="outline" onClick={() => append({ question: '', type: 'MCQ', options: [], correct_answer_key: '' })}>Add Question</Button>
+                        <Button type="button" variant="outline" size="sm" onClick={() => append({ question: '', type: 'MCQ', options: [], correct_answer_key: '' })}>Add Question</Button>
+                    </div>
+                </ScrollArea>
                 <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Add Passage</Button>
             </form>
         </Form>
