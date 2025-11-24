@@ -61,11 +61,11 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-        // This is the key change: allow any signed-in user to read staff profiles.
-        // This is necessary for the `getUserRole()` helper function to work correctly
-        // for all other security rules that depend on it.
+        // This rule is critical. It allows any signed-in user to read any staff
+        // profile. This is necessary for the `getUserRole()` helper function to work
+        // correctly for all other security rules that depend on it.
         allow read: if isSignedIn();
-        // Write permissions remain restricted.
+        // Write permissions remain restricted to admins.
         allow create, update, delete: if isAdmin();
     }
 
@@ -236,7 +236,7 @@ service cloud.firestore {
     }
     
     match /math_problems/{problemId} {
-        allow read, write: if isTeacher() || isAdmin();
+        allow get, list, write: if isTeacher() || isAdmin();
     }
 
     match /user_results/{resultId} {
