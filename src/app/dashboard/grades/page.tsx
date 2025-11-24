@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,21 +24,8 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
-import { Assessment } from '@/lib/types';
+import { Assessment, Class, Student } from '@/lib/types';
 
-// Mock student and assessment data until backend functions are fully implemented
-type Student = {
-  id: string;
-  uid: string;
-  firstName: string;
-  lastName: string;
-  classId: string;
-};
-
-type Class = {
-  id: string;
-  name: string;
-};
 
 // This function would ideally live in a separate utility/service file
 function calculateStudentGradeForClass(studentId: string, assessments: Assessment[]) {
@@ -66,9 +54,9 @@ function GradebookContent() {
   const firestore = useFirestore();
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
-  // 1. Fetch classes based on user role - CORRECTED QUERY
+  // 1. Fetch classes based on user role
   const classesQuery = useMemoFirebase(() => {
-    if (!user) return null;
+    if (!user || !firestore) return null;
     if (role === 'Administrator' || role === 'Director') {
       return collection(firestore, 'classes');
     }
@@ -81,14 +69,14 @@ function GradebookContent() {
 
   // 2. Fetch students for the selected class
   const studentsQuery = useMemoFirebase(
-    () => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
+    () => (selectedClassId && firestore) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
     [firestore, selectedClassId]
   );
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
   // 3. Fetch all assessments for the selected class
   const assessmentsQuery = useMemoFirebase(
-    () => selectedClassId ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId)) : null,
+    () => (selectedClassId && firestore) ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId)) : null,
     [firestore, selectedClassId]
   );
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
