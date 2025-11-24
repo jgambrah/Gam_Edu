@@ -29,16 +29,12 @@ export default function TimetablePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [customConstraint, setCustomConstraint] = useState('');
 
-  const classesQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
-    if (role === 'Administrator' || role === 'Director') {
-        return collection(firestore, 'classes');
-    }
-    if (role === 'Teacher') {
-        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    return null;
-  }, [firestore, user, role]);
+  const classesQuery = useMemoFirebase(
+    () => user && (role === 'Administrator' || role === 'Director') 
+      ? collection(firestore, 'classes') 
+      : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')),
+    [firestore, user, role]
+  );
   const { data: classes } = useCollection<ClassData>(classesQuery);
 
   const { data: allTeachers } = useCollection<Teacher>(useMemoFirebase(() => user ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]));
