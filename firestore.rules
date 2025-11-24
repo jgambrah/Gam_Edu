@@ -61,8 +61,12 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-        allow create, update, delete: if isAdmin();
+        // This is the key change: allow any signed-in user to read staff profiles.
+        // This is necessary for the `getUserRole()` helper function to work correctly
+        // for all other security rules that depend on it.
         allow read: if isSignedIn();
+        // Write permissions remain restricted.
+        allow create, update, delete: if isAdmin();
     }
 
     match /students/{studentId} {
@@ -232,8 +236,7 @@ service cloud.firestore {
     }
     
     match /math_problems/{problemId} {
-        allow get, list: if isSignedIn();
-        allow write: if isTeacher() || isAdmin();
+        allow read, write: if isTeacher() || isAdmin();
     }
 
     match /user_results/{resultId} {
@@ -248,8 +251,7 @@ service cloud.firestore {
     }
 
     match /science_problems/{problemId} {
-        allow read: if isSignedIn();
-        allow write: if isTeacher() || isAdmin();
+        allow read, write: if isTeacher() || isAdmin();
     }
 
     match /science_results/{resultId} {
