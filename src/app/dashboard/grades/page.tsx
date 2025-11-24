@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where } from 'firebase/firestore';
@@ -25,15 +25,21 @@ import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { Assessment } from '@/lib/types';
 
-// Mock student and assessment data until backend functions are fully implemented
 type Student = {
+  id: string;
   uid: string;
   firstName: string;
   lastName: string;
   classId: string;
 };
 
-// This function would ideally live in a separate utility/service file
+type Class = {
+  id: string;
+  name: string;
+  teacherId?: string;
+  grade?: string;
+};
+
 function calculateStudentGradeForClass(studentId: string, assessments: Assessment[]) {
   const studentAssessments = assessments.filter(a => a.studentId === studentId && a.score !== undefined && a.maxScore !== undefined);
   if (studentAssessments.length === 0) {
@@ -60,7 +66,7 @@ function GradebookContent() {
   const firestore = useFirestore();
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
-  // 1. Fetch classes based on user role - CORRECTED QUERY
+  // 1. Fetch classes based on user role
   const classesQuery = useMemoFirebase(() => {
     if (!user) return null;
     if (role === 'Administrator' || role === 'Director') {
@@ -71,7 +77,22 @@ function GradebookContent() {
     }
     return null;
   }, [firestore, user, role]);
-  const { data: classes, isLoading: isLoadingClasses } = useCollection(classesQuery);
+  
+  const { data: classes, isLoading: isLoadingClasses, error: classesError } = useCollection<Class>(classesQuery);
+
+  // Debug: Log classes data
+  useEffect(() => {
+    console.log('=== GRADEBOOK DEBUG ===');
+    console.log('User:', user?.uid);
+    console.log('Role:', role);
+    console.log('Classes loading:', isLoadingClasses);
+    console.log('Classes error:', classesError);
+    console.log('Classes data:', classes);
+    console.log('Number of classes:', classes?.length || 0);
+    if (classes && classes.length > 0) {
+      console.log('First class:', classes[0]);
+    }
+  }, [user, role, isLoadingClasses, classesError, classes]);
 
   // 2. Fetch students for the selected class
   const studentsQuery = useMemoFirebase(
@@ -86,6 +107,18 @@ function GradebookContent() {
     [firestore, selectedClassId]
   );
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
+
+  // Debug: Log selected class data
+  useEffect(() => {
+    if (selectedClassId) {
+      console.log('=== SELECTED CLASS ===');
+      console.log('Selected Class ID:', selectedClassId);
+      console.log('Students loading:', isLoadingStudents);
+      console.log('Students:', students);
+      console.log('Assessments loading:', isLoadingAssessments);
+      console.log('Assessments:', assessments);
+    }
+  }, [selectedClassId, students, isLoadingStudents, assessments, isLoadingAssessments]);
 
   // 4. Process data for the table
   const uniqueAssessmentNames = useMemo(() => {
@@ -135,20 +168,43 @@ function GradebookContent() {
       <Card>
         <CardHeader>
           <div className="w-full md:w-1/3">
-            <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
+            {/* Debug info */}
+            {isLoadingClasses && (
+              <p className="text-sm text-muted-foreground mb-2">Loading classes...</p>
+            )}
+            {!isLoadingClasses && (!classes || classes.length === 0) && (
+              <p className="text-sm text-red-500 mb-2">
+                No classes found. {role === 'Teacher' ? `Make sure classes are assigned to your UID: ${user?.uid}` : 'Create some classes first.'}
+              </p>
+            )}
+            {!isLoadingClasses && classes && classes.length > 0 && (
+              <p className="text-sm text-green-600 mb-2">Found {classes.length} class(es)</p>
+            )}
+            
+            <Select 
+              onValueChange={setSelectedClassId} 
+              disabled={isLoadingClasses || !classes || classes.length === 0}
+              value={selectedClassId || undefined}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select a class to view gradebook" />
               </SelectTrigger>
               <SelectContent>
                 {classes?.map(c => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name} {c.grade ? `(Grade ${c.grade})` : ''}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
         </CardHeader>
         <CardContent>
-          {isLoading && selectedClassId && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>}
+          {isLoading && selectedClassId && (
+            <div className="flex justify-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin"/>
+            </div>
+          )}
 
           {!isLoading && selectedClassId && gradebookData.length > 0 ? (
             <Table>
@@ -177,20 +233,46 @@ function GradebookContent() {
             !isLoading && selectedClassId && (
               <div className="text-center py-10">
                 <p className="text-muted-foreground">No student or assessment data found for this class.</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Add students to this class from the Students page.
+                </p>
               </div>
             )
           )}
-           {!selectedClassId && (
+           {!selectedClassId && !isLoadingClasses && (
               <div className="text-center py-10">
                 <p className="text-muted-foreground">Please select a class to view the gradebook.</p>
               </div>
             )}
         </CardContent>
       </Card>
+
+      {/* Debug Card - Remove this after debugging */}
+      <Card className="border-yellow-500">
+        <CardHeader>
+          <CardTitle className="text-sm">Debug Information</CardTitle>
+          <CardDescription className="text-xs">Check console for detailed logs</CardDescription>
+        </CardHeader>
+        <CardContent className="text-xs space-y-2">
+          <div><strong>User UID:</strong> {user?.uid || 'Not logged in'}</div>
+          <div><strong>User Email:</strong> {user?.email || 'N/A'}</div>
+          <div><strong>Role:</strong> {role || 'Not set'}</div>
+          <div><strong>Classes Loading:</strong> {isLoadingClasses ? 'Yes' : 'No'}</div>
+          <div><strong>Classes Found:</strong> {classes?.length || 0}</div>
+          <div><strong>Classes Error:</strong> {classesError ? JSON.stringify(classesError) : 'None'}</div>
+          {classes && classes.length > 0 && (
+            <div className="mt-2">
+              <strong>Classes:</strong>
+              <pre className="mt-1 p-2 bg-muted rounded text-[10px] overflow-auto max-h-40">
+                {JSON.stringify(classes, null, 2)}
+              </pre>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
-
 
 export default function GradesPage() {
   const { role } = useRole();
