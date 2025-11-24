@@ -40,34 +40,30 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (isAuthLoading) {
-      // Still waiting for Firebase Auth to determine if a user is logged in.
-      // Do nothing until we know.
       return;
     }
 
     if (!user) {
-      // Auth is settled, and there's definitely no user.
       setRole('Parent'); // Default for non-logged-in users.
       return;
     }
 
-    // Now we have a user, but we might be waiting for their staff document.
-    if (isStaffLoading) {
-      return;
-    }
-
-    // At this point, we have a user, and their staff data has been fetched (or not found).
-    if (staffData) {
-      setRole(staffData.role);
-    } else if (user.email?.endsWith('@sunnyside-student.com')) {
-      setRole('Student');
-    } else if (user.email?.endsWith('@sunnyside-parent.com')) {
-      setRole('Parent');
-    } else {
-      // Fallback for an authenticated user who is not a student, parent, or in the staff collection.
-      // Defaults to 'Director' to allow initial admin setup.
-      setRole('Director'); 
-    }
+    // The most reliable way to get the role is from the custom claim on the ID token.
+    user.getIdTokenResult().then(idTokenResult => {
+      const claims = idTokenResult.claims;
+      if (claims.role && typeof claims.role === 'string') {
+        setRole(claims.role as UserRole);
+      } else if (staffData) {
+        setRole(staffData.role);
+      } else if (user.email?.endsWith('@sunnyside-student.com')) {
+        setRole('Student');
+      } else if (user.email?.endsWith('@sunnyside-parent.com')) {
+        setRole('Parent');
+      } else {
+        setRole('Director'); 
+      }
+    });
+    
   }, [user, staffData, isAuthLoading, isStaffLoading]);
 
   return (
