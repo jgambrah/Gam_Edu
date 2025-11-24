@@ -41,7 +41,7 @@ export default function TimetablePage() {
   }, [firestore, user, role]);
   const { data: classes } = useCollection<ClassData>(classesQuery);
 
-  const { data: allTeachers } = useCollection<Teacher>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
+  const { data: allTeachers } = useCollection<Teacher>(useMemoFirebase(() => user ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]));
   const { data: subjects } = useCollection<Subject>(useMemoFirebase(() => user ? collection(firestore, 'subjects') : null, [firestore, user]));
   const { data: rooms } = useCollection<Room>(useMemoFirebase(() => user ? collection(firestore, 'rooms') : null, [firestore, user]));
   const { data: timeSlots } = useCollection<TimeSlot>(useMemoFirebase(() => user ? collection(firestore, 'timeSlots') : null, [firestore, user]));
