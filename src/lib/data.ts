@@ -131,6 +131,12 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher', 'Student'],
         },
         {
+            path: '/dashboard/grades',
+            title: 'Gradebook',
+            icon: ClipboardCheck,
+            roles: ['Teacher', 'Administrator', 'Director'],
+        },
+        {
             path: '/dashboard/report-cards',
             title: 'Report Cards',
             icon: FileText,
