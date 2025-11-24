@@ -1,18 +1,10 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
@@ -21,52 +13,74 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
-import { Assessment } from '@/lib/types';
-
-type Student = {
-  id: string;
-  uid: string;
-  firstName: string;
-  lastName: string;
-  classId: string;
-};
 
 type Class = {
   id: string;
-  name: string;
+  name?: string;
   teacherId?: string;
   grade?: string;
+  [key: string]: any;
 };
 
-function calculateStudentGradeForClass(studentId: string, assessments: Assessment[]) {
-  const studentAssessments = assessments.filter(a => a.studentId === studentId && a.score !== undefined && a.maxScore !== undefined);
-  if (studentAssessments.length === 0) {
-    return { finalGrade: 'N/A', percentage: 0, remarks: 'No graded work' };
-  }
-
-  const totalScore = studentAssessments.reduce((acc, a) => acc + a.score!, 0);
-  const maxScore = studentAssessments.reduce((acc, a) => acc + a.maxScore!, 0);
-  const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
-
-  let finalGrade = 'N/A';
-  if (percentage >= 90) finalGrade = 'A';
-  else if (percentage >= 80) finalGrade = 'B';
-  else if (percentage >= 70) finalGrade = 'C';
-  else if (percentage >= 60) finalGrade = 'D';
-  else if (percentage > 0) finalGrade = 'F';
-  
-  return { finalGrade, percentage: parseFloat(percentage.toFixed(1)), remarks: '' };
-}
-
-function GradebookContent() {
+function GradebookTest() {
   const { user } = useAuth();
   const { role } = useRole();
   const firestore = useFirestore();
-  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+  const [manualClasses, setManualClasses] = useState<any[]>([]);
+  const [manualError, setManualError] = useState<string>('');
 
-  // 1. Fetch classes based on user role
+  // Test 1: Manual fetch without useCollection hook
+  useEffect(() => {
+    async function testFetch() {
+      if (!firestore || !user) return;
+      
+      console.log('🔍 MANUAL FETCH TEST');
+      console.log('User UID:', user.uid);
+      console.log('Role:', role);
+      
+      try {
+        let classesRef;
+        if (role === 'Administrator' || role === 'Director') {
+          console.log('Fetching ALL classes (Admin/Director)');
+          classesRef = collection(firestore, 'classes');
+        } else if (role === 'Teacher') {
+          console.log('Fetching classes for teacher:', user.uid);
+          classesRef = query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        } else {
+          console.log('❌ Role not authorized:', role);
+          setManualError(`Role "${role}" is not authorized`);
+          return;
+        }
+
+        const snapshot = await getDocs(classesRef);
+        console.log('📊 Snapshot size:', snapshot.size);
+        console.log('📊 Snapshot empty:', snapshot.empty);
+        
+        const fetchedClasses = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        
+        console.log('📚 Fetched classes:', fetchedClasses);
+        setManualClasses(fetchedClasses);
+        
+        if (fetchedClasses.length === 0) {
+          if (role === 'Teacher') {
+            setManualError(`No classes found with teacherId="${user.uid}". Check if classes have this teacherId field.`);
+          } else {
+            setManualError('No classes found in the collection. Create some classes first.');
+          }
+        }
+      } catch (error: any) {
+        console.error('❌ Error fetching classes:', error);
+        setManualError(error.message);
+      }
+    }
+    
+    testFetch();
+  }, [firestore, user, role]);
+
+  // Test 2: Using useCollection hook
   const classesQuery = useMemoFirebase(() => {
     if (!user) return null;
     if (role === 'Administrator' || role === 'Director') {
@@ -78,196 +92,122 @@ function GradebookContent() {
     return null;
   }, [firestore, user, role]);
   
-  const { data: classes, isLoading: isLoadingClasses, error: classesError } = useCollection<Class>(classesQuery);
+  const { data: hookClasses, isLoading: hookLoading, error: hookError } = useCollection<Class>(classesQuery);
 
-  // Debug: Log classes data
   useEffect(() => {
-    console.log('=== GRADEBOOK DEBUG ===');
-    console.log('User:', user?.uid);
-    console.log('Role:', role);
-    console.log('Classes loading:', isLoadingClasses);
-    console.log('Classes error:', classesError);
-    console.log('Classes data:', classes);
-    console.log('Number of classes:', classes?.length || 0);
-    if (classes && classes.length > 0) {
-      console.log('First class:', classes[0]);
-    }
-  }, [user, role, isLoadingClasses, classesError, classes]);
-
-  // 2. Fetch students for the selected class
-  const studentsQuery = useMemoFirebase(
-    () => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
-    [firestore, selectedClassId]
-  );
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
-
-  // 3. Fetch all assessments for the selected class
-  const assessmentsQuery = useMemoFirebase(
-    () => selectedClassId ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId)) : null,
-    [firestore, selectedClassId]
-  );
-  const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
-
-  // Debug: Log selected class data
-  useEffect(() => {
-    if (selectedClassId) {
-      console.log('=== SELECTED CLASS ===');
-      console.log('Selected Class ID:', selectedClassId);
-      console.log('Students loading:', isLoadingStudents);
-      console.log('Students:', students);
-      console.log('Assessments loading:', isLoadingAssessments);
-      console.log('Assessments:', assessments);
-    }
-  }, [selectedClassId, students, isLoadingStudents, assessments, isLoadingAssessments]);
-
-  // 4. Process data for the table
-  const uniqueAssessmentNames = useMemo(() => {
-    if (!assessments) return [];
-    return [...new Set(assessments.map(a => a.assessmentName))];
-  }, [assessments]);
-
-  const gradebookData = useMemo(() => {
-    if (!students || !assessments) return [];
-    return students.map(student => {
-      const grades = uniqueAssessmentNames.reduce((acc, name) => {
-        const assessment = assessments.find(a => a.studentId === student.uid && a.assessmentName === name);
-        acc[name] = assessment && assessment.score !== undefined && assessment.maxScore !== undefined ? `${assessment.score}/${assessment.maxScore}` : 'N/A';
-        return acc;
-      }, {} as Record<string, string>);
-      
-      const { finalGrade, percentage } = calculateStudentGradeForClass(student.uid, assessments);
-
-      return {
-        studentId: student.uid,
-        studentName: `${student.firstName} ${student.lastName}`,
-        grades,
-        finalGrade: `${finalGrade} (${percentage}%)`,
-      };
-    });
-  }, [students, assessments, uniqueAssessmentNames]);
-  
-  const isLoading = isLoadingClasses || isLoadingStudents || isLoadingAssessments;
+    console.log('🪝 HOOK TEST');
+    console.log('Hook Loading:', hookLoading);
+    console.log('Hook Error:', hookError);
+    console.log('Hook Classes:', hookClasses);
+    console.log('Hook Classes Length:', hookClasses?.length);
+  }, [hookLoading, hookError, hookClasses]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Gradebook</h1>
-          <p className="text-muted-foreground">View student performance for a selected class.</p>
-        </div>
-        <div className="flex gap-2">
-            <Button asChild variant="outline">
-                <Link href="/dashboard/assessments">Enter Grades</Link>
-            </Button>
-            <Button asChild disabled>
-                <Link href="#">Manage Report Cards</Link>
-            </Button>
-        </div>
-      </div>
-      
-      <Card>
-        <CardHeader>
-          <div className="w-full md:w-1/3">
-            {/* Debug info */}
-            {isLoadingClasses && (
-              <p className="text-sm text-muted-foreground mb-2">Loading classes...</p>
-            )}
-            {!isLoadingClasses && (!classes || classes.length === 0) && (
-              <p className="text-sm text-red-500 mb-2">
-                No classes found. {role === 'Teacher' ? `Make sure classes are assigned to your UID: ${user?.uid}` : 'Create some classes first.'}
-              </p>
-            )}
-            {!isLoadingClasses && classes && classes.length > 0 && (
-              <p className="text-sm text-green-600 mb-2">Found {classes.length} class(es)</p>
-            )}
-            
-            <Select 
-              onValueChange={setSelectedClassId} 
-              disabled={isLoadingClasses || !classes || classes.length === 0}
-              value={selectedClassId || undefined}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a class to view gradebook" />
-              </SelectTrigger>
-              <SelectContent>
-                {classes?.map(c => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name || c.id} {c.grade ? `(Grade ${c.grade})` : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading && selectedClassId && (
-            <div className="flex justify-center p-8">
-              <Loader2 className="h-8 w-8 animate-spin"/>
-            </div>
-          )}
+    <div className="space-y-6 p-6">
+      <h1 className="text-3xl font-bold">Gradebook Debug Test</h1>
 
-          {!isLoading && selectedClassId && gradebookData.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student Name</TableHead>
-                  {uniqueAssessmentNames.map(name => (
-                    <TableHead key={name} className="text-center">{name}</TableHead>
-                  ))}
-                  <TableHead className="text-right">Final Grade</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {gradebookData.map(row => (
-                  <TableRow key={row.studentId}>
-                    <TableCell className="font-medium">{row.studentName}</TableCell>
-                    {uniqueAssessmentNames.map(name => (
-                      <TableCell key={name} className="text-center">{row.grades[name]}</TableCell>
-                    ))}
-                    <TableCell className="text-right font-medium">{row.finalGrade}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            !isLoading && selectedClassId && (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">No student or assessment data found for this class.</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Add students to this class from the Students page.
-                </p>
-              </div>
-            )
-          )}
-           {!selectedClassId && !isLoadingClasses && (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">Please select a class to view the gradebook.</p>
-              </div>
-            )}
+      {/* User Info */}
+      <Card className="border-blue-500">
+        <CardHeader>
+          <CardTitle>👤 User Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <div><strong>UID:</strong> {user?.uid || 'Not logged in'}</div>
+          <div><strong>Email:</strong> {user?.email || 'N/A'}</div>
+          <div><strong>Role:</strong> {role || 'Not set'}</div>
+          <div><strong>Can Access:</strong> {role === 'Teacher' || role === 'Administrator' || role === 'Director' ? '✅ Yes' : '❌ No'}</div>
         </CardContent>
       </Card>
 
-      {/* Debug Card - Remove this after debugging */}
-      <Card className="border-yellow-500">
+      {/* Manual Fetch Results */}
+      <Card className="border-green-500">
         <CardHeader>
-          <CardTitle className="text-sm">Debug Information</CardTitle>
-          <CardDescription className="text-xs">Check console for detailed logs</CardDescription>
+          <CardTitle>🔍 Test 1: Manual getDocs() Fetch</CardTitle>
+          <CardDescription>Direct Firestore query without hooks</CardDescription>
         </CardHeader>
-        <CardContent className="text-xs space-y-2">
-          <div><strong>User UID:</strong> {user?.uid || 'Not logged in'}</div>
-          <div><strong>User Email:</strong> {user?.email || 'N/A'}</div>
-          <div><strong>Role:</strong> {role || 'Not set'}</div>
-          <div><strong>Classes Loading:</strong> {isLoadingClasses ? 'Yes' : 'No'}</div>
-          <div><strong>Classes Found:</strong> {classes?.length || 0}</div>
-          <div><strong>Classes Error:</strong> {classesError ? JSON.stringify(classesError) : 'None'}</div>
-          {classes && classes.length > 0 && (
-            <div className="mt-2">
-              <strong>Classes:</strong>
-              <pre className="mt-1 p-2 bg-muted rounded text-[10px] overflow-auto max-h-40">
-                {JSON.stringify(classes, null, 2)}
+        <CardContent className="space-y-2 text-sm">
+          <div><strong>Classes Found:</strong> {manualClasses.length}</div>
+          {manualError && <div className="text-red-500"><strong>Error:</strong> {manualError}</div>}
+          
+          {manualClasses.length > 0 && (
+            <div className="mt-4">
+              <strong>Classes List:</strong>
+              <pre className="mt-2 p-3 bg-muted rounded text-xs overflow-auto max-h-60">
+                {JSON.stringify(manualClasses, null, 2)}
               </pre>
+              
+              <div className="mt-4">
+                <strong>Test Select Dropdown:</strong>
+                <Select>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Select a class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {manualClasses.map(c => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name || c.id}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Hook Results */}
+      <Card className="border-purple-500">
+        <CardHeader>
+          <CardTitle>🪝 Test 2: useCollection Hook</CardTitle>
+          <CardDescription>Using your custom hook</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <div><strong>Loading:</strong> {hookLoading ? '⏳ Yes' : '✅ No'}</div>
+          <div><strong>Error:</strong> {hookError ? `❌ ${JSON.stringify(hookError)}` : '✅ None'}</div>
+          <div><strong>Classes Found:</strong> {hookClasses?.length || 0}</div>
+          
+          {hookClasses && hookClasses.length > 0 && (
+            <div className="mt-4">
+              <strong>Classes List:</strong>
+              <pre className="mt-2 p-3 bg-muted rounded text-xs overflow-auto max-h-60">
+                {JSON.stringify(hookClasses, null, 2)}
+              </pre>
+              
+              <div className="mt-4">
+                <strong>Test Select Dropdown:</strong>
+                <Select>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Select a class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {hookClasses.map(c => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name || c.id}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Instructions */}
+      <Card className="border-yellow-500">
+        <CardHeader>
+          <CardTitle>📋 Next Steps</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm space-y-2">
+          <p><strong>Check the browser console (F12)</strong> for detailed logs.</p>
+          <p><strong>Compare Test 1 and Test 2:</strong></p>
+          <ul className="list-disc ml-6 space-y-1">
+            <li>If Test 1 works but Test 2 doesn't → Issue with useCollection hook</li>
+            <li>If both fail → Firestore permissions or query issue</li>
+            <li>If Test 1 shows 0 classes for Teacher → Add teacherId field to classes</li>
+            <li>If Test 1 shows classes → Dropdown should work!</li>
+          </ul>
         </CardContent>
       </Card>
     </div>
@@ -281,14 +221,17 @@ export default function GradesPage() {
 
   if (!canAccess) {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Access Denied</CardTitle>
-                <CardDescription>This feature is available only to Teachers, Administrators, and Directors.</CardDescription>
-            </CardHeader>
-        </Card>
+      <Card className="m-6">
+        <CardHeader>
+          <CardTitle>Access Denied</CardTitle>
+          <CardDescription>
+            This feature is available only to Teachers, Administrators, and Directors.
+            Your current role: {role || 'Not set'}
+          </CardDescription>
+        </CardHeader>
+      </Card>
     );
   }
 
-  return <GradebookContent />;
+  return <GradebookTest />;
 }
