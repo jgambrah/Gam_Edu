@@ -276,6 +276,11 @@ service cloud.firestore {
         allow read: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
     }
+
+    match /ela_writing_challenges/{challengeId} {
+        allow read: if isSignedIn();
+        allow write: if isTeacher() || isAdmin();
+    }
     
     match /ela_user_submissions/{submissionId} {
         allow create: if isOwner(request.resource.data.userId);
@@ -290,5 +295,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
