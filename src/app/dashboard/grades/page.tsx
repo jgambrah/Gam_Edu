@@ -57,14 +57,21 @@ function calculateStudentGradeForClass(studentId: string, assessments: Assessmen
 
 function GradebookContent() {
   const { user } = useAuth();
+  const { role } = useRole();
   const firestore = useFirestore();
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
-  // 1. Fetch teacher's classes
-  const classesQuery = useMemoFirebase(
-    () => user ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid)) : null,
-    [firestore, user]
-  );
+  // 1. Fetch classes based on user role
+  const classesQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    if (role === 'Administrator' || role === 'Director') {
+      return collection(firestore, 'classes');
+    }
+    if (role === 'Teacher') {
+      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    return null;
+  }, [firestore, user, role]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection(classesQuery);
 
   // 2. Fetch students for the selected class
