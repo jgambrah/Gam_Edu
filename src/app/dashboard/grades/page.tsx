@@ -99,7 +99,7 @@ function GradebookContent() {
     return students.map(student => {
       const grades = uniqueAssessmentNames.reduce((acc, name) => {
         const assessment = assessments.find(a => a.studentId === student.uid && a.assessmentName === name);
-        acc[name] = assessment && assessment.score !== undefined ? `${assessment.score}/${assessment.maxScore}` : 'N/A';
+        acc[name] = assessment && assessment.score !== undefined && assessment.maxScore !== undefined ? `${assessment.score}/${assessment.maxScore}` : 'N/A';
         return acc;
       }, {} as Record<string, string>);
       
