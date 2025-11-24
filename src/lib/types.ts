@@ -1,4 +1,5 @@
 
+
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -811,12 +812,26 @@ export type ElaReadingPassage = z.infer<typeof elaReadingPassageSchema> & {
     id: string;
 };
 
+export const elaWritingChallengeSchema = z.object({
+    title: z.string().min(1, "Title is required."),
+    prompt: z.string().min(10, "Prompt must be at least 10 characters."),
+    challengeType: z.enum(['Creative Writing', 'Summarization', 'Essay']),
+});
+
+export type ElaWritingChallenge = z.infer<typeof elaWritingChallengeSchema> & {
+    id: string;
+    createdBy: string;
+    createdAt: any;
+};
+
 export type ElaUserSubmission = {
     id: string;
     userId: string;
     challenge_id: string;
+    challenge_title: string;
     submission_text: string;
     date_submitted: any;
+    status: 'Submitted' | 'Graded';
     teacher_score?: number | null;
     teacher_feedback?: string | null;
 };

@@ -1188,6 +1188,32 @@
       },
       "required": ["title", "passage_text", "reading_level", "question_set"]
     },
+    "ElaWritingChallenge": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ElaWritingChallenge",
+      "type": "object",
+      "description": "A writing or summarization prompt for students.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "challengeType": {
+          "type": "string",
+          "enum": ["Creative Writing", "Summarization", "Essay"]
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["title", "prompt", "challengeType", "createdBy", "createdAt"]
+    },
     "ElaUserSubmission": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ElaUserSubmission",
@@ -1202,6 +1228,9 @@
           "type": "string",
           "description": "The ID of the ELA challenge this submission is for."
         },
+        "challenge_title": {
+            "type": "string"
+        },
         "submission_text": {
           "type": "string",
           "description": "The student's written answer."
@@ -1209,6 +1238,10 @@
         "date_submitted": {
           "type": "string",
           "format": "date-time"
+        },
+        "status": {
+            "type": "string",
+            "enum": ["Submitted", "Graded"]
         },
         "teacher_score": {
           "type": ["number", "null"],
@@ -1219,7 +1252,7 @@
           "description": "Qualitative feedback from the teacher, null if not yet graded."
         }
       },
-      "required": ["userId", "challenge_id", "submission_text", "date_submitted"]
+      "required": ["userId", "challenge_id", "submission_text", "date_submitted", "status"]
     }
   },
   "auth": {
@@ -1658,6 +1691,15 @@
           "schema": { "$ref": "#/backend/entities/ElaReadingPassage" },
           "description": "Stores ELA reading passages and comprehension questions.",
           "params": [{ "name": "passageId" }]
+        }
+      },
+      {
+        "path": "/ela_writing_challenges/{challengeId}",
+        "definition": {
+          "entityName": "ElaWritingChallenge",
+          "schema": { "$ref": "#/backend/entities/ElaWritingChallenge" },
+          "description": "Stores writing challenges for students.",
+          "params": [{ "name": "challengeId" }]
         }
       },
       {

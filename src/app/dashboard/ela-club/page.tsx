@@ -9,15 +9,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, addDoc } from 'firebase/firestore';
-import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema } from '@/lib/types';
-import { useState } from 'react';
+import { collection, query, addDoc, where, serverTimestamp } from 'firebase/firestore';
+import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission } from '@/lib/types';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,10 +31,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
+// --- Reading Practice Tab ---
 function ReadingPracticeTab() {
   const firestore = useFirestore();
   const passagesQuery = useMemoFirebase(() => query(collection(firestore, 'ela_reading_passages')), [firestore]);
@@ -72,22 +76,117 @@ function ReadingPracticeTab() {
   );
 }
 
-function WritingSubmissionTab() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Writing & Summarizing Challenges</CardTitle>
-        <CardDescription>
-          Submit your written work for feedback and improvement. (Coming Soon)
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="text-center text-muted-foreground py-12">
-        <p>Writing prompts and submission forms will be available here.</p>
-      </CardContent>
-    </Card>
-  );
+// --- Writing Submission Tab ---
+
+function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingChallenge, setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<{ submission_text: string }>({
+        defaultValues: { submission_text: '' },
+        resolver: zodResolver(z.object({ submission_text: z.string().min(1, "Submission cannot be empty.") }))
+    });
+
+    async function onSubmit(values: { submission_text: string }) {
+        if (!user) return;
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
+                ...values,
+                userId: user.uid,
+                challenge_id: challenge.id,
+                challenge_title: challenge.title,
+                date_submitted: serverTimestamp(),
+                status: 'Submitted',
+            });
+            toast({ title: 'Success', description: 'Your submission has been received.' });
+            setOpen(false);
+        } catch (error) {
+            console.error('Error submitting work:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your work.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+    
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="submission_text" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Your Response</FormLabel>
+                        <FormControl><Textarea {...field} rows={10} placeholder="Type your response here..." /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Submit</Button>
+            </form>
+        </Form>
+    );
 }
 
+function WritingSubmissionTab() {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
+
+    const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
+        useMemoFirebase(() => query(collection(firestore, 'ela_writing_challenges')), [firestore])
+    );
+    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
+        useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
+    );
+
+    const isLoading = isLoadingChallenges || isLoadingSubmissions;
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Writing & Summarizing Challenges</CardTitle>
+                <CardDescription>Submit your written work for feedback and improvement.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <Skeleton className="h-40 w-full"/> : (
+                    <div className="space-y-4">
+                        {challenges?.map(challenge => {
+                            const submission = submissions?.find(s => s.challenge_id === challenge.id);
+                            return (
+                                <Card key={challenge.id} className="p-4 flex justify-between items-center">
+                                    <div>
+                                        <h4 className="font-semibold">{challenge.title}</h4>
+                                        <p className="text-sm text-muted-foreground">{challenge.prompt}</p>
+                                        {submission && (
+                                            <div className="text-xs mt-2">
+                                                <Badge variant={submission.status === 'Graded' ? 'default' : 'secondary'}>{submission.status}</Badge>
+                                                {submission.status === 'Graded' && <span className="ml-2">Score: {submission.teacher_score}</span>}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <Dialog open={openDialogs[challenge.id] || false} onOpenChange={(isOpen) => setOpenDialogs(prev => ({ ...prev, [challenge.id]: isOpen }))}>
+                                        <DialogTrigger asChild>
+                                            <Button disabled={!!submission}>{submission ? 'Submitted' : 'Submit Work'}</Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>{challenge.title}</DialogTitle>
+                                                <DialogDescription>{challenge.prompt}</DialogDescription>
+                                            </DialogHeader>
+                                            <StudentSubmissionForm challenge={challenge} setOpen={() => setOpenDialogs(prev => ({ ...prev, [challenge.id]: false }))}/>
+                                        </DialogContent>
+                                    </Dialog>
+                                </Card>
+                            );
+                        })}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+// --- Teacher/Admin Management Components ---
 function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -292,6 +391,108 @@ function ManageDrills() {
     )
 }
 
+function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
+        resolver: zodResolver(elaWritingChallengeSchema),
+        defaultValues: { challengeType: 'Creative Writing' }
+    });
+
+    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
+        if (!user) return;
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
+                ...values,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success', description: 'New writing challenge has been posted.' });
+            setOpen(false);
+        } catch (error) {
+            console.error('Error creating challenge:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not create challenge.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+    
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., A Journey to the Past" {...field}/></FormControl><FormMessage/></FormItem>
+                )}/>
+                <FormField control={form.control} name="prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} placeholder="Describe the writing task..."/></FormControl><FormMessage/></FormItem>
+                )}/>
+                <FormField control={form.control} name="challengeType" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                        <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                        <SelectItem value="Summarization">Summarization</SelectItem>
+                        <SelectItem value="Essay">Essay</SelectItem>
+                    </SelectContent></Select><FormMessage/></FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Challenge</Button>
+            </form>
+        </Form>
+    );
+}
+
+function ManageWritingChallenges() {
+    const firestore = useFirestore();
+    const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => query(collection(firestore, 'ela_writing_challenges')), [firestore]));
+    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => query(collection(firestore, 'ela_user_submissions')), [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    
+    const submissionsByChallenge = useMemo(() => {
+        if (!submissions) return {};
+        return submissions.reduce((acc, sub) => {
+            (acc[sub.challenge_id] = acc[sub.challenge_id] || []).push(sub);
+            return acc;
+        }, {} as Record<string, ElaUserSubmission[]>);
+    }, [submissions]);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Manage Writing Challenges</CardTitle>
+                    <CardDescription>Create challenges and review student submissions.</CardDescription>
+                </div>
+                 <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Challenge</Button></DialogTrigger>
+                    <DialogContent><DialogHeader><DialogTitle>Create New Writing Challenge</DialogTitle></DialogHeader><ChallengeCreationForm setOpen={setIsFormOpen}/></DialogContent>
+                </Dialog>
+            </CardHeader>
+            <CardContent>
+                <Accordion type="single" collapsible>
+                    {challenges?.map(challenge => (
+                        <AccordionItem key={challenge.id} value={challenge.id}>
+                            <AccordionTrigger>
+                                <div className="flex justify-between w-full pr-4">
+                                    <span>{challenge.title}</span>
+                                    <span className="text-sm text-muted-foreground">{submissionsByChallenge[challenge.id]?.length || 0} Submissions</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                               {/* Submission grading table would go here */}
+                               <p className="text-muted-foreground p-4 text-center">Submission review UI coming soon.</p>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </CardContent>
+        </Card>
+    );
+}
+
+
+// --- Main ELA Club Page Component ---
 export default function ElaClubPage() {
   const { role } = useRole();
   const isTeacherOrAdmin =
@@ -322,11 +523,12 @@ export default function ElaClubPage() {
             Reading Practice
           </TabsTrigger>
           <TabsTrigger value="writing">
-            <ChevronRight className="mr-2 h-4 w-4" />
-            Writing Submissions
+            <PenSquare className="mr-2 h-4 w-4" />
+            Writing Challenges
           </TabsTrigger>
           {isTeacherOrAdmin && <TabsTrigger value="manage-drills">Manage Drills</TabsTrigger>}
           {isTeacherOrAdmin && <TabsTrigger value="manage-passages">Manage Passages</TabsTrigger>}
+          {isTeacherOrAdmin && <TabsTrigger value="manage-writing">Manage Writing</TabsTrigger>}
         </TabsList>
         <TabsContent value="grammar">
           <GrammarPractice />
@@ -345,6 +547,11 @@ export default function ElaClubPage() {
          {isTeacherOrAdmin && (
             <TabsContent value="manage-passages">
                 <ManagePassages />
+            </TabsContent>
+        )}
+        {isTeacherOrAdmin && (
+            <TabsContent value="manage-writing">
+                <ManageWritingChallenges />
             </TabsContent>
         )}
       </Tabs>

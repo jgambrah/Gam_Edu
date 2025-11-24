@@ -1,4 +1,5 @@
 
+
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -33,6 +34,7 @@ import {
   BookOpenCheck,
   Activity,
   FolderKanban,
+  PenSquare,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
