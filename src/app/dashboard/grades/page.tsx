@@ -1,221 +1,219 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { collection, getDocs } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { collection, query, where } from 'firebase/firestore';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
+import { Assessment } from '@/lib/types';
 
-function AuthDiagnostic() {
-  const { user: hookUser } = useAuth();
-  const { role } = useRole();
-  const firestore = useFirestore();
-  const router = useRouter();
-  const [directAuthUser, setDirectAuthUser] = useState<any>(null);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [testResults, setTestResults] = useState<string[]>([]);
+// Mock student and assessment data until backend functions are fully implemented
+type Student = {
+  id: string;
+  uid: string;
+  firstName: string;
+  lastName: string;
+  classId: string;
+};
 
-  // Test 1: Check Firebase Auth directly
-  useEffect(() => {
-    const auth = getAuth();
-    
-    addResult('🔍 Starting Auth Diagnostic...');
-    addResult(`📱 Current URL: ${window.location.href}`);
-    
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setAuthChecked(true);
-      setDirectAuthUser(user);
-      
-      if (user) {
-        addResult('✅ Firebase Auth: User IS logged in');
-        addResult(`   UID: ${user.uid}`);
-        addResult(`   Email: ${user.email}`);
-        addResult(`   Email Verified: ${user.emailVerified}`);
-      } else {
-        addResult('❌ Firebase Auth: NO user logged in');
-        addResult('   → You need to log in first!');
-      }
-    });
+type Class = {
+  id: string;
+  name: string;
+};
 
-    return () => unsubscribe();
-  }, []);
-
-  // Test 2: Check useAuth hook
-  useEffect(() => {
-    if (!authChecked) return;
-    
-    addResult('\n🪝 Testing useAuth() Hook:');
-    if (hookUser) {
-      addResult('✅ useAuth hook: Returns user');
-      addResult(`   UID: ${hookUser.uid}`);
-      addResult(`   Email: ${hookUser.email}`);
-    } else {
-      addResult('❌ useAuth hook: Returns null/undefined');
-      addResult('   → Issue with your useAuth hook implementation');
-    }
-  }, [hookUser, authChecked]);
-
-  // Test 3: Check role
-  useEffect(() => {
-    if (!authChecked) return;
-    
-    addResult('\n👔 Testing Role:');
-    addResult(`   Role from useRole(): ${role || 'Not set'}`);
-    
-    if (role && !directAuthUser) {
-      addResult('⚠️  WARNING: You have a role but no auth user!');
-      addResult('   → Role is cached but you are not logged in');
-    }
-  }, [role, directAuthUser, authChecked]);
-
-  // Test 4: Try to fetch classes
-  useEffect(() => {
-    if (!authChecked) return;
-    
-    async function testFirestore() {
-      addResult('\n🔥 Testing Firestore Access:');
-      
-      if (!directAuthUser) {
-        addResult('⏭️  Skipped: No authenticated user');
-        return;
-      }
-
-      try {
-        const classesRef = collection(firestore, 'classes');
-        const snapshot = await getDocs(classesRef);
-        addResult(`✅ Firestore: Successfully fetched data`);
-        addResult(`   Classes found: ${snapshot.size}`);
-        
-        if (snapshot.size > 0) {
-          const firstClass = snapshot.docs[0];
-          addResult(`   First class ID: ${firstClass.id}`);
-          addResult(`   First class data: ${JSON.stringify(firstClass.data())}`);
-        }
-      } catch (error: any) {
-        addResult(`❌ Firestore Error: ${error.message}`);
-      }
-    }
-
-    testFirestore();
-  }, [directAuthUser, firestore, authChecked]);
-
-  function addResult(message: string) {
-    setTestResults(prev => [...prev, message]);
-    console.log(message);
+// This function would ideally live in a separate utility/service file
+function calculateStudentGradeForClass(studentId: string, assessments: Assessment[]) {
+  const studentAssessments = assessments.filter(a => a.studentId === studentId && a.score !== undefined && a.maxScore !== undefined);
+  if (studentAssessments.length === 0) {
+    return { finalGrade: 'N/A', percentage: 0, remarks: 'No graded work' };
   }
 
+  const totalScore = studentAssessments.reduce((acc, a) => acc + a.score!, 0);
+  const maxScore = studentAssessments.reduce((acc, a) => acc + a.maxScore!, 0);
+  const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
+
+  let finalGrade = 'N/A';
+  if (percentage >= 90) finalGrade = 'A';
+  else if (percentage >= 80) finalGrade = 'B';
+  else if (percentage >= 70) finalGrade = 'C';
+  else if (percentage >= 60) finalGrade = 'D';
+  else if (percentage > 0) finalGrade = 'F';
+  
+  return { finalGrade, percentage: parseFloat(percentage.toFixed(1)), remarks: '' };
+}
+
+function GradebookContent() {
+  const { user } = useAuth();
+  const { role } = useRole();
+  const firestore = useFirestore();
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+
+  // 1. Fetch classes based on user role - CORRECTED QUERY
+  const classesQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    if (role === 'Administrator' || role === 'Director') {
+      return collection(firestore, 'classes');
+    }
+    if (role === 'Teacher') {
+      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    return null;
+  }, [firestore, user, role]);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+
+  // 2. Fetch students for the selected class
+  const studentsQuery = useMemoFirebase(
+    () => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
+    [firestore, selectedClassId]
+  );
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+
+  // 3. Fetch all assessments for the selected class
+  const assessmentsQuery = useMemoFirebase(
+    () => selectedClassId ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId)) : null,
+    [firestore, selectedClassId]
+  );
+  const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
+
+  // 4. Process data for the table
+  const uniqueAssessmentNames = useMemo(() => {
+    if (!assessments) return [];
+    return [...new Set(assessments.map(a => a.assessmentName))];
+  }, [assessments]);
+
+  const gradebookData = useMemo(() => {
+    if (!students || !assessments) return [];
+    return students.map(student => {
+      const grades = uniqueAssessmentNames.reduce((acc, name) => {
+        const assessment = assessments.find(a => a.studentId === student.uid && a.assessmentName === name);
+        acc[name] = assessment && assessment.score !== undefined && assessment.maxScore !== undefined ? `${assessment.score}/${assessment.maxScore}` : 'N/A';
+        return acc;
+      }, {} as Record<string, string>);
+      
+      const { finalGrade, percentage } = calculateStudentGradeForClass(student.uid, assessments);
+
+      return {
+        studentId: student.uid,
+        studentName: `${student.firstName} ${student.lastName}`,
+        grades,
+        finalGrade: `${finalGrade} (${percentage}%)`,
+      };
+    });
+  }, [students, assessments, uniqueAssessmentNames]);
+  
+  const isLoading = isLoadingClasses || isLoadingStudents || isLoadingAssessments;
+
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">🔐 Authentication Diagnostic</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Gradebook</h1>
+          <p className="text-muted-foreground">View student performance for a selected class.</p>
+        </div>
         <div className="flex gap-2">
-          <Button onClick={() => router.push('/')} variant="default">
-            Go to Login
-          </Button>
-          <Button onClick={() => router.push('/dashboard')} variant="outline">
-            Go to Dashboard
-          </Button>
+            <Button asChild variant="outline">
+                <Link href="/dashboard/assessments">Enter Grades</Link>
+            </Button>
+            <Button asChild disabled>
+                <Link href="#">Manage Report Cards</Link>
+            </Button>
         </div>
       </div>
-
-      {/* Quick Status */}
-      <Card className={directAuthUser ? "border-green-500" : "border-red-500"}>
-        <CardHeader>
-          <CardTitle>
-            {directAuthUser ? "✅ You are logged in" : "❌ You are NOT logged in"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {directAuthUser ? (
-            <>
-              <div><strong>UID:</strong> {directAuthUser.uid}</div>
-              <div><strong>Email:</strong> {directAuthUser.email}</div>
-              <div><strong>Role:</strong> {role || 'Not set'}</div>
-              <Button onClick={() => router.push('/dashboard/grades')} className="mt-4">
-                Go to Gradebook
-              </Button>
-            </>
-          ) : (
-            <>
-              <p className="text-red-600 font-medium">
-                You need to log in to access the gradebook.
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Role shows as "{role}" but this is cached. You have no active Firebase Auth session.
-              </p>
-              <Button onClick={() => router.push('/')} className="mt-4">
-                Go to Login Page
-              </Button>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Detailed Results */}
+      
       <Card>
         <CardHeader>
-          <CardTitle>Diagnostic Results</CardTitle>
+          <div className="w-full md:w-1/3">
+            <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a class to view gradebook" />
+              </SelectTrigger>
+              <SelectContent>
+                {classes?.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
         <CardContent>
-          <pre className="p-4 bg-muted rounded text-xs overflow-auto max-h-96 whitespace-pre-wrap font-mono">
-            {testResults.join('\n')}
-          </pre>
-        </CardContent>
-      </Card>
+          {isLoading && selectedClassId && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>}
 
-      {/* Instructions */}
-      <Card className="border-blue-500">
-        <CardHeader>
-          <CardTitle>📋 What to Do Next</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          {!directAuthUser ? (
-            <>
-              <div className="font-medium text-red-600">You are not logged in!</div>
-              <ol className="list-decimal ml-6 space-y-2">
-                <li>Click the <strong>"Go to Login"</strong> button above</li>
-                <li>Log in with your email and password</li>
-                <li>After successful login, return to the gradebook</li>
-              </ol>
-              <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950 rounded">
-                <strong>Note:</strong> The role "Director" is cached in your browser but your Firebase Auth session has expired or doesn't exist.
-              </div>
-            </>
+          {!isLoading && selectedClassId && gradebookData && gradebookData.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Student Name</TableHead>
+                  {uniqueAssessmentNames.map(name => (
+                    <TableHead key={name} className="text-center">{name}</TableHead>
+                  ))}
+                  <TableHead className="text-right">Final Grade</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {gradebookData.map(row => (
+                  <TableRow key={row.studentId}>
+                    <TableCell className="font-medium">{row.studentName}</TableCell>
+                    {uniqueAssessmentNames.map(name => (
+                      <TableCell key={name} className="text-center">{row.grades[name]}</TableCell>
+                    ))}
+                    <TableCell className="text-right font-medium">{row.finalGrade}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
-            <>
-              <div className="font-medium text-green-600">Authentication is working!</div>
-              <p>You can now use the gradebook and other features.</p>
-            </>
+            !isLoading && selectedClassId && (
+              <div className="text-center py-10">
+                <p className="text-muted-foreground">No student or assessment data found for this class.</p>
+              </div>
+            )
           )}
-        </CardContent>
-      </Card>
-
-      {/* Troubleshooting */}
-      <Card className="border-orange-500">
-        <CardHeader>
-          <CardTitle>🔧 If Login Doesn't Work</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p><strong>Try these steps:</strong></p>
-          <ol className="list-decimal ml-6 space-y-1">
-            <li>Clear your browser cache and cookies</li>
-            <li>Try incognito/private browsing mode</li>
-            <li>Check browser console (F12) for errors</li>
-            <li>Verify Firebase configuration in your environment variables</li>
-            <li>Make sure Firebase Auth is enabled in Firebase Console</li>
-          </ol>
-          <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded">
-            <strong>For Developers:</strong> Check that your Firebase config is correct and Firebase Auth is properly initialized in your app.
-          </div>
+           {!selectedClassId && (
+              <div className="text-center py-10">
+                <p className="text-muted-foreground">Please select a class to view the gradebook.</p>
+              </div>
+            )}
         </CardContent>
       </Card>
     </div>
   );
 }
 
+
 export default function GradesPage() {
-  return <AuthDiagnostic />;
+  const { role } = useRole();
+
+  const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+
+  if (!canAccess) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Access Denied</CardTitle>
+                <CardDescription>This feature is available only to Teachers, Administrators, and Directors.</CardDescription>
+            </CardHeader>
+        </Card>
+    );
+  }
+
+  return <GradebookContent />;
 }
