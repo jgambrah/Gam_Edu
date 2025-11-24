@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ElaGrammarDrill } from '@/lib/types';
 import { MOCK_ELA_DRILLS } from '@/lib/data';
+import { FormItem, FormControl } from '@/components/ui/form';
 
 export function GrammarPractice() {
   // Using mock data for now, but this can be switched to useCollection to fetch from Firestore
