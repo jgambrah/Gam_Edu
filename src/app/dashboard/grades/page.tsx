@@ -1,213 +1,215 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { collection, getDocs } from 'firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
-type Class = {
-  id: string;
-  name?: string;
-  teacherId?: string;
-  grade?: string;
-  [key: string]: any;
-};
-
-function GradebookTest() {
-  const { user } = useAuth();
+function AuthDiagnostic() {
+  const { user: hookUser } = useAuth();
   const { role } = useRole();
   const firestore = useFirestore();
-  const [manualClasses, setManualClasses] = useState<any[]>([]);
-  const [manualError, setManualError] = useState<string>('');
+  const router = useRouter();
+  const [directAuthUser, setDirectAuthUser] = useState<any>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [testResults, setTestResults] = useState<string[]>([]);
 
-  // Test 1: Manual fetch without useCollection hook
+  // Test 1: Check Firebase Auth directly
   useEffect(() => {
-    async function testFetch() {
-      if (!firestore || !user) return;
+    const auth = getAuth();
+    
+    addResult('🔍 Starting Auth Diagnostic...');
+    addResult(`📱 Current URL: ${window.location.href}`);
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setAuthChecked(true);
+      setDirectAuthUser(user);
       
-      console.log('🔍 MANUAL FETCH TEST');
-      console.log('User UID:', user.uid);
-      console.log('Role:', role);
-      
-      try {
-        let classesRef;
-        if (role === 'Administrator' || role === 'Director') {
-          console.log('Fetching ALL classes (Admin/Director)');
-          classesRef = collection(firestore, 'classes');
-        } else if (role === 'Teacher') {
-          console.log('Fetching classes for teacher:', user.uid);
-          classesRef = query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-        } else {
-          console.log('❌ Role not authorized:', role);
-          setManualError(`Role "${role}" is not authorized`);
-          return;
-        }
+      if (user) {
+        addResult('✅ Firebase Auth: User IS logged in');
+        addResult(`   UID: ${user.uid}`);
+        addResult(`   Email: ${user.email}`);
+        addResult(`   Email Verified: ${user.emailVerified}`);
+      } else {
+        addResult('❌ Firebase Auth: NO user logged in');
+        addResult('   → You need to log in first!');
+      }
+    });
 
+    return () => unsubscribe();
+  }, []);
+
+  // Test 2: Check useAuth hook
+  useEffect(() => {
+    if (!authChecked) return;
+    
+    addResult('\n🪝 Testing useAuth() Hook:');
+    if (hookUser) {
+      addResult('✅ useAuth hook: Returns user');
+      addResult(`   UID: ${hookUser.uid}`);
+      addResult(`   Email: ${hookUser.email}`);
+    } else {
+      addResult('❌ useAuth hook: Returns null/undefined');
+      addResult('   → Issue with your useAuth hook implementation');
+    }
+  }, [hookUser, authChecked]);
+
+  // Test 3: Check role
+  useEffect(() => {
+    if (!authChecked) return;
+    
+    addResult('\n👔 Testing Role:');
+    addResult(`   Role from useRole(): ${role || 'Not set'}`);
+    
+    if (role && !directAuthUser) {
+      addResult('⚠️  WARNING: You have a role but no auth user!');
+      addResult('   → Role is cached but you are not logged in');
+    }
+  }, [role, directAuthUser, authChecked]);
+
+  // Test 4: Try to fetch classes
+  useEffect(() => {
+    if (!authChecked) return;
+    
+    async function testFirestore() {
+      addResult('\n🔥 Testing Firestore Access:');
+      
+      if (!directAuthUser) {
+        addResult('⏭️  Skipped: No authenticated user');
+        return;
+      }
+
+      try {
+        const classesRef = collection(firestore, 'classes');
         const snapshot = await getDocs(classesRef);
-        console.log('📊 Snapshot size:', snapshot.size);
-        console.log('📊 Snapshot empty:', snapshot.empty);
+        addResult(`✅ Firestore: Successfully fetched data`);
+        addResult(`   Classes found: ${snapshot.size}`);
         
-        const fetchedClasses = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
-        console.log('📚 Fetched classes:', fetchedClasses);
-        setManualClasses(fetchedClasses);
-        
-        if (fetchedClasses.length === 0) {
-          if (role === 'Teacher') {
-            setManualError(`No classes found with teacherId="${user.uid}". Check if classes have this teacherId field.`);
-          } else {
-            setManualError('No classes found in the collection. Create some classes first.');
-          }
+        if (snapshot.size > 0) {
+          const firstClass = snapshot.docs[0];
+          addResult(`   First class ID: ${firstClass.id}`);
+          addResult(`   First class data: ${JSON.stringify(firstClass.data())}`);
         }
       } catch (error: any) {
-        console.error('❌ Error fetching classes:', error);
-        setManualError(error.message);
+        addResult(`❌ Firestore Error: ${error.message}`);
       }
     }
-    
-    testFetch();
-  }, [firestore, user, role]);
 
-  // Test 2: Using useCollection hook
-  const classesQuery = useMemoFirebase(() => {
-    if (!user) return null;
-    if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
-    }
-    if (role === 'Teacher') {
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    return null;
-  }, [firestore, user, role]);
-  
-  const { data: hookClasses, isLoading: hookLoading, error: hookError } = useCollection<Class>(classesQuery);
+    testFirestore();
+  }, [directAuthUser, firestore, authChecked]);
 
-  useEffect(() => {
-    console.log('🪝 HOOK TEST');
-    console.log('Hook Loading:', hookLoading);
-    console.log('Hook Error:', hookError);
-    console.log('Hook Classes:', hookClasses);
-    console.log('Hook Classes Length:', hookClasses?.length);
-  }, [hookLoading, hookError, hookClasses]);
+  function addResult(message: string) {
+    setTestResults(prev => [...prev, message]);
+    console.log(message);
+  }
 
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-3xl font-bold">Gradebook Debug Test</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">🔐 Authentication Diagnostic</h1>
+        <div className="flex gap-2">
+          <Button onClick={() => router.push('/')} variant="default">
+            Go to Login
+          </Button>
+          <Button onClick={() => router.push('/dashboard')} variant="outline">
+            Go to Dashboard
+          </Button>
+        </div>
+      </div>
 
-      {/* User Info */}
-      <Card className="border-blue-500">
+      {/* Quick Status */}
+      <Card className={directAuthUser ? "border-green-500" : "border-red-500"}>
         <CardHeader>
-          <CardTitle>👤 User Information</CardTitle>
+          <CardTitle>
+            {directAuthUser ? "✅ You are logged in" : "❌ You are NOT logged in"}
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <div><strong>UID:</strong> {user?.uid || 'Not logged in'}</div>
-          <div><strong>Email:</strong> {user?.email || 'N/A'}</div>
-          <div><strong>Role:</strong> {role || 'Not set'}</div>
-          <div><strong>Can Access:</strong> {role === 'Teacher' || role === 'Administrator' || role === 'Director' ? '✅ Yes' : '❌ No'}</div>
-        </CardContent>
-      </Card>
-
-      {/* Manual Fetch Results */}
-      <Card className="border-green-500">
-        <CardHeader>
-          <CardTitle>🔍 Test 1: Manual getDocs() Fetch</CardTitle>
-          <CardDescription>Direct Firestore query without hooks</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <div><strong>Classes Found:</strong> {manualClasses.length}</div>
-          {manualError && <div className="text-red-500"><strong>Error:</strong> {manualError}</div>}
-          
-          {manualClasses.length > 0 && (
-            <div className="mt-4">
-              <strong>Classes List:</strong>
-              <pre className="mt-2 p-3 bg-muted rounded text-xs overflow-auto max-h-60">
-                {JSON.stringify(manualClasses, null, 2)}
-              </pre>
-              
-              <div className="mt-4">
-                <strong>Test Select Dropdown:</strong>
-                <Select>
-                  <SelectTrigger className="mt-2">
-                    <SelectValue placeholder="Select a class" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {manualClasses.map(c => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name || c.id}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+        <CardContent className="space-y-2">
+          {directAuthUser ? (
+            <>
+              <div><strong>UID:</strong> {directAuthUser.uid}</div>
+              <div><strong>Email:</strong> {directAuthUser.email}</div>
+              <div><strong>Role:</strong> {role || 'Not set'}</div>
+              <Button onClick={() => router.push('/dashboard/grades')} className="mt-4">
+                Go to Gradebook
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-red-600 font-medium">
+                You need to log in to access the gradebook.
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Role shows as "{role}" but this is cached. You have no active Firebase Auth session.
+              </p>
+              <Button onClick={() => router.push('/')} className="mt-4">
+                Go to Login Page
+              </Button>
+            </>
           )}
         </CardContent>
       </Card>
 
-      {/* Hook Results */}
-      <Card className="border-purple-500">
+      {/* Detailed Results */}
+      <Card>
         <CardHeader>
-          <CardTitle>🪝 Test 2: useCollection Hook</CardTitle>
-          <CardDescription>Using your custom hook</CardDescription>
+          <CardTitle>Diagnostic Results</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <div><strong>Loading:</strong> {hookLoading ? '⏳ Yes' : '✅ No'}</div>
-          <div><strong>Error:</strong> {hookError ? `❌ ${JSON.stringify(hookError)}` : '✅ None'}</div>
-          <div><strong>Classes Found:</strong> {hookClasses?.length || 0}</div>
-          
-          {hookClasses && hookClasses.length > 0 && (
-            <div className="mt-4">
-              <strong>Classes List:</strong>
-              <pre className="mt-2 p-3 bg-muted rounded text-xs overflow-auto max-h-60">
-                {JSON.stringify(hookClasses, null, 2)}
-              </pre>
-              
-              <div className="mt-4">
-                <strong>Test Select Dropdown:</strong>
-                <Select>
-                  <SelectTrigger className="mt-2">
-                    <SelectValue placeholder="Select a class" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {hookClasses.map(c => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.name || c.id}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
+        <CardContent>
+          <pre className="p-4 bg-muted rounded text-xs overflow-auto max-h-96 whitespace-pre-wrap font-mono">
+            {testResults.join('\n')}
+          </pre>
         </CardContent>
       </Card>
 
       {/* Instructions */}
-      <Card className="border-yellow-500">
+      <Card className="border-blue-500">
         <CardHeader>
-          <CardTitle>📋 Next Steps</CardTitle>
+          <CardTitle>📋 What to Do Next</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm space-y-2">
-          <p><strong>Check the browser console (F12)</strong> for detailed logs.</p>
-          <p><strong>Compare Test 1 and Test 2:</strong></p>
-          <ul className="list-disc ml-6 space-y-1">
-            <li>If Test 1 works but Test 2 doesn't → Issue with useCollection hook</li>
-            <li>If both fail → Firestore permissions or query issue</li>
-            <li>If Test 1 shows 0 classes for Teacher → Add teacherId field to classes</li>
-            <li>If Test 1 shows classes → Dropdown should work!</li>
-          </ul>
+        <CardContent className="space-y-3 text-sm">
+          {!directAuthUser ? (
+            <>
+              <div className="font-medium text-red-600">You are not logged in!</div>
+              <ol className="list-decimal ml-6 space-y-2">
+                <li>Click the <strong>"Go to Login"</strong> button above</li>
+                <li>Log in with your email and password</li>
+                <li>After successful login, return to the gradebook</li>
+              </ol>
+              <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950 rounded">
+                <strong>Note:</strong> The role "Director" is cached in your browser but your Firebase Auth session has expired or doesn't exist.
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="font-medium text-green-600">Authentication is working!</div>
+              <p>You can now use the gradebook and other features.</p>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Troubleshooting */}
+      <Card className="border-orange-500">
+        <CardHeader>
+          <CardTitle>🔧 If Login Doesn't Work</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <p><strong>Try these steps:</strong></p>
+          <ol className="list-decimal ml-6 space-y-1">
+            <li>Clear your browser cache and cookies</li>
+            <li>Try incognito/private browsing mode</li>
+            <li>Check browser console (F12) for errors</li>
+            <li>Verify Firebase configuration in your environment variables</li>
+            <li>Make sure Firebase Auth is enabled in Firebase Console</li>
+          </ol>
+          <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded">
+            <strong>For Developers:</strong> Check that your Firebase config is correct and Firebase Auth is properly initialized in your app.
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -215,23 +217,5 @@ function GradebookTest() {
 }
 
 export default function GradesPage() {
-  const { role } = useRole();
-
-  const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
-
-  if (!canAccess) {
-    return (
-      <Card className="m-6">
-        <CardHeader>
-          <CardTitle>Access Denied</CardTitle>
-          <CardDescription>
-            This feature is available only to Teachers, Administrators, and Directors.
-            Your current role: {role || 'Not set'}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
-  return <GradebookTest />;
+  return <AuthDiagnostic />;
 }
