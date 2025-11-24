@@ -236,7 +236,8 @@ service cloud.firestore {
     }
     
     match /math_problems/{problemId} {
-        allow get, list, write: if isTeacher() || isAdmin();
+        allow get, list: if isTeacher() || isAdmin();
+        allow write: if isTeacher() || isAdmin();
     }
 
     match /user_results/{resultId} {
