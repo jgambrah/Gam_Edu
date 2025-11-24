@@ -36,6 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { cn } from '@/lib/utils';
 
 function Leaderboard() {
     const firestore = useFirestore();
@@ -214,7 +215,7 @@ export default function MathsClubPage() {
         </CardHeader>
       </Card>
       <Tabs defaultValue="practice">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-3" : "grid-cols-2")}>
           <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
           <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
           {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
