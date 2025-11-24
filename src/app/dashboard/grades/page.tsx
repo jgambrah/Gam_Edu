@@ -192,7 +192,7 @@ function GradebookContent() {
               <SelectContent>
                 {classes?.map(c => (
                   <SelectItem key={c.id} value={c.id}>
-                    {c.name} {c.grade ? `(Grade ${c.grade})` : ''}
+                    {c.name || c.id} {c.grade ? `(Grade ${c.grade})` : ''}
                   </SelectItem>
                 ))}
               </SelectContent>
