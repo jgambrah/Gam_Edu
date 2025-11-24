@@ -780,13 +780,16 @@ export type DailyFact = {
 };
 
 // ELA Club Schemas
-export type ElaGrammarDrill = {
+export const elaGrammarDrillSchema = z.object({
+    topic: z.string().min(1, "Topic is required."),
+    type: z.enum(["MCQ", "Drag and Drop"]),
+    question_prompt: z.string().min(1, "Question prompt is required."),
+    options: z.array(z.string()).optional(),
+    correct_answer: z.union([z.string(), z.array(z.string())]).refine(val => (Array.isArray(val) ? val.length > 0 : String(val).length > 0), { message: "Correct answer cannot be empty." }),
+});
+
+export type ElaGrammarDrill = z.infer<typeof elaGrammarDrillSchema> & {
     id: string;
-    topic: string;
-    type: 'MCQ' | 'Drag and Drop';
-    question_prompt: string;
-    options?: string[];
-    correct_answer: string | string[];
 };
 
 export type ElaReadingPassage = {
