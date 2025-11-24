@@ -61,7 +61,7 @@ function GradebookContent() {
   const firestore = useFirestore();
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
-  // 1. Fetch classes based on user role
+  // 1. Fetch classes based on user role - CORRECTED QUERY
   const classesQuery = useMemoFirebase(() => {
     if (!user) return null;
     if (role === 'Administrator' || role === 'Director') {
