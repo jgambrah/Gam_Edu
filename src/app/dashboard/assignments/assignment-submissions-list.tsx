@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import {
   useFirestore,
+  useCollection,
+  useMemoFirebase,
 } from '@/firebase';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { Assignment, StudentSubmission } from '@/lib/types';
@@ -39,19 +41,8 @@ export function AssignmentSubmissionsList({ assignment, readOnly = false }: Assi
   const [selectedSubmission, setSelectedSubmission] = useState<StudentSubmission | null>(null);
   const [isGrading, setIsGrading] = useState(false);
   
-  const [submissions, setSubmissions] = useState<StudentSubmission[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!firestore) return;
-    const submissionsQuery = query(collection(firestore, `assignments/${assignment.id}/submissions`));
-    const unsubscribe = onSnapshot(submissionsQuery, (snapshot) => {
-        setSubmissions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StudentSubmission)));
-        setIsLoading(false);
-    });
-    return () => unsubscribe();
-  }, [firestore, assignment.id]);
-
+  const submissionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, `assignments/${assignment.id}/submissions`)) : null, [firestore, assignment.id]);
+  const { data: submissions, isLoading } = useCollection<StudentSubmission>(submissionsQuery);
 
   const handleGradeClick = (submission: StudentSubmission) => {
     setSelectedSubmission(submission);

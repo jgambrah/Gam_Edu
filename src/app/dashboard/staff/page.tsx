@@ -48,7 +48,7 @@ import {
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useMemo } from 'react';
@@ -291,7 +291,7 @@ function StaffPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const staffCollectionRef = useMemoFirebase(() => collection(firestore, 'staff'), [firestore]);
+  const staffCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'staff') : null, [firestore]);
   const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -574,5 +574,3 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
-
-    

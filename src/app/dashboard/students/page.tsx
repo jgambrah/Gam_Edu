@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -52,7 +51,6 @@ import { collection, doc, addDoc, serverTimestamp, updateDoc, deleteDoc } from '
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useMemo } from 'react';
 import { Loader2, Edit, Trash2 } from 'lucide-react';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
 import { useRole } from '@/context/role-context';
@@ -241,10 +239,10 @@ function StudentsPageContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   
-  const classesCollectionRef = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
+  const classesCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
   const { data: classes } = useCollection<{id: string, name: string}>(classesCollectionRef);
   
-  const studentsCollectionRef = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
+  const studentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
   const { data: students, isLoading, forceRefetch } = useCollection<StudentData>(studentsCollectionRef);
 
   const form = useForm<z.infer<typeof studentFormSchema>>({

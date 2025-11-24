@@ -11,7 +11,7 @@ export default function AdminAssignmentsView() {
   const firestore = useFirestore();
 
   const assignmentsQuery = useMemoFirebase(
-    () => query(collection(firestore, 'assignments')),
+    () => firestore ? query(collection(firestore, 'assignments')) : null,
     [firestore]
   );
   const { data: assignments, isLoading } = useCollection<Assignment>(assignmentsQuery);

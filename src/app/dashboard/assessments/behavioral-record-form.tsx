@@ -28,7 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { behavioralRecordSchema } from '@/lib/types';
+import { behavioralRecordSchema, Student } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -38,8 +38,8 @@ export function BehavioralRecordForm() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const studentsQuery = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
-  const { data: students } = useCollection(studentsQuery);
+  const studentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  const { data: students } = useCollection<Student>(studentsQuery);
 
   const form = useForm<z.infer<typeof behavioralRecordSchema>>({
     resolver: zodResolver(behavioralRecordSchema),

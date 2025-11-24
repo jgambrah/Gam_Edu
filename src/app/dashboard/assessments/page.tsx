@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
   
 function AssessmentsLog() {
     const firestore = useFirestore();
-    const assessmentsQuery = useMemoFirebase(() => query(collection(firestore, 'assessments'), orderBy('assessmentDate', 'desc')), [firestore]);
+    const assessmentsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'assessments'), orderBy('assessmentDate', 'desc')) : null, [firestore]);
     const { data: assessments, isLoading } = useCollection<Assessment>(assessmentsQuery);
 
     const toDate = (dateValue: any): Date | null => {
@@ -84,7 +84,7 @@ function AssessmentsLog() {
   
 function BehavioralLog() {
     const firestore = useFirestore();
-    const recordsQuery = useMemoFirebase(() => query(collection(firestore, 'behavioral_records'), orderBy('date', 'desc')), [firestore]);
+    const recordsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'behavioral_records'), orderBy('date', 'desc')) : null, [firestore]);
     const { data: records, isLoading } = useCollection<BehavioralRecord>(recordsQuery);
 
     const toDate = (dateValue: any): Date | null => {

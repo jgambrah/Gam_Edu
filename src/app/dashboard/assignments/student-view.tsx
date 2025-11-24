@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth, useFirestore, useUser } from '@/firebase';
+import { useAuth, useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, doc, onSnapshot } from 'firebase/firestore';
 import { Assignment, StudentSubmission, Quiz, QuizAttempt, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,61 +25,23 @@ export default function StudentAssignmentsView() {
   const [isSubmissionDialogOpen, setSubmissionDialogOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
 
-  const [student, setStudent] = useState<Student | null>(null);
-  const [assignments, setAssignments] = useState<Assignment[] | null>(null);
-  const [quizzes, setQuizzes] = useState<Quiz[] | null>(null);
-  const [submissions, setSubmissions] = useState<StudentSubmission[] | null>(null);
-  const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const studentQuery = useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore]);
+  const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(studentQuery);
+  const student = studentData?.[0];
 
-  useEffect(() => {
-    if (!user || !firestore) return;
+  const assignmentsQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'assignments'), where('classId', '==', student.classId)) : null, [student, firestore]);
+  const { data: assignments, isLoading: areAssignmentsLoading } = useCollection<Assignment>(assignmentsQuery);
 
-    const studentQuery = query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    const unsubscribeStudent = onSnapshot(studentQuery, (snapshot) => {
-        if (!snapshot.empty) {
-            const studentData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Student;
-            setStudent(studentData);
-        } else {
-            setIsLoading(false);
-        }
-    });
+  const quizzesQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'quizzes'), where('classId', '==', student.classId)) : null, [student, firestore]);
+  const { data: quizzes, isLoading: areQuizzesLoading } = useCollection<Quiz>(quizzesQuery);
+  
+  const submissionsQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'submissions'), where('studentId', '==', student.uid)) : null, [student, firestore]);
+  const { data: submissions, isLoading: areSubmissionsLoading } = useCollection<StudentSubmission>(submissionsQuery);
 
-    return () => unsubscribeStudent();
-  }, [user, firestore]);
+  const quizAttemptsQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'quizAttempts'), where('studentId', '==', student.uid)) : null, [student, firestore]);
+  const { data: quizAttempts, isLoading: areAttemptsLoading } = useCollection<QuizAttempt>(quizAttemptsQuery);
 
-  useEffect(() => {
-    if (!student || !firestore) return;
-
-    const assignmentsQuery = query(collection(firestore, 'assignments'), where('classId', '==', student.classId));
-    const unsubscribeAssignments = onSnapshot(assignmentsQuery, snapshot => {
-        setAssignments(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Assignment)));
-    });
-
-    const quizzesQuery = query(collection(firestore, 'quizzes'), where('classId', '==', student.classId));
-    const unsubscribeQuizzes = onSnapshot(quizzesQuery, snapshot => {
-        setQuizzes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quiz)));
-    });
-
-    const submissionsQuery = query(collection(firestore, 'submissions'), where('studentId', '==', student.uid));
-    const unsubscribeSubmissions = onSnapshot(submissionsQuery, snapshot => {
-        setSubmissions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StudentSubmission)));
-    });
-
-    const quizAttemptsQuery = query(collection(firestore, 'quizAttempts'), where('studentId', '==', student.uid));
-    const unsubscribeQuizAttempts = onSnapshot(quizAttemptsQuery, snapshot => {
-        setQuizAttempts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as QuizAttempt)));
-        setIsLoading(false);
-    });
-
-    return () => {
-        unsubscribeAssignments();
-        unsubscribeQuizzes();
-        unsubscribeSubmissions();
-        unsubscribeQuizAttempts();
-    }
-  }, [student, firestore]);
-
+  const isLoading = isStudentLoading || areAssignmentsLoading || areQuizzesLoading || areSubmissionsLoading || areAttemptsLoading;
 
   const handleFileUpload = async (assignment: Assignment) => {
     if (!user || !student || !firestore) return;

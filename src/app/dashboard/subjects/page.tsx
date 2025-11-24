@@ -13,7 +13,7 @@ import { Loader2, PlusCircle, BookCopy } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -143,10 +143,10 @@ export default function SubjectsPage() {
 
   const canManage = role === 'Director' || role === 'Administrator';
 
-  const subjectsQuery = useMemoFirebase(() => collection(firestore, 'subjects'), [firestore, refetchKey]);
+  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refetchKey]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-  const teachersQuery = useMemoFirebase(() => query(collection(firestore, 'staff'), where('role', '==', 'Teacher')), [firestore]);
+  const teachersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
   const handleOpenDialog = (subject?: Subject) => {

@@ -164,9 +164,9 @@ function EditParentForm({ parent, students, setOpen }: { parent: ParentData, stu
 function ParentList({ forceRefetch }: { forceRefetch: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
-  const parentsCollectionRef = useMemoFirebase(() => collection(firestore, 'parents'), [firestore]);
+  const parentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'parents') : null, [firestore]);
   const { data: parents, isLoading } = useCollection<ParentData>(parentsCollectionRef);
-  const studentsCollectionRef = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
+  const studentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
   const { data: students } = useCollection(studentsCollectionRef);
 
   const [editingParent, setEditingParent] = useState<ParentData | null>(null);
@@ -252,7 +252,7 @@ function ParentsPageContent() {
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
   const [refetchKey, setRefetchKey] = useState(0);
 
-  const studentsCollectionRef = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
+  const studentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
   const { data: students } = useCollection(studentsCollectionRef);
 
   const forceRefetch = () => setRefetchKey(prev => prev + 1);

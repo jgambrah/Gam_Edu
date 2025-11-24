@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useMemoFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect } from 'react';
 import { collection, doc, query, where, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
@@ -48,6 +48,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DailyAttendanceSheet } from '../attendance/daily-attendance-sheet';
 import { Subject, TimetableEntry } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useCollection } from '@/firebase';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const classFormSchema = z.object({
   name: z.string().min(1, { message: 'Class name is required.' }),
@@ -107,7 +109,7 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
         studentIds: [],
         capacity: values.capacity,
       };
-      await setDoc(doc(firestore, 'classes', classId), classData, { merge: true });
+      setDocumentNonBlocking(doc(firestore, 'classes', classId), classData, { merge: true });
 
       toast({
         title: 'Class Created',
@@ -337,44 +339,13 @@ export default function AcademicsPageContent() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
 
-  const [classes, setClasses] = useState<ClassData[] | null>(null);
-  const [teachers, setTeachers] = useState<Teacher[] | null>(null);
-  const [students, setStudents] = useState<Student[] | null>(null);
-  const [timetable, setTimetable] = useState<TimetableEntry[] | null>(null);
-  const [subjects, setSubjects] = useState<Subject[] | null>(null);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore]));
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
+  const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(useMemoFirebase(() => firestore ? collection(firestore, 'timetables') : null, [firestore]));
+  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]));
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!firestore) return;
-    setIsLoading(true);
-
-    const queries = [
-        onSnapshot(collection(firestore, 'classes'), (snapshot) => {
-            setClasses(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClassData)));
-        }),
-        onSnapshot(query(collection(firestore, 'staff'), where('role', '==', 'Teacher')), (snapshot) => {
-            setTeachers(snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Teacher)));
-        }),
-        onSnapshot(collection(firestore, 'students'), (snapshot) => {
-            setStudents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Student)));
-        }),
-        onSnapshot(collection(firestore, 'timetables'), (snapshot) => {
-            setTimetable(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TimetableEntry)));
-        }),
-        onSnapshot(collection(firestore, 'subjects'), (snapshot) => {
-            setSubjects(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Subject)));
-        }),
-    ];
-    
-    // A simple way to check if all initial data is loaded
-    Promise.all([
-        new Promise(resolve => onSnapshot(collection(firestore, 'classes'), snapshot => resolve(snapshot))),
-    ]).then(() => setIsLoading(false));
-
-    return () => queries.forEach(unsubscribe => unsubscribe());
-  }, [firestore]);
-
+  const isLoading = isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
   const canManageClasses = role === 'Director' || role === 'Administrator';
   

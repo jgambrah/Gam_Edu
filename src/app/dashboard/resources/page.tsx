@@ -24,7 +24,7 @@ function ResourceCreationForm({ setOpen }: { setOpen: (open: boolean) => void })
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const classesQuery = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
+  const classesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
   const { data: classes } = useCollection<{id: string, name: string}>(classesQuery);
 
   const form = useForm<z.infer<typeof resourceSchema>>({
@@ -152,7 +152,7 @@ export default function ResourcesPage() {
 
   const canManage = role === 'Administrator' || role === 'Teacher';
 
-  const resourcesQuery = useMemoFirebase(() => collection(firestore, 'resources'), [firestore]);
+  const resourcesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'resources') : null, [firestore]);
   const { data: resources, isLoading } = useCollection<Resource>(resourcesQuery);
 
   const groupedResources = useMemo(() => {
