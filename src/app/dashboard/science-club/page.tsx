@@ -38,6 +38,7 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { format } from 'date-fns';
+import { Label } from '@/components/ui/label';
 
 function Leaderboard() {
     const firestore = useFirestore();
