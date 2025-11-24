@@ -4,7 +4,7 @@ import React, { createContext, useContext, ReactNode, useMemo, useState, useEffe
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
-import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 // This interface defines the shape of the context's value.
 export interface FirebaseContextState {
@@ -19,7 +19,6 @@ export interface FirebaseContextState {
 // Create the context with an undefined initial value.
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
-
 export const FirebaseProvider: React.FC<{ children: ReactNode, firebaseApp: FirebaseApp, firestore: Firestore, auth: Auth }> = ({
   children,
   firebaseApp,
@@ -27,7 +26,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode, firebaseApp: Fire
   auth,
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isUserLoading, setIsUserLoading] = useState(true); // Start loading until first auth event
+  const [isUserLoading, setIsUserLoading] = useState(true); // Correctly start in a loading state
   const [userError, setUserError] = useState<Error | null>(null);
 
   // Subscribe to Firebase auth state changes.
@@ -85,10 +84,9 @@ export const useUser = () => {
     return { user, isUserLoading, userError };
 };
 
-
 export function useMemoFirebase<T>(factory: () => T, deps: React.DependencyList): T {
     const memoized = useMemo(factory, deps);
-    if (typeof memoized === 'object' && memoized !== null) {
+    if (typeof memoized === 'object' && memoized !== null && !(memoized as any).__memo) {
         Object.defineProperty(memoized, '__memo', {
             value: true,
             writable: false,
