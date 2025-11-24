@@ -286,7 +286,7 @@ service cloud.firestore {
     
     // --- Maths Club Rules ---
     match /math_problems/{problemId} {
-        allow read: if isSignedIn();
+        allow get, list: if isSignedIn();
         allow write: if isTeacher() || isAdmin(); // Teachers and Admins can create problems
     }
 
