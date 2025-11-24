@@ -13,7 +13,6 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ElaGrammarDrill } from '@/lib/types';
 import { MOCK_ELA_DRILLS } from '@/lib/data';
-import { FormItem, FormControl } from '@/components/ui/form';
 
 export function GrammarPractice() {
   // Using mock data for now, but this can be switched to useCollection to fetch from Firestore
@@ -82,17 +81,19 @@ export function GrammarPractice() {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="font-semibold">{currentDrill.question_prompt}</p>
-        <RadioGroup onValueChange={setSelectedAnswer} value={selectedAnswer || ''} disabled={isCorrect !== null}>
+        <RadioGroup onValueChange={setSelectedAnswer} value={selectedAnswer || ''} disabled={isCorrect !== null} className="space-y-2">
           {currentDrill.options?.map((option, index) => (
-            <FormItem key={index} className={cn("flex items-center space-x-3 space-y-0 rounded-md border p-4", 
+            <div
+              key={index}
+              className={cn(
+                "flex items-center space-x-3 space-y-0 rounded-md border p-4", 
                 isCorrect !== null && option === currentDrill.correct_answer && 'border-green-500 bg-green-50',
                 isCorrect === false && selectedAnswer === option && 'border-red-500 bg-red-50'
-            )}>
-              <FormControl>
-                <RadioGroupItem value={option} id={`option-${index}`} />
-              </FormControl>
+              )}
+            >
+              <RadioGroupItem value={option} id={`option-${index}`} />
               <Label htmlFor={`option-${index}`} className="font-normal w-full">{option}</Label>
-            </FormItem>
+            </div>
           ))}
         </RadioGroup>
       </CardContent>
