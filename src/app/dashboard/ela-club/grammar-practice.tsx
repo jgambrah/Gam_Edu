@@ -2,8 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -11,14 +11,23 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { ElaGrammarDrill } from '@/lib/types';
-import { MOCK_ELA_DRILLS } from '@/lib/data';
+import { ElaGrammarDrill, Student } from '@/lib/types';
 
 export function GrammarPractice() {
-  // Using mock data for now, but this can be switched to useCollection to fetch from Firestore
-  const drills: ElaGrammarDrill[] = MOCK_ELA_DRILLS;
-  const isLoading = false; // Set to true when fetching from Firestore
+  const firestore = useFirestore();
+  const { user } = useAuth();
 
+  const { data: studentData } = useCollection<Student>(
+    useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+  );
+  const studentClassId = studentData?.[0]?.classId;
+  
+  const drillsQuery = useMemoFirebase(() => 
+    studentClassId ? query(collection(firestore, 'ela_grammar_drills'), where('classId', '==', studentClassId)) : null,
+    [firestore, studentClassId]
+  );
+  const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(drillsQuery);
+  
   const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -39,6 +48,7 @@ export function GrammarPractice() {
   };
 
   const handleNext = () => {
+    if (!drills) return;
     setIsCorrect(null);
     setSelectedAnswer(null);
     setCurrentDrillIndex((prev) => (prev + 1) % drills.length);
@@ -65,7 +75,7 @@ export function GrammarPractice() {
           <CardTitle>Grammar & Mechanics Drills</CardTitle>
         </CardHeader>
         <CardContent className="text-center py-10">
-          <p className="text-muted-foreground">No grammar drills are available at the moment.</p>
+          <p className="text-muted-foreground">No grammar drills are available for your class yet.</p>
         </CardContent>
       </Card>
     );

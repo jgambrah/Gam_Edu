@@ -41,7 +41,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 // --- Reading Practice Tab ---
 function ReadingPracticeTab() {
   const firestore = useFirestore();
-  const passagesQuery = useMemoFirebase(() => query(collection(firestore, 'ela_reading_passages')), [firestore]);
+  const { user } = useAuth();
+  const { data: studentData } = useCollection<Student>(
+    useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+  );
+  const studentClassId = studentData?.[0]?.classId;
+
+  const passagesQuery = useMemoFirebase(() => 
+    studentClassId ? query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId)) : null, 
+    [firestore, studentClassId]
+  );
   const { data: passages, isLoading } = useCollection<ElaReadingPassage>(passagesQuery);
 
   return (
@@ -69,7 +78,7 @@ function ReadingPracticeTab() {
               ))}
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-12">No reading passages are available yet.</p>
+            <p className="text-center text-muted-foreground py-12">No reading passages are available for your class yet.</p>
           )}
       </CardContent>
     </Card>
@@ -197,10 +206,12 @@ function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
     const form = useForm<z.infer<typeof elaReadingPassageSchema>>({
         resolver: zodResolver(elaReadingPassageSchema),
-        defaultValues: { title: '', passage_text: '', reading_level: '', question_set: [{ question: '', type: 'MCQ', options: ['', '', ''], correct_answer_key: '' }] }
+        defaultValues: { title: '', passage_text: '', reading_level: '', classId: '', question_set: [{ question: '', type: 'MCQ', options: ['', '', ''], correct_answer_key: '' }] }
     });
 
     const { fields, append, remove } = useFieldArray({
@@ -228,6 +239,14 @@ function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                  <ScrollArea className="h-[60vh] w-full pr-4">
                     <div className="space-y-4">
+                         <FormField control={form.control} name="classId" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Assign to Class</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                </Select><FormMessage/>
+                            </FormItem>
+                        )}/>
                         <FormField control={form.control} name="title" render={({ field }) => (
                             <FormItem><FormLabel>Passage Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
@@ -302,12 +321,15 @@ function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
     const form = useForm<z.infer<typeof elaGrammarDrillSchema>>({
         resolver: zodResolver(elaGrammarDrillSchema),
         defaultValues: {
             type: 'MCQ',
             options: ['', '', '', ''],
+            classId: '',
         }
     });
 
@@ -329,6 +351,15 @@ function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
                  <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
                         <FormItem><FormLabel>Topic</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a Topic"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Punctuation">Punctuation</SelectItem><SelectItem value="Verbs">Verbs</SelectItem><SelectItem value="Nouns">Nouns</SelectItem><SelectItem value="Adjectives">Adjectives</SelectItem></SelectContent></Select><FormMessage/></FormItem>
@@ -515,6 +546,9 @@ function ManageWritingChallenges() {
     );
 }
 
+type Student = {
+    classId: string;
+}
 
 // --- Main ELA Club Page Component ---
 export default function ElaClubPage() {

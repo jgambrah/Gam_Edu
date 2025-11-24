@@ -787,6 +787,7 @@ export const elaGrammarDrillSchema = z.object({
     question_prompt: z.string().min(1, "Question prompt is required."),
     options: z.array(z.string()).optional(),
     correct_answer: z.union([z.string(), z.array(z.string())]).refine(val => (Array.isArray(val) ? val.length > 0 : String(val).length > 0), { message: "Correct answer cannot be empty." }),
+    classId: z.string().min(1, "Please select a class."),
 });
 
 export type ElaGrammarDrill = z.infer<typeof elaGrammarDrillSchema> & {
@@ -804,6 +805,7 @@ export const elaReadingPassageSchema = z.object({
     title: z.string().min(1, "Title is required."),
     passage_text: z.string().min(1, "Passage text is required."),
     reading_level: z.string().min(1, "Reading level is required."),
+    classId: z.string().min(1, "Please select a class."),
     question_set: z.array(elaQuestionSchema).min(1, "At least one question is required."),
 });
 

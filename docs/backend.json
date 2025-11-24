@@ -1149,9 +1149,13 @@
         "correct_answer": {
           "type": ["string", "array"],
           "description": "The correct answer or an array of correct answers for sequencing."
+        },
+        "classId": {
+            "type": "string",
+            "description": "The class this drill is assigned to."
         }
       },
-      "required": ["topic", "type", "question_prompt", "correct_answer"]
+      "required": ["topic", "type", "question_prompt", "correct_answer", "classId"]
     },
     "ElaReadingPassage": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1171,6 +1175,10 @@
           "type": "string",
           "description": "The target reading level, e.g., 'Year 9'."
         },
+         "classId": {
+            "type": "string",
+            "description": "The class this passage is assigned to."
+        },
         "question_set": {
           "type": "array",
           "description": "An array of questions related to the passage.",
@@ -1186,7 +1194,7 @@
           }
         }
       },
-      "required": ["title", "passage_text", "reading_level", "question_set"]
+      "required": ["title", "passage_text", "reading_level", "question_set", "classId"]
     },
     "ElaWritingChallenge": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1204,6 +1212,10 @@
           "type": "string",
           "enum": ["Creative Writing", "Summarization", "Essay"]
         },
+        "classId": {
+          "type": "string",
+          "description": "The class this challenge is assigned to."
+        },
         "createdBy": {
           "type": "string"
         },
@@ -1212,7 +1224,7 @@
           "format": "date-time"
         }
       },
-      "required": ["title", "prompt", "challengeType", "createdBy", "createdAt"]
+      "required": ["title", "prompt", "challengeType", "createdBy", "createdAt", "classId"]
     },
     "ElaUserSubmission": {
       "$schema": "http://json-schema.org/draft-07/schema#",
