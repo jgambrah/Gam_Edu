@@ -20,10 +20,6 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // Super admin check for initial setup.
-      if (isSignedIn() && request.auth.token.email == 'jgambrah@sunnyside.com') {
-        return true;
-      }
       // Standard role-based check.
       return isSignedIn() && getUserRole() in ['Director', 'Administrator'];
     }
@@ -294,3 +290,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
