@@ -712,6 +712,7 @@ export const mathProblemSchema = z.object({
         source: z.string().optional(),
         gradeLevel: z.string().optional(),
     }).optional(),
+    classId: z.string().min(1, "Please select a class."),
 });
 
 export type MathProblem = z.infer<typeof mathProblemSchema> & {
@@ -748,6 +749,7 @@ export const scienceProblemSchema = z.object({
         source: z.string().optional(),
         gradeLevel: z.string().optional(),
     }).optional(),
+    classId: z.string().min(1, "Please select a class."),
 });
 
 export type ScienceProblem = z.infer<typeof scienceProblemSchema> & {

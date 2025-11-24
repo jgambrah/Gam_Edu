@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact } from '@/lib/types';
+import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact, Class } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -96,12 +96,15 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
     const form = useForm<z.infer<typeof scienceProblemSchema>>({
         resolver: zodResolver(scienceProblemSchema),
         defaultValues: {
             difficulty: 'Easy',
             topic: 'Biology',
             options: ['', '', '', ''],
+            classId: '',
         }
     });
 
@@ -123,7 +126,15 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <div className="grid grid-cols-2 gap-4">
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
                         <FormItem><FormLabel>Topic</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Biology">Biology</SelectItem><SelectItem value="Chemistry">Chemistry</SelectItem><SelectItem value="Physics">Physics</SelectItem><SelectItem value="Lab Safety">Lab Safety</SelectItem></SelectContent></Select><FormMessage/></FormItem>
                     )}/>

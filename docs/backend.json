@@ -933,9 +933,13 @@
             "source": { "type": "string" },
             "gradeLevel": { "type": "string" }
           }
+        },
+        "classId": {
+            "type": "string",
+            "description": "The class this problem is assigned to."
         }
       },
-      "required": ["topic", "difficulty", "question_text", "correct_answer"]
+      "required": ["topic", "difficulty", "question_text", "correct_answer", "classId"]
     },
     "UserResult": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1035,9 +1039,13 @@
             "source": { "type": "string" },
             "gradeLevel": { "type": "string" }
           }
+        },
+        "classId": {
+            "type": "string",
+            "description": "The class this problem is assigned to."
         }
       },
-      "required": ["topic", "difficulty", "question_text", "correct_answer"]
+      "required": ["topic", "difficulty", "question_text", "correct_answer", "classId"]
     },
     "ScienceResult": {
       "$schema": "http://json-schema.org/draft-07/schema#",

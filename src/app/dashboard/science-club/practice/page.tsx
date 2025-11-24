@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { ScienceProblem } from '@/lib/types';
+import { ScienceProblem, Student } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -25,15 +25,21 @@ function QuizComponent() {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  const { data: studentData } = useCollection<Student>(
+    useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+  );
+  const studentClassId = studentData?.[0]?.classId;
+
   const problemsQuery = useMemoFirebase(
-    () => (topic && difficulty)
+    () => (topic && difficulty && studentClassId)
       ? query(
           collection(firestore, 'science_problems'),
           where('topic', '==', topic),
-          where('difficulty', '==', difficulty)
+          where('difficulty', '==', difficulty),
+          where('classId', '==', studentClassId)
         )
       : null,
-    [firestore, topic, difficulty]
+    [firestore, topic, difficulty, studentClassId]
   );
   const { data: problems, isLoading } = useCollection<ScienceProblem>(problemsQuery);
 
@@ -102,7 +108,7 @@ function QuizComponent() {
   }
 
   if (!problems || problems.length === 0) {
-    return <p className="text-center text-muted-foreground py-8">No practice problems found for this topic and difficulty.</p>;
+    return <p className="text-center text-muted-foreground py-8">No practice problems found for this topic and difficulty in your class.</p>;
   }
 
   const currentProblem = problems[currentQuestionIndex];

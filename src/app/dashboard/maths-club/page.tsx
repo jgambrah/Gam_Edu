@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, orderBy, query, addDoc } from 'firebase/firestore';
-import { GlobalLeaderboardEntry, MathProblem, mathProblemSchema } from '@/lib/types';
+import { GlobalLeaderboardEntry, MathProblem, mathProblemSchema, Class } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -94,11 +94,14 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
     const form = useForm<z.infer<typeof mathProblemSchema>>({
         resolver: zodResolver(mathProblemSchema),
         defaultValues: {
             difficulty: 'Easy',
             options: ['', '', '', ''],
+            classId: '',
         }
     });
 
@@ -120,7 +123,15 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <div className="grid grid-cols-2 gap-4">
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
                         <FormItem><FormLabel>Topic</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a Topic"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Algebra">Algebra</SelectItem><SelectItem value="Geometry">Geometry</SelectItem><SelectItem value="Fractions">Fractions</SelectItem></SelectContent></Select><FormMessage/></FormItem>
                     )}/>
