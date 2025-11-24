@@ -190,8 +190,6 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
   const handleDelete = async (staffId: string) => {
     try {
         await deleteDoc(doc(firestore, 'staff', staffId));
-        // Note: This does not delete the user from Firebase Auth to prevent accidental lockouts.
-        // That should be a separate, more deliberate administrative action.
         toast({ title: 'Success', description: 'Staff member has been deleted.'});
         forceRefetch();
     } catch(error) {
@@ -218,53 +216,59 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
         <CardDescription>A list of all staff members in the system.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>First Name</TableHead>
-              <TableHead>Last Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              {canManage && <TableHead className="text-right">Actions</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {staff?.map((staffMember) => (
-              <TableRow key={staffMember.id}>
-                <TableCell>{staffMember.firstName}</TableCell>
-                <TableCell>{staffMember.lastName}</TableCell>
-                <TableCell>{staffMember.email}</TableCell>
-                <TableCell>{staffMember.role}</TableCell>
-                {canManage && (
-                    <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => setEditingStaff(staffMember)}>
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                 <Button variant="ghost" size="icon">
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This action will delete the staff member's profile from the database. It will not delete their login account. This cannot be undone.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Confirm Delete</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </TableCell>
-                )}
+        {staff && staff.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>First Name</TableHead>
+                <TableHead>Last Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
+                {canManage && <TableHead className="text-right">Actions</TableHead>}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {staff.map((staffMember) => (
+                <TableRow key={staffMember.id}>
+                  <TableCell>{staffMember.firstName}</TableCell>
+                  <TableCell>{staffMember.lastName}</TableCell>
+                  <TableCell>{staffMember.email}</TableCell>
+                  <TableCell>{staffMember.role}</TableCell>
+                  {canManage && (
+                      <TableCell className="text-right">
+                          <Button variant="ghost" size="icon" onClick={() => setEditingStaff(staffMember)}>
+                              <Edit className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                   <Button variant="ghost" size="icon">
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                          This action will delete the staff member's profile from the database. It will not delete their login account. This cannot be undone.
+                                      </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Confirm Delete</AlertDialogAction>
+                                  </AlertDialogFooter>
+                              </AlertDialogContent>
+                          </AlertDialog>
+                      </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            No staff members found. Add your first staff member above.
+          </div>
+        )}
       </CardContent>
     </Card>
 
@@ -309,9 +313,13 @@ function StaffPageContent() {
   const firstName = form.watch('firstName');
   const lastName = form.watch('lastName');
 
+  // Generate email automatically
   useEffect(() => {
-    if (firstName || lastName) {
-      const email = `${firstName.toLowerCase().replace(/\s/g, '')}${lastName.toLowerCase().replace(/\s/g, '')}@sunnyside.com`;
+    if (firstName && lastName) {
+      // Clean and format names for email
+      const cleanFirstName = firstName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cleanLastName = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const email = `${cleanFirstName}${cleanLastName}@sunnyside.com`;
       form.setValue('email', email);
     } else {
         form.setValue('email', '');
@@ -321,12 +329,18 @@ function StaffPageContent() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
+      // Create user in Firebase Auth
       const result = await createNewUser(values.email, values.password, values.role);
 
       if ('error' in result) {
+        // Handle specific error cases
+        if (result.error.includes('email-already-in-use')) {
+          throw new Error('This email is already in use. Please use a different name combination.');
+        }
         throw new Error(result.error);
       }
       
+      // Create staff document in Firestore
       const newStaffDoc = {
         uid: result.uid,
         firstName: values.firstName,
@@ -343,20 +357,28 @@ function StaffPageContent() {
       
       await setDoc(doc(firestore, 'staff', result.uid), newStaffDoc);
       
+      // Show success message with credentials
       toast({
-        title: 'Staff Added',
-        description: `${values.email} has been added as a ${values.role}.`,
+        title: 'Staff Added Successfully',
+        description: `${values.firstName} ${values.lastName} has been added. Login: ${values.email} / ${values.password}`,
+        duration: 8000,
       });
       
-      forceRefetch();
+      // Wait a bit for Firestore to propagate the change
+      setTimeout(() => {
+        forceRefetch();
+      }, 500);
+      
+      // Reset form
       form.reset();
+      
     } catch (error: any) {
+      console.error('Error adding staff:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: error.message,
+        title: 'Error Adding Staff',
+        description: error.message || 'An unexpected error occurred. Please try again.',
       });
-      console.error('Error adding staff:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -409,6 +431,9 @@ function StaffPageContent() {
                     <FormControl>
                       <Input placeholder="staff@sunnyside.com" {...field} readOnly />
                     </FormControl>
+                    <FormDescription>
+                      Auto-generated based on first and last name
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -494,12 +519,12 @@ function StaffPageContent() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Default Password</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} readOnly />
                     </FormControl>
                     <FormDescription>
-                      This is the default password for the new staff member.
+                      This is the default password for the new staff member. They should change it after first login.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -529,7 +554,7 @@ function StaffPageContent() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} className="w-full">
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Add Staff Member
               </Button>
@@ -549,3 +574,5 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
+
+    
