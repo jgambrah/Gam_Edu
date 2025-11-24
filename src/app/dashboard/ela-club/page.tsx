@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -12,15 +13,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
-import { ElaGrammarDrill, elaGrammarDrillSchema } from '@/lib/types';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, addDoc } from 'firebase/firestore';
+import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema } from '@/lib/types';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableRow, TableHeader, TableCell, TableBody, TableHead } from '@/components/ui/table';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
@@ -30,20 +31,40 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-
+import Link from 'next/link';
 
 function ReadingPracticeTab() {
+  const firestore = useFirestore();
+  const passagesQuery = useMemoFirebase(() => query(collection(firestore, 'ela_reading_passages')), [firestore]);
+  const { data: passages, isLoading } = useCollection<ElaReadingPassage>(passagesQuery);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reading Comprehension</CardTitle>
-        <CardDescription>
-          Read passages and answer questions to improve your understanding.
-          (Coming Soon)
-        </CardDescription>
+        <CardTitle>Reading Comprehension Practice</CardTitle>
+        <CardDescription>Select a passage to read and answer comprehension questions.</CardDescription>
       </CardHeader>
-      <CardContent className="text-center text-muted-foreground py-12">
-        <p>Reading passages and comprehension tests will appear here.</p>
+      <CardContent>
+        {isLoading ? <Skeleton className="h-40 w-full" /> :
+          passages && passages.length > 0 ? (
+            <div className="space-y-4">
+              {passages.map(passage => (
+                <Card key={passage.id}>
+                  <CardHeader>
+                    <CardTitle>{passage.title}</CardTitle>
+                    <CardDescription>Reading Level: {passage.reading_level}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild>
+                      <Link href={`/dashboard/ela-club/reading/${passage.id}`}>Start Reading</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-12">No reading passages are available yet.</p>
+          )}
       </CardContent>
     </Card>
   );
@@ -63,6 +84,104 @@ function WritingSubmissionTab() {
       </CardContent>
     </Card>
   );
+}
+
+function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<z.infer<typeof elaReadingPassageSchema>>({
+        resolver: zodResolver(elaReadingPassageSchema),
+        defaultValues: { title: '', passage_text: '', reading_level: '', question_set: [{ question: '', type: 'MCQ', options: ['', '', ''], correct_answer_key: '' }] }
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "question_set"
+    });
+
+    async function onSubmit(values: z.infer<typeof elaReadingPassageSchema>) {
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), values);
+            toast({ title: 'Success', description: 'New reading passage has been added.' });
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error adding passage:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the passage.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Passage Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                 <FormField control={form.control} name="reading_level" render={({ field }) => (
+                    <FormItem><FormLabel>Reading Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="passage_text" render={({ field }) => (
+                    <FormItem><FormLabel>Passage Text</FormLabel><FormControl><Textarea rows={8} {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+
+                <div className="space-y-4">
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="p-4 border rounded-md space-y-3">
+                            <h4 className="font-semibold">Question {index + 1}</h4>
+                            <FormField control={form.control} name={`question_set.${index}.question`} render={({ field }) => (
+                                <FormItem><FormLabel>Question</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <Button type="button" variant="destructive" size="sm" onClick={() => remove(index)}>Remove Question</Button>
+                        </div>
+                    ))}
+                </div>
+                <Button type="button" variant="outline" onClick={() => append({ question: '', type: 'MCQ', options: [], correct_answer_key: '' })}>Add Question</Button>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Add Passage</Button>
+            </form>
+        </Form>
+    );
+}
+
+function ManagePassages() {
+    const firestore = useFirestore();
+    const { data: passages, isLoading } = useCollection<ElaReadingPassage>(useMemoFirebase(() => query(collection(firestore, 'ela_reading_passages')), [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Reading Passage Bank</CardTitle>
+                    <CardDescription>Manage reading passages and their comprehension questions.</CardDescription>
+                </div>
+                 <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Passage</Button></DialogTrigger>
+                    <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>Create New Reading Passage</DialogTitle></DialogHeader><PassageCreationForm setOpen={setIsFormOpen}/></DialogContent>
+                </Dialog>
+            </CardHeader>
+            <CardContent>
+                 {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                <Table>
+                    <TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Reading Level</TableHead><TableHead># of Questions</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {passages?.map(p => (
+                            <TableRow key={p.id}>
+                                <TableCell>{p.title}</TableCell>
+                                <TableCell>{p.reading_level}</TableCell>
+                                <TableCell>{p.question_set.length}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                )}
+            </CardContent>
+        </Card>
+    );
 }
 
 function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
@@ -184,7 +303,7 @@ export default function ElaClubPage() {
       </Card>
 
       <Tabs defaultValue="grammar" className="w-full">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-5" : "grid-cols-3")}>
           <TabsTrigger value="grammar">
             <Edit className="mr-2 h-4 w-4" />
             Grammar Practice
@@ -197,7 +316,8 @@ export default function ElaClubPage() {
             <ChevronRight className="mr-2 h-4 w-4" />
             Writing Submissions
           </TabsTrigger>
-          {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Drills</TabsTrigger>}
+          {isTeacherOrAdmin && <TabsTrigger value="manage-drills">Manage Drills</TabsTrigger>}
+          {isTeacherOrAdmin && <TabsTrigger value="manage-passages">Manage Passages</TabsTrigger>}
         </TabsList>
         <TabsContent value="grammar">
           <GrammarPractice />
@@ -209,8 +329,13 @@ export default function ElaClubPage() {
           <WritingSubmissionTab />
         </TabsContent>
         {isTeacherOrAdmin && (
-            <TabsContent value="manage">
+            <TabsContent value="manage-drills">
                 <ManageDrills />
+            </TabsContent>
+        )}
+         {isTeacherOrAdmin && (
+            <TabsContent value="manage-passages">
+                <ManagePassages />
             </TabsContent>
         )}
       </Tabs>

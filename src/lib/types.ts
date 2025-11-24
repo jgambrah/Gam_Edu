@@ -792,17 +792,23 @@ export type ElaGrammarDrill = z.infer<typeof elaGrammarDrillSchema> & {
     id: string;
 };
 
-export type ElaReadingPassage = {
+const elaQuestionSchema = z.object({
+    question: z.string().min(1, "Question cannot be empty"),
+    type: z.enum(["MCQ", "Short Answer"]),
+    options: z.array(z.string()).optional(),
+    correct_answer_key: z.string().min(1, "Correct answer is required"),
+});
+
+export const elaReadingPassageSchema = z.object({
+    title: z.string().min(1, "Title is required."),
+    passage_text: z.string().min(1, "Passage text is required."),
+    reading_level: z.string().min(1, "Reading level is required."),
+    question_set: z.array(elaQuestionSchema).min(1, "At least one question is required."),
+});
+
+
+export type ElaReadingPassage = z.infer<typeof elaReadingPassageSchema> & {
     id: string;
-    title: string;
-    passage_text: string;
-    reading_level: string;
-    question_set: Array<{
-        question: string;
-        type: 'MCQ' | 'Short Answer';
-        options?: string[];
-        correct_answer_key: string;
-    }>;
 };
 
 export type ElaUserSubmission = {
