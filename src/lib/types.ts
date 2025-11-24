@@ -816,6 +816,7 @@ export const elaWritingChallengeSchema = z.object({
     title: z.string().min(1, "Title is required."),
     prompt: z.string().min(10, "Prompt must be at least 10 characters."),
     challengeType: z.enum(['Creative Writing', 'Summarization', 'Essay']),
+    classId: z.string().min(1, "Please select a class for this challenge."),
 });
 
 export type ElaWritingChallenge = z.infer<typeof elaWritingChallengeSchema> & {

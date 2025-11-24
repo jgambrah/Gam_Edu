@@ -16,7 +16,7 @@ import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, addDoc, where, serverTimestamp } from 'firebase/firestore';
-import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission } from '@/lib/types';
+import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class } from '@/lib/types';
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -131,15 +131,20 @@ function WritingSubmissionTab() {
     const firestore = useFirestore();
     const { user } = useAuth();
     const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
+    
+    const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
+        useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+    );
+    const studentClassId = studentData?.[0]?.classId;
 
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
-        useMemoFirebase(() => query(collection(firestore, 'ela_writing_challenges')), [firestore])
+        useMemoFirebase(() => studentClassId ? query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId)) : null, [firestore, studentClassId])
     );
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
         useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
     );
 
-    const isLoading = isLoadingChallenges || isLoadingSubmissions;
+    const isLoading = isLoadingChallenges || isLoadingSubmissions || isLoadingStudent;
     
     return (
         <Card>
@@ -179,6 +184,7 @@ function WritingSubmissionTab() {
                                 </Card>
                             );
                         })}
+                         {challenges?.length === 0 && <p className="text-center py-8 text-muted-foreground">No writing challenges have been assigned to your class yet.</p>}
                     </div>
                 )}
             </CardContent>
@@ -396,6 +402,8 @@ function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }
     const { user } = useAuth();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
     const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
         resolver: zodResolver(elaWritingChallengeSchema),
@@ -424,6 +432,22 @@ function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a class"/>
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage/>
+                    </FormItem>
+                )}/>
                 <FormField control={form.control} name="title" render={({ field }) => (
                     <FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., A Journey to the Past" {...field}/></FormControl><FormMessage/></FormItem>
                 )}/>
@@ -513,7 +537,7 @@ export default function ElaClubPage() {
       </Card>
 
       <Tabs defaultValue="grammar" className="w-full">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-5" : "grid-cols-3")}>
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-6" : "grid-cols-3")}>
           <TabsTrigger value="grammar">
             <Edit className="mr-2 h-4 w-4" />
             Grammar Practice
