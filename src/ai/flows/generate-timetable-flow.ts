@@ -5,7 +5,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { Class, Room, Subject, TimeSlot, TimetableEntry, UserRole } from '@/lib/types';
 
 // Define the shape of a simplified Teacher object for the AI
 const TeacherSchema = z.object({
@@ -16,7 +15,7 @@ const TeacherSchema = z.object({
 });
 
 // Define the input schema for the timetable generation flow
-export const GenerateTimetableInputSchema = z.object({
+const GenerateTimetableInputSchema = z.object({
   teachers: z.array(TeacherSchema).describe("A list of all available teachers."),
   subjects: z.array(z.object({ id: z.string(), name: z.string() })).describe("A list of all subjects to be scheduled."),
   classes: z.array(z.object({ id: z.string(), name: z.string() })).describe("A list of all classes that need a schedule."),
@@ -37,7 +36,7 @@ const TimetableEntrySchema = z.object({
 });
 
 // Define the output schema for the entire timetable
-export const GenerateTimetableOutputSchema = z.object({
+const GenerateTimetableOutputSchema = z.object({
   timetable: z.array(TimetableEntrySchema),
 });
 export type GenerateTimetableOutput = z.infer<typeof GenerateTimetableOutputSchema>;
