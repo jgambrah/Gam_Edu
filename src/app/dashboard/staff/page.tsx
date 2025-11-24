@@ -36,7 +36,6 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogDescription
   } from '@/components/ui/dialog';
   import {
     AlertDialog,
@@ -51,7 +50,7 @@ import {
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, serverTimestamp, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2, Edit, Trash2 } from 'lucide-react';
@@ -343,7 +342,6 @@ function StaffPageContent() {
         createdAt: serverTimestamp(),
       };
       
-      // Use the UID from the auth user as the document ID
       await setDoc(doc(firestore, 'staff', result.uid), newStaffDoc);
       
       toast({
@@ -552,3 +550,5 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
+
+    
