@@ -46,7 +46,7 @@ export default function TimetablePage() {
   const { data: rooms } = useCollection<Room>(useMemoFirebase(() => user ? collection(firestore, 'rooms') : null, [firestore, user]));
   const { data: timeSlots } = useCollection<TimeSlot>(useMemoFirebase(() => user ? collection(firestore, 'timeSlots') : null, [firestore, user]));
   const { data: timetable, isLoading: isTimetableLoading } = useCollection<TimetableEntry>(useMemoFirebase(() => user ? collection(firestore, 'timetables') : null, [firestore, user]));
-  const { data: studentData } = useCollection<Student>(useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user]));
+  const { data: studentData } = useCollection<Student>(useMemoFirebase(() => user && role === 'Student' ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role]));
 
   useEffect(() => {
     if (role === 'Student' && studentData && studentData.length > 0) {
@@ -55,7 +55,7 @@ export default function TimetablePage() {
         setSelectedClassId(currentStudent.classId);
       }
     }
-  }, [role, studentData, user]);
+  }, [role, studentData]);
 
   const canAccess = ['Student', 'Teacher', 'Administrator', 'Director'].includes(role);
   const canGenerate = ['Administrator', 'Director'].includes(role);
