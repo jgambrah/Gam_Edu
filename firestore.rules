@@ -51,7 +51,7 @@ service cloud.firestore {
     // --- Collection Rules ---
     
     match /announcements/{announcementId} {
-      allow read: if isSignedIn();
+      allow read: if request.auth != null;
       allow write: if isAdmin();
     }
 
