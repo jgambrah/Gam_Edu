@@ -35,23 +35,20 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   useEffect(() => {
     const determineRole = async () => {
       if (isAuthLoading || !firestore) {
-        // We can't do anything until authentication state is resolved.
-        // The effect will re-run once isAuthLoading becomes false.
         return;
       }
 
       setIsRoleLoading(true);
 
       if (!user) {
-        // If there's no user, default to Parent and stop loading.
         setRole('Parent');
         setIsRoleLoading(false);
         return;
       }
 
-      // 1. Check for custom claims first
+      // 1. Check for custom claims first, forcing a refresh.
       try {
-        const idTokenResult = await user.getIdTokenResult();
+        const idTokenResult = await user.getIdTokenResult(true);
         const claimsRole = idTokenResult.claims.role;
         if (claimsRole && typeof claimsRole === 'string') {
           setRole(claimsRole as UserRole);
