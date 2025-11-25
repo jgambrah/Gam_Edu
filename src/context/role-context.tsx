@@ -35,16 +35,19 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   useEffect(() => {
     const determineRole = async () => {
       if (isAuthLoading || !firestore) {
-        return;
-      }
-
-      if (!user) {
-        setRole('Parent');
-        setIsRoleLoading(false);
+        // We can't do anything until authentication state is resolved.
+        // The effect will re-run once isAuthLoading becomes false.
         return;
       }
 
       setIsRoleLoading(true);
+
+      if (!user) {
+        // If there's no user, default to Parent and stop loading.
+        setRole('Parent');
+        setIsRoleLoading(false);
+        return;
+      }
 
       // 1. Check for custom claims first
       try {
