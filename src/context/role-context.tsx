@@ -50,31 +50,10 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
       }
 
       console.log(`[DIAGNOSTIC] User Found: ${user.uid} (${user.email})`);
-
-      // 1. Check Custom Claims
-      try {
-        console.log("[DIAGNOSTIC] Step 1: Checking ID Token Claims...");
-        // Force refresh to ensure we get the latest claims
-        const idTokenResult = await user.getIdTokenResult(true);
-        
-        console.log("[DIAGNOSTIC] Raw Claims:", idTokenResult.claims);
-
-        const claimsRole = idTokenResult.claims.role;
-        console.log(`[DIAGNOSTIC] Found claim 'role': ${claimsRole}`);
-
-        if (claimsRole && typeof claimsRole === 'string') {
-          console.log(`%c[DIAGNOSTIC] SUCCESS! Setting Role via Claims to: ${claimsRole}`, "color: green; font-weight: bold;");
-          setRole(claimsRole as UserRole);
-          setIsRoleLoading(false);
-          return;
-        }
-      } catch (e) {
-        console.error("[DIAGNOSTIC] Error fetching claims:", e);
-      }
       
-      // 2. Check Staff Collection
+      // 1. Check Staff Collection
       try {
-        console.log("[DIAGNOSTIC] Step 2: Checking 'staff' collection in Firestore...");
+        console.log("[DIAGNOSTIC] Step 1: Checking 'staff' collection in Firestore...");
         const staffDocRef = doc(firestore, 'staff', user.uid);
         const staffDocSnap = await getDoc(staffDocRef);
         
@@ -97,9 +76,9 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
         console.error("[DIAGNOSTIC] Error checking staff collection:", e);
       }
 
-      // 3. Check Students Collection
+      // 2. Check Students Collection
       try {
-        console.log("[DIAGNOSTIC] Step 3: Checking 'students' collection...");
+        console.log("[DIAGNOSTIC] Step 2: Checking 'students' collection...");
         const studentDocRef = doc(firestore, 'students', user.uid);
         const studentDocSnap = await getDoc(studentDocRef);
         if (studentDocSnap.exists()) {
@@ -114,7 +93,7 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
           console.error("[DIAGNOSTIC] Error checking students collection:", e);
       }
       
-      // 4. Fallback
+      // 3. Fallback
       console.log("%c[DIAGNOSTIC] FAILED all checks. Defaulting to Parent.", "color: red; font-weight: bold;");
       setRole('Parent');
       setIsRoleLoading(false);
