@@ -68,6 +68,9 @@ const toolboxCategories = {
               },
             },
             { kind: 'block', type: 'controls_whileUntil' },
+            { kind: 'block', type: 'controls_for' },
+            { kind: 'block', type: 'controls_forEach' },
+            { kind: 'block', type: 'controls_flow_statements' },
           ],
         },
         {
@@ -78,6 +81,15 @@ const toolboxCategories = {
             { kind: 'block', type: 'math_number' },
             { kind: 'block', type: 'math_arithmetic' },
             { kind: 'block', type: 'math_single' },
+            { kind: 'block', type: 'math_trig' },
+            { kind: 'block', type: 'math_constant' },
+            { kind: 'block', type: 'math_number_property' },
+            { kind: 'block', type: 'math_round' },
+            { kind: 'block', type: 'math_on_list' },
+            { kind: 'block', type: 'math_modulo' },
+            { kind: 'block', type: 'math_constrain' },
+            { kind: 'block', type: 'math_random_int' },
+            { kind: 'block', type: 'math_random_float' },
           ],
         },
         {
@@ -86,9 +98,61 @@ const toolboxCategories = {
           colour: '%{BKY_TEXTS_HUE}',
           contents: [
             { kind: 'block', type: 'text' },
+            { kind: 'block', type: 'text_join' },
+            { kind: 'block', type: 'text_append' },
+            { kind: 'block', type: 'text_length' },
+            { kind: 'block', type: 'text_isEmpty' },
+            { kind: 'block', type: 'text_indexOf' },
+            { kind: 'block', type: 'text_charAt' },
+            { kind: 'block', type: 'text_getSubstring' },
+            { kind: 'block', type: 'text_changeCase' },
+            { kind: 'block', type: 'text_trim' },
             { kind: 'block', type: 'text_print' },
             { kind: 'block', type: 'text_prompt_ext' },
           ],
+        },
+        {
+          kind: 'category',
+          name: 'Lists',
+          colour: '%{BKY_LISTS_HUE}',
+          contents: [
+            { kind: 'block', type: 'lists_create_with' },
+            { kind: 'block', type: 'lists_repeat' },
+            { kind: 'block', type: 'lists_length' },
+            { kind: 'block', type: 'lists_isEmpty' },
+            { kind: 'block', type: 'lists_indexOf' },
+            { kind: 'block', type: 'lists_getIndex' },
+            { kind: 'block', type: 'lists_setIndex' },
+            { kind: 'block', type: 'lists_getSublist' },
+            { kind: 'block', type: 'lists_split' },
+            { kind: 'block', type: 'lists_sort' },
+          ],
+        },
+        {
+          kind: 'category',
+          name: 'Color',
+          colour: '%{BKY_COLOUR_HUE}',
+          contents: [
+            { kind: 'block', type: 'colour_picker' },
+            { kind: 'block', type: 'colour_random' },
+            { kind: 'block', type: 'colour_rgb' },
+            { kind: 'block', type: 'colour_blend' },
+          ],
+        },
+        {
+          kind: 'sep',
+        },
+        {
+          kind: 'category',
+          name: 'Variables',
+          colour: '%{BKY_VARIABLES_HUE}',
+          custom: 'VARIABLE',
+        },
+        {
+          kind: 'category',
+          name: 'Functions',
+          colour: '%{BKY_PROCEDURES_HUE}',
+          custom: 'PROCEDURE',
         },
         {
           kind: 'sep',
@@ -182,12 +246,19 @@ export function BlocklyEditor() {
 
   const runCode = () => {
     if (!workspace) return;
-    const code = javascriptGenerator.workspaceToCode(workspace);
     try {
-      eval(code);
+      const code = javascriptGenerator.workspaceToCode(workspace);
+      // Using a safer execution context
+      (function() {
+        eval(code);
+      })();
     } catch (e) {
       console.error(e);
-      alert('Error running code: ' + e);
+      if (e instanceof Error) {
+        alert('Error running code: ' + e.message);
+      } else {
+        alert('An unknown error occurred while running the code.');
+      }
     }
   };
 
