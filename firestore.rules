@@ -215,7 +215,16 @@ service cloud.firestore {
     
     match /announcements/{announcementId} {
       allow create, update, delete: if isAdmin();
-      allow read, list: if isSignedIn();
+      allow list: if isSignedIn() && (
+        request.query.where.audience.size() == 2 &&
+        'Everybody' in request.query.where.audience &&
+        (
+          (isStudent() && 'Student' in request.query.where.audience) ||
+          (isParent() && 'Parent' in request.query.where.audience) ||
+          (isStaff() && getUserRole() in request.query.where.audience)
+        )
+      );
+      allow get: if isSignedIn();
     }
 
     match /auditLogs/{logId} {
