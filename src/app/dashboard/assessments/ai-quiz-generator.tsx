@@ -54,9 +54,13 @@ export function AiQuizGenerator() {
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
   const classesQuery = useMemoFirebase(
-    () => user && (role === 'Administrator' || role === 'Director') 
-      ? collection(firestore, 'classes') 
-      : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')),
+    () => {
+        if (!user || !firestore) return null;
+        if (role === 'Administrator' || role === 'Director') {
+            return collection(firestore, 'classes');
+        }
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    },
     [firestore, user, role]
   );
   const { data: classes } = useCollection<Class>(classesQuery);
@@ -200,7 +204,7 @@ export function AiQuizGenerator() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={onAssign} disabled={isAssigning || !selectedClassId}>
+                        <Button onClick={() => onAssign()} disabled={isAssigning || !selectedClassId}>
                             {isAssigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             Save and Assign
                         </Button>
