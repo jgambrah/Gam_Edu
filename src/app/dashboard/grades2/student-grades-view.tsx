@@ -8,27 +8,9 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { Assessment } from '@/lib/types';
 import { collection, query, where } from 'firebase/firestore';
 import { useMemo } from 'react';
+import Link from 'next/link';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
-
-// This is a mock function. A real implementation would be more complex.
-function calculateStudentGradeForSubject(studentId: string, subjectId: string, assessments: Assessment[]) {
-    const subjectAssessments = assessments.filter(a => a.studentId === studentId && a.subjectId === subjectId && a.score !== undefined && a.maxScore !== undefined);
-    if (subjectAssessments.length === 0) return { finalGrade: 'N/A', percentage: 0 };
-  
-    const totalScore = subjectAssessments.reduce((acc, a) => acc + a.score!, 0);
-    const maxScore = subjectAssessments.reduce((acc, a) => acc + a.maxScore!, 0);
-    const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
-  
-    let finalGrade = 'N/A';
-    if (percentage >= 90) finalGrade = 'A';
-    else if (percentage >= 80) finalGrade = 'B';
-    else if (percentage >= 70) finalGrade = 'C';
-    else if (percentage >= 60) finalGrade = 'D';
-    else if (percentage > 0) finalGrade = 'F';
-    
-    return { finalGrade, percentage: parseFloat(percentage.toFixed(1)) };
-}
 
 export function StudentGradesView({ student, term, year }: { student: Student, term: string, year: string }) {
     const firestore = useFirestore();

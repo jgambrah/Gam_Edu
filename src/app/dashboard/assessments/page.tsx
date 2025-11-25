@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
 import { ClipboardCheck, FilePlus, UserCog, Wand2 } from 'lucide-react';
-import { AssessmentFeedbackForm } from './assessment-feedback-form';
 import { BehavioralRecordForm } from './behavioral-record-form';
 import { AiQuizGenerator } from './ai-quiz-generator';
 import {
@@ -163,13 +161,9 @@ export default function AssessmentsPage() {
         <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold flex items-center gap-2">
                 <ClipboardCheck className="h-8 w-8" />
-                Assessments &amp; Gradebook
+                Assessments &amp; Student Notes
             </h1>
             <div className="flex gap-2">
-                <Button variant={activeForm === 'grade' ? 'default' : 'outline'} onClick={() => toggleForm('grade')}>
-                    <FilePlus className="mr-2 h-4 w-4" />
-                    Add Grade Entry
-                </Button>
                 <Button variant={activeForm === 'behavior' ? 'default' : 'outline'} onClick={() => toggleForm('behavior')}>
                     <UserCog className="mr-2 h-4 w-4" />
                     Log Behavioral Incident
@@ -181,7 +175,6 @@ export default function AssessmentsPage() {
             </div>
         </div>
 
-        {activeForm === 'grade' && <AssessmentFeedbackForm />}
         {activeForm === 'behavior' && <BehavioralRecordForm />}
         {activeForm === 'ai' && <AiQuizGenerator />}
 

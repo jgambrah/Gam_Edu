@@ -9,14 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { Loader2, Printer, TrendingUp, User } from 'lucide-react';
+import { Loader2, TrendingUp, User, PlusCircle } from 'lucide-react';
 import { StudentGradesView } from './student-grades-view';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Assessment } from '@/lib/types';
-import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -69,9 +66,6 @@ function StudentGradesDetail({ student, assessments }: { student: Student; asses
                     )}
                 </TableBody>
             </Table>
-            <div className="flex justify-end">
-                <Button asChild variant="outline" size="sm"><Link href="/dashboard/assessments">Enter Grades</Link></Button>
-            </div>
         </div>
     );
 }
@@ -80,7 +74,7 @@ export default function Gradebook2Manager() {
   const { user } = useAuth();
   const { role } = useRole();
   const firestore = useFirestore();
-
+  const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   
   const teacherClassesQuery = useMemoFirebase(
@@ -106,12 +100,24 @@ export default function Gradebook2Manager() {
 
   const isLoading = isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments));
 
+  const toggleForm = (formName: string) => {
+    setActiveForm(activeForm === formName ? null : formName);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><TrendingUp /> Gradebook</CardTitle>
-          <CardDescription>Select a class to view student grades and performance.</CardDescription>
+            <div className="flex justify-between items-center">
+                <div>
+                    <CardTitle className="flex items-center gap-2"><TrendingUp /> Gradebook</CardTitle>
+                    <CardDescription>Select a class to view student grades and performance.</CardDescription>
+                </div>
+                <Button variant={activeForm === 'grade' ? 'default' : 'outline'} onClick={() => toggleForm('grade')}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Grade Entry
+                </Button>
+            </div>
         </CardHeader>
         <CardContent>
           <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
@@ -120,6 +126,8 @@ export default function Gradebook2Manager() {
           </Select>
         </CardContent>
       </Card>
+
+      {activeForm === 'grade' && <AssessmentFeedbackForm />}
       
       {selectedClassId && (
         <Card>
