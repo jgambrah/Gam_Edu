@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -195,24 +194,9 @@ export function BlocklyEditor() {
           // For now, we just pass back a hardcoded name to prevent the crash.
           callback("my_variable"); 
       });
-
-      const createVariableButtonHandler = () => {
-        Blockly.Variables.createVariable(workspace);
-      };
-
-      workspace.registerButtonCallback(
-        'CREATE_VARIABLE',
-        createVariableButtonHandler
-      );
     }
   }, [workspace]);
 
-
-  // Redefine javascriptGenerator.forBlock for 'text_print' to use window.alert
-  javascriptGenerator.forBlock['text_print'] = function(block: Blockly.Block) {
-    const msg = javascriptGenerator.valueToCode(block, 'TEXT', javascriptGenerator.ORDER_ATOMIC) || "''";
-    return `window.alert(${'\'\'\''}${msg.slice(1, -1)}${'\'\'\''});\n`;
-  };
 
   const handleSave = async () => {
     if (!user) {
@@ -262,11 +246,17 @@ export function BlocklyEditor() {
   const runCode = () => {
     if (!workspace) return;
     try {
-      const code = javascriptGenerator.workspaceToCode(workspace);
-      // Using a safer execution context
-      (function() {
-        eval(code);
-      })();
+        const code = javascriptGenerator.workspaceToCode(workspace);
+        // This forces 'alert()' blocks to log to console instead of popping up
+        const safeCode = `
+            var window = {}; 
+            window.alert = function(msg) { console.log("PROGRAM OUTPUT:", msg); };
+            var alert = window.alert;
+            ${code}
+        `;
+        const runUserCode = new Function(safeCode);
+        runUserCode();
+        toast({ title: "Code Executed", description: "Check the browser console for output." });
     } catch (e) {
       console.error(e);
       if (e instanceof Error) {
