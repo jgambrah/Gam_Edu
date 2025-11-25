@@ -199,7 +199,7 @@ export function AiQuizGenerator() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={onAssign} disabled={isAssigning || !selectedClassId}>
+                        <Button onClick={() => onAssign()} disabled={isAssigning || !selectedClassId}>
                             {isAssigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             Save and Assign
                         </Button>
