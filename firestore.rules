@@ -94,7 +94,7 @@ service cloud.firestore {
     
     match /quizzes/{quizId} {
       allow read: if isSignedIn();
-      allow create: if isTeacher();
+      allow create: if isStaff() && request.resource.data.teacherId == request.auth.uid;
       allow update, delete: if isTeacher() && get(/databases/$(database)/documents/quizzes/$(quizId)).data.teacherId == request.auth.uid;
     }
     
