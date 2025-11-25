@@ -58,7 +58,7 @@ export default function CodingClubPage() {
                 </Button>
               </Link>
               <Link
-                href="https://www.youtube.com/watch?v=Th4if_4Kq_s"
+                href="https://www.youtube.com/watch?v=sb-wF35TuvQ&list=PLlryJer4FuggBT5-4ZDTcYivs7kJHowXb"
                 target="_blank"
                 rel="noopener noreferrer"
               >
