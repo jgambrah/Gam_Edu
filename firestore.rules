@@ -219,7 +219,12 @@ service cloud.firestore {
     
     match /announcements/{announcementId} {
       allow create, update, delete: if isAdmin();
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() && (
+        'Everybody' in resource.data.audience ||
+        getUserRole() in resource.data.audience ||
+        (isStudent() && 'Student' in resource.data.audience) ||
+        (isParent() && 'Parent' in resource.data.audience)
+      );
     }
 
     match /auditLogs/{logId} {
