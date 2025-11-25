@@ -214,13 +214,8 @@ service cloud.firestore {
     }
     
     match /announcements/{announcementId} {
+      allow read: if isSignedIn();
       allow create, update, delete: if isAdmin();
-      allow read: if isSignedIn() && (
-        'Everybody' in resource.data.audience ||
-        (isStudent() && 'Student' in resource.data.audience) ||
-        (isParent() && 'Parent' in resource.data.audience) ||
-        (isStaff() && getUserRole() in resource.data.audience)
-      );
     }
 
     match /auditLogs/{logId} {
