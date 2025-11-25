@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // --- Custom Block Definition & Generator ---
 
@@ -162,6 +163,7 @@ export function BlocklyEditor() {
   const [xml, setXml] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [programOutput, setProgramOutput] = useState<string[]>([]);
   const { toast } = useToast();
   const { user } = useAuth();
   const firestore = useFirestore();
@@ -245,42 +247,62 @@ export function BlocklyEditor() {
 
   const runCode = () => {
     if (!workspace) return;
+    setProgramOutput([]);
+    const code = javascriptGenerator.workspaceToCode(workspace);
+    
     try {
-        const code = javascriptGenerator.workspaceToCode(workspace);
-        // This forces 'alert()' blocks to log to console instead of popping up
-        const safeCode = `
-            var window = {}; 
-            window.alert = function(msg) { console.log("PROGRAM OUTPUT:", msg); };
-            var alert = window.alert;
-            ${code}
-        `;
-        const runUserCode = new Function(safeCode);
-        runUserCode();
-        toast({ title: "Code Executed", description: "Check the browser console for output." });
+        const outputs: any[] = [];
+        const safeAlert = (msg: any) => {
+            outputs.push(String(msg));
+        };
+        const runUserCode = new Function('alert', code);
+        runUserCode(safeAlert);
+        setProgramOutput(outputs);
+        toast({ title: "Code Executed", description: "See the output below." });
     } catch (e) {
-      console.error(e);
-      if (e instanceof Error) {
-        alert('Error running code: ' + e.message);
-      } else {
-        alert('An unknown error occurred while running the code.');
-      }
+        console.error(e);
+        if (e instanceof Error) {
+            setProgramOutput([`Error: ${e.message}`]);
+            toast({ variant: 'destructive', title: "Execution Error", description: e.message });
+        } else {
+            setProgramOutput([`An unknown error occurred.`]);
+            toast({ variant: 'destructive', title: "Execution Error", description: 'An unknown error occurred.' });
+        }
     }
   };
 
   return (
-    <div className="relative">
-      <div className="absolute top-2 right-2 z-10 flex gap-2">
-        <Button onClick={runCode}>Run Code</Button>
-        <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Project
-        </Button>
-        <Button variant="outline" onClick={handleLoad} disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Load Project
-        </Button>
-      </div>
-      <div ref={blocklyDivRef} style={{ height: '600px', width: '100%', border: '1px solid #ddd', borderRadius: '0.5rem' }} />
+    <div className="space-y-4">
+        <div className="relative">
+        <div className="absolute top-2 right-2 z-10 flex gap-2">
+            <Button onClick={runCode}>Run Code</Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Project
+            </Button>
+            <Button variant="outline" onClick={handleLoad} disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Load Project
+            </Button>
+        </div>
+        <div ref={blocklyDivRef} style={{ height: '600px', width: '100%', border: '1px solid #ddd', borderRadius: '0.5rem' }} />
+        </div>
+        {programOutput.length > 0 && (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Program Output</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <pre className="bg-muted p-4 rounded-md text-sm whitespace-pre-wrap">
+                        <code>
+                            {programOutput.map((line, index) => (
+                                <div key={index}>{line}</div>
+                            ))}
+                        </code>
+                    </pre>
+                </CardContent>
+            </Card>
+        )}
     </div>
   );
 }
