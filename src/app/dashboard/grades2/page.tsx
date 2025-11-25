@@ -17,8 +17,16 @@ function Gradebook2PageContent() {
     );
   }
 
+  // For this new gradebook, let's keep it to staff for now.
   if (role === 'Student' || role === 'Parent') {
-    return <StudentParentGradebook2View />;
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Coming Soon</CardTitle>
+                <CardDescription>The student and parent view for this gradebook is under construction.</CardDescription>
+            </CardHeader>
+        </Card>
+    );
   }
 
   return <Gradebook2Manager />;

@@ -35,6 +35,7 @@ import {
   Activity,
   FolderKanban,
   PenSquare,
+  TrendingUp,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -131,16 +132,16 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher', 'Student'],
         },
         {
-            path: '/dashboard/grades',
-            title: 'Gradebook',
+            path: '/dashboard/assessments',
+            title: 'Assessments',
             icon: ClipboardCheck,
-            roles: ['Teacher', 'Administrator', 'Director'],
+            roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
             path: '/dashboard/grades2',
             title: 'Gradebook 2',
-            icon: ClipboardCheck,
-            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
+            icon: TrendingUp,
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
             path: '/dashboard/report-cards',
