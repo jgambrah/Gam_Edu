@@ -261,12 +261,10 @@ export function BlocklyEditor() {
 
     const code = javascriptGenerator.workspaceToCode(workspaceRef.current);
     
-    console.log("--- GENERATED JAVASCRIPT ---");
-    console.log(code);
-    console.log("----------------------------");
+    console.log("Generated JS:", code);
 
     if (!code || code.trim() === "") {
-        setLogs(["⚠️ No code generated. Did you connect your blocks?"]);
+        setLogs(["⚠️ No code to run. Drag some blocks into the workspace!"]);
         return;
     }
 
@@ -282,8 +280,8 @@ export function BlocklyEditor() {
 
       const wrappedCode = `
         const alert = customLogger;
-        var window = { alert: customLogger };
-        var console = { log: customLogger };
+        const window = { alert: customLogger };
+        const console = { log: customLogger };
         
         ${code}
       `;
