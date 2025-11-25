@@ -21,16 +21,18 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { behavioralRecordSchema, Student } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+
 
 export function BehavioralRecordForm() {
   const { user } = useAuth();
@@ -39,7 +41,7 @@ export function BehavioralRecordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const studentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
-  const { data: students } = useCollection<Student>(studentsQuery);
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
   const form = useForm<z.infer<typeof behavioralRecordSchema>>({
     resolver: zodResolver(behavioralRecordSchema),
@@ -80,16 +82,60 @@ export function BehavioralRecordForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField control={form.control} name="studentId" render={({ field }) => (
-                    <FormItem>
+                <FormField
+                    control={form.control}
+                    name="studentId"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
                         <FormLabel>Student</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue placeholder="Select a student" /></SelectTrigger></FormControl>
-                            <SelectContent>{students?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
-                        </Select>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                            <FormControl>
+                                <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                    "justify-between",
+                                    !field.value && "text-muted-foreground"
+                                )}
+                                >
+                                {field.value
+                                    ? students?.find(
+                                        (student) => student.uid === field.value
+                                    )?.firstName + ' ' + students?.find(
+                                        (student) => student.uid === field.value
+                                    )?.lastName
+                                    : "Select student"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                                <CommandInput placeholder="Search student..." />
+                                <CommandList>
+                                <CommandEmpty>No student found.</CommandEmpty>
+                                <CommandGroup>
+                                    {students?.map((student) => (
+                                    <CommandItem
+                                        value={`${student.firstName} ${student.lastName}`}
+                                        key={student.uid}
+                                        onSelect={() => {
+                                        form.setValue("studentId", student.uid)
+                                        }}
+                                    >
+                                        {student.firstName} {student.lastName}
+                                    </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                                </CommandList>
+                            </Command>
+                            </PopoverContent>
+                        </Popover>
                         <FormMessage />
-                    </FormItem>
-                )}/>
+                        </FormItem>
+                    )}
+                />
                  <FormField control={form.control} name="incidentType" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Incident Type</FormLabel>
