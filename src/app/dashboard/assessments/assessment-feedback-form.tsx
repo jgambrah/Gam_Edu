@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc, onSnapshot } from 'firebase/firestore';
 import { assessmentFeedbackSchema } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,7 +38,7 @@ import { useRole } from '@/context/role-context';
 import type { Class, Student } from '@/lib/types';
 
 
-export function AssessmentFeedbackForm() {
+export function AssessmentFeedbackForm({ classId }: { classId?: string }) {
     const { user } = useAuth();
     const { role } = useRole();
     const firestore = useFirestore();
@@ -55,13 +55,22 @@ export function AssessmentFeedbackForm() {
         term: MOCK_TERMS[0],
         assessmentType: 'Quiz',
         teacherId: user?.uid,
+        classId: classId || '',
       },
     });
 
     const selectedClassId = form.watch('classId');
 
+    // Effect to set the classId from props
+    useEffect(() => {
+        if (classId) {
+            form.setValue('classId', classId);
+        }
+    }, [classId, form]);
+
     useEffect(() => {
         if (!user || !firestore) return;
+        
         let classesQuery;
         if (role === 'Administrator' || role === 'Director') {
             classesQuery = collection(firestore, 'classes');
@@ -162,7 +171,7 @@ export function AssessmentFeedbackForm() {
                 <FormField control={form.control} name="classId" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Class</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={!!classId}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
                             <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>

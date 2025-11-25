@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense, useState, useMemo } from 'react';
@@ -113,7 +114,7 @@ export default function Gradebook2Manager() {
                     <CardTitle className="flex items-center gap-2"><TrendingUp /> Gradebook</CardTitle>
                     <CardDescription>Select a class to view student grades and performance.</CardDescription>
                 </div>
-                <Button variant={activeForm === 'grade' ? 'default' : 'outline'} onClick={() => toggleForm('grade')}>
+                <Button variant={activeForm === 'grade' ? 'default' : 'outline'} onClick={() => toggleForm('grade')} disabled={!selectedClassId}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Grade Entry
                 </Button>
@@ -127,7 +128,7 @@ export default function Gradebook2Manager() {
         </CardContent>
       </Card>
 
-      {activeForm === 'grade' && <AssessmentFeedbackForm />}
+      {activeForm === 'grade' && selectedClassId && <AssessmentFeedbackForm classId={selectedClassId} />}
       
       {selectedClassId && (
         <Card>
