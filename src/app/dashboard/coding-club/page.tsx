@@ -58,7 +58,7 @@ export default function CodingClubPage() {
                 </Button>
               </Link>
               <Link
-                href="https://www.youtube.com/watch?v=lPVJjQbEeN0"
+                href="https://www.youtube.com/watch?v=Th4if_4Kq_s"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -80,7 +80,7 @@ export default function CodingClubPage() {
             <CardContent>
                 <div className="mb-4">
                      <Link
-                        href="https://www.youtube.com/watch?v=S2_v371hrpY"
+                        href="https://www.youtube.com/watch?v=lPVJjQbEeN0"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
