@@ -30,28 +30,36 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
 
-  const isRoleLoading = isAuthLoading;
+  const [isRoleLoading, setIsRoleLoading] = useState(true);
 
   useEffect(() => {
-    if (isAuthLoading || !firestore) {
-      return;
-    }
-
-    if (!user) {
-      setRole('Parent'); // Default for non-logged-in users.
-      return;
-    }
-
     const determineRole = async () => {
-      // 1. Check for custom claims first (most reliable)
-      const idTokenResult = await user.getIdTokenResult();
-      const claimsRole = idTokenResult.claims.role;
-      if (claimsRole && typeof claimsRole === 'string') {
-        setRole(claimsRole as UserRole);
+      if (isAuthLoading || !firestore) {
         return;
       }
+
+      if (!user) {
+        setRole('Parent');
+        setIsRoleLoading(false);
+        return;
+      }
+
+      setIsRoleLoading(true);
+
+      // 1. Check for custom claims first
+      try {
+        const idTokenResult = await user.getIdTokenResult();
+        const claimsRole = idTokenResult.claims.role;
+        if (claimsRole && typeof claimsRole === 'string') {
+          setRole(claimsRole as UserRole);
+          setIsRoleLoading(false);
+          return;
+        }
+      } catch (e) {
+        console.warn("Could not get custom claims:", e);
+      }
       
-      // 2. Check if user is in the 'staff' collection
+      // 2. Check staff collection
       try {
         const staffDocRef = doc(firestore, 'staff', user.uid);
         const staffDocSnap = await getDoc(staffDocRef);
@@ -59,6 +67,7 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
           const staffData = staffDocSnap.data();
           if (staffData.role) {
             setRole(staffData.role as UserRole);
+            setIsRoleLoading(false);
             return;
           }
         }
@@ -66,31 +75,22 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
         console.warn("Could not check staff collection:", e);
       }
 
-      // 3. Check if user is in the 'students' collection
+      // 3. Check students collection
       try {
         const studentDocRef = doc(firestore, 'students', user.uid);
         const studentDocSnap = await getDoc(studentDocRef);
         if (studentDocSnap.exists()) {
           setRole('Student');
+          setIsRoleLoading(false);
           return;
         }
       } catch (e) {
           console.warn("Could not check students collection:", e);
       }
       
-      // 4. Fallback to email domain
-      if (user.email?.endsWith('@sunnyside-student.com')) {
-          setRole('Student');
-          return;
-      }
-
-      if (user.email?.endsWith('@sunnyside.com')) {
-          setRole('Director'); // Or a more appropriate default for staff domain
-          return;
-      }
-      
-      // 5. Default to Parent if no other role is found
+      // 4. Default to Parent if no other role is found
       setRole('Parent');
+      setIsRoleLoading(false);
     };
 
     determineRole();
@@ -117,12 +117,12 @@ export function useRole() {
 }
 
 export function RoleGuard({ children }: { children: ReactNode }) {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const { isRoleLoading } = useRole();
   const router = useRouter();
   const pathname = usePathname();
 
-  const isLoading = isUserLoading || isRoleLoading;
+  const isLoading = isAuthLoading || isRoleLoading;
 
   useEffect(() => {
       if (!isLoading && !user && pathname.startsWith('/dashboard')) {
