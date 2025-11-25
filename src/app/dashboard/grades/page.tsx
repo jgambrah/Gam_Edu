@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -29,7 +28,7 @@ import { Assessment, Class, Student } from '@/lib/types';
 
 // This function would ideally live in a separate utility/service file
 function calculateStudentGradeForClass(studentId: string, assessments: Assessment[]) {
-  const studentAssessments = assessments.filter(a => a.studentId === studentId && a.score !== undefined && a.maxScore !== undefined);
+  const studentAssessments = assessments.filter(a => a.studentId === studentId && a.score !== undefined && a.maxScore !== undefined && a.maxScore > 0);
   if (studentAssessments.length === 0) {
     return { finalGrade: 'N/A', percentage: 0, remarks: 'No graded work' };
   }
@@ -43,7 +42,7 @@ function calculateStudentGradeForClass(studentId: string, assessments: Assessmen
   else if (percentage >= 80) finalGrade = 'B';
   else if (percentage >= 70) finalGrade = 'C';
   else if (percentage >= 60) finalGrade = 'D';
-  else if (percentage > 0) finalGrade = 'F';
+  else if (percentage >= 0) finalGrade = 'F';
   
   return { finalGrade, percentage: parseFloat(percentage.toFixed(1)), remarks: '' };
 }
@@ -107,7 +106,7 @@ function GradebookContent() {
     });
   }, [students, assessments, uniqueAssessmentNames]);
   
-  const isLoading = isLoadingClasses || isLoadingStudents || isLoadingAssessments;
+  const isLoading = isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments));
 
   return (
     <div className="space-y-6">
@@ -142,43 +141,38 @@ function GradebookContent() {
           </div>
         </CardHeader>
         <CardContent>
-          {isLoading && selectedClassId && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>}
-
-          {!isLoading && selectedClassId && gradebookData && gradebookData.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student Name</TableHead>
-                  {uniqueAssessmentNames.map(name => (
-                    <TableHead key={name} className="text-center">{name}</TableHead>
-                  ))}
-                  <TableHead className="text-right">Final Grade</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {gradebookData.map(row => (
-                  <TableRow key={row.studentId}>
-                    <TableCell className="font-medium">{row.studentName}</TableCell>
+          {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
+            selectedClassId && gradebookData.length > 0 ? (
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead>Student Name</TableHead>
                     {uniqueAssessmentNames.map(name => (
-                      <TableCell key={name} className="text-center">{row.grades[name]}</TableCell>
+                        <TableHead key={name} className="text-center">{name}</TableHead>
                     ))}
-                    <TableCell className="text-right font-medium">{row.finalGrade}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            !isLoading && selectedClassId && (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">No student or assessment data found for this class.</p>
-              </div>
+                    <TableHead className="text-right">Overall Grade</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {gradebookData.map(row => (
+                    <TableRow key={row.studentId}>
+                        <TableCell className="font-medium">{row.studentName}</TableCell>
+                        {uniqueAssessmentNames.map(name => (
+                        <TableCell key={name} className="text-center">{row.grades[name]}</TableCell>
+                        ))}
+                        <TableCell className="text-right font-medium">{row.finalGrade}</TableCell>
+                    </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+            ) : (
+                <div className="text-center py-10">
+                    <p className="text-muted-foreground">
+                    {selectedClassId ? "No student or assessment data found for this class." : "Please select a class to view the gradebook."}
+                    </p>
+                </div>
             )
           )}
-           {!selectedClassId && (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">Please select a class to view the gradebook.</p>
-              </div>
-            )}
         </CardContent>
       </Card>
     </div>
