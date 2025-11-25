@@ -215,16 +215,12 @@ service cloud.firestore {
     
     match /announcements/{announcementId} {
       allow create, update, delete: if isAdmin();
-      allow list: if isSignedIn() && (
-        request.query.where.audience.size() == 2 &&
-        'Everybody' in request.query.where.audience &&
-        (
-          (isStudent() && 'Student' in request.query.where.audience) ||
-          (isParent() && 'Parent' in request.query.where.audience) ||
-          (isStaff() && getUserRole() in request.query.where.audience)
-        )
+      allow read: if isSignedIn() && (
+        'Everybody' in resource.data.audience ||
+        (isStudent() && 'Student' in resource.data.audience) ||
+        (isParent() && 'Parent' in resource.data.audience) ||
+        (isStaff() && getUserRole() in resource.data.audience)
       );
-      allow get: if isSignedIn();
     }
 
     match /auditLogs/{logId} {
