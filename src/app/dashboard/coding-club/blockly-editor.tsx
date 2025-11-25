@@ -34,6 +34,17 @@ const toolboxCategories = {
     contents: [
       {
         kind: 'category',
+        name: 'Output',
+        colour: '#5ba55b',
+        contents: [
+            { kind: 'block', type: 'text_print' },
+        ],
+      },
+      {
+        kind: 'sep',
+      },
+      {
+        kind: 'category',
         name: 'Logic',
         colour: '%{BKY_LOGIC_HUE}',
         contents: [
@@ -101,7 +112,6 @@ const toolboxCategories = {
           { kind: 'block', type: 'text_getSubstring' },
           { kind: 'block', type: 'text_changeCase' },
           { kind: 'block', type: 'text_trim' },
-          { kind: 'block', type: 'text_print' },
           { kind: 'block', type: 'text_prompt_ext' },
         ],
       },
@@ -243,7 +253,7 @@ export function BlocklyEditor() {
     }
   }, [user, workspace, handleLoad]);
 
-  const runCode = () => {
+ const runCode = () => {
     if (!workspaceRef.current) {
         setLogs(["❌ Error: Workspace not found."]);
         return;
@@ -280,7 +290,7 @@ export function BlocklyEditor() {
 
       const executionFunction = new Function('customLogger', wrappedCode);
       executionFunction(customLogger);
-
+      
       if (outputCount === 0) {
         setLogs((prev) => [
             ...prev, 
