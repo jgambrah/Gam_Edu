@@ -184,6 +184,24 @@ export function BlocklyEditor() {
     onXmlChange: setXml
   });
 
+  // Override the default browser dialogs which are blocked in sandboxed environments
+  useEffect(() => {
+    if (workspace) {
+      // The name of the callback key for the create variable button.
+      const CREATE_VARIABLE_CALLBACK_KEY = 'CREATE_VARIABLE';
+
+      const createVariableButtonHandler = () => {
+        Blockly.Variables.createVariable(workspace);
+      };
+
+      workspace.registerButtonCallback(
+        CREATE_VARIABLE_CALLBACK_KEY,
+        createVariableButtonHandler,
+      );
+    }
+  }, [workspace]);
+
+
   // Redefine javascriptGenerator.forBlock for 'text_print' to use window.alert
   javascriptGenerator.forBlock['text_print'] = function(block: Blockly.Block) {
     const msg = javascriptGenerator.valueToCode(block, 'TEXT', javascriptGenerator.ORDER_ATOMIC) || "''";
