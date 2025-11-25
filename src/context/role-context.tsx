@@ -29,66 +29,93 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<UserRole>('Parent');
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
-
   const [isRoleLoading, setIsRoleLoading] = useState(true);
 
   useEffect(() => {
     const determineRole = async () => {
+      console.log("%c[DIAGNOSTIC] Starting Role Check...", "color: blue; font-weight: bold;");
+
       if (isAuthLoading || !firestore) {
+        console.log("[DIAGNOSTIC] Waiting for Auth/Firestore...");
         return;
       }
 
       setIsRoleLoading(true);
 
       if (!user) {
+        console.log("[DIAGNOSTIC] No user found. Defaulting to Parent.");
         setRole('Parent');
         setIsRoleLoading(false);
         return;
       }
 
-      // 1. Check for custom claims first, forcing a refresh.
+      console.log(`[DIAGNOSTIC] User Found: ${user.uid} (${user.email})`);
+
+      // 1. Check Custom Claims
       try {
+        console.log("[DIAGNOSTIC] Step 1: Checking ID Token Claims...");
+        // Force refresh to ensure we get the latest claims
         const idTokenResult = await user.getIdTokenResult(true);
+        
+        console.log("[DIAGNOSTIC] Raw Claims:", idTokenResult.claims);
+
         const claimsRole = idTokenResult.claims.role;
+        console.log(`[DIAGNOSTIC] Found claim 'role': ${claimsRole}`);
+
         if (claimsRole && typeof claimsRole === 'string') {
+          console.log(`%c[DIAGNOSTIC] SUCCESS! Setting Role via Claims to: ${claimsRole}`, "color: green; font-weight: bold;");
           setRole(claimsRole as UserRole);
           setIsRoleLoading(false);
           return;
         }
       } catch (e) {
-        console.warn("Could not get custom claims:", e);
+        console.error("[DIAGNOSTIC] Error fetching claims:", e);
       }
       
-      // 2. Check staff collection
+      // 2. Check Staff Collection
       try {
+        console.log("[DIAGNOSTIC] Step 2: Checking 'staff' collection in Firestore...");
         const staffDocRef = doc(firestore, 'staff', user.uid);
         const staffDocSnap = await getDoc(staffDocRef);
+        
         if (staffDocSnap.exists()) {
           const staffData = staffDocSnap.data();
+          console.log("[DIAGNOSTIC] Staff Document Data:", staffData);
           if (staffData.role) {
+            console.log(`%c[DIAGNOSTIC] SUCCESS! Setting Role via Firestore (Staff) to: ${staffData.role}`, "color: green; font-weight: bold;");
             setRole(staffData.role as UserRole);
             setIsRoleLoading(false);
             return;
+          } else {
+             console.log("[DIAGNOSTIC] Staff doc exists, but has no 'role' field.");
           }
+        } else {
+          console.log("[DIAGNOSTIC] No document found in 'staff' collection for this UID.");
         }
       } catch (e) {
-        console.warn("Could not check staff collection:", e);
+        // THIS IS COMMON: Permission Denied errors appear here
+        console.error("[DIAGNOSTIC] Error checking staff collection:", e);
       }
 
-      // 3. Check students collection
+      // 3. Check Students Collection
       try {
+        console.log("[DIAGNOSTIC] Step 3: Checking 'students' collection...");
         const studentDocRef = doc(firestore, 'students', user.uid);
         const studentDocSnap = await getDoc(studentDocRef);
         if (studentDocSnap.exists()) {
+           console.log("%c[DIAGNOSTIC] SUCCESS! Found in students. Setting to Student.", "color: green; font-weight: bold;");
           setRole('Student');
           setIsRoleLoading(false);
           return;
+        } else {
+           console.log("[DIAGNOSTIC] No document found in 'students' collection.");
         }
       } catch (e) {
-          console.warn("Could not check students collection:", e);
+          console.error("[DIAGNOSTIC] Error checking students collection:", e);
       }
       
-      // 4. Default to Parent if no other role is found
+      // 4. Fallback
+      console.log("%c[DIAGNOSTIC] FAILED all checks. Defaulting to Parent.", "color: red; font-weight: bold;");
       setRole('Parent');
       setIsRoleLoading(false);
     };
