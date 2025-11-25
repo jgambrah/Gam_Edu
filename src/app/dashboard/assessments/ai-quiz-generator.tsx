@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,7 +45,7 @@ const generateQuizSchema = z.object({
 type GenerateQuizFormData = z.infer<typeof generateQuizSchema>;
 
 export function AiQuizGenerator() {
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -54,40 +54,23 @@ export function AiQuizGenerator() {
   const [generatedQuiz, setGeneratedQuiz] = useState<GenerateQuizOutput | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
-  // Fixed: More robust query logic
   const classesQuery = useMemoFirebase(() => {
     if (!user) {
-      console.log('❌ No user available for classes query');
       return null;
     }
     
     if (role === 'Administrator' || role === 'Director') {
-      console.log('✅ Fetching all classes (Admin/Director)');
       return collection(firestore, 'classes');
     }
     
     if (role === 'Teacher') {
-      console.log('✅ Fetching classes for teacher:', user.uid);
       return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
     }
     
-    console.log('❌ No valid role for classes query');
     return null;
   }, [firestore, user, role]);
   
   const { data: classes, isLoading: classesLoading, error: classesError } = useCollection<Class>(classesQuery);
-
-  // Debug logging
-  useEffect(() => {
-    console.log('=== AI QUIZ GENERATOR DEBUG ===');
-    console.log('User:', user?.uid);
-    console.log('Role:', role);
-    console.log('Classes Loading:', classesLoading);
-    console.log('Classes Error:', classesError);
-    console.log('Classes:', classes);
-    console.log('Selected Class ID:', selectedClassId);
-    console.log('Generated Quiz:', generatedQuiz);
-  }, [user, role, classesLoading, classesError, classes, selectedClassId, generatedQuiz]);
 
   const form = useForm<GenerateQuizFormData>({
     resolver: zodResolver(generateQuizSchema),
@@ -181,8 +164,16 @@ export function AiQuizGenerator() {
       setIsAssigning(false);
     }
   }
+  
+  if (isUserLoading) {
+    return (
+        <Card>
+            <CardHeader><CardTitle>AI-Powered Quiz Generator</CardTitle></CardHeader>
+            <CardContent><Loader2 className="mx-auto h-8 w-8 animate-spin" /></CardContent>
+        </Card>
+    );
+  }
 
-  // Check if user is authenticated
   if (!user) {
     return (
       <Card>
@@ -278,7 +269,6 @@ export function AiQuizGenerator() {
               </Accordion>
               
               <div className="border-t pt-4 space-y-4">
-                {/* Debug info */}
                 {classesLoading && (
                   <Alert>
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -324,7 +314,7 @@ export function AiQuizGenerator() {
                     )}
                   </div>
                   <Button 
-                    onClick={onAssign} 
+                    onClick={() => onAssign()} 
                     disabled={isAssigning || !selectedClassId || classesLoading}
                   >
                     {isAssigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
