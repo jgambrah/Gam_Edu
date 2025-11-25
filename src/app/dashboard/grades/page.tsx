@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -21,16 +22,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Loader2, ChevronRight, TrendingUp } from 'lucide-react';
 import { Assessment, Class, Student } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-
-// This function would ideally live in a separate utility/service file
-function calculateStudentGradeForClass(studentId: string, assessments: Assessment[]) {
-  const studentAssessments = assessments.filter(a => a.studentId === studentId && a.score !== undefined && a.maxScore !== undefined && a.maxScore > 0);
+// --- Utility function to calculate grades ---
+function calculateStudentGrade(studentId: string, assessments: Assessment[]) {
+  const studentAssessments = assessments.filter(a => a.studentId === studentId && a.score != null && a.maxScore != null && a.maxScore > 0);
   if (studentAssessments.length === 0) {
-    return { finalGrade: 'N/A', percentage: 0, remarks: 'No graded work' };
+    return { finalGrade: 'N/A', percentage: 0 };
   }
 
   const totalScore = studentAssessments.reduce((acc, a) => acc + a.score!, 0);
@@ -44,9 +45,46 @@ function calculateStudentGradeForClass(studentId: string, assessments: Assessmen
   else if (percentage >= 60) finalGrade = 'D';
   else if (percentage >= 0) finalGrade = 'F';
   
-  return { finalGrade, percentage: parseFloat(percentage.toFixed(1)), remarks: '' };
+  return { finalGrade, percentage: parseFloat(percentage.toFixed(1)) };
 }
 
+// --- Dialog to show individual student's scores ---
+function StudentGradesDetailDialog({ student, assessments }: { student: Student; assessments: Assessment[] }) {
+    const studentAssessments = assessments.filter(a => a.studentId === student.uid && a.score != null && a.maxScore != null);
+
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Grades for {student.firstName} {student.lastName}</DialogTitle>
+                <DialogDescription>A detailed breakdown of all recorded assessments.</DialogDescription>
+            </DialogHeader>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Assessment Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-right">Score</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {studentAssessments.length > 0 ? studentAssessments.map(a => (
+                        <TableRow key={a.id}>
+                            <TableCell>{a.assessmentName}</TableCell>
+                            <TableCell>{a.assessmentType}</TableCell>
+                            <TableCell className="text-right">{a.score}/{a.maxScore}</TableCell>
+                        </TableRow>
+                    )) : (
+                        <TableRow>
+                            <TableCell colSpan={3} className="text-center">No assessments recorded for this student.</TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </DialogContent>
+    );
+}
+
+// --- Main Page Component ---
 function GradebookContent() {
   const { user } = useAuth();
   const { role } = useRole();
@@ -80,109 +118,83 @@ function GradebookContent() {
   );
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-  // 4. Process data for the table
-  const uniqueAssessmentNames = useMemo(() => {
-    if (!assessments) return [];
-    return [...new Set(assessments.map(a => a.assessmentName))];
-  }, [assessments]);
-
-  const gradebookData = useMemo(() => {
+  // 4. Memoize the calculated data for display
+  const studentPerformanceData = useMemo(() => {
     if (!students || !assessments) return [];
     return students.map(student => {
-      const grades = uniqueAssessmentNames.reduce((acc, name) => {
-        const assessment = assessments.find(a => a.studentId === student.uid && a.assessmentName === name);
-        acc[name] = assessment && assessment.score !== undefined && assessment.maxScore !== undefined ? `${assessment.score}/${assessment.maxScore}` : 'N/A';
-        return acc;
-      }, {} as Record<string, string>);
-      
-      const { finalGrade, percentage } = calculateStudentGradeForClass(student.uid, assessments);
-
+      const { finalGrade, percentage } = calculateStudentGrade(student.uid, assessments);
       return {
-        studentId: student.uid,
-        studentName: `${student.firstName} ${student.lastName}`,
-        grades,
-        finalGrade: `${finalGrade} (${percentage}%)`,
+        ...student,
+        overallGrade: finalGrade,
+        overallPercentage: percentage,
       };
     });
-  }, [students, assessments, uniqueAssessmentNames]);
+  }, [students, assessments]);
   
   const isLoading = isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments));
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Gradebook</h1>
-          <p className="text-muted-foreground">View student performance for a selected class.</p>
-        </div>
-        <div className="flex gap-2">
-            <Button asChild variant="outline">
-                <Link href="/dashboard/assessments">Enter Grades</Link>
-            </Button>
-            <Button asChild disabled>
-                <Link href="#">Manage Report Cards</Link>
-            </Button>
-        </div>
-      </div>
-      
       <Card>
         <CardHeader>
-          <div className="w-full md:w-1/3">
-            <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a class to view gradebook" />
-              </SelectTrigger>
-              <SelectContent>
-                {classes?.map(c => (
-                  <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <CardTitle className="flex items-center gap-2"><TrendingUp /> Student Performance Summary</CardTitle>
+            <CardDescription>Select a class to view the overall academic performance of its students.</CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
-            selectedClassId && gradebookData.length > 0 ? (
-                <Table>
-                <TableHeader>
-                    <TableRow>
-                    <TableHead>Student Name</TableHead>
-                    {uniqueAssessmentNames.map(name => (
-                        <TableHead key={name} className="text-center">{name}</TableHead>
+             <div className="w-full md:w-1/3">
+                <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select a class to view performance" />
+                </SelectTrigger>
+                <SelectContent>
+                    {classes?.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
                     ))}
-                    <TableHead className="text-right">Overall Grade</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {gradebookData.map(row => (
-                    <TableRow key={row.studentId}>
-                        <TableCell className="font-medium">{row.studentName}</TableCell>
-                        {uniqueAssessmentNames.map(name => (
-                        <TableCell key={name} className="text-center">{row.grades[name]}</TableCell>
-                        ))}
-                        <TableCell className="text-right font-medium">{row.finalGrade}</TableCell>
-                    </TableRow>
+                </SelectContent>
+                </Select>
+            </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader><CardTitle>Class Roster</CardTitle></CardHeader>
+        <CardContent>
+            {isLoading ? (
+                <div className="space-y-2">
+                    {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+                </div>
+            ) : selectedClassId && studentPerformanceData.length > 0 ? (
+                <div className="border rounded-md">
+                    {studentPerformanceData.map(student => (
+                        <Dialog key={student.id}>
+                            <DialogTrigger asChild>
+                                <div className="flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-muted/50 cursor-pointer">
+                                    <span className="font-medium">{student.firstName} {student.lastName}</span>
+                                    <div className="flex items-center gap-4">
+                                        <span className="font-semibold text-lg">{student.overallGrade} ({student.overallPercentage}%)</span>
+                                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                                    </div>
+                                </div>
+                            </DialogTrigger>
+                            {assessments && <StudentGradesDetailDialog student={student} assessments={assessments} />}
+                        </Dialog>
                     ))}
-                </TableBody>
-                </Table>
+                </div>
             ) : (
                 <div className="text-center py-10">
                     <p className="text-muted-foreground">
-                    {selectedClassId ? "No student or assessment data found for this class." : "Please select a class to view the gradebook."}
+                    {selectedClassId ? "No student data found for this class." : "Please select a class to view student performance."}
                     </p>
                 </div>
-            )
-          )}
+            )}
         </CardContent>
       </Card>
     </div>
   );
 }
 
-
 export default function GradesPage() {
   const { role } = useRole();
-
   const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
   if (!canAccess) {
