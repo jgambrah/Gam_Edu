@@ -51,29 +51,36 @@ service cloud.firestore {
     }
 
     // --- Collection Rules ---
+    
+    match /announcements/{announcementId} {
+      // Allow any logged-in user to read/list announcements
+      allow read: if request.auth != null;
+      
+      allow write: if isAdmin();
+    }
 
     match /roles/{roleId} {
       allow read, write: if isAdmin();
     }
 
     match /staff/{staffId} {
-        allow read: if isSignedIn() || isOwner(staffId);
-        allow create, update, delete: if isAdmin();
+        allow read: if isSignedIn();
+        allow write: if isAdmin() || isOwner(staffId);
     }
 
     match /students/{studentId} {
-      allow read: if isSignedIn() || isOwner(studentId); 
-      allow create, update, delete: if isAdmin();
+      allow read: if isSignedIn(); 
+      allow write: if isAdmin() || isOwner(studentId);
     }
     
     match /parents/{parentId} {
-      allow create, update, delete: if isAdmin();
       allow read: if isSignedIn();
+      allow write: if isAdmin() || isOwner(parentId);
     }
 
     match /classes/{classId} {
-      allow create, update, delete: if isAdmin();
       allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
     
     match /assignments/{assignmentId} {
@@ -212,11 +219,6 @@ service cloud.firestore {
         allow read: if isAdmin();
         allow create: if isAdmin();
     }
-    
-    match /announcements/{announcementId} {
-      allow read: if isSignedIn();
-      allow create, update, delete: if isAdmin();
-    }
 
     match /auditLogs/{logId} {
       allow read, list: if isAdmin();
@@ -284,12 +286,5 @@ service cloud.firestore {
         allow update: if (isTeacher() || isAdmin()) && request.resource.data.keys().hasOnly(['teacher_score', 'teacher_feedback']);
         allow delete: if false;
     }
-
-    // Default deny all access to other collections
-    match /{document=**} {
-      allow read, write: if false;
-    }
   }
 }
-
-    
