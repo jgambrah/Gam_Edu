@@ -16,8 +16,7 @@ import { Loader2 } from 'lucide-react';
 // 1. Define the block's appearance (the JSON part)
 Blockly.Blocks['get_science_fact'] = {
   init: function(this: Blockly.Block) {
-    this.appendValueInput("FACT")
-        .setCheck(null)
+    this.appendDummyInput()
         .appendField("get latest science fact");
     this.setOutput(true, 'String');
     this.setColour(160);
@@ -28,34 +27,10 @@ Blockly.Blocks['get_science_fact'] = {
 
 // 2. Define the block's code generation logic
 javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block) {
-  // This is an asynchronous operation, so we need to handle it specially.
-  // We define an async helper function and call it.
-  const functionName = javascriptGenerator.provideFunction_(
-    'getLatestScienceFact',
-    `
-async function ${javascriptGenerator.FUNCTION_NAME_PLACEHOLDER_}() {
-  try {
-    // This code will run in the browser's JS environment, not in Node.js.
-    // It needs a way to access firestore. We'll pass it in.
-    // NOTE: For a real app, you'd pass your initialized firestore instance.
-    // Since we can't do that directly here, this is a simplified example.
-    // In a full implementation, you would inject the firestore instance
-    // into the execution context of the generated code.
-    
-    // The following is a placeholder for where you would query Firestore.
-    // For this demo, we'll return a static string.
-    return "The mitochondria is the powerhouse of the cell.";
-
-  } catch (e) {
-    console.error("Error fetching science fact:", e);
-    return "Could not fetch fact.";
-  }
-}
-`
-  );
-  // Generate code for an async call
-  const code = `(await ${functionName}())`;
-  return [code, javascriptGenerator.ORDER_ATOMIC];
+  // This is a simplified generator that returns a static string.
+  // The async nature was causing issues with the simple eval() runner.
+  const staticFact = "'The mitochondria is the powerhouse of the cell.'";
+  return [staticFact, javascriptGenerator.ORDER_ATOMIC];
 };
 
 
@@ -210,9 +185,7 @@ export function BlocklyEditor() {
     if (!workspace) return;
     const code = javascriptGenerator.workspaceToCode(workspace);
     try {
-      // The generated code is async, so we wrap it in an async IIFE
-      const asyncCode = `(async () => {${code}})();`;
-      eval(asyncCode);
+      eval(code);
     } catch (e) {
       console.error(e);
       alert('Error running code: ' + e);
