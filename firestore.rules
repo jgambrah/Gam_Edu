@@ -57,12 +57,12 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-        allow read: if isSignedIn();
+        allow read: if isSignedIn() || isOwner(staffId);
         allow create, update, delete: if isAdmin();
     }
 
     match /students/{studentId} {
-      allow read: if isSignedIn(); 
+      allow read: if isSignedIn() || isOwner(studentId); 
       allow create, update, delete: if isAdmin();
     }
     
@@ -291,3 +291,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
