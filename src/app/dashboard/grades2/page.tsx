@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense } from 'react';
@@ -5,6 +6,7 @@ import { useRole } from '@/context/role-context';
 import Gradebook2Manager from './gradebook2-manager';
 import StudentParentGradebook2View from './student-parent-view';
 import { Loader2 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 function Gradebook2PageContent() {
   const { role, isRoleLoading } = useRole();
