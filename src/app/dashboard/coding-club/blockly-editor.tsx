@@ -4,8 +4,18 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useBlocklyWorkspace } from 'react-blockly';
 import * as Blockly from 'blockly';
-import 'blockly/blocks'; // Import all standard blocks
-import 'blockly/javascript'; // Import JS generator
+// Import block definitions
+import 'blockly/blocks';
+import 'blockly/javascript';
+import 'blockly/blocks/logic';
+import 'blockly/blocks/loops';
+import 'blockly/blocks/math';
+import 'blockly/blocks/text';
+import 'blockly/blocks/lists';
+import 'blockly/blocks/colour';
+import 'blockly/blocks/variables';
+import 'blockly/blocks/procedures';
+
 import { javascriptGenerator } from 'blockly/javascript';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
