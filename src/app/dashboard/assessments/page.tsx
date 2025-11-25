@@ -20,6 +20,7 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { Assessment, BehavioralRecord } from '@/lib/types';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
   
 function AssessmentsLog() {
     const firestore = useFirestore();
@@ -175,8 +176,8 @@ export default function AssessmentsPage() {
             </div>
         </div>
 
-        {activeForm === 'behavior' && <BehavioralRecordForm />}
-        {activeForm === 'ai' && <AiQuizGenerator />}
+        <div className={cn(activeForm === 'behavior' ? 'block' : 'hidden')}><BehavioralRecordForm /></div>
+        <div className={cn(activeForm === 'ai' ? 'block' : 'hidden')}><AiQuizGenerator /></div>
 
         <div className="grid grid-cols-1 gap-6">
             <AssessmentsLog />
