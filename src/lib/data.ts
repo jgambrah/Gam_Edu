@@ -137,6 +137,12 @@ export const navItems: NavItem[] = [
             roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
+            path: '/dashboard/grades2',
+            title: 'Gradebook 2',
+            icon: ClipboardCheck,
+            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
+        },
+        {
             path: '/dashboard/report-cards',
             title: 'Report Cards',
             icon: FileText,
@@ -431,7 +437,7 @@ export const mockAttendanceRecords = [
   { id: '1', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Present', notes: '' },
   { id: '2', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Absent', notes: 'Feeling unwell' },
   { id: '3', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-20'), status: 'Late', notes: 'Traffic' },
-  { id: '4', studentId: 'student-04', studentName: 'Diana Prince', classId: 'grade-10-b', date: new Date('2024-05-20'), status: 'Present', notes: '' },
+  { id: '4', studentId: 'student-04', studentName: 'grade-10-b', date: new Date('2024-05-20'), status: 'Present', notes: '' },
   { id: '5', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
   { id: '6', studentId: 'student-02', studentName: 'Bob Johnson', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Present', notes: '' },
   { id: '7', studentId: 'student-03', studentName: 'Charlie Brown', classId: 'grade-10-a', date: new Date('2024-05-21'), status: 'Excused', notes: "Doctor's appointment" },
