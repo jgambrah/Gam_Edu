@@ -53,17 +53,12 @@ export function AiQuizGenerator() {
   const [generatedQuiz, setGeneratedQuiz] = useState<GenerateQuizOutput | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
-  const classesQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
-    if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
-    }
-    if (role === 'Teacher') {
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    return null;
-  }, [firestore, user, role]);
-
+  const classesQuery = useMemoFirebase(
+    () => user && (role === 'Administrator' || role === 'Director') 
+      ? collection(firestore, 'classes') 
+      : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')),
+    [firestore, user, role]
+  );
   const { data: classes } = useCollection<Class>(classesQuery);
 
 
