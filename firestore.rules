@@ -57,17 +57,16 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-        // This rule is critical. It allows any signed-in user to read any staff
-        // profile. This is necessary for the `getUserRole()` helper function to work
-        // correctly for all other security rules that depend on it.
+        // Allow admins to manage, and users to read their own staff profile.
+        // Allowing broader read access for isSignedIn() is needed for getUserRole() to work.
         allow read: if isSignedIn();
-        // Write permissions remain restricted to admins.
         allow create, update, delete: if isAdmin();
     }
 
     match /students/{studentId} {
+      // Allow admins to manage, and users (student themselves, or linked parents) to read.
+      allow read: if isSignedIn(); // Broad read for simplicity, can be tightened later if needed.
       allow create, update, delete: if isAdmin();
-      allow read: if isSignedIn();
     }
     
     match /parents/{parentId} {
