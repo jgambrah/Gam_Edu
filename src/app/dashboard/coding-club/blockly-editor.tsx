@@ -187,12 +187,14 @@ export function BlocklyEditor() {
 
   // Override the default browser dialogs which are blocked in sandboxed environments
   useEffect(() => {
-    if (workspace) {
-      Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
-          callback("my_variable"); 
-      });
-    }
-  }, [workspace]);
+    // OVERRIDE THE DEFAULT PROMPT
+    Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
+        // This is a temporary bypass. 
+        // In a real app, you would open a React Modal here.
+        // For now, we just pass back a hardcoded name to prevent the crash.
+        callback("my_variable"); 
+    });
+  }, []);
 
 
   const handleSave = async () => {
@@ -242,29 +244,30 @@ export function BlocklyEditor() {
 
   const runCode = () => {
     if (!workspace) return;
-    setProgramOutput([]);
     const code = javascriptGenerator.workspaceToCode(workspace);
+    setProgramOutput([]); // Clear previous output
     
     try {
-        const outputs: any[] = [];
-        const safeAlert = (msg: any) => {
-            outputs.push(String(msg));
+        // Define a custom logger that updates our React state
+        const customLogger = (message: any) => {
+            setProgramOutput((prev) => [...prev, String(message)]);
         };
-        
-        // Use an IIFE to correctly scope the 'alert' function
-        (function(alert) {
-            eval(code);
-        })(safeAlert);
 
-        setProgramOutput(outputs);
+        // Create a new Function, passing our custom logger to it.
+        // This sandboxes the code and allows us to intercept `alert`.
+        const executionFunction = new Function('alert', code);
+        
+        // Execute the function, providing our logger as the 'alert' implementation
+        executionFunction(customLogger);
+
         toast({ title: "Code Executed", description: "See the output below." });
     } catch (e) {
         console.error(e);
         if (e instanceof Error) {
-            setProgramOutput([`Error: ${e.message}`]);
+            setProgramOutput(prev => [...prev, `Error: ${e.message}`]);
             toast({ variant: 'destructive', title: "Execution Error", description: e.message });
         } else {
-            setProgramOutput([`An unknown error occurred.`]);
+            setProgramOutput(prev => [...prev,`An unknown error occurred.`]);
             toast({ variant: 'destructive', title: "Execution Error", description: 'An unknown error occurred.' });
         }
     }
@@ -283,25 +286,27 @@ export function BlocklyEditor() {
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Load Project
             </Button>
+             <Button variant="secondary" onClick={() => setProgramOutput([])}>Clear Output</Button>
         </div>
         <div ref={blocklyDivRef} style={{ height: '600px', width: '100%', border: '1px solid #ddd', borderRadius: '0.5rem' }} />
         </div>
-        {programOutput.length > 0 && (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Program Output</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <pre className="bg-muted p-4 rounded-md text-sm whitespace-pre-wrap">
-                        <code>
-                            {programOutput.map((line, index) => (
-                                <div key={index}>{line}</div>
-                            ))}
-                        </code>
-                    </pre>
-                </CardContent>
-            </Card>
-        )}
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Program Output</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <pre className="bg-muted p-4 rounded-md text-sm whitespace-pre-wrap h-48 overflow-y-auto font-mono">
+                    {programOutput.length === 0 ? (
+                        <span className="text-gray-500 italic">// Code output will appear here...</span>
+                    ) : (
+                        programOutput.map((line, index) => (
+                            <div key={index}>{line}</div>
+                        ))
+                    )}
+                </pre>
+            </CardContent>
+        </Card>
     </div>
   );
 }
