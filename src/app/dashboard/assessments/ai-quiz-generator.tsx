@@ -34,6 +34,7 @@ import { Label } from '@/components/ui/label';
 import { useRole } from '@/context/role-context';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { Class } from '@/lib/types';
+import { errorEmitter, FirestorePermissionError } from '@/firebase';
 
 const generateQuizSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
@@ -83,88 +84,76 @@ export function AiQuizGenerator() {
   });
 
   async function onGenerate(values: GenerateQuizFormData) {
-    console.log('🎯 Generating quiz with values:', values);
     setIsGenerating(true);
     setGeneratedQuiz(null);
     toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
 
     try {
       const result = await generateQuiz(values);
-      console.log('✅ Quiz generated successfully:', result);
       setGeneratedQuiz(result);
       toast({ title: 'Quiz Generated!', description: 'Review the questions below before assigning.' });
     } catch (error) {
-      console.error('❌ Error generating quiz:', error);
+      console.error('Error generating quiz:', error);
       toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the quiz.' });
     } finally {
       setIsGenerating(false);
     }
   }
 
-  async function onAssign() {
-    console.log('=== ASSIGN QUIZ DEBUG ===');
-    console.log('Generated Quiz:', generatedQuiz);
-    console.log('Selected Class ID:', selectedClassId);
-    console.log('User:', user?.uid);
-    
+  function onAssign() {
     if (!generatedQuiz) {
-      console.error('❌ No generated quiz');
       toast({ variant: 'destructive', title: 'Error', description: 'No quiz to assign. Please generate a quiz first.' });
       return;
     }
     
     if (!selectedClassId) {
-      console.error('❌ No class selected');
       toast({ variant: 'destructive', title: 'Error', description: 'Please select a class to assign the quiz to.' });
       return;
     }
     
     if (!user) {
-      console.error('❌ No user logged in');
       toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to assign a quiz.' });
       return;
     }
     
     setIsAssigning(true);
 
-    try {
-      const quizData = {
-        ...generatedQuiz,
-        classId: selectedClassId,
-        teacherId: user.uid,
-        topic: form.getValues('topic'),
-        forGradeLevel: form.getValues('forGradeLevel'),
-        createdAt: serverTimestamp(),
-      };
-      
-      console.log('📝 Saving quiz with data:', quizData);
-      
-      const docRef = await addDoc(collection(firestore, 'quizzes'), quizData);
-      
-      console.log('✅ Quiz saved successfully with ID:', docRef.id);
-      
-      toast({ 
-        title: 'Success!', 
-        description: `Quiz "${generatedQuiz.title}" has been assigned to the class.` 
+    const quizData = {
+      ...generatedQuiz,
+      classId: selectedClassId,
+      teacherId: user.uid,
+      topic: form.getValues('topic'),
+      forGradeLevel: form.getValues('forGradeLevel'),
+      createdAt: serverTimestamp(),
+    };
+    
+    const quizzesCollection = collection(firestore, 'quizzes');
+
+    addDoc(quizzesCollection, quizData)
+      .then((docRef) => {
+        toast({ 
+          title: 'Success!', 
+          description: `Quiz "${generatedQuiz.title}" has been assigned to the class.` 
+        });
+        
+        // Reset state
+        setGeneratedQuiz(null);
+        setSelectedClassId('');
+        form.reset();
+      })
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: quizzesCollection.path,
+            operation: 'create',
+            requestResourceData: quizData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
+        setIsAssigning(false);
       });
-      
-      // Reset state
-      setGeneratedQuiz(null);
-      setSelectedClassId('');
-      form.reset();
-      
-    } catch(error: any) {
-      console.error('❌ Error assigning quiz:', error);
-      toast({ 
-        variant: 'destructive', 
-        title: 'Error', 
-        description: error.message || 'Could not assign quiz. Check console for details.' 
-      });
-    } finally {
-      setIsAssigning(false);
-    }
   }
-  
+
   if (isUserLoading) {
     return (
         <Card>
@@ -290,7 +279,6 @@ export function AiQuizGenerator() {
                     <Label htmlFor="class-select">Assign to Class</Label>
                     <Select 
                       onValueChange={(value) => {
-                        console.log('Class selected:', value);
                         setSelectedClassId(value);
                       }} 
                       value={selectedClassId}
