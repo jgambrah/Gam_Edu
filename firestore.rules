@@ -53,10 +53,7 @@ service cloud.firestore {
     // --- Collection Rules ---
     
     match /announcements/{announcementId} {
-      // Allow any logged-in user to read/list announcements
       allow read: if request.auth != null;
-      
-      // Correctly restrict write access to administrators
       allow write: if isAdmin();
     }
 
