@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,17 +21,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2, AlertCircle } from 'lucide-react';
+import { Loader2, Wand2 } from 'lucide-react';
 import { generateQuiz, GenerateQuizOutput } from '@/ai/flows/generate-quiz-flow';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { useRole } from '@/context/role-context';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { Class } from '@/lib/types';
 
 const generateQuizSchema = z.object({
@@ -54,40 +52,14 @@ export function AiQuizGenerator() {
   const [generatedQuiz, setGeneratedQuiz] = useState<GenerateQuizOutput | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   
-  // Fixed: More robust query logic
-  const classesQuery = useMemoFirebase(() => {
-    if (!user) {
-      console.log('❌ No user available for classes query');
-      return null;
-    }
-    
-    if (role === 'Administrator' || role === 'Director') {
-      console.log('✅ Fetching all classes (Admin/Director)');
-      return collection(firestore, 'classes');
-    }
-    
-    if (role === 'Teacher') {
-      console.log('✅ Fetching classes for teacher:', user.uid);
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-    }
-    
-    console.log('❌ No valid role for classes query');
-    return null;
-  }, [firestore, user, role]);
-  
-  const { data: classes, isLoading: classesLoading, error: classesError } = useCollection<Class>(classesQuery);
+  const classesQuery = useMemoFirebase(
+    () => user && (role === 'Administrator' || role === 'Director') 
+      ? collection(firestore, 'classes') 
+      : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')),
+    [firestore, user, role]
+  );
+  const { data: classes } = useCollection<Class>(classesQuery);
 
-  // Debug logging
-  useEffect(() => {
-    console.log('=== AI QUIZ GENERATOR DEBUG ===');
-    console.log('User:', user?.uid);
-    console.log('Role:', role);
-    console.log('Classes Loading:', classesLoading);
-    console.log('Classes Error:', classesError);
-    console.log('Classes:', classes);
-    console.log('Selected Class ID:', selectedClassId);
-    console.log('Generated Quiz:', generatedQuiz);
-  }, [user, role, classesLoading, classesError, classes, selectedClassId, generatedQuiz]);
 
   const form = useForm<GenerateQuizFormData>({
     resolver: zodResolver(generateQuizSchema),
@@ -100,18 +72,16 @@ export function AiQuizGenerator() {
   });
 
   async function onGenerate(values: GenerateQuizFormData) {
-    console.log('🎯 Generating quiz with values:', values);
     setIsGenerating(true);
     setGeneratedQuiz(null);
     toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
 
     try {
       const result = await generateQuiz(values);
-      console.log('✅ Quiz generated successfully:', result);
       setGeneratedQuiz(result);
       toast({ title: 'Quiz Generated!', description: 'Review the questions below before assigning.' });
     } catch (error) {
-      console.error('❌ Error generating quiz:', error);
+      console.error('Error generating quiz:', error);
       toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the quiz.' });
     } finally {
       setIsGenerating(false);
@@ -119,94 +89,37 @@ export function AiQuizGenerator() {
   }
 
   async function onAssign() {
-    console.log('=== ASSIGN QUIZ DEBUG ===');
-    console.log('Generated Quiz:', generatedQuiz);
-    console.log('Selected Class ID:', selectedClassId);
-    console.log('User:', user?.uid);
-    
-    if (!generatedQuiz) {
-      console.error('❌ No generated quiz');
-      toast({ variant: 'destructive', title: 'Error', description: 'No quiz to assign. Please generate a quiz first.' });
-      return;
-    }
-    
-    if (!selectedClassId) {
-      console.error('❌ No class selected');
-      toast({ variant: 'destructive', title: 'Error', description: 'Please select a class to assign the quiz to.' });
-      return;
-    }
-    
-    if (!user) {
-      console.error('❌ No user logged in');
-      toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to assign a quiz.' });
-      return;
-    }
-    
+    if (!generatedQuiz || !selectedClassId || !user) return;
     setIsAssigning(true);
 
     try {
-      const quizData = {
-        ...generatedQuiz,
-        classId: selectedClassId,
-        teacherId: user.uid,
-        topic: form.getValues('topic'),
-        forGradeLevel: form.getValues('forGradeLevel'),
-        createdAt: serverTimestamp(),
-      };
-      
-      console.log('📝 Saving quiz with data:', quizData);
-      
-      const docRef = await addDoc(collection(firestore, 'quizzes'), quizData);
-      
-      console.log('✅ Quiz saved successfully with ID:', docRef.id);
-      
-      toast({ 
-        title: 'Success!', 
-        description: `Quiz "${generatedQuiz.title}" has been assigned to the class.` 
-      });
-      
-      // Reset state
-      setGeneratedQuiz(null);
-      setSelectedClassId('');
-      form.reset();
-      
-    } catch(error: any) {
-      console.error('❌ Error assigning quiz:', error);
-      toast({ 
-        variant: 'destructive', 
-        title: 'Error', 
-        description: error.message || 'Could not assign quiz. Check console for details.' 
-      });
+        await addDoc(collection(firestore, 'quizzes'), {
+            ...generatedQuiz,
+            classId: selectedClassId,
+            teacherId: user.uid,
+            topic: form.getValues('topic'),
+            forGradeLevel: form.getValues('forGradeLevel'),
+            createdAt: serverTimestamp(),
+        });
+        toast({ title: 'Success!', description: `Quiz "${generatedQuiz.title}" has been assigned.` });
+        setGeneratedQuiz(null);
+        setSelectedClassId('');
+        form.reset();
+    } catch(error) {
+        console.error("Error assigning quiz:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not assign quiz.' });
     } finally {
-      setIsAssigning(false);
+        setIsAssigning(false);
     }
-  }
 
-  // Check if user is authenticated
-  if (!user) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Authentication Required</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              You must be logged in to use the AI Quiz Generator. Please log in and try again.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-    );
   }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Wand2 className="h-6 w-6 text-accent-foreground" />
-          AI-Powered Quiz Generator
+            <Wand2 className="h-6 w-6 text-accent-foreground" />
+            AI-Powered Quiz Generator
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -236,12 +149,12 @@ export function AiQuizGenerator() {
               )} />
             </div>
             <FormField control={form.control} name="additionalInstructions" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Additional Instructions (Optional)</FormLabel>
-                <FormControl><Textarea placeholder="e.g., Focus on the inner planets." {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+                <FormItem>
+                  <FormLabel>Additional Instructions (Optional)</FormLabel>
+                  <FormControl><Textarea placeholder="e.g., Focus on the inner planets." {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
 
             <Button type="submit" disabled={isGenerating}>
               {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
@@ -251,89 +164,48 @@ export function AiQuizGenerator() {
         </Form>
 
         {generatedQuiz && (
-          <Card className="bg-muted/50">
-            <CardHeader>
-              <CardTitle>{generatedQuiz.title}</CardTitle>
-              <CardDescription>Review the generated quiz below. Assign it to a class when you are ready.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Accordion type="single" collapsible className="w-full">
-                {generatedQuiz.questions.map((q, index) => (
-                  <AccordionItem value={`item-${index}`} key={index}>
-                    <AccordionTrigger>Question {index + 1}: {q.questionText}</AccordionTrigger>
-                    <AccordionContent>
-                      <ul className="space-y-2 list-disc pl-5">
-                        {q.options.map((opt, i) => (
-                          <li key={i} className={opt === q.correctAnswer ? 'font-semibold text-green-600' : ''}>
-                            {opt}
-                          </li>
+            <Card className="bg-muted/50">
+                <CardHeader>
+                    <CardTitle>{generatedQuiz.title}</CardTitle>
+                    <CardDescription>Review the generated quiz below. Assign it to a class when you are ready.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Accordion type="single" collapsible className="w-full">
+                        {generatedQuiz.questions.map((q, index) => (
+                            <AccordionItem value={`item-${index}`} key={index}>
+                                <AccordionTrigger>Question {index + 1}: {q.questionText}</AccordionTrigger>
+                                <AccordionContent>
+                                    <ul className="space-y-2 list-disc pl-5">
+                                        {q.options.map((opt, i) => (
+                                            <li key={i} className={opt === q.correctAnswer ? 'font-semibold text-green-600' : ''}>
+                                                {opt}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <p className="mt-4 text-sm text-muted-foreground"><span className="font-semibold">Explanation:</span> {q.explanation}</p>
+                                </AccordionContent>
+                            </AccordionItem>
                         ))}
-                      </ul>
-                      <p className="mt-4 text-sm text-muted-foreground">
-                        <span className="font-semibold">Explanation:</span> {q.explanation}
-                      </p>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-              
-              <div className="border-t pt-4 space-y-4">
-                {/* Debug info */}
-                {classesLoading && (
-                  <Alert>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <AlertDescription>Loading classes...</AlertDescription>
-                  </Alert>
-                )}
-                
-                {!classesLoading && (!classes || classes.length === 0) && (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      No classes found. Please create a class first or check if you're assigned to any classes.
-                    </AlertDescription>
-                  </Alert>
-                )}
-                
-                <div className="flex items-end gap-4">
-                  <div className="flex-grow">
-                    <Label htmlFor="class-select">Assign to Class</Label>
-                    <Select 
-                      onValueChange={(value) => {
-                        console.log('Class selected:', value);
-                        setSelectedClassId(value);
-                      }} 
-                      value={selectedClassId}
-                      disabled={classesLoading || !classes || classes.length === 0}
-                    >
-                      <SelectTrigger id="class-select">
-                        <SelectValue placeholder="Select a class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {classes?.map(c => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {c.name || c.id}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {!classesLoading && classes && classes.length > 0 && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {classes.length} class(es) available
-                      </p>
-                    )}
-                  </div>
-                  <Button 
-                    onClick={onAssign} 
-                    disabled={isAssigning || !selectedClassId || classesLoading}
-                  >
-                    {isAssigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Save and Assign
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                    </Accordion>
+                    <div className="flex items-end gap-4 pt-4 border-t">
+                        <div className="flex-grow">
+                            <Label>Assign to Class</Label>
+                            <Select onValueChange={setSelectedClassId} value={selectedClassId}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a class" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Button onClick={onAssign} disabled={isAssigning || !selectedClassId}>
+                            {isAssigning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                            Save and Assign
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
         )}
       </CardContent>
     </Card>

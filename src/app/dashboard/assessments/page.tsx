@@ -176,8 +176,8 @@ export default function AssessmentsPage() {
             </div>
         </div>
 
-        <div className={cn(activeForm === 'behavior' ? 'block' : 'hidden')}><BehavioralRecordForm /></div>
-        <div className={cn(activeForm === 'ai' ? 'block' : 'hidden')}><AiQuizGenerator /></div>
+        {activeForm === 'behavior' && <BehavioralRecordForm />}
+        {activeForm === 'ai' && <AiQuizGenerator />}
 
         <div className="grid grid-cols-1 gap-6">
             <AssessmentsLog />
