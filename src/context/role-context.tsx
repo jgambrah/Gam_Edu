@@ -33,68 +33,49 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const determineRole = async () => {
-      console.log("%c[DIAGNOSTIC] Starting Role Check...", "color: blue; font-weight: bold;");
-
       if (isAuthLoading || !firestore) {
-        console.log("[DIAGNOSTIC] Waiting for Auth/Firestore...");
         return;
       }
 
       setIsRoleLoading(true);
 
       if (!user) {
-        console.log("[DIAGNOSTIC] No user found. Defaulting to Parent.");
         setRole('Parent');
         setIsRoleLoading(false);
         return;
       }
-
-      console.log(`[DIAGNOSTIC] User Found: ${user.uid} (${user.email})`);
       
       // 1. Check Staff Collection
       try {
-        console.log("[DIAGNOSTIC] Step 1: Checking 'staff' collection in Firestore...");
         const staffDocRef = doc(firestore, 'staff', user.uid);
         const staffDocSnap = await getDoc(staffDocRef);
         
         if (staffDocSnap.exists()) {
           const staffData = staffDocSnap.data();
-          console.log("[DIAGNOSTIC] Staff Document Data:", staffData);
           if (staffData.role) {
-            console.log(`%c[DIAGNOSTIC] SUCCESS! Setting Role via Firestore (Staff) to: ${staffData.role}`, "color: green; font-weight: bold;");
             setRole(staffData.role as UserRole);
             setIsRoleLoading(false);
             return;
-          } else {
-             console.log("[DIAGNOSTIC] Staff doc exists, but has no 'role' field.");
           }
-        } else {
-          console.log("[DIAGNOSTIC] No document found in 'staff' collection for this UID.");
         }
       } catch (e) {
-        // THIS IS COMMON: Permission Denied errors appear here
-        console.error("[DIAGNOSTIC] Error checking staff collection:", e);
+        console.error("Error checking staff collection:", e);
       }
 
       // 2. Check Students Collection
       try {
-        console.log("[DIAGNOSTIC] Step 2: Checking 'students' collection...");
         const studentDocRef = doc(firestore, 'students', user.uid);
         const studentDocSnap = await getDoc(studentDocRef);
         if (studentDocSnap.exists()) {
-           console.log("%c[DIAGNOSTIC] SUCCESS! Found in students. Setting to Student.", "color: green; font-weight: bold;");
           setRole('Student');
           setIsRoleLoading(false);
           return;
-        } else {
-           console.log("[DIAGNOSTIC] No document found in 'students' collection.");
         }
       } catch (e) {
-          console.error("[DIAGNOSTIC] Error checking students collection:", e);
+          console.error("Error checking students collection:", e);
       }
       
       // 3. Fallback
-      console.log("%c[DIAGNOSTIC] FAILED all checks. Defaulting to Parent.", "color: red; font-weight: bold;");
       setRole('Parent');
       setIsRoleLoading(false);
     };
