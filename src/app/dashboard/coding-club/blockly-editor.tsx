@@ -164,6 +164,7 @@ export function BlocklyEditor() {
   const [xml, setXml] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [programOutput, setProgramOutput] = useState<string[]>([]);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -219,7 +220,7 @@ export function BlocklyEditor() {
     if (!user || !workspace) {
       return;
     }
-    setIsLoading(true);
+    setIsFetching(true);
     try {
       const projectRef = doc(firestore, 'coding-club-projects', user.uid);
       const docSnap = await getDoc(projectRef);
@@ -238,14 +239,17 @@ export function BlocklyEditor() {
       console.error('Error loading project:', error);
       toast({ variant: 'destructive', title: 'Error', description: 'Could not load your project.' });
     } finally {
-      setIsLoading(false);
+      setIsFetching(false);
     }
   }, [user, firestore, toast, workspace]);
 
   // Load project on initial mount
   useEffect(() => {
     if(user && workspace) {
-        handleLoad();
+        setIsLoading(true);
+        handleLoad().finally(() => setIsLoading(false));
+    } else {
+        setIsLoading(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, workspace]);
@@ -308,8 +312,8 @@ export function BlocklyEditor() {
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Project
             </Button>
-            <Button variant="outline" onClick={handleLoad} disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button variant="outline" onClick={handleLoad} disabled={isFetching}>
+            {isFetching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Load Project
             </Button>
              <Button variant="secondary" onClick={() => setProgramOutput([])}>Clear Output</Button>
