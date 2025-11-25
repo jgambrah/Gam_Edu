@@ -187,16 +187,13 @@ export function BlocklyEditor() {
   // Override the default browser dialogs which are blocked in sandboxed environments
   useEffect(() => {
     if (workspace) {
-      // The name of the callback key for the create variable button.
-      const CREATE_VARIABLE_CALLBACK_KEY = 'CREATE_VARIABLE';
-
       const createVariableButtonHandler = () => {
         Blockly.Variables.createVariable(workspace);
       };
 
       workspace.registerButtonCallback(
-        CREATE_VARIABLE_CALLBACK_KEY,
-        createVariableButtonHandler,
+        'CREATE_VARIABLE',
+        createVariableButtonHandler
       );
     }
   }, [workspace]);
