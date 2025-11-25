@@ -7,14 +7,6 @@ import * as Blockly from 'blockly';
 // Import block definitions
 import 'blockly/blocks';
 import 'blockly/javascript';
-import 'blockly/blocks/logic';
-import 'blockly/blocks/loops';
-import 'blockly/blocks/math';
-import 'blockly/blocks/text';
-import 'blockly/blocks/lists';
-import 'blockly/blocks/colour';
-import 'blockly/blocks/variables';
-import 'blockly/blocks/procedures';
 
 import { javascriptGenerator } from 'blockly/javascript';
 import { Button } from '@/components/ui/button';
@@ -208,7 +200,7 @@ export function BlocklyEditor() {
   // Redefine javascriptGenerator.forBlock for 'text_print' to use window.alert
   javascriptGenerator.forBlock['text_print'] = function(block: Blockly.Block) {
     const msg = javascriptGenerator.valueToCode(block, 'TEXT', javascriptGenerator.ORDER_ATOMIC) || "''";
-    return `window.alert(${msg});\n`;
+    return `window.alert(${'\'\'\''}${msg.slice(1, -1)}${'\'\'\''});\n`;
   };
 
   const handleSave = async () => {
