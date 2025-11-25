@@ -16,7 +16,6 @@ import { Loader2 } from 'lucide-react';
 
 // --- Custom Block Definition & Generator ---
 
-// 1. Define the block's appearance (the JSON part)
 Blockly.Blocks['get_science_fact'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
@@ -28,7 +27,6 @@ Blockly.Blocks['get_science_fact'] = {
   }
 };
 
-// 2. Define the block's code generation logic
 javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block) {
   const staticFact = "'The mitochondria is the powerhouse of the cell.'";
   return [staticFact, javascriptGenerator.ORDER_ATOMIC];
@@ -183,6 +181,29 @@ export function BlocklyEditor() {
     },
     onXmlChange: setXml
   });
+
+  useEffect(() => {
+    if (workspace) {
+        // --- PROMPT OVERRIDE FOR VARIABLES ---
+        // This is the definitive fix for the "Create variable" button.
+        Blockly.dialog.setPrompt((message, defaultValue, callback) => {
+            const result = window.prompt(message, defaultValue);
+            callback(result);
+        });
+
+        // Optional: Override alert and confirm for a more consistent UI in the future.
+        Blockly.dialog.setAlert((message, callback) => {
+            window.alert(message);
+            if (callback) callback();
+        });
+
+        Blockly.dialog.setConfirm((message, callback) => {
+            const result = window.confirm(message);
+            callback(result);
+        });
+    }
+  }, [workspace]);
+
 
   // Redefine javascriptGenerator.forBlock for 'text_print' to use window.alert
   javascriptGenerator.forBlock['text_print'] = function(block: Blockly.Block) {
