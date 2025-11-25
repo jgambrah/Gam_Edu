@@ -54,7 +54,8 @@ service cloud.firestore {
     // --- Collection Rules ---
     
     match /announcements/{announcementId} {
-      allow read: if isSignedIn() && ('Everybody' in resource.data.audience || (isStudent() && 'Student' in resource.data.audience) || (isParent() && 'Parent' in resource.data.audience) || (isStaff() && getUserRole() in resource.data.audience));
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && request.query.where.field == 'audience' && request.query.where.op == 'array-contains-any' && 'Everybody' in request.query.where.value;
       allow write: if isAdmin();
     }
 
