@@ -187,6 +187,15 @@ export function BlocklyEditor() {
   // Override the default browser dialogs which are blocked in sandboxed environments
   useEffect(() => {
     if (workspace) {
+      // OVERRIDE THE DEFAULT PROMPT
+      Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
+          console.log("Prompt requested: " + message);
+          // This is a temporary bypass. 
+          // In a real app, you would open a React Modal here.
+          // For now, we just pass back a hardcoded name to prevent the crash.
+          callback("my_variable"); 
+      });
+
       const createVariableButtonHandler = () => {
         Blockly.Variables.createVariable(workspace);
       };
