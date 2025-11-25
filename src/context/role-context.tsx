@@ -15,7 +15,7 @@ import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { doc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 type RoleContextType = {
   role: UserRole;
@@ -30,16 +30,10 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
 
-  const staffDocRef = useMemoFirebase(
-    () => (user && firestore ? doc(firestore, 'staff', user.uid) : null),
-    [firestore, user]
-  );
-  const { data: staffData, isLoading: isStaffLoading } = useDoc<{ role: UserRole }>(staffDocRef);
-
-  const isRoleLoading = isAuthLoading || isStaffLoading;
+  const isRoleLoading = isAuthLoading;
 
   useEffect(() => {
-    if (isAuthLoading) {
+    if (isAuthLoading || !firestore) {
       return;
     }
 
@@ -48,23 +42,60 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
       return;
     }
 
-    // The most reliable way to get the role is from the custom claim on the ID token.
-    user.getIdTokenResult().then(idTokenResult => {
-      const claims = idTokenResult.claims;
-      if (claims.role && typeof claims.role === 'string') {
-        setRole(claims.role as UserRole);
-      } else if (staffData) {
-        setRole(staffData.role);
-      } else if (user.email?.endsWith('@sunnyside-student.com')) {
-        setRole('Student');
-      } else if (user.email?.endsWith('@sunnyside-parent.com')) {
-        setRole('Parent');
-      } else {
-        setRole('Director'); 
+    const determineRole = async () => {
+      // 1. Check for custom claims first (most reliable)
+      const idTokenResult = await user.getIdTokenResult();
+      const claimsRole = idTokenResult.claims.role;
+      if (claimsRole && typeof claimsRole === 'string') {
+        setRole(claimsRole as UserRole);
+        return;
       }
-    });
+      
+      // 2. Check if user is in the 'staff' collection
+      try {
+        const staffDocRef = doc(firestore, 'staff', user.uid);
+        const staffDocSnap = await getDoc(staffDocRef);
+        if (staffDocSnap.exists()) {
+          const staffData = staffDocSnap.data();
+          if (staffData.role) {
+            setRole(staffData.role as UserRole);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not check staff collection:", e);
+      }
+
+      // 3. Check if user is in the 'students' collection
+      try {
+        const studentDocRef = doc(firestore, 'students', user.uid);
+        const studentDocSnap = await getDoc(studentDocRef);
+        if (studentDocSnap.exists()) {
+          setRole('Student');
+          return;
+        }
+      } catch (e) {
+          console.warn("Could not check students collection:", e);
+      }
+      
+      // 4. Fallback to email domain
+      if (user.email?.endsWith('@sunnyside-student.com')) {
+          setRole('Student');
+          return;
+      }
+
+      if (user.email?.endsWith('@sunnyside.com')) {
+          setRole('Director'); // Or a more appropriate default for staff domain
+          return;
+      }
+      
+      // 5. Default to Parent if no other role is found
+      setRole('Parent');
+    };
+
+    determineRole();
     
-  }, [user, staffData, isAuthLoading, isStaffLoading]);
+  }, [user, firestore, isAuthLoading]);
 
   return (
     <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
