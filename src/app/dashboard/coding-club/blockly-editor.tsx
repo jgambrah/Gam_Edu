@@ -139,7 +139,7 @@ const toolboxCategories = {
           kind: 'category',
           name: 'Variables',
           colour: '%{BKY_VARIABLES_HUE}',
-          custom: 'VARIABLE',
+          custom: 'VARIABLE_DYNAMIC',
         },
         {
           kind: 'category',
