@@ -43,12 +43,15 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        await createNewUser(email, password, 'Director');
-        initiateEmailSignUp(auth, email, password);
+        // For simplicity, we'll just create a 'Director' on first sign up
+        // In a real app, you'd have a more secure way to create the first admin
+        await createNewUser(email, password, 'Director', { firstName: 'Admin', lastName: 'User' });
         toast({
           title: 'Account Creation Pending',
           description: "Your account is being created. You'll be redirected shortly.",
         });
+        // Non-blocking sign-in will handle the redirect
+        initiateEmailSignIn(auth, email, password);
       } else {
         initiateEmailSignIn(auth, email, password);
       }
@@ -59,7 +62,7 @@ export default function LoginPage() {
         description: error.message,
       });
     } finally {
-      setIsLoading(false);
+      // Don't set loading to false here; the onAuthStateChanged listener will trigger redirect
     }
   };
 

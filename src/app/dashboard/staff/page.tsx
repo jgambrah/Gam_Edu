@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -329,47 +330,22 @@ function StaffPageContent() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      // Create user in Firebase Auth
-      const result = await createNewUser(values.email, values.password, values.role);
+      const result = await createNewUser(values.email, values.password, values.role, { firstName: values.firstName, lastName: values.lastName });
 
       if ('error' in result) {
-        // Handle specific error cases
-        if (result.error.includes('email-already-in-use')) {
-          throw new Error('This email is already in use. Please use a different name combination.');
-        }
         throw new Error(result.error);
       }
       
-      // Create staff document in Firestore
-      const newStaffDoc = {
-        uid: result.uid,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        role: values.role,
-        phone: values.phone || '',
-        dateOfBirth: values.dateOfBirth || '',
-        gender: values.gender || '',
-        nationality: values.nationality || '',
-        address: values.address || '',
-        createdAt: serverTimestamp(),
-      };
-      
-      await setDoc(doc(firestore, 'staff', result.uid), newStaffDoc);
-      
-      // Show success message with credentials
       toast({
         title: 'Staff Added Successfully',
         description: `${values.firstName} ${values.lastName} has been added. Login: ${values.email} / ${values.password}`,
         duration: 8000,
       });
       
-      // Wait a bit for Firestore to propagate the change
       setTimeout(() => {
         forceRefetch();
       }, 500);
       
-      // Reset form
       form.reset();
       
     } catch (error: any) {

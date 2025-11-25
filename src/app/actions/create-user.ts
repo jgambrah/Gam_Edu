@@ -39,7 +39,8 @@ function getAdminApp(): App {
 export async function createNewUser(
   email: string,
   password: string,
-  role?: UserRole
+  role?: UserRole,
+  details?: { firstName: string, lastName: string }
 ): Promise<{ uid: string } | { error: string }> {
   const adminApp = getAdminApp();
   const auth = getAuth(adminApp);
@@ -65,11 +66,32 @@ export async function createNewUser(
     userRecord = await auth.createUser({
         email: email,
         password: password,
+        displayName: `${details?.firstName} ${details?.lastName}`.trim(),
     });
     
-    // Set custom claims for the user's role
-    const selectedRole = role || 'Parent'; // Default to 'Parent' if no role is provided
-    await auth.setCustomUserClaims(userRecord.uid, { role: selectedRole });
+    // Instead of custom claims, write role to the correct Firestore collection.
+    const selectedRole = role || 'Parent';
+
+    if (selectedRole === 'Parent') {
+        const parentDocRef = firestore.collection('parents').doc(userRecord.uid);
+        await parentDocRef.set({
+            uid: userRecord.uid,
+            email: email,
+            firstName: details?.firstName,
+            lastName: details?.lastName,
+            // ... any other parent-specific fields
+        });
+    } else { // All other roles are considered 'staff'
+        const staffDocRef = firestore.collection('staff').doc(userRecord.uid);
+        await staffDocRef.set({
+            uid: userRecord.uid,
+            email: email,
+            role: selectedRole,
+            firstName: details?.firstName,
+            lastName: details?.lastName,
+             // ... any other staff-specific fields
+        });
+    }
 
     return { uid: userRecord.uid };
 

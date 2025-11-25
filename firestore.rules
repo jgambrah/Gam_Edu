@@ -57,15 +57,11 @@ service cloud.firestore {
     }
 
     match /staff/{staffId} {
-        // Allow admins to manage, and users to read their own staff profile.
-        // Allow any signed-in user to read to allow role lookups.
         allow read: if isSignedIn();
         allow create, update, delete: if isAdmin();
     }
 
     match /students/{studentId} {
-      // Allow admins to manage, and users (student themselves, or linked parents) to read.
-      // Allow broader read for simplicity; can be tightened if needed.
       allow read: if isSignedIn(); 
       allow create, update, delete: if isAdmin();
     }
@@ -219,11 +215,11 @@ service cloud.firestore {
     
     match /announcements/{announcementId} {
       allow create, update, delete: if isAdmin();
-      allow read: if isSignedIn() && (
-        'Everybody' in resource.data.audience ||
-        getUserRole() in resource.data.audience ||
-        (isStudent() && 'Student' in resource.data.audience) ||
-        (isParent() && 'Parent' in resource.data.audience)
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (
+          request.query.where[0][2] in ['Everybody', getUserRole()] || 
+          (isStudent() && request.query.where[0][2] in ['Student']) ||
+          (isParent() && request.query.where[0][2] in ['Parent'])
       );
     }
 
