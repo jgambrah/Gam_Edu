@@ -28,7 +28,6 @@ Blockly.Blocks['get_science_fact'] = {
 // 2. Define the block's code generation logic
 javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block) {
   // This is a simplified generator that returns a static string.
-  // The async nature was causing issues with the simple eval() runner.
   const staticFact = "'The mitochondria is the powerhouse of the cell.'";
   return [staticFact, javascriptGenerator.ORDER_ATOMIC];
 };
