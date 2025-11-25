@@ -4,6 +4,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useBlocklyWorkspace } from 'react-blockly';
 import * as Blockly from 'blockly';
+
 import 'blockly/blocks';
 import 'blockly/javascript';
 
@@ -28,8 +29,9 @@ Blockly.Blocks['get_science_fact'] = {
 };
 
 javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block) {
-  const staticFact = "'The mitochondria is the powerhouse of the cell.'";
-  return [staticFact, javascriptGenerator.ORDER_ATOMIC];
+  // This is a placeholder. In a real app, this would be an async call.
+  // We return a static string to ensure the generated code is synchronous.
+  return ["'The powerhouse of the cell is the mitochondria.'", javascriptGenerator.ORDER_ATOMIC];
 };
 
 
