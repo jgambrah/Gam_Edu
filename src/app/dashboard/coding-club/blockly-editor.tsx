@@ -4,6 +4,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useBlocklyWorkspace } from 'react-blockly';
 import * as Blockly from 'blockly';
+import 'blockly/blocks'; // Import all standard blocks, including color
 import { javascriptGenerator } from 'blockly/javascript';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
