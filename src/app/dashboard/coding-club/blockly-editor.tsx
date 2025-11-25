@@ -188,12 +188,7 @@ export function BlocklyEditor() {
   // Override the default browser dialogs which are blocked in sandboxed environments
   useEffect(() => {
     if (workspace) {
-      // OVERRIDE THE DEFAULT PROMPT
       Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
-          console.log("Prompt requested: " + message);
-          // This is a temporary bypass. 
-          // In a real app, you would open a React Modal here.
-          // For now, we just pass back a hardcoded name to prevent the crash.
           callback("my_variable"); 
       });
     }
@@ -255,8 +250,12 @@ export function BlocklyEditor() {
         const safeAlert = (msg: any) => {
             outputs.push(String(msg));
         };
-        const runUserCode = new Function('alert', code);
-        runUserCode(safeAlert);
+        
+        // Use an IIFE to correctly scope the 'alert' function
+        (function(alert) {
+            eval(code);
+        })(safeAlert);
+
         setProgramOutput(outputs);
         toast({ title: "Code Executed", description: "See the output below." });
     } catch (e) {
