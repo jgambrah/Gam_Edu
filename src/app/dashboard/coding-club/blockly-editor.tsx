@@ -244,11 +244,11 @@ export function BlocklyEditor() {
 
   const runCode = () => {
     if (!workspace) return;
+
     const code = javascriptGenerator.workspaceToCode(workspace);
     setProgramOutput([]); // Clear previous output
-    
+
     try {
-        // Define a custom logger that updates our React state
         const customLogger = (message: any) => {
             setProgramOutput((prev) => [...prev, String(message)]);
         };
