@@ -243,33 +243,50 @@ export function BlocklyEditor() {
   }, [user, firestore, toast, workspace]);
 
   const runCode = () => {
-    if (!workspace) return;
+    if (!workspace) {
+        setProgramOutput(["❌ Error: Workspace not found."]);
+        return;
+    }
 
+    // 1. Generate the code
     const code = javascriptGenerator.workspaceToCode(workspace);
-    setProgramOutput([]); // Clear previous output
+    
+    // DEBUG: Log the generated code to your BROWSER console (F12) so you can see it
+    console.log("--- GENERATED JAVASCRIPT ---");
+    console.log(code);
+    console.log("----------------------------");
+
+    // 2. Check if code is empty
+    if (!code || code.trim() === "") {
+        setProgramOutput(["⚠️ No code generated. Did you connect your blocks?"]);
+        return;
+    }
+
+    // 3. Clear logs and start
+    setProgramOutput(["> Running..."]);
 
     try {
-        const customLogger = (message: any) => {
-            setProgramOutput((prev) => [...prev, String(message)]);
-        };
+      // Define the logger
+      const customLogger = (message: any) => {
+        setProgramOutput((prev) => [...prev, String(message)]);
+      };
 
-        // Create a new Function, passing our custom logger to it.
-        // This sandboxes the code and allows us to intercept `alert`.
-        const executionFunction = new Function('alert', code);
+      // Wrap the code to capture alert/console.log
+      const wrappedCode = `
+        const alert = customLogger;
+        const window = { alert: customLogger };
+        const console = { log: customLogger };
         
-        // Execute the function, providing our logger as the 'alert' implementation
-        executionFunction(customLogger);
+        // Execute the generated code
+        ${code}
+      `;
 
-        toast({ title: "Code Executed", description: "See the output below." });
-    } catch (e) {
-        console.error(e);
-        if (e instanceof Error) {
-            setProgramOutput(prev => [...prev, `Error: ${e.message}`]);
-            toast({ variant: 'destructive', title: "Execution Error", description: e.message });
-        } else {
-            setProgramOutput(prev => [...prev,`An unknown error occurred.`]);
-            toast({ variant: 'destructive', title: "Execution Error", description: 'An unknown error occurred.' });
-        }
+      // Run it
+      const executionFunction = new Function('customLogger', wrappedCode);
+      executionFunction(customLogger);
+
+    } catch (error: any) {
+      setProgramOutput((prev) => [...prev, `❌ Runtime Error: ${error.message}`]);
     }
   };
 
