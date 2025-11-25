@@ -14,7 +14,10 @@ service cloud.firestore {
     }
 
     function getUserRole() {
-      return get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role;
+      // Use `exists` to avoid errors on non-staff users
+      return exists(/databases/$(database)/documents/staff/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
+        : '';
     }
 
     function isAdmin() {
@@ -51,7 +54,7 @@ service cloud.firestore {
     // --- Collection Rules ---
     
     match /announcements/{announcementId} {
-      allow read: if request.auth != null;
+      allow read: if isSignedIn();
       allow write: if isAdmin();
     }
 
