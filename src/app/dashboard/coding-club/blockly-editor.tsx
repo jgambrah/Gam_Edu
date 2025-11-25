@@ -4,7 +4,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useBlocklyWorkspace } from 'react-blockly';
 import * as Blockly from 'blockly';
-// Import block definitions
 import 'blockly/blocks';
 import 'blockly/javascript';
 
@@ -31,7 +30,6 @@ Blockly.Blocks['get_science_fact'] = {
 
 // 2. Define the block's code generation logic
 javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block) {
-  // This is a simplified generator that returns a static string.
   const staticFact = "'The mitochondria is the powerhouse of the cell.'";
   return [staticFact, javascriptGenerator.ORDER_ATOMIC];
 };
@@ -139,7 +137,7 @@ const toolboxCategories = {
           kind: 'category',
           name: 'Variables',
           colour: '%{BKY_VARIABLES_HUE}',
-          custom: 'VARIABLE_DYNAMIC',
+          custom: 'VARIABLE',
         },
         {
           kind: 'category',
