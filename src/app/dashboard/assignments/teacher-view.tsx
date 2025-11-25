@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { Assignment } from '@/lib/types';
+import { Assignment, Quiz } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +12,59 @@ import { AssignmentCreationForm } from './assignment-creation-form';
 import { AssignmentSubmissionsList } from './assignment-submissions-list';
 import { QuizCreationForm } from './quiz-creation-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from 'date-fns';
+
+function QuizList() {
+  const firestore = useFirestore();
+  const { user } = useAuth();
+
+  const quizzesQuery = useMemoFirebase(
+    () => user ? query(collection(firestore, 'quizzes'), where('teacherId', '==', user.uid)) : null,
+    [firestore, user]
+  );
+  const { data: quizzes, isLoading } = useCollection<Quiz>(quizzesQuery);
+  const sortedQuizzes = quizzes?.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+
+  const { data: classes } = useCollection<{id: string, name: string}>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+
+  const getClassName = (classId: string) => {
+    return classes?.find(c => c.id === classId)?.name || classId;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {sortedQuizzes && sortedQuizzes.length > 0 ? (
+        sortedQuizzes.map((quiz) => (
+          <Card key={quiz.id}>
+            <CardHeader>
+              <CardTitle>{quiz.title}</CardTitle>
+              <CardDescription>
+                Topic: {quiz.topic} | Assigned to: {getClassName(quiz.classId)} on {format(quiz.createdAt.toDate(), 'PPP')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">{quiz.questions.length} questions</p>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        <div className="text-center py-10">
+          <p className="text-muted-foreground">You haven't created any quizzes yet.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export default function TeacherAssignmentsView() {
   const firestore = useFirestore();
@@ -83,9 +136,14 @@ export default function TeacherAssignmentsView() {
           </Card>
         </TabsContent>
         <TabsContent value="quizzes">
-            <div className="text-center py-10">
-                <p className="text-muted-foreground">Quiz management coming soon.</p>
-            </div>
+           <Card>
+            <CardHeader>
+              <CardTitle>Your Quizzes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <QuizList />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
