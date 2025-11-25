@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -11,7 +12,7 @@ import { javascriptGenerator } from 'blockly/javascript';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth, useFirestore } from '@/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -161,7 +162,7 @@ const toolboxCategories = {
 
 export function BlocklyEditor() {
   const [xml, setXml] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [programOutput, setProgramOutput] = useState<string[]>([]);
   const { toast } = useToast();
@@ -169,6 +170,7 @@ export function BlocklyEditor() {
   const firestore = useFirestore();
 
   const blocklyDivRef = useRef<HTMLDivElement>(null);
+  const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
   
   const { workspace } = useBlocklyWorkspace({
     ref: blocklyDivRef,
@@ -185,27 +187,25 @@ export function BlocklyEditor() {
     onXmlChange: setXml
   });
 
-  // Override the default browser dialogs which are blocked in sandboxed environments
   useEffect(() => {
-    // OVERRIDE THE DEFAULT PROMPT
+    workspaceRef.current = workspace;
     Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
-        // This is a temporary bypass. 
-        // In a real app, you would open a React Modal here.
-        // For now, we just pass back a hardcoded name to prevent the crash.
         callback("my_variable"); 
     });
-  }, []);
-
+  }, [workspace]);
 
   const handleSave = async () => {
-    if (!user) {
+    if (!user || !workspace) {
       toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to save a project.' });
       return;
     }
+    const currentXml = Blockly.Xml.workspaceToDom(workspace);
+    const xmlText = Blockly.Xml.domToText(currentXml);
+
     setIsSaving(true);
     try {
       const projectRef = doc(firestore, 'coding-club-projects', user.uid);
-      await setDoc(projectRef, { xml: xml, updatedAt: new Date() });
+      await setDoc(projectRef, { xml: xmlText, updatedAt: serverTimestamp() });
       toast({ title: 'Project Saved!', description: 'Your progress has been saved to your account.' });
     } catch (error) {
       console.error('Error saving project:', error);
@@ -217,7 +217,6 @@ export function BlocklyEditor() {
 
   const handleLoad = useCallback(async () => {
     if (!user || !workspace) {
-      toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to load a project.' });
       return;
     }
     setIsLoading(true);
@@ -226,8 +225,9 @@ export function BlocklyEditor() {
       const docSnap = await getDoc(projectRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        Blockly.Xml.clearWorkspaceAndLoadFromXml(Blockly.Xml.textToDom(data.xml), workspace);
-        setXml(data.xml);
+        const dom = Blockly.Xml.textToDom(data.xml);
+        Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, workspace);
+        setXml(data.xml); // Update React state to match
         toast({ title: 'Project Loaded', description: 'Your saved project has been loaded.' });
       } else {
         toast({ title: 'No Saved Project', description: 'We could not find a saved project for your account.' });
@@ -242,14 +242,23 @@ export function BlocklyEditor() {
     }
   }, [user, firestore, toast, workspace]);
 
+  // Load project on initial mount
+  useEffect(() => {
+    if(user && workspace) {
+        handleLoad();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, workspace]);
+
+
   const runCode = () => {
-    if (!workspace) {
+    if (!workspaceRef.current) {
         setProgramOutput(["❌ Error: Workspace not found."]);
         return;
     }
-
+    
     // 1. Generate the code
-    const code = javascriptGenerator.workspaceToCode(workspace);
+    const code = javascriptGenerator.workspaceToCode(workspaceRef.current);
     
     // DEBUG: Log the generated code to your BROWSER console (F12) so you can see it
     console.log("--- GENERATED JAVASCRIPT ---");
@@ -274,8 +283,8 @@ export function BlocklyEditor() {
       // Wrap the code to capture alert/console.log
       const wrappedCode = `
         const alert = customLogger;
-        const window = { alert: customLogger };
-        const console = { log: customLogger };
+        var window = { alert: customLogger };
+        var console = { log: customLogger };
         
         // Execute the generated code
         ${code}
