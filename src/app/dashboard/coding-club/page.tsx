@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -57,7 +58,7 @@ export default function CodingClubPage() {
                 </Button>
               </Link>
               <Link
-                href="https://www.youtube.com/watch?v=y2y5A5n5h9o"
+                href="https://www.youtube.com/watch?v=lPVJjQbEeN0"
                 target="_blank"
                 rel="noopener noreferrer"
               >
