@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLogo } from '@/components/icons/app-logo';
@@ -132,7 +133,9 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
                         <p className="text-sm text-muted-foreground">No general comments for this term.</p>
                     </CardContent>
                 </Card>
-            </CardFooter>
+            </div>
+        </CardContent>
+        <CardFooter className="flex-col items-stretch gap-8 pt-8 print:block">
             <div className="flex justify-around pt-16">
                 <div className="text-center">
                     <Separator className="mb-2" />
