@@ -58,14 +58,15 @@ service cloud.firestore {
 
     match /staff/{staffId} {
         // Allow admins to manage, and users to read their own staff profile.
-        // Allowing broader read access for isSignedIn() is needed for getUserRole() to work.
+        // Allow any signed-in user to read to allow role lookups.
         allow read: if isSignedIn();
         allow create, update, delete: if isAdmin();
     }
 
     match /students/{studentId} {
       // Allow admins to manage, and users (student themselves, or linked parents) to read.
-      allow read: if isSignedIn(); // Broad read for simplicity, can be tightened later if needed.
+      // Allow broader read for simplicity; can be tightened if needed.
+      allow read: if isSignedIn(); 
       allow create, update, delete: if isAdmin();
     }
     

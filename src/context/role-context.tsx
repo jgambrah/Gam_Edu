@@ -118,17 +118,29 @@ export function useRole() {
 
 export function RoleGuard({ children }: { children: ReactNode }) {
   const { user, isUserLoading: isAuthLoading } = useUser();
-  const { isRoleLoading } = useRole();
+  const { role, isRoleLoading } = useRole();
   const router = useRouter();
   const pathname = usePathname();
 
   const isLoading = isAuthLoading || isRoleLoading;
 
   useEffect(() => {
+      // 1. Redirect if not logged in
       if (!isLoading && !user && pathname.startsWith('/dashboard')) {
         router.push('/');
+        return;
       }
-  }, [isLoading, user, pathname, router]);
+
+      // 2. Redirect based on Role (The logic you were missing)
+      if (!isLoading && user && role) {
+        if (role === 'Teacher' && pathname === '/dashboard/parent') {
+           router.push('/dashboard/staff'); // Send teacher away from parent portal
+        }
+        else if (role === 'Student' && pathname === '/dashboard/parent') {
+           router.push('/dashboard'); // Send student to their main dashboard
+        }
+      }
+  }, [isLoading, user, role, pathname, router]);
 
   if (isLoading && pathname.startsWith('/dashboard')) {
     return (
