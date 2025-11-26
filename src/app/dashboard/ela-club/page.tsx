@@ -53,6 +53,7 @@ function ReadingPracticeTab() {
   );
   const studentClassId = studentData?.[0]?.classId;
 
+  // Corrected Query: Filter passages by `classId`.
   const passagesQuery = useMemoFirebase(() => 
     studentClassId ? query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId)) : null, 
     [firestore, studentClassId]
@@ -152,6 +153,7 @@ function WritingSubmissionTab() {
     );
     const studentClassId = studentData?.[0]?.classId;
 
+    // Corrected Query: Filter challenges by `classId`.
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
         useMemoFirebase(() => studentClassId ? query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId)) : null, [firestore, studentClassId])
     );
@@ -213,12 +215,14 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
   
+  // Use simple state for all inputs to avoid form state issues
   const [topic, setTopic] = useState('');
   const [readingLevel, setReadingLevel] = useState('Grade 9');
   const [numQuestions, setNumQuestions] = useState(3);
-  const [classId, setClassId] = useState('');
+  const [selectedClassId, setSelectedClassId] = useState('');
+
+  const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
 
   const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
@@ -251,7 +255,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
   }
 
   async function onSave() {
-    if (!generatedPassage || !classId) {
+    if (!generatedPassage || !selectedClassId) {
       toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.' });
       return;
     }
@@ -259,7 +263,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     try {
       await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), {
         ...generatedPassage,
-        classId: classId,
+        classId: selectedClassId,
       });
       toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
       setOpen(false);
@@ -308,12 +312,12 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
             </ScrollArea>
             <div className="space-y-2">
               <Label>Assign to Class</Label>
-              <Select onValueChange={setClassId} value={classId}>
+              <Select onValueChange={setSelectedClassId} value={selectedClassId}>
                 <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
                 <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <Button onClick={onSave} disabled={isSaving || !classId}>
+            <Button onClick={onSave} disabled={isSaving || !selectedClassId}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Passage
             </Button>
           </CardContent>
@@ -447,7 +451,7 @@ function ManagePassages() {
 
 function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
-    const { user: hookUser } = useAuth(); // Renamed to hookUser to avoid confusion
+    const { user: hookUser } = useAuth();
     const { toast } = useToast();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -489,30 +493,23 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
     // Save Function
     async function onSave() {
-        // --- 2. THE DIRECT AUTH FIX ---
-        // Instead of relying on the hook, we ask Firebase directly: "Who is logged in right now?"
+        // --- 2. FIX: Read directly from our simple state variable ---
+        const finalClassId = selectedClassId;
         const auth = getAuth();
-        const currentUser = auth.currentUser || hookUser; 
-
-        // 3. DEBUGGING
-        console.log("--- SAVE ATTEMPT ---");
-        console.log("Class ID:", selectedClassId);
-        console.log("Direct Firebase User:", auth.currentUser);
-        console.log("React Hook User:", hookUser);
+        const currentUser = auth.currentUser || hookUser;
 
         if (!generatedChallenge) {
-             toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
+             toast({ variant: 'destructive', title: 'Error', description: 'No challenge data found. Please generate again.' });
              return;
         }
 
-        if (!selectedClassId) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class.' });
+        if (!finalClassId) {
+             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class from the dropdown.' });
              return;
         }
 
         if (!currentUser) {
-             // If THIS hits, then the browser truly has no session token.
-             toast({ variant: 'destructive', title: 'Critical Auth Error', description: 'Browser has no session. Try Hard Refresh (Ctrl+F5).' });
+             toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
              return;
         }
 
@@ -522,8 +519,8 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 title: generatedChallenge.title,
                 prompt: generatedChallenge.prompt,
                 challengeType: generatedChallenge.challengeType,
-                classId: selectedClassId,
-                createdBy: currentUser.uid, // <--- Use the Direct User UID
+                classId: finalClassId, // <--- Using the state variable
+                createdBy: currentUser.uid,
                 createdAt: serverTimestamp(),
             });
             toast({ title: 'Success!', description: 'Challenge saved.' });
@@ -553,6 +550,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                             </SelectContent></Select><FormMessage /></FormItem>
                         )}/>
                         
+                        {/* --- 3. FIX: Simplified Dropdown (Controlled by State) --- */}
                         <div className="space-y-2">
                             <Label>Assign to Class</Label>
                             <Select 
@@ -568,7 +566,8 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {selectedClassId && <p className="text-xs text-green-600 font-bold">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
+                            {/* Visual Confirmation */}
+                            {selectedClassId && <p className="text-xs text-green-600">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
                         </div>
 
                     </div>
