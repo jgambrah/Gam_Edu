@@ -299,7 +299,7 @@ function StudentsPageContent() {
         title: 'Student Added',
         description: `${values.email} has been added and assigned to class.`,
       });
-      forceRefetch(); // This is the crucial fix
+      forceRefetch();
       form.reset();
     } catch (error: any) {
       let errorMessage = 'An error occurred while adding the student.';
