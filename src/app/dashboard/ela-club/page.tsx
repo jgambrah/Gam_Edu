@@ -208,116 +208,117 @@ function WritingSubmissionTab() {
 
 // --- Teacher/Admin Management Components ---
 function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
-    const [classId, setClassId] = useState('');
-    
-    // State for form inputs
-    const [topic, setTopic] = useState('');
-    const [readingLevel, setReadingLevel] = useState('Grade 9');
-    const [numQuestions, setNumQuestions] = useState(3);
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+  // State for form inputs
+  const [topic, setTopic] = useState('');
+  const [readingLevel, setReadingLevel] = useState('Grade 9');
+  const [numQuestions, setNumQuestions] = useState(3);
+  const [classId, setClassId] = useState('');
 
-    async function onGenerate() {
-        if (!topic) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic.' });
-            return;
-        }
-        setIsGenerating(true);
-        setGeneratedPassage(null);
-        toast({ title: 'Generating Passage...', description: 'Please wait while the AI writes your passage and questions.' });
+  const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
-        try {
-            const result = await generateReadingPassage({
-                topic: topic,
-                reading_level: readingLevel,
-                numQuestions: numQuestions,
-            });
-            setGeneratedPassage({ ...result, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer'})), classId: '' });
-            toast({ title: 'Passage Generated!', description: 'Review the content and select a class to save.' });
-        } catch (error) {
-            console.error('Error generating passage:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the passage.' });
-        } finally {
-            setIsGenerating(false);
-        }
+  async function onGenerate() {
+    if (!topic || !readingLevel) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic and reading level.' });
+      return;
     }
+    setIsGenerating(true);
+    setGeneratedPassage(null);
+    toast({ title: 'Generating Passage...', description: 'Please wait while the AI writes your passage and questions.' });
 
-    async function onSave() {
-        if (!generatedPassage || !classId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.' });
-            return;
-        }
-        setIsSaving(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), {
-                ...generatedPassage,
-                classId: classId,
-            });
-            toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
-            setOpen(false);
-        } catch (e) {
-            console.error("Error saving passage:", e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save the generated passage.' });
-        } finally {
-            setIsSaving(false);
-        }
+    try {
+      const result = await generateReadingPassage({
+        topic: topic,
+        reading_level: readingLevel,
+        numQuestions: numQuestions,
+      });
+      // Temporarily create a valid schema object for state, classId will be set before saving
+      setGeneratedPassage({ ...result, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer'})), classId: '' });
+      toast({ title: 'Passage Generated!', description: 'Review the content and select a class to save.' });
+    } catch (error) {
+      console.error('Error generating passage:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the passage.' });
+    } finally {
+      setIsGenerating(false);
     }
+  }
 
-    return (
-        <div className="space-y-4">
-            <div className="space-y-4 p-4 border rounded-md">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                        <Label>Topic</Label>
-                        <Input placeholder="e.g., The Amazon Rainforest" value={topic} onChange={(e) => setTopic(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Reading Level</Label>
-                        <Input placeholder="e.g., Grade 9" value={readingLevel} onChange={(e) => setReadingLevel(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label># of Questions</Label>
-                        <Input type="number" min={1} max={5} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} />
-                    </div>
-                </div>
-                <Button type="button" onClick={onGenerate} disabled={isGenerating}>
-                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Generate Passage
-                </Button>
-            </div>
-            {generatedPassage && (
-                <Card className="bg-muted/50">
-                    <CardHeader><CardTitle>{generatedPassage.title}</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <ScrollArea className="h-60 w-full pr-4">
-                            <div className="prose prose-sm max-w-none">
-                                <p>{generatedPassage.passage_text}</p>
-                                <h4>Comprehension Questions</h4>
-                                <ol>
-                                    {generatedPassage.question_set.map((q, i) => <li key={i}>{q.question} (Answer: {q.correct_answer_key})</li>)}
-                                </ol>
-                            </div>
-                        </ScrollArea>
-                        <div className="space-y-2">
-                            <Label>Assign to Class</Label>
-                            <Select onValueChange={setClassId} value={classId}>
-                                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                        <Button onClick={onSave} disabled={isSaving || !classId}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Passage
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
+  async function onSave() {
+    if (!generatedPassage || !classId) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.' });
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), {
+        ...generatedPassage,
+        classId: classId,
+      });
+      toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
+      setOpen(false);
+    } catch (e) {
+      console.error("Error saving passage:", e);
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not save the generated passage.' });
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-4 p-4 border rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label>Topic</Label>
+            <Input placeholder="e.g., The Amazon Rainforest" value={topic} onChange={(e) => setTopic(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label>Reading Level</Label>
+            <Input placeholder="e.g., Grade 9" value={readingLevel} onChange={(e) => setReadingLevel(e.target.value)} />
+          </div>
+          <div className="space-y-2">
+            <Label># of Questions</Label>
+            <Input type="number" min={1} max={5} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} />
+          </div>
         </div>
-    );
+        <Button type="button" onClick={onGenerate} disabled={isGenerating}>
+          {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+          Generate Passage
+        </Button>
+      </div>
+      {generatedPassage && (
+        <Card className="bg-muted/50">
+          <CardHeader><CardTitle>{generatedPassage.title}</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <ScrollArea className="h-60 w-full pr-4">
+              <div className="prose prose-sm max-w-none">
+                <p>{generatedPassage.passage_text}</p>
+                <h4>Comprehension Questions</h4>
+                <ol>
+                  {generatedPassage.question_set.map((q, i) => <li key={i}>{q.question} (Answer: {q.correct_answer_key})</li>)}
+                </ol>
+              </div>
+            </ScrollArea>
+            <div className="space-y-2">
+              <Label>Assign to Class</Label>
+              <Select onValueChange={setClassId} value={classId}>
+                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <Button onClick={onSave} disabled={isSaving || !classId}>
+              {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Passage
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
 }
 
 function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
@@ -449,42 +450,33 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
-    // Track the generated result
     const [generatedChallenge, setGeneratedChallenge] = useState<{
         title: string;
         prompt: string;
         challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
-        classId?: string; 
     } | null>(null);
 
-    // Get Classes
+    const [topic, setTopic] = useState('');
+    const [challengeType, setChallengeType] = useState<'Creative Writing' | 'Summarization' | 'Essay'>('Creative Writing');
+    const [gradeLevel, setGradeLevel] = useState('Grade 9');
+    const [classId, setClassId] = useState('');
+
     const { data: classes } = useCollection<Class>(
         useMemoFirebase(() => collection(firestore, 'classes'), [firestore])
     );
 
-    // Setup Form
-    const form = useForm({
-        defaultValues: { topic: '', challengeType: 'Creative Writing' as const, classId: '' }
-    });
-
-    // Watch the classId value in real-time for debugging
-    const watchedClassId = form.watch('classId');
-
-    // 1. GENERATE FUNCTION
-    async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay', classId: string; }) {
+    async function onGenerate() {
+        if (!topic || !challengeType || !gradeLevel) {
+            toast({ variant: 'destructive', title: 'Missing Information', description: 'Please fill out all fields before generating.'});
+            return;
+        }
         setIsGenerating(true);
         setGeneratedChallenge(null);
         toast({ title: 'Generating Challenge...', description: 'Please wait while the AI creates a prompt.' });
 
         try {
-            const result = await generateWritingChallenge(values);
-            
-            // CRITICAL: We save the classId you selected into this state object
-            setGeneratedChallenge({ 
-                ...result, 
-                classId: values.classId 
-            });
-            
+            const result = await generateWritingChallenge({ topic, challengeType });
+            setGeneratedChallenge(result);
             toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
         } catch (error) {
             console.error('Error generating challenge:', error);
@@ -494,27 +486,12 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         }
     }
 
-    // 2. SAVE FUNCTION
     async function onSave() {
-        // STRATEGY: Look for the Class ID in the form first. 
-        // If not there, look in the data we saved during generation.
-        const formClassId = form.getValues('classId');
-        const snapshotClassId = generatedChallenge?.classId;
-        
-        // The winner is...
-        const finalClassId = formClassId || snapshotClassId;
-
-        console.log("Saving Debug Info:", { 
-            idFromForm: formClassId, 
-            idFromSnapshot: snapshotClassId, 
-            finalClassId 
-        });
-
-        if (!generatedChallenge || !finalClassId || !user) {
+        if (!generatedChallenge || !classId || !user) {
             toast({ 
                 variant: 'destructive', 
                 title: 'Missing Information', 
-                description: `Class ID not found. Form sees: "${formClassId || 'Empty'}"` 
+                description: 'Please ensure a Class is selected before saving.' 
             });
             return;
         }
@@ -522,10 +499,8 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                title: generatedChallenge.title,
-                prompt: generatedChallenge.prompt,
-                challengeType: generatedChallenge.challengeType,
-                classId: finalClassId, // Use the detected ID
+                ...generatedChallenge,
+                classId: classId,
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
             });
@@ -541,87 +516,121 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
     return (
         <div className="space-y-4">
-             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <FormField control={form.control} name="topic" render={({ field }) => (
-                            <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        
-                        <FormField control={form.control} name="challengeType" render={({ field }) => (
-                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+             <div className="space-y-4 p-4 border rounded-md">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                        <Label>Topic/Theme</Label>
+                        <Input placeholder="e.g., A Journey to Mars" value={topic} onChange={e => setTopic(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Challenge Type</Label>
+                        <Select onValueChange={(val: 'Creative Writing' | 'Summarization' | 'Essay') => setChallengeType(val)} value={challengeType}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
                                 <SelectItem value="Creative Writing">Creative Writing</SelectItem>
                                 <SelectItem value="Summarization">Summarization</SelectItem>
                                 <SelectItem value="Essay">Essay</SelectItem>
-                            </SelectContent></Select><FormMessage /></FormItem>
-                        )}/>
-                        
-                        {/* FIX: Use 'value' instead of 'defaultValue' to ensure it stays synced */}
-                        <FormField control={form.control} name="classId" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Assign to Class</FormLabel>
-                                <Select 
-                                    // FORCE UPDATE: We manually set the value to be safe
-                                    onValueChange={(val) => {
-                                        field.onChange(val);
-                                        form.setValue('classId', val); 
-                                    }}
-                                    value={field.value} 
-                                >
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a class" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {classes?.map(c => (
-                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {/* DEBUG TEXT: This will show you exactly what the computer sees */}
-                                {field.value && <p className="text-xs text-green-600">Selected Class ID: {field.value}</p>}
-                                <FormMessage />
-                            </FormItem>
-                        )} />
+                            </SelectContent>
+                        </Select>
                     </div>
-                    
-                    <Button type="submit" disabled={isGenerating}>
-                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Generate Challenge
-                    </Button>
-                </form>
-            </Form>
+                     <div className="space-y-2">
+                        <Label>Target Grade Level</Label>
+                        <Input placeholder="e.g., Grade 9" value={gradeLevel} onChange={e => setGradeLevel(e.target.value)} />
+                    </div>
+                </div>
+                <Button type="button" onClick={onGenerate} disabled={isGenerating}>
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                    Generate Challenge
+                </Button>
+            </div>
 
             {generatedChallenge && (
                 <Card className="bg-muted/50">
                     <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
                         <p className="italic">{generatedChallenge.prompt}</p>
-                        
-                        {/* IF YOU WANT TO ALLOW CHANGING CLASS AFTER GENERATING, YOU CAN UNCOMMENT THIS: */}
-                        {/* 
-                        <div className="space-y-2">
-                             <Label>Change Class (Optional)</Label>
-                             <Select 
-                                value={form.watch('classId')} 
-                                onValueChange={(val) => form.setValue('classId', val)}
-                             >
+                         <div className="space-y-2">
+                             <Label>Assign to Class</Label>
+                             <Select onValueChange={setClassId} value={classId}>
                                 <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
                                 <SelectContent>
                                     {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                                 </SelectContent>
                              </Select>
                         </div> 
-                        */}
-
-                        <Button onClick={onSave} disabled={isSaving}>
+                        <Button onClick={onSave} disabled={isSaving || !classId}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
                         </Button>
                     </CardContent>
                 </Card>
             )}
         </div>
+    );
+}
+
+function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
+    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
+        resolver: zodResolver(elaWritingChallengeSchema),
+        defaultValues: {
+            title: '',
+            prompt: '',
+            challengeType: 'Creative Writing',
+            classId: '',
+        },
+    });
+
+    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
+        if (!user) return;
+        setIsSubmitting(true);
+        try {
+            await addDoc(collection(firestore, 'ela_writing_challenges'), {
+                ...values,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success', description: 'New writing challenge has been created.' });
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error creating challenge:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not create the challenge.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+                 <FormField control={form.control} name="prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+                <FormField control={form.control} name="challengeType" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                        <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                        <SelectItem value="Summarization">Summarization</SelectItem>
+                        <SelectItem value="Essay">Essay</SelectItem>
+                    </SelectContent></Select><FormMessage /></FormItem>
+                )}/>
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem><FormLabel>Assign to Class</FormLabel><Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                    </Select><FormMessage /></FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Challenge</Button>
+            </form>
+        </Form>
     );
 }
 
@@ -857,3 +866,4 @@ export default function ElaClubPage() {
     </div>
   );
 }
+
