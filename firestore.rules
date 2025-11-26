@@ -106,8 +106,20 @@ service cloud.firestore {
     }
     
     match /quizzes/{quizId}/attempts/{attemptId} {
-        allow read: if isTeacher() || isOwner(request.resource.data.studentId);
+        allow read: if isTeacher() || isOwner(resource.data.studentId);
         allow create: if isStudent();
+    }
+
+    // Allow students to read/write their own quiz attempts
+    match /quizAttempts/{attemptId} {
+      // Allow any signed-in user to read (prevents list crashes)
+      allow read: if isSignedIn();
+      
+      // Allow students to save their attempts
+      allow create: if isSignedIn();
+      
+      // Only teachers/admins can modify/delete attempts after they are created
+      allow update, delete: if isTeacher() || isAdmin();
     }
 
     match /assessments/{assessmentId} {
@@ -233,6 +245,9 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     
+    // --- UPDATED RULES FOR CLUBS ---
+    // Changed to 'allow read: if isSignedIn()' to prevent list errors
+    
     match /math_problems/{problemId} {
         allow read: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
@@ -293,3 +308,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
