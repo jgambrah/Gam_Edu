@@ -33,14 +33,6 @@ import type { Class } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 
-const generateProblemsSchema = z.object({
-  topic: z.string().min(3, "Topic must be at least 3 characters long."),
-  numQuestions: z.coerce.number().min(1).max(10),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-  gradeLevel: z.string().min(1, 'Please specify a grade level.'),
-});
-
-type GenerateProblemsFormData = z.infer<typeof generateProblemsSchema>;
 type Subject = 'Math' | 'Science' | 'ELA Grammar';
 
 export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; setOpen: (open: boolean) => void }) {
@@ -50,21 +42,23 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generatedProblems, setGeneratedProblems] = useState<GeneratePracticeProblemsOutput | null>(null);
+  
+  // State for form inputs
+  const [topic, setTopic] = useState('');
+  const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Easy');
+  const [numQuestions, setNumQuestions] = useState(5);
+  const [gradeLevel, setGradeLevel] = useState('Grade 9');
+  
+  // State for saving
   const [classId, setClassId] = useState('');
 
   const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
-  const form = useForm<GenerateProblemsFormData>({
-    resolver: zodResolver(generateProblemsSchema),
-    defaultValues: {
-      topic: '',
-      numQuestions: 5,
-      difficulty: 'Easy',
-      gradeLevel: 'Grade 9',
-    },
-  });
-
-  async function onGenerate(values: GenerateProblemsFormData) {
+  async function onGenerate() {
+    if (!topic) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic.' });
+        return;
+    }
     setIsGenerating(true);
     setGeneratedProblems(null);
     toast({ title: 'Generating Problems...', description: 'Please wait while the AI creates questions.' });
@@ -72,9 +66,9 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
     try {
       const result = await generatePracticeProblems({
         subject,
-        topic: values.topic,
-        numQuestions: values.numQuestions,
-        difficulty: values.difficulty
+        topic,
+        numQuestions,
+        difficulty,
       });
       setGeneratedProblems(result);
       toast({ title: 'Problems Generated!', description: 'Review the questions and select a class to save.' });
@@ -91,6 +85,10 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
         toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.'});
         return;
     }
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to save.' });
+        return;
+    }
     setIsSaving(true);
     
     const collectionNameMap = {
@@ -102,7 +100,6 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
 
     try {
         const batch = writeBatch(firestore);
-        const { topic, difficulty } = form.getValues();
 
         generatedProblems.problems.forEach(problem => {
             const problemRef = doc(collection(firestore, collectionName));
@@ -133,28 +130,37 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
 
   return (
     <div className="space-y-4">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
+      <div className="space-y-4 p-4 border rounded-md">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <FormField control={form.control} name="topic" render={({ field }) => (
-              <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g., Algebra" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="difficulty" render={({ field }) => (
-                <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="numQuestions" render={({ field }) => (
-              <FormItem><FormLabel># of Questions</FormLabel><FormControl><Input type="number" min={1} max={10} {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="gradeLevel" render={({ field }) => (
-                <FormItem><FormLabel>Target Grade Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
+            <div className="space-y-2">
+              <Label>Topic</Label>
+              <Input placeholder="e.g., Algebra" value={topic} onChange={(e) => setTopic(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Difficulty</Label>
+              <Select onValueChange={(val: 'Easy' | 'Medium' | 'Hard') => setDifficulty(val)} value={difficulty}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Easy">Easy</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="Hard">Hard</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label># of Questions</Label>
+              <Input type="number" min={1} max={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} />
+            </div>
+            <div className="space-y-2">
+              <Label>Target Grade Level</Label>
+              <Input placeholder="e.g., Grade 9" value={gradeLevel} onChange={(e) => setGradeLevel(e.target.value)} />
+            </div>
           </div>
-          <Button type="button" onClick={form.handleSubmit(onGenerate)} disabled={isGenerating}>
+          <Button type="button" onClick={onGenerate} disabled={isGenerating}>
             {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
             Generate Problems
           </Button>
-        </form>
-        </Form>
+      </div>
 
         {generatedProblems && generatedProblems.problems.length > 0 && (
             <Card className="bg-muted/50">
