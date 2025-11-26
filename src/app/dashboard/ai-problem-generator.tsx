@@ -47,7 +47,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [generatedProblems, setGeneratedProblems] = useState<GeneratePracticeProblemsOutput | null>(null);
+  const [generatedProblems, setGeneratedProblems] = useState<(GeneratePracticeProblemsOutput & { classId: string }) | null>(null);
 
   const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
@@ -68,7 +68,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
 
     try {
       const result = await generatePracticeProblems({ ...values, subject });
-      setGeneratedProblems(result);
+      setGeneratedProblems({ ...result, classId: values.classId });
       toast({ title: 'Problems Generated!', description: 'Review the questions below before saving.' });
     } catch (error) {
       console.error('Error generating problems:', error);
@@ -79,8 +79,12 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   }
 
   async function onSave() {
-    const currentClassId = form.getValues('classId');
-    if (!generatedProblems || !currentClassId || !form.getValues('topic')) {
+    let finalClassId = form.getValues('classId');
+    if (!finalClassId && generatedProblems?.classId) {
+      finalClassId = generatedProblems.classId;
+    }
+
+    if (!generatedProblems || !finalClassId || !form.getValues('topic')) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please ensure a class is selected before saving.'});
         return;
     }
@@ -103,7 +107,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
                 ...problem,
                 topic,
                 difficulty,
-                classId: currentClassId,
+                classId: finalClassId,
             };
             if (subject === 'ELA Grammar') {
                 data.type = 'MCQ';

@@ -210,7 +210,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const { toast } = useToast();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
+    const [generatedPassage, setGeneratedPassage] = useState<(z.infer<typeof elaReadingPassageSchema> & { classId: string }) | null>(null);
     
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
@@ -228,7 +228,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
                 ...values,
                 numQuestions: Number(values.numQuestions),
             });
-            setGeneratedPassage({ ...result, ...values, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer'})) });
+            setGeneratedPassage({ ...result, classId: values.classId, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer'})) });
             toast({ title: 'Passage Generated!', description: 'Review the content below before saving.' });
         } catch (error) {
             console.error('Error generating passage:', error);
@@ -239,16 +239,20 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     }
 
     async function onSave() {
-        const currentClassId = form.getValues('classId');
-        if (!generatedPassage || !currentClassId) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Missing information to save passage.' });
+        let finalClassId = form.getValues('classId');
+        if (!finalClassId && generatedPassage?.classId) {
+            finalClassId = generatedPassage.classId;
+        }
+
+        if (!generatedPassage || !finalClassId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Missing information to save passage. Please ensure a class is selected.' });
             return;
         }
         setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), {
                 ...generatedPassage,
-                classId: currentClassId,
+                classId: finalClassId,
             });
             toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
             setOpen(false);
@@ -437,11 +441,11 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     
-    const [generatedContent, setGeneratedContent] = useState<{
+    const [generatedChallenge, setGeneratedChallenge] = useState<{
         title: string;
         prompt: string;
         challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
-        classId: string;
+        classId?: string;
     } | null>(null);
 
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
@@ -452,12 +456,12 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
     async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay', classId: string; }) {
         setIsGenerating(true);
-        setGeneratedContent(null);
+        setGeneratedChallenge(null);
         toast({ title: 'Generating Challenge...', description: 'Please wait while the AI creates a prompt.' });
 
         try {
             const result = await generateWritingChallenge(values);
-            setGeneratedContent({ ...result, classId: values.classId });
+            setGeneratedChallenge({ ...result, classId: values.classId });
             toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
         } catch (error) {
             console.error('Error generating challenge:', error);
@@ -468,11 +472,16 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     }
 
     async function onSave() {
-        if (!generatedContent || !generatedContent.classId || !user) {
+        let finalClassId = form.getValues('classId');
+        if (!finalClassId && generatedChallenge?.classId) {
+            finalClassId = generatedChallenge.classId;
+        }
+
+        if (!generatedChallenge || !finalClassId || !user) {
             toast({ 
                 variant: 'destructive', 
                 title: 'Error', 
-                description: 'Please ensure a Class is selected before saving.' 
+                description: 'Could not find a Class ID. Please try selecting the class again.' 
             });
             return;
         }
@@ -480,7 +489,10 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...generatedContent,
+                title: generatedChallenge.title,
+                prompt: generatedChallenge.prompt,
+                challengeType: generatedChallenge.challengeType,
+                classId: finalClassId,
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
             });
@@ -503,7 +515,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                             <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="challengeType" render={({ field }) => (
-                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
                                 <SelectItem value="Creative Writing">Creative Writing</SelectItem>
                                 <SelectItem value="Summarization">Summarization</SelectItem>
                                 <SelectItem value="Essay">Essay</SelectItem>
@@ -520,11 +532,11 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 </form>
             </Form>
 
-            {generatedContent && (
+            {generatedChallenge && (
                 <Card className="bg-muted/50">
-                    <CardHeader><CardTitle>{generatedContent.title}</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
-                        <p className="italic">{generatedContent.prompt}</p>
+                        <p className="italic">{generatedChallenge.prompt}</p>
                         <Button onClick={onSave} disabled={isSaving}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
                         </Button>
@@ -657,73 +669,6 @@ function ManageWritingChallenges() {
                 </Accordion>
             </CardContent>
         </Card>
-    );
-}
-
-function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
-
-    const form = useForm<z.infer<typeof elaGrammarDrillSchema>>({
-        resolver: zodResolver(elaGrammarDrillSchema),
-        defaultValues: {
-            topic: '',
-            type: 'MCQ',
-            question_prompt: '',
-            options: ['', '', '', ''],
-            correct_answer: '',
-            classId: '',
-        }
-    });
-
-    async function onSubmit(values: z.infer<typeof elaGrammarDrillSchema>) {
-        setIsSubmitting(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_grammar_drills'), values);
-            toast({ title: 'Success', description: 'New grammar drill has been added.' });
-            form.reset();
-            setOpen(false);
-        } catch (error) {
-            console.error('Error adding drill:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the drill.' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <FormField control={form.control} name="classId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select><FormMessage/>
-                    </FormItem>
-                )}/>
-                <FormField control={form.control} name="topic" render={({ field }) => (
-                    <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Verbs, Punctuation" {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="question_prompt" render={({ field }) => (
-                    <FormItem><FormLabel>Question Prompt</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
-                <div className="grid grid-cols-2 gap-4">
-                    {form.getValues('options')?.map((_, index) => (
-                        <FormField key={index} control={form.control} name={`options.${index}`} render={({ field }) => (
-                            <FormItem><FormLabel>Option {index + 1}</FormLabel><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
-                        )}/>
-                    ))}
-                </div>
-                 <FormField control={form.control} name="correct_answer" render={({ field }) => (
-                    <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
-                )}/>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Drill</Button>
-            </form>
-        </Form>
     );
 }
 
