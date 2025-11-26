@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Gamepad2, PenSquare, LogIn } from 'lucide-react';
+import { Gamepad2, PenSquare, LogIn, Youtube } from 'lucide-react';
 import Link from 'next/link';
 
 export default function GameZonePage() {
@@ -37,10 +37,16 @@ export default function GameZonePage() {
               Create a new quiz or launch a game from your existing Kahoots. You will be redirected to the Kahoot! website.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-2">
             <Button asChild className="w-full">
               <Link href="https://create.kahoot.it" target="_blank" rel="noopener noreferrer">
                 Create or Host a Game on Kahoot!
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="https://www.youtube.com/watch?v=xGOLi56UQ3U" target="_blank" rel="noopener noreferrer">
+                <Youtube className="mr-2 h-4 w-4" />
+                Watch a Tutorial
               </Link>
             </Button>
           </CardContent>
