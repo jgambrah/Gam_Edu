@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { FormItem, FormControl } from '@/components/ui/form';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
