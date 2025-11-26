@@ -153,6 +153,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
             Generate Problems
           </Button>
         </form>
+        </Form>
 
         {generatedProblems && generatedProblems.problems.length > 0 && (
             <Card className="bg-muted/50">
@@ -193,7 +194,6 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
             </CardContent>
             </Card>
         )}
-      </Form>
     </div>
   );
 }
