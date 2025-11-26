@@ -855,3 +855,13 @@ export type GameLobby = {
     createdAt: any;
 };
 
+// Learning Material Schema
+export type LearningMaterial = {
+  id: string;
+  courseId: string;
+  courseName: string;
+  strand: string;
+  subStrandTitle: string;
+  content: string; // Supports markdown
+};
+

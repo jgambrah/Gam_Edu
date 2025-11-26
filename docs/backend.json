@@ -2,6 +2,35 @@
 
 {
   "entities": {
+    "LearningMaterial": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LearningMaterial",
+      "description": "Represents a piece of editable course content.",
+      "type": "object",
+      "properties": {
+        "courseId": {
+          "type": "string",
+          "description": "A unique identifier for the course (e.g., 'bs7-integrated-science')."
+        },
+        "courseName": {
+          "type": "string",
+          "description": "The display name of the course."
+        },
+        "strand": {
+          "type": "string",
+          "description": "The high-level strand or chapter the material belongs to."
+        },
+        "subStrandTitle": {
+          "type": "string",
+          "description": "The specific topic or sub-strand title."
+        },
+        "content": {
+          "type": "string",
+          "description": "The full notes or learning content, supporting markdown or basic HTML."
+        }
+      },
+      "required": ["courseId", "courseName", "strand", "subStrandTitle", "content"]
+    },
     "Announcement": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Announcement",
@@ -1487,6 +1516,15 @@
           "schema": { "$ref": "#/backend/entities/Resource" },
           "description": "Stores learning resources for courses.",
           "params": [{ "name": "resourceId" }]
+        }
+      },
+       {
+        "path": "/learning_materials/{materialId}",
+        "definition": {
+          "entityName": "LearningMaterial",
+          "schema": { "$ref": "#/backend/entities/LearningMaterial" },
+          "description": "Stores editable course content.",
+          "params": [{ "name": "materialId" }]
         }
       },
       {

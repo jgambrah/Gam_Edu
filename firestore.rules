@@ -193,6 +193,11 @@ service cloud.firestore {
       allow write: if isTeacher() || isAdmin();
     }
 
+    match /learning_materials/{materialId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
     match /lesson-plans/{lessonPlanId} {
       allow read: if isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid);
       allow create: if isTeacher() && request.resource.data.teacherId == request.auth.uid;
@@ -326,9 +331,15 @@ service cloud.firestore {
     }
     
     match /ela_user_submissions/{submissionId} {
+        // Fix: Use 'request.resource' for create, but 'resource' for read
         allow create: if isOwner(request.resource.data.userId);
+        
+        // CORRECTION HERE: changed 'request.resource' to 'resource'
         allow read: if isOwner(resource.data.userId) || isTeacher() || isAdmin();
+        
+        // Allow teachers to grade (update specific fields)
         allow update: if isTeacher() || isAdmin();
+        
         allow delete: if false;
     }
   }
