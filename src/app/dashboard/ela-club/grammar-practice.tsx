@@ -4,21 +4,25 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRole } from '@/context/role-context';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+// FIX: Import useUser instead of just useAuth
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { ElaGrammarDrill, Student } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 
 export function GrammarPractice() {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  // FIX: Use useUser to get the loading state (isUserLoading)
+  const { user, isUserLoading } = useUser();
   const { role } = useRole();
+  
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. ROBUST STUDENT QUERY
+  // 1. Get Student Data (Wait for user to exist)
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => {
       if (!user || !firestore || isStaff) return null;
@@ -28,12 +32,10 @@ export function GrammarPractice() {
   
   const studentClassId = studentData?.[0]?.classId;
 
-  // 2. QUERY DRILLS
+  // 2. Query Drills
   const drillsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    // Staff see all
     if (isStaff) return query(collection(firestore, 'ela_grammar_drills'));
-    // Students see class-specific
     if (studentClassId) {
       return query(collection(firestore, 'ela_grammar_drills'), where('classId', '==', studentClassId));
     }
@@ -42,7 +44,9 @@ export function GrammarPractice() {
 
   const { data: drills, isLoading: isLoadingDrills } = useCollection<ElaGrammarDrill>(drillsQuery);
 
-  const isLoading = (isLoadingStudent && !isStaff) || isLoadingDrills;
+  // 3. Combined Loading Logic
+  // If Auth is loading, OR Student Data is loading (for students), OR Drills are loading...
+  const isLoading = isUserLoading || (isLoadingStudent && !isStaff) || isLoadingDrills;
 
   return (
     <Card>
@@ -52,14 +56,18 @@ export function GrammarPractice() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
+          <div className="flex flex-col space-y-3">
+             <Skeleton className="h-12 w-full" />
+             <Skeleton className="h-12 w-full" />
+             <div className="flex items-center justify-center text-muted-foreground text-sm gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading your profile...
+             </div>
           </div>
         ) : (!isStaff && !studentClassId) ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">You are not assigned to a class. Please contact an administrator.</p>
-            <p className="text-xs text-red-400 mt-2">Debug: User ID {user?.uid}</p>
+            {/* Debug info will now only show if User IS loaded but Class IS NOT */}
+            <p className="text-xs text-red-400 mt-2">Debug: User ID: {user?.uid || 'Not Found'}</p>
           </div>
         ) : drills && drills.length > 0 ? (
            <div className="grid gap-4 md:grid-cols-2">
@@ -73,14 +81,15 @@ export function GrammarPractice() {
                     <p className="text-sm text-muted-foreground line-clamp-2">{drill.question_prompt}</p>
                   </div>
                   <Button className="mt-4" variant="outline" asChild>
-                    {/* Assuming you have a route for individual drills, or this might open a modal */}
                      <Link href={`/dashboard/ela-club/grammar/${drill.id}`}>Start Drill</Link>
                   </Button>
                 </Card>
               ))}
            </div>
         ) : (
-          <p className="text-center text-muted-foreground py-10">No grammar drills found for your class.</p>
+          <p className="text-center text-muted-foreground py-10">
+             {isStaff ? "No grammar drills found." : "No grammar drills found for your class."}
+          </p>
         )}
       </CardContent>
     </Card>
