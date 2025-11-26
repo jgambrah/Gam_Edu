@@ -173,7 +173,7 @@ function WritingSubmissionTab() {
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-        useMemoFirebase(() => (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
+        useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
     );
     const studentClassId = studentData?.[0]?.classId;
 
@@ -817,6 +817,42 @@ export default function ElaClubPage() {
   );
 }
 
+function ManageDrills() {
+    const firestore = useFirestore();
+    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_grammar_drills')) : null, [firestore]));
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
-
-
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Grammar Drill Bank</CardTitle>
+                    <CardDescription>Manage the collection of grammar problems for student practice sessions.</CardDescription>
+                </div>
+                 <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice grammar questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="ELA Grammar" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    {/* Placeholder for manual creation if needed */}
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                <Table>
+                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Type</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {drills?.map(d => (
+                            <TableRow key={d.id}>
+                                <TableCell>{d.topic}</TableCell>
+                                <TableCell><Badge variant="secondary">{d.type}</Badge></TableCell>
+                                <TableCell className="max-w-md truncate">{d.question_prompt}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
