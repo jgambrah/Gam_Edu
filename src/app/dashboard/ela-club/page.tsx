@@ -54,8 +54,8 @@ function ReadingPracticeTab() {
 
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => 
-      (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
-    [firestore, user, isStaff])
+      (user && firestore && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
+    [firestore, user, role])
   );
   const studentClassId = studentData?.[0]?.classId;
 
@@ -64,15 +64,15 @@ function ReadingPracticeTab() {
     if (isStaff) {
       return query(collection(firestore, 'ela_reading_passages'));
     }
-    if (studentClassId) {
+    if (role === 'Student' && studentClassId) {
       return query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId));
     }
     return null;
-  }, [firestore, studentClassId, isStaff]);
+  }, [firestore, studentClassId, isStaff, role]);
 
   const { data: passages, isLoading: isLoadingPassages } = useCollection<ElaReadingPassage>(passagesQuery);
 
-  const isLoading = (isLoadingStudent && !isStaff) || isLoadingPassages;
+  const isLoading = (role === 'Student' && isLoadingStudent) || isLoadingPassages;
 
   return (
     <Card>
@@ -84,6 +84,9 @@ function ReadingPracticeTab() {
       </CardHeader>
       <CardContent>
         {isLoading ? <Skeleton className="h-40 w-full" /> :
+          (role === 'Student' && !studentClassId) ? (
+            <p className="text-center text-muted-foreground py-10">You are not assigned to a class. Please contact an administrator.</p>
+          ) :
           passages && passages.length > 0 ? (
             <div className="space-y-4">
               {passages.map(passage => (
@@ -173,7 +176,7 @@ function WritingSubmissionTab() {
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-        useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
+        useMemoFirebase(() => (user && firestore && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
     );
     const studentClassId = studentData?.[0]?.classId;
 
@@ -181,16 +184,16 @@ function WritingSubmissionTab() {
         useMemoFirebase(() => {
             if(!firestore) return null;
             if (isStaff) return query(collection(firestore, 'ela_writing_challenges'));
-            if (studentClassId) return query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId));
+            if (role === 'Student' && studentClassId) return query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId));
             return null;
-        }, [firestore, studentClassId, isStaff])
+        }, [firestore, studentClassId, isStaff, role])
     );
 
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
         useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
     );
 
-    const isLoading = isLoadingChallenges || isLoadingSubmissions || (isLoadingStudent && !isStaff);
+    const isLoading = isLoadingChallenges || isLoadingSubmissions || (role === 'Student' && isLoadingStudent);
     
     return (
         <Card>
@@ -201,7 +204,11 @@ function WritingSubmissionTab() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                {isLoading ? <Skeleton className="h-40 w-full"/> : (
+                {isLoading ? <Skeleton className="h-40 w-full"/> : 
+                (role === 'Student' && !studentClassId) ? (
+                    <p className="text-center py-8 text-muted-foreground">You are not assigned to a class. Please contact an administrator.</p>
+                ) :
+                (
                     <div className="space-y-4">
                         {challenges?.map(challenge => {
                             const submission = submissions?.find(s => s.challenge_id === challenge.id);
