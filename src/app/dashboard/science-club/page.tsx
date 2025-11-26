@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -130,7 +131,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                  <FormField control={form.control} name="classId" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
                         <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select><FormMessage/>
                     </FormItem>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,7 +36,7 @@ const generateProblemsSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
   numQuestions: z.coerce.number().min(1).max(10),
   difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-  classId: z.string().min(1, 'Please select a class to assign problems to.'),
+  gradeLevel: z.string().min(1, 'Please specify a grade level.'),
 });
 
 type GenerateProblemsFormData = z.infer<typeof generateProblemsSchema>;
@@ -47,7 +48,8 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [generatedProblems, setGeneratedProblems] = useState<(GeneratePracticeProblemsOutput & { classId: string }) | null>(null);
+  const [generatedProblems, setGeneratedProblems] = useState<GeneratePracticeProblemsOutput | null>(null);
+  const [classIdToSave, setClassIdToSave] = useState('');
 
   const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
@@ -57,7 +59,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
       topic: '',
       numQuestions: 5,
       difficulty: 'Easy',
-      classId: '',
+      gradeLevel: 'Grade 9',
     },
   });
 
@@ -67,9 +69,10 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
     toast({ title: 'Generating Problems...', description: 'Please wait while the AI creates questions.' });
 
     try {
+      // The AI flow might not explicitly use gradeLevel, but it's good practice for context
       const result = await generatePracticeProblems({ ...values, subject });
-      setGeneratedProblems({ ...result, classId: values.classId });
-      toast({ title: 'Problems Generated!', description: 'Review the questions below before saving.' });
+      setGeneratedProblems(result);
+      toast({ title: 'Problems Generated!', description: 'Review the questions and select a class to save.' });
     } catch (error) {
       console.error('Error generating problems:', error);
       toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the problems.' });
@@ -79,13 +82,8 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   }
 
   async function onSave() {
-    let finalClassId = form.getValues('classId');
-    if (!finalClassId && generatedProblems?.classId) {
-      finalClassId = generatedProblems.classId;
-    }
-
-    if (!generatedProblems || !finalClassId || !form.getValues('topic')) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Please ensure a class is selected before saving.'});
+    if (!generatedProblems || !classIdToSave) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.'});
         return;
     }
     setIsSaving(true);
@@ -107,7 +105,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
                 ...problem,
                 topic,
                 difficulty,
-                classId: finalClassId,
+                classId: classIdToSave,
             };
             if (subject === 'ELA Grammar') {
                 data.type = 'MCQ';
@@ -142,8 +140,8 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
             <FormField control={form.control} name="numQuestions" render={({ field }) => (
               <FormItem><FormLabel># of Questions</FormLabel><FormControl><Input type="number" min={1} max={10} {...field} /></FormControl><FormMessage /></FormItem>
             )} />
-            <FormField control={form.control} name="classId" render={({ field }) => (
-                <FormItem><FormLabel>Assign to Class</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl><SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+            <FormField control={form.control} name="gradeLevel" render={({ field }) => (
+                <FormItem><FormLabel>Target Grade Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
           </div>
           <Button type="submit" disabled={isGenerating}>
@@ -157,10 +155,10 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
         <Card className="bg-muted/50">
           <CardHeader>
             <CardTitle>Generated Problems</CardTitle>
-            <CardDescription>Review the generated questions. Click "Save Problems" to add them to the problem bank.</CardDescription>
+            <CardDescription>Review the generated questions. Select a class and click "Save Problems" to add them to the problem bank.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ScrollArea className="h-72 w-full pr-4">
+            <ScrollArea className="h-60 w-full pr-4">
                 <Accordion type="single" collapsible className="w-full">
                     {generatedProblems.problems.map((p, index) => (
                     <AccordionItem value={`item-${index}`} key={index}>
@@ -178,7 +176,14 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
                     ))}
                 </Accordion>
             </ScrollArea>
-            <Button onClick={onSave} disabled={isSaving}>
+            <div className="space-y-2">
+                <FormLabel>Assign to Class</FormLabel>
+                <Select onValueChange={setClassIdToSave} value={classIdToSave}>
+                    <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                    <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                </Select>
+            </div>
+            <Button onClick={onSave} disabled={isSaving || !classIdToSave}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Save Problems
             </Button>
