@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,7 +31,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useAuth, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect } from 'react';
 import { collection, doc, query, where, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
@@ -201,7 +202,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { role } = useRole();
-    const { user } = useAuth();
+    const { user } = useUser();
 
     const form = useForm({
         defaultValues: {
@@ -336,7 +337,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
 export default function AcademicsPageContent() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
 
@@ -346,7 +347,7 @@ export default function AcademicsPageContent() {
   const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(useMemoFirebase(() => firestore && user ? collection(firestore, 'timetables') : null, [firestore, user]));
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(useMemoFirebase(() => firestore && user ? collection(firestore, 'subjects') : null, [firestore, user]));
 
-  const isLoading = isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
+  const isLoading = isUserLoading || isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
   const canManageClasses = role === 'Director' || role === 'Administrator';
   
