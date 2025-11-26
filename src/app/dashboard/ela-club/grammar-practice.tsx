@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,24 +26,27 @@ import { useRole } from '@/context/role-context';
 export function GrammarPractice() {
   const firestore = useFirestore();
   const { user } = useAuth();
-  const { role } = useRole();
+  const { role } = useRole(); 
 
-  const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
   
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
+    useMemoFirebase(() => 
+      (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
+    [firestore, user, isStaff])
   );
   const studentClassId = studentData?.[0]?.classId;
   
   const drillsQuery = useMemoFirebase(() => {
-    if (isTeacherOrAdmin) {
+    if (!firestore) return null;
+    if (isStaff) {
       return query(collection(firestore, 'ela_grammar_drills'));
     }
-    if (role === 'Student' && studentClassId) {
+    if (studentClassId) {
       return query(collection(firestore, 'ela_grammar_drills'), where('classId', '==', studentClassId));
     }
     return null;
-  }, [firestore, isTeacherOrAdmin, role, studentClassId]);
+  }, [firestore, isStaff, studentClassId]);
 
   const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(drillsQuery);
 
@@ -96,19 +99,7 @@ export function GrammarPractice() {
     }
   };
 
-  if (isLoading || (role === 'Student' && isLoadingStudent)) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Grammar & Mechanics Drills</CardTitle>
-          <CardDescription>Loading grammar exercises...</CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-center items-center h-40">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </CardContent>
-      </Card>
-    );
-  }
+  const isLoadingData = isLoading || (isLoadingStudent && !isStaff);
 
   if (practiceDrills.length > 0) {
     const currentDrill = practiceDrills[currentDrillIndex];
@@ -157,8 +148,13 @@ export function GrammarPractice() {
         <CardDescription>Choose a topic to start practicing.</CardDescription>
       </CardHeader>
       <CardContent>
-        {(role === 'Student' && !studentClassId) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
-        uniqueTopics.length > 0 ? (
+        {isLoadingData ? (
+            <div className="flex justify-center items-center h-40">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        ) : (role === 'Student' && !studentClassId) ? (
+            <p className="text-center text-muted-foreground py-10">You are not assigned to a class. Please contact an administrator.</p>
+        ) : uniqueTopics.length > 0 ? (
             <div className="space-y-4">
                  <Select onValueChange={setSelectedTopic}>
                     <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
