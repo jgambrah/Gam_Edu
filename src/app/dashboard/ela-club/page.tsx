@@ -53,7 +53,6 @@ function ReadingPracticeTab() {
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  // Corrected Query: Filter passages by `classId`.
   const passagesQuery = useMemoFirebase(() => 
     studentClassId ? query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId)) : null, 
     [firestore, studentClassId]
@@ -153,7 +152,6 @@ function WritingSubmissionTab() {
     );
     const studentClassId = studentData?.[0]?.classId;
 
-    // Corrected Query: Filter challenges by `classId`.
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
         useMemoFirebase(() => studentClassId ? query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId)) : null, [firestore, studentClassId])
     );
@@ -448,6 +446,76 @@ function ManagePassages() {
     );
 }
 
+function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
+    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
+        resolver: zodResolver(elaWritingChallengeSchema),
+        defaultValues: {
+            title: '',
+            prompt: '',
+            challengeType: 'Creative Writing',
+            classId: '',
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
+        if (!user) return;
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
+                ...values,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success', description: 'New writing challenge has been created.' });
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error adding challenge:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the challenge.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                <FormField control={form.control} name="challengeType" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                            <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                            <SelectItem value="Summarization">Summarization</SelectItem>
+                            <SelectItem value="Essay">Essay</SelectItem>
+                        </SelectContent></Select>
+                    <FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Challenge</Button>
+            </form>
+        </Form>
+    );
+}
+
 function ManageWritingChallenges() {
     const firestore = useFirestore();
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => query(collection(firestore, 'ela_writing_challenges')), [firestore]));
@@ -620,6 +688,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
+    // 1. DEDICATED STATE FOR CLASS ID
     const [selectedClassId, setSelectedClassId] = useState<string>("");
 
     const [generatedChallenge, setGeneratedChallenge] = useState<{
@@ -636,6 +705,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         defaultValues: { topic: '', challengeType: 'Creative Writing' as const }
     });
 
+    // Generate Function
     async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay' }) {
         setIsGenerating(true);
         setGeneratedChallenge(null);
@@ -653,22 +723,30 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         }
     }
 
+    // Save Function
     async function onSave() {
+        // --- 2. THE DIRECT AUTH FIX ---
         const auth = getAuth();
         const currentUser = auth.currentUser || hookUser;
 
-        const finalClassId = selectedClassId;
+        // 3. DEBUGGING
+        console.log("--- SAVE ATTEMPT ---");
+        console.log("Class ID:", selectedClassId);
+        console.log("Direct Firebase User:", auth.currentUser);
+        console.log("React Hook User:", hookUser);
 
         if (!generatedChallenge) {
-             toast({ variant: 'destructive', title: 'Error', description: 'No challenge data found. Please generate again.' });
+             toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
              return;
         }
-        if (!finalClassId) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class from the dropdown.' });
+
+        if (!selectedClassId) {
+             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class.' });
              return;
         }
+
         if (!currentUser) {
-             toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
+             toast({ variant: 'destructive', title: 'Critical Auth Error', description: 'Browser has no session. Try Hard Refresh (Ctrl+F5).' });
              return;
         }
 
@@ -678,7 +756,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 title: generatedChallenge.title,
                 prompt: generatedChallenge.prompt,
                 challengeType: generatedChallenge.challengeType,
-                classId: finalClassId,
+                classId: selectedClassId,
                 createdBy: currentUser.uid,
                 createdAt: serverTimestamp(),
             });
@@ -751,6 +829,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         </div>
     );
 }
+
 
 // --- Main ELA Club Page Component ---
 export default function ElaClubPage() {
