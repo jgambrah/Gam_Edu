@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, orderBy, query, addDoc, where } from 'firebase/firestore';
 import { GlobalLeaderboardEntry, MathProblem, mathProblemSchema, Class, Student } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -97,7 +97,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
     const form = useForm<z.infer<typeof mathProblemSchema>>({
         resolver: zodResolver(mathProblemSchema),
@@ -163,7 +163,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 
 function ManageProblems() {
     const firestore = useFirestore();
-    const { data: problems, isLoading } = useCollection<MathProblem>(useMemoFirebase(() => query(collection(firestore, 'math_problems')), [firestore]));
+    const { data: problems, isLoading } = useCollection<MathProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'math_problems')) : null, [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
@@ -213,17 +213,18 @@ export default function MathsClubPage() {
   const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
   const { role } = useRole();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
+    useMemoFirebase(() => (user && firestore && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
   );
   const studentClassId = studentData?.[0]?.classId;
   
   const problemsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
     if (isTeacherOrAdmin) {
       return query(collection(firestore, 'math_problems'));
     }
@@ -275,7 +276,7 @@ export default function MathsClubPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                 {(isLoadingProblems || (role === 'Student' && isLoadingStudent)) ? <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> :
-                (role === 'Student' && !studentClassId) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
+                (role === 'Student' && !studentClassId && !isLoadingStudent) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
                 (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

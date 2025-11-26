@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, orderBy, query, addDoc, serverTimestamp, where } from 'firebase/firestore';
 import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact, Class, Student } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -46,7 +46,7 @@ import { AiProblemGenerator } from '../ai-problem-generator';
 function Leaderboard() {
     const firestore = useFirestore();
     const leaderboardQuery = useMemoFirebase(
-      () => query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')),
+      () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
       [firestore]
     );
     const { data: leaderboard, isLoading } = useCollection<ScienceLeaderboardEntry>(leaderboardQuery);
@@ -98,7 +98,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes'): null, [firestore]));
 
     const form = useForm<z.infer<typeof scienceProblemSchema>>({
         resolver: zodResolver(scienceProblemSchema),
@@ -165,7 +165,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 
 function ManageProblems() {
     const firestore = useFirestore();
-    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => query(collection(firestore, 'science_problems')), [firestore]));
+    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
@@ -218,7 +218,7 @@ function FactOfTheDay() {
     const [isPosting, setIsPosting] = useState(false);
     const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-    const factsQuery = useMemoFirebase(() => query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')), [firestore]);
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
     const latestFact = facts?.[0];
 
@@ -273,17 +273,18 @@ export default function ScienceClubPage() {
   const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
   const { role } = useRole();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
   
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
+    useMemoFirebase(() => (user && firestore && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
   );
   const studentClassId = studentData?.[0]?.classId;
   
   const problemsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
     if (isTeacherOrAdmin) {
       return query(collection(firestore, 'science_problems'));
     }
@@ -338,7 +339,7 @@ export default function ScienceClubPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                 {(isLoadingProblems || (role === 'Student' && isLoadingStudent)) ? <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> :
-                (role === 'Student' && !studentClassId) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
+                (role === 'Student' && !studentClassId && !isLoadingStudent) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
                 (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

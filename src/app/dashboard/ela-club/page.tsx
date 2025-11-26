@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, addDoc, where, serverTimestamp, getDocs, doc } from 'firebase/firestore';
 import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -54,12 +54,13 @@ function ReadingPracticeTab() {
 
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => 
-      (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
+      (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
     [firestore, user, isStaff])
   );
   const studentClassId = studentData?.[0]?.classId;
 
   const passagesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
     if (isStaff) {
       return query(collection(firestore, 'ela_reading_passages'));
     }
@@ -172,12 +173,13 @@ function WritingSubmissionTab() {
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-        useMemoFirebase(() => (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
+        useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
     );
     const studentClassId = studentData?.[0]?.classId;
 
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
         useMemoFirebase(() => {
+            if(!firestore) return null;
             if (isStaff) return query(collection(firestore, 'ela_writing_challenges'));
             if (studentClassId) return query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId));
             return null;
@@ -185,7 +187,7 @@ function WritingSubmissionTab() {
     );
 
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
-        useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
+        useMemoFirebase(() => user && firestore ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
     );
 
     const isLoading = isLoadingChallenges || isLoadingSubmissions || (isLoadingStudent && !isStaff);
@@ -259,7 +261,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
 
   const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
 
-  const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+  const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
   async function onGenerate() {
     if (!topic) {
@@ -367,7 +369,7 @@ function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
     const form = useForm<z.infer<typeof elaReadingPassageSchema>>({
         resolver: zodResolver(elaReadingPassageSchema),
@@ -442,7 +444,7 @@ function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 
 function ManagePassages() {
     const firestore = useFirestore();
-    const { data: passages, isLoading } = useCollection<ElaReadingPassage>(useMemoFirebase(() => query(collection(firestore, 'ela_reading_passages')), [firestore]));
+    const { data: passages, isLoading } = useCollection<ElaReadingPassage>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_reading_passages')) : null, [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
@@ -500,7 +502,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     } | null>(null);
 
     const { data: classes } = useCollection<Class>(
-        useMemoFirebase(() => collection(firestore, 'classes'), [firestore])
+        useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
     );
 
     const form = useForm({
@@ -625,8 +627,8 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
 function ManageWritingChallenges() {
     const firestore = useFirestore();
-    const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => query(collection(firestore, 'ela_writing_challenges')), [firestore]));
-    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => query(collection(firestore, 'ela_user_submissions')), [firestore]));
+    const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_writing_challenges')) : null, [firestore]));
+    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_user_submissions')) : null, [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
     
@@ -683,7 +685,7 @@ function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
     const form = useForm<z.infer<typeof elaGrammarDrillSchema>>({
         resolver: zodResolver(elaGrammarDrillSchema),
@@ -746,7 +748,7 @@ function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
 
 function ManageDrills() {
     const firestore = useFirestore();
-    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => query(collection(firestore, 'ela_grammar_drills')), [firestore]));
+    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_grammar_drills')) : null, [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
@@ -794,7 +796,7 @@ function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
     const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
         resolver: zodResolver(elaWritingChallengeSchema),
