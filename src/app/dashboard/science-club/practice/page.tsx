@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { FormItem, FormControl } from '@/components/ui/form';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
@@ -21,7 +20,7 @@ function QuizComponent() {
   const difficulty = searchParams.get('difficulty');
 
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
   const { data: studentData } = useCollection<Student>(
@@ -134,7 +133,7 @@ function QuizComponent() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin" />;
   }
 
