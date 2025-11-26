@@ -215,10 +215,10 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
     const form = useForm({
-        defaultValues: { topic: '', reading_level: 'Grade 9', numQuestions: 3, classId: '' }
+        defaultValues: { topic: '', reading_level: 'Grade 9', numQuestions: '3', classId: '' }
     });
 
-    async function onGenerate(values: { topic: string; reading_level: string; numQuestions: number | string; classId: string; }) {
+    async function onGenerate(values: { topic: string; reading_level: string; numQuestions: string; classId: string; }) {
         setIsGenerating(true);
         setGeneratedPassage(null);
         toast({ title: 'Generating Passage...', description: 'Please wait while the AI writes your passage and questions.' });
@@ -229,7 +229,6 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
                 numQuestions: Number(values.numQuestions),
             });
             setGeneratedPassage({ ...result, ...values, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: []})) });
-            form.setValue('classId', values.classId);
             toast({ title: 'Passage Generated!', description: 'Review the content below before saving.' });
         } catch (error) {
             console.error('Error generating passage:', error);
@@ -570,7 +569,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         try {
             const result = await generateWritingChallenge(values);
             setGeneratedChallenge(result);
-            form.setValue('classId', values.classId);
+            form.setValue('classId', values.classId); // Ensure classId is kept in form state
             toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
         } catch (error) {
             console.error('Error generating challenge:', error);
