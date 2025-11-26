@@ -33,6 +33,10 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/students/$(request.auth.uid));
     }
 
+    function getStudentClassId() {
+        return get(/databases/$(database)/documents/students/$(request.auth.uid)).data.classId;
+    }
+
     function isParent() {
       return exists(/databases/$(database)/documents/parents/$(request.auth.uid));
     }
@@ -230,7 +234,8 @@ service cloud.firestore {
     }
     
     match /math_problems/{problemId} {
-        allow get, list: if isTeacher() || isAdmin();
+        allow get: if isSignedIn();
+        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
         allow write: if isTeacher() || isAdmin();
     }
 
@@ -246,7 +251,9 @@ service cloud.firestore {
     }
 
     match /science_problems/{problemId} {
-        allow read, write: if isTeacher() || isAdmin();
+        allow get: if isSignedIn();
+        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
+        allow write: if isTeacher() || isAdmin();
     }
 
     match /science_results/{resultId} {
@@ -266,17 +273,20 @@ service cloud.firestore {
     }
 
     match /ela_grammar_drills/{drillId} {
-        allow read: if isSignedIn();
+        allow get: if isSignedIn();
+        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
         allow write: if isTeacher() || isAdmin();
     }
 
     match /ela_reading_passages/{passageId} {
         allow read: if isSignedIn();
+        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
         allow write: if isTeacher() || isAdmin();
     }
 
     match /ela_writing_challenges/{challengeId} {
         allow read: if isSignedIn();
+        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
         allow write: if isTeacher() || isAdmin();
     }
     
