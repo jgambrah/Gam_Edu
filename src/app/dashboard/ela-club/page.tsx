@@ -653,6 +653,108 @@ function ManageWritingChallenges() {
     );
 }
 
+function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
+    const form = useForm<z.infer<typeof elaGrammarDrillSchema>>({
+        resolver: zodResolver(elaGrammarDrillSchema),
+        defaultValues: {
+            topic: '',
+            type: 'MCQ',
+            question_prompt: '',
+            options: [],
+            correct_answer: '',
+            classId: '',
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof elaGrammarDrillSchema>) {
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_grammar_drills'), values);
+            toast({ title: 'Success', description: 'New grammar drill has been added.' });
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error adding drill:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the drill.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <FormField control={form.control} name="topic" render={({ field }) => (
+                    <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Punctuation" {...field}/></FormControl><FormMessage/></FormItem>
+                )}/>
+                <FormField control={form.control} name="question_prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Question Prompt</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
+                )}/>
+                
+                 <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Drill</Button>
+            </form>
+        </Form>
+    );
+}
+
+function ManageDrills() {
+    const firestore = useFirestore();
+    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => query(collection(firestore, 'ela_grammar_drills')), [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Grammar Drill Bank</CardTitle>
+                    <CardDescription>Manage grammar and mechanics practice questions.</CardDescription>
+                </div>
+                 <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any grammar topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="ELA Grammar" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Drill</Button></DialogTrigger>
+                        <DialogContent><DialogHeader><DialogTitle>Create New Grammar Drill</DialogTitle></DialogHeader><DrillCreationForm setOpen={setIsFormOpen}/></DialogContent>
+                    </Dialog>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                <Table>
+                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Type</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {drills?.map(p => (
+                            <TableRow key={p.id}>
+                                <TableCell>{p.topic}</TableCell>
+                                <TableCell>{p.type}</TableCell>
+                                <TableCell className="max-w-md truncate">{p.question_prompt}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 
 // --- Main ELA Club Page Component ---
 export default function ElaClubPage() {
