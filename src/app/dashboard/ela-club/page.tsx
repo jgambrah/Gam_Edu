@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2 } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
@@ -19,7 +19,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { collection, query, addDoc, where, serverTimestamp, getDocs, doc } from 'firebase/firestore';
 import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableRow, TableHeader, TableCell, TableBody, TableHead } from '@/components/ui/table';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -43,76 +43,246 @@ import { generateWritingChallenge } from '@/ai/flows/generate-writing-challenge-
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getAuth } from 'firebase/auth';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+
+// --- SUB-COMPONENT: The Reading Reader Modal ---
+function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPassage | null, open: boolean, setOpen: (o: boolean) => void }) {
+    const [answers, setAnswers] = useState<Record<number, string>>({});
+    const [showResults, setShowResults] = useState(false);
+    const firestore = useFirestore();
+    const { user } = useUser();
+
+    if (!passage) return null;
+
+    // Calculate score
+    const calculateScore = () => {
+        let correct = 0;
+        let total = passage.question_set.length;
+        passage.question_set.forEach((q, idx) => {
+            // Simple case-insensitive match for short answers, exact match for MCQ
+            if (answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase()) {
+                correct++;
+            }
+        });
+        return { correct, total, percentage: (correct / total) * 100 };
+    };
+
+    const handleSubmit = async () => {
+        setShowResults(true);
+        const { percentage } = calculateScore();
+
+        // Save progress to Firestore
+        if (user && firestore) {
+            try {
+                await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
+                    userId: user.uid,
+                    challenge_id: passage.id,
+                    challenge_title: passage.title,
+                    type: 'Reading Comprehension',
+                    answers: answers,
+                    teacher_score: percentage,
+                    date_submitted: serverTimestamp(),
+                    status: 'Graded'
+                });
+            } catch (e) {
+                console.error("Failed to save reading progress", e);
+            }
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setShowResults(false);
+        setAnswers({});
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={handleClose}>
+            <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>{passage.title}</DialogTitle>
+                    <DialogDescription>Read the passage on the left and answer the questions on the right.</DialogDescription>
+                </DialogHeader>
+                
+                <div className="flex flex-1 gap-6 overflow-hidden min-h-0">
+                    {/* LEFT SIDE: PASSAGE TEXT */}
+                    <div className="w-1/2 flex flex-col border-r pr-6">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <FileText className="h-4 w-4"/> Passage Text 
+                            <Badge variant="outline">{passage.reading_level}</Badge>
+                        </h4>
+                        <ScrollArea className="flex-1 bg-muted/30 p-4 rounded-md border">
+                            <div className="prose prose-sm max-w-none whitespace-pre-wrap">
+                                {passage.passage_text}
+                            </div>
+                        </ScrollArea>
+                    </div>
+
+                    {/* RIGHT SIDE: QUESTIONS */}
+                    <div className="w-1/2 flex flex-col">
+                        <h4 className="font-semibold mb-2">Comprehension Questions</h4>
+                        <ScrollArea className="flex-1 pr-4">
+                            <div className="space-y-6">
+                                {passage.question_set.map((q, idx) => {
+                                    const isCorrect = answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase();
+                                    return (
+                                        <div key={idx} className={cn("p-4 border rounded-lg", 
+                                            showResults && isCorrect ? "bg-green-50 border-green-200" : "",
+                                            showResults && !isCorrect ? "bg-red-50 border-red-200" : ""
+                                        )}>
+                                            <p className="font-medium mb-3">{idx + 1}. {q.question}</p>
+                                            
+                                            {/* RENDER OPTIONS OR INPUT */}
+                                            {q.options && q.options.length > 0 ? (
+                                                <RadioGroup 
+                                                    value={answers[idx] || ''} 
+                                                    onValueChange={(val) => setAnswers(prev => ({...prev, [idx]: val}))}
+                                                    disabled={showResults}
+                                                >
+                                                    {q.options.map((opt, i) => (
+                                                        <div key={i} className="flex items-center space-x-2">
+                                                            <RadioGroupItem value={opt} id={`q${idx}-opt${i}`} />
+                                                            <Label htmlFor={`q${idx}-opt${i}`} className="font-normal cursor-pointer">{opt}</Label>
+                                                        </div>
+                                                    ))}
+                                                </RadioGroup>
+                                            ) : (
+                                                <Input 
+                                                    placeholder="Type your answer..." 
+                                                    value={answers[idx] || ''}
+                                                    onChange={(e) => setAnswers(prev => ({...prev, [idx]: e.target.value}))}
+                                                    disabled={showResults}
+                                                />
+                                            )}
+
+                                            {/* SHOW FEEDBACK */}
+                                            {showResults && (
+                                                <div className="mt-2 text-xs font-semibold">
+                                                    {isCorrect ? (
+                                                        <span className="text-green-600 flex items-center gap-1"><CheckCircle2 className="h-3 w-3"/> Correct</span>
+                                                    ) : (
+                                                        <span className="text-red-600">Correct Answer: {q.correct_answer_key}</span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </ScrollArea>
+                    </div>
+                </div>
+
+                <DialogFooter className="pt-4 border-t mt-4">
+                    {!showResults ? (
+                        <Button onClick={handleSubmit} className="w-full md:w-auto">Submit Answers</Button>
+                    ) : (
+                        <div className="flex justify-between w-full items-center">
+                            <div className="font-bold">
+                                Score: {calculateScore().correct} / {passage.question_set.length}
+                            </div>
+                            <Button onClick={handleClose}>Finish Practice</Button>
+                        </div>
+                    )}
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 // --- Reading Practice Tab ---
 function ReadingPracticeTab() {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser();
   const { role } = useRole(); 
   
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
+  // Dropdown states
+  const [selectedLevel, setSelectedLevel] = useState('');
+  const [selectedPassageId, setSelectedPassageId] = useState('');
+  const [isPassageOpen, setIsPassageOpen] = useState(false);
+
+  // Data fetching
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => 
-      (user && firestore && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
-    [firestore, user, role])
+    useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
   );
   const studentClassId = studentData?.[0]?.classId;
 
   const passagesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    if (isStaff) {
-      return query(collection(firestore, 'ela_reading_passages'));
-    }
-    if (role === 'Student' && studentClassId) {
-      return query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId));
-    }
+    if (isStaff) return query(collection(firestore, 'ela_reading_passages'));
+    if (studentClassId) return query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId));
     return null;
-  }, [firestore, studentClassId, isStaff, role]);
+  }, [firestore, studentClassId, isStaff]);
 
   const { data: passages, isLoading: isLoadingPassages } = useCollection<ElaReadingPassage>(passagesQuery);
 
-  const isLoading = (role === 'Student' && isLoadingStudent) || isLoadingPassages;
+  const isLoading = isUserLoading || isLoadingStudent || isLoadingPassages;
+
+  // Derived data for dropdowns
+  const uniqueLevels = useMemo(() => {
+    if (!passages) return [];
+    return Array.from(new Set(passages.map(p => p.reading_level))).sort();
+  }, [passages]);
+
+  const filteredPassages = useMemo(() => {
+    if (!passages || !selectedLevel) return [];
+    return passages.filter(p => p.reading_level === selectedLevel);
+  }, [passages, selectedLevel]);
+  
+  const activePassage = useMemo(() => {
+      return passages?.find(p => p.id === selectedPassageId) || null;
+  }, [passages, selectedPassageId]);
+
+  const handleStart = () => {
+    if (selectedPassageId) {
+      setIsPassageOpen(true);
+    }
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Reading Comprehension Practice</CardTitle>
-        <CardDescription>
-            {isStaff ? "Viewing ALL passages (Teacher View)" : "Select a passage to read."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? <Skeleton className="h-40 w-full" /> :
-          (role === 'Student' && !studentClassId) ? (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Reading Comprehension Practice</CardTitle>
+          <CardDescription>Select a reading level and a passage to begin.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex flex-col space-y-4"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
+          ) : (!isStaff && !studentClassId) ? (
             <p className="text-center text-muted-foreground py-10">You are not assigned to a class. Please contact an administrator.</p>
-          ) :
-          passages && passages.length > 0 ? (
-            <div className="space-y-4">
-              {passages.map(passage => (
-                <Card key={passage.id}>
-                  <CardHeader>
-                    <CardTitle>{passage.title}</CardTitle>
-                    <CardDescription>
-                        Level: {passage.reading_level} 
-                        {isStaff && <span className="ml-2 text-xs text-muted-foreground">(Class: {passage.classId})</span>}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button asChild>
-                      <Link href={`/dashboard/ela-club/reading/${passage.id}`}>Start Reading</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+          ) : passages && passages.length > 0 ? (
+            <div className="space-y-6 max-w-xl mx-auto py-4">
+              <div className="space-y-2">
+                <Label>1. Choose a Reading Level</Label>
+                <Select value={selectedLevel} onValueChange={val => { setSelectedLevel(val); setSelectedPassageId(''); }}>
+                  <SelectTrigger><SelectValue placeholder="Select Reading Level" /></SelectTrigger>
+                  <SelectContent>{uniqueLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>2. Choose a Passage</Label>
+                <Select value={selectedPassageId} onValueChange={setSelectedPassageId} disabled={!selectedLevel}>
+                  <SelectTrigger><SelectValue placeholder={!selectedLevel ? "Select a level first" : "Select a passage"} /></SelectTrigger>
+                  <SelectContent>{filteredPassages.map(passage => <SelectItem key={passage.id} value={passage.id}>{passage.title}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <Button className="w-full" size="lg" onClick={handleStart} disabled={!selectedPassageId}>Start Reading</Button>
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-12">
-                {isStaff ? "No passages found in the system." : "No reading passages are available for your class yet."}
-            </p>
+            <p className="text-center text-muted-foreground py-12">No reading passages available.</p>
           )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      <ActivePassageDialog
+        passage={activePassage}
+        open={isPassageOpen}
+        setOpen={setIsPassageOpen}
+      />
+    </>
   );
 }
 
