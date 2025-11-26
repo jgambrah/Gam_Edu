@@ -1,23 +1,23 @@
 'use client';
 
 import { useAuth, useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, doc, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, doc } from 'firebase/firestore';
 import { Assignment, StudentSubmission, Quiz, QuizAttempt, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { AssignmentSubmissionDialog } from './assignment-submission-dialog';
 import { setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { BookText, FileUp, Type } from 'lucide-react';
+import { BookText, FileUp, Type, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRole } from '@/context/role-context';
 
 export default function StudentAssignmentsView() {
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -25,29 +25,51 @@ export default function StudentAssignmentsView() {
   const [isSubmissionDialogOpen, setSubmissionDialogOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
 
-  const studentQuery = useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore]);
+  // 1. Get the student's data to find their classId
+  const studentQuery = useMemoFirebase(() => 
+    (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
+    [user, firestore]
+  );
   const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(studentQuery);
-  const student = studentData?.[0];
+  const student = useMemo(() => studentData?.[0], [studentData]);
+  const studentClassId = student?.classId;
 
-  const assignmentsQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'assignments'), where('classId', '==', student.classId)) : null, [student, firestore]);
+  // 2. Fetch assignments for the student's class
+  const assignmentsQuery = useMemoFirebase(() => 
+    (studentClassId && firestore) ? query(collection(firestore, 'assignments'), where('classId', '==', studentClassId)) : null,
+    [studentClassId, firestore]
+  );
   const { data: assignments, isLoading: areAssignmentsLoading } = useCollection<Assignment>(assignmentsQuery);
 
-  const quizzesQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'quizzes'), where('classId', '==', student.classId)) : null, [student, firestore]);
+  // 3. Fetch quizzes for the student's class
+  const quizzesQuery = useMemoFirebase(() => 
+    (studentClassId && firestore) ? query(collection(firestore, 'quizzes'), where('classId', '==', studentClassId)) : null,
+    [studentClassId, firestore]
+  );
   const { data: quizzes, isLoading: areQuizzesLoading } = useCollection<Quiz>(quizzesQuery);
   
-  const submissionsQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'submissions'), where('studentId', '==', student.uid)) : null, [student, firestore]);
+  // 4. Fetch all submissions by this student
+  const submissionsQuery = useMemoFirebase(() => 
+    (user && firestore) ? query(collection(firestore, 'submissions'), where('studentId', '==', user.uid)) : null, 
+    [user, firestore]
+  );
   const { data: submissions, isLoading: areSubmissionsLoading } = useCollection<StudentSubmission>(submissionsQuery);
 
-  const quizAttemptsQuery = useMemoFirebase(() => (student && firestore) ? query(collection(firestore, 'quizAttempts'), where('studentId', '==', student.uid)) : null, [student, firestore]);
+  // 5. Fetch all quiz attempts by this student
+  const quizAttemptsQuery = useMemoFirebase(() => 
+    (user && firestore) ? query(collection(firestore, 'quizAttempts'), where('studentId', '==', user.uid)) : null, 
+    [user, firestore]
+  );
   const { data: quizAttempts, isLoading: areAttemptsLoading } = useCollection<QuizAttempt>(quizAttemptsQuery);
 
-  const isLoading = isStudentLoading || areAssignmentsLoading || areQuizzesLoading || areSubmissionsLoading || areAttemptsLoading;
+
+  // Combined loading state
+  const isLoading = isUserLoading || isStudentLoading || areAssignmentsLoading || areQuizzesLoading || areSubmissionsLoading || areAttemptsLoading;
 
   const handleFileUpload = async (assignment: Assignment) => {
     if (!user || !student || !firestore) return;
     
     // This is a placeholder for file upload logic.
-    // In a real app, you would use Firebase Storage.
     const submission: Omit<StudentSubmission, 'id'> = {
       assignmentId: assignment.id,
       studentId: user.uid,
@@ -72,10 +94,24 @@ export default function StudentAssignmentsView() {
     setSubmissionDialogOpen(true);
   };
   
-  const combinedList = [
-    ...(assignments || []).map(item => ({ ...item, type: 'assignment' })),
-    ...(quizzes || []).map(item => ({...item, type: 'quiz' }))
-  ].sort((a,b) => b.createdAt.toDate() - a.createdAt.toDate());
+  const combinedList = useMemo(() => {
+    const allItems = [
+        ...(assignments || []).map(item => ({ ...item, type: 'assignment' as const })),
+        ...(quizzes || []).map(item => ({...item, type: 'quiz' as const }))
+    ];
+    return allItems.sort((a,b) => b.createdAt.toDate() - a.createdAt.toDate());
+  }, [assignments, quizzes]);
+
+  const submissionsMap = useMemo(() => {
+    if (!submissions) return new Map();
+    return new Map(submissions.map(s => [s.assignmentId, s]));
+  }, [submissions]);
+
+  const attemptsMap = useMemo(() => {
+    if (!quizAttempts) return new Map();
+    return new Map(quizAttempts.map(a => [a.quizId, a]));
+  }, [quizAttempts]);
+
 
   return (
     <div className="space-y-6">
@@ -94,8 +130,13 @@ export default function StudentAssignmentsView() {
             <div className="space-y-4">
               {combinedList.map((item) => {
                 const isAssignment = item.type === 'assignment';
-                const submission = submissions?.find((s) => s.assignmentId === item.id);
-                const quizAttempt = quizAttempts?.find(qa => qa.quizId === item.id);
+                let submission, quizAttempt;
+
+                if (isAssignment) {
+                    submission = submissionsMap.get(item.id);
+                } else {
+                    quizAttempt = attemptsMap.get(item.id);
+                }
 
                 return (
                   <Card key={item.id}>
