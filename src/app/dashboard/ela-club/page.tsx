@@ -40,6 +40,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { generateReadingPassage } from '@/ai/flows/generate-reading-passage-flow';
 import { generateWritingChallenge } from '@/ai/flows/generate-writing-challenge-flow';
+import { Label } from '@/components/ui/label';
 
 // --- Reading Practice Tab ---
 function ReadingPracticeTab() {
@@ -296,7 +297,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
                                 </div>
                             </ScrollArea>
                             <div className="space-y-2">
-                                <FormLabel>Assign to Class</FormLabel>
+                                <Label>Assign to Class</Label>
                                 <Select onValueChange={setClassId} value={classId}>
                                     <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
                                     <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
@@ -502,7 +503,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         <div className="space-y-4">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={form.control} name="topic" render={({ field }) => (
                             <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
@@ -513,10 +514,10 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                                 <SelectItem value="Essay">Essay</SelectItem>
                             </SelectContent></Select><FormMessage /></FormItem>
                         )}/>
-                        <FormField control={form.control} name="gradeLevel" render={({ field }) => (
-                            <FormItem><FormLabel>Target Grade Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
                     </div>
+                     <FormField control={form.control} name="gradeLevel" render={({ field }) => (
+                        <FormItem><FormLabel>Target Grade Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
                     <Button type="submit" disabled={isGenerating}>
                         {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                         Generate Challenge
@@ -672,6 +673,79 @@ function ManageWritingChallenges() {
     );
 }
 
+function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
+    const form = useForm<z.infer<typeof elaGrammarDrillSchema>>({
+        resolver: zodResolver(elaGrammarDrillSchema),
+        defaultValues: {
+            topic: '',
+            type: 'MCQ',
+            question_prompt: '',
+            options: ['', '', '', ''],
+            correct_answer: '',
+            classId: '',
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof elaGrammarDrillSchema>) {
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_grammar_drills'), values);
+            toast({ title: 'Success', description: 'New grammar drill has been added.' });
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error adding drill:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the drill.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField control={form.control} name="topic" render={({ field }) => (
+                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Punctuation" {...field}/></FormControl><FormMessage/></FormItem>
+                    )}/>
+                     <FormField control={form.control} name="type" render={({ field }) => (
+                        <FormItem><FormLabel>Drill Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="MCQ">Multiple Choice</SelectItem><SelectItem value="Drag and Drop" disabled>Drag and Drop (Coming Soon)</SelectItem></SelectContent></Select><FormMessage/></FormItem>
+                    )}/>
+                </div>
+                <FormField control={form.control} name="question_prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Question Prompt</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
+                )}/>
+                <div className="grid grid-cols-2 gap-4">
+                    {form.getValues('options')?.map((_, index) => (
+                        <FormField key={index} control={form.control} name={`options.${index}`} render={({ field }) => (
+                            <FormItem><FormLabel>Option {index + 1}</FormLabel><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
+                        )}/>
+                    ))}
+                </div>
+                 <FormField control={form.control} name="correct_answer" render={({ field }) => (
+                    <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Drill</Button>
+            </form>
+        </Form>
+    );
+}
+
+
 function ManageDrills() {
     const firestore = useFirestore();
     const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => query(collection(firestore, 'ela_grammar_drills')), [firestore]));
@@ -784,4 +858,4 @@ export default function ElaClubPage() {
   );
 }
 
-
+    
