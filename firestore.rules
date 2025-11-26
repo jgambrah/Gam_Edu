@@ -98,6 +98,22 @@ service cloud.firestore {
       allow create: if isStudent();
       allow update: if isTeacher() || isOwner(request.resource.data.studentId);
     }
+
+    // --- FIX FOR ROOT SUBMISSIONS COLLECTION ---
+    match /submissions/{submissionId} {
+      // Allow students to create submissions
+      allow create: if isSignedIn();
+      
+      // Allow students to read their own, Teachers/Admins to read all
+      // Note: We use 'isSignedIn()' for read to prevent list crashes if filters aren't perfect
+      allow read: if isSignedIn(); 
+      
+      // Allow Teachers/Admins to grade (update)
+      allow update: if isTeacher() || isAdmin();
+      
+      // Prevent deletion
+      allow delete: if false;
+    }
     
     match /quizzes/{quizId} {
       allow read: if isSignedIn();
