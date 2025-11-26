@@ -2,8 +2,8 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
-import { collection, query, where, serverTimestamp } from 'firebase/firestore';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -78,11 +78,8 @@ function QuizComponent() {
     const finalScore = (correctCount / problems.length) * 10;
     const timeTaken = Math.round((new Date().getTime() - startTime.getTime()) / 1000);
 
-    setScore(finalScore);
-    setIsFinished(true);
-
     try {
-        await addDocumentNonBlocking(collection(firestore, 'user_results'), {
+        await addDoc(collection(firestore, 'user_results'), {
             userId: user.uid,
             topic,
             difficulty,
@@ -91,6 +88,10 @@ function QuizComponent() {
             date_completed: serverTimestamp(),
             correct_count: correctCount,
         });
+        
+        setScore(finalScore);
+        setIsFinished(true);
+
         toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
     } catch (error) {
         console.error("Error saving results: ", error);
