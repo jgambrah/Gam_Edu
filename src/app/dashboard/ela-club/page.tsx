@@ -435,11 +435,14 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const { toast } = useToast();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    
+    // We don't need classId in this state object anymore, strictly strictly speaking, 
+    // but it's fine to leave it. We just won't rely on it for saving.
     const [generatedChallenge, setGeneratedChallenge] = useState<{
         title: string;
         prompt: string;
         challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
-        classId: string;
+        classId?: string; // Made optional to reflect we might rely on form
     } | null>(null);
 
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
@@ -455,6 +458,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
         try {
             const result = await generateWritingChallenge(values);
+            // We still set state to show the preview
             setGeneratedChallenge({ ...result, classId: values.classId });
             toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
         } catch (error) {
@@ -466,14 +470,30 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     }
 
     async function onSave() {
-        if (!generatedChallenge || !generatedChallenge.classId || !user) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Missing information to save challenge.' });
+        // --- FIX START ---
+        // Get the Class ID directly from the form (current value) 
+        // instead of the 'generatedChallenge' state (old value)
+        const currentClassId = form.getValues('classId');
+
+        if (!generatedChallenge || !currentClassId || !user) {
+            toast({ 
+                variant: 'destructive', 
+                title: 'Error', 
+                description: 'Please ensure a Class is selected before saving.' 
+            });
             return;
         }
+        // --- FIX END ---
+
         setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...generatedChallenge,
+                // Spread the generated content (Title, Prompt, Type)
+                title: generatedChallenge.title,
+                prompt: generatedChallenge.prompt,
+                challengeType: generatedChallenge.challengeType,
+                // Use the fresh Class ID from the form
+                classId: currentClassId,
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
             });
