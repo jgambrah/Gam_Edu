@@ -239,7 +239,8 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     }
 
     async function onSave() {
-        if (!generatedPassage || !form.getValues('classId')) {
+        const currentClassId = form.getValues('classId');
+        if (!generatedPassage || !currentClassId) {
             toast({ variant: 'destructive', title: 'Error', description: 'Missing information to save passage.' });
             return;
         }
@@ -247,7 +248,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), {
                 ...generatedPassage,
-                classId: form.getValues('classId'),
+                classId: currentClassId,
             });
             toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
             setOpen(false);
@@ -436,10 +437,11 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     
-    const [generatedChallenge, setGeneratedChallenge] = useState<{
+    const [generatedContent, setGeneratedContent] = useState<{
         title: string;
         prompt: string;
         challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
+        classId: string;
     } | null>(null);
 
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
@@ -450,12 +452,12 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
     async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay', classId: string; }) {
         setIsGenerating(true);
-        setGeneratedChallenge(null);
+        setGeneratedContent(null);
         toast({ title: 'Generating Challenge...', description: 'Please wait while the AI creates a prompt.' });
 
         try {
             const result = await generateWritingChallenge(values);
-            setGeneratedChallenge(result);
+            setGeneratedContent({ ...result, classId: values.classId });
             toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
         } catch (error) {
             console.error('Error generating challenge:', error);
@@ -466,9 +468,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     }
 
     async function onSave() {
-        const currentClassId = form.getValues('classId');
-
-        if (!generatedChallenge || !currentClassId || !user) {
+        if (!generatedContent || !generatedContent.classId || !user) {
             toast({ 
                 variant: 'destructive', 
                 title: 'Error', 
@@ -480,8 +480,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...generatedChallenge,
-                classId: currentClassId,
+                ...generatedContent,
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
             });
@@ -504,7 +503,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                             <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="challengeType" render={({ field }) => (
-                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
                                 <SelectItem value="Creative Writing">Creative Writing</SelectItem>
                                 <SelectItem value="Summarization">Summarization</SelectItem>
                                 <SelectItem value="Essay">Essay</SelectItem>
@@ -521,11 +520,11 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 </form>
             </Form>
 
-            {generatedChallenge && (
+            {generatedContent && (
                 <Card className="bg-muted/50">
-                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>{generatedContent.title}</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
-                        <p className="italic">{generatedChallenge.prompt}</p>
+                        <p className="italic">{generatedContent.prompt}</p>
                         <Button onClick={onSave} disabled={isSaving}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
                         </Button>
@@ -727,7 +726,6 @@ function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         </Form>
     );
 }
-
 
 function ManageDrills() {
     const firestore = useFirestore();

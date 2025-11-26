@@ -79,8 +79,9 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   }
 
   async function onSave() {
-    if (!generatedProblems || !form.getValues('classId') || !form.getValues('topic')) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Missing information to save problems.'});
+    const currentClassId = form.getValues('classId');
+    if (!generatedProblems || !currentClassId || !form.getValues('topic')) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Please ensure a class is selected before saving.'});
         return;
     }
     setIsSaving(true);
@@ -94,7 +95,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
 
     try {
         const batch = writeBatch(firestore);
-        const { topic, difficulty, classId } = form.getValues();
+        const { topic, difficulty } = form.getValues();
 
         generatedProblems.problems.forEach(problem => {
             const problemRef = doc(collection(firestore, collectionName));
@@ -102,7 +103,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
                 ...problem,
                 topic,
                 difficulty,
-                classId,
+                classId: currentClassId,
             };
             if (subject === 'ELA Grammar') {
                 data.type = 'MCQ';
