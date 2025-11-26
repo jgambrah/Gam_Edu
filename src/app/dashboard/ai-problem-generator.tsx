@@ -24,11 +24,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import type { Class } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
+import { getAuth } from 'firebase/auth';
 
 type Subject = 'Math' | 'Science' | 'ELA Grammar';
 
 export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; setOpen: (open: boolean) => void }) {
-  const { user } = useAuth();
+  const { user: hookUser } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -38,8 +39,6 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Easy');
   const [numQuestions, setNumQuestions] = useState(5);
-  const [gradeLevel, setGradeLevel] = useState('Grade 9');
-  
   const [classId, setClassId] = useState('');
 
   const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
@@ -71,12 +70,19 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   }
 
   async function onSave() {
-    if (!generatedProblems || !classId) {
+    const auth = getAuth();
+    const currentUser = auth.currentUser || hookUser;
+
+    if (!generatedProblems) {
+        toast({ variant: 'destructive', title: 'Error', description: 'No problems have been generated.' });
+        return;
+    }
+    if (!classId) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.'});
         return;
     }
-    if (!user) {
-        toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to save.' });
+    if (!currentUser) {
+        toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
         return;
     }
     setIsSaving(true);
@@ -141,9 +147,12 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
               <Label># of Questions</Label>
               <Input type="number" min={1} max={10} value={numQuestions} onChange={(e) => setNumQuestions(Number(e.target.value))} />
             </div>
-            <div className="space-y-2">
-              <Label>Target Grade Level</Label>
-              <Input placeholder="e.g., Grade 9" value={gradeLevel} onChange={(e) => setGradeLevel(e.target.value)} />
+             <div className="space-y-2">
+              <Label>Assign to Class</Label>
+              <Select onValueChange={setClassId} value={classId}>
+                  <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                  <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+              </Select>
             </div>
           </div>
           <Button type="button" onClick={onGenerate} disabled={isGenerating}>
@@ -177,13 +186,6 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
                         ))}
                     </Accordion>
                 </ScrollArea>
-                <div className="space-y-2">
-                    <Label>Assign to Class</Label>
-                    <Select onValueChange={setClassId} value={classId}>
-                        <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                    </Select>
-                </div>
                 <Button onClick={onSave} disabled={isSaving || !classId}>
                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Save Problems
