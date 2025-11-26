@@ -48,49 +48,62 @@ export async function createNewUser(
 
   try {
     let userRecord;
+
+    // Check if a user with this email already exists in Firebase Auth.
     try {
-        // First, check if a user with this email already exists.
         userRecord = await auth.getUserByEmail(email);
-        // If we found a user, it's a duplicate.
-        return { error: `A user with email '${email}' already exists. Please use a different email address.` };
     } catch (error: any) {
-        // 'auth/user-not-found' is the expected error if the user doesn't exist.
-        // In that case, we can proceed with creation.
-        if (error.code !== 'auth/user-not-found') {
-            // For any other error (e.g., network issues), we should stop and report it.
+        if (error.code === 'auth/user-not-found') {
+            // User does not exist, so create them.
+            userRecord = await auth.createUser({
+                email: email,
+                password: password,
+                displayName: `${details?.firstName} ${details?.lastName}`.trim(),
+            });
+        } else {
+            // A different error occurred (e.g., network issue).
             throw error;
         }
     }
-
-    // If we've reached here, it means the user does not exist, so we can create them.
-    userRecord = await auth.createUser({
-        email: email,
-        password: password,
-        displayName: `${details?.firstName} ${details?.lastName}`.trim(),
-    });
     
-    // Instead of custom claims, write role to the correct Firestore collection.
+    // At this point, userRecord is guaranteed to be a valid Auth user record, either existing or newly created.
     const selectedRole = role || 'Parent';
 
     if (selectedRole === 'Parent') {
-        const parentDocRef = firestore.collection('parents').doc(userRecord.uid);
-        await parentDocRef.set({
-            uid: userRecord.uid,
-            email: email,
-            firstName: details?.firstName,
-            lastName: details?.lastName,
-            // ... any other parent-specific fields
-        });
+        const docRef = firestore.collection('parents').doc(userRecord.uid);
+        const docSnap = await docRef.get();
+        if (!docSnap.exists) {
+            await docRef.set({
+                uid: userRecord.uid,
+                email: email,
+                firstName: details?.firstName,
+                lastName: details?.lastName,
+            });
+        }
+    } else if (selectedRole === 'Student') {
+        const docRef = firestore.collection('students').doc(userRecord.uid);
+        const docSnap = await docRef.get();
+        if (!docSnap.exists) {
+            await docRef.set({
+                uid: userRecord.uid,
+                email: email,
+                firstName: details?.firstName,
+                lastName: details?.lastName,
+                 // Add any other student-specific fields here from the form if needed
+            });
+        }
     } else { // All other roles are considered 'staff'
-        const staffDocRef = firestore.collection('staff').doc(userRecord.uid);
-        await staffDocRef.set({
-            uid: userRecord.uid,
-            email: email,
-            role: selectedRole,
-            firstName: details?.firstName,
-            lastName: details?.lastName,
-             // ... any other staff-specific fields
-        });
+        const docRef = firestore.collection('staff').doc(userRecord.uid);
+        const docSnap = await docRef.get();
+        if (!docSnap.exists) {
+            await docRef.set({
+                uid: userRecord.uid,
+                email: email,
+                role: selectedRole,
+                firstName: details?.firstName,
+                lastName: details?.lastName,
+            });
+        }
     }
 
     return { uid: userRecord.uid };
