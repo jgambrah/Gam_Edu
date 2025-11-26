@@ -1,10 +1,9 @@
-
 'use client';
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
+import { collection, query, where, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -85,7 +84,7 @@ function QuizComponent() {
     setIsFinished(true);
 
     try {
-        await addDoc(collection(firestore, 'science_results'), {
+        await addDocumentNonBlocking(collection(firestore, 'science_results'), {
             userId: user.uid,
             topic,
             difficulty,
@@ -140,7 +139,7 @@ function QuizComponent() {
         <p className="font-semibold text-lg">{currentProblem.question_text}</p>
         <RadioGroup onValueChange={(value) => handleAnswerChange(currentQuestionIndex, value)}>
           {currentProblem.options?.map((option, i) => (
-            <div key={i} className="flex items-center space-x-3 space-y-0">
+            <div key={i} className="flex items-center space-x-3">
               <RadioGroupItem value={String(option)} id={`q${currentQuestionIndex}-o${i}`} />
               <Label htmlFor={`q${currentQuestionIndex}-o${i}`} className="font-normal">{option}</Label>
             </div>
