@@ -92,7 +92,8 @@ export function AiChat() {
                   {message.role === 'model' && <Bot className="h-6 w-6 text-primary flex-shrink-0" />}
                   <div
                     className={cn(
-                      'rounded-lg p-3 max-w-[80%] text-sm',
+                      'rounded-lg p-3 max-w-[80%]',
+                      'prose prose-sm',
                       message.role === 'user'
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted'
