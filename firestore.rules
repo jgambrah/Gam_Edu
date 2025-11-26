@@ -87,6 +87,15 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     
+    // --- ATTENDANCE RULES ---
+    match /attendance/{attendanceId} {
+      // Allow Teachers and Admins to record/update attendance
+      allow write: if isTeacher() || isAdmin();
+      
+      // Allow Teachers, Admins, and signed-in users (like parents checking history) to read
+      allow read, list: if isSignedIn();
+    }
+    
     match /assignments/{assignmentId} {
       allow read: if isSignedIn();
       allow create: if isTeacher();
@@ -324,5 +333,4 @@ service cloud.firestore {
     }
   }
 }
-
     
