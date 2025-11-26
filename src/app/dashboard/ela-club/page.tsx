@@ -212,9 +212,9 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
   const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
-
-  // State for form inputs
+  
   const [topic, setTopic] = useState('');
   const [readingLevel, setReadingLevel] = useState('Grade 9');
   const [numQuestions, setNumQuestions] = useState(3);
@@ -237,8 +237,10 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
         reading_level: readingLevel,
         numQuestions: numQuestions,
       });
-      // Temporarily create a valid schema object for state, classId will be set before saving
-      setGeneratedPassage({ ...result, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer'})), classId: '' });
+      
+      const passageData = { ...result, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer' as const})), classId: '' };
+      setGeneratedPassage(passageData);
+
       toast({ title: 'Passage Generated!', description: 'Review the content and select a class to save.' });
     } catch (error) {
       console.error('Error generating passage:', error);
@@ -466,7 +468,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     );
 
     async function onGenerate() {
-        if (!topic || !challengeType || !gradeLevel) {
+        if (!topic || !challengeType) {
             toast({ variant: 'destructive', title: 'Missing Information', description: 'Please fill out all fields before generating.'});
             return;
         }
@@ -517,7 +519,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     return (
         <div className="space-y-4">
              <div className="space-y-4 p-4 border rounded-md">
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Topic/Theme</Label>
                         <Input placeholder="e.g., A Journey to Mars" value={topic} onChange={e => setTopic(e.target.value)} />
@@ -532,10 +534,6 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                                 <SelectItem value="Essay">Essay</SelectItem>
                             </SelectContent>
                         </Select>
-                    </div>
-                     <div className="space-y-2">
-                        <Label>Target Grade Level</Label>
-                        <Input placeholder="e.g., Grade 9" value={gradeLevel} onChange={e => setGradeLevel(e.target.value)} />
                     </div>
                 </div>
                 <Button type="button" onClick={onGenerate} disabled={isGenerating}>
@@ -866,4 +864,3 @@ export default function ElaClubPage() {
     </div>
   );
 }
-

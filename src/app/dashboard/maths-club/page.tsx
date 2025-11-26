@@ -40,6 +40,7 @@ import { useToast } from '@/hooks/use-toast';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from '@/lib/utils';
 import { AiProblemGenerator } from '../ai-problem-generator';
+import { Label } from '@/components/ui/label';
 
 function Leaderboard() {
     const firestore = useFirestore();

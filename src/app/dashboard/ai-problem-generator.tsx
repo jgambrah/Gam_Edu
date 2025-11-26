@@ -5,14 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -43,13 +35,11 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const [isSaving, setIsSaving] = useState(false);
   const [generatedProblems, setGeneratedProblems] = useState<GeneratePracticeProblemsOutput | null>(null);
   
-  // State for form inputs
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Easy');
   const [numQuestions, setNumQuestions] = useState(5);
   const [gradeLevel, setGradeLevel] = useState('Grade 9');
   
-  // State for saving
   const [classId, setClassId] = useState('');
 
   const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
