@@ -15,7 +15,7 @@ import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, addDoc, where, serverTimestamp } from 'firebase/firestore';
+import { collection, query, addDoc, where, serverTimestamp, getDocs } from 'firebase/firestore';
 import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student } from '@/lib/types';
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,8 @@ import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { AiProblemGenerator } from '../ai-problem-generator';
+import { generateReadingPassage } from '@/ai/flows/generate-reading-passage-flow';
+import { generateWritingChallenge } from '@/ai/flows/generate-writing-challenge-flow';
 
 // --- Reading Practice Tab ---
 function ReadingPracticeTab() {
@@ -203,6 +205,106 @@ function WritingSubmissionTab() {
 }
 
 // --- Teacher/Admin Management Components ---
+function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
+    
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
+    const form = useForm({
+        defaultValues: { topic: '', reading_level: 'Grade 9', numQuestions: 3, classId: '' }
+    });
+
+    async function onGenerate(values: { topic: string; reading_level: string; numQuestions: number; classId: string; }) {
+        setIsGenerating(true);
+        setGeneratedPassage(null);
+        toast({ title: 'Generating Passage...', description: 'Please wait while the AI writes your passage and questions.' });
+
+        try {
+            const result = await generateReadingPassage(values);
+            setGeneratedPassage({ ...result, ...values, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: []})) });
+            form.setValue('classId', values.classId);
+            toast({ title: 'Passage Generated!', description: 'Review the content below before saving.' });
+        } catch (error) {
+            console.error('Error generating passage:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred while creating the passage.' });
+        } finally {
+            setIsGenerating(false);
+        }
+    }
+
+    async function onSave() {
+        if (!generatedPassage || !form.getValues('classId')) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Missing information to save passage.' });
+            return;
+        }
+        setIsSaving(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), {
+                ...generatedPassage,
+                classId: form.getValues('classId'),
+            });
+            toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
+            setOpen(false);
+        } catch (e) {
+            console.error("Error saving passage:", e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save the generated passage.' });
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
+    return (
+        <div className="space-y-4">
+             <Form {...form}>
+                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <FormField control={form.control} name="topic" render={({ field }) => (
+                            <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g., The Amazon Rainforest" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="reading_level" render={({ field }) => (
+                            <FormItem><FormLabel>Reading Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="numQuestions" render={({ field }) => (
+                            <FormItem><FormLabel># of Questions</FormLabel><FormControl><Input type="number" min={1} max={5} {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                         <FormField control={form.control} name="classId" render={({ field }) => (
+                            <FormItem><FormLabel>Assign to Class</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl><SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                        )} />
+                    </div>
+                    <Button type="submit" disabled={isGenerating}>
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        Generate Passage
+                    </Button>
+                </form>
+            </Form>
+
+            {generatedPassage && (
+                <Card className="bg-muted/50">
+                    <CardHeader><CardTitle>{generatedPassage.title}</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <ScrollArea className="h-72 w-full pr-4">
+                            <div className="prose prose-sm max-w-none">
+                                <p>{generatedPassage.passage_text}</p>
+                                <h4>Comprehension Questions</h4>
+                                <ol>
+                                    {generatedPassage.question_set.map((q, i) => <li key={i}>{q.question} (Answer: {q.correct_answer_key})</li>)}
+                                </ol>
+                            </div>
+                        </ScrollArea>
+                        <Button onClick={onSave} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Passage
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+    );
+}
+
 function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -285,6 +387,7 @@ function ManagePassages() {
     const firestore = useFirestore();
     const { data: passages, isLoading } = useCollection<ElaReadingPassage>(useMemoFirebase(() => query(collection(firestore, 'ela_reading_passages')), [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
     return (
         <Card>
@@ -293,10 +396,16 @@ function ManagePassages() {
                     <CardTitle>Reading Passage Bank</CardTitle>
                     <CardDescription>Manage reading passages and their comprehension questions.</CardDescription>
                 </div>
-                 <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Passage</Button></DialogTrigger>
-                    <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>Create New Reading Passage</DialogTitle></DialogHeader><PassageCreationForm setOpen={setIsFormOpen}/></DialogContent>
-                </Dialog>
+                <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Passage Generator</DialogTitle><DialogDescription>Generate a complete reading passage with comprehension questions.</DialogDescription></DialogHeader><AiPassageGenerator setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4" />New Passage</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>Create New Reading Passage</DialogTitle></DialogHeader><PassageCreationForm setOpen={setIsFormOpen} /></DialogContent>
+                    </Dialog>
+                </div>
             </CardHeader>
             <CardContent>
                  {isLoading ? <Skeleton className="h-40 w-full" /> : (
@@ -436,6 +545,102 @@ function ManageDrills() {
     )
 }
 
+function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [generatedChallenge, setGeneratedChallenge] = useState<Omit<ElaWritingChallenge, 'id'|'createdAt'|'createdBy'> | null>(null);
+
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
+    const form = useForm({
+        defaultValues: { topic: '', challengeType: 'Creative Writing' as 'Creative Writing' | 'Summarization' | 'Essay', classId: '' }
+    });
+
+    async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay', classId: string; }) {
+        setIsGenerating(true);
+        setGeneratedChallenge(null);
+        toast({ title: 'Generating Challenge...', description: 'Please wait while the AI creates a prompt.' });
+
+        try {
+            const result = await generateWritingChallenge(values);
+            setGeneratedChallenge(result);
+            form.setValue('classId', values.classId);
+            toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
+        } catch (error) {
+            console.error('Error generating challenge:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'An AI error occurred.' });
+        } finally {
+            setIsGenerating(false);
+        }
+    }
+
+    async function onSave() {
+        if (!generatedChallenge || !form.getValues('classId') || !user) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Missing information to save challenge.' });
+            return;
+        }
+        setIsSaving(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
+                ...generatedChallenge,
+                classId: form.getValues('classId'),
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success!', description: 'The new writing challenge has been saved.' });
+            setOpen(false);
+        } catch (e) {
+            console.error("Error saving challenge:", e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save the generated challenge.' });
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
+    return (
+        <div className="space-y-4">
+             <Form {...form}>
+                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <FormField control={form.control} name="topic" render={({ field }) => (
+                            <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="challengeType" render={({ field }) => (
+                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                                <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                                <SelectItem value="Summarization">Summarization</SelectItem>
+                                <SelectItem value="Essay">Essay</SelectItem>
+                            </SelectContent></Select><FormMessage /></FormItem>
+                        )}/>
+                         <FormField control={form.control} name="classId" render={({ field }) => (
+                            <FormItem><FormLabel>Assign to Class</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl><SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                        )} />
+                    </div>
+                    <Button type="submit" disabled={isGenerating}>
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        Generate Challenge
+                    </Button>
+                </form>
+            </Form>
+
+            {generatedChallenge && (
+                <Card className="bg-muted/50">
+                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="italic">{generatedChallenge.prompt}</p>
+                        <Button onClick={onSave} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+    );
+}
+
 function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
     const { user } = useAuth();
@@ -511,6 +716,7 @@ function ManageWritingChallenges() {
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => query(collection(firestore, 'ela_writing_challenges')), [firestore]));
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => query(collection(firestore, 'ela_user_submissions')), [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
     
     const submissionsByChallenge = useMemo(() => {
         if (!submissions) return {};
@@ -527,10 +733,16 @@ function ManageWritingChallenges() {
                     <CardTitle>Manage Writing Challenges</CardTitle>
                     <CardDescription>Create challenges and review student submissions.</CardDescription>
                 </div>
-                 <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Challenge</Button></DialogTrigger>
-                    <DialogContent><DialogHeader><DialogTitle>Create New Writing Challenge</DialogTitle></DialogHeader><ChallengeCreationForm setOpen={setIsFormOpen}/></DialogContent>
-                </Dialog>
+                <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Writing Challenge Generator</DialogTitle><DialogDescription>Generate a writing prompt for any topic.</DialogDescription></DialogHeader><AiChallengeGenerator setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4" />New Challenge</Button></DialogTrigger>
+                        <DialogContent><DialogHeader><DialogTitle>Create New Writing Challenge</DialogTitle></DialogHeader><ChallengeCreationForm setOpen={setIsFormOpen} /></DialogContent>
+                    </Dialog>
+                </div>
             </CardHeader>
             <CardContent>
                 <Accordion type="single" collapsible>
