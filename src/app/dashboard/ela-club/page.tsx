@@ -199,17 +199,20 @@ function ReadingPracticeTab() {
   
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // Dropdown states
-  const [selectedLevel, setSelectedLevel] = useState('');
-  const [selectedPassageId, setSelectedPassageId] = useState('');
-  const [isPassageOpen, setIsPassageOpen] = useState(false);
+  // State for UI
+  const [selectedLevel, setSelectedLevel] = useState<string>('');
+  const [selectedPassageId, setSelectedPassageId] = useState<string>('');
+  const [isReaderOpen, setIsReaderOpen] = useState(false);
 
-  // Data fetching
+  // 1. Fetch Student Data
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
+    useMemoFirebase(() => 
+      (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
+    [firestore, user, isStaff])
   );
   const studentClassId = studentData?.[0]?.classId;
 
+  // 2. Fetch Passages
   const passagesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     if (isStaff) return query(collection(firestore, 'ela_reading_passages'));
@@ -219,69 +222,100 @@ function ReadingPracticeTab() {
 
   const { data: passages, isLoading: isLoadingPassages } = useCollection<ElaReadingPassage>(passagesQuery);
 
-  const isLoading = isUserLoading || isLoadingStudent || isLoadingPassages;
+  const isLoading = isUserLoading || (isLoadingStudent && !isStaff) || isLoadingPassages;
 
-  // Derived data for dropdowns
+  // 3. Derived Lists
   const uniqueLevels = useMemo(() => {
-    if (!passages) return [];
-    return Array.from(new Set(passages.map(p => p.reading_level))).sort();
+      if (!passages) return [];
+      return Array.from(new Set(passages.map(p => p.reading_level))).sort();
   }, [passages]);
 
   const filteredPassages = useMemo(() => {
-    if (!passages || !selectedLevel) return [];
-    return passages.filter(p => p.reading_level === selectedLevel);
+      if (!passages) return [];
+      if (!selectedLevel) return []; // Show none until level selected
+      return passages.filter(p => p.reading_level === selectedLevel);
   }, [passages, selectedLevel]);
-  
+
   const activePassage = useMemo(() => {
       return passages?.find(p => p.id === selectedPassageId) || null;
   }, [passages, selectedPassageId]);
 
   const handleStart = () => {
-    if (selectedPassageId) {
-      setIsPassageOpen(true);
-    }
+      if (selectedPassageId) setIsReaderOpen(true);
   };
 
   return (
     <>
-      <Card>
+        <Card>
         <CardHeader>
-          <CardTitle>Reading Comprehension Practice</CardTitle>
-          <CardDescription>Select a reading level and a passage to begin.</CardDescription>
+            <CardTitle>Reading Comprehension Practice</CardTitle>
+            <CardDescription>{isStaff ? "Viewing ALL passages" : "Select a reading level and a title to begin."}</CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <div className="flex flex-col space-y-4"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
-          ) : (!isStaff && !studentClassId) ? (
-            <p className="text-center text-muted-foreground py-10">You are not assigned to a class. Please contact an administrator.</p>
-          ) : passages && passages.length > 0 ? (
-            <div className="space-y-6 max-w-xl mx-auto py-4">
-              <div className="space-y-2">
-                <Label>1. Choose a Reading Level</Label>
-                <Select value={selectedLevel} onValueChange={val => { setSelectedLevel(val); setSelectedPassageId(''); }}>
-                  <SelectTrigger><SelectValue placeholder="Select Reading Level" /></SelectTrigger>
-                  <SelectContent>{uniqueLevels.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>2. Choose a Passage</Label>
-                <Select value={selectedPassageId} onValueChange={setSelectedPassageId} disabled={!selectedLevel}>
-                  <SelectTrigger><SelectValue placeholder={!selectedLevel ? "Select a level first" : "Select a passage"} /></SelectTrigger>
-                  <SelectContent>{filteredPassages.map(passage => <SelectItem key={passage.id} value={passage.id}>{passage.title}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <Button className="w-full" size="lg" onClick={handleStart} disabled={!selectedPassageId}>Start Reading</Button>
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground py-12">No reading passages available.</p>
-          )}
+            {isLoading ? (
+                <div className="flex flex-col space-y-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                    <div className="flex justify-center text-muted-foreground text-sm gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Loading library...
+                    </div>
+                </div>
+            ) :
+            (!isStaff && !studentClassId) ? (
+                <div className="text-center py-8">
+                    <p className="text-muted-foreground">You are not assigned to a class.</p>
+                </div>
+            ) :
+            passages && passages.length > 0 ? (
+                <div className="space-y-6 max-w-xl mx-auto py-4">
+                     {/* DROP DOWN 1: READING LEVEL */}
+                     <div className="space-y-2">
+                        <Label>1. Choose Reading Level</Label>
+                        <Select value={selectedLevel} onValueChange={(val) => { setSelectedLevel(val); setSelectedPassageId(''); }}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Level (e.g., Grade 9)" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {uniqueLevels.map(lvl => (
+                                    <SelectItem key={lvl} value={lvl}>{lvl}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                     {/* DROP DOWN 2: PASSAGE TITLE */}
+                     <div className="space-y-2">
+                        <Label>2. Choose Passage Title</Label>
+                        <Select value={selectedPassageId} onValueChange={setSelectedPassageId} disabled={!selectedLevel}>
+                            <SelectTrigger>
+                                <SelectValue placeholder={!selectedLevel ? "Select a level first" : "Select a Title"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {filteredPassages.map(p => (
+                                    <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <Button className="w-full" size="lg" onClick={handleStart} disabled={!selectedPassageId}>
+                        Open Reader <BookOpenCheck className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            ) : (
+                <p className="text-center text-muted-foreground py-12">
+                    {isStaff ? "No passages found." : "No reading passages available for your class."}
+                </p>
+            )}
         </CardContent>
-      </Card>
-      <ActivePassageDialog
-        passage={activePassage}
-        open={isPassageOpen}
-        setOpen={setIsPassageOpen}
-      />
+        </Card>
+
+        {/* THE READER MODAL */}
+        <ActivePassageDialog 
+            passage={activePassage} 
+            open={isReaderOpen} 
+            setOpen={setIsReaderOpen} 
+        />
     </>
   );
 }
