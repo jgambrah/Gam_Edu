@@ -48,24 +48,42 @@ import { getAuth } from 'firebase/auth';
 function ReadingPracticeTab() {
   const firestore = useFirestore();
   const { user } = useAuth();
+  const { role } = useRole(); // 1. Get the Role
+  
+  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
+
+  // 2. Fetch Student Data (Only matters if NOT staff)
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+    useMemoFirebase(() => 
+      (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
+    [firestore, user, isStaff])
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  const passagesQuery = useMemoFirebase(() => 
-    studentClassId ? query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId)) : null, 
-    [firestore, studentClassId]
-  );
+  // 3. Smart Query: Show ALL for Staff, Filtered for Students
+  const passagesQuery = useMemoFirebase(() => {
+    if (isStaff) {
+      // Teachers see ALL passages
+      return query(collection(firestore, 'ela_reading_passages'));
+    }
+    if (studentClassId) {
+      // Students see only their class
+      return query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId));
+    }
+    return null; // No query if no class ID found
+  }, [firestore, studentClassId, isStaff]);
+
   const { data: passages, isLoading: isLoadingPassages } = useCollection<ElaReadingPassage>(passagesQuery);
 
-  const isLoading = isLoadingStudent || (studentData && isLoadingPassages);
+  const isLoading = (isLoadingStudent && !isStaff) || isLoadingPassages;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Reading Comprehension Practice</CardTitle>
-        <CardDescription>Select a passage to read and answer comprehension questions.</CardDescription>
+        <CardDescription>
+            {isStaff ? "Viewing ALL passages (Teacher View)" : "Select a passage to read."}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? <Skeleton className="h-40 w-full" /> :
@@ -75,7 +93,11 @@ function ReadingPracticeTab() {
                 <Card key={passage.id}>
                   <CardHeader>
                     <CardTitle>{passage.title}</CardTitle>
-                    <CardDescription>Reading Level: {passage.reading_level}</CardDescription>
+                    <CardDescription>
+                        Level: {passage.reading_level} 
+                        {/* Show Class ID to teachers for debugging */}
+                        {isStaff && <span className="ml-2 text-xs text-muted-foreground">(Class: {passage.classId})</span>}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Button asChild>
@@ -86,7 +108,9 @@ function ReadingPracticeTab() {
               ))}
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-12">No reading passages are available for your class yet.</p>
+            <p className="text-center text-muted-foreground py-12">
+                {isStaff ? "No passages found in the system." : "No reading passages are available for your class yet."}
+            </p>
           )}
       </CardContent>
     </Card>
@@ -147,27 +171,40 @@ function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingCh
 function WritingSubmissionTab() {
     const firestore = useFirestore();
     const { user } = useAuth();
+    const { role } = useRole(); // 1. Get Role
     const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
     
+    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
+
+    // 2. Fetch Student Data (Only if not staff)
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-        useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+        useMemoFirebase(() => (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
     );
     const studentClassId = studentData?.[0]?.classId;
 
+    // 3. Fetch Challenges (All for Staff, Filtered for Students)
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
-        useMemoFirebase(() => studentClassId ? query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId)) : null, [firestore, studentClassId])
+        useMemoFirebase(() => {
+            if (isStaff) return query(collection(firestore, 'ela_writing_challenges'));
+            if (studentClassId) return query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId));
+            return null;
+        }, [firestore, studentClassId, isStaff])
     );
+
+    // 4. Fetch Submissions (Only makes sense for students to see their own)
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
         useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
     );
 
-    const isLoading = isLoadingChallenges || isLoadingSubmissions || isLoadingStudent;
+    const isLoading = isLoadingChallenges || isLoadingSubmissions || (isLoadingStudent && !isStaff);
     
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Writing & Summarizing Challenges</CardTitle>
-                <CardDescription>Submit your written work for feedback and improvement.</CardDescription>
+                <CardDescription>
+                    {isStaff ? "Viewing ALL Challenges (Teacher View)" : "Submit your written work for feedback."}
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 {isLoading ? <Skeleton className="h-40 w-full"/> : (
@@ -177,7 +214,10 @@ function WritingSubmissionTab() {
                             return (
                                 <Card key={challenge.id} className="p-4 flex justify-between items-center">
                                     <div>
-                                        <h4 className="font-semibold">{challenge.title}</h4>
+                                        <h4 className="font-semibold">
+                                            {challenge.title}
+                                            {isStaff && <span className="ml-2 text-xs font-normal text-muted-foreground">(Class ID: {challenge.classId})</span>}
+                                        </h4>
                                         <p className="text-sm text-muted-foreground">{challenge.prompt}</p>
                                         {submission && (
                                             <div className="text-xs mt-2">
@@ -186,22 +226,27 @@ function WritingSubmissionTab() {
                                             </div>
                                         )}
                                     </div>
-                                    <Dialog open={openDialogs[challenge.id] || false} onOpenChange={(isOpen) => setOpenDialogs(prev => ({ ...prev, [challenge.id]: isOpen }))}>
-                                        <DialogTrigger asChild>
-                                            <Button disabled={!!submission}>{submission ? 'Submitted' : 'Submit Work'}</Button>
-                                        </DialogTrigger>
-                                        <DialogContent>
-                                            <DialogHeader>
-                                                <DialogTitle>{challenge.title}</DialogTitle>
-                                                <DialogDescription>{challenge.prompt}</DialogDescription>
-                                            </DialogHeader>
-                                            <StudentSubmissionForm challenge={challenge} setOpen={() => setOpenDialogs(prev => ({ ...prev, [challenge.id]: false }))}/>
-                                        </DialogContent>
-                                    </Dialog>
+                                    
+                                    {/* Only show Submit button to Students */}
+                                    {!isStaff && (
+                                        <Dialog open={openDialogs[challenge.id] || false} onOpenChange={(isOpen) => setOpenDialogs(prev => ({ ...prev, [challenge.id]: isOpen }))}>
+                                            <DialogTrigger asChild>
+                                                <Button disabled={!!submission}>{submission ? 'Submitted' : 'Submit Work'}</Button>
+                                            </DialogTrigger>
+                                            <DialogContent>
+                                                <DialogHeader>
+                                                    <DialogTitle>{challenge.title}</DialogTitle>
+                                                    <DialogDescription>{challenge.prompt}</DialogDescription>
+                                                </DialogHeader>
+                                                <StudentSubmissionForm challenge={challenge} setOpen={() => setOpenDialogs(prev => ({ ...prev, [challenge.id]: false }))}/>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
+                                    {isStaff && <Badge variant="outline">Teacher View</Badge>}
                                 </Card>
                             );
                         })}
-                         {challenges?.length === 0 && <p className="text-center py-8 text-muted-foreground">No writing challenges have been assigned to your class yet.</p>}
+                         {challenges?.length === 0 && <p className="text-center py-8 text-muted-foreground">No writing challenges found.</p>}
                     </div>
                 )}
             </CardContent>
@@ -448,73 +493,142 @@ function ManagePassages() {
     );
 }
 
-function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user: hookUser } = useAuth();
     const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const [selectedClassId, setSelectedClassId] = useState<string>("");
 
-    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
-        resolver: zodResolver(elaWritingChallengeSchema),
-        defaultValues: {
-            title: '',
-            prompt: '',
-            challengeType: 'Creative Writing',
-            classId: '',
-        }
+    const [generatedChallenge, setGeneratedChallenge] = useState<{
+        title: string;
+        prompt: string;
+        challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
+    } | null>(null);
+
+    const { data: classes } = useCollection<Class>(
+        useMemoFirebase(() => collection(firestore, 'classes'), [firestore])
+    );
+
+    const form = useForm({
+        defaultValues: { topic: '', challengeType: 'Creative Writing' as const }
     });
 
-    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
-        if (!user) return;
-        setIsSubmitting(true);
+    async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay' }) {
+        setIsGenerating(true);
+        setGeneratedChallenge(null);
+        toast({ title: 'Generating Challenge...', description: 'Please wait...' });
+
+        try {
+            const result = await generateWritingChallenge(values);
+            setGeneratedChallenge(result);
+            toast({ title: 'Challenge Generated!', description: 'Review the prompt below.' });
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'AI Error.' });
+        } finally {
+            setIsGenerating(false);
+        }
+    }
+
+    async function onSave() {
+        const auth = getAuth();
+        const currentUser = auth.currentUser || hookUser; 
+
+        if (!generatedChallenge) {
+             toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
+             return;
+        }
+
+        if (!selectedClassId) {
+             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class.' });
+             return;
+        }
+
+        if (!currentUser) {
+             toast({ variant: 'destructive', title: 'Critical Auth Error', description: 'Browser has no session. Try Hard Refresh (Ctrl+F5).' });
+             return;
+        }
+
+        setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...values,
-                createdBy: user.uid,
+                title: generatedChallenge.title,
+                prompt: generatedChallenge.prompt,
+                challengeType: generatedChallenge.challengeType,
+                classId: selectedClassId,
+                createdBy: currentUser.uid,
                 createdAt: serverTimestamp(),
             });
-            toast({ title: 'Success', description: 'New writing challenge has been created.' });
-            form.reset();
+            toast({ title: 'Success!', description: 'Challenge saved.' });
             setOpen(false);
-        } catch (error) {
-            console.error('Error adding challenge:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the challenge.' });
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Save failed.' });
         } finally {
-            setIsSubmitting(false);
+            setIsSaving(false);
         }
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem><FormLabel>Challenge Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                 <FormField control={form.control} name="prompt" render={({ field }) => (
-                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="challengeType" render={({ field }) => (
-                    <FormItem><FormLabel>Challenge Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                            <SelectItem value="Creative Writing">Creative Writing</SelectItem>
-                            <SelectItem value="Summarization">Summarization</SelectItem>
-                            <SelectItem value="Essay">Essay</SelectItem>
-                        </SelectContent></Select>
-                    <FormMessage/></FormItem>
-                )}/>
-                 <FormField control={form.control} name="classId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select><FormMessage/>
-                    </FormItem>
-                )}/>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Challenge</Button>
-            </form>
-        </Form>
+        <div className="space-y-4">
+             <Form {...form}>
+                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <FormField control={form.control} name="topic" render={({ field }) => (
+                            <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        
+                        <FormField control={form.control} name="challengeType" render={({ field }) => (
+                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                                <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                                <SelectItem value="Summarization">Summarization</SelectItem>
+                                <SelectItem value="Essay">Essay</SelectItem>
+                            </SelectContent></Select><FormMessage /></FormItem>
+                        )}/>
+                        
+                        <div className="space-y-2">
+                            <Label>Assign to Class</Label>
+                            <Select 
+                                value={selectedClassId} 
+                                onValueChange={(val) => setSelectedClassId(val)}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a class" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {classes?.map(c => (
+                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {selectedClassId && <p className="text-xs text-green-600 font-bold">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
+                        </div>
+
+                    </div>
+                    
+                    <Button type="submit" disabled={isGenerating}>
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        Generate Challenge
+                    </Button>
+                </form>
+            </Form>
+
+            {generatedChallenge && (
+                <Card className="bg-muted/50">
+                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="italic">{generatedChallenge.prompt}</p>
+                        
+                        <Button onClick={onSave} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
     );
 }
 
@@ -683,159 +797,73 @@ function ManageDrills() {
     );
 }
 
-function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
+function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
-    const { user: hookUser } = useAuth();
+    const { user } = useAuth();
     const { toast } = useToast();
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // --- 1. NEW: Dedicated State for Class ID (Bypassing Form Logic) ---
-    const [selectedClassId, setSelectedClassId] = useState<string>("");
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
-    const [generatedChallenge, setGeneratedChallenge] = useState<{
-        title: string;
-        prompt: string;
-        challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
-    } | null>(null);
-
-    const { data: classes } = useCollection<Class>(
-        useMemoFirebase(() => collection(firestore, 'classes'), [firestore])
-    );
-
-    const form = useForm({
-        defaultValues: { topic: '', challengeType: 'Creative Writing' as const }
+    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
+        resolver: zodResolver(elaWritingChallengeSchema),
+        defaultValues: {
+            title: '',
+            prompt: '',
+            challengeType: 'Creative Writing',
+            classId: '',
+        }
     });
 
-    // Generate Function
-    async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay' }) {
-        setIsGenerating(true);
-        setGeneratedChallenge(null);
-        toast({ title: 'Generating Challenge...', description: 'Please wait...' });
-
-        try {
-            const result = await generateWritingChallenge(values);
-            setGeneratedChallenge(result);
-            toast({ title: 'Challenge Generated!', description: 'Review the prompt below.' });
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'AI Error.' });
-        } finally {
-            setIsGenerating(false);
-        }
-    }
-
-    // Save Function
-    async function onSave() {
-        // --- 2. THE DIRECT AUTH FIX ---
-        // Instead of relying on the hook, we ask Firebase directly: "Who is logged in right now?"
-        const auth = getAuth();
-        const currentUser = auth.currentUser || hookUser; 
-
-        // 3. DEBUGGING
-        console.log("--- SAVE ATTEMPT ---");
-        console.log("Class ID:", selectedClassId);
-        console.log("Direct Firebase User:", auth.currentUser);
-        console.log("React Hook User:", hookUser);
-
-        if (!generatedChallenge) {
-             toast({ variant: 'destructive', title: 'Error', description: 'No challenge data found. Please generate again.' });
-             return;
-        }
-
-        if (!selectedClassId) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class from the dropdown.' });
-             return;
-        }
-
-        // *** THIS IS LIKELY THE REAL PROBLEM ***
-        if (!currentUser) {
-             toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
-             return;
-        }
-
-        setIsSaving(true);
+    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
+        if (!user) return;
+        setIsSubmitting(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                title: generatedChallenge.title,
-                prompt: generatedChallenge.prompt,
-                challengeType: generatedChallenge.challengeType,
-                classId: selectedClassId,
-                createdBy: currentUser.uid, // <--- Use the Direct User UID
+                ...values,
+                createdBy: user.uid,
                 createdAt: serverTimestamp(),
             });
-            toast({ title: 'Success!', description: 'Challenge saved.' });
+            toast({ title: 'Success', description: 'New writing challenge has been created.' });
+            form.reset();
             setOpen(false);
-        } catch (e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Save failed.' });
+        } catch (error) {
+            console.error('Error adding challenge:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the challenge.' });
         } finally {
-            setIsSaving(false);
+            setIsSubmitting(false);
         }
     }
 
     return (
-        <div className="space-y-4">
-             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <FormField control={form.control} name="topic" render={({ field }) => (
-                            <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        
-                        <FormField control={form.control} name="challengeType" render={({ field }) => (
-                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                                <SelectItem value="Creative Writing">Creative Writing</SelectItem>
-                                <SelectItem value="Summarization">Summarization</SelectItem>
-                                <SelectItem value="Essay">Essay</SelectItem>
-                            </SelectContent></Select><FormMessage /></FormItem>
-                        )}/>
-                        
-                        {/* --- 3. FIX: Simplified Dropdown (Controlled by State) --- */}
-                        <div className="space-y-2">
-                            <Label>Assign to Class</Label>
-                            <Select 
-                                value={selectedClassId} 
-                                onValueChange={(val) => {
-                                    console.log("Class Selected:", val); // Debug Log
-                                    setSelectedClassId(val);
-                                }}
-                            >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select a class" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {classes?.map(c => (
-                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {/* Visual Confirmation */}
-                            {selectedClassId && <p className="text-xs text-green-600 font-bold">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
-                        </div>
-
-                    </div>
-                    
-                    <Button type="submit" disabled={isGenerating}>
-                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Generate Challenge
-                    </Button>
-                </form>
-            </Form>
-
-            {generatedChallenge && (
-                <Card className="bg-muted/50">
-                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="italic">{generatedChallenge.prompt}</p>
-                        
-                        <Button onClick={onSave} disabled={isSaving}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
-        </div>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                <FormField control={form.control} name="challengeType" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                            <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                            <SelectItem value="Summarization">Summarization</SelectItem>
+                            <SelectItem value="Essay">Essay</SelectItem>
+                        </SelectContent></Select>
+                    <FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Challenge</Button>
+            </form>
+        </Form>
     );
 }
 
