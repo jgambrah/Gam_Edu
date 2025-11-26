@@ -218,13 +218,16 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
         defaultValues: { topic: '', reading_level: 'Grade 9', numQuestions: 3, classId: '' }
     });
 
-    async function onGenerate(values: { topic: string; reading_level: string; numQuestions: number; classId: string; }) {
+    async function onGenerate(values: { topic: string; reading_level: string; numQuestions: number | string; classId: string; }) {
         setIsGenerating(true);
         setGeneratedPassage(null);
         toast({ title: 'Generating Passage...', description: 'Please wait while the AI writes your passage and questions.' });
 
         try {
-            const result = await generateReadingPassage(values);
+            const result = await generateReadingPassage({
+                ...values,
+                numQuestions: Number(values.numQuestions),
+            });
             setGeneratedPassage({ ...result, ...values, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: []})) });
             form.setValue('classId', values.classId);
             toast({ title: 'Passage Generated!', description: 'Review the content below before saving.' });
