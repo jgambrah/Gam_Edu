@@ -219,18 +219,30 @@ export default function MathsClubPage() {
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => (user && firestore && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
+    useMemoFirebase(() => {
+      if (!user || !firestore) return null;
+      if (role !== 'Student') return null;
+      return query(collection(firestore, 'students'), where('uid', '==', user.uid));
+    }, [firestore, user, role])
   );
-  const studentClassId = studentData?.[0]?.classId;
+  
+  const studentInfo = studentData?.[0]; 
+  const studentClassId = studentInfo?.classId;
   
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
+    
     if (isTeacherOrAdmin) {
       return query(collection(firestore, 'math_problems'));
     }
-    if (role === 'Student' && studentClassId) {
-      return query(collection(firestore, 'math_problems'), where('classId', '==', studentClassId));
+    
+    if (role === 'Student') {
+        if (studentClassId) {
+             return query(collection(firestore, 'math_problems'), where('classId', '==', studentClassId));
+        }
+        return null;
     }
+    
     return null;
   }, [firestore, isTeacherOrAdmin, role, studentClassId]);
 
@@ -275,8 +287,15 @@ export default function MathsClubPage() {
                 <CardDescription>Select a topic and difficulty to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {(isLoadingProblems || (role === 'Student' && isLoadingStudent)) ? <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> :
-                (role === 'Student' && !studentClassId && !isLoadingStudent) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
+                {(isLoadingProblems || (role === 'Student' && isLoadingStudent)) ? (
+                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
+                ) : 
+                (role === 'Student' && !studentClassId) ? (
+                    <div className="text-center space-y-2">
+                        <p className="text-muted-foreground">We could not find your class assignment.</p>
+                        <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
+                    </div>
+                ) : 
                 (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

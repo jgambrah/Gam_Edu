@@ -48,7 +48,7 @@ import { getAuth } from 'firebase/auth';
 function ReadingPracticeTab() {
   const firestore = useFirestore();
   const { user } = useAuth();
-  const { role } = useRole();
+  const { role } = useRole(); 
   
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
@@ -173,7 +173,7 @@ function WritingSubmissionTab() {
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-        useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
+        useMemoFirebase(() => (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
     );
     const studentClassId = studentData?.[0]?.classId;
 
@@ -187,7 +187,7 @@ function WritingSubmissionTab() {
     );
 
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
-        useMemoFirebase(() => user && firestore ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
+        useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
     );
 
     const isLoading = isLoadingChallenges || isLoadingSubmissions || (isLoadingStudent && !isStaff);
@@ -926,4 +926,5 @@ export default function ElaClubPage() {
     </div>
   );
 }
+
 
