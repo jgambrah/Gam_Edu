@@ -47,7 +47,7 @@ import {
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, addDoc, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useMemo } from 'react';
 import { Loader2, Edit, Trash2 } from 'lucide-react';
@@ -72,7 +72,7 @@ const studentFormSchema = z.object({
 
 const editStudentFormSchema = studentFormSchema.omit({ password: true, email: true });
 
-type StudentData = z.infer<typeof studentFormSchema> & { id: string };
+type StudentData = z.infer<typeof studentFormSchema> & { id: string; uid: string };
 
 function EditStudentForm({ student, classes, setOpen }: { student: StudentData, classes: any[] | null, setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
@@ -120,7 +120,7 @@ function EditStudentForm({ student, classes, setOpen }: { student: StudentData, 
             <FormField control={form.control} name="classId" render={({ field }) => (
                 <FormItem><FormLabel>Class</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
-                    <SelectContent>{classes?.map((c) => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}</SelectContent>
+                    <SelectContent>{classes?.map((c) => (<SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>))}</SelectContent>
                 </Select><FormMessage /></FormItem>
             )}/>
             <div className="grid grid-cols-2 gap-4">
@@ -168,7 +168,6 @@ function StudentList({ students, classes, isLoading, searchTerm, classFilter, fo
   const handleDelete = async (studentId: string) => {
     try {
         await deleteDoc(doc(firestore, 'students', studentId));
-        // Note: This does not delete the user from Firebase Auth
         toast({ title: 'Success', description: 'Student has been deleted.'});
         forceRefetch();
     } catch(error) {
@@ -189,39 +188,47 @@ function StudentList({ students, classes, isLoading, searchTerm, classFilter, fo
 
   return (
     <>
-    <Table>
-        <TableHeader>
-        <TableRow>
-            <TableHead>First Name</TableHead>
-            <TableHead>Last Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Class</TableHead>
-            {canManage && <TableHead className="text-right">Actions</TableHead>}
-        </TableRow>
-        </TableHeader>
-        <TableBody>
-        {filteredStudents.map((student) => (
-            <TableRow key={student.id}>
-            <TableCell>{student.firstName}</TableCell>
-            <TableCell>{student.lastName}</TableCell>
-            <TableCell>{student.email}</TableCell>
-            <TableCell>{classes?.find(c => c.id === student.classId)?.name || student.classId}</TableCell>
-            {canManage && (
-                <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => setEditingStudent(student)}><Edit className="h-4 w-4" /></Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This action will delete the student's profile from the database. It will not delete their login account. This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                            <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(student.id)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </TableCell>
-            )}
-            </TableRow>
-        ))}
-        </TableBody>
-    </Table>
+    {filteredStudents.length > 0 ? (
+      <Table>
+          <TableHeader>
+          <TableRow>
+              <TableHead>First Name</TableHead>
+              <TableHead>Last Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Class</TableHead>
+              {canManage && <TableHead className="text-right">Actions</TableHead>}
+          </TableRow>
+          </TableHeader>
+          <TableBody>
+          {filteredStudents.map((student) => (
+              <TableRow key={student.id}>
+              <TableCell>{student.firstName}</TableCell>
+              <TableCell>{student.lastName}</TableCell>
+              <TableCell>{student.email}</TableCell>
+              <TableCell>{classes?.find(c => c.id === student.classId)?.name || classes?.find(c => c.id === student.classId)?.id || student.classId}</TableCell>
+              {canManage && (
+                  <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" onClick={() => setEditingStudent(student)}><Edit className="h-4 w-4" /></Button>
+                      <AlertDialog>
+                          <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
+                          <AlertDialogContent>
+                              <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This action will delete the student's profile from the database. It will not delete their login account. This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
+                              <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(student.id)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
+                          </AlertDialogContent>
+                      </AlertDialog>
+                  </TableCell>
+              )}
+              </TableRow>
+          ))}
+          </TableBody>
+      </Table>
+    ) : (
+      <div className="text-center py-8 text-muted-foreground">
+        {searchTerm || classFilter !== 'all' 
+          ? 'No students match your search criteria.' 
+          : 'No students found. Add your first student above.'}
+      </div>
+    )}
     {editingStudent && (
         <Dialog open={!!editingStudent} onOpenChange={(open) => { if (!open) { setEditingStudent(null); forceRefetch(); }}}>
             <DialogContent>
@@ -265,8 +272,11 @@ function StudentsPageContent() {
   const lastName = form.watch('lastName');
 
   useEffect(() => {
-    if (firstName || lastName) {
-      const email = `${firstName.toLowerCase().replace(/\s/g, '')}${lastName.toLowerCase().replace(/\s/g, '')}@sunnyside-student.com`;
+    if (firstName && lastName) {
+      // Clean names for email - remove special characters
+      const cleanFirstName = firstName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cleanLastName = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const email = `${cleanFirstName}${cleanLastName}@sunnyside-student.com`;
       form.setValue('email', email);
     } else {
         form.setValue('email', '');
@@ -276,42 +286,57 @@ function StudentsPageContent() {
   async function onSubmit(values: z.infer<typeof studentFormSchema>) {
     setIsSubmitting(true);
     try {
+      console.log('🎓 Creating student account...');
+      
+      // Create user in Firebase Auth
       const result = await createNewUser(values.email, values.password);
 
       if ('error' in result) {
+        if (result.error.includes('email-already-in-use')) {
+          throw new Error('This email is already in use. Please use a different name combination.');
+        }
         throw new Error(result.error);
       }
 
+      console.log('✅ Student account created with UID:', result.uid);
+
+      // Create student document with UID as document ID
       const studentData = {
         uid: result.uid,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
         classId: values.classId,
-        dateOfBirth: values.dateOfBirth,
-        gender: values.gender,
-        address: values.address,
+        dateOfBirth: values.dateOfBirth || '',
+        gender: values.gender || '',
+        address: values.address || '',
+        createdAt: serverTimestamp(),
       };
 
-      await addDoc(collection(firestore, 'students'), studentData);
+      // Use setDoc with the UID as the document ID
+      await setDoc(doc(firestore, 'students', result.uid), studentData);
+      
+      console.log('✅ Student document created in Firestore');
 
       toast({
-        title: 'Student Added',
-        description: `${values.email} has been added and assigned to class.`,
+        title: 'Student Added Successfully',
+        description: `${values.firstName} ${values.lastName} has been enrolled. Login: ${values.email} / ${values.password}`,
+        duration: 8000,
       });
-      forceRefetch();
+      
+      // Wait a bit for Firestore to propagate
+      setTimeout(() => {
+        forceRefetch();
+      }, 500);
+      
       form.reset();
     } catch (error: any) {
-      let errorMessage = 'An error occurred while adding the student.';
-       if (error.message.includes('EMAIL_EXISTS')) {
-        errorMessage = 'This email is already in use by another account.';
-      }
+      console.error('❌ Error adding student:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: errorMessage,
+        description: error.message || 'An error occurred while adding the student.',
       });
-      console.error('Error adding student:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -375,7 +400,7 @@ function StudentsPageContent() {
                     name="password"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>Default Password</FormLabel>
                         <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} readOnly />
                         </FormControl>
@@ -398,7 +423,7 @@ function StudentsPageContent() {
                         <SelectContent>
                           {classes?.map((c) => (
                             <SelectItem key={c.id} value={c.id}>
-                              {c.name}
+                              {c.name || c.id}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -488,7 +513,7 @@ function StudentsPageContent() {
                     <SelectItem value="all">All Classes</SelectItem>
                     {classes?.map((c) => (
                         <SelectItem key={c.id} value={c.id}>
-                            {c.name}
+                            {c.name || c.id}
                         </SelectItem>
                     ))}
                 </SelectContent>
