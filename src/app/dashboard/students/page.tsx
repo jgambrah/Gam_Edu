@@ -130,7 +130,9 @@ function EditStudentForm({ student, classes, setOpen }: { student: StudentData, 
                  <FormField control={form.control} name="gender" render={({ field }) => (
                     <FormItem><FormLabel>Gender</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a gender" /></SelectTrigger></FormControl><SelectContent>
-                        <SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem><SelectItem value="Other">Other</SelectItem>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
                     </SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
@@ -297,8 +299,8 @@ function StudentsPageContent() {
         title: 'Student Added',
         description: `${values.email} has been added and assigned to class.`,
       });
+      forceRefetch(); // This is the crucial fix
       form.reset();
-      forceRefetch();
     } catch (error: any) {
       let errorMessage = 'An error occurred while adding the student.';
        if (error.message.includes('EMAIL_EXISTS')) {
