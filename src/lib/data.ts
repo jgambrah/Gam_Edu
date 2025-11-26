@@ -36,6 +36,7 @@ import {
   FolderKanban,
   PenSquare,
   TrendingUp,
+  Gamepad2,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -163,6 +164,12 @@ export const navItems: NavItem[] = [
     icon: Activity,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
+        {
+            path: '/dashboard/game-zone',
+            title: 'Game Zone',
+            icon: Gamepad2,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
         {
             path: '/dashboard/maths-club',
             title: 'Maths Club',

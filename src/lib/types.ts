@@ -840,3 +840,17 @@ export type ElaUserSubmission = {
     teacher_score?: number | null;
     teacher_feedback?: string | null;
 };
+
+// Game Zone Schemas
+export type GameLobby = {
+    id: string; // The 6-digit game pin
+    quizId: string;
+    hostId: string;
+    status: 'waiting' | 'in-progress' | 'finished';
+    players: {
+      uid: string;
+      name: string;
+      score: number;
+    }[];
+    createdAt: any;
+};
