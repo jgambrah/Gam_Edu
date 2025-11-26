@@ -233,9 +233,11 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     
+    // --- UPDATED RULES FOR CLUBS ---
+    // Changed to 'allow read: if isSignedIn()' to prevent list errors
+    
     match /math_problems/{problemId} {
-        allow get: if isSignedIn();
-        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
+        allow read: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
     }
 
@@ -251,8 +253,7 @@ service cloud.firestore {
     }
 
     match /science_problems/{problemId} {
-        allow get: if isSignedIn();
-        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
+        allow read: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
     }
 
@@ -273,20 +274,17 @@ service cloud.firestore {
     }
 
     match /ela_grammar_drills/{drillId} {
-        allow get: if isSignedIn();
-        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
+        allow read: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
     }
 
     match /ela_reading_passages/{passageId} {
         allow read: if isSignedIn();
-        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
         allow write: if isTeacher() || isAdmin();
     }
 
     match /ela_writing_challenges/{challengeId} {
         allow read: if isSignedIn();
-        allow list: if isTeacher() || isAdmin() || (isStudent() && request.query.where.classId == getStudentClassId());
         allow write: if isTeacher() || isAdmin();
     }
     
