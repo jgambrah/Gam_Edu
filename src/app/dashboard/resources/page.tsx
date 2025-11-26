@@ -163,16 +163,20 @@ export default function ResourcesPage() {
   const { data: resources, isLoading } = useCollection<Resource>(resourcesQuery);
 
   const groupedResources = useMemo(() => {
-    if (!resources) return {};
-    const defaultResources = {
+    const defaultResources: Record<string, Resource[]> = {
         'BS7 Integrated Science': [
             { id: 'bs7-is', title: 'View Course Materials', url: '/dashboard/resources/bs7-integrated-science', resourceType: 'Link', courseName: 'BS7 Integrated Science' }
         ]
+    };
+    
+    if (!resources) {
+        return defaultResources;
     }
+
     const allResources = resources.reduce((acc, resource) => {
       (acc[resource.courseName] = acc[resource.courseName] || []).push(resource);
       return acc;
-    }, defaultResources as Record<string, Resource[]>);
+    }, defaultResources);
 
     return allResources;
   }, [resources]);
