@@ -287,45 +287,20 @@ function StudentsPageContent() {
   async function onSubmit(values: z.infer<typeof studentFormSchema>) {
     setIsSubmitting(true);
     try {
-      console.log('🎓 Creating student account...');
-      
-      // Create user in Firebase Auth
       const result = await createNewUser(values.email, values.password, 'Student', { firstName: values.firstName, lastName: values.lastName });
 
       if ('error' in result) {
-        if (result.error.includes('email-already-in-use')) {
-          throw new Error('This email is already in use. Please use a different name combination.');
-        }
         throw new Error(result.error);
       }
-
-      console.log('✅ Student account created with UID:', result.uid);
-
-      // Create student document with UID as document ID
-      const studentData = {
-        uid: result.uid,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        classId: values.classId,
-        dateOfBirth: values.dateOfBirth || '',
-        gender: values.gender || '',
-        address: values.address || '',
-        createdAt: serverTimestamp(),
-      };
-
-      // Use setDoc with the UID as the document ID
-      await setDoc(doc(firestore, 'students', result.uid), studentData);
       
-      console.log('✅ Student document created in Firestore');
-
       toast({
         title: 'Student Added Successfully',
-        description: `${values.firstName} ${values.lastName} has been enrolled. Login: ${values.email} / ${values.password}`,
+        description: `${values.firstName} ${values.lastName} has been added. Login: ${values.email} / ${values.password}`,
         duration: 8000,
       });
       
-      // Wait a bit for Firestore to propagate
+      // The createNewUser function already handles Firestore creation
+      // so we just need to refetch the data.
       setTimeout(() => {
         forceRefetch();
       }, 500);
@@ -335,7 +310,7 @@ function StudentsPageContent() {
       console.error('❌ Error adding student:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Error Adding Student',
         description: error.message || 'An error occurred while adding the student.',
       });
     } finally {
@@ -535,5 +510,3 @@ export default function StudentsPage() {
         <StudentsPageContent />
     )
 }
-
-    
