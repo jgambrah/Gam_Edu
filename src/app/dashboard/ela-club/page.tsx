@@ -2,6 +2,7 @@
 
 'use client';
 
+import { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -17,7 +18,6 @@ import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, addDoc, where, serverTimestamp, getDocs, doc } from 'firebase/firestore';
 import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student } from '@/lib/types';
-import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -213,12 +213,12 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
+    const [classId, setClassId] = useState('');
     
     // State for form inputs
     const [topic, setTopic] = useState('');
     const [readingLevel, setReadingLevel] = useState('Grade 9');
     const [numQuestions, setNumQuestions] = useState(3);
-    const [classId, setClassId] = useState('');
 
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
@@ -310,7 +310,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
                                 <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={onSave} disabled={isSaving}>
+                        <Button onClick={onSave} disabled={isSaving || !classId}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Passage
                         </Button>
                     </CardContent>
@@ -448,32 +448,43 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const { toast } = useToast();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    // Track the generated result
     const [generatedChallenge, setGeneratedChallenge] = useState<{
         title: string;
         prompt: string;
         challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
+        classId?: string; 
     } | null>(null);
 
-    // State for form inputs
-    const [topic, setTopic] = useState('');
-    const [challengeType, setChallengeType] = useState<'Creative Writing' | 'Summarization' | 'Essay'>('Creative Writing');
-    const [gradeLevel, setGradeLevel] = useState('Grade 9'); // Added for AI context
-    const [classId, setClassId] = useState('');
+    // Get Classes
+    const { data: classes } = useCollection<Class>(
+        useMemoFirebase(() => collection(firestore, 'classes'), [firestore])
+    );
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    // Setup Form
+    const form = useForm({
+        defaultValues: { topic: '', challengeType: 'Creative Writing' as const, classId: '' }
+    });
 
-    async function onGenerate() {
-        if (!topic) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic.' });
-            return;
-        }
+    // Watch the classId value in real-time for debugging
+    const watchedClassId = form.watch('classId');
+
+    // 1. GENERATE FUNCTION
+    async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay', classId: string; }) {
         setIsGenerating(true);
         setGeneratedChallenge(null);
         toast({ title: 'Generating Challenge...', description: 'Please wait while the AI creates a prompt.' });
 
         try {
-            const result = await generateWritingChallenge({ topic, challengeType });
-            setGeneratedChallenge(result);
+            const result = await generateWritingChallenge(values);
+            
+            // CRITICAL: We save the classId you selected into this state object
+            setGeneratedChallenge({ 
+                ...result, 
+                classId: values.classId 
+            });
+            
             toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
         } catch (error) {
             console.error('Error generating challenge:', error);
@@ -483,12 +494,27 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         }
     }
 
+    // 2. SAVE FUNCTION
     async function onSave() {
-        if (!generatedChallenge || !classId || !user) {
-            toast({
-                variant: 'destructive',
-                title: 'Missing Information',
-                description: 'Please ensure a Class is selected before saving.'
+        // STRATEGY: Look for the Class ID in the form first. 
+        // If not there, look in the data we saved during generation.
+        const formClassId = form.getValues('classId');
+        const snapshotClassId = generatedChallenge?.classId;
+        
+        // The winner is...
+        const finalClassId = formClassId || snapshotClassId;
+
+        console.log("Saving Debug Info:", { 
+            idFromForm: formClassId, 
+            idFromSnapshot: snapshotClassId, 
+            finalClassId 
+        });
+
+        if (!generatedChallenge || !finalClassId || !user) {
+            toast({ 
+                variant: 'destructive', 
+                title: 'Missing Information', 
+                description: `Class ID not found. Form sees: "${formClassId || 'Empty'}"` 
             });
             return;
         }
@@ -496,8 +522,10 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...generatedChallenge,
-                classId: classId,
+                title: generatedChallenge.title,
+                prompt: generatedChallenge.prompt,
+                challengeType: generatedChallenge.challengeType,
+                classId: finalClassId, // Use the detected ID
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
             });
@@ -513,42 +541,80 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
     return (
         <div className="space-y-4">
-            <div className="space-y-4 p-4 border rounded-md">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label>Topic/Theme</Label>
-                        <Input placeholder="e.g., A Journey to Mars" value={topic} onChange={e => setTopic(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Challenge Type</Label>
-                        <Select onValueChange={(val: 'Creative Writing' | 'Summarization' | 'Essay') => setChallengeType(val)} value={challengeType}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
+             <Form {...form}>
+                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <FormField control={form.control} name="topic" render={({ field }) => (
+                            <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        
+                        <FormField control={form.control} name="challengeType" render={({ field }) => (
+                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
                                 <SelectItem value="Creative Writing">Creative Writing</SelectItem>
                                 <SelectItem value="Summarization">Summarization</SelectItem>
                                 <SelectItem value="Essay">Essay</SelectItem>
-                            </SelectContent>
-                        </Select>
+                            </SelectContent></Select><FormMessage /></FormItem>
+                        )}/>
+                        
+                        {/* FIX: Use 'value' instead of 'defaultValue' to ensure it stays synced */}
+                        <FormField control={form.control} name="classId" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Assign to Class</FormLabel>
+                                <Select 
+                                    // FORCE UPDATE: We manually set the value to be safe
+                                    onValueChange={(val) => {
+                                        field.onChange(val);
+                                        form.setValue('classId', val); 
+                                    }}
+                                    value={field.value} 
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a class" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {classes?.map(c => (
+                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {/* DEBUG TEXT: This will show you exactly what the computer sees */}
+                                {field.value && <p className="text-xs text-green-600">Selected Class ID: {field.value}</p>}
+                                <FormMessage />
+                            </FormItem>
+                        )} />
                     </div>
-                </div>
-                <Button type="button" onClick={onGenerate} disabled={isGenerating}>
-                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Generate Challenge
-                </Button>
-            </div>
+                    
+                    <Button type="submit" disabled={isGenerating}>
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        Generate Challenge
+                    </Button>
+                </form>
+            </Form>
 
             {generatedChallenge && (
                 <Card className="bg-muted/50">
                     <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
                         <p className="italic">{generatedChallenge.prompt}</p>
+                        
+                        {/* IF YOU WANT TO ALLOW CHANGING CLASS AFTER GENERATING, YOU CAN UNCOMMENT THIS: */}
+                        {/* 
                         <div className="space-y-2">
-                            <Label>Assign to Class</Label>
-                            <Select onValueChange={setClassId} value={classId}>
+                             <Label>Change Class (Optional)</Label>
+                             <Select 
+                                value={form.watch('classId')} 
+                                onValueChange={(val) => form.setValue('classId', val)}
+                             >
                                 <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
+                                <SelectContent>
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                             </Select>
+                        </div> 
+                        */}
+
                         <Button onClick={onSave} disabled={isSaving}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
                         </Button>
@@ -556,76 +622,6 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 </Card>
             )}
         </div>
-    );
-}
-
-function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { user } = useAuth();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
-
-    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
-        resolver: zodResolver(elaWritingChallengeSchema),
-        defaultValues: { challengeType: 'Creative Writing' }
-    });
-
-    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
-        if (!user) return;
-        setIsSubmitting(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...values,
-                createdBy: user.uid,
-                createdAt: serverTimestamp(),
-            });
-            toast({ title: 'Success', description: 'New writing challenge has been posted.' });
-            setOpen(false);
-        } catch (error) {
-            console.error('Error creating challenge:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not create challenge.' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-    
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="classId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a class"/>
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage/>
-                    </FormItem>
-                )}/>
-                <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., A Journey to the Past" {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="prompt" render={({ field }) => (
-                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} placeholder="Describe the writing task..."/></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="challengeType" render={({ field }) => (
-                    <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                        <SelectItem value="Creative Writing">Creative Writing</SelectItem>
-                        <SelectItem value="Summarization">Summarization</SelectItem>
-                        <SelectItem value="Essay">Essay</SelectItem>
-                    </SelectContent></Select><FormMessage/></FormItem>
-                )}/>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Challenge</Button>
-            </form>
-        </Form>
     );
 }
 

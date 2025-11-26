@@ -194,7 +194,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
                         <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
-                <Button onClick={onSave} disabled={isSaving}>
+                <Button onClick={onSave} disabled={isSaving || !classId}>
                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Save Problems
                 </Button>
