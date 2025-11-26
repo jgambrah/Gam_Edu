@@ -447,7 +447,7 @@ function ManagePassages() {
 
 function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user } = useAuth(); // <--- Check if this is loading correctly
     const { toast } = useToast();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -489,18 +489,28 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
     // Save Function
     async function onSave() {
-        // --- 2. FIX: Read directly from our simple state variable ---
-        const finalClassId = selectedClassId;
+        // --- DIAGNOSTIC LOGS (Check your browser console F12) ---
+        console.log("--- SAVE DIAGNOSTIC ---");
+        console.log("Selected Class ID:", selectedClassId);
+        console.log("Current User:", user);
+        console.log("Generated Challenge:", generatedChallenge);
+        
+        // 2. SEPARATE CHECKS (To find the real culprit)
+        
+        if (!generatedChallenge) {
+             toast({ variant: 'destructive', title: 'Error', description: 'No challenge data found. Please generate again.' });
+             return;
+        }
 
-        console.log("Saving with Class ID:", finalClassId);
+        if (!selectedClassId) {
+             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class from the dropdown.' });
+             return;
+        }
 
-        if (!generatedChallenge || !finalClassId || !user) {
-            toast({ 
-                variant: 'destructive', 
-                title: 'Missing Class', 
-                description: 'Please select a class from the dropdown menu.' 
-            });
-            return;
+        // *** THIS IS LIKELY THE REAL PROBLEM ***
+        if (!user) {
+             toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
+             return;
         }
 
         setIsSaving(true);
@@ -509,7 +519,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 title: generatedChallenge.title,
                 prompt: generatedChallenge.prompt,
                 challengeType: generatedChallenge.challengeType,
-                classId: finalClassId, // <--- Using the state variable
+                classId: selectedClassId, // Use the state variable
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
             });
@@ -517,7 +527,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
             setOpen(false);
         } catch (e) {
             console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Save failed.' });
+            toast({ variant: 'destructive', title: 'Error', description: 'Save failed. Check console.' });
         } finally {
             setIsSaving(false);
         }
@@ -527,7 +537,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         <div className="space-y-4">
              <Form {...form}>
                 <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <FormField control={form.control} name="topic" render={({ field }) => (
                             <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
@@ -539,21 +549,8 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                                 <SelectItem value="Essay">Essay</SelectItem>
                             </SelectContent></Select><FormMessage /></FormItem>
                         )}/>
-                    </div>
-                    
-                    <Button type="submit" disabled={isGenerating}>
-                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Generate Challenge
-                    </Button>
-                </form>
-            </Form>
-
-            {generatedChallenge && (
-                <Card className="bg-muted/50">
-                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="italic">{generatedChallenge.prompt}</p>
-
+                        
+                        {/* --- 3. FIX: Simplified Dropdown (Controlled by State) --- */}
                         <div className="space-y-2">
                             <Label>Assign to Class</Label>
                             <Select 
@@ -573,9 +570,24 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                                 </SelectContent>
                             </Select>
                             {/* Visual Confirmation */}
-                            {selectedClassId && <p className="text-xs text-green-600">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
+                            {selectedClassId && <p className="text-xs text-green-600 font-bold">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
                         </div>
 
+                    </div>
+                    
+                    <Button type="submit" disabled={isGenerating}>
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        Generate Challenge
+                    </Button>
+                </form>
+            </Form>
+
+            {generatedChallenge && (
+                <Card className="bg-muted/50">
+                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="italic">{generatedChallenge.prompt}</p>
+                        
                         <Button onClick={onSave} disabled={isSaving}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
                         </Button>
