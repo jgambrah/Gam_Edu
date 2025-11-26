@@ -48,11 +48,10 @@ import { getAuth } from 'firebase/auth';
 function ReadingPracticeTab() {
   const firestore = useFirestore();
   const { user } = useAuth();
-  const { role } = useRole(); // 1. Get the Role
+  const { role } = useRole();
   
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 2. Fetch Student Data (Only matters if NOT staff)
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => 
       (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
@@ -60,17 +59,14 @@ function ReadingPracticeTab() {
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  // 3. Smart Query: Show ALL for Staff, Filtered for Students
   const passagesQuery = useMemoFirebase(() => {
     if (isStaff) {
-      // Teachers see ALL passages
       return query(collection(firestore, 'ela_reading_passages'));
     }
     if (studentClassId) {
-      // Students see only their class
       return query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId));
     }
-    return null; // No query if no class ID found
+    return null;
   }, [firestore, studentClassId, isStaff]);
 
   const { data: passages, isLoading: isLoadingPassages } = useCollection<ElaReadingPassage>(passagesQuery);
@@ -95,7 +91,6 @@ function ReadingPracticeTab() {
                     <CardTitle>{passage.title}</CardTitle>
                     <CardDescription>
                         Level: {passage.reading_level} 
-                        {/* Show Class ID to teachers for debugging */}
                         {isStaff && <span className="ml-2 text-xs text-muted-foreground">(Class: {passage.classId})</span>}
                     </CardDescription>
                   </CardHeader>
@@ -171,18 +166,16 @@ function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingCh
 function WritingSubmissionTab() {
     const firestore = useFirestore();
     const { user } = useAuth();
-    const { role } = useRole(); // 1. Get Role
+    const { role } = useRole();
     const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
     
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-    // 2. Fetch Student Data (Only if not staff)
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
         useMemoFirebase(() => (user && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
     );
     const studentClassId = studentData?.[0]?.classId;
 
-    // 3. Fetch Challenges (All for Staff, Filtered for Students)
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
         useMemoFirebase(() => {
             if (isStaff) return query(collection(firestore, 'ela_writing_challenges'));
@@ -191,7 +184,6 @@ function WritingSubmissionTab() {
         }, [firestore, studentClassId, isStaff])
     );
 
-    // 4. Fetch Submissions (Only makes sense for students to see their own)
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
         useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
     );
@@ -227,7 +219,6 @@ function WritingSubmissionTab() {
                                         )}
                                     </div>
                                     
-                                    {/* Only show Submit button to Students */}
                                     {!isStaff && (
                                         <Dialog open={openDialogs[challenge.id] || false} onOpenChange={(isOpen) => setOpenDialogs(prev => ({ ...prev, [challenge.id]: isOpen }))}>
                                             <DialogTrigger asChild>
