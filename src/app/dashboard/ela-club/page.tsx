@@ -486,6 +486,131 @@ function ManagePassages() {
     );
 }
 
+function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+
+    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
+        resolver: zodResolver(elaWritingChallengeSchema),
+        defaultValues: {
+            title: '',
+            prompt: '',
+            challengeType: 'Creative Writing',
+            classId: '',
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
+        if (!user) return;
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
+                ...values,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success', description: 'New writing challenge has been created.' });
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error adding challenge:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the challenge.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                <FormField control={form.control} name="challengeType" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                            <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                            <SelectItem value="Summarization">Summarization</SelectItem>
+                            <SelectItem value="Essay">Essay</SelectItem>
+                        </SelectContent></Select>
+                    <FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Challenge</Button>
+            </form>
+        </Form>
+    );
+}
+
+function ManageWritingChallenges() {
+    const firestore = useFirestore();
+    const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_writing_challenges')) : null, [firestore]));
+    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_user_submissions')) : null, [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
+    
+    const submissionsByChallenge = useMemo(() => {
+        if (!submissions) return {};
+        return submissions.reduce((acc, sub) => {
+            (acc[sub.challenge_id] = acc[sub.challenge_id] || []).push(sub);
+            return acc;
+        }, {} as Record<string, ElaUserSubmission[]>);
+    }, [submissions]);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Manage Writing Challenges</CardTitle>
+                    <CardDescription>Create challenges and review student submissions.</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Writing Challenge Generator</DialogTitle><DialogDescription>Generate a writing prompt for any topic.</DialogDescription></DialogHeader><AiChallengeGenerator setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4" />New Challenge</Button></DialogTrigger>
+                        <DialogContent><DialogHeader><DialogTitle>Create New Writing Challenge</DialogTitle></DialogHeader><ChallengeCreationForm setOpen={setIsFormOpen} /></DialogContent>
+                    </Dialog>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <Accordion type="single" collapsible>
+                    {challenges?.map(challenge => (
+                        <AccordionItem key={challenge.id} value={challenge.id}>
+                            <AccordionTrigger>
+                                <div className="flex justify-between w-full pr-4">
+                                    <span>{challenge.title}</span>
+                                    <span className="text-sm text-muted-foreground">{submissionsByChallenge[challenge.id]?.length || 0} Submissions</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                               {/* Submission grading table would go here */}
+                               <p className="text-muted-foreground p-4 text-center">Submission review UI coming soon.</p>
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </CardContent>
+        </Card>
+    );
+}
+
 function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
     const { user: hookUser } = useAuth();
@@ -625,241 +750,6 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     );
 }
 
-function ManageWritingChallenges() {
-    const firestore = useFirestore();
-    const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_writing_challenges')) : null, [firestore]));
-    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_user_submissions')) : null, [firestore]));
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-    
-    const submissionsByChallenge = useMemo(() => {
-        if (!submissions) return {};
-        return submissions.reduce((acc, sub) => {
-            (acc[sub.challenge_id] = acc[sub.challenge_id] || []).push(sub);
-            return acc;
-        }, {} as Record<string, ElaUserSubmission[]>);
-    }, [submissions]);
-
-    return (
-        <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle>Manage Writing Challenges</CardTitle>
-                    <CardDescription>Create challenges and review student submissions.</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Writing Challenge Generator</DialogTitle><DialogDescription>Generate a writing prompt for any topic.</DialogDescription></DialogHeader><AiChallengeGenerator setOpen={setIsAiFormOpen} /></DialogContent>
-                    </Dialog>
-                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4" />New Challenge</Button></DialogTrigger>
-                        <DialogContent><DialogHeader><DialogTitle>Create New Writing Challenge</DialogTitle></DialogHeader><ChallengeCreationForm setOpen={setIsFormOpen} /></DialogContent>
-                    </Dialog>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Accordion type="single" collapsible>
-                    {challenges?.map(challenge => (
-                        <AccordionItem key={challenge.id} value={challenge.id}>
-                            <AccordionTrigger>
-                                <div className="flex justify-between w-full pr-4">
-                                    <span>{challenge.title}</span>
-                                    <span className="text-sm text-muted-foreground">{submissionsByChallenge[challenge.id]?.length || 0} Submissions</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                               {/* Submission grading table would go here */}
-                               <p className="text-muted-foreground p-4 text-center">Submission review UI coming soon.</p>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </CardContent>
-        </Card>
-    );
-}
-
-function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
-
-    const form = useForm<z.infer<typeof elaGrammarDrillSchema>>({
-        resolver: zodResolver(elaGrammarDrillSchema),
-        defaultValues: {
-            topic: '',
-            type: 'MCQ',
-            question_prompt: '',
-            options: ['', '', '', ''],
-            classId: '',
-        }
-    });
-
-    async function onSubmit(values: z.infer<typeof elaGrammarDrillSchema>) {
-        setIsSubmitting(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_grammar_drills'), values);
-            toast({ title: 'Success', description: 'New grammar drill has been added.' });
-            form.reset();
-            setOpen(false);
-        } catch (error) {
-            console.error('Error adding drill:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the drill.' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <FormField control={form.control} name="classId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select><FormMessage/>
-                    </FormItem>
-                )}/>
-                <FormField control={form.control} name="topic" render={({ field }) => (
-                    <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Punctuation" {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="question_prompt" render={({ field }) => (
-                    <FormItem><FormLabel>Question Prompt</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
-                <div className="grid grid-cols-2 gap-4">
-                    {form.getValues('options')?.map((_, index) => (
-                        <FormField key={index} control={form.control} name={`options.${index}`} render={({ field }) => (
-                            <FormItem><FormLabel>Option {index + 1}</FormLabel><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
-                        )}/>
-                    ))}
-                </div>
-                 <FormField control={form.control} name="correct_answer" render={({ field }) => (
-                    <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
-                )}/>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Drill</Button>
-            </form>
-        </Form>
-    );
-}
-
-function ManageDrills() {
-    const firestore = useFirestore();
-    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_grammar_drills')) : null, [firestore]));
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-
-    return (
-        <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle>Grammar Drill Bank</CardTitle>
-                    <CardDescription>Manage grammar and mechanics practice questions.</CardDescription>
-                </div>
-                 <div className="flex gap-2">
-                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any grammar topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="ELA Grammar" setOpen={setIsAiFormOpen} /></DialogContent>
-                    </Dialog>
-                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Drill</Button></DialogTrigger>
-                        <DialogContent><DialogHeader><DialogTitle>Create New Grammar Drill</DialogTitle></DialogHeader><DrillCreationForm setOpen={setIsFormOpen}/></DialogContent>
-                    </Dialog>
-                </div>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? <Skeleton className="h-40 w-full" /> : (
-                <Table>
-                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Type</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {drills?.map(p => (
-                            <TableRow key={p.id}>
-                                <TableCell>{p.topic}</TableCell>
-                                <TableCell>{p.type}</TableCell>
-                                <TableCell className="max-w-md truncate">{p.question_prompt}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                )}
-            </CardContent>
-        </Card>
-    );
-}
-
-function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { user } = useAuth();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
-
-    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
-        resolver: zodResolver(elaWritingChallengeSchema),
-        defaultValues: {
-            title: '',
-            prompt: '',
-            challengeType: 'Creative Writing',
-            classId: '',
-        }
-    });
-
-    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
-        if (!user) return;
-        setIsSubmitting(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...values,
-                createdBy: user.uid,
-                createdAt: serverTimestamp(),
-            });
-            toast({ title: 'Success', description: 'New writing challenge has been created.' });
-            form.reset();
-            setOpen(false);
-        } catch (error) {
-            console.error('Error adding challenge:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the challenge.' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem><FormLabel>Challenge Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                 <FormField control={form.control} name="prompt" render={({ field }) => (
-                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="challengeType" render={({ field }) => (
-                    <FormItem><FormLabel>Challenge Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                            <SelectItem value="Creative Writing">Creative Writing</SelectItem>
-                            <SelectItem value="Summarization">Summarization</SelectItem>
-                            <SelectItem value="Essay">Essay</SelectItem>
-                        </SelectContent></Select>
-                    <FormMessage/></FormItem>
-                )}/>
-                 <FormField control={form.control} name="classId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select><FormMessage/>
-                    </FormItem>
-                )}/>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Challenge</Button>
-            </form>
-        </Form>
-    );
-}
-
 // --- Main ELA Club Page Component ---
 export default function ElaClubPage() {
   const { role } = useRole();
@@ -926,5 +816,6 @@ export default function ElaClubPage() {
     </div>
   );
 }
+
 
 

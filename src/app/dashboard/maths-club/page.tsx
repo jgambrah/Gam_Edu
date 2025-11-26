@@ -45,7 +45,7 @@ import { Label } from '@/components/ui/label';
 function Leaderboard() {
     const firestore = useFirestore();
     const leaderboardQuery = useMemoFirebase(
-      () => query(collection(firestore, 'global_leaderboard'), orderBy('total_correct_answers', 'desc')),
+      () => firestore ? query(collection(firestore, 'global_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
       [firestore]
     );
     const { data: leaderboard, isLoading } = useCollection<GlobalLeaderboardEntry>(leaderboardQuery);
@@ -231,18 +231,15 @@ export default function MathsClubPage() {
   
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    
     if (isTeacherOrAdmin) {
       return query(collection(firestore, 'math_problems'));
     }
-    
     if (role === 'Student') {
         if (studentClassId) {
              return query(collection(firestore, 'math_problems'), where('classId', '==', studentClassId));
         }
         return null;
     }
-    
     return null;
   }, [firestore, isTeacherOrAdmin, role, studentClassId]);
 
