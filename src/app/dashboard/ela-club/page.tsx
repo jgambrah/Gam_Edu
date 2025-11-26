@@ -228,7 +228,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
                 ...values,
                 numQuestions: Number(values.numQuestions),
             });
-            setGeneratedPassage({ ...result, ...values, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: []})) });
+            setGeneratedPassage({ ...result, ...values, passage_text: result.passage_text, question_set: result.question_set.map(q => ({...q, options: [], type: 'Short Answer'})) });
             toast({ title: 'Passage Generated!', description: 'Review the content below before saving.' });
         } catch (error) {
             console.error('Error generating passage:', error);
@@ -316,7 +316,7 @@ function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 
     const form = useForm<z.infer<typeof elaReadingPassageSchema>>({
         resolver: zodResolver(elaReadingPassageSchema),
-        defaultValues: { title: '', passage_text: '', reading_level: '', classId: '', question_set: [{ question: '', type: 'MCQ', options: ['', '', ''], correct_answer_key: '' }] }
+        defaultValues: { title: '', passage_text: '', reading_level: '', classId: '', question_set: [{ question: '', type: 'Short Answer', options: [], correct_answer_key: '' }] }
     });
 
     const { fields, append, remove } = useFieldArray({
@@ -376,7 +376,7 @@ function PassageCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                                 </div>
                             ))}
                         </div>
-                        <Button type="button" variant="outline" size="sm" onClick={() => append({ question: '', type: 'MCQ', options: [], correct_answer_key: '' })}>Add Question</Button>
+                        <Button type="button" variant="outline" size="sm" onClick={() => append({ question: '', type: 'Short Answer', options: [], correct_answer_key: '' })}>Add Question</Button>
                     </div>
                 </ScrollArea>
                 <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Add Passage</Button>
@@ -435,14 +435,10 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const { toast } = useToast();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    
-    // We don't need classId in this state object anymore, strictly strictly speaking, 
-    // but it's fine to leave it. We just won't rely on it for saving.
     const [generatedChallenge, setGeneratedChallenge] = useState<{
         title: string;
         prompt: string;
         challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
-        classId?: string; // Made optional to reflect we might rely on form
     } | null>(null);
 
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
@@ -458,8 +454,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
         try {
             const result = await generateWritingChallenge(values);
-            // We still set state to show the preview
-            setGeneratedChallenge({ ...result, classId: values.classId });
+            setGeneratedChallenge(result);
             toast({ title: 'Challenge Generated!', description: 'Review the prompt below before saving.' });
         } catch (error) {
             console.error('Error generating challenge:', error);
@@ -470,9 +465,6 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     }
 
     async function onSave() {
-        // --- FIX START ---
-        // Get the Class ID directly from the form (current value) 
-        // instead of the 'generatedChallenge' state (old value)
         const currentClassId = form.getValues('classId');
 
         if (!generatedChallenge || !currentClassId || !user) {
@@ -483,16 +475,11 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
             });
             return;
         }
-        // --- FIX END ---
 
         setIsSaving(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                // Spread the generated content (Title, Prompt, Type)
-                title: generatedChallenge.title,
-                prompt: generatedChallenge.prompt,
-                challengeType: generatedChallenge.challengeType,
-                // Use the fresh Class ID from the form
+                ...generatedChallenge,
                 classId: currentClassId,
                 createdBy: user.uid,
                 createdAt: serverTimestamp(),
@@ -670,64 +657,6 @@ function ManageWritingChallenges() {
                 </Accordion>
             </CardContent>
         </Card>
-    );
-}
-
-function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
-
-    const form = useForm<z.infer<typeof elaGrammarDrillSchema>>({
-        resolver: zodResolver(elaGrammarDrillSchema),
-        defaultValues: {
-            topic: '',
-            type: 'MCQ',
-            question_prompt: '',
-            options: [],
-            correct_answer: '',
-            classId: '',
-        }
-    });
-
-    async function onSubmit(values: z.infer<typeof elaGrammarDrillSchema>) {
-        setIsSubmitting(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_grammar_drills'), values);
-            toast({ title: 'Success', description: 'New grammar drill has been added.' });
-            form.reset();
-            setOpen(false);
-        } catch (error) {
-            console.error('Error adding drill:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the drill.' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                 <FormField control={form.control} name="classId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select><FormMessage/>
-                    </FormItem>
-                )}/>
-                <FormField control={form.control} name="topic" render={({ field }) => (
-                    <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Punctuation" {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="question_prompt" render={({ field }) => (
-                    <FormItem><FormLabel>Question Prompt</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
-                
-                 <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Drill</Button>
-            </form>
-        </Form>
     );
 }
 
