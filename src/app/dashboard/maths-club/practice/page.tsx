@@ -15,7 +15,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { FormItem, FormControl } from '@/components/ui/form';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
@@ -141,10 +140,10 @@ function QuizComponent() {
         <p className="font-semibold text-lg">{currentProblem.question_text}</p>
         <RadioGroup onValueChange={(value) => handleAnswerChange(currentQuestionIndex, value)}>
           {currentProblem.options?.map((option, i) => (
-            <FormItem key={i} className="flex items-center space-x-3 space-y-0">
-              <FormControl><RadioGroupItem value={String(option)} id={`q${currentQuestionIndex}-o${i}`} /></FormControl>
+            <div key={i} className="flex items-center space-x-3 space-y-0">
+              <RadioGroupItem value={String(option)} id={`q${currentQuestionIndex}-o${i}`} />
               <Label htmlFor={`q${currentQuestionIndex}-o${i}`} className="font-normal">{option}</Label>
-            </FormItem>
+            </div>
           ))}
         </RadioGroup>
       </CardContent>
