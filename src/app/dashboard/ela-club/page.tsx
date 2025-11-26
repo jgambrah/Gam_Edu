@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -10,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
@@ -320,32 +319,43 @@ function ReadingPracticeTab() {
   );
 }
 
-// --- Writing Submission Tab ---
-
-function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingChallenge, setOpen: (open: boolean) => void }) {
+// --- SUB-COMPONENT: Writing Workspace Modal ---
+function ActiveChallengeDialog({ 
+    challenge, 
+    existingSubmission, 
+    open, 
+    setOpen 
+}: { 
+    challenge: ElaWritingChallenge | null, 
+    existingSubmission: ElaUserSubmission | undefined,
+    open: boolean, 
+    setOpen: (o: boolean) => void 
+}) {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user } = useUser();
     const { toast } = useToast();
+    
+    const [text, setText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const form = useForm<{ submission_text: string }>({
-        defaultValues: { submission_text: '' },
-        resolver: zodResolver(z.object({ submission_text: z.string().min(1, "Submission cannot be empty.") }))
-    });
+    if (!challenge) return null;
 
-    async function onSubmit(values: { submission_text: string }) {
-        if (!user) return;
+    const handleSubmit = async () => {
+        if (!user || !text.trim()) return;
         setIsSubmitting(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
-                ...values,
                 userId: user.uid,
                 challenge_id: challenge.id,
                 challenge_title: challenge.title,
+                type: 'Writing Challenge',
+                submission_text: text,
                 date_submitted: serverTimestamp(),
                 status: 'Submitted',
+                teacher_score: null,
+                teacher_feedback: ''
             });
-            toast({ title: 'Success', description: 'Your submission has been received.' });
+            toast({ title: 'Success', description: 'Your work has been submitted for review.' });
             setOpen(false);
         } catch (error) {
             console.error('Error submitting work:', error);
@@ -353,108 +363,214 @@ function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingCh
         } finally {
             setIsSubmitting(false);
         }
-    }
-    
+    };
+
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="submission_text" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Your Response</FormLabel>
-                        <FormControl><Textarea {...field} rows={10} placeholder="Type your response here..." /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Submit</Button>
-            </form>
-        </Form>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+                <DialogHeader>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline">{challenge.challengeType}</Badge>
+                        {existingSubmission && <Badge variant={existingSubmission.status === 'Graded' ? 'default' : 'secondary'}>{existingSubmission.status}</Badge>}
+                    </div>
+                    <DialogTitle className="text-xl">{challenge.title}</DialogTitle>
+                </DialogHeader>
+
+                <div className="flex flex-1 gap-6 overflow-hidden min-h-0 pt-2">
+                    {/* LEFT SIDE: PROMPT */}
+                    <div className="w-1/3 flex flex-col border-r pr-6">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <Lightbulb className="h-4 w-4 text-yellow-500"/> The Prompt
+                        </h4>
+                        <ScrollArea className="flex-1 bg-yellow-50/50 p-4 rounded-md border border-yellow-100">
+                            <p className="text-sm whitespace-pre-wrap leading-relaxed text-slate-800">
+                                {challenge.prompt}
+                            </p>
+                        </ScrollArea>
+                    </div>
+
+                    {/* RIGHT SIDE: EDITOR / STATUS */}
+                    <div className="w-2/3 flex flex-col">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <PenSquare className="h-4 w-4"/> Your Response
+                        </h4>
+                        
+                        {existingSubmission ? (
+                            <ScrollArea className="flex-1 bg-muted/20 p-4 rounded-md border">
+                                <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif">
+                                    {existingSubmission.submission_text}
+                                </div>
+                                {existingSubmission.status === 'Graded' && (
+                                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                                        <p className="font-bold text-green-800 mb-1">Teacher Feedback (Score: {existingSubmission.teacher_score}/100)</p>
+                                        <p className="text-sm text-green-700">{existingSubmission.teacher_feedback || "Great job!"}</p>
+                                    </div>
+                                )}
+                            </ScrollArea>
+                        ) : (
+                            <Textarea 
+                                className="flex-1 resize-none font-serif text-lg p-4 leading-relaxed bg-white" 
+                                placeholder="Start writing here..."
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
+                            />
+                        )}
+                    </div>
+                </div>
+
+                <DialogFooter className="pt-4 border-t mt-4">
+                    {existingSubmission ? (
+                        <Button onClick={() => setOpen(false)} variant="secondary">Close View</Button>
+                    ) : (
+                        <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Submit Work
+                        </Button>
+                    )}
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
 
 function WritingSubmissionTab() {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user, isUserLoading } = useUser();
     const { role } = useRole();
-    const [openDialogs, setOpenDialogs] = useState<Record<string, boolean>>({});
     
+    // UI State
+    const [selectedType, setSelectedType] = useState<string>('');
+    const [selectedChallengeId, setSelectedChallengeId] = useState<string>('');
+    const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
+    // 1. Fetch Student Data (to get Class ID)
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-        useMemoFirebase(() => (user && firestore && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
+        useMemoFirebase(() => (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, isStaff])
     );
     const studentClassId = studentData?.[0]?.classId;
 
+    // 2. Fetch Challenges
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(
         useMemoFirebase(() => {
             if(!firestore) return null;
             if (isStaff) return query(collection(firestore, 'ela_writing_challenges'));
-            if (role === 'Student' && studentClassId) return query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId));
+            if (studentClassId) return query(collection(firestore, 'ela_writing_challenges'), where('classId', '==', studentClassId));
             return null;
-        }, [firestore, studentClassId, isStaff, role])
+        }, [firestore, studentClassId, isStaff])
     );
 
+    // 3. Fetch My Submissions (to see if I already did it)
     const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(
-        useMemoFirebase(() => user ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
+        useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'ela_user_submissions'), where('userId', '==', user.uid)) : null, [firestore, user])
     );
 
-    const isLoading = isLoadingChallenges || isLoadingSubmissions || (role === 'Student' && isLoadingStudent);
-    
+    const isLoading = isUserLoading || isLoadingChallenges || isLoadingSubmissions || (isLoadingStudent && !isStaff);
+
+    // 4. Filtering Logic
+    const uniqueTypes = useMemo(() => {
+        if (!challenges) return [];
+        return Array.from(new Set(challenges.map(c => c.challengeType))).sort();
+    }, [challenges]);
+
+    const filteredChallenges = useMemo(() => {
+        if (!challenges || !selectedType) return [];
+        return challenges.filter(c => c.challengeType === selectedType);
+    }, [challenges, selectedType]);
+
+    const activeChallenge = useMemo(() => {
+        return challenges?.find(c => c.id === selectedChallengeId) || null;
+    }, [challenges, selectedChallengeId]);
+
+    const existingSubmission = useMemo(() => {
+        if (!activeChallenge || !submissions) return undefined;
+        return submissions.find(s => s.challenge_id === activeChallenge.id);
+    }, [activeChallenge, submissions]);
+
+    const handleStart = () => {
+        if (selectedChallengeId) setIsWorkspaceOpen(true);
+    };
+
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Writing & Summarizing Challenges</CardTitle>
-                <CardDescription>
-                    {isStaff ? "Viewing ALL Challenges (Teacher View)" : "Submit your written work for feedback."}
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? <Skeleton className="h-40 w-full"/> : 
-                (role === 'Student' && !studentClassId) ? (
-                    <p className="text-center py-8 text-muted-foreground">You are not assigned to a class. Please contact an administrator.</p>
-                ) :
-                (
-                    <div className="space-y-4">
-                        {challenges?.map(challenge => {
-                            const submission = submissions?.find(s => s.challenge_id === challenge.id);
-                            return (
-                                <Card key={challenge.id} className="p-4 flex justify-between items-center">
-                                    <div>
-                                        <h4 className="font-semibold">
-                                            {challenge.title}
-                                            {isStaff && <span className="ml-2 text-xs font-normal text-muted-foreground">(Class ID: {challenge.classId})</span>}
-                                        </h4>
-                                        <p className="text-sm text-muted-foreground">{challenge.prompt}</p>
-                                        {submission && (
-                                            <div className="text-xs mt-2">
-                                                <Badge variant={submission.status === 'Graded' ? 'default' : 'secondary'}>{submission.status}</Badge>
-                                                {submission.status === 'Graded' && <span className="ml-2">Score: {submission.teacher_score}</span>}
-                                            </div>
-                                        )}
-                                    </div>
-                                    
-                                    {!isStaff && (
-                                        <Dialog open={openDialogs[challenge.id] || false} onOpenChange={(isOpen) => setOpenDialogs(prev => ({ ...prev, [challenge.id]: isOpen }))}>
-                                            <DialogTrigger asChild>
-                                                <Button disabled={!!submission}>{submission ? 'Submitted' : 'Submit Work'}</Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                <DialogHeader>
-                                                    <DialogTitle>{challenge.title}</DialogTitle>
-                                                    <DialogDescription>{challenge.prompt}</DialogDescription>
-                                                </DialogHeader>
-                                                <StudentSubmissionForm challenge={challenge} setOpen={() => setOpenDialogs(prev => ({ ...prev, [challenge.id]: false }))}/>
-                                            </DialogContent>
-                                        </Dialog>
-                                    )}
-                                    {isStaff && <Badge variant="outline">Teacher View</Badge>}
-                                </Card>
-                            );
-                        })}
-                         {challenges?.length === 0 && <p className="text-center py-8 text-muted-foreground">No writing challenges found.</p>}
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+        <>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Writing & Summarizing Challenges</CardTitle>
+                    <CardDescription>{isStaff ? "Viewing ALL Challenges" : "Select a challenge type to begin writing."}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {isLoading ? (
+                        <div className="flex flex-col space-y-4">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                            <div className="flex justify-center text-muted-foreground text-sm gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" /> Loading challenges...
+                            </div>
+                        </div>
+                    ) : 
+                    (!isStaff && !studentClassId) ? (
+                        <div className="text-center py-8">
+                            <p className="text-muted-foreground">You are not assigned to a class.</p>
+                            <p className="text-xs text-red-400 mt-1">Debug: UID {user?.uid}</p>
+                        </div>
+                    ) :
+                    challenges && challenges.length > 0 ? (
+                        <div className="space-y-6 max-w-xl mx-auto py-4">
+                            
+                            {/* DROPDOWN 1: TYPE */}
+                            <div className="space-y-2">
+                                <Label>1. Choose Challenge Type</Label>
+                                <Select value={selectedType} onValueChange={(val) => { setSelectedType(val); setSelectedChallengeId(''); }}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select Type (e.g., Essay, Creative Writing)" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {uniqueTypes.map(type => (
+                                            <SelectItem key={type} value={type}>{type}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* DROPDOWN 2: TITLE */}
+                            <div className="space-y-2">
+                                <Label>2. Choose Challenge</Label>
+                                <Select value={selectedChallengeId} onValueChange={setSelectedChallengeId} disabled={!selectedType}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder={!selectedType ? "Select a type first" : "Select a Title"} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {filteredChallenges.map(c => {
+                                            const isDone = submissions?.some(s => s.challenge_id === c.id);
+                                            return (
+                                                <SelectItem key={c.id} value={c.id}>
+                                                    {c.title} {isDone ? "✅" : ""}
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <Button className="w-full" size="lg" onClick={handleStart} disabled={!selectedChallengeId}>
+                                {existingSubmission ? "View My Submission" : "Open Writing Workspace"}
+                                {existingSubmission ? <BookOpenCheck className="ml-2 h-4 w-4"/> : <PenSquare className="ml-2 h-4 w-4" />}
+                            </Button>
+                        </div>
+                    ) : (
+                         <p className="text-center text-muted-foreground py-12">{isStaff ? "No challenges found." : "No writing challenges available for your class."}</p>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* THE WORKSPACE MODAL */}
+            <ActiveChallengeDialog 
+                challenge={activeChallenge} 
+                existingSubmission={existingSubmission}
+                open={isWorkspaceOpen} 
+                setOpen={setIsWorkspaceOpen} 
+            />
+        </>
     );
 }
 
@@ -1067,3 +1183,4 @@ function ManageDrills() {
         </Card>
     )
 }
+    
