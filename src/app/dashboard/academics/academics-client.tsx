@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useAuth, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect } from 'react';
 import { collection, doc, query, where, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
@@ -336,14 +336,15 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
 export default function AcademicsPageContent() {
   const { role } = useRole();
   const firestore = useFirestore();
+  const { user } = useAuth();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
 
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
-  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore]));
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
-  const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(useMemoFirebase(() => firestore ? collection(firestore, 'timetables') : null, [firestore]));
-  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]));
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(useMemoFirebase(() => firestore && user ? collection(firestore, 'classes') : null, [firestore, user]));
+  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(useMemoFirebase(() => firestore && user ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]));
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]));
+  const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(useMemoFirebase(() => firestore && user ? collection(firestore, 'timetables') : null, [firestore, user]));
+  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(useMemoFirebase(() => firestore && user ? collection(firestore, 'subjects') : null, [firestore, user]));
 
   const isLoading = isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
