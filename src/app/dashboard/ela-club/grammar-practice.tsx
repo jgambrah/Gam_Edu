@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -19,12 +20,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useRole } from '@/context/role-context';
+
 
 export function GrammarPractice() {
   const firestore = useFirestore();
   const { user } = useAuth();
+  const { role } = useRole();
+
+  const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
   
-  const drillsQuery = useMemoFirebase(() => query(collection(firestore, 'ela_grammar_drills')), [firestore]);
+  const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
+    useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
+  );
+  const studentClassId = studentData?.[0]?.classId;
+  
+  const drillsQuery = useMemoFirebase(() => {
+    if (isTeacherOrAdmin) {
+      return query(collection(firestore, 'ela_grammar_drills'));
+    }
+    if (role === 'Student' && studentClassId) {
+      return query(collection(firestore, 'ela_grammar_drills'), where('classId', '==', studentClassId));
+    }
+    return null;
+  }, [firestore, isTeacherOrAdmin, role, studentClassId]);
+
   const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(drillsQuery);
 
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
@@ -76,7 +96,7 @@ export function GrammarPractice() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (role === 'Student' && isLoadingStudent)) {
     return (
       <Card>
         <CardHeader>
@@ -137,7 +157,8 @@ export function GrammarPractice() {
         <CardDescription>Choose a topic to start practicing.</CardDescription>
       </CardHeader>
       <CardContent>
-        {uniqueTopics.length > 0 ? (
+        {(role === 'Student' && !studentClassId) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
+        uniqueTopics.length > 0 ? (
             <div className="space-y-4">
                  <Select onValueChange={setSelectedTopic}>
                     <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
@@ -150,7 +171,7 @@ export function GrammarPractice() {
                 <Button onClick={handleStartPractice} disabled={!selectedTopic} className="w-full">Start Practice</Button>
             </div>
         ) : (
-             <p className="text-center text-muted-foreground py-10">No grammar drills are available yet.</p>
+             <p className="text-center text-muted-foreground py-10">No grammar drills are available for your class yet.</p>
         )}
       </CardContent>
     </Card>

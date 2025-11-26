@@ -21,8 +21,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact, Class } from '@/lib/types';
+import { collection, orderBy, query, addDoc, serverTimestamp, where } from 'firebase/firestore';
+import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact, Class, Student } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -272,9 +272,27 @@ export default function ScienceClubPage() {
   const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
   const { role } = useRole();
+  const { user } = useAuth();
   const firestore = useFirestore();
 
-  const { data: problems } = useCollection<ScienceProblem>(useMemoFirebase(() => query(collection(firestore, 'science_problems')), [firestore]));
+  const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+  
+  const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
+    useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role])
+  );
+  const studentClassId = studentData?.[0]?.classId;
+  
+  const problemsQuery = useMemoFirebase(() => {
+    if (isTeacherOrAdmin) {
+      return query(collection(firestore, 'science_problems'));
+    }
+    if (role === 'Student' && studentClassId) {
+      return query(collection(firestore, 'science_problems'), where('classId', '==', studentClassId));
+    }
+    return null;
+  }, [firestore, isTeacherOrAdmin, role, studentClassId]);
+
+  const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(problemsQuery);
 
   const uniqueTopics = useMemo(() => {
     if (!problems) return [];
@@ -288,7 +306,6 @@ export default function ScienceClubPage() {
     }
   };
 
-  const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
   return (
     <div className="space-y-6">
@@ -319,27 +336,33 @@ export default function ScienceClubPage() {
                 <CardDescription>Select a topic and difficulty to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Select onValueChange={setTopic}>
-                        <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
-                        <SelectContent>
-                            {uniqueTopics.map(topic => (
-                                <SelectItem key={topic} value={topic}>{topic}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                     <Select onValueChange={setDifficulty}>
-                        <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Easy">Easy</SelectItem>
-                            <SelectItem value="Medium">Medium</SelectItem>
-                            <SelectItem value="Hard">Hard</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <Button onClick={handleStartPractice} disabled={!topic || !difficulty} className="w-full">
-                    Start Practice
-                </Button>
+                {(isLoadingProblems || (role === 'Student' && isLoadingStudent)) ? <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> :
+                (role === 'Student' && !studentClassId) ? <p className="text-muted-foreground text-center">You are not assigned to a class. Please contact an administrator.</p> :
+                (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Select onValueChange={setTopic}>
+                                <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
+                                <SelectContent>
+                                    {uniqueTopics.map(topic => (
+                                        <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Select onValueChange={setDifficulty}>
+                                <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Easy">Easy</SelectItem>
+                                    <SelectItem value="Medium">Medium</SelectItem>
+                                    <SelectItem value="Hard">Hard</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Button onClick={handleStartPractice} disabled={!topic || !difficulty} className="w-full">
+                            Start Practice
+                        </Button>
+                    </>
+                )}
             </CardContent>
           </Card>
         </TabsContent>

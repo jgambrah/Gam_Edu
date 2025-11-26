@@ -48,7 +48,6 @@ function QuizComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Only set start time if it hasn't been set yet
     if (problems && problems.length > 0 && !startTime) {
       setStartTime(new Date());
     }
@@ -65,9 +64,6 @@ function QuizComponent() {
   };
 
   const handleSubmit = async () => {
-    // 1. DEBUG: Check if we have everything needed to start
-    console.log("Submitting...", { hasProblems: !!problems, hasUser: !!user, hasStartTime: !!startTime });
-
     if (!problems) {
         console.error("Submission Failed: No problems loaded.");
         return;
@@ -77,7 +73,6 @@ function QuizComponent() {
         return;
     }
     if (!startTime) {
-        // Fallback: If timer didn't start, assume start time was now (to prevent blocking)
         console.warn("Timer missing, using fallback.");
     }
     
@@ -92,15 +87,10 @@ function QuizComponent() {
 
     const finalScore = (correctCount / problems.length) * 10;
     
-    // Safety check for timer
     const safeStartTime = startTime || new Date(); 
     const timeTaken = Math.round((new Date().getTime() - safeStartTime.getTime()) / 1000);
 
-    console.log("Calculated Score:", finalScore);
-
     try {
-        console.log("Attempting to save to Firestore...");
-        
         await addDoc(collection(firestore, 'user_results'), { 
             userId: user.uid,
             topic,
@@ -111,16 +101,13 @@ function QuizComponent() {
             correct_count: correctCount,
         });
 
-        console.log("Save Successful!");
         setScore(finalScore);
         setIsFinished(true);
 
         toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
     } catch (error: any) {
-        // 2. DEBUG: Log the actual error to console
         console.error("FULL FIREBASE ERROR:", error);
         
-        // Show the error on screen
         toast({ 
             variant: 'destructive', 
             title: 'Submission Error', 
