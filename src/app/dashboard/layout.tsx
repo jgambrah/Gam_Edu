@@ -7,6 +7,7 @@ import { RoleProvider, RoleGuard } from '@/context/role-context';
 import ClientBoundary from './client-boundary';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
+import { AiChat } from '@/components/ai-chat';
 
 export default function DashboardLayout({
   children,
@@ -24,7 +25,8 @@ export default function DashboardLayout({
             <SidebarInset>
                 <Header />
                 <ClientBoundary>
-                <main className="p-4 lg:p-6">{children}</main>
+                  <main className="p-4 lg:p-6">{children}</main>
+                  <AiChat />
                 </ClientBoundary>
             </SidebarInset>
             </SidebarProvider>

@@ -9,4 +9,5 @@ import '@/ai/flows/generate-lesson-ideas-flow.ts';
 import '@/ai/flows/generate-practice-problems-flow.ts';
 import '@/ai/flows/generate-reading-passage-flow.ts';
 import '@/ai/flows/generate-writing-challenge-flow.ts';
+import '@/ai/flows/campus-assistant-flow.ts';
     
