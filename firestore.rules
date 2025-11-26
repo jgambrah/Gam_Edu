@@ -14,13 +14,14 @@ service cloud.firestore {
     }
 
     function getUserRole() {
-      // Use `exists` to avoid errors on non-staff users
+      // Safely get the role from the staff collection
       return exists(/databases/$(database)/documents/staff/$(request.auth.uid))
         ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
         : '';
     }
 
     function isAdmin() {
+      // Directors and Administrators share high-level access
       let userRole = getUserRole();
       return isSignedIn() && (userRole == 'Director' || userRole == 'Administrator');
     }
@@ -59,7 +60,8 @@ service cloud.firestore {
     
     match /announcements/{announcementId} {
       allow get: if isSignedIn();
-      allow list: if isSignedIn() && request.query.where.field == 'audience' && request.query.where.op == 'array-contains-any' && 'Everybody' in request.query.where.value;
+      // Allow Admins to see all, or Users to see public ones
+      allow list: if isAdmin() || (isSignedIn() && request.query.where.field == 'audience' && request.query.where.op == 'array-contains-any' && 'Everybody' in request.query.where.value);
       allow write: if isAdmin();
     }
 
@@ -89,10 +91,7 @@ service cloud.firestore {
     
     // --- ATTENDANCE RULES ---
     match /attendance/{attendanceId} {
-      // Allow Teachers and Admins to record/update attendance
       allow write: if isTeacher() || isAdmin();
-      
-      // Allow Teachers, Admins, and signed-in users (like parents checking history) to read
       allow read, list: if isSignedIn();
     }
     
@@ -108,19 +107,12 @@ service cloud.firestore {
       allow update: if isTeacher() || isOwner(request.resource.data.studentId);
     }
 
-    // --- FIX FOR ROOT SUBMISSIONS COLLECTION ---
+    // --- ROOT SUBMISSIONS COLLECTION ---
     match /submissions/{submissionId} {
-      // Allow students to create submissions
       allow create: if isSignedIn();
-      
-      // Allow students to read their own, Teachers/Admins to read all
-      // Note: We use 'isSignedIn()' for read to prevent list crashes if filters aren't perfect
+      // Open read to prevent list crashes, relies on UI filtering for privacy
       allow read: if isSignedIn(); 
-      
-      // Allow Teachers/Admins to grade (update)
       allow update: if isTeacher() || isAdmin();
-      
-      // Prevent deletion
       allow delete: if false;
     }
     
@@ -131,19 +123,15 @@ service cloud.firestore {
     }
     
     match /quizzes/{quizId}/attempts/{attemptId} {
+        // Use resource.data for read checks
         allow read: if isTeacher() || isOwner(resource.data.studentId);
         allow create: if isStudent();
     }
 
-    // Allow students to read/write their own quiz attempts
+    // --- QUIZ ATTEMPTS (Root) ---
     match /quizAttempts/{attemptId} {
-      // Allow any signed-in user to read (prevents list crashes)
       allow read: if isSignedIn();
-      
-      // Allow students to save their attempts
       allow create: if isSignedIn();
-      
-      // Only teachers/admins can modify/delete attempts after they are created
       allow update, delete: if isTeacher() || isAdmin();
     }
 
@@ -193,8 +181,11 @@ service cloud.firestore {
       allow write: if isTeacher() || isAdmin();
     }
 
+    // --- LEARNING MATERIALS ---
     match /learning_materials/{materialId} {
+      // Allow everyone to read materials to prevent crashes
       allow read: if isSignedIn();
+      // Only Teachers/Admins (Directors) can upload
       allow write: if isTeacher() || isAdmin();
     }
 
@@ -275,8 +266,7 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     
-    // --- UPDATED RULES FOR CLUBS ---
-    // Changed to 'allow read: if isSignedIn()' to prevent list errors
+    // --- CLUB RULES (Simplified for Stability) ---
     
     match /math_problems/{problemId} {
         allow read: if isSignedIn();
@@ -330,19 +320,18 @@ service cloud.firestore {
         allow write: if isTeacher() || isAdmin();
     }
     
+    // --- ELA SUBMISSIONS ---
     match /ela_user_submissions/{submissionId} {
-        // Fix: Use 'request.resource' for create, but 'resource' for read
+        // Create: Check the NEW data (request.resource)
         allow create: if isOwner(request.resource.data.userId);
         
-        // CORRECTION HERE: changed 'request.resource' to 'resource'
+        // Read: Check the EXISTING data (resource) OR allow Staff
         allow read: if isOwner(resource.data.userId) || isTeacher() || isAdmin();
         
-        // Allow teachers to grade (update)
+        // Update: Teachers can grade
         allow update: if isTeacher() || isAdmin();
         
         allow delete: if false;
     }
   }
 }
-
-    
