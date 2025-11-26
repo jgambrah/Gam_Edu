@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -286,21 +287,12 @@ function StudentsPageContent() {
   async function onSubmit(values: z.infer<typeof studentFormSchema>) {
     setIsSubmitting(true);
     try {
-      console.log('🎓 Creating student account...');
-      
-      // Create user in Firebase Auth
       const result = await createNewUser(values.email, values.password);
 
       if ('error' in result) {
-        if (result.error.includes('email-already-in-use')) {
-          throw new Error('This email is already in use. Please use a different name combination.');
-        }
         throw new Error(result.error);
       }
 
-      console.log('✅ Student account created with UID:', result.uid);
-
-      // Create student document with UID as document ID
       const studentData = {
         uid: result.uid,
         firstName: values.firstName,
@@ -313,29 +305,24 @@ function StudentsPageContent() {
         createdAt: serverTimestamp(),
       };
 
-      // Use setDoc with the UID as the document ID
       await setDoc(doc(firestore, 'students', result.uid), studentData);
       
-      console.log('✅ Student document created in Firestore');
-
       toast({
         title: 'Student Added Successfully',
         description: `${values.firstName} ${values.lastName} has been enrolled. Login: ${values.email} / ${values.password}`,
         duration: 8000,
       });
       
-      // Wait a bit for Firestore to propagate
       setTimeout(() => {
         forceRefetch();
       }, 500);
       
       form.reset();
     } catch (error: any) {
-      console.error('❌ Error adding student:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: error.message || 'An error occurred while adding the student.',
+        title: 'Error Adding Student',
+        description: error.message || 'An unexpected error occurred. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -534,3 +521,5 @@ export default function StudentsPage() {
         <StudentsPageContent />
     )
 }
+
+    
