@@ -740,7 +740,7 @@ export type GlobalLeaderboardEntry = {
 
 // Science Club Schemas
 export const scienceProblemSchema = z.object({
-    topic: z.enum(['Physics', 'Biology', 'Chemistry', 'Lab Safety']),
+    topic: z.string().min(1, "Topic is required."),
     difficulty: z.enum(['Easy', 'Medium', 'Hard']),
     question_text: z.string().min(1, "Question text is required."),
     correct_answer: z.string().min(1, "Correct answer is required."),
@@ -854,3 +854,4 @@ export type GameLobby = {
     }[];
     createdAt: any;
 };
+

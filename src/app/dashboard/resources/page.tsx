@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -18,6 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 function ResourceCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
@@ -88,6 +88,7 @@ function ResourceCreationForm({ setOpen }: { setOpen: (open: boolean) => void })
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="BS7 Integrated Science">BS7 Integrated Science</SelectItem>
                   {classes?.map((c) => (
                     <SelectItem key={c.id} value={c.name}>
                       {c.name}
@@ -163,10 +164,17 @@ export default function ResourcesPage() {
 
   const groupedResources = useMemo(() => {
     if (!resources) return {};
-    return resources.reduce((acc, resource) => {
+    const defaultResources = {
+        'BS7 Integrated Science': [
+            { id: 'bs7-is', title: 'View Course Materials', url: '/dashboard/resources/bs7-integrated-science', resourceType: 'Link', courseName: 'BS7 Integrated Science' }
+        ]
+    }
+    const allResources = resources.reduce((acc, resource) => {
       (acc[resource.courseName] = acc[resource.courseName] || []).push(resource);
       return acc;
-    }, {} as Record<string, Resource[]>);
+    }, defaultResources as Record<string, Resource[]>);
+
+    return allResources;
   }, [resources]);
 
   const getIcon = (type: Resource['resourceType']) => {
@@ -220,10 +228,10 @@ export default function ResourcesPage() {
                 <ul className="space-y-3">
                   {courseResources.map((resource) => (
                     <li key={resource.id}>
-                      <a href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-muted transition-colors">
+                      <Link href={resource.url} target={resource.url.startsWith('/') ? '' : '_blank'} rel="noopener noreferrer" className="flex items-center gap-3 p-2 rounded-md hover:bg-muted transition-colors">
                         {getIcon(resource.resourceType)}
                         <span className="text-sm font-medium">{resource.title}</span>
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
