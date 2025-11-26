@@ -42,6 +42,7 @@ import { generateReadingPassage } from '@/ai/flows/generate-reading-passage-flow
 import { generateWritingChallenge } from '@/ai/flows/generate-writing-challenge-flow';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { getAuth } from 'firebase/auth';
 
 // --- Reading Practice Tab ---
 function ReadingPracticeTab() {
@@ -212,7 +213,6 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
   const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
   
   const [topic, setTopic] = useState('');
@@ -223,9 +223,9 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
   const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
   async function onGenerate() {
-    if (!topic || !readingLevel) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic and reading level.' });
-      return;
+    if (!topic) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic.' });
+        return;
     }
     setIsGenerating(true);
     setGeneratedPassage(null);
@@ -447,7 +447,7 @@ function ManagePassages() {
 
 function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
-    const { user } = useAuth(); // <--- Check if this is loading correctly
+    const { user: hookUser } = useAuth(); // Renamed to hookUser to avoid confusion
     const { toast } = useToast();
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -489,27 +489,30 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
 
     // Save Function
     async function onSave() {
-        // --- DIAGNOSTIC LOGS (Check your browser console F12) ---
-        console.log("--- SAVE DIAGNOSTIC ---");
-        console.log("Selected Class ID:", selectedClassId);
-        console.log("Current User:", user);
-        console.log("Generated Challenge:", generatedChallenge);
-        
-        // 2. SEPARATE CHECKS (To find the real culprit)
-        
+        // --- 2. THE DIRECT AUTH FIX ---
+        // Instead of relying on the hook, we ask Firebase directly: "Who is logged in right now?"
+        const auth = getAuth();
+        const currentUser = auth.currentUser || hookUser; 
+
+        // 3. DEBUGGING
+        console.log("--- SAVE ATTEMPT ---");
+        console.log("Class ID:", selectedClassId);
+        console.log("Direct Firebase User:", auth.currentUser);
+        console.log("React Hook User:", hookUser);
+
         if (!generatedChallenge) {
-             toast({ variant: 'destructive', title: 'Error', description: 'No challenge data found. Please generate again.' });
+             toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
              return;
         }
 
         if (!selectedClassId) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class from the dropdown.' });
+             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class.' });
              return;
         }
 
-        // *** THIS IS LIKELY THE REAL PROBLEM ***
-        if (!user) {
-             toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
+        if (!currentUser) {
+             // If THIS hits, then the browser truly has no session token.
+             toast({ variant: 'destructive', title: 'Critical Auth Error', description: 'Browser has no session. Try Hard Refresh (Ctrl+F5).' });
              return;
         }
 
@@ -519,15 +522,15 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 title: generatedChallenge.title,
                 prompt: generatedChallenge.prompt,
                 challengeType: generatedChallenge.challengeType,
-                classId: selectedClassId, // Use the state variable
-                createdBy: user.uid,
+                classId: selectedClassId,
+                createdBy: currentUser.uid, // <--- Use the Direct User UID
                 createdAt: serverTimestamp(),
             });
             toast({ title: 'Success!', description: 'Challenge saved.' });
             setOpen(false);
         } catch (e) {
             console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Save failed. Check console.' });
+            toast({ variant: 'destructive', title: 'Error', description: 'Save failed.' });
         } finally {
             setIsSaving(false);
         }
@@ -550,15 +553,11 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                             </SelectContent></Select><FormMessage /></FormItem>
                         )}/>
                         
-                        {/* --- 3. FIX: Simplified Dropdown (Controlled by State) --- */}
                         <div className="space-y-2">
                             <Label>Assign to Class</Label>
                             <Select 
                                 value={selectedClassId} 
-                                onValueChange={(val) => {
-                                    console.log("Class Selected:", val); // Debug Log
-                                    setSelectedClassId(val);
-                                }}
+                                onValueChange={(val) => setSelectedClassId(val)}
                             >
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select a class" />
@@ -569,7 +568,6 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {/* Visual Confirmation */}
                             {selectedClassId && <p className="text-xs text-green-600 font-bold">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
                         </div>
 
