@@ -31,6 +31,7 @@ import { generatePracticeProblems, GeneratePracticeProblemsOutput } from '@/ai/f
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { Class } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
 
 const generateProblemsSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
@@ -181,7 +182,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
                     </Accordion>
                 </ScrollArea>
                 <div className="space-y-2">
-                    <FormLabel>Assign to Class</FormLabel>
+                    <Label>Assign to Class</Label>
                     <Select onValueChange={setClassId} value={classId}>
                         <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
                         <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
