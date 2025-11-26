@@ -1,19 +1,19 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { ScienceProblem, Student } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { FormItem, FormControl } from '@/components/ui/form';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
@@ -50,7 +50,8 @@ function QuizComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (problems && problems.length > 0) {
+    // Only set start time if it hasn't been set yet
+    if (problems && problems.length > 0 && !startTime) {
       setStartTime(new Date());
     }
   }, [problems]);
@@ -66,7 +67,22 @@ function QuizComponent() {
   };
 
   const handleSubmit = async () => {
-    if (!problems || !user || !startTime) return;
+    // 1. DEBUG: Check if we have everything needed to start
+    console.log("Submitting...", { hasProblems: !!problems, hasUser: !!user, hasStartTime: !!startTime });
+
+    if (!problems) {
+        console.error("Submission Failed: No problems loaded.");
+        return;
+    }
+    if (!user) {
+        alert("Error: You seem to be logged out. Please refresh.");
+        return;
+    }
+    if (!startTime) {
+        // Fallback: If timer didn't start, assume start time was now (to prevent blocking)
+        console.warn("Timer missing, using fallback.");
+    }
+    
     setIsSubmitting(true);
 
     let correctCount = 0;
@@ -78,9 +94,16 @@ function QuizComponent() {
     });
 
     const finalScore = (correctCount / problems.length) * 10;
-    const timeTaken = Math.round((new Date().getTime() - startTime.getTime()) / 1000);
+    
+    // Safety check for timer
+    const safeStartTime = startTime || new Date(); 
+    const timeTaken = Math.round((new Date().getTime() - safeStartTime.getTime()) / 1000);
+
+    console.log("Calculated Score:", finalScore);
 
     try {
+        console.log("Attempting to save to Firestore...");
+        
         await addDoc(collection(firestore, 'science_results'), {
             userId: user.uid,
             topic,
@@ -91,13 +114,21 @@ function QuizComponent() {
             correct_count: correctCount,
         });
 
+        console.log("Save Successful!");
         setScore(finalScore);
         setIsFinished(true);
 
         toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
-    } catch (error) {
-        console.error("Error saving results: ", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not save your results.'});
+    } catch (error: any) {
+        // 2. DEBUG: Log the actual error to console
+        console.error("FULL FIREBASE ERROR:", error);
+        
+        // Show the error on screen
+        toast({ 
+            variant: 'destructive', 
+            title: 'Submission Error', 
+            description: error.message || 'Check console for details.'
+        });
     } finally {
         setIsSubmitting(false);
     }
