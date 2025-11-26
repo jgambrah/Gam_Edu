@@ -31,7 +31,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect } from 'react';
 import { collection, doc, query, where, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
@@ -49,8 +49,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DailyAttendanceSheet } from '../attendance/daily-attendance-sheet';
 import { Subject, TimetableEntry } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useCollection } from '@/firebase';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const classFormSchema = z.object({
   name: z.string().min(1, { message: 'Class name is required.' }),
@@ -232,15 +231,24 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
     async function onUpdate(values: { teacherId: string; capacity: number; description?: string; }) {
         if (!firestore) return;
         setIsSubmitting(true);
-        try {
-            await updateDoc(doc(firestore, 'classes', classData.id), values);
-            toast({ title: "Success", description: "Class details have been updated."});
-        } catch (error) {
-            console.error("Error updating class", error);
-            toast({ variant: 'destructive', title: "Error", description: "Could not update class details."});
-        } finally {
-            setIsSubmitting(false);
-        }
+        
+        const docRef = doc(firestore, 'classes', classData.id);
+        
+        updateDoc(docRef, values)
+            .then(() => {
+                toast({ title: "Success", description: "Class details have been updated."});
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: docRef.path,
+                    operation: 'update',
+                    requestResourceData: values
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsSubmitting(false);
+            });
     }
 
     const canManage = role === 'Director' || role === 'Administrator';
