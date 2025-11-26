@@ -31,15 +31,15 @@ function QuizComponent() {
   const studentClassId = studentData?.[0]?.classId;
 
   const problemsQuery = useMemoFirebase(
-    () => (topic && difficulty && studentClassId)
+    () => (topic && difficulty)
       ? query(
           collection(firestore, 'math_problems'),
           where('topic', '==', topic),
           where('difficulty', '==', difficulty),
-          where('classId', '==', studentClassId)
+          // Not filtering by classId to allow access to all problems of a topic
         )
       : null,
-    [firestore, topic, difficulty, studentClassId]
+    [firestore, topic, difficulty]
   );
   const { data: problems, isLoading } = useCollection<MathProblem>(problemsQuery);
 
@@ -108,7 +108,7 @@ function QuizComponent() {
   }
 
   if (!problems || problems.length === 0) {
-    return <p className="text-center text-muted-foreground py-8">No practice problems found for this topic and difficulty in your class.</p>;
+    return <p className="text-center text-muted-foreground py-8">No practice problems found for this topic and difficulty.</p>;
   }
 
   const currentProblem = problems[currentQuestionIndex];

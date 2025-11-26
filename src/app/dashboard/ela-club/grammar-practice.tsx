@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -12,32 +12,48 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ElaGrammarDrill, Student } from '@/lib/types';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export function GrammarPractice() {
   const firestore = useFirestore();
   const { user } = useAuth();
-
-  const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
-  );
-  const studentClassId = studentData?.[0]?.classId;
   
-  const drillsQuery = useMemoFirebase(() => 
-    studentClassId ? query(collection(firestore, 'ela_grammar_drills'), where('classId', '==', studentClassId)) : null,
-    [firestore, studentClassId]
-  );
+  const drillsQuery = useMemoFirebase(() => query(collection(firestore, 'ela_grammar_drills')), [firestore]);
   const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(drillsQuery);
-  
+
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [practiceDrills, setPracticeDrills] = useState<ElaGrammarDrill[]>([]);
   const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const { toast } = useToast();
+
+  const uniqueTopics = useMemo(() => {
+    if (!drills) return [];
+    return Array.from(new Set(drills.map(d => d.topic)));
+  }, [drills]);
+
+  const handleStartPractice = () => {
+      if (!selectedTopic || !drills) return;
+      const filteredDrills = drills.filter(d => d.topic === selectedTopic);
+      setPracticeDrills(filteredDrills);
+      setCurrentDrillIndex(0);
+      setSelectedAnswer(null);
+      setIsCorrect(null);
+  };
 
   const handleCheckAnswer = () => {
     if (!selectedAnswer) {
       toast({ variant: 'destructive', title: 'No Answer Selected', description: 'Please choose an option before checking.' });
       return;
     }
+    const currentDrill = practiceDrills[currentDrillIndex];
     const correct = selectedAnswer === currentDrill.correct_answer;
     setIsCorrect(correct);
     toast({
@@ -48,10 +64,16 @@ export function GrammarPractice() {
   };
 
   const handleNext = () => {
-    if (!drills) return;
+    if (!practiceDrills) return;
     setIsCorrect(null);
     setSelectedAnswer(null);
-    setCurrentDrillIndex((prev) => (prev + 1) % drills.length);
+    if (currentDrillIndex < practiceDrills.length - 1) {
+        setCurrentDrillIndex((prev) => prev + 1);
+    } else {
+        // End of practice session for this topic
+        toast({ title: 'Topic Complete!', description: 'You have completed all drills for this topic.'});
+        setPracticeDrills([]);
+    }
   };
 
   if (isLoading) {
@@ -68,52 +90,69 @@ export function GrammarPractice() {
     );
   }
 
-  if (!drills || drills.length === 0) {
+  if (practiceDrills.length > 0) {
+    const currentDrill = practiceDrills[currentDrillIndex];
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Grammar & Mechanics Drills</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center py-10">
-          <p className="text-muted-foreground">No grammar drills are available for your class yet.</p>
-        </CardContent>
-      </Card>
-    );
+         <Card>
+            <CardHeader>
+                <CardTitle>Grammar & Mechanics Drills</CardTitle>
+                <CardDescription>Topic: {currentDrill.topic}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <p className="font-semibold">{currentDrill.question_prompt}</p>
+                <RadioGroup onValueChange={setSelectedAnswer} value={selectedAnswer || ''} disabled={isCorrect !== null} className="space-y-2">
+                {currentDrill.options?.map((option, index) => (
+                    <div
+                    key={index}
+                    className={cn(
+                        "flex items-center space-x-3 space-y-0 rounded-md border p-4", 
+                        isCorrect !== null && option === currentDrill.correct_answer && 'border-green-500 bg-green-50',
+                        isCorrect === false && selectedAnswer === option && 'border-red-500 bg-red-50'
+                    )}
+                    >
+                    <RadioGroupItem value={option} id={`option-${index}`} />
+                    <Label htmlFor={`option-${index}`} className="font-normal w-full">{option}</Label>
+                    </div>
+                ))}
+                </RadioGroup>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                {isCorrect === null ? (
+                <Button onClick={handleCheckAnswer}>Check Answer</Button>
+                ) : (
+                <Button onClick={handleNext}>
+                    {currentDrillIndex === practiceDrills.length - 1 ? 'Finish' : 'Next Question'}
+                </Button>
+                )}
+                <Button variant="ghost" onClick={() => setPracticeDrills([])}>Change Topic</Button>
+            </CardFooter>
+        </Card>
+    )
   }
-
-  const currentDrill = drills[currentDrillIndex];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Grammar & Mechanics Drills</CardTitle>
-        <CardDescription>Topic: {currentDrill.topic}</CardDescription>
+        <CardTitle>Grammar & Mechanics Practice</CardTitle>
+        <CardDescription>Choose a topic to start practicing.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="font-semibold">{currentDrill.question_prompt}</p>
-        <RadioGroup onValueChange={setSelectedAnswer} value={selectedAnswer || ''} disabled={isCorrect !== null} className="space-y-2">
-          {currentDrill.options?.map((option, index) => (
-            <div
-              key={index}
-              className={cn(
-                "flex items-center space-x-3 space-y-0 rounded-md border p-4", 
-                isCorrect !== null && option === currentDrill.correct_answer && 'border-green-500 bg-green-50',
-                isCorrect === false && selectedAnswer === option && 'border-red-500 bg-red-50'
-              )}
-            >
-              <RadioGroupItem value={option} id={`option-${index}`} />
-              <Label htmlFor={`option-${index}`} className="font-normal w-full">{option}</Label>
+      <CardContent>
+        {uniqueTopics.length > 0 ? (
+            <div className="space-y-4">
+                 <Select onValueChange={setSelectedTopic}>
+                    <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
+                    <SelectContent>
+                        {uniqueTopics.map(topic => (
+                            <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <Button onClick={handleStartPractice} disabled={!selectedTopic} className="w-full">Start Practice</Button>
             </div>
-          ))}
-        </RadioGroup>
-      </CardContent>
-      <CardFooter>
-        {isCorrect === null ? (
-          <Button onClick={handleCheckAnswer}>Check Answer</Button>
         ) : (
-          <Button onClick={handleNext}>Next Question</Button>
+             <p className="text-center text-muted-foreground py-10">No grammar drills are available yet.</p>
         )}
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 }

@@ -36,7 +36,7 @@ function QuizComponent() {
           collection(firestore, 'science_problems'),
           where('topic', '==', topic),
           where('difficulty', '==', difficulty),
-          where('classId', '==', studentClassId)
+          // where('classId', '==', studentClassId) // Let's allow access to all problems for now
         )
       : null,
     [firestore, topic, difficulty, studentClassId]
@@ -108,7 +108,7 @@ function QuizComponent() {
   }
 
   if (!problems || problems.length === 0) {
-    return <p className="text-center text-muted-foreground py-8">No practice problems found for this topic and difficulty in your class.</p>;
+    return <p className="text-center text-muted-foreground py-8">No practice problems found for this topic and difficulty.</p>;
   }
 
   const currentProblem = problems[currentQuestionIndex];

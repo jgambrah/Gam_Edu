@@ -137,7 +137,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                 )}/>
                 <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
-                        <FormItem><FormLabel>Topic</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Biology">Biology</SelectItem><SelectItem value="Chemistry">Chemistry</SelectItem><SelectItem value="Physics">Physics</SelectItem><SelectItem value="Lab Safety">Lab Safety</SelectItem></SelectContent></Select><FormMessage/></FormItem>
+                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Photosynthesis" {...field} /></FormControl><FormMessage/></FormItem>
                     )}/>
                     <FormField control={form.control} name="difficulty" render={({ field }) => (
                         <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
@@ -272,6 +272,15 @@ export default function ScienceClubPage() {
   const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
   const { role } = useRole();
+  const firestore = useFirestore();
+
+  const { data: problems } = useCollection<ScienceProblem>(useMemoFirebase(() => query(collection(firestore, 'science_problems')), [firestore]));
+
+  const uniqueTopics = useMemo(() => {
+    if (!problems) return [];
+    const topics = new Set(problems.map(p => p.topic));
+    return Array.from(topics);
+  }, [problems]);
 
   const handleStartPractice = () => {
     if (topic && difficulty) {
@@ -314,10 +323,9 @@ export default function ScienceClubPage() {
                     <Select onValueChange={setTopic}>
                         <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Biology">Biology</SelectItem>
-                            <SelectItem value="Chemistry">Chemistry</SelectItem>
-                            <SelectItem value="Physics">Physics</SelectItem>
-                             <SelectItem value="Lab Safety">Lab Safety</SelectItem>
+                            {uniqueTopics.map(topic => (
+                                <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                      <Select onValueChange={setDifficulty}>

@@ -16,7 +16,7 @@ import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, addDoc, where, serverTimestamp } from 'firebase/firestore';
-import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class } from '@/lib/types';
+import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student } from '@/lib/types';
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -363,7 +363,7 @@ function DrillCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
                 )}/>
                  <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
-                        <FormItem><FormLabel>Topic</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a Topic"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Punctuation">Punctuation</SelectItem><SelectItem value="Verbs">Verbs</SelectItem><SelectItem value="Nouns">Nouns</SelectItem><SelectItem value="Adjectives">Adjectives</SelectItem></SelectContent></Select><FormMessage/></FormItem>
+                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Punctuation" {...field} /></FormControl><FormMessage/></FormItem>
                     )}/>
                     <FormField control={form.control} name="type" render={({ field }) => (
                         <FormItem><FormLabel>Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="MCQ">Multiple Choice</SelectItem><SelectItem value="Drag and Drop" disabled>Drag and Drop (soon)</SelectItem></SelectContent></Select><FormMessage/></FormItem>
@@ -554,9 +554,6 @@ function ManageWritingChallenges() {
     );
 }
 
-type Student = {
-    classId: string;
-}
 
 // --- Main ELA Club Page Component ---
 export default function ElaClubPage() {
