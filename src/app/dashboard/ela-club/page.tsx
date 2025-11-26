@@ -48,7 +48,7 @@ import { getAuth } from 'firebase/auth';
 function ReadingPracticeTab() {
   const firestore = useFirestore();
   const { user } = useAuth();
-  const { data: studentData } = useCollection<Student>(
+  const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
   );
   const studentClassId = studentData?.[0]?.classId;
@@ -57,7 +57,9 @@ function ReadingPracticeTab() {
     studentClassId ? query(collection(firestore, 'ela_reading_passages'), where('classId', '==', studentClassId)) : null, 
     [firestore, studentClassId]
   );
-  const { data: passages, isLoading } = useCollection<ElaReadingPassage>(passagesQuery);
+  const { data: passages, isLoading: isLoadingPassages } = useCollection<ElaReadingPassage>(passagesQuery);
+
+  const isLoading = isLoadingStudent || (studentData && isLoadingPassages);
 
   return (
     <Card>
@@ -688,7 +690,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     const [isGenerating, setIsGenerating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
-    // 1. DEDICATED STATE FOR CLASS ID
+    // --- 1. NEW: Dedicated State for Class ID (Bypassing Form Logic) ---
     const [selectedClassId, setSelectedClassId] = useState<string>("");
 
     const [generatedChallenge, setGeneratedChallenge] = useState<{
@@ -726,8 +728,9 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
     // Save Function
     async function onSave() {
         // --- 2. THE DIRECT AUTH FIX ---
+        // Instead of relying on the hook, we ask Firebase directly: "Who is logged in right now?"
         const auth = getAuth();
-        const currentUser = auth.currentUser || hookUser;
+        const currentUser = auth.currentUser || hookUser; 
 
         // 3. DEBUGGING
         console.log("--- SAVE ATTEMPT ---");
@@ -736,17 +739,18 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         console.log("React Hook User:", hookUser);
 
         if (!generatedChallenge) {
-             toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
+             toast({ variant: 'destructive', title: 'Error', description: 'No challenge data found. Please generate again.' });
              return;
         }
 
         if (!selectedClassId) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class.' });
+             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class from the dropdown.' });
              return;
         }
 
+        // *** THIS IS LIKELY THE REAL PROBLEM ***
         if (!currentUser) {
-             toast({ variant: 'destructive', title: 'Critical Auth Error', description: 'Browser has no session. Try Hard Refresh (Ctrl+F5).' });
+             toast({ variant: 'destructive', title: 'Logged Out', description: 'You seem to be logged out. Please refresh the page.' });
              return;
         }
 
@@ -757,7 +761,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 prompt: generatedChallenge.prompt,
                 challengeType: generatedChallenge.challengeType,
                 classId: selectedClassId,
-                createdBy: currentUser.uid,
+                createdBy: currentUser.uid, // <--- Use the Direct User UID
                 createdAt: serverTimestamp(),
             });
             toast({ title: 'Success!', description: 'Challenge saved.' });
@@ -787,11 +791,15 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                             </SelectContent></Select><FormMessage /></FormItem>
                         )}/>
                         
+                        {/* --- 3. FIX: Simplified Dropdown (Controlled by State) --- */}
                         <div className="space-y-2">
                             <Label>Assign to Class</Label>
                             <Select 
                                 value={selectedClassId} 
-                                onValueChange={(val) => setSelectedClassId(val)}
+                                onValueChange={(val) => {
+                                    console.log("Class Selected:", val); // Debug Log
+                                    setSelectedClassId(val);
+                                }}
                             >
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select a class" />
@@ -802,6 +810,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {/* Visual Confirmation */}
                             {selectedClassId && <p className="text-xs text-green-600 font-bold">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
                         </div>
 
@@ -829,7 +838,6 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
         </div>
     );
 }
-
 
 // --- Main ELA Club Page Component ---
 export default function ElaClubPage() {
