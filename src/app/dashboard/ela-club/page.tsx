@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
@@ -37,6 +37,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { AiProblemGenerator } from '../ai-problem-generator';
 
 // --- Reading Practice Tab ---
 function ReadingPracticeTab() {
@@ -392,6 +393,7 @@ function ManageDrills() {
     const firestore = useFirestore();
     const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => query(collection(firestore, 'ela_grammar_drills')), [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
     return (
         <Card>
@@ -400,13 +402,19 @@ function ManageDrills() {
                     <CardTitle>Grammar Drill Bank</CardTitle>
                     <CardDescription>Manage the collection of grammar drills.</CardDescription>
                 </div>
-                <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Drill</Button></DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader><DialogTitle>Create New Grammar Drill</DialogTitle><DialogDescription>Add a new question to the drill bank.</DialogDescription></DialogHeader>
-                        <DrillCreationForm setOpen={setIsFormOpen}/>
-                    </DialogContent>
-                </Dialog>
+                <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any grammar topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="ELA Grammar" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Drill</Button></DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>Create New Grammar Drill</DialogTitle><DialogDescription>Add a new question to the drill bank.</DialogDescription></DialogHeader>
+                            <DrillCreationForm setOpen={setIsFormOpen}/>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </CardHeader>
             <CardContent>
                 {isLoading ? <Skeleton className="h-40 w-full" /> : (

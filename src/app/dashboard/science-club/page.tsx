@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { FlaskConical, Trophy, PencilRuler, PlusCircle, Lightbulb } from 'lucide-react';
+import { FlaskConical, Trophy, PencilRuler, PlusCircle, Lightbulb, Wand2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -40,6 +40,7 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { format } from 'date-fns';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { AiProblemGenerator } from '../ai-problem-generator';
 
 function Leaderboard() {
     const firestore = useFirestore();
@@ -165,6 +166,7 @@ function ManageProblems() {
     const firestore = useFirestore();
     const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => query(collection(firestore, 'science_problems')), [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
     return (
         <Card>
@@ -173,13 +175,19 @@ function ManageProblems() {
                     <CardTitle>Problem Bank</CardTitle>
                     <CardDescription>Manage the collection of science problems for student practice sessions.</CardDescription>
                 </div>
-                <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                    <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Problem</Button></DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader><DialogTitle>Create New Science Problem</DialogTitle><DialogDescription>Add a new question to the problem bank.</DialogDescription></DialogHeader>
-                        <ProblemCreationForm setOpen={setIsFormOpen}/>
-                    </DialogContent>
-                </Dialog>
+                 <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Problem</Button></DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>Create New Science Problem</DialogTitle><DialogDescription>Add a new question to the problem bank.</DialogDescription></DialogHeader>
+                            <ProblemCreationForm setOpen={setIsFormOpen}/>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </CardHeader>
             <CardContent>
                 {isLoading ? <Skeleton className="h-40 w-full" /> : (
