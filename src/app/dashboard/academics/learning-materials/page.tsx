@@ -5,6 +5,7 @@ import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+// NEW: Storage Imports
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
 import { Class, Student, LearningMaterial, ResourceItem, ResourceType } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAuth } from 'firebase/auth';
+import { Badge } from '@/components/ui/badge';
 
 // --- CONSTANTS ---
 const SUBJECTS_LIST = [
@@ -540,3 +542,4 @@ export default function LearningMaterialsPage() {
     </div>
   );
 }
+
