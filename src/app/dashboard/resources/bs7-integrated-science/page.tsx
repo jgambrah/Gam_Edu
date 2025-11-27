@@ -119,8 +119,7 @@ export default function BS7IntegratedSciencePage() {
       query(
         collection(firestore, 'learning_materials'),
         where('courseId', '==', 'bs7-integrated-science'),
-        orderBy('strand'),
-        orderBy('subStrandTitle')
+        orderBy('strand')
       ),
     [firestore]
   );
