@@ -1,8 +1,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { getAuth } from 'firebase/auth';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { LearningMaterial, Class, Student } from '@/lib/types';
@@ -41,7 +42,7 @@ function MaterialForm({
   classes: Class[] | undefined;
 }) {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth();
+  const { user: hookUser } = useAuth(); // Renamed to avoid confusion
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,14 +54,24 @@ function MaterialForm({
   const [url, setUrl] = useState(materialToEdit?.url || '');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent page refresh
+    e.preventDefault();
     
-    // 1. Debugging: Check if function fires
-    console.log("Submitting form...", { title, classId, user });
+    // 1. FIX: Get the user directly from Firebase SDK
+    const auth = getAuth();
+    const currentUser = auth.currentUser || hookUser;
 
-    if (!user || !firestore) {
-        toast({ variant: 'destructive', title: 'Initialization Error', description: 'Firebase not ready. Please wait a moment and try again.' });
-        console.error("Missing User or Firestore");
+    // Debugging logs
+    console.log("Submitting with:", { 
+        firestoreExists: !!firestore, 
+        currentUserUID: currentUser?.uid 
+    });
+
+    if (!currentUser || !firestore) {
+        toast({ 
+            variant: 'destructive', 
+            title: 'Authentication Error', 
+            description: 'Could not verify your login session. Please refresh the page.' 
+        });
         return;
     }
 
@@ -79,11 +90,9 @@ function MaterialForm({
         type,
         url,
         classId,
-        uploadedBy: user.uid,
+        uploadedBy: currentUser.uid, // Use the direct user UID
         updatedAt: serverTimestamp(),
       };
-
-      console.log("Saving data:", data); // Debugging
 
       if (materialToEdit) {
         // Update existing
@@ -162,9 +171,9 @@ function MaterialForm({
             <Button 
                 type="submit" 
                 form="material-form" // <--- This links the button to the form above
-                disabled={isSubmitting || isUserLoading}
+                disabled={isSubmitting || !hookUser}
             >
-                {(isSubmitting || isUserLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
+                {(isSubmitting || !hookUser) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
                 Save Material
             </Button>
         </DialogFooter>
