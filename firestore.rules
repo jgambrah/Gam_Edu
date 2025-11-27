@@ -21,9 +21,15 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // Directors and Administrators share high-level access
+      // 1. Check if the user is signed in
+      if (!isSignedIn()) return false;
+      
+      // 2. HARDCODE your UID temporarily to prove it's a permission issue
+      // Replace "gZxe..." with your exact UID string
+      if (request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2") return true;
+
       let userRole = getUserRole();
-      return isSignedIn() && (userRole == 'Director' || userRole == 'Administrator');
+      return (userRole == 'Director' || userRole == 'Administrator');
     }
 
     function isTeacher() {
@@ -335,4 +341,5 @@ service cloud.firestore {
     }
   }
 }
+
     
