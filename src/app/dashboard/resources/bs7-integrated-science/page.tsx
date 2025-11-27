@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -37,7 +38,7 @@ import {
   FileText, Video, HelpCircle, Paperclip, UploadCloud 
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
+import { LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
 
 
 // --- CONSTANTS: The Structure You Provided ---
@@ -143,7 +144,7 @@ function MaterialEditorDialog({
 
     setIsSaving(true);
     try {
-      const dataToSave: Omit<LearningMaterial, 'id'> = {
+      const dataToSave = {
         courseId: 'bs7-integrated-science',
         strand,
         subStrand,
@@ -164,8 +165,12 @@ function MaterialEditorDialog({
       }
       setOpen(false);
     } catch (error) {
+      // Error is now automatically emitted by the non-blocking-updates functions
+      // The toast here is a fallback for non-permission errors
+      if (!(error instanceof Error && error.name === 'FirebaseError')) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to save.' });
+      }
       console.error(error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to save.' });
     } finally {
       setIsSaving(false);
     }
@@ -494,3 +499,5 @@ export default function BS7IntegratedSciencePage() {
     </div>
   );
 }
+
+    
