@@ -44,7 +44,6 @@ export default function LessonPlanningPage() {
   const firestore = useFirestore();
   const [isFormOpen, setFormOpen] = useState(false);
 
-  // Use useCollection for reactive data fetching
   const plansQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
     if (role === 'Teacher') {
