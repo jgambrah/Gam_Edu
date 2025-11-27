@@ -40,7 +40,7 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
       setIsRoleLoading(true);
 
       if (!user) {
-        setRole('Parent');
+        setRole('Parent'); // Default for non-logged-in users
         setIsRoleLoading(false);
         return;
       }
@@ -74,9 +74,23 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
       } catch (e) {
           console.error("Error checking students collection:", e);
       }
+
+      // 3. Check Parents Collection
+      try {
+        const parentDocRef = doc(firestore, 'parents', user.uid);
+        const parentDocSnap = await getDoc(parentDocRef);
+        if (parentDocSnap.exists()) {
+          setRole('Parent');
+          setIsRoleLoading(false);
+          return;
+        }
+      } catch (e) {
+          console.error("Error checking parents collection:", e);
+      }
       
-      // 3. Fallback
-      setRole('Parent');
+      // 4. Fallback if user document doesn't exist in any collection
+      // This might happen if a user is created in Auth but their DB record fails
+      setRole('Parent'); // Default to a restrictive role
       setIsRoleLoading(false);
     };
 
