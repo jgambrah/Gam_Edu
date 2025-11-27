@@ -87,6 +87,10 @@ service cloud.firestore {
       allow read, write: if isFinanceStaff();
     }
 
+    match /accountsPayable/{payableId} {
+      allow read, write: if isFinanceStaff();
+    }
+
     // --- LEARNING MATERIALS (FIXED) ---
     match /learning_materials/{materialId} {
       // Use simple auth check for list operations
