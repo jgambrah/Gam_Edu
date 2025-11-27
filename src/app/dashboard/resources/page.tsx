@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -152,7 +153,7 @@ export default function ResourcesPage() {
   const { user } = useAuth(); // Import useAuth to get user
   const [isDialogOpen, setDialogOpen] = useState(false);
 
-  const canManage = role === 'Administrator' || role === 'Teacher';
+  const canManage = role === 'Administrator' || role === 'Teacher' || role === 'Director';
 
   // Make the query conditional on the user object
   const resourcesQuery = useMemoFirebase(() => {
