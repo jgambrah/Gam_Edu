@@ -857,22 +857,56 @@ export type GameLobby = {
 
 // --- RICH LEARNING MATERIAL ---
 
+// An individual file/link inside the topic
+export interface ResourceItem {
+  id: string; // timestamp-based ID for React keys
+  title: string; // The short description (e.g. "Intro Video")
+  type: ResourceType;
+  url: string;
+}
+
+// The Main "Topic" Container
+export interface LearningMaterial {
+  id: string;
+  topicTitle: string; // Changed from 'title' to be clearer
+  description?: string;
+  classId: string;
+  resources: ResourceItem[]; // <--- ARRAY OF MULTIPLE FILES
+  uploadedBy: string;
+  createdAt: any;
+}
+
+// RICH LEARNING MATERIAL TYPES (from previous version that are still used in other files)
 export type RichQuizQuestion = {
   question: string;
   options: string[]; // [A, B, C, D]
   correctAnswer: string;
 };
 
+export type Attachment = {
+  name: string;
+  url: string; // This would be the Firebase Storage URL
+  type: 'PDF' | 'DOC' | 'EXCEL' | 'IMAGE' | 'OTHER';
+};
+
+export type VideoLink = {
+  title: string;
+  url: string; // YouTube URL
+};
+
+// The following type is now being replaced by the interface above, but kept for compatibility if needed elsewhere.
+// We will primarily use the interface going forward.
+// export type LearningMaterial = {
+//   id: string;
+//   title: string;
+//   description?: string;
+//   type: ResourceType;
+//   url: string;
+//   classId: string;
+//   subjectId?: string;
+//   uploadedBy: string;
+//   createdAt: any;
+// };
 export type ResourceType = 'PDF' | 'Video' | 'Document' | 'Spreadsheet' | 'Link';
 
-export interface LearningMaterial {
-  id: string;
-  title: string;
-  description?: string;
-  type: ResourceType;
-  url: string; // URL to the file (Firebase Storage) or external link
-  classId: string; // The class this is assigned to
-  subjectId?: string; 
-  uploadedBy: string;
-  createdAt: any; // Firestore Timestamp
-}
+    
