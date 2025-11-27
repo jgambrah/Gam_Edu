@@ -331,12 +331,6 @@ export const navItems: NavItem[] = [
             icon: FileText,
             roles: ['Director', 'Administrator'],
         },
-        {
-            path: '/dashboard/diagnostics',
-            title: 'Diagnostics',
-            icon: AlertCircle,
-            roles: ['Director', 'Administrator'],
-        },
     ]
   },
 ];
