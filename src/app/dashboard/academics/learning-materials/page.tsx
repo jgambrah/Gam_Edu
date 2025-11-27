@@ -1,10 +1,11 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+// NEW: Storage Imports
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
 import { Class, Student } from '@/lib/types'; // Keep your existing imports
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,14 +14,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'; // Make sure you have this component
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileText, Video, Link as LinkIcon, FileSpreadsheet, File, 
-  Plus, Trash2, Edit, ExternalLink, Loader2, X, FolderOpen 
+  Plus, Trash2, Edit, ExternalLink, Loader2, X, FolderOpen, UploadCloud, Globe 
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAuth } from 'firebase/auth';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import type { ResourceType, ResourceItem, LearningMaterial } from '@/lib/types';
 
@@ -52,7 +53,12 @@ function MaterialForm({
   const firestore = useFirestore();
   const { user: hookUser } = useAuth();
   const { toast } = useToast();
+  
+  // Overall Form Submission State
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Resource Upload State
+  const [isUploadingResource, setIsUploadingResource] = useState(false);
 
   // Main Topic State
   const [topicTitle, setTopicTitle] = useState(materialToEdit?.topicTitle || '');
@@ -62,35 +68,80 @@ function MaterialForm({
   // Resources Array State
   const [resources, setResources] = useState<ResourceItem[]>(materialToEdit?.resources || []);
 
-  // Temporary State for the "Add Resource" inputs
+  // --- NEW: Toggle between Link and File ---
+  const [inputType, setInputType] = useState<'link' | 'file'>('link');
+
+  // Temporary Inputs
   const [tempType, setTempType] = useState<string>('PDF');
   const [tempTitle, setTempTitle] = useState('');
-  const [tempUrl, setTempUrl] = useState('');
+  const [tempUrl, setTempUrl] = useState(''); // For Links
+  const [tempFile, setTempFile] = useState<File | null>(null); // For Files
 
-  // Reset function when modal opens
+  // Reset when opening
   useState(() => {
-    if(open) setIsSubmitting(false);
+    if(open) {
+        setIsSubmitting(false);
+        setIsUploadingResource(false);
+    }
   });
 
-  const handleAddResource = () => {
-    if (!tempTitle || !tempUrl) {
-        toast({ variant: 'destructive', title: 'Missing Info', description: 'Please enter a description and link for the item.' });
+  // --- LOGIC: Add Resource (Uploads file if needed) ---
+  const handleAddResource = async () => {
+    if (!tempTitle) {
+        toast({ variant: 'destructive', title: 'Missing Info', description: 'Please describe this item (e.g. "Lecture Notes").' });
         return;
     }
 
-    const newItem: ResourceItem = {
-        id: Date.now().toString(),
-        type: tempType as ResourceType,
-        title: tempTitle,
-        url: tempUrl
-    };
+    if (inputType === 'link' && !tempUrl) {
+        toast({ variant: 'destructive', title: 'Missing Link', description: 'Please enter the website URL.' });
+        return;
+    }
 
-    setResources([...resources, newItem]);
-    
-    // Clear inputs for next item
-    setTempTitle('');
-    setTempUrl('');
-    toast({ title: "Item Added", description: "Added to list. Don't forget to save the topic!" });
+    if (inputType === 'file' && !tempFile) {
+        toast({ variant: 'destructive', title: 'Missing File', description: 'Please select a file from your computer.' });
+        return;
+    }
+
+    // Prepare for upload
+    setIsUploadingResource(true);
+    let finalUrl = tempUrl;
+
+    try {
+        // 1. Handle File Upload (if selected)
+        if (inputType === 'file' && tempFile) {
+            const storage = getStorage(); // Initialize Storage
+            // Create a unique path: materials/{timestamp}_{filename}
+            const storageRef = ref(storage, `materials/${Date.now()}_${tempFile.name}`);
+            
+            // Upload
+            await uploadBytes(storageRef, tempFile);
+            
+            // Get URL
+            finalUrl = await getDownloadURL(storageRef);
+        }
+
+        // 2. Add to Local List
+        const newItem: ResourceItem = {
+            id: Date.now().toString(),
+            type: tempType as ResourceType,
+            title: tempTitle,
+            url: finalUrl
+        };
+
+        setResources([...resources, newItem]);
+        
+        // 3. Reset Input Fields
+        setTempTitle('');
+        setTempUrl('');
+        setTempFile(null);
+        toast({ title: "Item Added", description: inputType === 'file' ? "File uploaded and added to list." : "Link added to list." });
+
+    } catch (error) {
+        console.error("Upload Error", error);
+        toast({ variant: 'destructive', title: "Upload Failed", description: "Check your internet connection or file size." });
+    } finally {
+        setIsUploadingResource(false);
+    }
   };
 
   const handleRemoveResource = (id: string) => {
@@ -115,7 +166,7 @@ function MaterialForm({
     }
 
     if (resources.length === 0) {
-        toast({ variant: 'destructive', title: 'Empty Topic', description: 'Please add at least one video, file, or link.' });
+        toast({ variant: 'destructive', title: 'Empty Topic', description: 'Please add at least one resource.' });
         return;
     }
 
@@ -126,7 +177,7 @@ function MaterialForm({
         topicTitle,
         description,
         classId,
-        resources, // Save the array
+        resources,
         uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
       };
@@ -154,7 +205,7 @@ function MaterialForm({
       <DialogContent className="sm:max-w-[700px] h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{materialToEdit ? 'Edit Material Topic' : 'Create New Material Topic'}</DialogTitle>
-          <DialogDescription>Create a folder of resources (PDFs, Videos, etc) for a specific topic.</DialogDescription>
+          <DialogDescription>Create a collection of files and links for a specific topic.</DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 py-4 overflow-y-auto flex-1 px-1">
@@ -165,7 +216,7 @@ function MaterialForm({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label>Topic Title *</Label>
-                    <Input required value={topicTitle} onChange={e => setTopicTitle(e.target.value)} placeholder="e.g. Photosynthesis Master Class" />
+                    <Input required value={topicTitle} onChange={e => setTopicTitle(e.target.value)} placeholder="e.g. Science Week 3: Energy" />
                 </div>
                 <div className="space-y-2">
                     <Label>Assign to Class *</Label>
@@ -178,53 +229,81 @@ function MaterialForm({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>General Instructions / Description</Label>
-                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Read the PDF first, then watch the video..." className="h-20" />
+                <Label>Instructions / Description</Label>
+                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Instructions for students..." className="h-20" />
               </div>
           </div>
 
           {/* 2. RESOURCE BUILDER */}
           <div className="space-y-4 border p-4 rounded-md bg-slate-50">
-             <h3 className="font-semibold text-sm text-slate-700">2. Add Resources</h3>
+             <h3 className="font-semibold text-sm text-slate-700">2. Add Files & Links</h3>
              
-             {/* INPUTS */}
-             <div className="grid grid-cols-12 gap-2 items-end">
-                <div className="col-span-3 space-y-1">
-                    <Label className="text-xs">Type</Label>
-                    <Select value={tempType} onValueChange={setTempType}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="PDF">PDF</SelectItem>
-                            <SelectItem value="Video">Video / YouTube</SelectItem>
-                            <SelectItem value="Document">Word Doc</SelectItem>
-                            <SelectItem value="Spreadsheet">Excel</SelectItem>
-                            <SelectItem value="Link">Website Link</SelectItem>
-                        </SelectContent>
-                    </Select>
+             {/* TABS FOR UPLOAD TYPE */}
+             <Tabs value={inputType} onValueChange={(v) => setInputType(v as 'link' | 'file')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="link"><Globe className="w-4 h-4 mr-2"/> External Link (YouTube, Drive)</TabsTrigger>
+                    <TabsTrigger value="file"><UploadCloud className="w-4 h-4 mr-2"/> Upload from Computer</TabsTrigger>
+                </TabsList>
+
+                {/* SHARED INPUTS (Type & Title) */}
+                <div className="grid grid-cols-12 gap-2 mb-2">
+                    <div className="col-span-4 space-y-1">
+                        <Label className="text-xs">Category</Label>
+                        <Select value={tempType} onValueChange={setTempType}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="PDF">PDF</SelectItem>
+                                <SelectItem value="Video">Video</SelectItem>
+                                <SelectItem value="Document">Word Doc</SelectItem>
+                                <SelectItem value="Spreadsheet">Excel/Sheet</SelectItem>
+                                <SelectItem value="Link">Website</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="col-span-8 space-y-1">
+                        <Label className="text-xs">Description / Label</Label>
+                        <Input value={tempTitle} onChange={e => setTempTitle(e.target.value)} placeholder="e.g. Worksheet 1" />
+                    </div>
                 </div>
-                <div className="col-span-4 space-y-1">
-                    <Label className="text-xs">Description / Label</Label>
-                    <Input value={tempTitle} onChange={e => setTempTitle(e.target.value)} placeholder="e.g. Intro Video" />
-                </div>
-                <div className="col-span-4 space-y-1">
-                    <Label className="text-xs">Link / URL</Label>
-                    <Input value={tempUrl} onChange={e => setTempUrl(e.target.value)} placeholder="https://..." />
-                </div>
-                <div className="col-span-1">
-                    <Button type="button" onClick={handleAddResource} size="icon" className="w-full"><Plus className="h-4 w-4"/></Button>
-                </div>
-             </div>
+
+                {/* LINK INPUT */}
+                <TabsContent value="link">
+                    <div className="flex gap-2 items-end">
+                        <div className="flex-1 space-y-1">
+                            <Label className="text-xs">URL</Label>
+                            <Input value={tempUrl} onChange={e => setTempUrl(e.target.value)} placeholder="https://youtube.com/..." />
+                        </div>
+                        <Button type="button" onClick={handleAddResource} disabled={isUploadingResource}>
+                            <Plus className="h-4 w-4"/> Add
+                        </Button>
+                    </div>
+                </TabsContent>
+
+                {/* FILE INPUT */}
+                <TabsContent value="file">
+                    <div className="flex gap-2 items-end">
+                        <div className="flex-1 space-y-1">
+                            <Label className="text-xs">Select File</Label>
+                            <Input type="file" onChange={(e) => setTempFile(e.target.files ? e.target.files[0] : null)} className="cursor-pointer" />
+                        </div>
+                        <Button type="button" onClick={handleAddResource} disabled={isUploadingResource || !tempFile}>
+                            {isUploadingResource ? <Loader2 className="h-4 w-4 animate-spin"/> : <UploadCloud className="h-4 w-4"/>}
+                            {isUploadingResource ? 'Uploading...' : 'Upload & Add'}
+                        </Button>
+                    </div>
+                </TabsContent>
+             </Tabs>
 
              {/* LIST OF ADDED ITEMS */}
-             <div className="space-y-2 mt-4">
-                {resources.length === 0 && <p className="text-sm text-muted-foreground text-center italic py-4">No resources added yet.</p>}
-                {resources.map((res, index) => (
-                    <div key={res.id} className="flex items-center justify-between bg-white p-2 border rounded-md shadow-sm">
+             <div className="space-y-2 mt-4 bg-white p-2 rounded border min-h-[100px]">
+                {resources.length === 0 && <p className="text-sm text-muted-foreground text-center italic py-8">No resources added yet.</p>}
+                {resources.map((res) => (
+                    <div key={res.id} className="flex items-center justify-between p-2 border rounded-md shadow-sm hover:bg-slate-50">
                         <div className="flex items-center gap-3 overflow-hidden">
                             <div className="bg-slate-100 p-2 rounded"><MaterialIcon type={res.type} /></div>
                             <div className="flex flex-col">
                                 <span className="text-sm font-semibold truncate">{res.title}</span>
-                                <span className="text-xs text-muted-foreground truncate max-w-[200px]">{res.url}</span>
+                                <span className="text-xs text-muted-foreground truncate max-w-[200px] text-blue-500 underline">{res.type === 'Link' ? res.url : 'Stored File'}</span>
                             </div>
                         </div>
                         <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveResource(res.id)}><X className="h-4 w-4 text-red-500"/></Button>
@@ -234,7 +313,7 @@ function MaterialForm({
           </div>
 
           <DialogFooter>
-            <Button type="submit" disabled={isSubmitting} className="w-full">
+            <Button type="submit" disabled={isSubmitting || isUploadingResource} className="w-full">
                 {isSubmitting ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving Topic...</>
                 ) : (
@@ -369,17 +448,6 @@ export default function LearningMaterialsPage() {
                                                 <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-blue-400"/>
                                             </a>
                                         ))
-                                    ) : (mat as any).url ? (
-                                        // BACKWARD COMPATIBILITY for items created in the previous step
-                                        <a href={(mat as any).url} target="_blank" rel="noopener noreferrer" 
-                                           className="flex items-center p-3 rounded-lg border bg-amber-50 hover:bg-amber-100 transition-colors">
-                                            <div className="mr-3"><MaterialIcon type={(mat as any).type} /></div>
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium">Single Resource</p>
-                                                <p className="text-xs text-slate-500">Legacy Item</p>
-                                            </div>
-                                            <ExternalLink className="h-4 w-4 text-slate-400"/>
-                                        </a>
                                     ) : (
                                         <p className="text-sm text-muted-foreground italic">No files attached.</p>
                                     )}
@@ -388,8 +456,8 @@ export default function LearningMaterialsPage() {
                             
                             <CardFooter className="pt-2 pb-3 bg-slate-50/50 border-t">
                                 <div className="flex justify-between w-full text-xs text-slate-400">
-                                    <span>{mat.resources?.length || ((mat as any).url ? 1 : 0)} items</span>
-                                    <span>Added by Staff</span>
+                                    <span>{mat.resources?.length || 0} items</span>
+                                    <span>{mat.createdAt ? new Date(mat.createdAt?.seconds * 1000).toLocaleDateString() : 'N/A'}</span>
                                 </div>
                             </CardFooter>
                         </Card>
@@ -411,5 +479,3 @@ export default function LearningMaterialsPage() {
     </div>
   );
 }
-
-    

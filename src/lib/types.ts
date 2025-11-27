@@ -901,12 +901,10 @@ export type VideoLink = {
 //   title: string;
 //   description?: string;
 //   type: ResourceType;
-//   url: string;
+//   url:string;
 //   classId: string;
 //   subjectId?: string;
 //   uploadedBy: string;
 //   createdAt: any;
 // };
 export type ResourceType = 'PDF' | 'Video' | 'Document' | 'Spreadsheet' | 'Link';
-
-    
