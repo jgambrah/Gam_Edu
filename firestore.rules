@@ -67,6 +67,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /subjects/{subjectId} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+    }
+
     match /quizzes/{quizId} {
       allow read: if isSignedIn();
       allow create: if isStaff() && request.resource.data.teacherId == request.auth.uid;
