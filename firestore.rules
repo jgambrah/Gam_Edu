@@ -90,6 +90,10 @@ service cloud.firestore {
     match /accountsPayable/{payableId} {
       allow read, write: if isFinanceStaff();
     }
+    
+    match /vendors/{vendorId} {
+      allow read, write: if isFinanceStaff();
+    }
 
     // --- LEARNING MATERIALS (FIXED) ---
     match /learning_materials/{materialId} {
