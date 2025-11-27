@@ -82,6 +82,10 @@ service cloud.firestore {
     match /behavioral_records/{recordId} {
       allow read, write: if isSignedIn();
     }
+    
+    match /financialRecords/{recordId} {
+      allow read, write: if isFinanceStaff();
+    }
 
     // --- LEARNING MATERIALS (FIXED) ---
     match /learning_materials/{materialId} {
