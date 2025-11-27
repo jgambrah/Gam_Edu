@@ -446,7 +446,7 @@ export const financialRecordSchema = z.object({
 
 export const bulkBillingSchema = z.object({
   classId: z.string().min(1, "A class must be selected."),
-  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other']),
+  type: z.enum(['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Other']),
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
@@ -855,14 +855,33 @@ export type GameLobby = {
     createdAt: any;
 };
 
-// Learning Material Schema
+// --- RICH LEARNING MATERIAL ---
+
+export type Attachment = {
+  name: string;
+  url: string; // This would be the Firebase Storage URL
+  type: 'PDF' | 'DOC' | 'EXCEL' | 'IMAGE' | 'OTHER';
+};
+
+export type VideoLink = {
+  title: string;
+  url: string; // YouTube URL
+};
+
+export type RichQuizQuestion = {
+  question: string;
+  options: string[]; // [A, B, C, D]
+  correctAnswer: string;
+};
+
 export type LearningMaterial = {
   id: string;
   courseId: string;
-  courseName: string;
-  strand: string;
-  subStrandTitle: string;
-  content: string; // Supports markdown/HTML
-  subjectId?: string;
-  classId?: string;
+  strand: string;       // e.g., "STRAND 1: DIVERSITY OF MATTER"
+  subStrand: string;    // e.g., "Sub-strand 1: Materials"
+  topicTitle: string;   // e.g., "Introduction to Matter"
+  content: string;      // HTML string
+  attachments: Attachment[];
+  videoLinks: VideoLink[];
+  practiceQuestions: RichQuizQuestion[];
 };
