@@ -41,7 +41,7 @@ function MaterialForm({
   classes: Class[] | undefined;
 }) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,6 +59,7 @@ function MaterialForm({
     console.log("Submitting form...", { title, classId, user });
 
     if (!user || !firestore) {
+        toast({ variant: 'destructive', title: 'Initialization Error', description: 'Firebase not ready. Please wait a moment and try again.' });
         console.error("Missing User or Firestore");
         return;
     }
@@ -161,9 +162,9 @@ function MaterialForm({
             <Button 
                 type="submit" 
                 form="material-form" // <--- This links the button to the form above
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUserLoading}
             >
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
+                {(isSubmitting || isUserLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
                 Save Material
             </Button>
         </DialogFooter>
