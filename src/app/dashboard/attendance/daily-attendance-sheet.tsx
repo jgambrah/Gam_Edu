@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, FirestorePermissionError, errorEmitter } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
 import { attendanceRecordSchema, type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -144,27 +144,34 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore) return;
         setIsLoading(true);
-        try {
-            const batch = writeBatch(firestore);
-            data.records.forEach(record => {
-                const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-                const { studentName, id, ...dataToSave } = record;
-                batch.set(recordRef, dataToSave, { merge: true });
+        
+        const batch = writeBatch(firestore);
+        data.records.forEach(record => {
+            const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
+            const { studentName, id, ...dataToSave } = record;
+            batch.set(recordRef, dataToSave, { merge: true });
+        });
 
-                if (record.status === 'Absent' || record.status === 'Late') {
-                    console.log(`Placeholder: Sending notification to parent of ${record.studentName} for being ${record.status}.`);
-                }
+        batch.commit()
+            .then(() => {
+                toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
+                data.records.forEach(record => {
+                    if (record.status === 'Absent' || record.status === 'Late') {
+                        console.log(`Placeholder: Sending notification to parent of ${record.studentName} for being ${record.status}.`);
+                    }
+                });
+            })
+            .catch(serverError => {
+                const permissionError = new FirestorePermissionError({
+                    path: 'attendance', // The batch writes to the 'attendance' collection
+                    operation: 'write',
+                    requestResourceData: data.records,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
-
-            await batch.commit();
-            toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
-
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'An error occurred while saving attendance.' });
-        } finally {
-            setIsLoading(false);
-        }
     }
 
     return (

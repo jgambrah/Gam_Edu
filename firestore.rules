@@ -144,6 +144,10 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /attendance/{attendanceId} {
+        allow read, write: if isStaff();
+    }
+
     // Default deny for everything else that has not been matched
     match /{path=**} {
       allow read, write: if false;
