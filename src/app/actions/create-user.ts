@@ -106,6 +106,21 @@ export async function createNewUser(
         }
     }
 
+    // Special handling for the specific director user to ensure profile exists
+    if (email === 'jgambrah@sunnyside.com' && userRecord.uid === 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2') {
+        const directorDocRef = firestore.collection('staff').doc('gZxe3nMbGcQhNgEzkwEZwDBnkFR2');
+        const directorDocSnap = await directorDocRef.get();
+        if (!directorDocSnap.exists) {
+            await directorDocRef.set({
+                uid: 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2',
+                email: 'jgambrah@sunnyside.com',
+                role: 'Director',
+                firstName: 'Admin',
+                lastName: 'User',
+            });
+        }
+    }
+
     return { uid: userRecord.uid };
 
   } catch (error: any) {
