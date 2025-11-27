@@ -37,6 +37,7 @@ import {
   PenSquare,
   TrendingUp,
   Gamepad2,
+  AlertCircle,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -328,6 +329,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/audit-log',
             title: 'Audit Log',
             icon: FileText,
+            roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/diagnostics',
+            title: 'Diagnostics',
+            icon: AlertCircle,
             roles: ['Director', 'Administrator'],
         },
     ]
