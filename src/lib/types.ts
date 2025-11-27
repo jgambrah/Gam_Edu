@@ -857,31 +857,22 @@ export type GameLobby = {
 
 // --- RICH LEARNING MATERIAL ---
 
-export type Attachment = {
-  name: string;
-  url: string; // This would be the Firebase Storage URL
-  type: 'PDF' | 'DOC' | 'EXCEL' | 'IMAGE' | 'OTHER';
-};
-
-export type VideoLink = {
-  title: string;
-  url: string; // YouTube URL
-};
-
 export type RichQuizQuestion = {
   question: string;
   options: string[]; // [A, B, C, D]
   correctAnswer: string;
 };
 
-export type LearningMaterial = {
+export type ResourceType = 'PDF' | 'Video' | 'Document' | 'Spreadsheet' | 'Link';
+
+export interface LearningMaterial {
   id: string;
-  courseId: string;
-  strand: string;       // e.g., "STRAND 1: DIVERSITY OF MATTER"
-  subStrand: string;    // e.g., "Sub-strand 1: Materials"
-  topicTitle: string;   // e.g., "Introduction to Matter"
-  content: string;      // HTML string
-  attachments: Attachment[];
-  videoLinks: VideoLink[];
-  practiceQuestions: RichQuizQuestion[];
-};
+  title: string;
+  description?: string;
+  type: ResourceType;
+  url: string; // URL to the file (Firebase Storage) or external link
+  classId: string; // The class this is assigned to
+  subjectId?: string; 
+  uploadedBy: string;
+  createdAt: any; // Firestore Timestamp
+}
