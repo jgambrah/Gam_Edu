@@ -29,7 +29,7 @@ const MaterialIcon = ({ type }: { type: string }) => {
   }
 };
 
-// --- COMPONENT: Add/Edit Material Form ---
+// --- COMPONENT: Add/Edit Material Form (Fixed) ---
 function MaterialForm({ 
   open, 
   setOpen, 
@@ -42,45 +42,46 @@ function MaterialForm({
   classes: Class[] | undefined;
 }) {
   const firestore = useFirestore();
-  const { user: hookUser } = useAuth(); // Renamed to avoid confusion
+  const { user: hookUser } = useAuth();
   const { toast } = useToast();
+  
+  // 1. Initialize as FALSE
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form State
+  // Form Fields
   const [title, setTitle] = useState(materialToEdit?.title || '');
   const [description, setDescription] = useState(materialToEdit?.description || '');
   const [type, setType] = useState<string>(materialToEdit?.type || 'PDF');
   const [classId, setClassId] = useState(materialToEdit?.classId || '');
   const [url, setUrl] = useState(materialToEdit?.url || '');
 
+  // 2. FORCE RESET: Ensure spinner is off whenever the modal opens
+  useEffect(() => {
+    if (open) {
+        setIsSubmitting(false);
+    }
+  }, [open]);
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Stop page refresh
     
-    // 1. FIX: Get the user directly from Firebase SDK
+    // Prevent double-clicks if already running
+    if (isSubmitting) return;
+
     const auth = getAuth();
     const currentUser = auth.currentUser || hookUser;
 
-    // Debugging logs
-    console.log("Submitting with:", { 
-        firestoreExists: !!firestore, 
-        currentUserUID: currentUser?.uid 
-    });
-
     if (!currentUser || !firestore) {
-        toast({ 
-            variant: 'destructive', 
-            title: 'Authentication Error', 
-            description: 'Could not verify your login session. Please refresh the page.' 
-        });
+        toast({ variant: 'destructive', title: 'Error', description: 'Authentication missing.' });
         return;
     }
 
-    // 2. Validation
     if (!title || !url || !classId) {
         toast({ variant: 'destructive', title: 'Missing Fields', description: 'Title, Class, and Link are required.' });
         return;
     }
 
+    // Start Spinning
     setIsSubmitting(true);
 
     try {
@@ -90,28 +91,27 @@ function MaterialForm({
         type,
         url,
         classId,
-        uploadedBy: currentUser.uid, // Use the direct user UID
+        uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
       };
 
       if (materialToEdit) {
-        // Update existing
         await updateDoc(doc(firestore, 'learning_materials', materialToEdit.id), data);
-        toast({ title: 'Success', description: 'Material updated successfully.' });
+        toast({ title: 'Success', description: 'Updated successfully.' });
       } else {
-        // Create new
         await addDoc(collection(firestore, 'learning_materials'), {
           ...data,
           createdAt: serverTimestamp(),
         });
-        toast({ title: 'Success', description: 'Material added successfully.' });
+        toast({ title: 'Success', description: 'Created successfully.' });
       }
+      // Close Modal on Success
       setOpen(false);
     } catch (error: any) {
-      console.error("Firestore Error:", error);
-      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save material.' });
-    } finally {
-      setIsSubmitting(false);
+      console.error("Save Error:", error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to save.' });
+      // Only stop spinning if it failed (if success, modal closes anyway)
+      setIsSubmitting(false); 
     }
   };
 
@@ -123,8 +123,9 @@ function MaterialForm({
           <DialogDescription>Share resources, documents, or links with your students.</DialogDescription>
         </DialogHeader>
         
-        {/* FIX 1: Add an ID to the form */}
-        <form id="material-form" onSubmit={handleSubmit} className="space-y-4 py-4">
+        {/* FIX 3: Form wraps EVERYTHING including the footer. No ID needed. */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 py-4">
+          
           <div className="space-y-2">
             <Label>Title *</Label>
             <Input required value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Algebra Formulas" />
@@ -157,30 +158,31 @@ function MaterialForm({
           <div className="space-y-2">
             <Label>Resource Link / URL *</Label>
             <Input required value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." />
-            <p className="text-xs text-muted-foreground">Paste a Google Drive link, YouTube link, or file URL here.</p>
           </div>
 
           <div className="space-y-2">
-            <Label>Description (Optional)</Label>
+            <Label>Description</Label>
             <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description..." />
           </div>
-        </form>
 
-        {/* FIX 2: DialogFooter is OUTSIDE the form, but linked via 'form' attribute */}
-        <DialogFooter>
-            <Button 
-                type="submit" 
-                form="material-form" // <--- This links the button to the form above
-                disabled={isSubmitting || !hookUser}
-            >
-                {(isSubmitting || !hookUser) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
-                Save Material
+          {/* Footer is INSIDE the form now */}
+          <DialogFooter>
+            <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                    <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                    </>
+                ) : (
+                    'Save Material'
+                )}
             </Button>
-        </DialogFooter>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
 }
+
 
 // --- MAIN PAGE ---
 export default function LearningMaterialsPage() {
