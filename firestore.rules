@@ -110,6 +110,12 @@ service cloud.firestore {
       allow read, write: if isFinanceStaff();
     }
 
+    match /lesson-plans/{planId} {
+      allow read: if isSignedIn();
+      allow create: if isTeacher() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if isTeacher() && resource.data.teacherId == request.auth.uid;
+    }
+
     // --- LEARNING MATERIALS (FIXED) ---
     match /learning_materials/{materialId} {
       // Use simple auth check for list operations
