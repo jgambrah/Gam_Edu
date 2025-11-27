@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -30,14 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { BookOpen, Edit, Loader2, Save } from 'lucide-react';
-
-type LearningMaterial = {
-  id: string;
-  courseId: string;
-  strand: string;
-  subStrandTitle: string;
-  content: string;
-};
+import type { LearningMaterial } from '@/lib/types';
 
 // --- Edit Dialog Component ---
 function EditMaterialDialog({
@@ -88,7 +80,7 @@ function EditMaterialDialog({
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="w-full h-full resize-none"
-            placeholder="Enter course content here..."
+            placeholder="Enter course content here... You can paste text and images."
           />
         </div>
         <div className="flex justify-end pt-4">
@@ -105,43 +97,6 @@ function EditMaterialDialog({
     </Dialog>
   );
 }
-
-function SeedButton() {
-  const firestore = useFirestore();
-  const { toast } = useToast();
-
-  const addSampleData = async () => {
-    try {
-      await addDoc(collection(firestore, 'learning_materials'), {
-        courseId: 'bs7-integrated-science',
-        strand: 'Strand 1: Diversity of Matter',
-        subStrandTitle: 'Sub-strand 1: Living and Non-Living Things',
-        content: '<p><strong>Introduction:</strong><br>All things around us are matter. Matter is anything that has mass and occupies space...</p>',
-        createdAt: new Date()
-      });
-      
-      await addDoc(collection(firestore, 'learning_materials'), {
-        courseId: 'bs7-integrated-science',
-        strand: 'Strand 1: Diversity of Matter',
-        subStrandTitle: 'Sub-strand 2: Materials',
-        content: '<p>Materials can be classified into metals, non-metals, and semi-metals...</p>',
-        createdAt: new Date()
-      });
-
-      toast({ title: "Success", description: "Sample data added! Refresh the page." });
-    } catch (e) {
-      console.error(e);
-      alert("Error adding data. Check console.");
-    }
-  };
-
-  return (
-    <Button onClick={addSampleData} variant="outline" className="mb-4 bg-green-50 border-green-200 text-green-700">
-      + Add Test Data
-    </Button>
-  );
-}
-
 
 // --- Main Page Component ---
 export default function BS7IntegratedSciencePage() {
@@ -185,8 +140,6 @@ export default function BS7IntegratedSciencePage() {
           </CardDescription>
         </CardHeader>
       </Card>
-      
-      {canManage && <SeedButton />} 
 
       {isLoading ? (
         <div className="text-center p-8">
@@ -197,7 +150,7 @@ export default function BS7IntegratedSciencePage() {
          <Card>
             <CardContent className="py-12 text-center">
                 <p className="text-muted-foreground">No learning materials found for this course yet.</p>
-                {canManage && <p className="text-sm text-muted-foreground mt-2">Use the "Add Test Data" button to populate the course or create content in Firestore.</p>}
+                {canManage && <p className="text-sm text-muted-foreground mt-2">You can add content in the Firestore database under the 'learning_materials' collection.</p>}
             </CardContent>
          </Card>
       ) : (

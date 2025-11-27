@@ -862,6 +862,7 @@ export type LearningMaterial = {
   courseName: string;
   strand: string;
   subStrandTitle: string;
-  content: string; // Supports markdown
+  content: string; // Supports markdown/HTML
+  subjectId?: string;
+  classId?: string;
 };
-
