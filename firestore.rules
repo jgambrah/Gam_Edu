@@ -117,9 +117,11 @@ service cloud.firestore {
     }
 
     match /learning_materials/{materialId} {
-      allow get, list: if isSignedIn();
-      // TEMPORARY: Allow anyone to write so you can test the form
-      allow write: if true; 
+      // DEBUG: Allow ALL reads. 
+      // If this still fails, it proves it is a MISSING INDEX issue.
+      allow read: if true; 
+      
+      allow write: if isTeacher() || isAdmin();
     }
 
     // --- MATH CLUB ---
