@@ -1,12 +1,12 @@
+
 'use client';
 
-import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-// NEW: Storage Imports
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
-import { Class, Student } from '@/lib/types'; // Keep your existing imports
+import { Class, Student, LearningMaterial, ResourceItem, ResourceType } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -14,19 +14,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'; // Make sure you have this component
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileText, Video, Link as LinkIcon, FileSpreadsheet, File, 
-  Plus, Trash2, Edit, ExternalLink, Loader2, X, FolderOpen, UploadCloud, Globe 
+  Plus, Trash2, Edit, ExternalLink, Loader2, X, Folder, UploadCloud, Globe, ArrowLeft, BookOpen 
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAuth } from 'firebase/auth';
-import { Badge } from '@/components/ui/badge';
-import type { ResourceType, ResourceItem, LearningMaterial } from '@/lib/types';
 
+// --- CONSTANTS ---
+const SUBJECTS_LIST = [
+  "Integrated Science",
+  "Mathematics",
+  "English Language",
+  "Social Studies",
+  "R.M.E",
+  "I.C.T",
+  "French",
+  "Ghanaian Language"
+];
 
-// --- Helper: Icon Selector ---
+// --- HELPER ICONS ---
 const MaterialIcon = ({ type }: { type: string }) => {
   switch (type) {
     case 'PDF': return <FileText className="h-5 w-5 text-red-500" />;
@@ -43,39 +52,34 @@ function MaterialForm({
   open, 
   setOpen, 
   materialToEdit, 
-  classes 
+  classes,
+  preSelectedSubject 
 }: { 
   open: boolean; 
   setOpen: (o: boolean) => void; 
   materialToEdit?: LearningMaterial | null; 
   classes: Class[] | undefined;
+  preSelectedSubject?: string;
 }) {
   const firestore = useFirestore();
   const { user: hookUser } = useAuth();
   const { toast } = useToast();
   
-  // Overall Form Submission State
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Resource Upload State
   const [isUploadingResource, setIsUploadingResource] = useState(false);
 
-  // Main Topic State
+  // Form State
   const [topicTitle, setTopicTitle] = useState(materialToEdit?.topicTitle || '');
   const [description, setDescription] = useState(materialToEdit?.description || '');
   const [classId, setClassId] = useState(materialToEdit?.classId || '');
-
-  // Resources Array State
+  const [subject, setSubject] = useState(materialToEdit?.subject || preSelectedSubject || ''); // Subject State
   const [resources, setResources] = useState<ResourceItem[]>(materialToEdit?.resources || []);
 
-  // --- NEW: Toggle between Link and File ---
   const [inputType, setInputType] = useState<'link' | 'file'>('link');
-
-  // Temporary Inputs
   const [tempType, setTempType] = useState<string>('PDF');
   const [tempTitle, setTempTitle] = useState('');
-  const [tempUrl, setTempUrl] = useState(''); // For Links
-  const [tempFile, setTempFile] = useState<File | null>(null); // For Files
+  const [tempUrl, setTempUrl] = useState('');
+  const [tempFile, setTempFile] = useState<File | null>(null);
 
   // Reset when opening
   useState(() => {
@@ -85,42 +89,31 @@ function MaterialForm({
     }
   });
 
-  // --- LOGIC: Add Resource (Uploads file if needed) ---
   const handleAddResource = async () => {
     if (!tempTitle) {
-        toast({ variant: 'destructive', title: 'Missing Info', description: 'Please describe this item (e.g. "Lecture Notes").' });
+        toast({ variant: 'destructive', title: 'Missing Info', description: 'Please describe this item.' });
         return;
     }
-
     if (inputType === 'link' && !tempUrl) {
-        toast({ variant: 'destructive', title: 'Missing Link', description: 'Please enter the website URL.' });
+        toast({ variant: 'destructive', title: 'Missing Link', description: 'Please enter the URL.' });
         return;
     }
-
     if (inputType === 'file' && !tempFile) {
-        toast({ variant: 'destructive', title: 'Missing File', description: 'Please select a file from your computer.' });
+        toast({ variant: 'destructive', title: 'Missing File', description: 'Please select a file.' });
         return;
     }
 
-    // Prepare for upload
     setIsUploadingResource(true);
     let finalUrl = tempUrl;
 
     try {
-        // 1. Handle File Upload (if selected)
         if (inputType === 'file' && tempFile) {
-            const storage = getStorage(); // Initialize Storage
-            // Create a unique path: materials/{timestamp}_{filename}
+            const storage = getStorage();
             const storageRef = ref(storage, `materials/${Date.now()}_${tempFile.name}`);
-            
-            // Upload
             await uploadBytes(storageRef, tempFile);
-            
-            // Get URL
             finalUrl = await getDownloadURL(storageRef);
         }
 
-        // 2. Add to Local List
         const newItem: ResourceItem = {
             id: Date.now().toString(),
             type: tempType as ResourceType,
@@ -129,16 +122,14 @@ function MaterialForm({
         };
 
         setResources([...resources, newItem]);
-        
-        // 3. Reset Input Fields
         setTempTitle('');
         setTempUrl('');
         setTempFile(null);
-        toast({ title: "Item Added", description: inputType === 'file' ? "File uploaded and added to list." : "Link added to list." });
+        toast({ title: "Item Added", description: "Resource added to the list." });
 
     } catch (error) {
         console.error("Upload Error", error);
-        toast({ variant: 'destructive', title: "Upload Failed", description: "Check your internet connection or file size." });
+        toast({ variant: 'destructive', title: "Upload Failed", description: "Check connection or file size." });
     } finally {
         setIsUploadingResource(false);
     }
@@ -160,8 +151,8 @@ function MaterialForm({
         return;
     }
 
-    if (!topicTitle || !classId) {
-        toast({ variant: 'destructive', title: 'Missing Fields', description: 'Topic Title and Class are required.' });
+    if (!topicTitle || !classId || !subject) {
+        toast({ variant: 'destructive', title: 'Missing Fields', description: 'Topic, Class, and Subject are required.' });
         return;
     }
 
@@ -177,6 +168,7 @@ function MaterialForm({
         topicTitle,
         description,
         classId,
+        subject,
         resources,
         uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
@@ -204,19 +196,23 @@ function MaterialForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[700px] h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>{materialToEdit ? 'Edit Material Topic' : 'Create New Material Topic'}</DialogTitle>
-          <DialogDescription>Create a collection of files and links for a specific topic.</DialogDescription>
+          <DialogTitle>{materialToEdit ? 'Edit Material' : 'Add Learning Material'}</DialogTitle>
+          <DialogDescription>Create a topic folder containing multiple resources.</DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 py-4 overflow-y-auto flex-1 px-1">
           
-          {/* 1. TOPIC DETAILS */}
           <div className="space-y-4 border p-4 rounded-md bg-slate-50">
-              <h3 className="font-semibold text-sm text-slate-700">1. Topic Details</h3>
+              <h3 className="font-semibold text-sm text-slate-700">1. Organization</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label>Topic Title *</Label>
-                    <Input required value={topicTitle} onChange={e => setTopicTitle(e.target.value)} placeholder="e.g. Science Week 3: Energy" />
+                    <Label>Subject *</Label>
+                    <Select value={subject} onValueChange={setSubject}>
+                        <SelectTrigger><SelectValue placeholder="Select Subject" /></SelectTrigger>
+                        <SelectContent>
+                            {SUBJECTS_LIST.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="space-y-2">
                     <Label>Assign to Class *</Label>
@@ -229,57 +225,54 @@ function MaterialForm({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Instructions / Description</Label>
-                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Instructions for students..." className="h-20" />
+                    <Label>Topic Title *</Label>
+                    <Input required value={topicTitle} onChange={e => setTopicTitle(e.target.value)} placeholder="e.g. Diversity of Matter" />
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description of this topic..." className="h-16" />
               </div>
           </div>
 
-          {/* 2. RESOURCE BUILDER */}
           <div className="space-y-4 border p-4 rounded-md bg-slate-50">
-             <h3 className="font-semibold text-sm text-slate-700">2. Add Files & Links</h3>
+             <h3 className="font-semibold text-sm text-slate-700">2. Add Resources</h3>
              
-             {/* TABS FOR UPLOAD TYPE */}
              <Tabs value={inputType} onValueChange={(v) => setInputType(v as 'link' | 'file')} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-4">
-                    <TabsTrigger value="link"><Globe className="w-4 h-4 mr-2"/> External Link (YouTube, Drive)</TabsTrigger>
-                    <TabsTrigger value="file"><UploadCloud className="w-4 h-4 mr-2"/> Upload from Computer</TabsTrigger>
+                    <TabsTrigger value="link"><Globe className="w-4 h-4 mr-2"/> External Link</TabsTrigger>
+                    <TabsTrigger value="file"><UploadCloud className="w-4 h-4 mr-2"/> Upload File</TabsTrigger>
                 </TabsList>
 
-                {/* SHARED INPUTS (Type & Title) */}
                 <div className="grid grid-cols-12 gap-2 mb-2">
                     <div className="col-span-4 space-y-1">
-                        <Label className="text-xs">Category</Label>
+                        <Label className="text-xs">Type</Label>
                         <Select value={tempType} onValueChange={setTempType}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="PDF">PDF</SelectItem>
                                 <SelectItem value="Video">Video</SelectItem>
                                 <SelectItem value="Document">Word Doc</SelectItem>
-                                <SelectItem value="Spreadsheet">Excel/Sheet</SelectItem>
+                                <SelectItem value="Spreadsheet">Excel</SelectItem>
                                 <SelectItem value="Link">Website</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="col-span-8 space-y-1">
-                        <Label className="text-xs">Description / Label</Label>
-                        <Input value={tempTitle} onChange={e => setTempTitle(e.target.value)} placeholder="e.g. Worksheet 1" />
+                        <Label className="text-xs">File Name / Label</Label>
+                        <Input value={tempTitle} onChange={e => setTempTitle(e.target.value)} placeholder="e.g. Course Notes" />
                     </div>
                 </div>
 
-                {/* LINK INPUT */}
                 <TabsContent value="link">
                     <div className="flex gap-2 items-end">
                         <div className="flex-1 space-y-1">
                             <Label className="text-xs">URL</Label>
-                            <Input value={tempUrl} onChange={e => setTempUrl(e.target.value)} placeholder="https://youtube.com/..." />
+                            <Input value={tempUrl} onChange={e => setTempUrl(e.target.value)} placeholder="https://..." />
                         </div>
-                        <Button type="button" onClick={handleAddResource} disabled={isUploadingResource}>
-                            <Plus className="h-4 w-4"/> Add
-                        </Button>
+                        <Button type="button" onClick={handleAddResource} disabled={isUploadingResource}><Plus className="h-4 w-4"/></Button>
                     </div>
                 </TabsContent>
 
-                {/* FILE INPUT */}
                 <TabsContent value="file">
                     <div className="flex gap-2 items-end">
                         <div className="flex-1 space-y-1">
@@ -288,13 +281,11 @@ function MaterialForm({
                         </div>
                         <Button type="button" onClick={handleAddResource} disabled={isUploadingResource || !tempFile}>
                             {isUploadingResource ? <Loader2 className="h-4 w-4 animate-spin"/> : <UploadCloud className="h-4 w-4"/>}
-                            {isUploadingResource ? 'Uploading...' : 'Upload & Add'}
                         </Button>
                     </div>
                 </TabsContent>
              </Tabs>
 
-             {/* LIST OF ADDED ITEMS */}
              <div className="space-y-2 mt-4 bg-white p-2 rounded border min-h-[100px]">
                 {resources.length === 0 && <p className="text-sm text-muted-foreground text-center italic py-8">No resources added yet.</p>}
                 {resources.map((res) => (
@@ -303,7 +294,7 @@ function MaterialForm({
                             <div className="bg-slate-100 p-2 rounded"><MaterialIcon type={res.type} /></div>
                             <div className="flex flex-col">
                                 <span className="text-sm font-semibold truncate">{res.title}</span>
-                                <span className="text-xs text-muted-foreground truncate max-w-[200px] text-blue-500 underline">{res.type === 'Link' ? res.url : 'Stored File'}</span>
+                                <span className="text-xs text-muted-foreground truncate max-w-[200px] text-blue-500">{res.type}</span>
                             </div>
                         </div>
                         <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveResource(res.id)}><X className="h-4 w-4 text-red-500"/></Button>
@@ -313,12 +304,8 @@ function MaterialForm({
           </div>
 
           <DialogFooter>
-            <Button type="submit" disabled={isSubmitting || isUploadingResource} className="w-full">
-                {isSubmitting ? (
-                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving Topic...</>
-                ) : (
-                    `Save Topic (${resources.length} items)`
-                )}
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : `Save Topic (${resources.length} items)`}
             </Button>
           </DialogFooter>
         </form>
@@ -337,6 +324,10 @@ export default function LearningMaterialsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<LearningMaterial | null>(null);
   
+  // Navigation State
+  const [currentSubject, setCurrentSubject] = useState<string | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<string>(''); // For filtering in Admin view
+
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   // 1. Student Data (for class ID)
@@ -346,25 +337,46 @@ export default function LearningMaterialsPage() {
         return query(collection(firestore, 'students'), where('uid', '==', user.uid));
     }, [user, role, firestore])
   );
-  const studentClassId = studentData?.[0]?.classId;
+  
+  // Automatically set class ID for students
+  const activeClassId = role === 'Student' ? studentData?.[0]?.classId : selectedClassId;
 
-  // 2. Classes (for Staff)
+  // 2. Classes (for Staff dropdown)
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (canManage && firestore) ? query(collection(firestore, 'classes')) : null, [canManage, firestore])
   );
 
-  // 3. Materials Query
+  // 3. Materials Query (Depends on whether we are inside a Subject Folder)
   const materialsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    if (canManage) return query(collection(firestore, 'learning_materials'), orderBy('createdAt', 'desc'));
-    if (role === 'Student' && studentClassId) return query(collection(firestore, 'learning_materials'), where('classId', '==', studentClassId));
-    return null;
-  }, [firestore, canManage, role, studentClassId]);
+    if (!firestore || !activeClassId) return null;
+    
+    // Base Query: Must match Class ID
+    let baseQuery = query(
+        collection(firestore, 'learning_materials'), 
+        where('classId', '==', activeClassId)
+    );
+
+    // If a Subject Folder is open, filter by that subject
+    if (currentSubject) {
+        baseQuery = query(baseQuery, where('subject', '==', currentSubject), orderBy('createdAt', 'desc'));
+    }
+
+    return baseQuery;
+  }, [firestore, activeClassId, currentSubject]);
 
   const { data: materials, isLoading } = useCollection<LearningMaterial>(materialsQuery);
 
+  // 4. Derive Subjects List from actual data (or use preset list if empty)
+  // This calculates how many files are in each subject folder
+  const subjectCounts = useMemo(() => {
+    if(!materials && !currentSubject) return {}; // If listing all, we need a different query approach for counts, but for now we rely on the drill-down
+    // Note: To show counts on the top level, we'd need to fetch ALL materials for the class first.
+    // To simplify: We just show the preset folders.
+    return {};
+  }, [materials]);
+
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this topic and all its resources?")) return;
+    if (!confirm("Delete this topic?")) return;
     try {
         await deleteDoc(doc(firestore, 'learning_materials', id));
         toast({ title: "Deleted", description: "Topic removed." });
@@ -383,89 +395,137 @@ export default function LearningMaterialsPage() {
       setIsFormOpen(true);
   };
 
+  // --- RENDER HELPERS ---
+
+  // 1. CLASS SELECTOR (For Admins)
+  if (canManage && !activeClassId) {
+      return (
+          <div className="p-8 max-w-2xl mx-auto space-y-4">
+              <Card>
+                  <CardHeader><CardTitle>Learning Materials Manager</CardTitle><CardDescription>Select a class to manage materials.</CardDescription></CardHeader>
+                  <CardContent>
+                      <Label>Select Class</Label>
+                      <Select onValueChange={setSelectedClassId}>
+                          <SelectTrigger><SelectValue placeholder="Select Class..." /></SelectTrigger>
+                          <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                      </Select>
+                  </CardContent>
+              </Card>
+          </div>
+      )
+  }
+
+  // 2. SUBJECT FOLDER VIEW (Top Level)
+  if (!currentSubject) {
+      return (
+        <div className="space-y-6 p-6">
+            <Card className="bg-slate-50">
+                <CardHeader className="flex flex-row justify-between items-center pb-2">
+                    <div>
+                        <CardTitle>Subject Folders</CardTitle>
+                        <CardDescription>Select a subject to view topics and materials for <strong>{classes?.find(c => c.id === activeClassId)?.name || 'Class'}</strong></CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                        {canManage && <Button variant="outline" onClick={() => setSelectedClassId('')}>Switch Class</Button>}
+                        {canManage && <Button onClick={handleCreate}><Plus className="mr-2 h-4 w-4"/> Add Material</Button>}
+                    </div>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4">
+                    {SUBJECTS_LIST.map((subject) => (
+                        <div 
+                            key={subject}
+                            onClick={() => setCurrentSubject(subject)}
+                            className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-blue-300 cursor-pointer transition-all flex flex-col items-center justify-center gap-3 text-center group"
+                        >
+                            <div className="bg-blue-50 p-4 rounded-full group-hover:bg-blue-100 transition-colors">
+                                <Folder className="h-8 w-8 text-blue-500 fill-blue-500/20" />
+                            </div>
+                            <h3 className="font-semibold text-slate-700 group-hover:text-blue-700">{subject}</h3>
+                            <span className="text-xs text-muted-foreground">Click to open</span>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+
+            {/* Form Dialog (Can be opened from top level) */}
+            {isFormOpen && (
+                <MaterialForm 
+                    open={isFormOpen} 
+                    setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
+                    classes={classes}
+                    materialToEdit={editingMaterial}
+                />
+            )}
+        </div>
+      );
+  }
+
+  // 3. TOPIC VIEW (Inside a Subject)
   return (
     <div className="space-y-6 p-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Learning Materials</CardTitle>
-            <CardDescription>
-                {canManage ? "Organize materials into topics for your classes." : "Access resources assigned to your class."}
-            </CardDescription>
-          </div>
-          {canManage && (
-            <Button onClick={handleCreate}>
-              <Plus className="mr-2 h-4 w-4" /> Create New Topic
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent>
-            {isLoading || (role === 'Student' && isStudentLoading) ? (
-                <div className="space-y-2">
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-20 w-full" />
-                </div>
-            ) : (!materials || materials.length === 0) ? (
-                <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg">
-                    <FolderOpen className="mx-auto h-12 w-12 mb-2 opacity-50"/>
-                    <p>No learning materials found.</p>
-                    {role === 'Student' && !studentClassId && <p className="text-xs text-red-400 mt-2">You are not assigned to a class yet.</p>}
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {materials.map((mat) => (
-                        <Card key={mat.id} className="flex flex-col shadow-sm border-l-4 border-l-blue-500">
-                            <CardHeader className="pb-2">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <CardTitle className="text-lg">{mat.topicTitle || (mat as any).title}</CardTitle>
-                                        <CardDescription className="mt-1">
-                                            {classes?.find(c => c.id === mat.classId)?.name || 'Unknown Class'}
-                                        </CardDescription>
+      <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => setCurrentSubject(null)} className="gap-2 pl-0 hover:bg-transparent hover:text-blue-600">
+              <ArrowLeft className="h-4 w-4" /> Back to Subjects
+          </Button>
+          <h1 className="text-2xl font-bold text-slate-800">{currentSubject}</h1>
+          <Badge variant="outline" className="text-xs">{classes?.find(c => c.id === activeClassId)?.name}</Badge>
+      </div>
+
+      <div className="flex justify-end">
+         {canManage && <Button onClick={handleCreate}><Plus className="mr-2 h-4 w-4"/> Add Topic to {currentSubject}</Button>}
+      </div>
+
+      {isLoading ? (
+        <div className="text-center p-12"><Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" /></div>
+      ) : (!materials || materials.length === 0) ? (
+        <div className="text-center py-16 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50/50">
+            <BookOpen className="mx-auto h-12 w-12 mb-2 opacity-30"/>
+            <p>No topics found for {currentSubject}.</p>
+            {canManage && <Button variant="link" onClick={handleCreate}>Create the first topic</Button>}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6">
+            {materials.map((mat) => (
+                <Card key={mat.id} className="flex flex-col shadow-sm border-l-4 border-l-blue-500">
+                    <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <CardTitle className="text-lg">{mat.topicTitle}</CardTitle>
+                                {mat.description && <p className="text-sm text-slate-600 mt-1">{mat.description}</p>}
+                            </div>
+                            {canManage && (
+                                <div className="flex gap-1">
+                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(mat)}><Edit className="h-4 w-4 text-slate-500" /></Button>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(mat.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button>
+                                </div>
+                            )}
+                        </div>
+                    </CardHeader>
+                    
+                    <CardContent className="flex-1 pb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
+                            {mat.resources && mat.resources.map((res, i) => (
+                                <a key={i} href={res.url} target="_blank" rel="noopener noreferrer" 
+                                   className="flex items-center p-3 rounded-lg border bg-white hover:bg-blue-50 hover:border-blue-300 transition-all group shadow-sm">
+                                    <div className="mr-3 bg-slate-50 p-2 rounded-md group-hover:bg-white"><MaterialIcon type={res.type} /></div>
+                                    <div className="flex-1 overflow-hidden">
+                                        <p className="text-sm font-medium text-slate-900 group-hover:text-blue-700 truncate">{res.title}</p>
+                                        <p className="text-xs text-slate-500">{res.type}</p>
                                     </div>
-                                    {canManage && (
-                                        <div className="flex gap-1">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(mat)}><Edit className="h-4 w-4 text-slate-500" /></Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(mat.id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
-                                        </div>
-                                    )}
-                                </div>
-                                {mat.description && <p className="text-sm text-slate-600 mt-2">{mat.description}</p>}
-                            </CardHeader>
-                            
-                            <CardContent className="flex-1 pb-4">
-                                <div className="space-y-2">
-                                    {/* Handle NEW structure (array) */}
-                                    {mat.resources && mat.resources.length > 0 ? (
-                                        mat.resources.map((res, i) => (
-                                            <a key={i} href={res.url} target="_blank" rel="noopener noreferrer" 
-                                               className="flex items-center p-3 rounded-lg border bg-slate-50 hover:bg-blue-50 hover:border-blue-200 transition-colors group">
-                                                <div className="mr-3"><MaterialIcon type={res.type} /></div>
-                                                <div className="flex-1 overflow-hidden">
-                                                    <p className="text-sm font-medium text-slate-900 group-hover:text-blue-700 truncate">{res.title}</p>
-                                                    <p className="text-xs text-slate-500">{res.type}</p>
-                                                </div>
-                                                <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-blue-400"/>
-                                            </a>
-                                        ))
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground italic">No files attached.</p>
-                                    )}
-                                </div>
-                            </CardContent>
-                            
-                            <CardFooter className="pt-2 pb-3 bg-slate-50/50 border-t">
-                                <div className="flex justify-between w-full text-xs text-slate-400">
-                                    <span>{mat.resources?.length || 0} items</span>
-                                    <span>{mat.createdAt ? new Date(mat.createdAt?.seconds * 1000).toLocaleDateString() : 'N/A'}</span>
-                                </div>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            )}
-        </CardContent>
-      </Card>
+                                    <ExternalLink className="h-3 w-3 text-slate-300 group-hover:text-blue-400"/>
+                                </a>
+                            ))}
+                        </div>
+                    </CardContent>
+                    
+                    <CardFooter className="pt-2 pb-3 bg-slate-50/50 border-t flex justify-between text-xs text-slate-400">
+                        <span>{mat.resources?.length || 0} resources</span>
+                        <span>Added: {mat.createdAt ? new Date(mat.createdAt.seconds * 1000).toLocaleDateString() : 'Just now'}</span>
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
+      )}
 
       {/* Form Dialog */}
       {isFormOpen && (
@@ -474,6 +534,7 @@ export default function LearningMaterialsPage() {
             setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
             classes={classes}
             materialToEdit={editingMaterial}
+            preSelectedSubject={currentSubject || undefined}
         />
       )}
     </div>
