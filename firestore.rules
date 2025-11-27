@@ -145,7 +145,8 @@ service cloud.firestore {
     }
 
     match /attendance/{attendanceId} {
-        allow read, write: if isStaff();
+        allow read, list: if isSignedIn();
+        allow write: if isTeacher() || isAdmin();
     }
 
     // Default deny for everything else that has not been matched
