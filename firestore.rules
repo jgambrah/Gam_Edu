@@ -189,10 +189,9 @@ service cloud.firestore {
 
     // --- LEARNING MATERIALS ---
     match /learning_materials/{materialId} {
-      // DEBUG MODE: Allow everyone to read.
-      allow read: if true; 
-      
-      // Keep write restricted
+      // Allow everyone to read materials to prevent crashes
+      allow read: if isSignedIn();
+      // Only Teachers/Admins (Directors) can upload
       allow write: if isTeacher() || isAdmin();
     }
 
@@ -342,3 +341,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
