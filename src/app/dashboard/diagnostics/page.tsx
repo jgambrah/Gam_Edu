@@ -2,14 +2,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth, useFirestore } from "@/firebase";
+import { useUser, useFirestore } from "@/firebase";
 import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, CheckCircle, Loader2, XCircle } from "lucide-react";
 
 export default function DiagnosticTest() {
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const [logs, setLogs] = useState<{ step: string; status: "success" | "error" | "pending"; msg: string }[]>([]);
   const [isRunning, setIsRunning] = useState(false);
@@ -22,7 +22,7 @@ export default function DiagnosticTest() {
     setLogs([]);
     setIsRunning(true);
 
-    if (!firestore || !user) {
+    if (isUserLoading || !firestore || !user) {
       addLog("Initialization", "error", "Firestore or User not loaded. Refresh page.");
       setIsRunning(false);
       return;
@@ -90,8 +90,8 @@ export default function DiagnosticTest() {
             </div>
           ))}
         </div>
-        <Button onClick={runDiagnostics} disabled={isRunning} className="w-full">
-          {isRunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <AlertCircle className="mr-2 h-4 w-4" />}
+        <Button onClick={runDiagnostics} disabled={isRunning || isUserLoading} className="w-full">
+          {isRunning || isUserLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <AlertCircle className="mr-2 h-4 w-4" />}
           Run Permission Test
         </Button>
       </CardContent>
