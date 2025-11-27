@@ -116,11 +116,9 @@ service cloud.firestore {
       allow update, delete: if isTeacher() && resource.data.teacherId == request.auth.uid;
     }
 
-    // --- LEARNING MATERIALS (FIXED) ---
     match /learning_materials/{materialId} {
-      allow read: if isSignedIn();
-      // TEMPORARY: Allow anyone to write so you can test the form
-      allow write: if true; 
+      allow read: if request.auth != null;
+      allow write: if isTeacher() || isAdmin(); 
     }
 
     // --- MATH CLUB ---
