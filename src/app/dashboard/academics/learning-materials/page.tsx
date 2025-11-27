@@ -53,8 +53,22 @@ function MaterialForm({
   const [url, setUrl] = useState(materialToEdit?.url || '');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !firestore) return;
+    e.preventDefault(); // Prevent page refresh
+    
+    // 1. Debugging: Check if function fires
+    console.log("Submitting form...", { title, classId, user });
+
+    if (!user || !firestore) {
+        console.error("Missing User or Firestore");
+        return;
+    }
+
+    // 2. Validation
+    if (!title || !url || !classId) {
+        toast({ variant: 'destructive', title: 'Missing Fields', description: 'Title, Class, and Link are required.' });
+        return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -67,6 +81,8 @@ function MaterialForm({
         uploadedBy: user.uid,
         updatedAt: serverTimestamp(),
       };
+
+      console.log("Saving data:", data); // Debugging
 
       if (materialToEdit) {
         // Update existing
@@ -81,9 +97,9 @@ function MaterialForm({
         toast({ title: 'Success', description: 'Material added successfully.' });
       }
       setOpen(false);
-    } catch (error) {
-      console.error(error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to save material.' });
+    } catch (error: any) {
+      console.error("Firestore Error:", error);
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save material.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -96,9 +112,11 @@ function MaterialForm({
           <DialogTitle>{materialToEdit ? 'Edit Material' : 'Add Learning Material'}</DialogTitle>
           <DialogDescription>Share resources, documents, or links with your students.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+        
+        {/* FIX 1: Add an ID to the form */}
+        <form id="material-form" onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Title</Label>
+            <Label>Title *</Label>
             <Input required value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Algebra Formulas" />
           </div>
           
@@ -116,7 +134,7 @@ function MaterialForm({
                 </Select>
             </div>
             <div className="space-y-2">
-                <Label>Assign to Class</Label>
+                <Label>Assign to Class *</Label>
                 <Select value={classId} onValueChange={setClassId}>
                     <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
                     <SelectContent>
@@ -127,7 +145,7 @@ function MaterialForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Resource Link / URL</Label>
+            <Label>Resource Link / URL *</Label>
             <Input required value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." />
             <p className="text-xs text-muted-foreground">Paste a Google Drive link, YouTube link, or file URL here.</p>
           </div>
@@ -136,13 +154,19 @@ function MaterialForm({
             <Label>Description (Optional)</Label>
             <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description..." />
           </div>
-
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save Material
-            </Button>
-          </DialogFooter>
         </form>
+
+        {/* FIX 2: DialogFooter is OUTSIDE the form, but linked via 'form' attribute */}
+        <DialogFooter>
+            <Button 
+                type="submit" 
+                form="material-form" // <--- This links the button to the form above
+                disabled={isSubmitting}
+            >
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} 
+                Save Material
+            </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
