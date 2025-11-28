@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { getApp } from 'firebase/app'; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
 import { Class, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -113,6 +114,7 @@ function MaterialForm({
   });
 
   const handleAddResource = async () => {
+    // 1. Basic Validation
     if (!tempTitle) {
         toast({ variant: 'destructive', title: 'Missing Info', description: 'Please describe this item.' });
         return;
@@ -130,14 +132,32 @@ function MaterialForm({
     let finalUrl = tempUrl;
 
     try {
+        // 2. Handle File Upload
         if (inputType === 'file' && tempFile) {
-            // FIX: Hardcode the correct bucket URL found in your Cloud Shell
-            const storage = getStorage(undefined, "gs://studio-525105839-159e4.appspot.com");
-            const storageRef = ref(storage, `materials/${Date.now()}_${tempFile.name}`);
-            await uploadBytes(storageRef, tempFile);
-            finalUrl = await getDownloadURL(storageRef);
+            console.log("Starting upload for:", tempFile.name);
+
+            // A. Get the initialized Firebase App
+            const app = getApp(); 
+            
+            // B. Initialize Storage with the App AND the Bucket URL
+            // This ensures Auth state is shared correctly
+            const storage = getStorage(app, "gs://studio-525105839-159e4.appspot.com");
+            
+            // C. Create Reference
+            // We sanitize the filename to avoid issues with spaces/characters
+            const sanitizedName = tempFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
+            const storageRef = ref(storage, `materials/${Date.now()}_${sanitizedName}`);
+            
+            // D. Upload
+            const snapshot = await uploadBytes(storageRef, tempFile);
+            console.log("Upload finished, fetching URL...");
+            
+            // E. Get URL
+            finalUrl = await getDownloadURL(snapshot.ref);
+            console.log("Got URL:", finalUrl);
         }
 
+        // 3. Add to Local List
         const newItem: ResourceItem = {
             id: Date.now().toString(),
             type: tempType as ResourceType,
@@ -146,14 +166,24 @@ function MaterialForm({
         };
 
         setResources([...resources, newItem]);
+        
+        // 4. Reset Input Fields
         setTempTitle('');
         setTempUrl('');
         setTempFile(null);
-        toast({ title: "Item Added", description: "Resource added to the list." });
+        toast({ title: "Success", description: "Item added to the list." });
 
-    } catch (error) {
-        console.error("Upload Error", error);
-        toast({ variant: 'destructive', title: "Upload Failed", description: "Check connection or file size." });
+    } catch (error: any) {
+        console.error("Upload Error Detailed:", error);
+        
+        // Specific Error Handling
+        if (error.code === 'storage/retry-limit-exceeded') {
+             toast({ variant: 'destructive', title: "Connection Failed", description: "Max retries exceeded. Please check your internet or disable AdBlockers." });
+        } else if (error.code === 'storage/unauthorized') {
+             toast({ variant: 'destructive', title: "Permission Denied", description: "You are not authorized to upload files." });
+        } else {
+             toast({ variant: 'destructive', title: "Upload Failed", description: error.message || "Unknown error occurred." });
+        }
     } finally {
         setIsUploadingResource(false);
     }
