@@ -1,9 +1,10 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+// FIX 1: All imports consolidated here. No duplicate imports allowed later.
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
@@ -27,10 +28,10 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
 
-// --- COMPONENT: Fact of the Day (Simplified) ---
+// --- SUB-COMPONENT: Fact of the Day ---
 function FactOfTheDay() {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user } = useAuth(); // Using useAuth here is fine since we imported it at the top
     const { role } = useRole();
     const { toast } = useToast();
     const [factText, setFactText] = useState('');
@@ -38,11 +39,9 @@ function FactOfTheDay() {
     
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-    // FIX: Fetch ALL facts without sorting in database (Prevents Index Crash)
     const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
 
-    // Sort in browser
     const latestFact = useMemo(() => {
         if (!facts || facts.length === 0) return null;
         return facts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
@@ -99,6 +98,42 @@ function FactOfTheDay() {
     );
 }
 
+// --- SUB-COMPONENT: Leaderboard ---
+function LeaderboardV2() {
+  const firestore = useFirestore();
+  const leaderboardQuery = useMemoFirebase(
+    () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+    [firestore]
+  );
+  const { data: leaderboard, isLoading } = useCollection<ScienceLeaderboardEntry>(leaderboardQuery);
+
+  if (isLoading) return <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>;
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Rank</TableHead>
+          <TableHead>Student</TableHead>
+          <TableHead className="text-right">Score</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {leaderboard?.map((entry, index) => (
+          <TableRow key={entry.userId || index}>
+            <TableCell className="font-bold">#{index + 1}</TableCell>
+            <TableCell>{entry.userName || "Unknown Student"}</TableCell>
+            <TableCell className="text-right">{entry.total_correct_answers}</TableCell>
+          </TableRow>
+        ))}
+        {(!leaderboard || leaderboard.length === 0) && (
+            <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No records yet.</TableCell></TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
+}
+
 // --- SUB-COMPONENT: Add Problem Form ---
 function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
     const firestore = useFirestore();
@@ -150,7 +185,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Topic</Label>
-                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Photosynthesis" />
+                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Biology" />
                         </div>
                         <div className="space-y-2">
                             <Label>Difficulty</Label>
@@ -176,7 +211,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
                     </div>
                     <div className="space-y-2">
                         <Label>Question</Label>
-                        <Textarea value={questionText} onChange={e => setQuestionText(e.target.value)} placeholder="Which part of the plant absorbs light?" />
+                        <Textarea value={questionText} onChange={e => setQuestionText(e.target.value)} placeholder="What is the powerhouse of the cell?" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         {options.map((opt, i) => (
@@ -185,7 +220,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
                     </div>
                     <div className="space-y-2">
                         <Label>Correct Answer (Must match option)</Label>
-                        <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="e.g. Chloroplast" />
+                        <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="e.g. Mitochondria" />
                     </div>
                     <Button type="submit" disabled={isSubmitting} className="w-full">
                         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Problem
@@ -196,10 +231,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
     );
 }
 
-// --- SUB-COMPONENT: Simple Auth Hook Import ---
-import { useAuth } from '@/firebase';
-
-// --- MAIN PAGE ---
+// --- MAIN PAGE COMPONENT ---
 export default function ScienceClubPageFresh() {
   const router = useRouter();
   const firestore = useFirestore();
@@ -230,7 +262,7 @@ export default function ScienceClubPageFresh() {
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
   );
 
-  // 3. Get Problems (SAFE QUERY: No filters initially)
+  // 3. Get Problems (SAFE QUERY)
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'science_problems'));
@@ -242,7 +274,7 @@ export default function ScienceClubPageFresh() {
   const filteredProblems = useMemo(() => {
     if (!rawProblems) return [];
     
-    // Filter for Students (Only show my class OR global items)
+    // Filter for Students
     let list = rawProblems;
     if (role === 'Student') {
         list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
@@ -298,7 +330,7 @@ export default function ScienceClubPageFresh() {
       <Tabs defaultValue="practice" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/> Practice Hub</TabsTrigger>
-          {/* <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/> Leaderboard</TabsTrigger> */}
+          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/> Leaderboard</TabsTrigger>
         </TabsList>
 
         {/* PRACTICE TAB */}
@@ -401,6 +433,19 @@ export default function ScienceClubPageFresh() {
                             )}
                         </div>
                     )}
+                </CardContent>
+            </Card>
+        </TabsContent>
+
+        {/* LEADERBOARD TAB */}
+        <TabsContent value="leaderboard">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Top Scientists</CardTitle>
+                    <CardDescription>Global ranking based on correct answers.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <LeaderboardV2 />
                 </CardContent>
             </Card>
         </TabsContent>
