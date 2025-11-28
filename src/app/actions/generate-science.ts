@@ -4,32 +4,45 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Define the structure we want the AI to return
-const QuestionSchema = z.object({
+// 1. Define the Schema for a Single Question
+const SingleQuestionSchema = z.object({
   question: z.string().describe("The science question text"),
   options: z.array(z.string()).length(4).describe("4 possible answers"),
   correctAnswer: z.string().describe("The correct answer (must match one of the options exactly)"),
-  topic: z.string().describe("The specific sub-topic (e.g. Photosynthesis)"),
+  topic: z.string().describe("The specific sub-topic"),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
 });
 
-export async function generateScienceQuestionAction(input: { topic: string, difficulty: string }) {
+// 2. Define the Output Schema (A list of questions)
+const OutputSchema = z.object({
+  questions: z.array(SingleQuestionSchema),
+});
+
+
+// 3. The Action
+export async function generateScienceQuestionAction(input: { 
+  topic: string; 
+  difficulty: string; 
+  count: number; // <--- New Input
+}) {
   try {
     const prompt = `
-      Generate a ${input.difficulty} level science question about "${input.topic}".
+      Generate ${input.count} unique ${input.difficulty} level multiple-choice science questions about "${input.topic}".
       Target audience: Junior High School students.
-      Return strictly JSON format.
+      Ensure the correct answer is included in the options.
     `;
 
     const { output } = await ai.generate({
-      prompt: prompt,
       model: 'googleai/gemini-2.5-flash',
-      output: { schema: QuestionSchema },
+      prompt: prompt,
+      output: { schema: OutputSchema },
     });
+
+    if (!output || !output.questions) {
+        throw new Error("AI returned invalid data structure");
+    }
     
-    if (!output) throw new Error("No data returned from AI model");
-    
-    return { success: true, data: output };
+    return { success: true, data: output.questions }; // Return the array directly
   } catch (error: any) {
     console.error("AI Generation Error:", error);
     return { success: false, error: error.message };
