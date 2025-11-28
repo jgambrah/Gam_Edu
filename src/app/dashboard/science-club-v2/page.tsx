@@ -1,15 +1,15 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2, Lightbulb, CheckCircle2 
+  Trash2 
 } from 'lucide-react';
-import { format } from 'date-fns';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,83 +19,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
-import { AiProblemGenerator } from '../ai-problem-generator';
-import { Wand2 } from 'lucide-react';
-
-// --- SUB-COMPONENT: Fact of the Day ---
-function FactOfTheDayV2({ isStaff }: { isStaff: boolean }) {
-    const firestore = useFirestore();
-    const { user } = useAuth();
-    const { toast } = useToast();
-    const [factText, setFactText] = useState('');
-    const [isPosting, setIsPosting] = useState(false);
-
-    // Simple query to avoid index crashes
-    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
-    const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
-
-    // Sort client-side for safety
-    const latestFact = useMemo(() => {
-        if (!facts || facts.length === 0) return null;
-        return facts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
-    }, [facts]);
-
-    const handlePostFact = async () => {
-        if (!factText.trim() || !user) return;
-        setIsPosting(true);
-        try {
-            await addDoc(collection(firestore, 'daily_facts'), {
-                factText,
-                createdAt: serverTimestamp(),
-                postedBy: user.uid,
-            });
-            toast({ title: 'Success', description: 'Fact posted.' });
-            setFactText('');
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to post.' });
-        } finally {
-            setIsPosting(false);
-        }
-    };
-
-    return (
-        <Card className="bg-amber-50/50 border-amber-200">
-            <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-amber-700 text-lg">
-                    <Lightbulb className="h-5 w-5"/> Science Fact of the Day
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
-                    <blockquote className="border-l-4 border-amber-400 pl-4 italic text-slate-700">
-                        "{latestFact.factText}"
-                        <footer className="text-xs text-muted-foreground mt-2 not-italic">
-                            — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
-                        </footer>
-                    </blockquote>
-                ) : <p className="text-muted-foreground text-sm">No fact has been posted for today yet.</p>}
-
-                {isStaff && (
-                    <div className="space-y-2 pt-4 border-t border-amber-200/50">
-                        <Label>Post a New Fact</Label>
-                        <div className="flex gap-2">
-                            <Input value={factText} onChange={e => setFactText(e.target.value)} placeholder="Did you know...?" className="bg-white"/>
-                            <Button onClick={handlePostFact} disabled={isPosting || !factText.trim()} size="sm" className="bg-amber-600 hover:bg-amber-700">
-                                {isPosting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post"}
-                            </Button>
-                        </div>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    );
-}
+import { Class, Student, ScienceProblem, ScienceLeaderboardEntry } from '@/lib/types';
 
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
@@ -273,11 +202,13 @@ export default function ScienceClubPageV2() {
   const filteredProblems = useMemo(() => {
     if (!rawProblems) return [];
     
+    // Filter for Students (Only show my class OR global items)
     let list = rawProblems;
     if (role === 'Student') {
         list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
     }
 
+    // Filter by UI Selections
     if (selectedTopic) list = list.filter(p => p.topic === selectedTopic);
     if (selectedDifficulty) list = list.filter(p => p.difficulty === selectedDifficulty);
 
@@ -316,12 +247,10 @@ export default function ScienceClubPageV2() {
             Science Club 2.0
           </CardTitle>
           <CardDescription>
-            Explore the universe through science practice and daily facts.
+            Explore the universe through science practice and competition.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-            <FactOfTheDayV2 isStaff={isStaff} />
-        </CardContent>
+        {/* Daily Facts Section Removed for Simplicity */}
       </Card>
 
       <Tabs defaultValue="practice" className="w-full">
@@ -459,3 +388,4 @@ export default function ScienceClubPageV2() {
     </div>
   );
 }
+
