@@ -1,13 +1,12 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { getApp } from 'firebase/app'; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
+import { getApp } from 'firebase/app';
 import { Class, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,9 @@ const SUBJECTS_LIST = [
   "R.M.E",
   "I.C.T",
   "French",
-  "Ghanaian Language"
+  "Ghanaian Language",
+  "Career Technology",
+  "Creative Arts"
 ];
 
 // --- DATA TYPES ---
@@ -140,21 +141,17 @@ function MaterialForm({
             const app = getApp(); 
             
             // B. Initialize Storage with the App AND the Bucket URL
-            // This ensures Auth state is shared correctly
             const storage = getStorage(app, "gs://studio-525105839-159e4.appspot.com");
             
             // C. Create Reference
-            // We sanitize the filename to avoid issues with spaces/characters
             const sanitizedName = tempFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
             const storageRef = ref(storage, `materials/${Date.now()}_${sanitizedName}`);
             
             // D. Upload
             const snapshot = await uploadBytes(storageRef, tempFile);
-            console.log("Upload finished, fetching URL...");
             
             // E. Get URL
             finalUrl = await getDownloadURL(snapshot.ref);
-            console.log("Got URL:", finalUrl);
         }
 
         // 3. Add to Local List
@@ -175,15 +172,7 @@ function MaterialForm({
 
     } catch (error: any) {
         console.error("Upload Error Detailed:", error);
-        
-        // Specific Error Handling
-        if (error.code === 'storage/retry-limit-exceeded') {
-             toast({ variant: 'destructive', title: "Connection Failed", description: "Max retries exceeded. Please check your internet or disable AdBlockers." });
-        } else if (error.code === 'storage/unauthorized') {
-             toast({ variant: 'destructive', title: "Permission Denied", description: "You are not authorized to upload files." });
-        } else {
-             toast({ variant: 'destructive', title: "Upload Failed", description: error.message || "Unknown error occurred." });
-        }
+        toast({ variant: 'destructive', title: "Upload Failed", description: error.message || "Unknown error occurred." });
     } finally {
         setIsUploadingResource(false);
     }
@@ -236,7 +225,7 @@ function MaterialForm({
           ...data,
           createdAt: serverTimestamp(),
         });
-        toast({ title: 'Success', description: 'Topic created successfully.' });
+        toast({ title: 'Success', description: 'New topic created successfully.' });
       }
       setOpen(false);
     } catch (error: any) {
@@ -420,15 +409,6 @@ export default function LearningMaterialsPage() {
 
   const { data: materials, isLoading } = useCollection<LearningMaterial>(materialsQuery);
 
-  // 4. Derive Subjects List from actual data (or use preset list if empty)
-  // This calculates how many files are in each subject folder
-  const subjectCounts = useMemo(() => {
-    if(!materials && !currentSubject) return {}; // If listing all, we need a different query approach for counts, but for now we rely on the drill-down
-    // Note: To show counts on the top level, we'd need to fetch ALL materials for the class first.
-    // To simplify: We just show the preset folders.
-    return {};
-  }, [materials]);
-
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this topic?")) return;
     try {
@@ -594,3 +574,5 @@ export default function LearningMaterialsPage() {
     </div>
   );
 }
+
+    

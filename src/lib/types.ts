@@ -857,24 +857,39 @@ export type GameLobby = {
 
 // --- RICH LEARNING MATERIAL ---
 
-// An individual file/link inside the topic
-export interface ResourceItem {
-  id: string; // timestamp-based ID for React keys
-  title: string; // The short description (e.g. "Intro Video")
-  type: ResourceType;
-  url: string;
+// Attachment for a Topic
+export interface Attachment {
+    name: string;
+    url: string;
+    type: 'PDF' | 'DOC' | 'IMAGE';
 }
 
-export type ResourceType = 'PDF' | 'Video' | 'Document' | 'Spreadsheet' | 'Link';
+// Video Link for a Topic
+export interface VideoLink {
+    title: string;
+    url: string;
+}
+
+// Question for a Topic
+export interface RichQuizQuestion {
+    question: string;
+    options: string[];
+    correctAnswer: string;
+}
 
 // The Main "Topic" Container
 export interface LearningMaterial {
-  id: string;
-  topicTitle: string; // Changed from 'title' to be clearer
-  description?: string;
-  classId: string;
-  subject: string; // The new field
-  resources: ResourceItem[]; // <--- ARRAY OF MULTIPLE FILES
-  uploadedBy: string;
-  createdAt: any;
+    id: string;
+    courseId: string; // e.g. "bs7-integrated-science"
+    strand: string;
+    subStrand: string;
+    topicTitle: string;
+    content: string; // This is for rich text / html content
+    attachments: Attachment[];
+    videoLinks: VideoLink[];
+    practiceQuestions: RichQuizQuestion[];
+    createdAt: any;
+    updatedAt?: any;
 }
+
+    
