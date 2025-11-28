@@ -117,8 +117,6 @@ service cloud.firestore {
     }
 
     match /learning_materials/{materialId} {
-      // DEBUG: Allow ALL reads. 
-      // If this still fails, it proves it is a MISSING INDEX issue.
       allow read: if true; 
       
       allow write: if isTeacher() || isAdmin();
@@ -126,8 +124,7 @@ service cloud.firestore {
 
     // --- MATH CLUB ---
     match /math_problems/{problemId} {
-      allow get: if isSignedIn();
-      allow list: if isSignedIn();
+      allow read: if isSignedIn();
       allow write: if isStaff();
     }
 
@@ -144,8 +141,7 @@ service cloud.firestore {
 
     // --- SCIENCE CLUB ---
     match /science_problems/{problemId} {
-      allow get: if isSignedIn();
-      allow list: if isSignedIn();
+      allow read: if isSignedIn();
       allow write: if isStaff();
     }
 
