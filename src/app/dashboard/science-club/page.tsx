@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -19,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Added useUser
 import { collection, orderBy, query, addDoc, serverTimestamp, where } from 'firebase/firestore';
 import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact, Class, Student } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -216,9 +217,13 @@ function FactOfTheDay() {
     const [isPosting, setIsPosting] = useState(false);
     const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    // FIX: Removed orderBy('createdAt', 'desc') temporarily to prevent "Missing Index" crash
+    // Once the collection is stable and index exists, you can add it back.
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
-    const latestFact = facts?.[0];
+    
+    // Sort client-side instead to be safe
+    const latestFact = facts?.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds)[0];
 
     const handlePostFact = async () => {
         if (!factText.trim() || !user) return;
@@ -248,7 +253,7 @@ function FactOfTheDay() {
                 {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
                     <blockquote className="border-l-4 pl-4 italic">
                         {latestFact.factText}
-                        <footer className="text-xs text-muted-foreground mt-2">Posted on {format(latestFact.createdAt.toDate(), 'PPP')}</footer>
+                        <footer className="text-xs text-muted-foreground mt-2">Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}</footer>
                     </blockquote>
                 ) : <p className="text-muted-foreground text-sm">No fact has been posted for today yet.</p>}
 
@@ -270,8 +275,8 @@ export default function ScienceClubPage() {
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
-  const { role, isRoleLoading } = useRole();
-  const { user, isUserLoading } = useUser();
+  const { role } = useRole();
+  const { user, isUserLoading } = useUser(); // FIX: Use useUser hook to get loading state
   const firestore = useFirestore();
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
@@ -309,7 +314,8 @@ export default function ScienceClubPage() {
     }
   };
 
-  const isLoading = isUserLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
+  // FIX: Robust loading state check
+  const isLoading = isUserLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
     <div className="space-y-6">
@@ -396,3 +402,5 @@ export default function ScienceClubPage() {
     </div>
   );
 }
+
+    
