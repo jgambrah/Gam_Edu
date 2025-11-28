@@ -1,11 +1,12 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+// All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, getDoc, increment } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
   Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play, Atom
@@ -55,63 +56,56 @@ interface LabFact {
   createdAt: any;
 }
 
-// --- COMPONENT: Leaderboard ---
-function ScienceLeaderboard() {
+// --- UPDATED COMPONENT: Leaderboard ---
+function LeaderboardV2() {
   const firestore = useFirestore();
+  
+  // Fetch from the NEW collection
   const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+    () => firestore ? query(collection(firestore, 'science_lab_leaderboard'), orderBy('points', 'desc'), orderBy('quizzesPlayed', 'desc')) : null,
     [firestore]
   );
-  const { data: leaderboard, isLoading } = useCollection<ScienceLeaderboardEntry>(leaderboardQuery);
+  const { data: leaderboard, isLoading } = useCollection<any>(leaderboardQuery);
 
-  if (isLoading) {
-    return (
-      <div className="space-y-2 p-4">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-      </div>
-    );
-  }
+  if (isLoading) return <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>;
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Rank</TableHead>
-          <TableHead>Student</TableHead>
-          <TableHead className="text-right">Score</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {leaderboard && leaderboard.length > 0 ? leaderboard.map((entry, index) => (
-          <TableRow key={entry.userId}>
-            <TableCell className="font-bold text-lg">#{index + 1}</TableCell>
-            <TableCell>
-              <div className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarImage src={entry.profilePictureUrl} />
-                  <AvatarFallback>{entry.userName ? entry.userName.charAt(0) : 'S'}</AvatarFallback>
-                </Avatar>
-                <span className="font-medium">{entry.userName || "Unknown Student"}</span>
-              </div>
-            </TableCell>
-            <TableCell className="text-right font-bold text-lg">{entry.total_correct_answers}</TableCell>
-          </TableRow>
-        )) : (
-          <TableRow>
-            <TableCell colSpan={3} className="text-center text-muted-foreground h-24">
-              No scores on the leaderboard yet. Be the first!
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <div className="max-w-4xl mx-auto">
+        <Table>
+        <TableHeader>
+            <TableRow>
+            <TableHead className="w-[100px]">Rank</TableHead>
+            <TableHead>Scientist</TableHead>
+            <TableHead className="text-right">Quizzes Played</TableHead>
+            <TableHead className="text-right">Total Points</TableHead>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            {leaderboard?.map((entry, index) => (
+            <TableRow key={entry.id}>
+                <TableCell className="font-bold text-lg">
+                    {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                </TableCell>
+                <TableCell className="font-medium">
+                    <div className="flex flex-col">
+                        <span>{entry.userName || "Anonymous Scientist"}</span>
+                        <span className="text-xs text-muted-foreground">Class: {entry.className || 'N/A'}</span>
+                    </div>
+                </TableCell>
+                <TableCell className="text-right">{entry.quizzesPlayed}</TableCell>
+                <TableCell className="text-right font-bold text-emerald-600">{entry.points}</TableCell>
+            </TableRow>
+            ))}
+            {(!leaderboard || leaderboard.length === 0) && (
+                <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No champions yet. Be the first!</TableCell></TableRow>
+            )}
+        </TableBody>
+        </Table>
+    </div>
   );
 }
 
-
-// --- COMPONENT: Quiz Runner (Handles multiple questions) ---
+// --- UPDATED COMPONENT: Quiz Runner (Now Saves Scores) ---
 function QuizRunnerDialog({ 
     questionSet, 
     open, 
@@ -121,11 +115,15 @@ function QuizRunnerDialog({
     open: boolean, 
     setOpen: (o: boolean) => void 
 }) {
+    const firestore = useFirestore();
+    const { user } = useAuth(); // Need user to save score
+    
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState('');
     const [score, setScore] = useState(0);
     const [isFinished, setIsFinished] = useState(false);
-    const [showFeedback, setShowFeedback] = useState(false); // Show right/wrong for current question
+    const [showFeedback, setShowFeedback] = useState(false); 
+    const [isSaving, setIsSaving] = useState(false); // New saving state
 
     if (!questionSet) return null;
 
@@ -144,13 +142,49 @@ function QuizRunnerDialog({
         if (currentIndex < totalQuestions - 1) {
             setCurrentIndex(prev => prev + 1);
         } else {
-            setIsFinished(true);
+            finishQuiz(); // Call finish logic
+        }
+    };
+
+    const finishQuiz = async () => {
+        setIsFinished(true);
+        // If user is logged in, save the score!
+        if (user && firestore) {
+            setIsSaving(true);
+            try {
+                // 1. Save Detailed Result (Audit Log)
+                await addDoc(collection(firestore, 'science_lab_results'), {
+                    userId: user.uid,
+                    userName: user.displayName || user.email?.split('@')[0] || 'Student',
+                    quizTitle: questionSet.title,
+                    score: score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0), // Add last question score if correct
+                    total: totalQuestions,
+                    date: serverTimestamp()
+                });
+
+                // 2. Update Leaderboard (Aggregate)
+                const finalScore = score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0);
+                const userRef = doc(firestore, 'science_lab_leaderboard', user.uid);
+                
+                // Use setDoc with merge to create or update
+                await setDoc(userRef, {
+                    userName: user.displayName || user.email?.split('@')[0] || 'Student',
+                    // You might want to fetch student class here, but for now let's stick to basics
+                    points: increment(finalScore * 10), // 10 points per correct answer
+                    quizzesPlayed: increment(1),
+                    lastActive: serverTimestamp()
+                }, { merge: true });
+
+            } catch (e) {
+                console.error("Error saving score:", e);
+            } finally {
+                setIsSaving(false);
+            }
         }
     };
 
     const handleClose = () => {
         setOpen(false);
-        // Reset state after closing
         setTimeout(() => {
             setCurrentIndex(0);
             setScore(0);
@@ -184,7 +218,7 @@ function QuizRunnerDialog({
                                     else if (opt === selectedOption) style = "bg-red-100 border-red-500 text-red-800";
                                     else style = "opacity-50";
                                 } else if (opt === selectedOption) {
-                                    style = "border-indigo-500 bg-indigo-50";
+                                    style = "border-emerald-500 bg-emerald-50";
                                 }
 
                                 return (
@@ -200,7 +234,7 @@ function QuizRunnerDialog({
 
                         <DialogFooter>
                             {!showFeedback ? (
-                                <Button onClick={handleCheck} disabled={!selectedOption} className="w-full bg-indigo-600 hover:bg-indigo-700">Check Answer</Button>
+                                <Button onClick={handleCheck} disabled={!selectedOption} className="w-full bg-emerald-600 hover:bg-emerald-700">Check Answer</Button>
                             ) : (
                                 <Button onClick={handleNext} className="w-full">
                                     {currentIndex < totalQuestions - 1 ? "Next Question" : "Finish Quiz"}
@@ -210,11 +244,19 @@ function QuizRunnerDialog({
                     </div>
                 ) : (
                     <div className="text-center py-8 space-y-4">
-                        <Trophy className="h-16 w-16 mx-auto text-yellow-400" />
+                        <Trophy className="h-16 w-16 mx-auto text-yellow-400 animate-bounce" />
                         <h3 className="text-2xl font-bold text-slate-800">Quiz Complete!</h3>
-                        <p className="text-lg text-slate-600">You scored {score} out of {totalQuestions}</p>
-                        <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
-                            <div className="bg-green-500 h-full transition-all" style={{ width: `${(score / totalQuestions) * 100}%` }}></div>
+                        <div className="space-y-1">
+                            <p className="text-lg text-slate-600">You answered <strong>{score}</strong> correct.</p>
+                            {isSaving ? (
+                                <p className="text-sm text-emerald-600 flex items-center justify-center gap-2"><Loader2 className="h-3 w-3 animate-spin"/> Saving your points...</p>
+                            ) : (
+                                <p className="text-sm text-emerald-600 font-bold">Points added to Leaderboard!</p>
+                            )}
+                        </div>
+                        
+                        <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden mt-4">
+                            <div className="bg-green-500 h-full transition-all duration-1000" style={{ width: `${(score / totalQuestions) * 100}%` }}></div>
                         </div>
                         <Button onClick={handleClose} className="w-full mt-4">Close</Button>
                     </div>
@@ -251,7 +293,7 @@ function AiGeneratorModal({
             if (result.success && result.data) {
                 setPreviewData(result.data);
             } else {
-                alert("AI Error: " + (result as any).error);
+                alert("AI Error: " + result.error);
             }
         } catch (e) {
             console.error(e);
@@ -430,6 +472,7 @@ export default function ScienceLabPageFresh() {
   const [activeTab, setActiveTab] = useState('explore');
   const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null);
   
+  // Filters
   const [filterTopic, setFilterTopic] = useState('All');
   const [filterDiff, setFilterDiff] = useState('All');
 
@@ -502,7 +545,7 @@ export default function ScienceLabPageFresh() {
         <div className="flex gap-2">
             {isStaff && (
                 <Button onClick={() => setIsAiOpen(true)} className="bg-purple-600 hover:bg-purple-700 text-white shadow-md">
-                    <Wand2 className="mr-2 h-4 w-4"/> Generate Quiz
+                    <Wand2 className="mr-2 h-4 w-4"/> AI Generate Quiz
                 </Button>
             )}
         </div>
@@ -579,7 +622,7 @@ export default function ScienceLabPageFresh() {
                     <CardDescription>Global ranking based on correct answers in science quizzes.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ScienceLeaderboard />
+                    <LeaderboardV2 />
                 </CardContent>
             </Card>
         </TabsContent>
