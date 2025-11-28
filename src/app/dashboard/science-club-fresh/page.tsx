@@ -8,7 +8,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play, Atom
+  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question';
@@ -28,7 +28,6 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceLeaderboardEntry } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Separator } from '@/components/ui/separator';
 
 // --- NEW TYPES (Grouped) ---
 interface Question {
@@ -278,7 +277,7 @@ function AiGeneratorModal({
     );
 }
 
-// --- COMPONENT: Fact of the Day (Fixed) ---
+// --- COMPONENT: Fact of the Day (FIXED) ---
 function FactOfTheDay() {
     const firestore = useFirestore();
     const { user } = useAuth();
@@ -319,6 +318,7 @@ function FactOfTheDay() {
             setFactText('');
         } catch (error: any) {
             console.error("Fact Post Error:", error);
+            // Check for the specific permission error
             if (error.code === 'permission-denied') {
                  toast({ variant: 'destructive', title: 'Permission Denied', description: 'Check Firestore Rules for science_lab_facts.' });
             } else {
@@ -379,17 +379,18 @@ export default function ScienceLabPageFresh() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // Data Loading
+  // 1. Get Student Data
   const { data: studentData, isLoading: sLoading } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
   const studentClassId = studentData?.[0]?.classId;
 
+  // 2. Get Classes
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
   );
 
-  // Get Question Sets (NEW COLLECTION)
+  // 3. Get Question Sets (NEW COLLECTION)
   const setsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_question_sets')) : null, [firestore]);
   const { data: rawSets, isLoading: qLoading } = useCollection<QuestionSet>(setsQuery);
 
@@ -441,7 +442,7 @@ export default function ScienceLabPageFresh() {
       }
   };
 
-  const isLoading = isUserLoading || isRoleLoading || qLoading;
+  const isLoading = isUserLoading || isRoleLoading || qLoading || (role === 'Student' && sLoading);
 
   return (
     <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
@@ -456,7 +457,7 @@ export default function ScienceLabPageFresh() {
         <div className="flex gap-2">
             {isStaff && (
                 <Button onClick={() => setIsAiOpen(true)} className="bg-purple-600 hover:bg-purple-700 text-white shadow-md">
-                    <Wand2 className="mr-2 h-4 w-4"/> AI Generate Quiz
+                    <Wand2 className="mr-2 h-4 w-4"/> Generate Quiz
                 </Button>
             )}
         </div>
