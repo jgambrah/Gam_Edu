@@ -141,7 +141,8 @@ function MaterialForm({
             const app = getApp(); 
             
             // B. Initialize Storage with the App AND the Bucket URL
-            const storage = getStorage(app, "gs://studio-525105839-159e4.appspot.com");
+            // FIX: Point to the bucket where we enabled CORS
+            const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
             
             // C. Create Reference
             const sanitizedName = tempFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
@@ -225,7 +226,7 @@ function MaterialForm({
           ...data,
           createdAt: serverTimestamp(),
         });
-        toast({ title: 'Success', description: 'New topic created successfully.' });
+        toast({ title: 'Success', description: 'Topic created successfully.' });
       }
       setOpen(false);
     } catch (error: any) {
@@ -574,5 +575,3 @@ export default function LearningMaterialsPage() {
     </div>
   );
 }
-
-    
