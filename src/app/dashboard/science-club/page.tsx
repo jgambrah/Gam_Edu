@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Added useUser
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, orderBy, query, addDoc, serverTimestamp, where } from 'firebase/firestore';
 import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact, Class, Student } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -217,13 +217,10 @@ function FactOfTheDay() {
     const [isPosting, setIsPosting] = useState(false);
     const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-    // FIX: Removed orderBy('createdAt', 'desc') temporarily to prevent "Missing Index" crash
-    // Once the collection is stable and index exists, you can add it back.
+    // FIX 2: Simplified Query (No orderBy) to prevent index crash
     const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
-    
-    // Sort client-side instead to be safe
-    const latestFact = facts?.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
+    const latestFact = facts?.[0]; // Just take the first one for now
 
     const handlePostFact = async () => {
         if (!factText.trim() || !user) return;
@@ -276,7 +273,7 @@ export default function ScienceClubPage() {
   const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
   const { role } = useRole();
-  const { user, isUserLoading } = useUser(); // FIX: Use useUser hook to get loading state
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
@@ -290,12 +287,22 @@ export default function ScienceClubPage() {
   
   const studentClassId = studentData?.[0]?.classId;
   
+  // FIX 3: Robust Query Logic (Copied from Maths Club)
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    if (isTeacherOrAdmin) return query(collection(firestore, 'science_problems'));
     
-    if (role === 'Student' && studentClassId) {
-      return query(collection(firestore, 'science_problems'), where('classId', '==', studentClassId));
+    // Teachers see everything
+    if (isTeacherOrAdmin) {
+      return query(collection(firestore, 'science_problems'));
+    }
+    
+    // Students see only their class content
+    if (role === 'Student') {
+        if (studentClassId) {
+             return query(collection(firestore, 'science_problems'), where('classId', '==', studentClassId));
+        }
+        // If classId is missing, return null to avoid query error
+        return null;
     }
     return null;
   }, [firestore, isTeacherOrAdmin, role, studentClassId]);
@@ -313,9 +320,6 @@ export default function ScienceClubPage() {
       router.push(`/dashboard/science-club/practice?topic=${topic}&difficulty=${difficulty}`);
     }
   };
-
-  // FIX: Robust loading state check
-  const isLoading = isUserLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
     <div className="space-y-6">
@@ -346,13 +350,15 @@ export default function ScienceClubPage() {
                 <CardDescription>Select a topic and difficulty to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {isLoading ? (
+                {/* FIX 4: Better Loading State Logic */}
+                {(isLoadingProblems || (role === 'Student' && isLoadingStudent) || isUserLoading) ? (
                     <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div>
                 ) : 
                 (role === 'Student' && !studentClassId) ? (
-                    <p className="text-muted-foreground text-center">
-                        You are not assigned to a class. Please contact an administrator.
-                    </p>
+                    <div className="text-center">
+                        <p className="text-muted-foreground">You are not assigned to a class. Please contact an administrator.</p>
+                        <p className="text-xs text-red-500 mt-1">Debug: {user?.uid}</p>
+                    </div>
                 ) : 
                 (
                     <>
