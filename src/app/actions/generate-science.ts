@@ -48,6 +48,3 @@ export async function generateScienceQuestionAction(input: {
     return { success: true, data: output.questions }; // Return the array directly
   } catch (error: any) {
     console.error("AI Generation Error:", error);
-    return { success: false, error: error.message };
-  }
-}

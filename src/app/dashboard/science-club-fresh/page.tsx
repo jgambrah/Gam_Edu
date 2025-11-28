@@ -9,10 +9,10 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   Atom, Trophy, BrainCircuit, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle, Database, Wand2, Sparkles 
+  Trash2, Lightbulb, CheckCircle2, Database, Wand2, Sparkles, XCircle 
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { generateScienceQuestionAction } from '@/app/actions/generate-science';
+import { generateScienceQuestionAction } from '@/app/actions/generate-science'; 
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -27,7 +27,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student } from '@/lib/types';
+import { Class, Student, ScienceLeaderboardEntry } from '@/lib/types';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 
 // --- TYPES ---
@@ -47,7 +48,85 @@ interface LabFact {
   createdAt: any;
 }
 
-// --- COMPONENT: AI Generator Modal ---
+// --- COMPONENT: Attempt Question Dialog ---
+function AttemptQuestionDialog({ 
+    question, 
+    open, 
+    setOpen 
+}: { 
+    question: LabQuestion | null, 
+    open: boolean, 
+    setOpen: (o: boolean) => void 
+}) {
+    const [selectedOption, setSelectedOption] = useState('');
+    const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
+
+    if (!question) return null;
+
+    const handleCheck = () => {
+        if (selectedOption === question.correctAnswer) {
+            setStatus('correct');
+        } else {
+            setStatus('wrong');
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setStatus('idle');
+        setSelectedOption('');
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={handleClose}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Science Challenge</DialogTitle>
+                    <DialogDescription>{question.topic} • {question.difficulty}</DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-6 py-4">
+                    <p className="text-lg font-medium">{question.question}</p>
+                    
+                    <RadioGroup value={selectedOption} onValueChange={(val) => { setSelectedOption(val); setStatus('idle'); }}>
+                        {(question.options || []).map((opt, i) => (
+                            <div key={i} className={`flex items-center space-x-2 border p-3 rounded-md transition-colors ${
+                                status === 'correct' && opt === question.correctAnswer ? 'bg-green-100 border-green-500' :
+                                status === 'wrong' && opt === selectedOption ? 'bg-red-100 border-red-500' : 'hover:bg-slate-50'
+                            }`}>
+                                <RadioGroupItem value={opt} id={`opt-${i}`} disabled={status === 'correct'} />
+                                <Label htmlFor={`opt-${i}`} className="flex-grow cursor-pointer">{opt}</Label>
+                                {status === 'correct' && opt === question.correctAnswer && <CheckCircle2 className="h-5 w-5 text-green-600"/>}
+                                {status === 'wrong' && opt === selectedOption && <XCircle className="h-5 w-5 text-red-600"/>}
+                            </div>
+                        ))}
+                    </RadioGroup>
+
+                    {status === 'correct' && (
+                        <div className="bg-green-50 text-green-800 p-3 rounded-md text-center font-bold">
+                            Correct! Great job, Scientist!
+                        </div>
+                    )}
+                    {status === 'wrong' && (
+                        <div className="bg-red-50 text-red-800 p-3 rounded-md text-center font-bold">
+                            Oops! That's not right. Try again.
+                        </div>
+                    )}
+                </div>
+
+                <DialogFooter>
+                    {status === 'correct' ? (
+                        <Button onClick={handleClose} className="w-full bg-green-600 hover:bg-green-700">Next Question</Button>
+                    ) : (
+                        <Button onClick={handleCheck} disabled={!selectedOption} className="w-full">Check Answer</Button>
+                    )}
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- COMPONENT: AI Generator Modal (UPDATED) ---
 function AiGeneratorModal({ 
     open, 
     setOpen, 
@@ -58,9 +137,12 @@ function AiGeneratorModal({
     onSave: (data: any) => Promise<void>
 }) {
     const [topic, setTopic] = useState('');
+    const [grade, setGrade] = useState('JHS 1'); // New State
     const [difficulty, setDifficulty] = useState('Beginner');
+    const [count, setCount] = useState(1); // New State
+    
     const [isGenerating, setIsGenerating] = useState(false);
-    const [previewData, setPreviewData] = useState<any>(null);
+    const [previewData, setPreviewData] = useState<any[] | null>(null); // Array now
 
     const handleGenerate = async () => {
         if (!topic) return;
@@ -68,7 +150,13 @@ function AiGeneratorModal({
         setPreviewData(null);
         
         try {
-            const result = await generateScienceQuestionAction({ topic, difficulty });
+            // Call updated Server Action
+            const result = await generateScienceQuestionAction({ 
+                topic, 
+                difficulty, 
+                grade,
+                count 
+            });
             
             if (result.success && result.data) {
                 setPreviewData(result.data);
@@ -83,9 +171,11 @@ function AiGeneratorModal({
         }
     };
 
-    const handleConfirm = () => {
-        if (previewData) {
-            onSave({ ...previewData, classId: 'global' });
+    const handleConfirm = async () => {
+        if (previewData && previewData.length > 0) {
+            for (const question of previewData) {
+                await onSave({ ...question, classId: 'global' });
+            }
             setOpen(false);
             setPreviewData(null);
             setTopic('');
@@ -94,13 +184,13 @@ function AiGeneratorModal({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-purple-500"/> AI Question Generator
+                    <DialogTitle className="flex items-center gap-2 text-purple-700">
+                        <Sparkles className="h-5 w-5"/> AI Question Generator
                     </DialogTitle>
                     <DialogDescription>
-                        Enter a topic and let the AI create a question for you.
+                        Generate multiple choice questions instantly.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -114,44 +204,251 @@ function AiGeneratorModal({
                                 placeholder="e.g. Solar System, Atoms, Gravity" 
                             />
                         </div>
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2">
+                                <Label>Target Grade</Label>
+                                <Input 
+                                    value={grade} 
+                                    onChange={e => setGrade(e.target.value)} 
+                                    placeholder="e.g. JHS 1, Grade 6" 
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Difficulty</Label>
+                                <Select value={difficulty} onValueChange={setDifficulty}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Beginner">Beginner</SelectItem>
+                                        <SelectItem value="Intermediate">Intermediate</SelectItem>
+                                        <SelectItem value="Advanced">Advanced</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                         <div className="space-y-2">
-                            <Label>Difficulty</Label>
-                            <Select value={difficulty} onValueChange={setDifficulty}>
+                            <Label>Number of Questions</Label>
+                            <Select value={count.toString()} onValueChange={(v) => setCount(Number(v))}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Beginner">Beginner</SelectItem>
-                                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                                    <SelectItem value="Advanced">Advanced</SelectItem>
+                                    <SelectItem value="1">1 Question</SelectItem>
+                                    <SelectItem value="3">3 Questions</SelectItem>
+                                    <SelectItem value="5">5 Questions</SelectItem>
+                                    <SelectItem value="10">10 Questions</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
+
                         <Button 
                             onClick={handleGenerate} 
                             disabled={isGenerating || !topic} 
-                            className="w-full bg-purple-600 hover:bg-purple-700"
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold mt-2"
                         >
-                            {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Generating...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate Question</>}
+                            {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Generating {count} questions...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate</>}
                         </Button>
                     </div>
                 ) : (
-                    <div className="space-y-4 py-4">
-                        <div className="bg-slate-50 p-4 rounded-md border">
-                            <p className="font-semibold text-sm text-slate-500 mb-1">{previewData.topic} ({previewData.difficulty})</p>
-                            <p className="font-medium text-lg mb-4">{previewData.question}</p>
-                            <div className="grid grid-cols-2 gap-2">
-                                {previewData.options.map((opt: string, i: number) => (
-                                    <div key={i} className={`p-2 text-sm border rounded ${opt === previewData.correctAnswer ? 'bg-green-50 border-green-200 font-medium' : 'bg-white'}`}>
-                                        {opt}
+                    <div className="flex flex-col gap-4 overflow-hidden">
+                        <div className="bg-purple-50 p-2 rounded-md border border-purple-100 flex-1 overflow-y-auto pr-2">
+                            <p className="font-semibold text-xs text-purple-600 mb-3 uppercase tracking-wide sticky top-0 bg-purple-50 pb-2">
+                                Preview ({previewData.length} Questions)
+                            </p>
+                            
+                            <div className="space-y-6">
+                                {previewData.map((q, idx) => (
+                                    <div key={idx} className="border-b border-purple-200 pb-4 last:border-0">
+                                        <p className="font-medium text-md mb-2 text-slate-800">
+                                            {idx + 1}. {q.question}
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {(q.options || []).map((opt: string, i: number) => (
+                                                <div key={i} className={`p-2 text-xs border rounded-md ${opt === q.correctAnswer ? 'bg-green-100 border-green-300 font-bold text-green-800' : 'bg-white text-slate-600'}`}>
+                                                    {opt} {opt === q.correctAnswer && "✓"}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="flex gap-2">
-                            <Button variant="outline" onClick={() => setPreviewData(null)} className="flex-1">Try Again</Button>
-                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700">Save to Lab</Button>
+                        <div className="flex gap-2 mt-auto pt-2">
+                            <Button variant="outline" onClick={() => setPreviewData(null)} className="flex-1">Discard</Button>
+                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+                                Save All to Library
+                            </Button>
                         </div>
                     </div>
                 )}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- COMPONENT: Fact of the Day (FIXED) ---
+function FactOfTheDay() {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { role } = useRole();
+    const { toast } = useToast();
+    const [factText, setFactText] = useState('');
+    const [isPosting, setIsPosting] = useState(false);
+    
+    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
+
+    // FIX: Use 'science_lab_facts' to match the new system
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_facts')) : null, [firestore]);
+    const { data: facts, isLoading } = useCollection<LabFact>(factsQuery);
+
+    const latestFact = useMemo(() => {
+        if (!facts || facts.length === 0) return null;
+        return facts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
+    }, [facts]);
+
+    const handlePostFact = async () => {
+        if (!factText.trim() || !user) return;
+        setIsPosting(true);
+        try {
+            // FIX: Post to 'science_lab_facts'
+            await addDoc(collection(firestore, 'science_lab_facts'), {
+                text: factText, // Use 'text' to match Type interface
+                createdAt: serverTimestamp(),
+                postedBy: user.uid,
+            });
+            toast({ title: 'Success', description: 'Fact posted.' });
+            setFactText('');
+        } catch (error: any) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: error.message });
+        } finally {
+            setIsPosting(false);
+        }
+    };
+
+    return (
+        <Card className="bg-emerald-50/50 border-emerald-200">
+            <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-emerald-700 text-lg">
+                    <Lightbulb className="h-5 w-5"/> Science Fact of the Day
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
+                    <blockquote className="border-l-4 border-emerald-400 pl-4 italic text-slate-700">
+                        "{latestFact.text}"
+                        <footer className="text-xs text-muted-foreground mt-2 not-italic">
+                            — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
+                        </footer>
+                    </blockquote>
+                ) : <p className="text-muted-foreground text-sm">No facts yet.</p>}
+
+                {isStaff && (
+                    <div className="space-y-2 pt-4 border-t border-emerald-200/50">
+                        <Label>Post a New Fact</Label>
+                        <div className="flex gap-2">
+                            <Input value={factText} onChange={e => setFactText(e.target.value)} placeholder="Did you know...?" className="bg-white"/>
+                            <Button onClick={handlePostFact} disabled={isPosting || !factText.trim()} size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                                {isPosting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+// --- COMPONENT: Add Question Form (Manual) ---
+function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined, onAiOpen: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [topic, setTopic] = useState('');
+    const [difficulty, setDifficulty] = useState('Beginner');
+    const [classId, setClassId] = useState('global');
+    const [question, setQuestion] = useState('');
+    const [options, setOptions] = useState(['', '', '', '']);
+    const [correctAnswer, setCorrectAnswer] = useState('');
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await addDoc(collection(firestore, 'science_lab_questions'), {
+                topic, difficulty, classId, question, options, correctAnswer, createdAt: serverTimestamp()
+            });
+            toast({ title: 'Saved', description: 'Question added.' });
+            setOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleOptionChange = (idx: number, val: string) => {
+        const newOpts = [...options];
+        newOpts[idx] = val;
+        setOptions(newOpts);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>Add Lab Question (Manual)</DialogTitle></DialogHeader>
+                
+                <div className="space-y-4 py-4">
+                     <Button variant="outline" onClick={() => { setOpen(false); onAiOpen(); }} className="w-full border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
+                        <Wand2 className="mr-2 h-4 w-4"/> Switch to AI Generator
+                    </Button>
+                    <div className="relative">
+                        <Separator />
+                        <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-background px-2 text-xs text-muted-foreground">OR ENTER MANUALLY</span>
+                    </div>
+
+                    <form onSubmit={handleSave} className="space-y-4">
+                       <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Topic</Label>
+                                <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Physics" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Difficulty</Label>
+                                <Select value={difficulty} onValueChange={setDifficulty}>
+                                    <SelectTrigger><SelectValue/></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Beginner">Beginner</SelectItem>
+                                        <SelectItem value="Intermediate">Intermediate</SelectItem>
+                                        <SelectItem value="Advanced">Advanced</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Target Class</Label>
+                            <Select value={classId} onValueChange={setClassId}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="global">All Classes (Global)</SelectItem>
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Question</Label>
+                            <Textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="Enter question..." required />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            {options.map((opt, i) => (
+                                <Input key={i} value={opt} onChange={e => handleOptionChange(i, e.target.value)} placeholder={`Option ${i+1}`} required />
+                            ))}
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Correct Answer (Exact Match)</Label>
+                            <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="Paste correct option here" required />
+                        </div>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">Save Question</Button>
+                    </form>
+                </div>
             </DialogContent>
         </Dialog>
     );
@@ -197,124 +494,20 @@ function SetupButton({ isStaff }: { isStaff: boolean }) {
     );
 }
 
-// --- COMPONENT: Add Question Form (Manual) ---
-function AddQuestionForm({ open, setOpen, classes, onAiSave }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined, onAiSave: (data: any) => Promise<void> }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-
-    const [topic, setTopic] = useState('');
-    const [difficulty, setDifficulty] = useState('Beginner');
-    const [classId, setClassId] = useState('global');
-    const [question, setQuestion] = useState('');
-    const [options, setOptions] = useState(['', '', '', '']);
-    const [correctAnswer, setCorrectAnswer] = useState('');
-
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            await addDoc(collection(firestore, 'science_lab_questions'), {
-                topic, difficulty, classId, question, options, correctAnswer, createdAt: serverTimestamp()
-            });
-            toast({ title: 'Saved', description: 'Question added to the Lab.' });
-            setOpen(false);
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: 'Error', description: e.message });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleOptionChange = (idx: number, val: string) => {
-        const newOpts = [...options];
-        newOpts[idx] = val;
-        setOptions(newOpts);
-    };
-
-    return (
-        <>
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                    <DialogHeader><DialogTitle>Add Lab Question</DialogTitle></DialogHeader>
-                    
-                    <div className="space-y-4 py-4">
-                        <Button variant="outline" onClick={() => setIsAiModalOpen(true)} className="w-full border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
-                            <Wand2 className="mr-2 h-4 w-4"/> Or... Generate with AI
-                        </Button>
-                        <div className="relative">
-                            <Separator />
-                            <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-background px-2 text-xs text-muted-foreground">MANUAL ENTRY</span>
-                        </div>
-
-                        <form onSubmit={handleSave} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Topic</Label>
-                                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Physics" required />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Difficulty</Label>
-                                    <Select value={difficulty} onValueChange={setDifficulty}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Beginner">Beginner</SelectItem>
-                                            <SelectItem value="Intermediate">Intermediate</SelectItem>
-                                            <SelectItem value="Advanced">Advanced</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Target Class</Label>
-                                <Select value={classId} onValueChange={setClassId}>
-                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="global">All Classes (Global)</SelectItem>
-                                        {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Question</Label>
-                                <Textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="Enter question..." required />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                {options.map((opt, i) => (
-                                    <Input key={i} value={opt} onChange={e => handleOptionChange(i, e.target.value)} placeholder={`Option ${i+1}`} required />
-                                ))}
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Correct Answer</Label>
-                                <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="Paste correct option here" required />
-                            </div>
-                            <Button type="submit" disabled={isSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700">Save Question</Button>
-                        </form>
-                    </div>
-                </DialogContent>
-            </Dialog>
-            
-            {/* The AI Modal is controlled from this component now */}
-            <AiGeneratorModal 
-                open={isAiModalOpen} 
-                setOpen={setIsAiModalOpen} 
-                onSave={onAiSave}
-            />
-        </>
-    );
-}
-
 // --- MAIN PAGE ---
-export default function ScienceLabPage() {
-  const { user, isUserLoading } = useUser();
-  const { role, isRoleLoading } = useRole();
+export default function ScienceLabPageFresh() {
+  const router = useRouter();
   const firestore = useFirestore();
+  const { role, isRoleLoading } = useRole();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
+  const [attemptingQuestion, setAttemptingQuestion] = useState<LabQuestion | null>(null); 
   
+  // Filters
   const [filterTopic, setFilterTopic] = useState('All');
   const [filterDiff, setFilterDiff] = useState('All');
 
@@ -323,9 +516,6 @@ export default function ScienceLabPage() {
   // Data Loading
   const questionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_questions')) : null, [firestore]);
   const { data: rawQuestions, isLoading: qLoading } = useCollection<LabQuestion>(questionsQuery);
-
-  const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_facts')) : null, [firestore]);
-  const { data: rawFacts } = useCollection<LabFact>(factsQuery);
 
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
@@ -336,20 +526,18 @@ export default function ScienceLabPage() {
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  // Data Processing
-  const latestFact = useMemo(() => {
-      if(!rawFacts || rawFacts.length === 0) return null;
-      return rawFacts.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0))[0];
-  }, [rawFacts]);
-
+  // Filtering
   const filteredQuestions = useMemo(() => {
       if(!rawQuestions) return [];
       let list = rawQuestions;
+
       if (role === 'Student') {
           list = list.filter(q => q.classId === 'global' || q.classId === studentClassId);
       }
+
       if(filterTopic !== 'All') list = list.filter(q => q.topic === filterTopic);
       if(filterDiff !== 'All') list = list.filter(q => q.difficulty === filterDiff);
+
       return list;
   }, [rawQuestions, role, studentClassId, filterTopic, filterDiff]);
 
@@ -365,15 +553,16 @@ export default function ScienceLabPage() {
       }
   };
 
+  // Handler for saving AI questions (can be single or array)
   const handleAiSave = async (data: any) => {
       try {
           await addDoc(collection(firestore, 'science_lab_questions'), {
               ...data,
               createdAt: serverTimestamp()
           });
-          toast({ title: 'Saved', description: 'AI Question added to library.' });
-      } catch (e) {
-          toast({ variant: 'destructive', title: 'Error', description: 'Failed to save AI question.' });
+          toast({ title: 'Saved', description: 'AI Question added.' });
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: 'Error', description: e.message });
       }
   };
 
@@ -382,37 +571,33 @@ export default function ScienceLabPage() {
   return (
     <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
       
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
-                <Atom className="h-8 w-8 text-indigo-600"/> The Science Lab
+                <Atom className="h-8 w-8 text-emerald-600"/> The Science Lab
             </h1>
             <p className="text-slate-500">Explore, Experiment, and Excel.</p>
         </div>
         <div className="flex gap-2">
             <SetupButton isStaff={isStaff} />
             {isStaff && (
-                <Button onClick={() => setIsFormOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
-                    <Plus className="mr-2 h-4 w-4"/> Add Question
-                </Button>
+                <>
+                    <Button variant="outline" onClick={() => setIsAiOpen(true)} className="border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
+                        <Wand2 className="mr-2 h-4 w-4"/> AI Generate
+                    </Button>
+                    <Button onClick={() => setIsFormOpen(true)} className="bg-emerald-600 hover:bg-emerald-700">
+                        <Plus className="mr-2 h-4 w-4"/> Manual Add
+                    </Button>
+                </>
             )}
         </div>
       </div>
 
-      <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0 shadow-lg">
-          <CardContent className="p-6 flex items-start gap-4">
-              <div className="bg-white/20 p-3 rounded-full">
-                  <Lightbulb className="h-6 w-6 text-yellow-300" />
-              </div>
-              <div>
-                  <h3 className="font-bold text-indigo-100 uppercase text-xs tracking-wider mb-1">Did you know?</h3>
-                  <p className="text-lg font-medium leading-relaxed">
-                      {latestFact ? latestFact.text : "Science is the poetry of reality."}
-                  </p>
-              </div>
-          </CardContent>
-      </Card>
+      {/* FACT OF THE DAY */}
+      <FactOfTheDay />
 
+      {/* TABS */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="explore">Question Bank</TabsTrigger>
@@ -420,6 +605,7 @@ export default function ScienceLabPage() {
         </TabsList>
 
         <TabsContent value="explore" className="mt-6 space-y-6">
+            {/* FILTERS */}
             <div className="flex gap-4">
                 <Select value={filterTopic} onValueChange={setFilterTopic}>
                     <SelectTrigger className="w-[180px] bg-white"><SelectValue placeholder="Topic" /></SelectTrigger>
@@ -439,30 +625,33 @@ export default function ScienceLabPage() {
                 </Select>
             </div>
 
+            {/* GRID */}
             {isLoading ? (
-                <div className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-500"/></div>
+                <div className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-emerald-500"/></div>
             ) : filteredQuestions.length === 0 ? (
                 <div className="text-center py-20 border-2 border-dashed rounded-xl">
                     <BrainCircuit className="h-12 w-12 text-slate-300 mx-auto mb-4"/>
-                    <p className="text-slate-500">No questions found matching your filters.</p>
-                    {isStaff && <Button variant="link" onClick={() => setIsFormOpen(true)}>Create the first one</Button>}
+                    <p className="text-slate-500">No questions found.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredQuestions.map((q) => (
-                        <Card key={q.id} className="hover:shadow-md transition-shadow border-t-4 border-t-indigo-400">
+                        <Card key={q.id} className="hover:shadow-md transition-shadow border-t-4 border-t-emerald-400">
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
-                                    <Badge variant="outline" className="text-xs">{q.topic}</Badge>
-                                    {isStaff && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDelete(q.id)}><Trash2 className="h-4 w-4 text-red-400"/></Button>}
+                                    <Badge variant="outline">{q.topic}</Badge>
+                                    {isStaff && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete(q.id)}><Trash2 className="h-4 w-4"/></Button>}
                                 </div>
-                                <CardTitle className="text-base mt-2 line-clamp-2 leading-snug">{q.question}</CardTitle>
+                                <CardTitle className="text-base mt-2 line-clamp-2">{q.question}</CardTitle>
                             </CardHeader>
                             <CardContent className="pb-2">
-                                <p className="text-xs text-slate-400 mb-4">{q.difficulty} • {q.classId === 'global' ? 'Global' : 'Class Specific'}</p>
+                                <p className="text-xs text-slate-400">{q.difficulty} • {q.classId === 'global' ? 'Global' : 'Class'}</p>
                             </CardContent>
                             <CardFooter className="pt-0">
-                                <Button className="w-full bg-slate-100 text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200">
+                                <Button 
+                                    onClick={() => setAttemptingQuestion(q)} 
+                                    className="w-full bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                                >
                                     Attempt Question
                                 </Button>
                             </CardFooter>
@@ -474,7 +663,7 @@ export default function ScienceLabPage() {
 
         <TabsContent value="leaderboard">
             <Card>
-                <CardContent className="p-8 text-center text-muted-foreground">
+                <CardContent className="p-8 text-center">
                     <Trophy className="h-12 w-12 mx-auto mb-4 text-yellow-400"/>
                     <p>Leaderboard coming soon!</p>
                 </CardContent>
@@ -482,13 +671,21 @@ export default function ScienceLabPage() {
         </TabsContent>
       </Tabs>
 
-      {/* MODAL */}
-      <AddQuestionForm 
-        open={isFormOpen} 
-        setOpen={setIsFormOpen} 
-        classes={classes}
-        onAiSave={handleAiSave} 
+      {/* MODALS */}
+      <AddQuestionForm open={isFormOpen} setOpen={setIsFormOpen} classes={classes} />
+      
+      <AiGeneratorModal 
+        open={isAiOpen} 
+        setOpen={setIsAiOpen} 
+        onSave={handleAiSave} 
+      />
+
+      <AttemptQuestionDialog 
+        question={attemptingQuestion}
+        open={!!attemptingQuestion}
+        setOpen={(val) => { if(!val) setAttemptingQuestion(null); }}
       />
     </div>
   );
 }
+
