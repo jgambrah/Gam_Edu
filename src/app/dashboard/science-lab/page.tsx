@@ -27,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Student, Class } from '@/lib/types';
+import { Student, Class, DailyFact } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
@@ -42,13 +42,7 @@ interface LabQuestion {
   classId: string;
 }
 
-interface LabFact {
-  id: string;
-  text: string;
-  createdAt: any;
-}
-
-// --- COMPONENT: Attempt Question Dialog (The Fix for Issue 1) ---
+// --- COMPONENT: Attempt Question Dialog ---
 function AttemptQuestionDialog({ 
     question, 
     open, 
@@ -126,7 +120,7 @@ function AttemptQuestionDialog({
     );
 }
 
-// --- COMPONENT: AI Generator Modal (The Fix for Issue 2) ---
+// --- COMPONENT: AI Generator Modal ---
 function AiGeneratorModal({ 
     open, 
     setOpen, 
@@ -195,7 +189,7 @@ function AiGeneratorModal({
                             <Input 
                                 value={topic} 
                                 onChange={e => setTopic(e.target.value)} 
-                                placeholder="e.g. Solar System, Atoms" 
+                                placeholder="e.g. Solar System, Atoms, Gravity" 
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -406,6 +400,76 @@ function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, 
     );
 }
 
+// --- COMPONENT: Fact of the Day ---
+function FactOfTheDay() {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { role } = useRole();
+    const { toast } = useToast();
+    const [factText, setFactText] = useState('');
+    const [isPosting, setIsPosting] = useState(false);
+    
+    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
+
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_facts')) : null, [firestore]);
+    const { data: facts, isLoading } = useCollection<LabFact>(factsQuery);
+
+    const latestFact = useMemo(() => {
+        if (!facts || facts.length === 0) return null;
+        return facts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
+    }, [facts]);
+
+    const handlePostFact = async () => {
+        if (!factText.trim() || !user) return;
+        setIsPosting(true);
+        try {
+            await addDoc(collection(firestore, 'science_lab_facts'), {
+                factText,
+                createdAt: serverTimestamp(),
+                postedBy: user.uid,
+            });
+            toast({ title: 'Success', description: 'Fact posted.' });
+            setFactText('');
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to post.' });
+        } finally {
+            setIsPosting(false);
+        }
+    };
+
+    return (
+        <Card className="bg-emerald-50/50 border-emerald-200">
+            <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-emerald-700 text-lg">
+                    <Lightbulb className="h-5 w-5"/> Science Fact of the Day
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
+                    <blockquote className="border-l-4 border-emerald-400 pl-4 italic text-slate-700">
+                        "{latestFact.factText}"
+                        <footer className="text-xs text-muted-foreground mt-2 not-italic">
+                            — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
+                        </footer>
+                    </blockquote>
+                ) : <p className="text-muted-foreground text-sm">No facts yet.</p>}
+
+                {isStaff && (
+                    <div className="space-y-2 pt-4 border-t border-emerald-200/50">
+                        <Label>Post a New Fact</Label>
+                        <div className="flex gap-2">
+                            <Input value={factText} onChange={e => setFactText(e.target.value)} placeholder="Did you know...?" className="bg-white"/>
+                            <Button onClick={handlePostFact} disabled={isPosting || !factText.trim()} size="sm" className="bg-emerald-600 hover:bg-emerald-700">
+                                {isPosting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 // --- MAIN PAGE ---
 export default function ScienceLabPage() {
   const router = useRouter();
@@ -424,6 +488,7 @@ export default function ScienceLabPage() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
+  // Data Loading
   const questionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_questions')) : null, [firestore]);
   const { data: rawQuestions, isLoading: qLoading } = useCollection<LabQuestion>(questionsQuery);
 
@@ -438,11 +503,6 @@ export default function ScienceLabPage() {
     useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
   const studentClassId = studentData?.[0]?.classId;
-
-  const latestFact = useMemo(() => {
-      if(!rawFacts || rawFacts.length === 0) return null;
-      return rawFacts.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0))[0];
-  }, [rawFacts]);
 
   const filteredQuestions = useMemo(() => {
       if(!rawQuestions) return [];
@@ -582,7 +642,8 @@ export default function ScienceLabPage() {
       <AddQuestionForm 
         open={isFormOpen} 
         setOpen={setIsFormOpen} 
-        classes={classes} 
+        classes={classes}
+        onAiOpen={() => setIsAiOpen(true)}
       />
 
       <AiGeneratorModal 
