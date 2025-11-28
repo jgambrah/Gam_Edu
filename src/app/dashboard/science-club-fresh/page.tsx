@@ -28,7 +28,8 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceLeaderboardEntry } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 // --- NEW TYPES (Grouped) ---
 interface Question {
@@ -53,6 +54,62 @@ interface LabFact {
   text: string;
   createdAt: any;
 }
+
+// --- COMPONENT: Leaderboard ---
+function ScienceLeaderboard() {
+  const firestore = useFirestore();
+  const leaderboardQuery = useMemoFirebase(
+    () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+    [firestore]
+  );
+  const { data: leaderboard, isLoading } = useCollection<ScienceLeaderboardEntry>(leaderboardQuery);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2 p-4">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Rank</TableHead>
+          <TableHead>Student</TableHead>
+          <TableHead className="text-right">Score</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {leaderboard && leaderboard.length > 0 ? leaderboard.map((entry, index) => (
+          <TableRow key={entry.userId}>
+            <TableCell className="font-bold text-lg">#{index + 1}</TableCell>
+            <TableCell>
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage src={entry.profilePictureUrl} />
+                  <AvatarFallback>{entry.userName ? entry.userName.charAt(0) : 'S'}</AvatarFallback>
+                </Avatar>
+                <span className="font-medium">{entry.userName || "Unknown Student"}</span>
+              </div>
+            </TableCell>
+            <TableCell className="text-right font-bold text-lg">{entry.total_correct_answers}</TableCell>
+          </TableRow>
+        )) : (
+          <TableRow>
+            <TableCell colSpan={3} className="text-center text-muted-foreground h-24">
+              No scores on the leaderboard yet. Be the first!
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
+}
+
 
 // --- COMPONENT: Quiz Runner (Handles multiple questions) ---
 function QuizRunnerDialog({ 
@@ -175,7 +232,7 @@ function AiGeneratorModal({
 }: { 
     open: boolean, 
     setOpen: (o: boolean) => void,
-    onSave: (data: any[], meta: any) => Promise<void>
+    onSave: (data: any, meta: any) => Promise<void>
 }) {
     const [topic, setTopic] = useState('');
     const [grade, setGrade] = useState('JHS 1');
@@ -194,7 +251,7 @@ function AiGeneratorModal({
             if (result.success && result.data) {
                 setPreviewData(result.data);
             } else {
-                alert("AI Error: " + (result.error || "Unknown error"));
+                alert("AI Error: " + (result as any).error);
             }
         } catch (e) {
             console.error(e);
@@ -371,30 +428,26 @@ export default function ScienceLabPageFresh() {
 
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
-  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null); // <--- Opens Quiz Runner
+  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null);
   
-  // Filters
   const [filterTopic, setFilterTopic] = useState('All');
   const [filterDiff, setFilterDiff] = useState('All');
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. Get Student Data
   const { data: studentData, isLoading: sLoading } = useCollection<Student>(
-    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user, firestore])
+    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  // 2. Get Question Sets
   const setsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_question_sets')) : null, [firestore]);
   const { data: rawSets, isLoading: qLoading } = useCollection<QuestionSet>(setsQuery);
 
-  // Filtering Logic
   const filteredSets = useMemo(() => {
       if(!rawSets) return [];
       let list = rawSets;
 
-      if (role === 'Student' && studentClassId) {
+      if (role === 'Student') {
           list = list.filter(s => s.classId === 'global' || s.classId === studentClassId);
       }
 
@@ -521,9 +574,12 @@ export default function ScienceLabPageFresh() {
 
         <TabsContent value="leaderboard">
             <Card>
-                <CardContent className="p-8 text-center text-muted-foreground">
-                    <Trophy className="h-12 w-12 mx-auto mb-4 text-yellow-400"/>
-                    <p>Leaderboard coming soon!</p>
+                <CardHeader>
+                    <CardTitle>Top Scientists</CardTitle>
+                    <CardDescription>Global ranking based on correct answers in science quizzes.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ScienceLeaderboard />
                 </CardContent>
             </Card>
         </TabsContent>
