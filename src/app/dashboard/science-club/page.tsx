@@ -223,7 +223,7 @@ function FactOfTheDay() {
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
     
     // Sort client-side instead to be safe
-    const latestFact = facts?.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds)[0];
+    const latestFact = facts?.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
 
     const handlePostFact = async () => {
         if (!factText.trim() || !user) return;
@@ -402,5 +402,3 @@ export default function ScienceClubPage() {
     </div>
   );
 }
-
-    
