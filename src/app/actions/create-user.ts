@@ -115,9 +115,9 @@ export async function createNewUser(
                 uid: userRecord.uid,
                 email: email,
                 role: 'Director',
-                firstName: details?.firstName || 'Admin',
-                lastName: details?.lastName || 'User',
-            });
+                firstName: details?.firstName || 'James',
+                lastName: details?.lastName || 'Gambrah',
+            }, { merge: true });
         }
     }
 
