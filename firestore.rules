@@ -128,11 +128,7 @@ service cloud.firestore {
     }
 
     match /science_problems/{problemId} {
-      // DEBUG: Allow EVERYONE to read.
-      // If this works, we know the collection exists and the connection is good.
-      allow read: if true; 
-      
-      // Keep write restricted
+      allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
     }
 
