@@ -4,12 +4,13 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore'; // Removed orderBy
+import { collection, query, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   Atom, Trophy, BrainCircuit, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle, Database 
+  Trash2, Lightbulb, CheckCircle, Database, Wand2, Sparkles 
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { generateScienceQuestionAction } from '@/app/actions/generate-science';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -18,12 +19,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Student, Class } from '@/lib/types';
+import { Separator } from '@/components/ui/separator';
 
 // --- TYPES ---
 interface LabQuestion {
@@ -42,6 +44,116 @@ interface LabFact {
   createdAt: any;
 }
 
+// --- COMPONENT: AI Generator Modal ---
+function AiGeneratorModal({ 
+    open, 
+    setOpen, 
+    onSave 
+}: { 
+    open: boolean, 
+    setOpen: (o: boolean) => void,
+    onSave: (data: any) => Promise<void>
+}) {
+    const [topic, setTopic] = useState('');
+    const [difficulty, setDifficulty] = useState('Beginner');
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [previewData, setPreviewData] = useState<any>(null);
+
+    const handleGenerate = async () => {
+        if (!topic) return;
+        setIsGenerating(true);
+        setPreviewData(null);
+        
+        try {
+            const result = await generateScienceQuestionAction({ topic, difficulty });
+            
+            if (result.success && result.data) {
+                setPreviewData(result.data);
+            } else {
+                alert("AI Error: " + result.error);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Failed to generate.");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const handleConfirm = () => {
+        if (previewData) {
+            onSave({ ...previewData, classId: 'global' });
+            setOpen(false);
+            setPreviewData(null);
+            setTopic('');
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-purple-500"/> AI Question Generator
+                    </DialogTitle>
+                    <DialogDescription>
+                        Enter a topic and let the AI create a question for you.
+                    </DialogDescription>
+                </DialogHeader>
+
+                {!previewData ? (
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Topic / Concept</Label>
+                            <Input 
+                                value={topic} 
+                                onChange={e => setTopic(e.target.value)} 
+                                placeholder="e.g. Solar System, Atoms, Gravity" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Difficulty</Label>
+                            <Select value={difficulty} onValueChange={setDifficulty}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Beginner">Beginner</SelectItem>
+                                    <SelectItem value="Intermediate">Intermediate</SelectItem>
+                                    <SelectItem value="Advanced">Advanced</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <Button 
+                            onClick={handleGenerate} 
+                            disabled={isGenerating || !topic} 
+                            className="w-full bg-purple-600 hover:bg-purple-700"
+                        >
+                            {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Generating...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate Question</>}
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="space-y-4 py-4">
+                        <div className="bg-slate-50 p-4 rounded-md border">
+                            <p className="font-semibold text-sm text-slate-500 mb-1">{previewData.topic} ({previewData.difficulty})</p>
+                            <p className="font-medium text-lg mb-4">{previewData.question}</p>
+                            <div className="grid grid-cols-2 gap-2">
+                                {previewData.options.map((opt: string, i: number) => (
+                                    <div key={i} className={`p-2 text-sm border rounded ${opt === previewData.correctAnswer ? 'bg-green-50 border-green-200 font-medium' : 'bg-white'}`}>
+                                        {opt}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="outline" onClick={() => setPreviewData(null)} className="flex-1">Try Again</Button>
+                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700">Save to Library</Button>
+                        </div>
+                    </div>
+                )}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 // --- COMPONENT: Admin Seed Button ---
 function SetupButton({ isStaff }: { isStaff: boolean }) {
     const firestore = useFirestore();
@@ -53,7 +165,6 @@ function SetupButton({ isStaff }: { isStaff: boolean }) {
     const initialize = async () => {
         setLoading(true);
         try {
-            // Create a dummy question to initialize collection
             await addDoc(collection(firestore, 'science_lab_questions'), {
                 topic: 'General',
                 difficulty: 'Beginner',
@@ -63,7 +174,6 @@ function SetupButton({ isStaff }: { isStaff: boolean }) {
                 classId: 'global',
                 createdAt: serverTimestamp()
             });
-            // Create a dummy fact
             await addDoc(collection(firestore, 'science_lab_facts'), {
                 text: 'Water expands when it freezes.',
                 createdAt: serverTimestamp()
@@ -84,7 +194,7 @@ function SetupButton({ isStaff }: { isStaff: boolean }) {
     );
 }
 
-// --- COMPONENT: Add Question Form ---
+// --- COMPONENT: Add Question Form (Manual) ---
 function AddQuestionForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -139,7 +249,7 @@ function AddQuestionForm({ open, setOpen, classes }: { open: boolean, setOpen: (
                     <div className="space-y-2">
                         <Label>Target Class</Label>
                         <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger><SelectValue placeholder="All Classes" /></SelectTrigger>
+                            <SelectTrigger><SelectValue/></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="global">All Classes (Global)</SelectItem>
                                 {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -176,6 +286,7 @@ export default function ScienceLabPage() {
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
   
   // Filters
@@ -184,45 +295,36 @@ export default function ScienceLabPage() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. Fetch Questions (SAFE MODE: No orderBy)
+  // Data Fetching
   const questionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_questions')) : null, [firestore]);
   const { data: rawQuestions, isLoading: qLoading } = useCollection<LabQuestion>(questionsQuery);
 
-  // 2. Fetch Facts (SAFE MODE: No orderBy)
   const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_facts')) : null, [firestore]);
   const { data: rawFacts } = useCollection<LabFact>(factsQuery);
 
-  // 3. Fetch Classes
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
   );
 
-  // Get Student Class ID
-  const { data: studentData, isLoading: sLoading } = useCollection<Student>(
+  const { data: studentData } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  // 2. Data Processing (Client-Side)
+  // Data Processing
   const latestFact = useMemo(() => {
       if(!rawFacts || rawFacts.length === 0) return null;
-      // Sort by date manually to avoid index errors
       return rawFacts.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0))[0];
   }, [rawFacts]);
 
   const filteredQuestions = useMemo(() => {
       if(!rawQuestions) return [];
       let list = rawQuestions;
-
-      // Filter by Class (If Student)
       if (role === 'Student') {
           list = list.filter(q => q.classId === 'global' || q.classId === studentClassId);
       }
-
-      // Filter by UI
       if(filterTopic !== 'All') list = list.filter(q => q.topic === filterTopic);
       if(filterDiff !== 'All') list = list.filter(q => q.difficulty === filterDiff);
-
       return list;
   }, [rawQuestions, role, studentClassId, filterTopic, filterDiff]);
 
@@ -238,12 +340,23 @@ export default function ScienceLabPage() {
       }
   };
 
+  const handleAiSave = async (data: any) => {
+      try {
+          await addDoc(collection(firestore, 'science_lab_questions'), {
+              ...data,
+              createdAt: serverTimestamp()
+          });
+          toast({ title: 'Saved', description: 'AI Question added to library.' });
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: 'Error', description: 'Failed to save AI question.' + e.message });
+      }
+  };
+
   const isLoading = isUserLoading || isRoleLoading || qLoading;
 
   return (
     <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
       
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
@@ -254,14 +367,18 @@ export default function ScienceLabPage() {
         <div className="flex gap-2">
             <SetupButton isStaff={isStaff} />
             {isStaff && (
-                <Button onClick={() => setIsFormOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
-                    <Plus className="mr-2 h-4 w-4"/> Add Question
-                </Button>
+                <>
+                    <Button variant="outline" onClick={() => setIsAiOpen(true)} className="border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
+                        <Wand2 className="mr-2 h-4 w-4"/> AI Generate
+                    </Button>
+                    <Button onClick={() => setIsFormOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
+                        <Plus className="mr-2 h-4 w-4"/> Manual Add
+                    </Button>
+                </>
             )}
         </div>
       </div>
 
-      {/* FACT CARD */}
       <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0 shadow-lg">
           <CardContent className="p-6 flex items-start gap-4">
               <div className="bg-white/20 p-3 rounded-full">
@@ -276,7 +393,6 @@ export default function ScienceLabPage() {
           </CardContent>
       </Card>
 
-      {/* TABS */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="explore">Question Bank</TabsTrigger>
@@ -285,7 +401,6 @@ export default function ScienceLabPage() {
 
         <TabsContent value="explore" className="mt-6 space-y-6">
             
-            {/* FILTERS */}
             <div className="flex gap-4">
                 <Select value={filterTopic} onValueChange={setFilterTopic}>
                     <SelectTrigger className="w-[180px] bg-white"><SelectValue placeholder="Topic" /></SelectTrigger>
@@ -305,11 +420,9 @@ export default function ScienceLabPage() {
                 </Select>
             </div>
 
-            {/* LOADING / EMPTY STATES */}
             {isLoading ? (
                 <div className="text-center py-20">
-                    <Loader2 className="h-10 w-10 animate-spin text-indigo-500 mx-auto mb-4"/>
-                    <p className="text-slate-500">Loading the Lab...</p>
+                    <Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-500"/>
                 </div>
             ) : filteredQuestions.length === 0 ? (
                 <div className="text-center py-20 border-2 border-dashed rounded-xl">
@@ -318,7 +431,6 @@ export default function ScienceLabPage() {
                     {isStaff && <Button variant="link" onClick={() => setIsFormOpen(true)}>Create the first one</Button>}
                 </div>
             ) : (
-                /* QUESTION GRID */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredQuestions.map((q) => (
                         <Card key={q.id} className="hover:shadow-md transition-shadow border-t-4 border-t-indigo-400">
@@ -347,17 +459,22 @@ export default function ScienceLabPage() {
             <Card>
                 <CardContent className="p-8 text-center text-muted-foreground">
                     <Trophy className="h-12 w-12 mx-auto mb-4 text-yellow-400"/>
-                    <p>Leaderboard coming soon to Science Lab 2.0!</p>
+                    <p>Leaderboard coming soon!</p>
                 </CardContent>
             </Card>
         </TabsContent>
       </Tabs>
 
-      {/* MODAL */}
       <AddQuestionForm 
         open={isFormOpen} 
         setOpen={setIsFormOpen} 
         classes={classes} 
+      />
+      
+      <AiGeneratorModal 
+        open={isAiOpen} 
+        setOpen={setIsAiOpen} 
+        onSave={handleAiSave} 
       />
     </div>
   );
