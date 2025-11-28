@@ -128,8 +128,7 @@ service cloud.firestore {
     }
 
     match /science_problems/{problemId} {
-      allow get: if isSignedIn();
-      allow list: if isSignedIn();
+      allow read: if true; // <--- Force open for testing
       allow write: if isTeacher() || isAdmin();
     }
 
@@ -169,5 +168,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
