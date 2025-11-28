@@ -29,7 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
 
 // --- SUB-COMPONENT: Fact of the Day ---
-function FactOfTheDayV2({ isStaff }: { isStaff: boolean }) {
+function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
     const firestore = useFirestore();
     const { user } = useAuth();
     const { toast } = useToast();
@@ -79,7 +79,7 @@ function FactOfTheDayV2({ isStaff }: { isStaff: boolean }) {
                             — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
                         </footer>
                     </blockquote>
-                ) : <p className="text-muted-foreground text-sm">No fact has been posted for today yet.</p>}
+                ) : <p className="text-muted-foreground text-sm">No facts yet.</p>}
 
                 {isStaff && (
                     <div className="space-y-2 pt-4 border-t border-amber-200/50">
@@ -100,11 +100,18 @@ function FactOfTheDayV2({ isStaff }: { isStaff: boolean }) {
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
   const firestore = useFirestore();
+  // FIX: Removed `orderBy` from the query to prevent internal assertion failure.
   const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+    () => firestore ? query(collection(firestore, 'science_leaderboard')) : null,
     [firestore]
   );
   const { data: leaderboard, isLoading } = useCollection<ScienceLeaderboardEntry>(leaderboardQuery);
+
+  // Perform sorting on the client-side after data is fetched.
+  const sortedLeaderboard = useMemo(() => {
+    if (!leaderboard) return [];
+    return leaderboard.sort((a, b) => b.total_correct_answers - a.total_correct_answers);
+  }, [leaderboard]);
 
   if (isLoading) return <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>;
 
@@ -118,14 +125,14 @@ function LeaderboardV2() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {leaderboard?.map((entry, index) => (
+        {sortedLeaderboard.map((entry, index) => (
           <TableRow key={entry.userId || index}>
             <TableCell className="font-bold">#{index + 1}</TableCell>
             <TableCell>{entry.userName || "Unknown Student"}</TableCell>
             <TableCell className="text-right">{entry.total_correct_answers}</TableCell>
           </TableRow>
         ))}
-        {(!leaderboard || leaderboard.length === 0) && (
+        {(!sortedLeaderboard || sortedLeaderboard.length === 0) && (
             <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No records yet.</TableCell></TableRow>
         )}
       </TableBody>
@@ -261,7 +268,7 @@ export default function ScienceClubPageV2() {
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
   );
 
-  // 3. Get Problems
+  // 3. Get Problems (SAFE QUERY)
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'science_problems'));
@@ -273,7 +280,7 @@ export default function ScienceClubPageV2() {
   const filteredProblems = useMemo(() => {
     if (!rawProblems) return [];
     
-    // Filter for Students (Only show my class OR global items)
+    // Filter for Students
     let list = rawProblems;
     if (role === 'Student') {
         list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
@@ -311,10 +318,10 @@ export default function ScienceClubPageV2() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-t-4 border-t-green-500 shadow-sm">
+      <Card className="border-t-4 border-t-teal-500 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FlaskConical className="h-6 w-6 text-green-600"/> 
+            <FlaskConical className="h-6 w-6 text-teal-600"/> 
             Science Club 2.0
           </CardTitle>
           <CardDescription>
@@ -322,7 +329,7 @@ export default function ScienceClubPageV2() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-            <FactOfTheDayV2 isStaff={isStaff} />
+            <FactOfTheDay isStaff={isStaff} />
         </CardContent>
       </Card>
 
@@ -350,7 +357,7 @@ export default function ScienceClubPageV2() {
                     {/* Loading State */}
                     {isLoading && (
                         <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
-                            <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+                            <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
                             <p>Loading Science Lab...</p>
                         </div>
                     )}
@@ -396,7 +403,7 @@ export default function ScienceClubPageV2() {
                                 <p className="text-sm font-medium text-slate-500">
                                     Found {filteredProblems.length} available problems.
                                 </p>
-                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-green-600 hover:bg-green-700">
+                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-teal-600 hover:bg-teal-700">
                                     Start Practice Session
                                 </Button>
                             </div>
