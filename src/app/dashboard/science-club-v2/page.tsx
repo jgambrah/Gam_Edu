@@ -1,15 +1,17 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+// All imports consolidated here.
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2 
+  Trash2, Lightbulb, CheckCircle2 
 } from 'lucide-react';
+import { format } from 'date-fns';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +26,76 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceProblem, ScienceLeaderboardEntry } from '@/lib/types';
+import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
+
+// --- SUB-COMPONENT: Fact of the Day ---
+function FactOfTheDayV2({ isStaff }: { isStaff: boolean }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [factText, setFactText] = useState('');
+    const [isPosting, setIsPosting] = useState(false);
+
+    // Simple query to avoid index crashes
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
+    const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
+
+    // Sort in browser
+    const latestFact = useMemo(() => {
+        if (!facts || facts.length === 0) return null;
+        return facts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
+    }, [facts]);
+
+    const handlePostFact = async () => {
+        if (!factText.trim() || !user) return;
+        setIsPosting(true);
+        try {
+            await addDoc(collection(firestore, 'daily_facts'), {
+                factText,
+                createdAt: serverTimestamp(),
+                postedBy: user.uid,
+            });
+            toast({ title: 'Success', description: 'Fact posted.' });
+            setFactText('');
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to post.' });
+        } finally {
+            setIsPosting(false);
+        }
+    };
+
+    return (
+        <Card className="bg-amber-50/50 border-amber-200">
+            <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-amber-700 text-lg">
+                    <Lightbulb className="h-5 w-5"/> Science Fact of the Day
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
+                    <blockquote className="border-l-4 border-amber-400 pl-4 italic text-slate-700">
+                        "{latestFact.factText}"
+                        <footer className="text-xs text-muted-foreground mt-2 not-italic">
+                            — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
+                        </footer>
+                    </blockquote>
+                ) : <p className="text-muted-foreground text-sm">No fact has been posted for today yet.</p>}
+
+                {isStaff && (
+                    <div className="space-y-2 pt-4 border-t border-amber-200/50">
+                        <Label>Post a New Fact</Label>
+                        <div className="flex gap-2">
+                            <Input value={factText} onChange={e => setFactText(e.target.value)} placeholder="Did you know...?" className="bg-white"/>
+                            <Button onClick={handlePostFact} disabled={isPosting || !factText.trim()} size="sm" className="bg-amber-600 hover:bg-amber-700">
+                                {isPosting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
 
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
@@ -113,7 +184,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Topic</Label>
-                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Photosynthesis" />
+                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Biology" />
                         </div>
                         <div className="space-y-2">
                             <Label>Difficulty</Label>
@@ -139,7 +210,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
                     </div>
                     <div className="space-y-2">
                         <Label>Question</Label>
-                        <Textarea value={questionText} onChange={e => setQuestionText(e.target.value)} placeholder="Which part of the plant absorbs light?" />
+                        <Textarea value={questionText} onChange={e => setQuestionText(e.target.value)} placeholder="What is the powerhouse of the cell?" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         {options.map((opt, i) => (
@@ -148,7 +219,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
                     </div>
                     <div className="space-y-2">
                         <Label>Correct Answer (Must match option)</Label>
-                        <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="e.g. Chloroplast" />
+                        <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="e.g. Mitochondria" />
                     </div>
                     <Button type="submit" disabled={isSubmitting} className="w-full">
                         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Problem
@@ -250,7 +321,9 @@ export default function ScienceClubPageV2() {
             Explore the universe through science practice and competition.
           </CardDescription>
         </CardHeader>
-        {/* Daily Facts Section Removed for Simplicity */}
+        <CardContent>
+            <FactOfTheDayV2 isStaff={isStaff} />
+        </CardContent>
       </Card>
 
       <Tabs defaultValue="practice" className="w-full">
@@ -388,4 +461,3 @@ export default function ScienceClubPageV2() {
     </div>
   );
 }
-

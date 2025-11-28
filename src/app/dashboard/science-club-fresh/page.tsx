@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-// FIX 1: All imports consolidated here. No duplicate imports allowed later.
+// All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
@@ -27,76 +27,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
-
-// --- SUB-COMPONENT: Fact of the Day ---
-function FactOfTheDay() {
-    const firestore = useFirestore();
-    const { user } = useAuth(); // Using useAuth here is fine since we imported it at the top
-    const { role } = useRole();
-    const { toast } = useToast();
-    const [factText, setFactText] = useState('');
-    const [isPosting, setIsPosting] = useState(false);
-    
-    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
-
-    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
-    const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
-
-    const latestFact = useMemo(() => {
-        if (!facts || facts.length === 0) return null;
-        return facts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
-    }, [facts]);
-
-    const handlePostFact = async () => {
-        if (!factText.trim() || !user) return;
-        setIsPosting(true);
-        try {
-            await addDoc(collection(firestore, 'daily_facts'), {
-                factText,
-                createdAt: serverTimestamp(),
-                postedBy: user.uid,
-            });
-            toast({ title: 'Success', description: 'Fact posted.' });
-            setFactText('');
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to post.' });
-        } finally {
-            setIsPosting(false);
-        }
-    };
-
-    return (
-        <Card className="bg-emerald-50/50 border-emerald-200">
-            <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-emerald-700 text-lg">
-                    <Lightbulb className="h-5 w-5"/> Science Fact of the Day
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
-                    <blockquote className="border-l-4 border-emerald-400 pl-4 italic text-slate-700">
-                        "{latestFact.factText}"
-                        <footer className="text-xs text-muted-foreground mt-2 not-italic">
-                            — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
-                        </footer>
-                    </blockquote>
-                ) : <p className="text-muted-foreground text-sm">No facts yet.</p>}
-
-                {isStaff && (
-                    <div className="space-y-2 pt-4 border-t border-emerald-200/50">
-                        <Label>Post a New Fact</Label>
-                        <div className="flex gap-2">
-                            <Input value={factText} onChange={e => setFactText(e.target.value)} placeholder="Did you know...?" className="bg-white"/>
-                            <Button onClick={handlePostFact} disabled={isPosting || !factText.trim()} size="sm" className="bg-emerald-600 hover:bg-emerald-700">
-                                {isPosting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post"}
-                            </Button>
-                        </div>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    );
-}
 
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
@@ -262,7 +192,7 @@ export default function ScienceClubPageFresh() {
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
   );
 
-  // 3. Get Problems (SAFE QUERY)
+  // 3. Get Problems
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'science_problems'));
@@ -312,19 +242,17 @@ export default function ScienceClubPageFresh() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-t-4 border-t-emerald-500 shadow-sm">
+      <Card className="border-t-4 border-t-green-500 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FlaskConical className="h-6 w-6 text-emerald-600"/> 
+            <FlaskConical className="h-6 w-6 text-green-600"/> 
             Science Club 3.0
           </CardTitle>
           <CardDescription>
             Explore the universe through science practice and competition.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-            <FactOfTheDay />
-        </CardContent>
+        {/* Daily Facts Section Removed for Simplicity */}
       </Card>
 
       <Tabs defaultValue="practice" className="w-full">
@@ -351,7 +279,7 @@ export default function ScienceClubPageFresh() {
                     {/* Loading State */}
                     {isLoading && (
                         <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
-                            <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+                            <Loader2 className="h-8 w-8 animate-spin text-green-500" />
                             <p>Loading Science Lab...</p>
                         </div>
                     )}
@@ -397,7 +325,7 @@ export default function ScienceClubPageFresh() {
                                 <p className="text-sm font-medium text-slate-500">
                                     Found {filteredProblems.length} available problems.
                                 </p>
-                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-emerald-600 hover:bg-emerald-700">
+                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-green-600 hover:bg-green-700">
                                     Start Practice Session
                                 </Button>
                             </div>
