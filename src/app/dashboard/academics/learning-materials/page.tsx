@@ -1,13 +1,12 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-// NEW: Storage Imports
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
-import { Class, Student, LearningMaterial, ResourceItem, ResourceType } from '@/lib/types';
+import { Class, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -36,6 +35,27 @@ const SUBJECTS_LIST = [
   "French",
   "Ghanaian Language"
 ];
+
+// --- DATA TYPES ---
+export type ResourceType = 'PDF' | 'Video' | 'Document' | 'Spreadsheet' | 'Link';
+
+export interface ResourceItem {
+  id: string;
+  title: string;
+  type: ResourceType;
+  url: string;
+}
+
+export interface LearningMaterial {
+  id: string;
+  topicTitle: string;
+  description?: string;
+  classId: string;
+  subject: string; // <--- NEW FIELD
+  resources: ResourceItem[];
+  uploadedBy: string;
+  createdAt: any;
+}
 
 // --- HELPER ICONS ---
 const MaterialIcon = ({ type }: { type: string }) => {
@@ -110,7 +130,8 @@ function MaterialForm({
 
     try {
         if (inputType === 'file' && tempFile) {
-            const storage = getStorage();
+            // FIX: Hardcode the correct bucket URL found in your Cloud Shell
+            const storage = getStorage(undefined, "gs://studio-525105839-159e4.appspot.com");
             const storageRef = ref(storage, `materials/${Date.now()}_${tempFile.name}`);
             await uploadBytes(storageRef, tempFile);
             finalUrl = await getDownloadURL(storageRef);
@@ -542,4 +563,3 @@ export default function LearningMaterialsPage() {
     </div>
   );
 }
-
