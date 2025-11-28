@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -271,8 +270,8 @@ export default function ScienceClubPage() {
   const [topic, setTopic] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
-  const { role } = useRole();
-  const { user } = useUser();
+  const { role, isRoleLoading } = useRole();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
@@ -310,6 +309,7 @@ export default function ScienceClubPage() {
     }
   };
 
+  const isLoading = isUserLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
     <div className="space-y-6">
@@ -340,7 +340,7 @@ export default function ScienceClubPage() {
                 <CardDescription>Select a topic and difficulty to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {(isLoadingProblems || (role === 'Student' && isLoadingStudent)) ? (
+                {isLoading ? (
                     <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div>
                 ) : 
                 (role === 'Student' && !studentClassId) ? (
