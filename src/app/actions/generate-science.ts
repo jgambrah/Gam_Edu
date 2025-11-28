@@ -13,7 +13,7 @@ const SingleQuestionSchema = z.object({
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
 });
 
-// 2. Define the Output Schema (A list of questions)
+// 2. Define the Output Schema (A container for the array)
 const OutputSchema = z.object({
   questions: z.array(SingleQuestionSchema),
 });
@@ -23,7 +23,7 @@ const OutputSchema = z.object({
 export async function generateScienceQuestionAction(input: { 
   topic: string; 
   difficulty: string; 
-  count: number; // <--- New Input
+  count: number; // <--- Updated to accept count
 }) {
   try {
     const prompt = `
@@ -33,8 +33,8 @@ export async function generateScienceQuestionAction(input: {
     `;
 
     const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
       prompt: prompt,
+      model: 'googleai/gemini-2.5-flash',
       output: { schema: OutputSchema },
     });
 
