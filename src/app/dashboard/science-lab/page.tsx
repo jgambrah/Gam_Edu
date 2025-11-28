@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore'; // Removed orderBy
 import { 
   Atom, Trophy, BrainCircuit, Plus, Loader2, 
   Trash2, Lightbulb, CheckCircle, Database 
@@ -25,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Student, Class } from '@/lib/types';
 
-// --- NEW TYPES (Detached from old system) ---
+// --- TYPES ---
 interface LabQuestion {
   id: string;
   topic: string;
@@ -33,7 +33,7 @@ interface LabQuestion {
   question: string;
   options: string[];
   correctAnswer: string;
-  classId: string; // 'global' or specific ID
+  classId: string;
 }
 
 interface LabFact {
@@ -107,7 +107,7 @@ function AddQuestionForm({ open, setOpen, classes }: { open: boolean, setOpen: (
             });
             toast({ title: 'Saved', description: 'Question added to the Lab.' });
             setOpen(false);
-        } catch (e) {
+        } catch (e: any) {
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to save.' });
         } finally {
             setIsSubmitting(false);
@@ -184,25 +184,24 @@ export default function ScienceLabPage() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. Data Fetching (SAFE MODE: No sorting in query)
-  // Fetch Questions
+  // 1. Fetch Questions (SAFE MODE: No orderBy)
   const questionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_questions')) : null, [firestore]);
   const { data: rawQuestions, isLoading: qLoading } = useCollection<LabQuestion>(questionsQuery);
 
-  // Fetch Facts
+  // 2. Fetch Facts (SAFE MODE: No orderBy)
   const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_facts')) : null, [firestore]);
   const { data: rawFacts } = useCollection<LabFact>(factsQuery);
 
-  // Fetch Student Info (to filter questions)
+  // 3. Fetch Classes
+  const { data: classes } = useCollection<Class>(
+    useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
+  );
+
+  // Get Student Class ID
   const { data: studentData, isLoading: sLoading } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
   const studentClassId = studentData?.[0]?.classId;
-
-  // Fetch Classes (For Admin dropdown)
-  const { data: classes } = useCollection<Class>(
-    useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
-  );
 
   // 2. Data Processing (Client-Side)
   const latestFact = useMemo(() => {
@@ -239,7 +238,7 @@ export default function ScienceLabPage() {
       }
   };
 
-  const isLoading = isUserLoading || isRoleLoading || qLoading || (role === 'Student' && sLoading);
+  const isLoading = isUserLoading || isRoleLoading || qLoading;
 
   return (
     <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
