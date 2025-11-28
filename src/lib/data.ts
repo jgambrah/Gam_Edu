@@ -172,8 +172,8 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/maths-club',
-            title: 'Maths Club',
+            path: '/dashboard/maths-club-v2',
+            title: 'Maths Club 2.0',
             icon: Sigma,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
