@@ -146,11 +146,6 @@ service cloud.firestore {
         allow read, list: if isSignedIn();
         allow write: if isTeacher() || isAdmin();
     }
-    
-    match /materials/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
-    }
 
     // Default deny for everything else that has not been matched
     match /{path=**} {
@@ -161,7 +156,12 @@ service cloud.firestore {
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow any logged-in user to read and write files
+    // Explicitly allow reads and writes to the materials folder for any logged-in user.
+    match /materials/{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+
+    // A general fallback rule for other paths.
     match /{allPaths=**} {
       allow read, write: if request.auth != null;
     }
