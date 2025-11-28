@@ -24,25 +24,23 @@ function QuizComponent() {
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
-  // 1. Fetch Student Data to get Class ID
-  const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+  const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
+    useMemoFirebase(() => user ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  // 2. Update Query to include Class ID
   const problemsQuery = useMemoFirebase(
-    () => (topic && difficulty && studentClassId) // Wait for classId
+    () => (topic && difficulty && studentClassId)
       ? query(
           collection(firestore, 'science_problems'),
           where('topic', '==', topic),
           where('difficulty', '==', difficulty),
-          where('classId', '==', studentClassId) // <--- THIS FIXES THE PERMISSION ERROR
+          where('classId', '==', studentClassId)
         )
       : null,
     [firestore, topic, difficulty, studentClassId]
   );
-  const { data: problems, isLoading } = useCollection<ScienceProblem>(problemsQuery);
+  const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(problemsQuery);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | number>>({});
@@ -52,7 +50,6 @@ function QuizComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Only set start time if it hasn't been set yet
     if (problems && problems.length > 0 && !startTime) {
       setStartTime(new Date());
     }
@@ -123,7 +120,9 @@ function QuizComponent() {
     }
   };
 
-  if (isLoading || isUserLoading) {
+  const isLoading = isUserLoading || isStudentLoading || (studentClassId && isLoadingProblems);
+
+  if (isLoading) {
     return <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin" />;
   }
 
