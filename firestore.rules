@@ -136,6 +136,26 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
     }
+    
+    // --- NEW SCIENCE LAB RULES ---
+    
+    // 1. Questions: Everyone reads, Staff writes
+    match /science_lab_questions/{id} {
+      allow read: if request.auth != null;
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    // 2. Facts: Everyone reads, Staff writes
+    match /science_lab_facts/{id} {
+      allow read: if request.auth != null;
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    // 3. Results: Students write their own, Teachers read all
+    match /science_lab_results/{id} {
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow read: if request.auth.uid == resource.data.userId || isTeacher() || isAdmin();
+    }
 
     match /ela_grammar_drills/{drillId} {
       allow read: if isSignedIn();
