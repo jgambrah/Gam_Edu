@@ -8,7 +8,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play 
+  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play, Atom
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question';
@@ -28,6 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceLeaderboardEntry } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
 
 // --- NEW TYPES (Grouped) ---
 interface Question {
@@ -370,7 +371,7 @@ export default function ScienceLabPageFresh() {
 
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
-  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null); 
+  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null); // <--- Opens Quiz Runner
   
   // Filters
   const [filterTopic, setFilterTopic] = useState('All');
@@ -384,6 +385,10 @@ export default function ScienceLabPageFresh() {
   );
   const studentClassId = studentData?.[0]?.classId;
 
+  const { data: classes } = useCollection<Class>(
+    useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
+  );
+
   // Get Question Sets (NEW COLLECTION)
   const setsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_question_sets')) : null, [firestore]);
   const { data: rawSets, isLoading: qLoading } = useCollection<QuestionSet>(setsQuery);
@@ -392,11 +397,16 @@ export default function ScienceLabPageFresh() {
   const filteredSets = useMemo(() => {
       if(!rawSets) return [];
       let list = rawSets;
+
+      // Filter by Class
       if (role === 'Student') {
           list = list.filter(s => s.classId === 'global' || s.classId === studentClassId);
       }
+
+      // Filter by UI
       if(filterTopic !== 'All') list = list.filter(s => s.topic === filterTopic);
       if(filterDiff !== 'All') list = list.filter(s => s.difficulty === filterDiff);
+
       return list;
   }, [rawSets, role, studentClassId, filterTopic, filterDiff]);
 
@@ -421,7 +431,7 @@ export default function ScienceLabPageFresh() {
               difficulty: meta.difficulty,
               grade: meta.grade,
               classId: 'global',
-              questions: questions,
+              questions: questions, // Array of questions
               createdAt: serverTimestamp()
           });
           toast({ title: 'Saved', description: 'New Quiz Set created.' });
@@ -439,9 +449,9 @@ export default function ScienceLabPageFresh() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
-                <Atom className="h-8 w-8 text-emerald-600"/> The Science Lab
+                <Atom className="h-8 w-8 text-emerald-600"/> Science Lab 3.0
             </h1>
-            <p className="text-slate-500">Explore, Experiment, and Excel.</p>
+            <p className="text-slate-500">Explore question sets and daily facts.</p>
         </div>
         <div className="flex gap-2">
             {isStaff && (
@@ -461,6 +471,7 @@ export default function ScienceLabPageFresh() {
         </TabsList>
 
         <TabsContent value="explore" className="mt-6 space-y-6">
+            {/* FILTERS */}
             <div className="flex gap-4">
                 <Select value={filterTopic} onValueChange={setFilterTopic}>
                     <SelectTrigger className="w-[180px] bg-white"><SelectValue placeholder="Topic" /></SelectTrigger>
@@ -480,6 +491,7 @@ export default function ScienceLabPageFresh() {
                 </Select>
             </div>
 
+            {/* GRID */}
             {isLoading ? (
                 <div className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-emerald-500"/></div>
             ) : filteredSets.length === 0 ? (
@@ -525,13 +537,15 @@ export default function ScienceLabPageFresh() {
             </Card>
         </TabsContent>
       </Tabs>
-      
+
+      {/* AI GENERATOR */}
       <AiGeneratorModal 
         open={isAiOpen} 
         setOpen={setIsAiOpen} 
         onSave={handleAiSave} 
       />
 
+      {/* QUIZ RUNNER */}
       <QuizRunnerDialog 
         questionSet={attemptingSet}
         open={!!attemptingSet}
@@ -540,4 +554,3 @@ export default function ScienceLabPageFresh() {
     </div>
   );
 }
-
