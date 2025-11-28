@@ -8,7 +8,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play 
+  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play, Atom
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question';
@@ -28,6 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceLeaderboardEntry } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
 
 // --- NEW TYPES (Grouped) ---
 interface Question {
@@ -277,7 +278,7 @@ function AiGeneratorModal({
     );
 }
 
-// --- COMPONENT: Fact of the Day (FIXED) ---
+// --- COMPONENT: Fact of the Day (Fixed) ---
 function FactOfTheDay() {
     const firestore = useFirestore();
     const { user } = useAuth();
