@@ -128,7 +128,8 @@ service cloud.firestore {
     }
 
     match /science_problems/{problemId} {
-      allow read: if true; // <--- Force open for testing
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
     }
 
