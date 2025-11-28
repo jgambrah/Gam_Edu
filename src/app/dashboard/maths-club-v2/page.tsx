@@ -8,7 +8,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { 
   Sigma, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2, BookOpen, CheckCircle2 
+  Trash2, BookOpen, CheckCircle2, Wand2 
 } from 'lucide-react';
 
 // UI Components
@@ -19,12 +19,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, MathProblem } from '@/lib/types';
+import { AiProblemGenerator } from '../ai-problem-generator';
 
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
@@ -170,6 +171,7 @@ export default function MathsClubPageV2() {
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAiFormOpen, setIsAiFormOpen] = useState(false);
   
   // Filters
   const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -284,9 +286,15 @@ export default function MathsClubPageV2() {
                         <CardDescription>Select filters to find problems.</CardDescription>
                     </div>
                     {isStaff && (
-                        <Button onClick={() => setIsFormOpen(true)} size="sm">
-                            <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
-                        </Button>
+                        <div className="flex gap-2">
+                            <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                                <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                                <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Math" setOpen={setIsAiFormOpen} /></DialogContent>
+                            </Dialog>
+                            <Button onClick={() => setIsFormOpen(true)} size="sm">
+                                <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
+                            </Button>
+                        </div>
                     )}
                 </CardHeader>
                 <CardContent className="space-y-6">
