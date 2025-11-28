@@ -3,16 +3,15 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-// All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
-  Atom, Trophy, BrainCircuit, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Database, Wand2, Sparkles, XCircle 
+  FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
+  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play 
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { generateScienceQuestionAction } from '@/app/actions/generate-science'; 
+import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -29,17 +28,23 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceLeaderboardEntry } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Separator } from '@/components/ui/separator';
 
-// --- TYPES ---
-interface LabQuestion {
-  id: string;
-  topic: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+// --- NEW TYPES (Grouped) ---
+interface Question {
   question: string;
   options: string[];
   correctAnswer: string;
+}
+
+interface QuestionSet {
+  id: string;
+  title: string; // e.g. "Photosynthesis (5 Qs)"
+  topic: string;
+  difficulty: string;
+  grade: string;
+  questions: Question[]; // Array of questions inside one doc
   classId: string;
+  createdAt: any;
 }
 
 interface LabFact {
@@ -48,85 +53,120 @@ interface LabFact {
   createdAt: any;
 }
 
-// --- COMPONENT: Attempt Question Dialog ---
-function AttemptQuestionDialog({ 
-    question, 
+// --- COMPONENT: Quiz Runner (Handles multiple questions) ---
+function QuizRunnerDialog({ 
+    questionSet, 
     open, 
     setOpen 
 }: { 
-    question: LabQuestion | null, 
+    questionSet: QuestionSet | null, 
     open: boolean, 
     setOpen: (o: boolean) => void 
 }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState('');
-    const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
+    const [score, setScore] = useState(0);
+    const [isFinished, setIsFinished] = useState(false);
+    const [showFeedback, setShowFeedback] = useState(false); // Show right/wrong for current question
 
-    if (!question) return null;
+    if (!questionSet) return null;
+
+    const currentQuestion = questionSet.questions[currentIndex];
+    const totalQuestions = questionSet.questions.length;
 
     const handleCheck = () => {
-        if (selectedOption === question.correctAnswer) {
-            setStatus('correct');
+        const isCorrect = selectedOption === currentQuestion.correctAnswer;
+        if (isCorrect) setScore(s => s + 1);
+        setShowFeedback(true);
+    };
+
+    const handleNext = () => {
+        setShowFeedback(false);
+        setSelectedOption('');
+        if (currentIndex < totalQuestions - 1) {
+            setCurrentIndex(prev => prev + 1);
         } else {
-            setStatus('wrong');
+            setIsFinished(true);
         }
     };
 
     const handleClose = () => {
         setOpen(false);
-        setStatus('idle');
-        setSelectedOption('');
+        // Reset state after closing
+        setTimeout(() => {
+            setCurrentIndex(0);
+            setScore(0);
+            setIsFinished(false);
+            setShowFeedback(false);
+            setSelectedOption('');
+        }, 300);
     };
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                    <DialogTitle>Science Challenge</DialogTitle>
-                    <DialogDescription>{question.topic} • {question.difficulty}</DialogDescription>
+                    <DialogTitle>{questionSet.title}</DialogTitle>
+                    <DialogDescription>
+                        Question {currentIndex + 1} of {totalQuestions} • Score: {score}
+                    </DialogDescription>
                 </DialogHeader>
                 
-                <div className="space-y-6 py-4">
-                    <p className="text-lg font-medium">{question.question}</p>
-                    
-                    <RadioGroup value={selectedOption} onValueChange={(val) => { setSelectedOption(val); setStatus('idle'); }}>
-                        {(question.options || []).map((opt, i) => (
-                            <div key={i} className={`flex items-center space-x-2 border p-3 rounded-md transition-colors ${
-                                status === 'correct' && opt === question.correctAnswer ? 'bg-green-100 border-green-500' :
-                                status === 'wrong' && opt === selectedOption ? 'bg-red-100 border-red-500' : 'hover:bg-slate-50'
-                            }`}>
-                                <RadioGroupItem value={opt} id={`opt-${i}`} disabled={status === 'correct'} />
-                                <Label htmlFor={`opt-${i}`} className="flex-grow cursor-pointer">{opt}</Label>
-                                {status === 'correct' && opt === question.correctAnswer && <CheckCircle2 className="h-5 w-5 text-green-600"/>}
-                                {status === 'wrong' && opt === selectedOption && <XCircle className="h-5 w-5 text-red-600"/>}
-                            </div>
-                        ))}
-                    </RadioGroup>
-
-                    {status === 'correct' && (
-                        <div className="bg-green-50 text-green-800 p-3 rounded-md text-center font-bold">
-                            Correct! Great job, Scientist!
+                {!isFinished ? (
+                    <div className="space-y-6 py-4">
+                        <div className="bg-slate-50 p-4 rounded-lg border">
+                            <p className="text-lg font-medium text-slate-800">{currentQuestion.question}</p>
                         </div>
-                    )}
-                    {status === 'wrong' && (
-                        <div className="bg-red-50 text-red-800 p-3 rounded-md text-center font-bold">
-                            Oops! That's not right. Try again.
-                        </div>
-                    )}
-                </div>
+                        
+                        <RadioGroup value={selectedOption} onValueChange={setSelectedOption}>
+                            {currentQuestion.options.map((opt, i) => {
+                                let style = "border hover:bg-slate-50";
+                                if (showFeedback) {
+                                    if (opt === currentQuestion.correctAnswer) style = "bg-green-100 border-green-500 text-green-800";
+                                    else if (opt === selectedOption) style = "bg-red-100 border-red-500 text-red-800";
+                                    else style = "opacity-50";
+                                } else if (opt === selectedOption) {
+                                    style = "border-indigo-500 bg-indigo-50";
+                                }
 
-                <DialogFooter>
-                    {status === 'correct' ? (
-                        <Button onClick={handleClose} className="w-full bg-green-600 hover:bg-green-700">Next Question</Button>
-                    ) : (
-                        <Button onClick={handleCheck} disabled={!selectedOption} className="w-full">Check Answer</Button>
-                    )}
-                </DialogFooter>
+                                return (
+                                    <div key={i} className={`flex items-center space-x-2 p-3 rounded-md transition-colors cursor-pointer ${style}`}>
+                                        <RadioGroupItem value={opt} id={`opt-${i}`} disabled={showFeedback} />
+                                        <Label htmlFor={`opt-${i}`} className="flex-grow cursor-pointer">{opt}</Label>
+                                        {showFeedback && opt === currentQuestion.correctAnswer && <CheckCircle2 className="h-5 w-5 text-green-600"/>}
+                                        {showFeedback && opt === selectedOption && opt !== currentQuestion.correctAnswer && <XCircle className="h-5 w-5 text-red-600"/>}
+                                    </div>
+                                )
+                            })}
+                        </RadioGroup>
+
+                        <DialogFooter>
+                            {!showFeedback ? (
+                                <Button onClick={handleCheck} disabled={!selectedOption} className="w-full bg-indigo-600 hover:bg-indigo-700">Check Answer</Button>
+                            ) : (
+                                <Button onClick={handleNext} className="w-full">
+                                    {currentIndex < totalQuestions - 1 ? "Next Question" : "Finish Quiz"}
+                                </Button>
+                            )}
+                        </DialogFooter>
+                    </div>
+                ) : (
+                    <div className="text-center py-8 space-y-4">
+                        <Trophy className="h-16 w-16 mx-auto text-yellow-400" />
+                        <h3 className="text-2xl font-bold text-slate-800">Quiz Complete!</h3>
+                        <p className="text-lg text-slate-600">You scored {score} out of {totalQuestions}</p>
+                        <div className="w-full bg-slate-200 rounded-full h-4 overflow-hidden">
+                            <div className="bg-green-500 h-full transition-all" style={{ width: `${(score / totalQuestions) * 100}%` }}></div>
+                        </div>
+                        <Button onClick={handleClose} className="w-full mt-4">Close</Button>
+                    </div>
+                )}
             </DialogContent>
         </Dialog>
     );
 }
 
-// --- COMPONENT: AI Generator Modal (UPDATED) ---
+// --- COMPONENT: AI Generator Modal (Creates Sets) ---
 function AiGeneratorModal({ 
     open, 
     setOpen, 
@@ -134,15 +174,14 @@ function AiGeneratorModal({
 }: { 
     open: boolean, 
     setOpen: (o: boolean) => void,
-    onSave: (data: any) => Promise<void>
+    onSave: (data: any, meta: any) => Promise<void>
 }) {
     const [topic, setTopic] = useState('');
-    const [grade, setGrade] = useState('JHS 1'); // New State
+    const [grade, setGrade] = useState('JHS 1');
     const [difficulty, setDifficulty] = useState('Beginner');
-    const [count, setCount] = useState(1); // New State
-    
+    const [count, setCount] = useState(3); // Default to 3 for a set
     const [isGenerating, setIsGenerating] = useState(false);
-    const [previewData, setPreviewData] = useState<any[] | null>(null); // Array now
+    const [previewData, setPreviewData] = useState<any[] | null>(null);
 
     const handleGenerate = async () => {
         if (!topic) return;
@@ -150,14 +189,7 @@ function AiGeneratorModal({
         setPreviewData(null);
         
         try {
-            // Call updated Server Action
-            const result = await generateScienceQuestionAction({ 
-                topic, 
-                difficulty, 
-                grade,
-                count 
-            });
-            
+            const result = await generateScienceQuestionAction({ topic, difficulty, grade, count });
             if (result.success && result.data) {
                 setPreviewData(result.data);
             } else {
@@ -173,9 +205,8 @@ function AiGeneratorModal({
 
     const handleConfirm = async () => {
         if (previewData && previewData.length > 0) {
-            for (const question of previewData) {
-                await onSave({ ...question, classId: 'global' });
-            }
+            // Save as ONE document (The Set)
+            await onSave(previewData, { topic, difficulty, grade, count });
             setOpen(false);
             setPreviewData(null);
             setTopic('');
@@ -187,33 +218,17 @@ function AiGeneratorModal({
             <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-purple-700">
-                        <Sparkles className="h-5 w-5"/> AI Question Generator
+                        <Sparkles className="h-5 w-5"/> AI Quiz Generator
                     </DialogTitle>
-                    <DialogDescription>
-                        Generate multiple choice questions instantly.
-                    </DialogDescription>
+                    <DialogDescription>Create a complete quiz set in seconds.</DialogDescription>
                 </DialogHeader>
 
                 {!previewData ? (
                     <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <Label>Topic / Concept</Label>
-                            <Input 
-                                value={topic} 
-                                onChange={e => setTopic(e.target.value)} 
-                                placeholder="e.g. Solar System, Atoms, Gravity" 
-                            />
-                        </div>
+                        <div className="space-y-2"><Label>Topic</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Digestive System" /></div>
                         <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2"><Label>Grade</Label><Input value={grade} onChange={e => setGrade(e.target.value)} /></div>
                              <div className="space-y-2">
-                                <Label>Target Grade</Label>
-                                <Input 
-                                    value={grade} 
-                                    onChange={e => setGrade(e.target.value)} 
-                                    placeholder="e.g. JHS 1, Grade 6" 
-                                />
-                            </div>
-                            <div className="space-y-2">
                                 <Label>Difficulty</Label>
                                 <Select value={difficulty} onValueChange={setDifficulty}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -226,7 +241,7 @@ function AiGeneratorModal({
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label>Number of Questions</Label>
+                            <Label>Questions in Set</Label>
                             <Select value={count.toString()} onValueChange={(v) => setCount(Number(v))}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
@@ -237,44 +252,23 @@ function AiGeneratorModal({
                                 </SelectContent>
                             </Select>
                         </div>
-
-                        <Button 
-                            onClick={handleGenerate} 
-                            disabled={isGenerating || !topic} 
-                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold mt-2"
-                        >
-                            {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Generating {count} questions...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate</>}
+                        <Button onClick={handleGenerate} disabled={isGenerating || !topic} className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-2">
+                            {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Creating Quiz...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate Quiz</>}
                         </Button>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-4 overflow-hidden">
-                        <div className="bg-purple-50 p-2 rounded-md border border-purple-100 flex-1 overflow-y-auto pr-2">
-                            <p className="font-semibold text-xs text-purple-600 mb-3 uppercase tracking-wide sticky top-0 bg-purple-50 pb-2">
-                                Preview ({previewData.length} Questions)
-                            </p>
-                            
-                            <div className="space-y-6">
-                                {previewData.map((q, idx) => (
-                                    <div key={idx} className="border-b border-purple-200 pb-4 last:border-0">
-                                        <p className="font-medium text-md mb-2 text-slate-800">
-                                            {idx + 1}. {q.question}
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {(q.options || []).map((opt: string, i: number) => (
-                                                <div key={i} className={`p-2 text-xs border rounded-md ${opt === q.correctAnswer ? 'bg-green-100 border-green-300 font-bold text-green-800' : 'bg-white text-slate-600'}`}>
-                                                    {opt} {opt === q.correctAnswer && "✓"}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                        <div className="bg-purple-50 p-3 rounded-md border border-purple-100 flex-1 overflow-y-auto">
+                            <p className="font-bold text-purple-800 mb-2">Preview: {previewData.length} Questions generated</p>
+                            <ul className="list-disc pl-5 space-y-1 text-sm text-slate-700">
+                                {previewData.map((q, i) => (
+                                    <li key={i}>{q.question}</li>
                                 ))}
-                            </div>
+                            </ul>
                         </div>
                         <div className="flex gap-2 mt-auto pt-2">
                             <Button variant="outline" onClick={() => setPreviewData(null)} className="flex-1">Discard</Button>
-                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
-                                Save All to Library
-                            </Button>
+                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700 text-white">Save Quiz Set</Button>
                         </div>
                     </div>
                 )}
@@ -283,7 +277,7 @@ function AiGeneratorModal({
     );
 }
 
-// --- COMPONENT: Fact of the Day (FIXED) ---
+// --- COMPONENT: Fact of the Day (Fixed) ---
 function FactOfTheDay() {
     const firestore = useFirestore();
     const { user } = useAuth();
@@ -294,7 +288,6 @@ function FactOfTheDay() {
     
     const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-    // FIX: Use 'science_lab_facts' to match the new system
     const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_facts')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<LabFact>(factsQuery);
 
@@ -304,20 +297,32 @@ function FactOfTheDay() {
     }, [facts]);
 
     const handlePostFact = async () => {
-        if (!factText.trim() || !user) return;
+        if (!factText.trim()) {
+            toast({ variant: 'destructive', title: "Error", description: "Fact cannot be empty." });
+            return;
+        }
+        if (!user) {
+            toast({ variant: 'destructive', title: "Error", description: "You must be logged in." });
+            return;
+        }
+
         setIsPosting(true);
         try {
-            // FIX: Post to 'science_lab_facts'
+            console.log("Posting fact to science_lab_facts...");
             await addDoc(collection(firestore, 'science_lab_facts'), {
-                text: factText, // Use 'text' to match Type interface
+                text: factText,
                 createdAt: serverTimestamp(),
                 postedBy: user.uid,
             });
-            toast({ title: 'Success', description: 'Fact posted.' });
+            toast({ title: 'Success', description: 'Fact posted successfully.' });
             setFactText('');
         } catch (error: any) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message });
+            console.error("Fact Post Error:", error);
+            if (error.code === 'permission-denied') {
+                 toast({ variant: 'destructive', title: 'Permission Denied', description: 'Check Firestore Rules for science_lab_facts.' });
+            } else {
+                 toast({ variant: 'destructive', title: 'Error', description: error.message });
+            }
         } finally {
             setIsPosting(false);
         }
@@ -356,156 +361,16 @@ function FactOfTheDay() {
     );
 }
 
-// --- COMPONENT: Add Question Form (Manual) ---
-function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined, onAiOpen: () => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const [topic, setTopic] = useState('');
-    const [difficulty, setDifficulty] = useState('Beginner');
-    const [classId, setClassId] = useState('global');
-    const [question, setQuestion] = useState('');
-    const [options, setOptions] = useState(['', '', '', '']);
-    const [correctAnswer, setCorrectAnswer] = useState('');
-
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            await addDoc(collection(firestore, 'science_lab_questions'), {
-                topic, difficulty, classId, question, options, correctAnswer, createdAt: serverTimestamp()
-            });
-            toast({ title: 'Saved', description: 'Question added.' });
-            setOpen(false);
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: 'Error', description: e.message });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handleOptionChange = (idx: number, val: string) => {
-        const newOpts = [...options];
-        newOpts[idx] = val;
-        setOptions(newOpts);
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Add Lab Question (Manual)</DialogTitle></DialogHeader>
-                
-                <div className="space-y-4 py-4">
-                     <Button variant="outline" onClick={() => { setOpen(false); onAiOpen(); }} className="w-full border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
-                        <Wand2 className="mr-2 h-4 w-4"/> Switch to AI Generator
-                    </Button>
-                    <div className="relative">
-                        <Separator />
-                        <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-background px-2 text-xs text-muted-foreground">OR ENTER MANUALLY</span>
-                    </div>
-
-                    <form onSubmit={handleSave} className="space-y-4">
-                       <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label>Topic</Label>
-                                <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Physics" required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Difficulty</Label>
-                                <Select value={difficulty} onValueChange={setDifficulty}>
-                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Beginner">Beginner</SelectItem>
-                                        <SelectItem value="Intermediate">Intermediate</SelectItem>
-                                        <SelectItem value="Advanced">Advanced</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Target Class</Label>
-                            <Select value={classId} onValueChange={setClassId}>
-                                <SelectTrigger><SelectValue/></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="global">All Classes (Global)</SelectItem>
-                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Question</Label>
-                            <Textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="Enter question..." required />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                            {options.map((opt, i) => (
-                                <Input key={i} value={opt} onChange={e => handleOptionChange(i, e.target.value)} placeholder={`Option ${i+1}`} required />
-                            ))}
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Correct Answer (Exact Match)</Label>
-                            <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="Paste correct option here" required />
-                        </div>
-                        <Button type="submit" disabled={isSubmitting} className="w-full">Save Question</Button>
-                    </form>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-// --- COMPONENT: Admin Seed Button ---
-function SetupButton({ isStaff }: { isStaff: boolean }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [loading, setLoading] = useState(false);
-
-    if (!isStaff) return null;
-
-    const initialize = async () => {
-        setLoading(true);
-        try {
-            await addDoc(collection(firestore, 'science_lab_questions'), {
-                topic: 'General',
-                difficulty: 'Beginner',
-                question: 'What planet do we live on?',
-                options: ['Mars', 'Earth', 'Venus', 'Jupiter'],
-                correctAnswer: 'Earth',
-                classId: 'global',
-                createdAt: serverTimestamp()
-            });
-            await addDoc(collection(firestore, 'science_lab_facts'), {
-                text: 'Water expands when it freezes.',
-                createdAt: serverTimestamp()
-            });
-            toast({ title: "System Initialized", description: "Collections created successfully." });
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <Button variant="outline" size="sm" onClick={initialize} disabled={loading} className="border-indigo-200 text-indigo-700 bg-indigo-50">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
-            Initialize New Database
-        </Button>
-    );
-}
-
-// --- MAIN PAGE ---
+// --- MAIN PAGE COMPONENT ---
 export default function ScienceLabPageFresh() {
-  const router = useRouter();
   const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
-  const [attemptingQuestion, setAttemptingQuestion] = useState<LabQuestion | null>(null); 
+  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null); 
   
   // Filters
   const [filterTopic, setFilterTopic] = useState('All');
@@ -514,54 +379,54 @@ export default function ScienceLabPageFresh() {
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   // Data Loading
-  const questionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_questions')) : null, [firestore]);
-  const { data: rawQuestions, isLoading: qLoading } = useCollection<LabQuestion>(questionsQuery);
-
-  const { data: classes } = useCollection<Class>(
-    useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
-  );
-
   const { data: studentData, isLoading: sLoading } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  // Filtering
-  const filteredQuestions = useMemo(() => {
-      if(!rawQuestions) return [];
-      let list = rawQuestions;
+  // Get Question Sets (NEW COLLECTION)
+  const setsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_question_sets')) : null, [firestore]);
+  const { data: rawSets, isLoading: qLoading } = useCollection<QuestionSet>(setsQuery);
 
+  // Filtering Logic
+  const filteredSets = useMemo(() => {
+      if(!rawSets) return [];
+      let list = rawSets;
       if (role === 'Student') {
-          list = list.filter(q => q.classId === 'global' || q.classId === studentClassId);
+          list = list.filter(s => s.classId === 'global' || s.classId === studentClassId);
       }
-
-      if(filterTopic !== 'All') list = list.filter(q => q.topic === filterTopic);
-      if(filterDiff !== 'All') list = list.filter(q => q.difficulty === filterDiff);
-
+      if(filterTopic !== 'All') list = list.filter(s => s.topic === filterTopic);
+      if(filterDiff !== 'All') list = list.filter(s => s.difficulty === filterDiff);
       return list;
-  }, [rawQuestions, role, studentClassId, filterTopic, filterDiff]);
+  }, [rawSets, role, studentClassId, filterTopic, filterDiff]);
 
   const uniqueTopics = useMemo(() => {
-      if(!rawQuestions) return [];
-      return Array.from(new Set(rawQuestions.map(q => q.topic))).sort();
-  }, [rawQuestions]);
+      if(!rawSets) return [];
+      return Array.from(new Set(rawSets.map(s => s.topic))).sort();
+  }, [rawSets]);
 
   const handleDelete = async (id: string) => {
-      if(confirm('Delete this question?')) {
-          await deleteDoc(doc(firestore, 'science_lab_questions', id));
+      if(confirm('Delete this quiz set?')) {
+          await deleteDoc(doc(firestore, 'science_question_sets', id));
           toast({ title: 'Deleted' });
       }
   };
 
-  // Handler for saving AI questions (can be single or array)
-  const handleAiSave = async (data: any) => {
+  // Handler for saving AI Quiz Set
+  const handleAiSave = async (questions: any[], meta: any) => {
       try {
-          await addDoc(collection(firestore, 'science_lab_questions'), {
-              ...data,
+          await addDoc(collection(firestore, 'science_question_sets'), {
+              title: `${meta.topic} (${meta.count} Qs)`,
+              topic: meta.topic,
+              difficulty: meta.difficulty,
+              grade: meta.grade,
+              classId: 'global',
+              questions: questions,
               createdAt: serverTimestamp()
           });
-          toast({ title: 'Saved', description: 'AI Question added.' });
+          toast({ title: 'Saved', description: 'New Quiz Set created.' });
       } catch (e: any) {
+          console.error(e);
           toast({ variant: 'destructive', title: 'Error', description: e.message });
       }
   };
@@ -571,7 +436,6 @@ export default function ScienceLabPageFresh() {
   return (
     <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
       
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
@@ -580,32 +444,23 @@ export default function ScienceLabPageFresh() {
             <p className="text-slate-500">Explore, Experiment, and Excel.</p>
         </div>
         <div className="flex gap-2">
-            <SetupButton isStaff={isStaff} />
             {isStaff && (
-                <>
-                    <Button variant="outline" onClick={() => setIsAiOpen(true)} className="border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
-                        <Wand2 className="mr-2 h-4 w-4"/> AI Generate
-                    </Button>
-                    <Button onClick={() => setIsFormOpen(true)} className="bg-emerald-600 hover:bg-emerald-700">
-                        <Plus className="mr-2 h-4 w-4"/> Manual Add
-                    </Button>
-                </>
+                <Button onClick={() => setIsAiOpen(true)} className="bg-purple-600 hover:bg-purple-700 text-white shadow-md">
+                    <Wand2 className="mr-2 h-4 w-4"/> AI Generate Quiz
+                </Button>
             )}
         </div>
       </div>
 
-      {/* FACT OF THE DAY */}
       <FactOfTheDay />
 
-      {/* TABS */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="explore">Question Bank</TabsTrigger>
+            <TabsTrigger value="explore">Quiz Library</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
         </TabsList>
 
         <TabsContent value="explore" className="mt-6 space-y-6">
-            {/* FILTERS */}
             <div className="flex gap-4">
                 <Select value={filterTopic} onValueChange={setFilterTopic}>
                     <SelectTrigger className="w-[180px] bg-white"><SelectValue placeholder="Topic" /></SelectTrigger>
@@ -625,34 +480,34 @@ export default function ScienceLabPageFresh() {
                 </Select>
             </div>
 
-            {/* GRID */}
             {isLoading ? (
                 <div className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-emerald-500"/></div>
-            ) : filteredQuestions.length === 0 ? (
+            ) : filteredSets.length === 0 ? (
                 <div className="text-center py-20 border-2 border-dashed rounded-xl">
-                    <BrainCircuit className="h-12 w-12 text-slate-300 mx-auto mb-4"/>
-                    <p className="text-slate-500">No questions found.</p>
+                    <FolderOpen className="h-12 w-12 text-slate-300 mx-auto mb-4"/>
+                    <p className="text-slate-500">No quizzes found.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredQuestions.map((q) => (
-                        <Card key={q.id} className="hover:shadow-md transition-shadow border-t-4 border-t-emerald-400">
+                    {filteredSets.map((set) => (
+                        <Card key={set.id} className="hover:shadow-md transition-shadow border-t-4 border-t-purple-400">
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
-                                    <Badge variant="outline">{q.topic}</Badge>
-                                    {isStaff && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete(q.id)}><Trash2 className="h-4 w-4"/></Button>}
+                                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">{set.topic}</Badge>
+                                    {isStaff && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete(set.id)}><Trash2 className="h-4 w-4"/></Button>}
                                 </div>
-                                <CardTitle className="text-base mt-2 line-clamp-2">{q.question}</CardTitle>
+                                <CardTitle className="text-lg mt-2">{set.title}</CardTitle>
+                                <CardDescription>{set.difficulty} • {set.grade || 'General'}</CardDescription>
                             </CardHeader>
                             <CardContent className="pb-2">
-                                <p className="text-xs text-slate-400">{q.difficulty} • {q.classId === 'global' ? 'Global' : 'Class'}</p>
+                                <p className="text-xs text-slate-400">Contains {set.questions?.length || 0} Questions</p>
                             </CardContent>
                             <CardFooter className="pt-0">
                                 <Button 
-                                    onClick={() => setAttemptingQuestion(q)} 
-                                    className="w-full bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                                    onClick={() => setAttemptingSet(set)} 
+                                    className="w-full bg-slate-100 text-slate-700 hover:bg-purple-50 hover:text-purple-700 group"
                                 >
-                                    Attempt Question
+                                    <Play className="mr-2 h-4 w-4 group-hover:fill-current"/> Start Quiz
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -663,16 +518,13 @@ export default function ScienceLabPageFresh() {
 
         <TabsContent value="leaderboard">
             <Card>
-                <CardContent className="p-8 text-center">
+                <CardContent className="p-8 text-center text-muted-foreground">
                     <Trophy className="h-12 w-12 mx-auto mb-4 text-yellow-400"/>
                     <p>Leaderboard coming soon!</p>
                 </CardContent>
             </Card>
         </TabsContent>
       </Tabs>
-
-      {/* MODALS */}
-      <AddQuestionForm open={isFormOpen} setOpen={setIsFormOpen} classes={classes} />
       
       <AiGeneratorModal 
         open={isAiOpen} 
@@ -680,10 +532,10 @@ export default function ScienceLabPageFresh() {
         onSave={handleAiSave} 
       />
 
-      <AttemptQuestionDialog 
-        question={attemptingQuestion}
-        open={!!attemptingQuestion}
-        setOpen={(val) => { if(!val) setAttemptingQuestion(null); }}
+      <QuizRunnerDialog 
+        questionSet={attemptingSet}
+        open={!!attemptingSet}
+        setOpen={(val) => { if(!val) setAttemptingSet(null); }}
       />
     </div>
   );
