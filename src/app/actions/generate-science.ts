@@ -8,7 +8,7 @@ import { z } from 'zod';
 const SingleQuestionSchema = z.object({
   question: z.string().describe("The science question text"),
   options: z.array(z.string()).length(4).describe("4 possible answers"),
-  correctAnswer: z.string().describe("The correct answer (must match one of the options exactly)"),
+  correctAnswer: z.string().describe("The correct answer (must match one option exactly)"),
   topic: z.string().describe("The specific sub-topic"),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']),
 });
@@ -23,13 +23,16 @@ const OutputSchema = z.object({
 export async function generateScienceQuestionAction(input: { 
   topic: string; 
   difficulty: string; 
+  grade: string; // <--- NEW: Grade Level
   count: number; // <--- Updated to accept count
 }) {
   try {
     const prompt = `
       Generate ${input.count} unique ${input.difficulty} level multiple-choice science questions about "${input.topic}".
-      Target audience: Junior High School students.
+      Target Audience: Students in ${input.grade}.
+      Ensure the language is appropriate for this grade level.
       Ensure the correct answer is included in the options.
+      Output strictly JSON.
     `;
 
     const { output } = await ai.generate({
