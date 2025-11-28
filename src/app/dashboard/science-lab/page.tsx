@@ -42,7 +42,7 @@ interface LabQuestion {
   classId: string;
 }
 
-// --- COMPONENT: Attempt Question Dialog ---
+// --- COMPONENT: Attempt Question Dialog (The Fix for Issue 1) ---
 function AttemptQuestionDialog({ 
     question, 
     open, 
@@ -83,7 +83,7 @@ function AttemptQuestionDialog({
                     <p className="text-lg font-medium">{question.question}</p>
                     
                     <RadioGroup value={selectedOption} onValueChange={(val) => { setSelectedOption(val); setStatus('idle'); }}>
-                        {question.options.map((opt, i) => (
+                        {question.options && question.options.map((opt, i) => (
                             <div key={i} className={`flex items-center space-x-2 border p-3 rounded-md transition-colors ${
                                 status === 'correct' && opt === question.correctAnswer ? 'bg-green-100 border-green-500' :
                                 status === 'wrong' && opt === selectedOption ? 'bg-red-100 border-red-500' : 'hover:bg-slate-50'
@@ -120,7 +120,7 @@ function AttemptQuestionDialog({
     );
 }
 
-// --- COMPONENT: AI Generator Modal ---
+// --- COMPONENT: AI Generator Modal (The Fix for Issue 2) ---
 function AiGeneratorModal({ 
     open, 
     setOpen, 
@@ -146,7 +146,7 @@ function AiGeneratorModal({
             const result = await generateScienceQuestionAction({ topic, difficulty, count });
             
             if (result.success && result.data) {
-                setPreviewData(result.data);
+                setPreviewData(result.data); // This is now an array of questions
             } else {
                 alert("AI Error: " + result.error);
             }
@@ -481,8 +481,9 @@ export default function ScienceLabPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
-  const [attemptingQuestion, setAttemptingQuestion] = useState<LabQuestion | null>(null);
+  const [attemptingQuestion, setAttemptingQuestion] = useState<LabQuestion | null>(null); // For the new dialog
   
+  // Filters
   const [filterTopic, setFilterTopic] = useState('All');
   const [filterDiff, setFilterDiff] = useState('All');
 
@@ -491,9 +492,6 @@ export default function ScienceLabPage() {
   // Data Loading
   const questionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_questions')) : null, [firestore]);
   const { data: rawQuestions, isLoading: qLoading } = useCollection<LabQuestion>(questionsQuery);
-
-  const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_facts')) : null, [firestore]);
-  const { data: rawFacts } = useCollection<LabFact>(factsQuery);
 
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
