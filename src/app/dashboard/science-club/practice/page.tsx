@@ -24,15 +24,23 @@ function QuizComponent() {
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
+  // 1. Fetch Student Data to get Class ID
+  const { data: studentData } = useCollection<Student>(
+    useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user])
+  );
+  const studentClassId = studentData?.[0]?.classId;
+
+  // 2. Update Query to include Class ID
   const problemsQuery = useMemoFirebase(
-    () => (topic && difficulty)
+    () => (topic && difficulty && studentClassId) // Wait for classId
       ? query(
           collection(firestore, 'science_problems'),
           where('topic', '==', topic),
-          where('difficulty', '==', difficulty)
+          where('difficulty', '==', difficulty),
+          where('classId', '==', studentClassId) // <--- THIS FIXES THE PERMISSION ERROR
         )
       : null,
-    [firestore, topic, difficulty]
+    [firestore, topic, difficulty, studentClassId]
   );
   const { data: problems, isLoading } = useCollection<ScienceProblem>(problemsQuery);
 
