@@ -2,9 +2,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
+// All imports consolidated here.
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   Atom, Trophy, BrainCircuit, Plus, Loader2, 
   Trash2, Lightbulb, CheckCircle, Database, Wand2, Sparkles 
@@ -227,11 +229,10 @@ function SetupButton({ isStaff }: { isStaff: boolean }) {
 }
 
 // --- COMPONENT: Add Question Form (Manual) ---
-function AddQuestionForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
+function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined, onAiOpen: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isAiOpen, setIsAiOpen] = useState(false);
 
     const [topic, setTopic] = useState('');
     const [difficulty, setDifficulty] = useState('Beginner');
@@ -261,87 +262,65 @@ function AddQuestionForm({ open, setOpen, classes }: { open: boolean, setOpen: (
         newOpts[idx] = val;
         setOptions(newOpts);
     };
-    
-     const handleAiSave = async (data: any) => {
-        try {
-            await addDoc(collection(firestore, 'science_lab_questions'), {
-                ...data,
-                createdAt: serverTimestamp()
-            });
-            toast({ title: 'Saved', description: 'AI Question added to library.' });
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to save AI question.' + e.message });
-        }
-    };
 
     return (
-        <>
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Add Lab Question (Manual)</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                         <Button variant="outline" onClick={() => setIsAiOpen(true)} className="w-full border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
-                            <Wand2 className="mr-2 h-4 w-4"/> Switch to AI Generator
-                        </Button>
-                        <div className="relative">
-                            <Separator />
-                            <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-background px-2 text-xs text-muted-foreground">OR ENTER MANUALLY</span>
-                        </div>
-                        <form onSubmit={handleSave} className="space-y-4">
-                           <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Topic</Label>
-                                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Physics" required />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Difficulty</Label>
-                                    <Select value={difficulty} onValueChange={setDifficulty}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Beginner">Beginner</SelectItem>
-                                            <SelectItem value="Intermediate">Intermediate</SelectItem>
-                                            <SelectItem value="Advanced">Advanced</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>Add Lab Question (Manual)</DialogTitle></DialogHeader>
+                <div className="space-y-4 py-4">
+                     <Button variant="outline" onClick={() => { setOpen(false); onAiOpen(); }} className="w-full border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
+                        <Wand2 className="mr-2 h-4 w-4"/> Switch to AI Generator
+                    </Button>
+                    <div className="relative">
+                        <Separator />
+                        <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-background px-2 text-xs text-muted-foreground">OR ENTER MANUALLY</span>
+                    </div>
+                    <form onSubmit={handleSave} className="space-y-4">
+                       <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Topic</Label>
+                                <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Physics" required />
                             </div>
                             <div className="space-y-2">
-                                <Label>Target Class</Label>
-                                <Select value={classId} onValueChange={setClassId}>
+                                <Label>Difficulty</Label>
+                                <Select value={difficulty} onValueChange={setDifficulty}>
                                     <SelectTrigger><SelectValue/></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="global">All Classes (Global)</SelectItem>
-                                        {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                        <SelectItem value="Beginner">Beginner</SelectItem>
+                                        <SelectItem value="Intermediate">Intermediate</SelectItem>
+                                        <SelectItem value="Advanced">Advanced</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Question</Label>
-                                <Textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="Enter question..." required />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                {options.map((opt, i) => (
-                                    <Input key={i} value={opt} onChange={e => handleOptionChange(i, e.target.value)} placeholder={`Option ${i+1}`} required />
-                                ))}
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Correct Answer (Exact Match)</Label>
-                                <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="Paste correct option here" required />
-                            </div>
-                            <Button type="submit" disabled={isSubmitting} className="w-full">Save Question</Button>
-                        </form>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <AiGeneratorModal
-                open={isAiOpen}
-                setOpen={setIsAiOpen}
-                onSave={handleAiSave}
-            />
-        </>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Target Class</Label>
+                            <Select value={classId} onValueChange={setClassId}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="global">All Classes (Global)</SelectItem>
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Question</Label>
+                            <Textarea value={question} onChange={e => setQuestion(e.target.value)} placeholder="Enter question..." required />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            {options.map((opt, i) => (
+                                <Input key={i} value={opt} onChange={e => handleOptionChange(i, e.target.value)} placeholder={`Option ${i+1}`} required />
+                            ))}
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Correct Answer (Exact Match)</Label>
+                            <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="Paste correct option here" required />
+                        </div>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">Save Question</Button>
+                    </form>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
 
@@ -353,6 +332,7 @@ export default function ScienceLabPage() {
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
   
   const [filterTopic, setFilterTopic] = useState('All');
@@ -430,9 +410,14 @@ export default function ScienceLabPage() {
         <div className="flex gap-2">
             <SetupButton isStaff={isStaff} />
             {isStaff && (
-                <Button onClick={() => setIsFormOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
-                    <Plus className="mr-2 h-4 w-4"/> Add Question
-                </Button>
+                <>
+                    <Button variant="outline" onClick={() => setIsAiOpen(true)} className="border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
+                        <Wand2 className="mr-2 h-4 w-4"/> AI Generate
+                    </Button>
+                    <Button onClick={() => setIsFormOpen(true)} className="bg-indigo-600 hover:bg-indigo-700">
+                        <Plus className="mr-2 h-4 w-4"/> Manual Add
+                    </Button>
+                </>
             )}
         </div>
       </div>
@@ -520,12 +505,14 @@ export default function ScienceLabPage() {
             </Card>
         </TabsContent>
       </Tabs>
-
+      
       <AddQuestionForm 
         open={isFormOpen} 
         setOpen={setIsFormOpen} 
-        classes={classes} 
+        classes={classes}
+        onAiOpen={() => setIsAiOpen(true)}
       />
+
       <AiGeneratorModal 
         open={isAiOpen} 
         setOpen={setIsAiOpen} 
@@ -534,4 +521,3 @@ export default function ScienceLabPage() {
     </div>
   );
 }
-
