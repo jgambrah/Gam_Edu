@@ -128,8 +128,18 @@ service cloud.firestore {
     }
 
     match /science_problems/{problemId} {
+      allow read: if true;
+      allow write: if isTeacher() || isAdmin();
+    }
+    
+    match /science_problems_v4/{problemId} {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
+    }
+
+    match /science_leaderboard_v4/{userId} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == userId;
     }
 
     match /daily_facts/{factId} {

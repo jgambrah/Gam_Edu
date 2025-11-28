@@ -37,6 +37,7 @@ import {
   TrendingUp,
   Gamepad2,
   AlertCircle,
+  Atom,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -186,6 +187,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/science-club-fresh',
             title: 'Science Club 3.0',
             icon: FlaskConical,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/science-lab',
+            title: 'The Science Lab',
+            icon: Atom,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {

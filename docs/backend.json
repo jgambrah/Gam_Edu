@@ -1775,6 +1775,26 @@
           "description": "Stores student submissions for ELA writing challenges.",
           "params": [{ "name": "submissionId" }]
         }
+      },
+      {
+          "path": "/science_lab_questions/{id}",
+          "definition": { "entityName": "LabQuestion", "schema": { "$ref": "#/backend/entities/ScienceProblem" }, "description": "Stores questions for The Science Lab.", "params": [{ "name": "id" }] }
+      },
+      {
+          "path": "/science_lab_facts/{id}",
+          "definition": { "entityName": "LabFact", "schema": { "$ref": "#/backend/entities/DailyFact" }, "description": "Stores facts for The Science Lab.", "params": [{ "name": "id" }] }
+      },
+      {
+          "path": "/science_lab_results/{id}",
+          "definition": { "entityName": "ScienceResult", "schema": { "$ref": "#/backend/entities/ScienceResult" }, "description": "Stores student results for The Science Lab.", "params": [{ "name": "id" }] }
+      },
+      {
+        "path": "/science_problems_v4/{problemId}",
+        "definition": { "entityName": "ScienceProblem", "schema": { "$ref": "#/backend/entities/ScienceProblem" }, "description": "Stores science problems for Science Club 4.0.", "params": [{ "name": "problemId" }] }
+      },
+      {
+        "path": "/science_leaderboard_v4/{userId}",
+        "definition": { "entityName": "ScienceLeaderboard", "schema": { "$ref": "#/backend/entities/ScienceLeaderboard" }, "description": "Leaderboard for Science Club 4.0.", "params": [{ "name": "userId" }] }
       }
     ],
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
