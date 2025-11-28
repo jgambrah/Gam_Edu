@@ -23,7 +23,7 @@ export async function generateScienceQuestionAction(input: { topic: string, diff
 
     const { output } = await ai.generate({
       prompt: prompt,
-      model: 'googleai/gemini-1.5-flash',
+      model: 'googleai/gemini-2.5-flash',
       output: { schema: QuestionSchema },
     });
     
@@ -35,4 +35,3 @@ export async function generateScienceQuestionAction(input: { topic: string, diff
     return { success: false, error: error.message };
   }
 }
-
