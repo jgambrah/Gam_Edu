@@ -1,15 +1,15 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 // All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDoc } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play 
+  Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play, Atom
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question'; 
@@ -27,9 +27,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceLeaderboardEntry } from '@/lib/types';
+import { Class, Student } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 
 // --- NEW TYPES (Grouped) ---
@@ -54,55 +55,6 @@ interface LabFact {
   id: string;
   text: string;
   createdAt: any;
-}
-
-// --- UPDATED COMPONENT: Leaderboard ---
-function LeaderboardV2() {
-  const firestore = useFirestore();
-  
-  // Fetch from the NEW collection
-  const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'science_lab_leaderboard'), orderBy('points', 'desc'), orderBy('quizzesPlayed', 'desc')) : null,
-    [firestore]
-  );
-  const { data: leaderboard, isLoading } = useCollection<any>(leaderboardQuery);
-
-  if (isLoading) return <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>;
-
-  return (
-    <div className="max-w-4xl mx-auto">
-        <Table>
-        <TableHeader>
-            <TableRow>
-            <TableHead className="w-[100px]">Rank</TableHead>
-            <TableHead>Scientist</TableHead>
-            <TableHead className="text-right">Quizzes Played</TableHead>
-            <TableHead className="text-right">Total Points</TableHead>
-            </TableRow>
-        </TableHeader>
-        <TableBody>
-            {leaderboard?.map((entry, index) => (
-            <TableRow key={entry.id}>
-                <TableCell className="font-bold text-lg">
-                    {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
-                </TableCell>
-                <TableCell className="font-medium">
-                    <div className="flex flex-col">
-                        <span>{entry.userName || "Anonymous Scientist"}</span>
-                        <span className="text-xs text-muted-foreground">Class: {entry.className || 'N/A'}</span>
-                    </div>
-                </TableCell>
-                <TableCell className="text-right">{entry.quizzesPlayed}</TableCell>
-                <TableCell className="text-right font-bold text-emerald-600">{entry.points}</TableCell>
-            </TableRow>
-            ))}
-            {(!leaderboard || leaderboard.length === 0) && (
-                <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No champions yet. Be the first!</TableCell></TableRow>
-            )}
-        </TableBody>
-        </Table>
-    </div>
-  );
 }
 
 // --- UPDATED COMPONENT: Quiz Runner (Now Saves Scores) ---
@@ -281,7 +233,7 @@ function AiGeneratorModal({
     const [difficulty, setDifficulty] = useState('Beginner');
     const [count, setCount] = useState(3);
     const [isGenerating, setIsGenerating] = useState(false);
-    const [previewData, setPreviewData] = useState<any[] | null>(null);
+    const [previewData, setPreviewData] = useState<any[] | null>(null); // Array of questions
 
     const handleGenerate = async () => {
         if (!topic) return;
@@ -289,9 +241,11 @@ function AiGeneratorModal({
         setPreviewData(null);
         
         try {
+            // Call the updated Server Action with count
             const result = await generateScienceQuestionAction({ topic, difficulty, grade, count });
+            
             if (result.success && result.data) {
-                setPreviewData(result.data);
+                setPreviewData(result.data); // This is now an array of questions
             } else {
                 alert("AI Error: " + result.error);
             }
@@ -324,7 +278,7 @@ function AiGeneratorModal({
 
                 {!previewData ? (
                     <div className="space-y-4 py-4">
-                        <div className="space-y-2"><Label>Topic</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Digestive System" /></div>
+                        <div className="space-y-2"><Label>Topic / Concept</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Digestive System" /></div>
                         <div className="grid grid-cols-2 gap-4">
                              <div className="space-y-2"><Label>Grade</Label><Input value={grade} onChange={e => setGrade(e.target.value)} /></div>
                              <div className="space-y-2">
@@ -351,7 +305,7 @@ function AiGeneratorModal({
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={handleGenerate} disabled={isGenerating || !topic} className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-2">
+                        <Button onClick={handleGenerate} disabled={isGenerating || !topic} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold">
                             {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Creating Quiz...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate Quiz</>}
                         </Button>
                     </div>
@@ -392,11 +346,13 @@ function AiGeneratorModal({
     );
 }
 
-// --- COMPONENT: Leaderboard ---
+// --- UPDATED COMPONENT: Leaderboard ---
 function LeaderboardV2() {
   const firestore = useFirestore();
+  
+  // Fetch from the NEW collection
   const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'science_lab_leaderboard'), orderBy('points', 'desc')) : null,
+    () => firestore ? query(collection(firestore, 'science_lab_leaderboard'), orderBy('points', 'desc'), orderBy('quizzesPlayed', 'desc')) : null,
     [firestore]
   );
   const { data: leaderboard, isLoading } = useCollection<any>(leaderboardQuery);
@@ -421,10 +377,13 @@ function LeaderboardV2() {
                     {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                 </TableCell>
                 <TableCell className="font-medium">
-                    <span>{entry.userName || "Anonymous Scientist"}</span>
+                    <div className="flex flex-col">
+                        <span>{entry.userName || "Anonymous Scientist"}</span>
+                        <span className="text-xs text-muted-foreground">Class: {entry.className || 'N/A'}</span>
+                    </div>
                 </TableCell>
-                <TableCell className="text-right">{entry.quizzesPlayed || 0}</TableCell>
-                <TableCell className="text-right font-bold text-emerald-600">{entry.points || 0}</TableCell>
+                <TableCell className="text-right">{entry.quizzesPlayed}</TableCell>
+                <TableCell className="text-right font-bold text-emerald-600">{entry.points}</TableCell>
             </TableRow>
             ))}
             {(!leaderboard || leaderboard.length === 0) && (
@@ -456,7 +415,12 @@ function FactOfTheDay() {
     }, [facts]);
 
     const handlePostFact = async () => {
-        if (!factText.trim() || !user) return;
+        if (!factText.trim()) {
+            toast({ variant: 'destructive', title: "Error", description: "Fact cannot be empty." });
+            return;
+        }
+        if (!user) return;
+
         setIsPosting(true);
         try {
             await addDoc(collection(firestore, 'science_lab_facts'), {
@@ -651,8 +615,9 @@ function SetupButton({ isStaff }: { isStaff: boolean }) {
     );
 }
 
-// --- MAIN PAGE COMPONENT ---
+// --- MAIN PAGE ---
 export default function ScienceClubPageV2() {
+  const router = useRouter();
   const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();
   const { user, isUserLoading } = useUser();
@@ -729,7 +694,7 @@ export default function ScienceClubPageV2() {
       }
   };
 
-  const isLoading = isUserLoading || isRoleLoading || qLoading;
+  const isLoading = isUserLoading || isRoleLoading || qLoading || (role === 'Student' && sLoading);
 
   return (
     <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
@@ -737,9 +702,9 @@ export default function ScienceClubPageV2() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
-                <FlaskConical className="h-8 w-8 text-emerald-600"/> Science Club 2.0
+                <Atom className="h-8 w-8 text-emerald-600"/> Science Club 2.0
             </h1>
-            <p className="text-slate-500">Explore, Experiment, and Excel in Science.</p>
+            <p className="text-slate-500">Explore, Experiment, and Excel.</p>
         </div>
         <div className="flex gap-2">
             <SetupButton isStaff={isStaff} />
@@ -844,6 +809,7 @@ export default function ScienceClubPageV2() {
           open={isFormOpen} 
           setOpen={setIsFormOpen} 
           classes={classes} 
+          onAiOpen={() => setIsAiOpen(true)}
       />
 
       <QuizRunnerDialog 
@@ -854,3 +820,5 @@ export default function ScienceClubPageV2() {
     </div>
   );
 }
+
+    
