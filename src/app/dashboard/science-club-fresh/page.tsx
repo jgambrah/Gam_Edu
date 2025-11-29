@@ -108,83 +108,84 @@ function QuizRunnerDialog({
 
     // 3. Finish & Save (The Logic you requested)
     const finishQuiz = async () => {
-    setIsFinished(true);
-    
-    // Calculate final score
-    const finalScore = score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0);
-    
-    // If user is logged in, save the score
-    if (user && firestore) {
+        setIsFinished(true);
+        
+        // Calculate final score including the last answer
+        const finalScore = score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0);
+        
+        console.log('========================================');
+        console.log('🚀 STARTING DIAGNOSTIC SUBMISSION');
+        console.log('========================================');
+        console.log('1. User State:', user ? `Logged in as ${user.uid}` : 'NULL (Logged Out)');
+        console.log('2. Firestore State:', firestore ? 'Initialized' : 'NULL');
+        console.log('3. Score to save:', finalScore);
+        
+        if (!user) {
+            console.error('❌ ABORTING: No User found.');
+            toast({ variant: 'destructive', title: 'Error', description: 'You are not logged in.' });
+            return;
+        }
+        
         setIsSaving(true);
         
         try {
-            console.log('💾 Saving quiz results...', {
-                userId: user.uid,
-                email: user.email,
-                finalScore,
-                totalQuestions
-            });
-
-            // Get user's display name (try multiple sources)
-            const userName = user.displayName 
-                || user.email?.split('@')[0] 
-                || 'Anonymous Student';
-
-            // 1. Save Detailed Result
+            // --- ATTEMPT 1: SAVE RESULT ---
+            console.log('📝 Attempting to save to collection: science_lab_results');
+            
             const resultData = {
                 userId: user.uid,
-                userName: userName,
+                userName: user.displayName || user.email?.split('@')[0] || 'Student',
                 quizTitle: questionSet.title,
                 score: finalScore,
                 total: totalQuestions,
                 percentage: Math.round((finalScore / totalQuestions) * 100),
                 date: serverTimestamp()
             };
-
-            console.log('📝 Creating result document:', resultData);
             
-            await addDoc(collection(firestore, 'science_lab_results'), resultData);
-            
-            console.log('✅ Result saved successfully');
+            // LOG THE DATA WE ARE TRYING TO SEND
+            console.log('   Data payload:', resultData);
 
-            // 2. Update Leaderboard
+            const resultRef = await addDoc(collection(firestore, 'science_lab_results'), resultData);
+            console.log('✅ SUCCESS: Result saved. Doc ID:', resultRef.id);
+
+            // --- ATTEMPT 2: UPDATE LEADERBOARD ---
+            console.log('🏆 Attempting to update collection: science_lab_leaderboard');
+            console.log('   Target Document ID:', user.uid);
+
             const userRef = doc(firestore, 'science_lab_leaderboard', user.uid);
-            
-            console.log('🏆 Updating leaderboard for:', user.uid);
-            
             const leaderboardData = {
-                userName: userName,
+                userName: user.displayName || user.email?.split('@')[0] || 'Student',
                 userId: user.uid,
-                points: increment(finalScore * 10), // 10 points per correct answer
+                points: increment(finalScore * 10),
                 quizzesPlayed: increment(1),
                 lastActive: serverTimestamp()
             };
 
-            console.log('📊 Leaderboard data:', leaderboardData);
-            
-            // Use setDoc with merge to create or update
             await setDoc(userRef, leaderboardData, { merge: true });
+            console.log('✅ SUCCESS: Leaderboard updated.');
             
-            console.log('✅ Leaderboard updated successfully');
-            
+            toast({ title: 'Success!', description: `Score saved! You got ${finalScore} points.` });
+
         } catch (error: any) {
-            console.error('❌ Error saving score:', error);
-            console.error('Error code:', error.code);
-            console.error('Error message:', error.message);
+            console.error('========================================');
+            console.error('❌ CRITICAL ERROR CAUGHT');
+            console.error('========================================');
+            console.error('Error Code:', error.code);
+            console.error('Error Message:', error.message);
+            console.error('Full Error Object:', error);
             
-            // Show error to user
             toast({
                 variant: 'destructive',
-                title: 'Could Not Save Score',
-                description: error.message || 'Please check your internet connection and try again.'
+                title: 'Save Failed',
+                description: error.message
             });
         } finally {
             setIsSaving(false);
+            console.log('========================================');
+            console.log('🏁 DIAGNOSTIC COMPLETE');
+            console.log('========================================');
         }
-    } else {
-        console.warn('⚠️ Cannot save score: User or Firestore not available');
-    }
-};
+    };
 
     const handleClose = () => {
         setOpen(false);
@@ -277,13 +278,14 @@ function AiGeneratorModal({
 }: { 
     open: boolean, 
     setOpen: (o: boolean) => void,
-    onSave: (data: any) => Promise<void>
+    onSave: (data: any, meta: any) => Promise<void>
 }) {
     const [topic, setTopic] = useState('');
+    const [grade, setGrade] = useState('JHS 1');
     const [difficulty, setDifficulty] = useState('Beginner');
-    const [count, setCount] = useState(1); // New Count State
+    const [count, setCount] = useState(3);
     const [isGenerating, setIsGenerating] = useState(false);
-    const [previewData, setPreviewData] = useState<any[] | null>(null); // Array of questions
+    const [previewData, setPreviewData] = useState<any[] | null>(null);
 
     const handleGenerate = async () => {
         if (!topic) return;
@@ -291,11 +293,9 @@ function AiGeneratorModal({
         setPreviewData(null);
         
         try {
-            // Call the updated Server Action with count
-            const result = await generateScienceQuestionAction({ topic, difficulty, grade: 'JHS 1', count });
-            
+            const result = await generateScienceQuestionAction({ topic, difficulty, grade, count });
             if (result.success && result.data) {
-                setPreviewData(result.data); // This is now an array of questions
+                setPreviewData(result.data);
             } else {
                 alert("AI Error: " + result.error);
             }
@@ -309,10 +309,7 @@ function AiGeneratorModal({
 
     const handleConfirm = async () => {
         if (previewData && previewData.length > 0) {
-            // Loop through and save all generated questions
-            for (const question of previewData) {
-                await onSave({ ...question, classId: 'global' });
-            }
+            await onSave(previewData, { topic, difficulty, grade, count });
             setOpen(false);
             setPreviewData(null);
             setTopic('');
@@ -324,18 +321,18 @@ function AiGeneratorModal({
             <DialogContent className="sm:max-w-[600px] max-h-[85vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-purple-700">
-                        <Sparkles className="h-5 w-5"/> AI Question Generator
+                        <Sparkles className="h-5 w-5"/> AI Quiz Generator
                     </DialogTitle>
                     <DialogDescription>
-                        Generate multiple choice questions instantly.
+                        Create a Science Club quiz instantly.
                     </DialogDescription>
                 </DialogHeader>
 
                 {!previewData ? (
                     <div className="space-y-4 py-4">
-                        <div className="space-y-2"><Label>Topic / Concept</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Solar System, Atoms, Gravity" /></div>
+                        <div className="space-y-2"><Label>Topic</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Digestive System" /></div>
                         <div className="grid grid-cols-2 gap-4">
-                             <div className="space-y-2"><Label>Grade</Label><Input value="JHS 1" readOnly /></div>
+                             <div className="space-y-2"><Label>Grade</Label><Input value={grade} onChange={e => setGrade(e.target.value)} /></div>
                              <div className="space-y-2">
                                 <Label>Difficulty</Label>
                                 <Select value={difficulty} onValueChange={setDifficulty}>
@@ -349,7 +346,7 @@ function AiGeneratorModal({
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label>Count</Label>
+                            <Label>Questions in Set</Label>
                             <Select value={count.toString()} onValueChange={(v) => setCount(Number(v))}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
@@ -360,39 +357,23 @@ function AiGeneratorModal({
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={handleGenerate} disabled={isGenerating || !topic} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold">
-                            {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Generating {count} questions...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate</>}
+                        <Button onClick={handleGenerate} disabled={isGenerating || !topic} className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-2">
+                            {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Creating Quiz...</> : <><Wand2 className="mr-2 h-4 w-4"/> Generate Quiz</>}
                         </Button>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-4 overflow-hidden">
-                        <div className="bg-purple-50 p-2 rounded-md border border-purple-100 flex-1 overflow-y-auto pr-2">
-                            <p className="font-semibold text-xs text-purple-600 mb-3 uppercase tracking-wide sticky top-0 bg-purple-50 pb-2">
-                                Preview ({previewData.length} Questions)
-                            </p>
-                            
-                            <div className="space-y-6">
-                                {previewData.map((q, idx) => (
-                                    <div key={idx} className="border-b border-purple-200 pb-4 last:border-0">
-                                        <p className="font-medium text-md mb-2 text-slate-800">
-                                            {idx + 1}. {q.question}
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {q.options.map((opt: string, i: number) => (
-                                                <div key={i} className={`p-2 text-xs border rounded-md ${opt === q.correctAnswer ? 'bg-green-100 border-green-300 font-bold text-green-800' : 'bg-white text-slate-600'}`}>
-                                                    {opt} {opt === q.correctAnswer && "✓"}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                        <div className="bg-purple-50 p-3 rounded-md border border-purple-100 flex-1 overflow-y-auto">
+                            <p className="font-bold text-purple-800 mb-2">Preview: {previewData.length} Questions generated</p>
+                            <ul className="list-disc pl-5 space-y-1 text-sm text-slate-700">
+                                {previewData.map((q, i) => (
+                                    <li key={i}>{q.question}</li>
                                 ))}
-                            </div>
+                            </ul>
                         </div>
                         <div className="flex gap-2 mt-auto pt-2">
                             <Button variant="outline" onClick={() => setPreviewData(null)} className="flex-1">Discard</Button>
-                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
-                                Save All to Library
-                            </Button>
+                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700 text-white">Save Quiz Set</Button>
                         </div>
                     </div>
                 )}
@@ -491,7 +472,7 @@ function FactOfTheDay() {
         <Card className="bg-emerald-50/50 border-emerald-200">
             <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-emerald-700 text-lg">
-                    <Lightbulb className="h-5 w-5"/> Science Club Fact of the Day
+                    <Lightbulb className="h-5 w-5"/> Science Club 2.0 Fact of the Day
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -520,12 +501,13 @@ function FactOfTheDay() {
     );
 }
 
-// --- COMPONENT: Add Question Form (Manual - Creates Sets now for consistency) ---
+// --- COMPONENT: Add Question Form (Manual) ---
 function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined, onAiOpen: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Form
     const [topic, setTopic] = useState('');
     const [difficulty, setDifficulty] = useState('Beginner');
     const [classId, setClassId] = useState('global');
@@ -533,6 +515,7 @@ function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, 
     const [options, setOptions] = useState(['', '', '', '']);
     const [correctAnswer, setCorrectAnswer] = useState('');
 
+    // NOTE: Manual form currently creates a "Set" of 1 question to keep structure consistent
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -564,7 +547,7 @@ function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Add Lab Question (Manual)</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>Add Question Manually</DialogTitle></DialogHeader>
                 
                 <div className="space-y-4 py-4">
                      <Button variant="outline" onClick={() => { setOpen(false); onAiOpen(); }} className="w-full border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
@@ -672,10 +655,10 @@ export default function ScienceLabPage() {
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
-  const [isAiOpen, setIsAiOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
-  const [attemptingQuestion, setAttemptingQuestion] = useState<LabQuestion | null>(null); // For the new dialog
+  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null);
   
   // Filters
   const [filterTopic, setFilterTopic] = useState('All');
@@ -684,8 +667,7 @@ export default function ScienceLabPage() {
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   // Data Loading
-  const questionsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_lab_questions')) : null, [firestore]);
-  const { data: rawQuestions, isLoading: qLoading } = useCollection<LabQuestion>(questionsQuery);
+  const { data: rawSets, isLoading: qLoading } = useCollection<QuestionSet>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_question_sets')) : null, [firestore]));
 
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
@@ -696,38 +678,47 @@ export default function ScienceLabPage() {
   );
   const studentClassId = studentData?.[0]?.classId;
 
-  const filteredQuestions = useMemo(() => {
-      if(!rawQuestions) return [];
-      let list = rawQuestions;
+  const filteredSets = useMemo(() => {
+      if(!rawSets) return [];
+      let list = rawSets;
+
       if (role === 'Student') {
-          list = list.filter(q => q.classId === 'global' || q.classId === studentClassId);
+          list = list.filter(s => s.classId === 'global' || s.classId === studentClassId);
       }
-      if(filterTopic !== 'All') list = list.filter(q => q.topic === filterTopic);
-      if(filterDiff !== 'All') list = list.filter(q => q.difficulty === filterDiff);
+
+      if(filterTopic !== 'All') list = list.filter(s => s.topic === filterTopic);
+      if(filterDiff !== 'All') list = list.filter(s => s.difficulty === filterDiff);
+
       return list;
-  }, [rawQuestions, role, studentClassId, filterTopic, filterDiff]);
+  }, [rawSets, role, studentClassId, filterTopic, filterDiff]);
 
   const uniqueTopics = useMemo(() => {
-      if(!rawQuestions) return [];
-      return Array.from(new Set(rawQuestions.map(q => q.topic))).sort();
-  }, [rawQuestions]);
+      if(!rawSets) return [];
+      return Array.from(new Set(rawSets.map(s => s.topic))).sort();
+  }, [rawSets]);
 
   const handleDelete = async (id: string) => {
-      if(confirm('Delete this question?')) {
-          await deleteDoc(doc(firestore, 'science_lab_questions', id));
+      if(confirm('Delete this quiz set?')) {
+          await deleteDoc(doc(firestore, 'science_question_sets', id));
           toast({ title: 'Deleted' });
       }
   };
   
-  const handleAiSave = async (data: any) => {
+  const handleAiSave = async (questions: any[], meta: any) => {
       try {
-          await addDoc(collection(firestore, 'science_lab_questions'), {
-              ...data,
+          await addDoc(collection(firestore, 'science_question_sets'), {
+              title: `${meta.topic} (${meta.count} Qs)`,
+              topic: meta.topic,
+              difficulty: meta.difficulty,
+              grade: meta.grade,
+              classId: 'global',
+              questions: questions, 
               createdAt: serverTimestamp()
           });
-          toast({ title: 'Saved', description: 'AI Question added to library.' });
+          toast({ title: 'Saved', description: 'New Quiz Set created.' });
       } catch (e: any) {
-          toast({ variant: 'destructive', title: 'Error', description: 'Failed to save AI question.' + e.message });
+          console.error(e);
+          toast({ variant: 'destructive', title: 'Error', description: 'Failed to save AI quiz.' + e.message });
       }
   };
 
@@ -739,7 +730,7 @@ export default function ScienceLabPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
-                <Atom className="h-8 w-8 text-emerald-600"/> The Science Lab
+                <Atom className="h-8 w-8 text-emerald-600"/> Science Club 2.0
             </h1>
             <p className="text-slate-500">Explore, Experiment, and Excel.</p>
         </div>
@@ -748,7 +739,7 @@ export default function ScienceLabPage() {
             {isStaff && (
                 <>
                     <Button variant="outline" onClick={() => setIsAiOpen(true)} className="bg-purple-600 hover:bg-purple-700 text-white shadow-md">
-                        <Wand2 className="mr-2 h-4 w-4"/> AI Generate
+                        <Wand2 className="mr-2 h-4 w-4"/> AI Generate Quiz
                     </Button>
                     <Button onClick={() => setIsFormOpen(true)} className="bg-emerald-600 hover:bg-emerald-700">
                         <Plus className="mr-2 h-4 w-4"/> Manual Add
@@ -762,7 +753,7 @@ export default function ScienceLabPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="explore">Question Bank</TabsTrigger>
+            <TabsTrigger value="explore">Quiz Library</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
         </TabsList>
 
@@ -788,31 +779,32 @@ export default function ScienceLabPage() {
 
             {isLoading ? (
                 <div className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-emerald-500"/></div>
-            ) : filteredQuestions.length === 0 ? (
+            ) : filteredSets.length === 0 ? (
                 <div className="text-center py-20 border-2 border-dashed rounded-xl">
-                    <BrainCircuit className="h-12 w-12 text-slate-300 mx-auto mb-4"/>
-                    <p className="text-slate-500">No questions found.</p>
+                    <FolderOpen className="h-12 w-12 text-slate-300 mx-auto mb-4"/>
+                    <p className="text-slate-500">No quizzes found.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredQuestions.map((q) => (
-                        <Card key={q.id} className="hover:shadow-md transition-shadow border-t-4 border-t-emerald-400">
+                    {filteredSets.map((set) => (
+                        <Card key={set.id} className="hover:shadow-md transition-shadow border-t-4 border-t-purple-400">
                             <CardHeader className="pb-2">
                                 <div className="flex justify-between items-start">
-                                    <Badge variant="outline">{q.topic}</Badge>
-                                    {isStaff && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete(q.id)}><Trash2 className="h-4 w-4"/></Button>}
+                                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">{set.topic}</Badge>
+                                    {isStaff && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={() => handleDelete(set.id)}><Trash2 className="h-4 w-4"/></Button>}
                                 </div>
-                                <CardTitle className="text-base mt-2 line-clamp-2">{q.question}</CardTitle>
+                                <CardTitle className="text-lg mt-2">{set.title}</CardTitle>
+                                <CardDescription>{set.difficulty} • {set.grade || 'General'}</CardDescription>
                             </CardHeader>
                             <CardContent className="pb-2">
-                                <p className="text-xs text-slate-400">{q.difficulty} • {q.classId === 'global' ? 'Global' : 'Class'}</p>
+                                <p className="text-xs text-slate-400">Contains {set.questions?.length || 0} Questions</p>
                             </CardContent>
                             <CardFooter className="pt-0">
                                 <Button 
-                                    onClick={() => setAttemptingQuestion(q)} 
-                                    className="w-full bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                                    onClick={() => setAttemptingSet(set)} 
+                                    className="w-full bg-slate-100 text-slate-700 hover:bg-purple-50 hover:text-purple-700 group"
                                 >
-                                    Attempt Question
+                                    <Play className="mr-2 h-4 w-4 group-hover:fill-current"/> Start Quiz
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -823,32 +815,37 @@ export default function ScienceLabPage() {
 
         <TabsContent value="leaderboard">
             <Card>
-                <CardContent className="p-8 text-center text-muted-foreground">
-                    <Trophy className="h-12 w-12 mx-auto mb-4 text-yellow-400"/>
-                    <p>Leaderboard coming soon!</p>
+                <CardHeader>
+                    <CardTitle>Science Leaderboard</CardTitle>
+                    <CardDescription>See how you rank against other students in science.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <LeaderboardV2 />
                 </CardContent>
             </Card>
         </TabsContent>
       </Tabs>
       
-      <AddQuestionForm 
-        open={isFormOpen} 
-        setOpen={setIsFormOpen} 
-        classes={classes}
-        onAiOpen={() => setIsAiOpen(true)}
-      />
-
       <AiGeneratorModal 
         open={isAiOpen} 
         setOpen={setIsAiOpen} 
         onSave={handleAiSave} 
       />
+      
+      <AddQuestionForm 
+          open={isFormOpen} 
+          setOpen={setIsFormOpen} 
+          classes={classes} 
+          onAiOpen={() => setIsAiOpen(true)}
+      />
 
-      <AttemptQuestionDialog 
-        question={attemptingQuestion}
-        open={!!attemptingQuestion}
-        setOpen={(val) => { if(!val) setAttemptingQuestion(null); }}
+      <QuizRunnerDialog 
+        questionSet={attemptingSet}
+        open={!!attemptingSet}
+        setOpen={(val) => { if(!val) setAttemptingSet(null); }}
       />
     </div>
   );
 }
+
+    
