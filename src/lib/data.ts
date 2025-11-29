@@ -184,12 +184,6 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/science-lab',
-            title: 'The Science Lab',
-            icon: Atom,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
             path: '/dashboard/ela-club',
             title: 'ELA Club',
             icon: BookOpenCheck,
