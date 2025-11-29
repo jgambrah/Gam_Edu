@@ -6,48 +6,80 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
+// Define History Schema
 const HistoryMessageSchema = z.object({
   role: z.enum(['user', 'model']),
   content: z.string(),
 });
 
+// Input Schema
 const CampusAssistantInputSchema = z.object({
   prompt: z.string().describe('The user\'s current question or message.'),
-  role: z.string().describe('The role of the user, e.g., "Student", "Teacher", "Administrator".'),
+  role: z.string().optional().describe('The role of the user (Student, Teacher, Administrator).'),
   history: z.array(HistoryMessageSchema).optional().describe('The previous conversation history.'),
 });
 
 export type CampusAssistantInput = z.infer<typeof CampusAssistantInputSchema>;
 
+// Output Schema
 const CampusAssistantOutputSchema = z.object({
   response: z.string().describe('The AI\'s response to the user.'),
 });
 
 export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 
-export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
-  return campusAssistantFlow(input);
-}
-
+// --- 1. DEFINE THE INTELLIGENT PROMPT ---
 const prompt = ai.definePrompt({
   name: 'campusAssistantPrompt',
   input: { schema: CampusAssistantInputSchema },
   output: { schema: CampusAssistantOutputSchema },
-  prompt: `You are CampusBot, a friendly and helpful AI assistant for the CampusConnect school management platform.
+  prompt: `
+    You are **CampusBot**, the intelligent AI assistant for the **CampusConnect** school management platform.
+    
+    Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
 
-Your primary goal is to assist users based on their role and answer their questions clearly.
+    ---
+    ### CONTEXT: USER ROLE
+    The current user is identified as: {{{role}}}
+    *(If the role is 'Unknown' or empty, infer the user's needs based on their question. Do not repeatedly ask for their role if they ask a general question).*
 
-CURRENT USER'S ROLE: {{{role}}}
+    ---
+    ### YOUR CAPABILITIES & INSTRUCTIONS
 
-CONTEXTUAL INSTRUCTIONS:
-- If the user is a 'Student', your primary function is to be an academic tutor. Explain complex concepts, define terms, and answer general knowledge questions simply and accurately. Also, guide them on how to find platform information like assignments, grades, or club activities. Be encouraging and supportive.
-- If the user is a 'Teacher', assist with lesson planning ideas, suggest ways to create assignments or quizzes, and provide guidance on using the platform's academic tools.
-- If the user is an 'Administrator' or 'Director', provide information on managing staff, students, and school-wide settings. Explain how to generate reports and manage system configurations.
-- If the user's role is 'Parent', help them understand their child's progress, navigate the portal, and find information about school events and announcements.
+    #### 1. 🎓 FOR STUDENTS (Study Helper)
+    - If the user asks about academic topics (Science, Math, English, etc.), act as a **Tutor**.
+    - Explain concepts simply (e.g., "Explain living cells"). Use analogies.
+    - Quiz them if they ask for practice.
+    - **Example:** If asked "Explain living cells", provide a clear biology explanation, not app support.
 
-Always be polite, concise, and clear in your responses. Do not invent features that don't exist. When asked about a specific school-related feature, base your guidance on the known features of the CampusConnect platform.`,
+    #### 2. 👔 FOR ADMINISTRATORS & DIRECTORS (Office Assistant)
+    - If the user asks to write a letter, memo, or announcement, act as a **Professional Secretary**.
+    - Draft professional documents. Ask for details if needed (e.g., "Who is this letter for?").
+    - **Example:** "Draft a letter to parents about a holiday" -> Write a formal letter.
+
+    #### 3. 🧭 APP NAVIGATION (For Everyone)
+    - Guide users on how to use CampusConnect.
+    - **Academics:** Mention the "Math Club", "Science Lab", and "ELA Club" for practice.
+    - **Lesson Plans:** Tell Teachers they can create plans in the "Lesson Planning" tab.
+    - **Materials:** Tell users they can find resources in "Learning Materials".
+    - **Attendance:** Explain that attendance is taken in the Class Dashboard.
+
+    ---
+    ### CONVERSATION HISTORY
+    (Use this to remember what the user just said)
+    {{#each history}}
+      {{role}}: {{content}}
+    {{/each}}
+    
+    ---
+    ### CURRENT REQUEST
+    User: {{prompt}}
+    
+    CampusBot Response:
+  `,
 });
 
+// --- 2. DEFINE THE FLOW ---
 const campusAssistantFlow = ai.defineFlow(
   {
     name: 'campusAssistantFlow',
@@ -55,7 +87,24 @@ const campusAssistantFlow = ai.defineFlow(
     outputSchema: CampusAssistantOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+    // Default to 'Unknown' if role is missing to prevent template errors
+    const safeInput = {
+      ...input,
+      role: input.role || 'Unknown',
+      history: input.history || []
+    };
+
+    const { output } = await prompt(safeInput);
+    
+    if (!output) {
+      throw new Error("Failed to generate response");
+    }
+
+    return output;
   }
 );
+
+// --- 3. EXPORT THE ACTION ---
+export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
+  return campusAssistantFlow(input);
+}
