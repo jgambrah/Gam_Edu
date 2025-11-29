@@ -57,7 +57,7 @@ interface LabFact {
   createdAt: any;
 }
 
-// --- UPDATED COMPONENT: Quiz Runner (Now Saves Scores) ---
+// --- UPDATED COMPONENT: Quiz Runner (With Debugging & Fixes) ---
 function QuizRunnerDialog({ 
     questionSet, 
     open, 
@@ -68,70 +68,122 @@ function QuizRunnerDialog({
     setOpen: (o: boolean) => void 
 }) {
     const firestore = useFirestore();
-    const { user } = useAuth(); // Need user to save score
+    const { user } = useAuth(); 
+    const { toast } = useToast(); // Added toast for error feedback
     
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState('');
     const [score, setScore] = useState(0);
     const [isFinished, setIsFinished] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false); 
-    const [isSaving, setIsSaving] = useState(false); // New saving state
+    const [isSaving, setIsSaving] = useState(false); 
 
     if (!questionSet) return null;
 
     const currentQuestion = questionSet.questions[currentIndex];
     const totalQuestions = questionSet.questions.length;
 
+    // 1. Handle Check (Updates the local score state)
     const handleCheck = () => {
         const isCorrect = selectedOption === currentQuestion.correctAnswer;
-        if (isCorrect) setScore(s => s + 1);
+        if (isCorrect) {
+            setScore(s => s + 1);
+        }
         setShowFeedback(true);
     };
 
+    // 2. Handle Next / Finish
     const handleNext = () => {
         setShowFeedback(false);
-        setSelectedOption('');
+        
         if (currentIndex < totalQuestions - 1) {
+            // Move to next question
+            setSelectedOption('');
             setCurrentIndex(prev => prev + 1);
         } else {
-            finishQuiz(); // Call finish logic
+            // End of quiz - Run the save logic
+            finishQuiz(); 
         }
     };
 
+    // 3. Finish & Save (The Logic you requested)
     const finishQuiz = async () => {
         setIsFinished(true);
-        // If user is logged in, save the score!
+        
+        // NOTE: 'score' state is already updated by handleCheck, so we use it directly.
+        const finalScore = score;
+        
+        // If user is logged in, save the score
         if (user && firestore) {
             setIsSaving(true);
+            
             try {
-                // 1. Save Detailed Result (Audit Log)
-                await addDoc(collection(firestore, 'science_lab_results'), {
+                console.log('💾 Saving quiz results...', {
                     userId: user.uid,
-                    userName: user.displayName || user.email?.split('@')[0] || 'Student',
-                    quizTitle: questionSet.title,
-                    score: score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0), // Add last question score if correct
-                    total: totalQuestions,
-                    date: serverTimestamp()
+                    email: user.email,
+                    finalScore,
+                    totalQuestions
                 });
 
-                // 2. Update Leaderboard (Aggregate)
-                const finalScore = score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0);
+                // Get user's display name (try multiple sources)
+                const userName = user.displayName 
+                    || user.email?.split('@')[0] 
+                    || 'Anonymous Student';
+
+                // 1. Save Detailed Result to 'science_lab_results'
+                const resultData = {
+                    userId: user.uid,
+                    userName: userName,
+                    quizTitle: questionSet.title,
+                    score: finalScore,
+                    total: totalQuestions,
+                    percentage: Math.round((finalScore / totalQuestions) * 100),
+                    date: serverTimestamp()
+                };
+
+                console.log('📝 Creating result document:', resultData);
+                
+                // Add to the history collection
+                await addDoc(collection(firestore, 'science_lab_results'), resultData);
+                
+                console.log('✅ Result saved successfully');
+
+                // 2. Update Leaderboard in 'science_lab_leaderboard'
                 const userRef = doc(firestore, 'science_lab_leaderboard', user.uid);
                 
-                // Use setDoc with merge to create or update
-                await setDoc(userRef, {
-                    userName: user.displayName || user.email?.split('@')[0] || 'Student',
-                    // You might want to fetch student class here, but for now let's stick to basics
+                console.log('🏆 Updating leaderboard for:', user.uid);
+                
+                const leaderboardData = {
+                    userName: userName,
+                    userId: user.uid,
                     points: increment(finalScore * 10), // 10 points per correct answer
                     quizzesPlayed: increment(1),
                     lastActive: serverTimestamp()
-                }, { merge: true });
+                };
 
-            } catch (e) {
-                console.error("Error saving score:", e);
+                console.log('📊 Leaderboard data:', leaderboardData);
+                
+                // Use setDoc with merge to create or update the user's stats
+                await setDoc(userRef, leaderboardData, { merge: true });
+                
+                console.log('✅ Leaderboard updated successfully');
+                
+            } catch (error: any) {
+                console.error('❌ Error saving score:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+                
+                // Show detailed error to user
+                toast({
+                    variant: 'destructive',
+                    title: 'Could Not Save Score',
+                    description: error.message || 'Please check your internet connection and try again.'
+                });
             } finally {
                 setIsSaving(false);
             }
+        } else {
+            console.warn('⚠️ Cannot save score: User or Firestore not available');
         }
     };
 
@@ -273,12 +325,14 @@ function AiGeneratorModal({
                     <DialogTitle className="flex items-center gap-2 text-purple-700">
                         <Sparkles className="h-5 w-5"/> AI Quiz Generator
                     </DialogTitle>
-                    <DialogDescription>Create a Science Club quiz instantly.</DialogDescription>
+                    <DialogDescription>
+                        Create a Science Club quiz instantly.
+                    </DialogDescription>
                 </DialogHeader>
 
                 {!previewData ? (
                     <div className="space-y-4 py-4">
-                        <div className="space-y-2"><Label>Topic / Concept</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Digestive System" /></div>
+                        <div className="space-y-2"><Label>Topic / Concept</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Solar System, Atoms, Gravity" /></div>
                         <div className="grid grid-cols-2 gap-4">
                              <div className="space-y-2"><Label>Grade</Label><Input value={grade} onChange={e => setGrade(e.target.value)} /></div>
                              <div className="space-y-2">
@@ -346,13 +400,11 @@ function AiGeneratorModal({
     );
 }
 
-// --- UPDATED COMPONENT: Leaderboard ---
+// --- COMPONENT: Leaderboard ---
 function LeaderboardV2() {
   const firestore = useFirestore();
-  
-  // Fetch from the NEW collection
   const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'science_lab_leaderboard'), orderBy('points', 'desc'), orderBy('quizzesPlayed', 'desc')) : null,
+    () => firestore ? query(collection(firestore, 'science_lab_leaderboard'), orderBy('points', 'desc')) : null,
     [firestore]
   );
   const { data: leaderboard, isLoading } = useCollection<any>(leaderboardQuery);
@@ -377,13 +429,10 @@ function LeaderboardV2() {
                     {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                 </TableCell>
                 <TableCell className="font-medium">
-                    <div className="flex flex-col">
-                        <span>{entry.userName || "Anonymous Scientist"}</span>
-                        <span className="text-xs text-muted-foreground">Class: {entry.className || 'N/A'}</span>
-                    </div>
+                    <span>{entry.userName || "Anonymous Scientist"}</span>
                 </TableCell>
-                <TableCell className="text-right">{entry.quizzesPlayed}</TableCell>
-                <TableCell className="text-right font-bold text-emerald-600">{entry.points}</TableCell>
+                <TableCell className="text-right">{entry.quizzesPlayed || 0}</TableCell>
+                <TableCell className="text-right font-bold text-emerald-600">{entry.points || 0}</TableCell>
             </TableRow>
             ))}
             {(!leaderboard || leaderboard.length === 0) && (
@@ -415,12 +464,7 @@ function FactOfTheDay() {
     }, [facts]);
 
     const handlePostFact = async () => {
-        if (!factText.trim()) {
-            toast({ variant: 'destructive', title: "Error", description: "Fact cannot be empty." });
-            return;
-        }
-        if (!user) return;
-
+        if (!factText.trim() || !user) return;
         setIsPosting(true);
         try {
             await addDoc(collection(firestore, 'science_lab_facts'), {
@@ -694,7 +738,7 @@ export default function ScienceClubPageV2() {
       }
   };
 
-  const isLoading = isUserLoading || isRoleLoading || qLoading || (role === 'Student' && sLoading);
+  const isLoading = isUserLoading || isRoleLoading || qLoading;
 
   return (
     <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
