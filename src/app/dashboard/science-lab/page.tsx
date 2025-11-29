@@ -12,7 +12,7 @@ import {
   Trash2, Lightbulb, CheckCircle2, Database, Wand2, Sparkles, XCircle 
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { generateScienceQuestionAction } from '@/app/actions/generate-science'; 
+import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question'; 
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -143,7 +143,7 @@ function AiGeneratorModal({
         
         try {
             // Call the updated Server Action with count
-            const result = await generateScienceQuestionAction({ topic, difficulty, count });
+            const result = await generateScienceQuestionAction({ topic, difficulty, grade: 'JHS 1', count });
             
             if (result.success && result.data) {
                 setPreviewData(result.data); // This is now an array of questions
@@ -424,7 +424,7 @@ function FactOfTheDay() {
         setIsPosting(true);
         try {
             await addDoc(collection(firestore, 'science_lab_facts'), {
-                factText,
+                text: factText,
                 createdAt: serverTimestamp(),
                 postedBy: user.uid,
             });
@@ -447,7 +447,7 @@ function FactOfTheDay() {
             <CardContent className="space-y-4">
                 {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
                     <blockquote className="border-l-4 border-emerald-400 pl-4 italic text-slate-700">
-                        "{latestFact.factText}"
+                        "{latestFact.text}"
                         <footer className="text-xs text-muted-foreground mt-2 not-italic">
                             — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
                         </footer>
