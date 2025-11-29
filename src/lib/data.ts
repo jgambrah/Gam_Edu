@@ -184,12 +184,6 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/science-club-fresh',
-            title: 'Science Club 3.0',
-            icon: FlaskConical,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
             path: '/dashboard/science-lab',
             title: 'The Science Lab',
             icon: Atom,
