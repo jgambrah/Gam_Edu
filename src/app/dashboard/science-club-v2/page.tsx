@@ -3,7 +3,6 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-// All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
@@ -243,6 +242,7 @@ function ManageProblems() {
     const firestore = useFirestore();
     const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
+    // --- NEW: AI State ---
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
     return (
@@ -253,10 +253,18 @@ function ManageProblems() {
                     <CardDescription>Manage the collection of science problems for student practice sessions.</CardDescription>
                 </div>
                  <div className="flex gap-2">
+                    {/* --- NEW: AI Button & Dialog --- */}
                     <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
                         <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} /></DialogContent>
+                        <DialogContent className="max-w-3xl">
+                            <DialogHeader>
+                                <DialogTitle>AI Problem Generator</DialogTitle>
+                                <DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription>
+                            </DialogHeader>
+                            <AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} />
+                        </DialogContent>
                     </Dialog>
+                    
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Problem</Button></DialogTrigger>
                         <DialogContent>
@@ -295,6 +303,8 @@ export default function ScienceClubPageV2() {
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  // --- NEW: AI State in Main Component ---
+  const [isAiFormOpen, setIsAiFormOpen] = useState(false);
   
   // Filters
   const [selectedTopic, setSelectedTopic] = useState<string>('');
@@ -397,9 +407,23 @@ export default function ScienceClubPageV2() {
                         <CardDescription>Select filters to find problems.</CardDescription>
                     </div>
                     {isStaff && (
-                        <Button onClick={() => setIsFormOpen(true)} size="sm">
-                            <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
-                        </Button>
+                        <div className="flex gap-2">
+                            {/* --- NEW: AI Button --- */}
+                            <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                                <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                                <DialogContent className="max-w-3xl">
+                                    <DialogHeader>
+                                        <DialogTitle>AI Problem Generator</DialogTitle>
+                                        <DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription>
+                                    </DialogHeader>
+                                    {/* Use the existing AiProblemGenerator but set subject to Science */}
+                                    <AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} />
+                                </DialogContent>
+                            </Dialog>
+                            <Button onClick={() => setIsFormOpen(true)} size="sm">
+                                <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
+                            </Button>
+                        </div>
                     )}
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -496,8 +520,8 @@ export default function ScienceClubPageV2() {
         <TabsContent value="leaderboard">
             <Card>
                 <CardHeader>
-                    <CardTitle>Top Scientists</CardTitle>
-                    <CardDescription>Global ranking based on correct answers.</CardDescription>
+                    <CardTitle>Science Leaderboard</CardTitle>
+                    <CardDescription>See how you rank against other students in science.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <LeaderboardV2 />
