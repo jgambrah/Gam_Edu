@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, writeBatch, doc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Wand2 } from 'lucide-react';
@@ -93,35 +93,41 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
         'ELA Grammar': 'ela_grammar_drills',
     };
     const collectionName = collectionNameMap[subject];
+    const problemsCollection = collection(firestore, collectionName);
 
-    try {
-        const batch = writeBatch(firestore);
+    const batch = writeBatch(firestore);
 
-        generatedProblems.problems.forEach(problem => {
-            const problemRef = doc(collection(firestore, collectionName));
-            let data: any = {
-                ...problem,
-                topic,
-                difficulty,
-                classId: classId,
-            };
-            if (subject === 'ELA Grammar') {
-                data.type = 'MCQ';
-                data.question_prompt = problem.question_text;
-            }
-            batch.set(problemRef, data);
-        });
-        
-        await batch.commit();
+    generatedProblems.problems.forEach(problem => {
+        const problemRef = doc(problemsCollection);
+        let data: any = {
+            ...problem,
+            topic,
+            difficulty,
+            classId: classId,
+        };
+        if (subject === 'ELA Grammar') {
+            data.type = 'MCQ';
+            data.question_prompt = problem.question_text;
+        }
+        batch.set(problemRef, data);
+    });
+    
+    batch.commit()
+      .then(() => {
         toast({ title: 'Success!', description: `${generatedProblems.problems.length} problems have been saved.`});
         setOpen(false);
-
-    } catch (e) {
-        console.error("Error saving problems:", e);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not save the generated problems.' });
-    } finally {
+      })
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: problemsCollection.path,
+            operation: 'create', // Batch write is a 'write' operation which includes create
+            requestResourceData: generatedProblems.problems,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
         setIsSaving(false);
-    }
+      });
   }
 
   return (
