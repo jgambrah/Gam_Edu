@@ -9,7 +9,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2, Lightbulb, CheckCircle2 
+  Trash2, Lightbulb, CheckCircle2, Wand2
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -21,12 +21,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
+import { cn } from '@/lib/utils';
+import { AiProblemGenerator } from '../ai-problem-generator';
 
 // --- SUB-COMPONENT: Fact of the Day ---
 function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
@@ -74,7 +76,7 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
             <CardContent className="space-y-4">
                 {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
                     <blockquote className="border-l-4 border-amber-400 pl-4 italic text-slate-700">
-                        "{latestFact.factText}"
+                        "{latestFact.text}"
                         <footer className="text-xs text-muted-foreground mt-2 not-italic">
                             — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
                         </footer>
@@ -235,6 +237,53 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
             </DialogContent>
         </Dialog>
     );
+}
+
+function ManageProblems() {
+    const firestore = useFirestore();
+    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Problem Bank</CardTitle>
+                    <CardDescription>Manage the collection of science problems for student practice sessions.</CardDescription>
+                </div>
+                 <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Problem</Button></DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>Create New Science Problem</DialogTitle><DialogDescription>Add a new question to the problem bank.</DialogDescription></DialogHeader>
+                            <AddScienceProblemForm open={isFormOpen} setOpen={setIsFormOpen} classes={[]} />
+                        </DialogContent>
+                    </Dialog>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                <Table>
+                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Difficulty</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {problems?.map(p => (
+                            <TableRow key={p.id}>
+                                <TableCell>{p.topic}</TableCell>
+                                <TableCell>{p.difficulty}</TableCell>
+                                <TableCell className="max-w-md truncate">{p.question_text}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                )}
+            </CardContent>
+        </Card>
+    )
 }
 
 // --- MAIN PAGE COMPONENT ---
