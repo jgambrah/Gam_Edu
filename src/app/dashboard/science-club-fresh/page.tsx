@@ -11,7 +11,7 @@ import {
   Trash2, Lightbulb, CheckCircle2, Database, Sparkles, Wand2, XCircle, FolderOpen, Play, Atom
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question';
+import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question'; 
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -469,7 +469,7 @@ export default function ScienceLabPageFresh() {
 
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('explore');
-  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null);
+  const [attemptingSet, setAttemptingSet] = useState<QuestionSet | null>(null); // <--- Opens Quiz Runner
   
   // Filters
   const [filterTopic, setFilterTopic] = useState('All');
@@ -477,23 +477,32 @@ export default function ScienceLabPageFresh() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // Data Loading
+  // 1. Get Student Data
   const { data: studentData, isLoading: sLoading } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
   const studentClassId = studentData?.[0]?.classId;
 
+  // 2. Get Classes
+  const { data: classes } = useCollection<Class>(
+    useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
+  );
+
+  // 3. Get Question Sets (NEW COLLECTION)
   const setsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'science_question_sets')) : null, [firestore]);
   const { data: rawSets, isLoading: qLoading } = useCollection<QuestionSet>(setsQuery);
 
+  // Filtering Logic
   const filteredSets = useMemo(() => {
       if(!rawSets) return [];
       let list = rawSets;
 
+      // Filter by Class
       if (role === 'Student') {
           list = list.filter(s => s.classId === 'global' || s.classId === studentClassId);
       }
 
+      // Filter by UI
       if(filterTopic !== 'All') list = list.filter(s => s.topic === filterTopic);
       if(filterDiff !== 'All') list = list.filter(s => s.difficulty === filterDiff);
 
@@ -512,6 +521,7 @@ export default function ScienceLabPageFresh() {
       }
   };
 
+  // Handler for saving AI Quiz Set
   const handleAiSave = async (questions: any[], meta: any) => {
       try {
           await addDoc(collection(firestore, 'science_question_sets'), {
@@ -520,7 +530,7 @@ export default function ScienceLabPageFresh() {
               difficulty: meta.difficulty,
               grade: meta.grade,
               classId: 'global',
-              questions: questions,
+              questions: questions, // Array of questions
               createdAt: serverTimestamp()
           });
           toast({ title: 'Saved', description: 'New Quiz Set created.' });
@@ -560,6 +570,7 @@ export default function ScienceLabPageFresh() {
         </TabsList>
 
         <TabsContent value="explore" className="mt-6 space-y-6">
+            {/* FILTERS */}
             <div className="flex gap-4">
                 <Select value={filterTopic} onValueChange={setFilterTopic}>
                     <SelectTrigger className="w-[180px] bg-white"><SelectValue placeholder="Topic" /></SelectTrigger>
@@ -579,6 +590,7 @@ export default function ScienceLabPageFresh() {
                 </Select>
             </div>
 
+            {/* GRID */}
             {isLoading ? (
                 <div className="text-center py-20"><Loader2 className="h-10 w-10 animate-spin mx-auto text-emerald-500"/></div>
             ) : filteredSets.length === 0 ? (
@@ -628,12 +640,14 @@ export default function ScienceLabPageFresh() {
         </TabsContent>
       </Tabs>
 
+      {/* AI GENERATOR */}
       <AiGeneratorModal 
         open={isAiOpen} 
         setOpen={setIsAiOpen} 
         onSave={handleAiSave} 
       />
 
+      {/* QUIZ RUNNER */}
       <QuizRunnerDialog 
         questionSet={attemptingSet}
         open={!!attemptingSet}
