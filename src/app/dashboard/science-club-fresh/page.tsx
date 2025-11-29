@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 // All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
@@ -478,6 +477,7 @@ export default function ScienceLabPageFresh() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
+  // Data Loading
   const { data: studentData, isLoading: sLoading } = useCollection<Student>(
     useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
