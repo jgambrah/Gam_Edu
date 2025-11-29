@@ -110,80 +110,45 @@ function QuizRunnerDialog({
     const finishQuiz = async () => {
         setIsFinished(true);
         
-        // Calculate final score including the last answer
+        // Calculate score
         const finalScore = score + (selectedOption === currentQuestion.correctAnswer ? 1 : 0);
         
-        console.log('========================================');
-        console.log('🚀 STARTING DIAGNOSTIC SUBMISSION');
-        console.log('========================================');
-        console.log('1. User State:', user ? `Logged in as ${user.uid}` : 'NULL (Logged Out)');
-        console.log('2. Firestore State:', firestore ? 'Initialized' : 'NULL');
-        console.log('3. Score to save:', finalScore);
-        
-        if (!user) {
-            console.error('❌ ABORTING: No User found.');
-            toast({ variant: 'destructive', title: 'Error', description: 'You are not logged in.' });
-            return;
-        }
-        
-        setIsSaving(true);
-        
-        try {
-            // --- ATTEMPT 1: SAVE RESULT ---
-            console.log('📝 Attempting to save to collection: science_lab_results');
-            
-            const resultData = {
-                userId: user.uid,
-                userName: user.displayName || user.email?.split('@')[0] || 'Student',
-                quizTitle: questionSet.title,
-                score: finalScore,
-                total: totalQuestions,
-                percentage: Math.round((finalScore / totalQuestions) * 100),
-                date: serverTimestamp()
-            };
-            
-            // LOG THE DATA WE ARE TRYING TO SEND
-            console.log('   Data payload:', resultData);
+        if (user && firestore) {
+            setIsSaving(true);
+            try {
+                // 1. Get User Name
+                const userName = user.displayName || user.email?.split('@')[0] || 'Student';
 
-            const resultRef = await addDoc(collection(firestore, 'science_lab_results'), resultData);
-            console.log('✅ SUCCESS: Result saved. Doc ID:', resultRef.id);
+                // 2. Save Result History
+                await addDoc(collection(firestore, 'science_lab_results'), {
+                    userId: user.uid,
+                    userName: userName,
+                    quizTitle: questionSet.title,
+                    score: finalScore,
+                    total: totalQuestions,
+                    percentage: Math.round((finalScore / totalQuestions) * 100),
+                    date: serverTimestamp()
+                });
 
-            // --- ATTEMPT 2: UPDATE LEADERBOARD ---
-            console.log('🏆 Attempting to update collection: science_lab_leaderboard');
-            console.log('   Target Document ID:', user.uid);
+                // 3. Update Leaderboard (Merge)
+                const userRef = doc(firestore, 'science_lab_leaderboard', user.uid);
+                await setDoc(userRef, {
+                    userName: userName,
+                    userId: user.uid, // Ensure ID is saved for querying
+                    className: 'General', // You can fetch real class later if needed
+                    points: increment(finalScore * 10),
+                    quizzesPlayed: increment(1),
+                    lastActive: serverTimestamp()
+                }, { merge: true });
+                
+                toast({ title: 'Success!', description: `You scored ${finalScore}/${totalQuestions}!` });
 
-            const userRef = doc(firestore, 'science_lab_leaderboard', user.uid);
-            const leaderboardData = {
-                userName: user.displayName || user.email?.split('@')[0] || 'Student',
-                userId: user.uid,
-                points: increment(finalScore * 10),
-                quizzesPlayed: increment(1),
-                lastActive: serverTimestamp()
-            };
-
-            await setDoc(userRef, leaderboardData, { merge: true });
-            console.log('✅ SUCCESS: Leaderboard updated.');
-            
-            toast({ title: 'Success!', description: `Score saved! You got ${finalScore} points.` });
-
-        } catch (error: any) {
-            console.error('========================================');
-            console.error('❌ CRITICAL ERROR CAUGHT');
-            console.error('========================================');
-            console.error('Error Code:', error.code);
-            console.error('Error Message:', error.message);
-            console.error('Full Error Object:', error);
-            
-            toast({
-                variant: 'destructive',
-                title: 'Save Failed',
-                description: error.message
-            });
-        } finally {
-            setIsSaving(false);
-            console.log('========================================');
-            console.log('🏁 DIAGNOSTIC COMPLETE');
-            console.log('========================================');
+            } catch (e) {
+                console.error("Error saving:", e);
+                toast({ variant: 'destructive', title: 'Error', description: 'Could not save progress.' });
+            } finally {
+                setIsSaving(false);
+            }
         }
     };
 
@@ -285,7 +250,7 @@ function AiGeneratorModal({
     const [difficulty, setDifficulty] = useState('Beginner');
     const [count, setCount] = useState(3);
     const [isGenerating, setIsGenerating] = useState(false);
-    const [previewData, setPreviewData] = useState<any[] | null>(null);
+    const [previewData, setPreviewData] = useState<any[] | null>(null); // Array of questions
 
     const handleGenerate = async () => {
         if (!topic) return;
@@ -294,8 +259,9 @@ function AiGeneratorModal({
         
         try {
             const result = await generateScienceQuestionAction({ topic, difficulty, grade, count });
+            
             if (result.success && result.data) {
-                setPreviewData(result.data);
+                setPreviewData(result.data); // This is now an array of questions
             } else {
                 alert("AI Error: " + result.error);
             }
@@ -363,17 +329,31 @@ function AiGeneratorModal({
                     </div>
                 ) : (
                     <div className="flex flex-col gap-4 overflow-hidden">
-                        <div className="bg-purple-50 p-3 rounded-md border border-purple-100 flex-1 overflow-y-auto">
+                        <div className="bg-purple-50 p-3 rounded-md border border-purple-100 flex-1 overflow-y-auto pr-2">
                             <p className="font-bold text-purple-800 mb-2">Preview: {previewData.length} Questions generated</p>
-                            <ul className="list-disc pl-5 space-y-1 text-sm text-slate-700">
-                                {previewData.map((q, i) => (
-                                    <li key={i}>{q.question}</li>
+                            
+                            <div className="space-y-6">
+                                {previewData.map((q, idx) => (
+                                    <div key={idx} className="border-b border-purple-200 pb-4 last:border-0">
+                                        <p className="font-medium text-md mb-2 text-slate-800">
+                                            {idx + 1}. {q.question}
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {q.options.map((opt: string, i: number) => (
+                                                <div key={i} className={`p-2 text-xs border rounded-md ${opt === q.correctAnswer ? 'bg-green-100 border-green-300 font-bold text-green-800' : 'bg-white text-slate-600'}`}>
+                                                    {opt} {opt === q.correctAnswer && "✓"}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                         </div>
                         <div className="flex gap-2 mt-auto pt-2">
                             <Button variant="outline" onClick={() => setPreviewData(null)} className="flex-1">Discard</Button>
-                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700 text-white">Save Quiz Set</Button>
+                            <Button onClick={handleConfirm} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+                                Save All to Library
+                            </Button>
                         </div>
                     </div>
                 )}
@@ -472,7 +452,7 @@ function FactOfTheDay() {
         <Card className="bg-emerald-50/50 border-emerald-200">
             <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-emerald-700 text-lg">
-                    <Lightbulb className="h-5 w-5"/> Science Club 2.0 Fact of the Day
+                    <Lightbulb className="h-5 w-5"/> Science Club Fact of the Day
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -547,7 +527,7 @@ function AddQuestionForm({ open, setOpen, classes, onAiOpen }: { open: boolean, 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Add Question Manually</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>Add Lab Question (Manual)</DialogTitle></DialogHeader>
                 
                 <div className="space-y-4 py-4">
                      <Button variant="outline" onClick={() => { setOpen(false); onAiOpen(); }} className="w-full border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100">
@@ -732,7 +712,7 @@ export default function ScienceLabPage() {
             <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-2">
                 <Atom className="h-8 w-8 text-emerald-600"/> Science Club 2.0
             </h1>
-            <p className="text-slate-500">Explore, Experiment, and Excel.</p>
+            <p className="text-slate-500">Explore question sets and daily facts.</p>
         </div>
         <div className="flex gap-2">
             <SetupButton isStaff={isStaff} />
@@ -847,5 +827,3 @@ export default function ScienceLabPage() {
     </div>
   );
 }
-
-    
