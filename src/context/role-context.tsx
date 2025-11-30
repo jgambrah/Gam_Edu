@@ -126,19 +126,25 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   const isLoading = isAuthLoading || isRoleLoading;
 
   useEffect(() => {
-      // 1. Redirect if not logged in
+      // 1. Redirect unauthenticated users from dashboard to login
       if (!isLoading && !user && pathname.startsWith('/dashboard')) {
         router.push('/');
         return;
       }
 
-      // 2. Redirect based on Role (The logic you were missing)
+      // 2. Redirect authenticated users based on role mismatch
       if (!isLoading && user && role) {
-        if (role === 'Teacher' && pathname === '/dashboard/parent') {
-           router.push('/dashboard/staff'); // Send teacher away from parent portal
+        const isStaffRole = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+        const isParentPage = pathname.startsWith('/dashboard/parents') || pathname.startsWith('/dashboard/student-registration');
+
+        // If a staff member lands on a parent-only page, redirect them.
+        if (isStaffRole && isParentPage) {
+           router.push('/dashboard'); 
         }
-        else if (role === 'Student' && pathname === '/dashboard/parent') {
-           router.push('/dashboard'); // Send student to their main dashboard
+        
+        // If a student lands on a parent-only page, redirect them.
+        else if (role === 'Student' && isParentPage) {
+           router.push('/dashboard');
         }
       }
   }, [isLoading, user, role, pathname, router]);
