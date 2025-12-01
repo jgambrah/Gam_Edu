@@ -75,7 +75,7 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
             <CardContent className="space-y-4">
                 {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
                     <blockquote className="border-l-4 border-amber-400 pl-4 italic text-slate-700">
-                        "{latestFact.text}"
+                        "{latestFact.factText}"
                         <footer className="text-xs text-muted-foreground mt-2 not-italic">
                             — Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}
                         </footer>
