@@ -105,7 +105,7 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
 
     determineRole();
     
-  }, [user, firestore, isAuthLoading]);
+  }, [user?.uid, firestore, isAuthLoading]); // Use user.uid for stability
 
   return (
     <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
