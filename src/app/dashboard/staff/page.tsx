@@ -49,11 +49,12 @@ import {
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
-import { useAuth, useFirestore } from '@/firebase'; // Removed useCollection
-import { collection, doc, deleteDoc, updateDoc, getDocs, query, orderBy } from 'firebase/firestore'; // Added getDocs
+import { useAuth, useFirestore } from '@/firebase'; 
+// FIX: Import onSnapshot for real-time updates
+import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, query, serverTimestamp } from 'firebase/firestore'; 
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState, useCallback } from 'react';
-import { Loader2, Edit, Trash2, RefreshCw } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Loader2, Edit, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
 import { useRole } from '@/context/role-context';
@@ -189,7 +190,7 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
       try {
           await deleteDoc(doc(firestore, 'staff', staffId));
           toast({ title: 'Success', description: 'Staff member has been deleted.'});
-          forceRefetch();
+          // No need to call forceRefetch, listener will auto-update
       } catch(error) {
           console.error(error);
           toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete staff member.' });
@@ -212,11 +213,6 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
         <CardHeader>
           <CardTitle>Existing Staff</CardTitle>
           <CardDescription>Total Staff: {staff?.length || 0}</CardDescription>
-          <div className="pt-4 flex justify-end">
-            <Button variant="outline" size="icon" onClick={forceRefetch} title="Refresh List">
-                <RefreshCw className="h-4 w-4"/>
-            </Button>
-          </div>
         </CardHeader>
         <CardContent>
           {staff && staff.length > 0 ? (
@@ -266,10 +262,10 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
       </Card>
   
       {editingStaff && (
-          <Dialog open={!!editingStaff} onOpenChange={(open) => { if (!open) { setEditingStaff(null); }}}>
+          <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
               <DialogContent>
                   <DialogHeader>
-                      <DialogTitle>Edit Staff: {editingStaff.firstName} {editingStaff.lastName}</DialogTitle>
+                      <DialogTitle>Edit Staff: {editingStaff.firstName}</DialogTitle>
                   </DialogHeader>
                   <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} onSuccess={forceRefetch} />
               </DialogContent>
@@ -285,32 +281,32 @@ function StaffPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // --- NEW: Direct Fetch State ---
+  // --- NEW: Real-Time Listener State ---
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  const fetchStaff = useCallback(async () => {
-    if (!firestore || !user) return;
-    
-    setIsLoadingData(true);
-    try {
-        // Try getting all staff directly
-        const querySnapshot = await getDocs(collection(firestore, 'staff'));
-        const staffList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        setStaff(staffList);
-        console.log(`Loaded ${staffList.length} staff members.`);
-    } catch (error: any) {
-        console.error("Error loading staff:", error);
-        toast({ variant: "destructive", title: "Load Error", description: error.message });
-    } finally {
-        setIsLoadingData(false);
-    }
-  }, [firestore, user, toast]);
-
-  // Initial Load
+  // Real-Time Listener
   useEffect(() => {
-      fetchStaff();
-  }, [fetchStaff]);
+    if (!firestore || !user) return;
+
+    console.log("🔄 Setting up Staff Listener...");
+    setIsLoadingData(true);
+
+    const q = query(collection(firestore, 'staff'), orderBy('lastName'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
+        console.log(`✅ Listener Updated: Found ${staffList.length} staff.`);
+        setStaff(staffList);
+        setIsLoadingData(false);
+    }, (error) => {
+        console.error("❌ Listener Error:", error);
+        toast({ variant: "destructive", title: "Error", description: "Could not load staff data. Check permissions or network." });
+        setIsLoadingData(false);
+    });
+
+    return () => unsubscribe();
+  }, [firestore, user, toast]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -342,14 +338,16 @@ function StaffPageContent() {
         throw new Error(result.error);
       }
       
-      toast({
-        title: 'Staff Added Successfully',
-        description: `${values.firstName} ${values.lastName} has been added.`,
-        duration: 8000,
+      await setDoc(doc(firestore, 'staff', result.uid), {
+        ...values,
+        uid: result.uid,
+        createdAt: serverTimestamp(),
       });
       
-      // Refresh the list immediately
-      await fetchStaff();
+      toast({
+        title: 'Staff Added',
+        description: `${values.firstName} ${values.lastName} added.`,
+      });
       
       form.reset();
       
@@ -358,7 +356,7 @@ function StaffPageContent() {
       toast({
         variant: 'destructive',
         title: 'Error Adding Staff',
-        description: error.message || 'An unexpected error occurred. Please try again.',
+        description: error.message,
       });
     } finally {
       setIsSubmitting(false);
@@ -544,10 +542,11 @@ function StaffPageContent() {
         </CardContent>
       </Card>
 
-      <StaffList staff={staff} isLoading={isLoadingData} forceRefetch={fetchStaff} />
+      <StaffList staff={staff} isLoading={isLoadingData} forceRefetch={() => {}} />
     </div>
   );
 }
+
 
 export default function StaffPage() {
     return (
