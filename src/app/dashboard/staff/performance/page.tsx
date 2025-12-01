@@ -129,7 +129,7 @@ export default function PerformanceReviewsPage() {
   const [isFormOpen, setFormOpen] = useState(false);
 
   const staffQuery = useMemoFirebase(() => {
-    if (!user) return null;
+    if (!user || !firestore) return null;
     const excludedRoles: UserRole[] = ['Administrator', 'Director'];
     return query(collection(firestore, 'staff'), where('role', 'not-in', excludedRoles));
   }, [firestore, user]);

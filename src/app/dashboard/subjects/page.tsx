@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useAuth } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, addDoc, updateDoc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,8 +54,6 @@ function SubjectForm({
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
         // Create new subject
-        const subjectId = values.name.toLowerCase().replace(/\s+/g, '-');
-        const subjectRef = doc(firestore, 'subjects', subjectId);
         await addDoc(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
@@ -137,6 +135,7 @@ function SubjectForm({
 export default function SubjectsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
+  const { user } = useAuth();
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
   const [refetchKey, setRefetchKey] = useState(0);
@@ -146,7 +145,7 @@ export default function SubjectsPage() {
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refetchKey]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-  const teachersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore]);
+  const teachersQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
   const handleOpenDialog = (subject?: Subject) => {

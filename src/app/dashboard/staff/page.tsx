@@ -49,7 +49,7 @@ import {
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, serverTimestamp, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useMemo } from 'react';
@@ -241,22 +241,12 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
                               <Edit className="h-4 w-4" />
                           </Button>
                           <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                   <Button variant="ghost" size="icon">
-                                      <Trash2 className="h-4 w-4 text-destructive" />
-                                  </Button>
-                              </AlertDialogTrigger>
+                              <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
                               <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                      <AlertDialogDescription>
+                                  <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>
                                           This action will delete the staff member's profile from the database. It will not delete their login account. This cannot be undone.
-                                      </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Confirm Delete</AlertDialogAction>
-                                  </AlertDialogFooter>
+                                      </AlertDialogDescription></AlertDialogHeader>
+                                  <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
                               </AlertDialogContent>
                           </AlertDialog>
                       </TableCell>
@@ -289,10 +279,11 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
 
 function StaffPageContent() {
   const firestore = useFirestore();
+  const { user } = useAuth(); // Import useAuth to get user
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const staffCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'staff') : null, [firestore]);
+  const staffCollectionRef = useMemoFirebase(() => (firestore && user) ? collection(firestore, 'staff') : null, [firestore, user]);
   const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -433,7 +424,7 @@ function StaffPageContent() {
                   name="dateOfBirth"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Date of Birth</FormLabel>
+                      <FormLabel>Date of Birth (Optional)</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
@@ -446,7 +437,7 @@ function StaffPageContent() {
                   name="gender"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Gender</FormLabel>
+                      <FormLabel>Gender (Optional)</FormLabel>
                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -469,7 +460,7 @@ function StaffPageContent() {
                   name="nationality"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nationality</FormLabel>
+                      <FormLabel>Nationality (Optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g. American" {...field} />
                       </FormControl>
@@ -482,7 +473,7 @@ function StaffPageContent() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>Address (Optional)</FormLabel>
                       <FormControl>
                         <Input placeholder="123 Main St, Anytown USA" {...field} />
                       </FormControl>

@@ -59,7 +59,7 @@ export default function PayrollPage() {
   }
 
   const handleRunPayroll = async () => {
-    if (!hasRequiredData) return;
+    if (!hasRequiredData || !staffList) return;
     setIsProcessing(true);
     toast({ title: "Processing Payroll...", description: `Running payroll for ${period}. This may take a moment.`});
 
