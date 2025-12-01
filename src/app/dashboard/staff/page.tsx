@@ -231,34 +231,43 @@ function StaffPageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [staff, setStaff] = useState<StaffData[]>([]);
+  // Start loading only if we don't have data yet
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // --- RELIABLE DATA FETCHING (onSnapshot) ---
+  // --- STABILIZED LISTENER ---
   useEffect(() => {
-    if (isUserLoading) return;
-    
-    if (!user || !firestore) {
-        setIsLoadingData(false);
-        return;
-    }
-    
-    setIsLoadingData(true);
-    // We use a simple collection reference. 
-    // If you add orderBy('lastName') later, ensure you create the Index in Firebase Console.
+    // 1. Safety Checks
+    if (isUserLoading || !user || !firestore) return;
+
+    // 2. Only show loading spinner if we have NO data yet. 
+    // This prevents "flickering" if the user object updates slightly.
+    if (staff.length === 0) setIsLoadingData(true);
+
+    console.log("🔄 Connecting to Staff Collection...");
+
     const q = collection(firestore, 'staff');
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
+        
+        console.log(`✅ DATA RECEIVED: ${staffList.length} staff members.`);
+        
         setStaff(staffList);
-        setIsLoadingData(false);
+        setIsLoadingData(false); // Stop loading immediately
     }, (error) => {
-        console.error("Listener Error:", error);
-        toast({ variant: "destructive", title: "Error loading list", description: "Check permissions or connection." });
+        console.error("❌ Listener Error:", error);
+        // Only show toast if it's a real permission error, not a navigation cancellation
+        if (error.code === 'permission-denied') {
+             toast({ variant: "destructive", title: "Access Denied", description: "Check Firestore Rules." });
+        }
         setIsLoadingData(false);
     });
 
     return () => unsubscribe();
-  }, [firestore, user, isUserLoading, toast]);
+    
+    // IMPORTANT: We remove 'staff.length' dependency so it doesn't loop
+    // We rely on firestore/user stability
+  }, [firestore, user?.uid, isUserLoading]); // Only re-run if UID changes, not the whole user object
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -334,7 +343,8 @@ function StaffPageContent() {
         </CardContent>
       </Card>
 
-      <StaffList staff={staff} isLoading={isLoadingData} />
+      {/* Force re-render when staff length changes to ensure UI updates */}
+      <StaffList key={staff.length} staff={staff} isLoading={isLoadingData} />
     </div>
   );
 }
@@ -344,5 +354,3 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
-
-    
