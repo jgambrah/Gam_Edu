@@ -12,22 +12,22 @@ import {
 } from 'react';
 import type { UserRole } from '@/lib/types';
 import { useUser, useFirestore } from '@/firebase';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type RoleContextType = {
-  role: UserRole | null; // Changed to nullable to distinguish "loading" from "assigned"
-  setRole: Dispatch<SetStateAction<UserRole>>;
+  role: UserRole | null; // Allow null for "No Role Found"
+  setRole: Dispatch<SetStateAction<UserRole | null>>;
   isRoleLoading: boolean;
 };
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
-// --- 1. ROLE PROVIDER (Determines WHO they are) ---
 function RoleProviderContent({ children }: { children: ReactNode }) {
-  // Start with null so we know we haven't decided yet
-  const [role, setRole] = useState<UserRole>('Parent'); 
+  const [role, setRole] = useState<UserRole | null>(null); // Start as NULL
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const [isRoleLoading, setIsRoleLoading] = useState(true);
@@ -39,68 +39,62 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
       setIsRoleLoading(true);
 
       if (!user) {
-        setRole('Parent'); // Default safe role for guests
+        setRole('Parent'); // Guest/Logged out defaults to Parent view (Safe)
         setIsRoleLoading(false);
         return;
       }
 
-      console.log(`Checking role for UID: ${user.uid}...`);
+      console.log("🔍 Checking Role for UID:", user.uid);
 
       // 1. Check Custom Claims (Fastest)
       try {
-        const idTokenResult = await user.getIdTokenResult(); // Removed 'true' to prevent rate limits, unless strictly needed
+        const idTokenResult = await user.getIdTokenResult();
         const claimsRole = idTokenResult.claims.role;
-        
         if (claimsRole && typeof claimsRole === 'string') {
-          console.log("Role found via Claims:", claimsRole);
+          console.log("✅ Found Role via Claims:", claimsRole);
           setRole(claimsRole as UserRole);
           setIsRoleLoading(false);
           return;
         }
-      } catch (e) {
-        console.warn("Claims check failed, falling back to DB.");
-      }
+      } catch (e) { console.warn(e); }
       
       // 2. Check Staff Collection
       try {
         const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
-        if (staffDoc.exists() && staffDoc.data().role) {
-          setRole(staffDoc.data().role as UserRole);
+        if (staffDoc.exists()) {
+          const r = staffDoc.data().role || 'Teacher';
+          console.log("✅ Found in Staff:", r);
+          setRole(r as UserRole);
           setIsRoleLoading(false);
           return;
         }
-      } catch (e) { 
-        console.log("Not a staff member (or permission denied)"); 
-      }
+      } catch (e) { console.log("Not staff or permission denied"); }
 
       // 3. Check Students Collection
       try {
         const studentDoc = await getDoc(doc(firestore, 'students', user.uid));
         if (studentDoc.exists()) {
-          console.log("User identified as Student");
+          console.log("✅ Found in Students");
           setRole('Student');
           setIsRoleLoading(false);
           return;
         }
-      } catch (e) {
-         console.log("Not a student");
-      }
+      } catch (e) { console.log("Not student"); }
 
-      // 4. Check Parents Collection (Explicit check, don't just assume)
+      // 4. Check Parents Collection (Explicit Check)
       try {
         const parentDoc = await getDoc(doc(firestore, 'parents', user.uid));
         if (parentDoc.exists()) {
+          console.log("✅ Found in Parents");
           setRole('Parent');
           setIsRoleLoading(false);
           return;
         }
-      } catch (e) {
-          console.log("Not a parent");
-      }
+      } catch (e) { console.log("Not parent"); }
       
-      // 5. Final Fallback
-      console.warn("User has no profile in DB. Defaulting to Parent view.");
-      setRole('Parent'); 
+      // 5. FINAL FALLBACK: Do NOT default to Parent. Default to NULL.
+      console.warn("❌ User not found in any collection.");
+      setRole(null); // No role found
       setIsRoleLoading(false);
     };
 
@@ -108,11 +102,8 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
     
   }, [user, firestore, isAuthLoading]);
 
-  return (
-    <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
-      {children}
-    </RoleContext.Provider>
-  );
+  // @ts-ignore
+  return <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>{children}</RoleContext.Provider>;
 }
 
 export function RoleProvider({ children }: { children: ReactNode }) {
@@ -121,13 +112,11 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
 export function useRole() {
   const context = useContext(RoleContext);
-  if (context === undefined) {
-    throw new Error('useRole must be used within a RoleProvider');
-  }
+  if (context === undefined) throw new Error('useRole must be used within a RoleProvider');
   return context;
 }
 
-// --- 2. ROLE GUARD (Determines WHERE they go) ---
+// --- 2. UPDATED ROLE GUARD ---
 export function RoleGuard({ children }: { children: ReactNode }) {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const { role, isRoleLoading } = useRole();
@@ -139,43 +128,43 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
       if (isLoading) return;
 
-      // 1. Not Logged In? -> Go Home
+      // Not logged in? -> Home
       if (!user && pathname.startsWith('/dashboard')) {
         router.push('/');
         return;
       }
 
-      // 2. Logged In? -> Enforce Portals
-      if (user && role) {
-        
+      // Logged in? -> Check access
+      if (user) {
+        if (!role) {
+            // Role is NULL (User exists in Auth but not in DB)
+            // Do nothing, let the component render the "Access Denied" screen below
+            return;
+        }
+
         const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian'].includes(role);
 
-        // --- A. STAFF LOGIC ---
+        // A. STAFF Redirects
         if (isStaff) {
-            // If Staff tries to go to Student or Parent portal
             if (pathname.startsWith('/dashboard/students') || pathname.startsWith('/dashboard/parents')) {
-                router.push('/dashboard/staff'); // Or /dashboard/academics
-            }
-            // If Staff is at root dashboard
-            else if (pathname === '/dashboard') {
+                router.push('/dashboard/staff'); 
+            } else if (pathname === '/dashboard') {
                 router.push('/dashboard/staff');
             }
         }
         
-        // --- B. STUDENT LOGIC ---
+        // B. STUDENT Redirects
         else if (role === 'Student') {
-             // If Student tries to go to Staff or Parent portal
              if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/parents') || pathname === '/dashboard') {
-                 router.push('/dashboard/students'); // Make sure you have a 'students' folder (plural)
+                 // IMPORTANT: Redirect to the correct plural/singular folder you have
+                 router.push('/dashboard/students'); 
              }
         }
 
-        // --- C. PARENT LOGIC (The 404 Fix) ---
+        // C. PARENT Redirects
         else if (role === 'Parent') {
-            // If Parent tries to go to Staff or Student portal
             if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/students') || pathname === '/dashboard') {
-                // FIX: Changed from '/dashboard/parent' to '/dashboard/parents'
-                router.push('/dashboard/parents'); 
+                router.push('/dashboard/parents');
             }
         }
       }
@@ -186,10 +175,39 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full items-center justify-center bg-slate-50">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground animate-pulse">Verifying access...</p>
+            <p className="text-muted-foreground animate-pulse">Verifying account access...</p>
           </div>
       </div>
     )
+  }
+
+  // Handling the "No Role" case explicitly
+  if (!isLoading && user && !role && pathname.startsWith('/dashboard')) {
+      return (
+        <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 p-4">
+            <Card className="max-w-md w-full border-red-200 shadow-lg">
+                <CardHeader className="text-center">
+                    <div className="mx-auto bg-red-100 p-3 rounded-full w-fit mb-2">
+                        <AlertCircle className="h-8 w-8 text-red-600" />
+                    </div>
+                    <CardTitle className="text-red-700">Account Not Configured</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center space-y-4">
+                    <p className="text-slate-600">
+                        You are logged in as <strong>{user.email}</strong>, but we couldn't find your profile in the Student, Staff, or Parent database.
+                    </p>
+                    <div className="bg-slate-100 p-3 rounded text-xs font-mono text-left">
+                        UID: {user.uid} <br/>
+                        Status: Role Missing
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        Please contact the IT administrator to link your account correctly.
+                    </p>
+                    <Button onClick={() => router.push('/')} variant="outline">Back to Home</Button>
+                </CardContent>
+            </Card>
+        </div>
+      );
   }
   
   return <>{children}</>;
