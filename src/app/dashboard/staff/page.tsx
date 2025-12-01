@@ -279,12 +279,24 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
 
 function StaffPageContent() {
   const firestore = useFirestore();
-  const { user } = useAuth(); // Import useAuth to get user
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const staffCollectionRef = useMemoFirebase(() => (firestore && user) ? collection(firestore, 'staff') : null, [firestore, user]);
-  const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
+  const staffCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'staff');
+  }, [firestore, user]);
+
+  const { data: staff, isLoading, error, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
+
+  useEffect(() => {
+    if (error) {
+        console.error("Error loading staff:", error);
+        toast({ variant: "destructive", title: "Load Error", description: "Could not load staff list." });
+    }
+  }, [error, toast]);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -541,3 +553,5 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
+
+    

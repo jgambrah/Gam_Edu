@@ -250,11 +250,24 @@ function StudentsPageContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   
-  const classesCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'classes') : null, [firestore, user]);
+  const classesCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'classes');
+  }, [firestore, user]);
   const { data: classes } = useCollection<{id: string, name: string}>(classesCollectionRef);
   
-  const studentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]);
-  const { data: students, isLoading, forceRefetch } = useCollection<StudentData>(studentsCollectionRef);
+  const studentsCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'students');
+  }, [firestore, user]);
+  const { data: students, isLoading, error, forceRefetch } = useCollection<StudentData>(studentsCollectionRef);
+
+  useEffect(() => {
+    if (error) {
+        console.error("Error loading students:", error);
+        toast({ variant: "destructive", title: "Load Error", description: "Could not load student list." });
+    }
+  }, [error, toast]);
 
   const form = useForm<z.infer<typeof studentFormSchema>>({
     resolver: zodResolver(studentFormSchema),
@@ -523,3 +536,5 @@ export default function StudentsPage() {
         <StudentsPageContent />
     )
 }
+
+    

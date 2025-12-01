@@ -254,11 +254,28 @@ function ParentsPageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
   
-  const parentsCollectionRef = useMemoFirebase(() => (firestore && user) ? collection(firestore, 'parents') : null, [firestore, user]);
-  const { data: parents, isLoading: isParentsLoading, forceRefetch } = useCollection<ParentData>(parentsCollectionRef);
+  const parentsCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'parents');
+  }, [firestore, user]);
+  const { data: parents, isLoading: isParentsLoading, error: parentsError, forceRefetch } = useCollection<ParentData>(parentsCollectionRef);
 
-  const studentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]);
-  const { data: students, isLoading: isStudentsLoading } = useCollection(studentsCollectionRef);
+  const studentsCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'students');
+  }, [firestore, user]);
+  const { data: students, isLoading: isStudentsLoading, error: studentsError } = useCollection(studentsCollectionRef);
+
+  useEffect(() => {
+    if (parentsError) {
+        console.error("Error loading parents:", parentsError);
+        toast({ variant: "destructive", title: "Load Error", description: "Could not load parent list." });
+    }
+    if (studentsError) {
+        console.error("Error loading students:", studentsError);
+        toast({ variant: "destructive", title: "Load Error", description: "Could not load student list for linking." });
+    }
+  }, [parentsError, studentsError, toast]);
 
   const isLoading = isParentsLoading || isStudentsLoading;
 
@@ -507,3 +524,5 @@ export default function ParentsPage() {
         <ParentsPageContent />
     )
 }
+
+    
