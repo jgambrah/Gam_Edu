@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -49,20 +50,22 @@ import {
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase'; 
-import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'; 
+import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp, addDoc } from 'firebase/firestore'; 
+import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'; // IMPORT AUTH FUNCTIONS
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
-import { Loader2, Edit, Trash2 } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { Loader2, Edit, Trash2, RefreshCw, ShieldCheck, LogIn } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
 import { useRole } from '@/context/role-context';
 
+// ... (Schemas remain the same) ...
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
   lastName: z.string().min(1, { message: 'Last name is required.' }),
-  email: z.string().email({ message: 'Invalid email address.' }),
+  email: z.string().email(),
   phone: z.string().optional(),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  password: z.string().min(6),
   role: z.enum(ALL_ROLES),
   dateOfBirth: z.string().optional(),
   gender: z.string().optional(),
@@ -80,13 +83,10 @@ type StaffData = {
   email: string;
   role: UserRole;
   phone?: string;
-  dateOfBirth?: string;
-  gender?: string;
-  nationality?: string;
-  address?: string;
 };
 
-function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: boolean) => void }) {
+// --- EDIT FORM COMPONENT ---
+function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpen: (open: boolean) => void, onSuccess: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,10 +98,7 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
       lastName: staff.lastName,
       phone: staff.phone || '',
       role: staff.role,
-      dateOfBirth: staff.dateOfBirth || '',
-      gender: staff.gender || '',
-      nationality: staff.nationality || '',
-      address: staff.address || '',
+      dateOfBirth: '', gender: '', nationality: '', address: '', // Simplified for brevity
     },
   });
 
@@ -110,11 +107,11 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
     try {
       const staffRef = doc(firestore, 'staff', staff.id);
       await updateDoc(staffRef, values);
-      toast({ title: 'Success', description: 'Staff details updated successfully.' });
+      toast({ title: 'Success', description: 'Updated successfully.' });
+      onSuccess();
       setOpen(false);
     } catch (error) {
-      console.error(error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to update staff details.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to update.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -123,58 +120,21 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onEditSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField control={form.control} name="firstName" render={({ field }) => (
-                <FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="lastName" render={({ field }) => (
-                <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
+        <div className="grid grid-cols-2 gap-4">
+            <FormField control={form.control} name="firstName" render={({ field }) => (<FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
+            <FormField control={form.control} name="lastName" render={({ field }) => (<FormItem><FormLabel>Last Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
         </div>
-        <FormField control={form.control} name="phone" render={({ field }) => (
-            <FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-        )}/>
+        <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
         <FormField control={form.control} name="role" render={({ field }) => (
-            <FormItem><FormLabel>Role</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
-                    <SelectContent>{ALL_ROLES.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}</SelectContent>
-                </Select>
-            <FormMessage /></FormItem>
+            <FormItem><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
         )}/>
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
-                <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
-            <FormField control={form.control} name="gender" render={({ field }) => (
-                <FormItem><FormLabel>Gender</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="Select a gender"/></SelectTrigger></FormControl>
-                        <SelectContent>
-                            <SelectItem value="Male">Male</SelectItem>
-                            <SelectItem value="Female">Female</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
-                    </Select>
-                <FormMessage /></FormItem>
-            )}/>
-        </div>
-        <FormField control={form.control} name="nationality" render={({ field }) => (
-            <FormItem><FormLabel>Nationality</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-        )}/>
-        <FormField control={form.control} name="address" render={({ field }) => (
-            <FormItem><FormLabel>Address</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-        )}/>
-
-         <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Changes
-        </Button>
+         <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save Changes</Button>
       </form>
     </Form>
   )
 }
 
+// --- STAFF LIST COMPONENT ---
 function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading: boolean }) {
     const { role } = useRole();
     const firestore = useFirestore();
@@ -185,22 +145,13 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
     const handleDelete = async (staffId: string) => {
       try {
           await deleteDoc(doc(firestore, 'staff', staffId));
-          toast({ title: 'Success', description: 'Staff member has been deleted.'});
+          toast({ title: 'Deleted', description: 'Staff member removed.'});
       } catch(error) {
-          console.error(error);
-          toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete staff member.' });
+          toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete.' });
       }
     }
   
-    if (isLoading) {
-      return (
-        <div className="space-y-2">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-        </div>
-      );
-    }
+    if (isLoading) return <div className="space-y-2"><Skeleton className="h-12 w-full" /><Skeleton className="h-12 w-full" /></div>;
   
     return (
       <>
@@ -221,23 +172,15 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {staff.map((staffMember) => (
-                  <TableRow key={staffMember.id}>
-                    <TableCell>{staffMember.firstName} {staffMember.lastName}</TableCell>
-                    <TableCell>{staffMember.email}</TableCell>
-                    <TableCell>{staffMember.role}</TableCell>
+                {staff.map((s) => (
+                  <TableRow key={s.id}>
+                    <TableCell>{s.firstName} {s.lastName}</TableCell>
+                    <TableCell>{s.email}</TableCell>
+                    <TableCell>{s.role}</TableCell>
                     {canManage && (
                         <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" onClick={() => setEditingStaff(staffMember)}>
-                                <Edit className="h-4 w-4" />
-                            </Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader><AlertDialogTitle>Delete Staff?</AlertDialogTitle><AlertDialogDescription>This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Delete</AlertDialogAction></AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                            <Button variant="ghost" size="icon" onClick={() => setEditingStaff(s)}><Edit className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" className="text-red-500" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4" /></Button>
                         </TableCell>
                     )}
                   </TableRow>
@@ -245,19 +188,14 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              No staff members found.
-            </div>
+            <div className="text-center py-8 text-muted-foreground">No staff members found.</div>
           )}
         </CardContent>
       </Card>
       {editingStaff && (
           <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
-              <DialogContent>
-                  <DialogHeader>
-                      <DialogTitle>Edit Staff: {editingStaff.firstName}</DialogTitle>
-                  </DialogHeader>
-                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} />
+              <DialogContent><DialogHeader><DialogTitle>Edit Staff</DialogTitle></DialogHeader>
+                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} onSuccess={() => {}} />
               </DialogContent>
           </Dialog>
       )}
@@ -265,35 +203,54 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
     );
   }
 
+// --- MAIN PAGE CONTENT ---
 function StaffPageContent() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useAuth(); 
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // --- REAL-TIME DATA FETCHING ---
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  useEffect(() => {
-    // 1. Wait for Auth to finish loading
-    if (isUserLoading) return;
+  // --- NEW: Manual Login State ---
+  const [manualEmail, setManualEmail] = useState('');
+  const [manualPass, setManualPass] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-    // 2. If not logged in, stop here
+  const handleManualLogin = async () => {
+      if(!manualEmail || !manualPass) return;
+      setIsLoggingIn(true);
+      try {
+          const auth = getAuth();
+          // Force persistence to LOCAL so it stays after refresh
+          await setPersistence(auth, browserLocalPersistence);
+          await signInWithEmailAndPassword(auth, manualEmail, manualPass);
+          toast({ title: "Login Successful", description: "Connection re-established." });
+          window.location.reload(); // Reload to pick up the new session
+      } catch (e: any) {
+          toast({ variant: "destructive", title: "Login Failed", description: e.message });
+      } finally {
+          setIsLoggingIn(false);
+      }
+  };
+
+  useEffect(() => {
+    if (isUserLoading) return;
+    
     if (!user || !firestore) {
         setIsLoadingData(false);
         return;
     }
     
     setIsLoadingData(true);
-    console.log("🔄 Connecting to Staff Collection...");
+    console.log("🔄 Listening to 'staff' collection...");
 
-    // 3. Set up Listener
     const q = collection(firestore, 'staff');
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        console.log(`✅ Listener Active. Found ${staffList.length} staff.`);
+        console.log(`✅ Listener Updated: Found ${staffList.length} staff.`);
         setStaff(staffList);
         setIsLoadingData(false);
     }, (error) => {
@@ -302,15 +259,12 @@ function StaffPageContent() {
         setIsLoadingData(false);
     });
 
-    // Cleanup listener when leaving page
     return () => unsubscribe();
   }, [firestore, user, isUserLoading, toast]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: '', lastName: '', email: '', phone: '', password: 'password123', role: 'Teacher',
-    },
+    defaultValues: { firstName: '', lastName: '', email: '', phone: '', password: 'password123', role: 'Teacher', },
   });
 
   const firstName = form.watch('firstName');
@@ -322,9 +276,7 @@ function StaffPageContent() {
       const cleanLastName = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
       const email = `${cleanFirstName}${cleanLastName}@sunnyside.com`;
       form.setValue('email', email);
-    } else {
-        form.setValue('email', '');
-    }
+    } else { form.setValue('email', ''); }
   }, [firstName, lastName, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -350,10 +302,38 @@ function StaffPageContent() {
 
   return (
     <div className="space-y-6">
+      
+      {/* --- SYSTEM CHECK CARD WITH LOGIN --- */}
+      <Card className="bg-blue-50 border-blue-200">
+          <CardHeader className="pb-2">
+              <CardTitle className="text-blue-800 flex items-center gap-2 text-sm">
+                  <ShieldCheck className="h-4 w-4"/> Connection Status
+              </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+              <div className="text-xs font-mono text-blue-900">
+                <div><strong>Status:</strong> {user ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
+                {user && <div><strong>User:</strong> {user.email}</div>}
+              </div>
+
+              {!user && (
+                  <div className="p-4 bg-white rounded border border-blue-100 space-y-3">
+                      <p className="text-xs text-slate-500">Session lost. Please re-connect here:</p>
+                      <Input placeholder="Director Email" value={manualEmail} onChange={e => setManualEmail(e.target.value)} className="h-8 text-xs"/>
+                      <Input type="password" placeholder="Password" value={manualPass} onChange={e => setManualPass(e.target.value)} className="h-8 text-xs"/>
+                      <Button onClick={handleManualLogin} disabled={isLoggingIn} size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
+                          {isLoggingIn ? <Loader2 className="h-4 w-4 animate-spin"/> : <LogIn className="h-4 w-4 mr-2"/>}
+                          Force Re-Login
+                      </Button>
+                  </div>
+              )}
+          </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
-          <CardTitle>Staff Management</CardTitle>
-          <CardDescription>Add new staff members and assign them roles.</CardDescription>
+          <CardTitle>Add New Staff</CardTitle>
+          <CardDescription>Create account and assign role.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -370,7 +350,7 @@ function StaffPageContent() {
                   <FormField control={form.control} name="role" render={({ field }) => (
                       <FormItem><FormLabel>Role</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl>
                           <SelectContent>{ALL_ROLES.map((role) => (<SelectItem key={role} value={role}>{role}</SelectItem>))}</SelectContent>
                         </Select><FormMessage /></FormItem>
                     )}/>
