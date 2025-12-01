@@ -47,24 +47,22 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { useAuth, useFirestore } from '@/firebase'; // Removed useCollection/useMemoFirebase
+import { collection, doc, deleteDoc, updateDoc, setDoc, getDocs, query, orderBy } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState, useMemo } from 'react';
-import { Loader2, Edit, Trash2 } from 'lucide-react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { Loader2, Edit, Trash2, RefreshCw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
 import { useRole } from '@/context/role-context';
+import { Checkbox } from '@/components/ui/checkbox';
 
+// --- SCHEMA DEFINITIONS ---
 const studentFormSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
   lastName: z.string().min(1, { message: 'Last name is required.' }),
-  email: z.string().email({
-    message: 'Invalid email address.',
-  }),
-  password: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
-  }),
+  email: z.string().email({ message: 'Invalid email address.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
   classId: z.string().min(1, { message: 'Please select a class.'}),
   dateOfBirth: z.string().optional(),
   gender: z.string().optional(),
@@ -75,7 +73,8 @@ const editStudentFormSchema = studentFormSchema.omit({ password: true, email: tr
 
 type StudentData = z.infer<typeof studentFormSchema> & { id: string; uid: string };
 
-function EditStudentForm({ student, classes, setOpen }: { student: StudentData, classes: any[] | null, setOpen: (open: boolean) => void }) {
+// --- SUB-COMPONENT: Edit Form ---
+function EditStudentForm({ student, classes, setOpen, onSuccess }: { student: StudentData, classes: any[] | null, setOpen: (open: boolean) => void, onSuccess: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,6 +97,7 @@ function EditStudentForm({ student, classes, setOpen }: { student: StudentData, 
         const studentRef = doc(firestore, 'students', student.id);
         await updateDoc(studentRef, values);
         toast({ title: 'Success', description: 'Student details updated successfully.' });
+        onSuccess(); // Trigger refresh
         setOpen(false);
       } catch (error) {
         console.error(error);
@@ -149,6 +149,7 @@ function EditStudentForm({ student, classes, setOpen }: { student: StudentData, 
     )
   }
 
+// --- SUB-COMPONENT: List ---
 function StudentList({ students, classes, isLoading, searchTerm, classFilter, forceRefetch }: { students: StudentData[] | null, classes: any[] | null, isLoading: boolean, searchTerm: string, classFilter: string, forceRefetch: () => void }) {
   const { role } = useRole();
   const firestore = useFirestore();
@@ -213,7 +214,7 @@ function StudentList({ students, classes, isLoading, searchTerm, classFilter, fo
                       <AlertDialog>
                           <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
                           <AlertDialogContent>
-                              <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This action will delete the student's profile from the database. It will not delete their login account. This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
+                              <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This action will delete the student's profile. It cannot be undone.</AlertDialogDescription></AlertDialogHeader>
                               <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(student.id)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
                           </AlertDialogContent>
                       </AlertDialog>
@@ -231,10 +232,10 @@ function StudentList({ students, classes, isLoading, searchTerm, classFilter, fo
       </div>
     )}
     {editingStudent && (
-        <Dialog open={!!editingStudent} onOpenChange={(open) => { if (!open) { setEditingStudent(null); forceRefetch(); }}}>
+        <Dialog open={!!editingStudent} onOpenChange={(open) => { if (!open) { setEditingStudent(null); }}}>
             <DialogContent>
-                <DialogHeader><DialogTitle>Edit Student: {editingStudent.firstName} {editingStudent.lastName}</DialogTitle></DialogHeader>
-                <EditStudentForm student={editingStudent} classes={classes} setOpen={() => { setEditingStudent(null); forceRefetch(); }} />
+                <DialogHeader><DialogTitle>Edit Student</DialogTitle></DialogHeader>
+                <EditStudentForm student={editingStudent} classes={classes} setOpen={() => setEditingStudent(null)} onSuccess={forceRefetch} />
             </DialogContent>
         </Dialog>
     )}
@@ -242,44 +243,67 @@ function StudentList({ students, classes, isLoading, searchTerm, classFilter, fo
   );
 }
 
+// --- MAIN PAGE COMPONENT ---
 function StudentsPageContent() {
   const firestore = useFirestore();
   const { user } = useAuth();
   const { toast } = useToast();
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   
-  const classesCollectionRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return collection(firestore, 'classes');
-  }, [firestore, user]);
-  const { data: classes } = useCollection<{id: string, name: string}>(classesCollectionRef);
+  // DATA STATES (Replaced Hooks with State + Effect for Robustness)
+  const [classes, setClasses] = useState<{id: string, name: string}[]>([]);
+  const [students, setStudents] = useState<StudentData[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   
-  const studentsCollectionRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return collection(firestore, 'students');
-  }, [firestore, user]);
-  const { data: students, isLoading, error, forceRefetch } = useCollection<StudentData>(studentsCollectionRef);
+  // --- DIRECT DATA FETCHING ---
+  const fetchData = useCallback(async () => {
+      if (!firestore || !user) return;
+      
+      setIsLoadingData(true);
+      try {
+          console.log("🔄 Fetching Classes & Students...");
 
+          // 1. Fetch Classes
+          const classSnap = await getDocs(collection(firestore, 'classes'));
+          const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
+          setClasses(classList);
+
+          // 2. Fetch Students (Try with orderBy, fallback if index missing)
+          try {
+              const studentQ = query(collection(firestore, 'students'), orderBy('firstName'));
+              const studentSnap = await getDocs(studentQ);
+              const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() } as StudentData));
+              setStudents(studentList);
+              console.log(`✅ Found ${studentList.length} students.`);
+          } catch (sortError) {
+              console.warn("Sorting failed (Index?), trying unsorted fetch...", sortError);
+              const studentQ = collection(firestore, 'students');
+              const studentSnap = await getDocs(studentQ);
+              const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() } as StudentData));
+              setStudents(studentList);
+          }
+
+      } catch (error) {
+          console.error("❌ Fatal Data Load Error:", error);
+          toast({ variant: "destructive", title: "Data Load Error", description: "Please refresh the page." });
+      } finally {
+          setIsLoadingData(false);
+      }
+  }, [firestore, user, toast]);
+
+  // Initial Load
   useEffect(() => {
-    if (error) {
-        console.error("Error loading students:", error);
-        toast({ variant: "destructive", title: "Load Error", description: "Could not load student list." });
-    }
-  }, [error, toast]);
+      fetchData();
+  }, [fetchData]);
+
 
   const form = useForm<z.infer<typeof studentFormSchema>>({
     resolver: zodResolver(studentFormSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: 'password123',
-      classId: '',
-      dateOfBirth: '',
-      gender: '',
-      address: '',
+      firstName: '', lastName: '', email: '', password: 'password123', classId: '', dateOfBirth: '', gender: '', address: '',
     },
   });
 
@@ -288,7 +312,6 @@ function StudentsPageContent() {
 
   useEffect(() => {
     if (firstName && lastName) {
-      // Clean names for email - remove special characters
       const cleanFirstName = firstName.toLowerCase().replace(/[^a-z0-9]/g, '');
       const cleanLastName = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
       const email = `${cleanFirstName}${cleanLastName}@sunnyside-student.com`;
@@ -309,6 +332,7 @@ function StudentsPageContent() {
       
       const { uid } = result;
 
+      // Save to Firestore
       await setDoc(doc(firestore, 'students', uid), {
         uid: uid,
         firstName: values.firstName,
@@ -323,13 +347,12 @@ function StudentsPageContent() {
       
       toast({
         title: 'Student Added Successfully',
-        description: `${values.firstName} ${values.lastName} has been added. Login: ${values.email} / ${values.password}`,
-        duration: 8000,
+        description: `${values.firstName} ${values.lastName} added.`,
+        duration: 5000,
       });
       
-      setTimeout(() => {
-        forceRefetch();
-      }, 500);
+      // REFRESH DATA INSTANTLY
+      await fetchData();
       
       form.reset();
     } catch (error: any) {
@@ -337,7 +360,7 @@ function StudentsPageContent() {
       toast({
         variant: 'destructive',
         title: 'Error Adding Student',
-        description: error.message || 'An error occurred while adding the student.',
+        description: error.message || 'An error occurred.',
       });
     } finally {
       setIsSubmitting(false);
@@ -355,78 +378,33 @@ function StudentsPageContent() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="John" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <FormField control={form.control} name="firstName" render={({ field }) => (
+                    <FormItem><FormLabel>First Name</FormLabel><FormControl><Input placeholder="John" {...field} /></FormControl><FormMessage /></FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <FormField control={form.control} name="lastName" render={({ field }) => (
+                    <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input placeholder="Doe" {...field} /></FormControl><FormMessage /></FormItem>
                   )}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="student@sunnyside-student.com" {...field} readOnly />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              <FormField control={form.control} name="email" render={({ field }) => (
+                  <FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} readOnly /></FormControl><FormMessage /></FormItem>
                 )}
               />
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Default Password</FormLabel>
-                        <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} readOnly />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
+                 <FormField control={form.control} name="password" render={({ field }) => (
+                    <FormItem><FormLabel>Default Password</FormLabel><FormControl><Input type="password" placeholder="••••••••" {...field} readOnly /></FormControl><FormMessage /></FormItem>
                     )}
                 />
-                <FormField
-                  control={form.control}
-                  name="classId"
-                  render={({ field }) => (
+                <FormField control={form.control} name="classId" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Class</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a class to assign" />
-                          </SelectTrigger>
-                        </FormControl>
+                        <FormControl><SelectTrigger><SelectValue placeholder="Select a class to assign" /></SelectTrigger></FormControl>
                         <SelectContent>
-                          {classes?.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              {c.name || c.id}
-                            </SelectItem>
+                          {classes.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -437,59 +415,29 @@ function StudentsPageContent() {
               </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <FormField
-                  control={form.control}
-                  name="dateOfBirth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date of Birth (Optional)</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
+                    <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
+                <FormField control={form.control} name="gender" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Gender (Optional)</FormLabel>
+                      <FormLabel>Gender</FormLabel>
                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a gender" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Male">Male</SelectItem>
-                          <SelectItem value="Female">Female</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
-                        </SelectContent>
+                        <FormControl><SelectTrigger><SelectValue placeholder="Select a gender" /></SelectTrigger></FormControl>
+                        <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem><SelectItem value="Other">Other</SelectItem></SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="123 Main St, Anytown USA" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <FormField control={form.control} name="address" render={({ field }) => (
+                    <FormItem><FormLabel>Address</FormLabel><FormControl><Input placeholder="Address..." {...field} /></FormControl><FormMessage /></FormItem>
                   )}
                 />
               
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Add Student
+              <Button type="submit" disabled={isSubmitting} className="w-full">
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Add Student
               </Button>
             </form>
           </Form>
@@ -499,7 +447,7 @@ function StudentsPageContent() {
       <Card>
         <CardHeader>
           <CardTitle>Student List</CardTitle>
-          <CardDescription>A list of all students in the system.</CardDescription>
+          <CardDescription>Total Students: {students.length}</CardDescription>
           <div className="pt-4 flex gap-4">
             <Input 
               placeholder="Search by name..."
@@ -513,28 +461,33 @@ function StudentsPageContent() {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All Classes</SelectItem>
-                    {classes?.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                            {c.name || c.id}
-                        </SelectItem>
+                    {classes.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
                     ))}
                 </SelectContent>
             </Select>
+            <Button variant="outline" size="icon" onClick={fetchData} title="Refresh List">
+                <RefreshCw className={`h-4 w-4 ${isLoadingData ? 'animate-spin' : ''}`}/>
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
-            <StudentList students={students} classes={classes} isLoading={isLoading} searchTerm={searchTerm} classFilter={classFilter} forceRefetch={forceRefetch} />
+            <StudentList 
+                students={students} 
+                classes={classes} 
+                isLoading={isLoadingData} 
+                searchTerm={searchTerm} 
+                classFilter={classFilter} 
+                forceRefetch={fetchData} 
+            />
         </CardContent>
       </Card>
     </div>
   );
 }
 
-
 export default function StudentsPage() {
     return (
         <StudentsPageContent />
     )
 }
-
-    
