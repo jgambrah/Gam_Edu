@@ -156,15 +156,15 @@ export function RoleGuard({ children }: { children: ReactNode }) {
         
         // B. STUDENTS: Should not see Staff/Parent pages
         else if (role === 'Student') {
-             if (pathname === '/dashboard/parent' || pathname.startsWith('/dashboard/staff')) {
-                 router.push('/dashboard/student');
+             if (pathname === '/dashboard/parent' || pathname.startsWith('/dashboard/staff') || pathname === '/dashboard/admissions') {
+                 router.push('/dashboard');
              }
         }
 
         // C. PARENTS: Should not see Staff/Student pages
         else if (role === 'Parent') {
             if (pathname.startsWith('/dashboard/staff') || pathname === '/dashboard/academics') {
-                router.push('/dashboard/parent');
+                router.push('/dashboard');
             }
         }
       }
