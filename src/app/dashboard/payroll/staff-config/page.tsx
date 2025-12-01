@@ -153,7 +153,8 @@ export default function StaffPayrollConfigPage() {
     const firestore = useFirestore();
     const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
-    const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
+    const staffListQuery = useMemoFirebase(() => (user && firestore) ? collection(firestore, 'staff') : null, [firestore, user]);
+    const { data: staffList } = useCollection<Staff>(staffListQuery);
     
     if (!['Administrator', 'Accountant'].includes(role)) {
         return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;

@@ -66,7 +66,7 @@ export default function LessonPlanningPage() {
   }, [firestore, user, role]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
 
-  const staffQuery = useMemoFirebase(() => firestore ? collection(firestore, 'staff') : null, [firestore]);
+  const staffQuery = useMemoFirebase(() => (firestore && user) ? collection(firestore, 'staff') : null, [firestore, user]);
   const { data: staff, isLoading: isLoadingStaff } = useCollection<StaffData>(staffQuery);
 
   const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';

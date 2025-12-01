@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
@@ -35,7 +36,8 @@ export default function InventoryPage() {
     const inventoryQuery = useMemoFirebase(() => user ? query(collection(firestore, 'inventory'), orderBy('name')) : null, [firestore, user, refetchKey]);
     const { data: inventory, isLoading } = useCollection<InventoryItem>(inventoryQuery);
 
-    const { data: staffList } = useCollection<Staff>(useMemoFirebase(() => user ? collection(firestore, 'staff') : null, [firestore, user]));
+    const staffListQuery = useMemoFirebase(() => (user && firestore) ? collection(firestore, 'staff') : null, [firestore, user]);
+    const { data: staffList } = useCollection<Staff>(staffListQuery);
 
     const canAccess = role === 'Administrator' || role === 'Director';
 
