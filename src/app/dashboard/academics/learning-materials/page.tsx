@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, getDoc } from 'firebase/firestore'; // Added getDoc
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
 import { getApp } from 'firebase/app';
 import { Class, Student } from '@/lib/types';
@@ -359,15 +359,38 @@ export default function LearningMaterialsPage() {
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. Student Data
-  const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
-    useMemoFirebase(() => {
-        if (role !== 'Student' || !user || !firestore) return null;
-        return query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    }, [user, role, firestore])
-  );
+  // --- FIX: ROBUST STUDENT DATA FETCHING ---
+  const [studentClassId, setStudentClassId] = useState<string | null>(null);
+  const [isStudentLoading, setIsStudentLoading] = useState(true);
+
+  useEffect(() => {
+      async function fetchStudentProfile() {
+          if (role !== 'Student' || !user || !firestore) {
+              setIsStudentLoading(false);
+              return;
+          }
+          try {
+              console.log("Fetching student profile for:", user.uid);
+              const docRef = doc(firestore, 'students', user.uid);
+              const docSnap = await getDoc(docRef);
+              
+              if (docSnap.exists()) {
+                  const data = docSnap.data();
+                  console.log("Student Profile Found:", data);
+                  setStudentClassId(data.classId);
+              } else {
+                  console.error("Student document not found for UID:", user.uid);
+              }
+          } catch (e) {
+              console.error("Error fetching student:", e);
+          } finally {
+              setIsStudentLoading(false);
+          }
+      }
+      fetchStudentProfile();
+  }, [role, user, firestore]);
   
-  const activeClassId = role === 'Student' ? studentData?.[0]?.classId : selectedClassId;
+  const activeClassId = role === 'Student' ? studentClassId : selectedClassId;
 
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (canManage && firestore) ? query(collection(firestore, 'classes')) : null, [canManage, firestore])
@@ -421,11 +444,11 @@ export default function LearningMaterialsPage() {
       setIsFormOpen(true);
   };
   
-  const pageLoading = (role === 'Student' && isStudentLoading) || isLoadingMaterials;
+  const pageLoading = (role === 'Student' && isStudentLoading) || (!!activeClassId && isLoadingMaterials);
+
 
   // --- RENDER HELPERS ---
 
-  // 1. CLASS SELECTOR (Admin)
   if (canManage && !activeClassId) {
       return (
           <div className="p-8 max-w-2xl mx-auto space-y-4">
@@ -451,7 +474,15 @@ export default function LearningMaterialsPage() {
       )
   }
 
-  // 2. SUBJECT FOLDER VIEW (Top Level)
+  if (role === 'Student' && !activeClassId) {
+      return (
+          <div className="p-8 text-center">
+              <h2 className="text-xl font-semibold">Class Not Found</h2>
+              <p className="text-muted-foreground">We couldn't find your class assignment. Please contact an administrator.</p>
+          </div>
+      )
+  }
+
   if (!currentSubject) {
       return (
         <div className="space-y-6 p-6">
@@ -491,7 +522,7 @@ export default function LearningMaterialsPage() {
                     setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
                     classes={classes}
                     materialToEdit={editingMaterial}
-                    preSelectedClassId={activeClassId}
+                    preSelectedClassId={activeClassId || undefined}
                 />
             )}
         </div>
@@ -506,12 +537,10 @@ export default function LearningMaterialsPage() {
               <ArrowLeft className="h-4 w-4" /> Back to Subjects
           </Button>
           <h1 className="text-2xl font-bold text-slate-800">{currentSubject}</h1>
-          {/* DEBUG INFO FOR STUDENT */}
-          {role === 'Student' && !materials?.length && (
-              <div className="ml-auto p-2 bg-red-50 text-red-800 text-xs font-mono border border-red-200 rounded">
-                  <div className='flex items-center gap-2 font-bold'><AlertTriangle className="h-4 w-4"/> Debug Info</div>
-                  Student Class ID: <strong>{activeClassId || "Not Found"}</strong><br/>
-                  Looking for Subject: <strong>{currentSubject}</strong>
+          {/* DIAGNOSTIC BOX */}
+          {role === 'Student' && !sortedMaterials?.length && (
+              <div className="ml-auto p-2 bg-yellow-50 text-yellow-800 text-xs font-mono border border-yellow-200 rounded">
+                   Debug: ClassID: <strong>{activeClassId || "Missing"}</strong>
               </div>
           )}
       </div>
@@ -578,11 +607,9 @@ export default function LearningMaterialsPage() {
             classes={classes}
             materialToEdit={editingMaterial}
             preSelectedSubject={currentSubject || undefined}
-            preSelectedClassId={activeClassId}
+            preSelectedClassId={activeClassId || undefined}
         />
       )}
     </div>
   );
 }
-
-    
