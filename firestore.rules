@@ -99,6 +99,11 @@ service cloud.firestore {
                   );
       allow write: if isAdmin();
     }
+    
+    match /learning_materials/{materialId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
 
     // Assignments & Quizzes
     match /assignments/{assignmentId} {
