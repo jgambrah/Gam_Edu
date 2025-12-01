@@ -50,8 +50,7 @@ import {
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase'; 
-// IMPORT onSnapshot for Real-Time updates & addDoc for debugging
-import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp, addDoc } from 'firebase/firestore'; 
+import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'; 
 import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
@@ -133,7 +132,9 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
                 </Select>
             <FormMessage /></FormItem>
         )}/>
-         <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save Changes</Button>
+         <Button type="submit" disabled={isSubmitting} className="w-full">
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save Changes
+        </Button>
       </form>
     </Form>
   )
@@ -402,5 +403,3 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
-
-    
