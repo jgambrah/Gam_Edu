@@ -279,13 +279,13 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
 
 function StaffPageContent() {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useAuth(); 
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const staffCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return collection(firestore, 'staff');
+    return collection(firestore, 'staff'); 
   }, [firestore, user]);
 
   const { data: staff, isLoading, error, forceRefetch } = useCollection<StaffData>(staffCollectionRef);
@@ -317,12 +317,10 @@ function StaffPageContent() {
   const firstName = form.watch('firstName');
   const lastName = form.watch('lastName');
 
-  // Generate email automatically
   useEffect(() => {
     if (firstName && lastName) {
-      // Clean and format names for email
-      const cleanFirstName = firstName.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const cleanLastName = lastName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cleanFirstName = firstName.toLowerCase().replace(/\s/g, '');
+      const cleanLastName = lastName.toLowerCase().replace(/\s/g, '');
       const email = `${cleanFirstName}${cleanLastName}@sunnyside.com`;
       form.setValue('email', email);
     } else {
@@ -553,5 +551,3 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
-
-    
