@@ -50,9 +50,10 @@ import {
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase'; 
-import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'; 
+// FIX: Changed imports to use getDocs instead of onSnapshot
+import { collection, doc, deleteDoc, updateDoc, setDoc, getDocs, serverTimestamp } from 'firebase/firestore'; 
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Loader2, Edit, Trash2, RefreshCw, UserPlus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
@@ -83,7 +84,7 @@ type StaffData = {
   phone?: string;
 };
 
-function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: boolean) => void }) {
+function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpen: (open: boolean) => void, onSuccess: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,6 +105,7 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
       const staffRef = doc(firestore, 'staff', staff.id);
       await updateDoc(staffRef, values);
       toast({ title: 'Success', description: 'Updated successfully.' });
+      onSuccess(); // Refresh list after edit
       setOpen(false);
     } catch (error) {
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to update.' });
@@ -136,19 +138,18 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
   )
 }
 
-function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading: boolean }) {
-    const { user } = useAuth(); // We use Auth user here to determine if they can see actions, actual role logic can be added if needed
+function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | null, isLoading: boolean, forceRefetch: () => void }) {
+    const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [editingStaff, setEditingStaff] = useState<StaffData | null>(null);
-    
-    // Simple check: If logged in, show actions (since this page is protected by RoleGuard anyway)
-    const canManage = !!user; 
+    const canManage = role === 'Director' || role === 'Administrator';
   
     const handleDelete = async (staffId: string) => {
       try {
           await deleteDoc(doc(firestore, 'staff', staffId));
           toast({ title: 'Deleted', description: 'Staff member removed.'});
+          forceRefetch(); // Refresh list after delete
       } catch(error) {
           toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete.' });
       }
@@ -165,6 +166,9 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
                 <CardTitle>Existing Staff</CardTitle>
                 <CardDescription>Total Staff: {staff?.length || 0}</CardDescription>
             </div>
+            <Button variant="outline" size="sm" onClick={forceRefetch}>
+                <RefreshCw className="h-4 w-4 mr-2"/> Refresh List
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -209,14 +213,17 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
             </Table>
             </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">No staff members found.</div>
+            <div className="text-center py-8 text-muted-foreground">
+                <p>No staff members found.</p>
+                <p className="text-xs mt-2 text-slate-400">Click "Refresh List" to try again.</p>
+            </div>
           )}
         </CardContent>
       </Card>
       {editingStaff && (
           <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
               <DialogContent><DialogHeader><DialogTitle>Edit Staff</DialogTitle></DialogHeader>
-                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} />
+                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} onSuccess={forceRefetch} />
               </DialogContent>
           </Dialog>
       )}
@@ -230,44 +237,41 @@ function StaffPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // --- DIRECT FETCH STATE ---
   const [staff, setStaff] = useState<StaffData[]>([]);
-  // Start loading only if we don't have data yet
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // --- STABILIZED LISTENER ---
-  useEffect(() => {
-    // 1. Safety Checks
-    if (isUserLoading || !user || !firestore) return;
+  // --- ROBUST FETCH FUNCTION ---
+  const fetchStaff = useCallback(async () => {
+    if (!firestore || !user) return;
 
-    // 2. Only show loading spinner if we have NO data yet. 
-    // This prevents "flickering" if the user object updates slightly.
-    if (staff.length === 0) setIsLoadingData(true);
-
-    console.log("🔄 Connecting to Staff Collection...");
-
-    const q = collection(firestore, 'staff');
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        
-        console.log(`✅ DATA RECEIVED: ${staffList.length} staff members.`);
-        
-        setStaff(staffList);
-        setIsLoadingData(false); // Stop loading immediately
-    }, (error) => {
-        console.error("❌ Listener Error:", error);
-        // Only show toast if it's a real permission error, not a navigation cancellation
-        if (error.code === 'permission-denied') {
-             toast({ variant: "destructive", title: "Access Denied", description: "Check Firestore Rules." });
-        }
-        setIsLoadingData(false);
-    });
-
-    return () => unsubscribe();
+    setIsLoadingData(true);
+    console.log("🔄 Fetching Staff List...");
     
-    // IMPORTANT: We remove 'staff.length' dependency so it doesn't loop
-    // We rely on firestore/user stability
-  }, [firestore, user?.uid, isUserLoading]); // Only re-run if UID changes, not the whole user object
+    try {
+        // Direct Fetch (getDocs) - Immune to listener timeouts
+        const querySnapshot = await getDocs(collection(firestore, 'staff'));
+        const staffList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
+        
+        console.log(`✅ Fetched ${staffList.length} staff members.`);
+        setStaff(staffList);
+    } catch (error: any) {
+        console.error("❌ Fetch Error:", error);
+        // Don't show toast for permission errors to avoid spamming, just log it
+        if (error.code !== 'permission-denied') {
+            toast({ variant: "destructive", title: "Error", description: "Could not load staff list." });
+        }
+    } finally {
+        setIsLoadingData(false);
+    }
+  }, [firestore, user, toast]);
+
+  // Initial Load
+  useEffect(() => {
+      if (!isUserLoading && user) {
+          fetchStaff();
+      }
+  }, [isUserLoading, user, fetchStaff]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -299,6 +303,7 @@ function StaffPageContent() {
       });
 
       toast({ title: 'Staff Added', description: `${values.firstName} ${values.lastName} added.` });
+      await fetchStaff(); // Refresh list immediately
       form.reset();
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -343,8 +348,7 @@ function StaffPageContent() {
         </CardContent>
       </Card>
 
-      {/* Force re-render when staff length changes to ensure UI updates */}
-      <StaffList key={staff.length} staff={staff} isLoading={isLoadingData} />
+      <StaffList staff={staff} isLoading={isLoadingData} forceRefetch={fetchStaff} />
     </div>
   );
 }
