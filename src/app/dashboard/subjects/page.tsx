@@ -218,7 +218,6 @@ export default function SubjectsPage() {
           </DialogHeader>
           <SubjectForm
             setOpen={handleCloseDialog}
-            onSubjectChange={onSubjectChange}
             allTeachers={teachers || []}
             initialData={editingSubject}
           />
