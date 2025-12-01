@@ -1,4 +1,3 @@
-
 "use client";
 
 import { 
@@ -142,7 +141,7 @@ export function RoleGuard({ children }: { children: ReactNode }) {
             return;
         }
 
-        const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian'].includes(role);
+        const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
 
         // A. STAFF Redirects
         if (isStaff) {
