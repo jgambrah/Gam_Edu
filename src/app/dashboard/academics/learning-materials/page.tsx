@@ -54,7 +54,7 @@ export interface LearningMaterial {
   topicTitle: string;
   description?: string;
   classId: string;
-  subject: string; // <--- NEW FIELD
+  subject: string; 
   resources: ResourceItem[];
   uploadedBy: string;
   createdAt: any;
@@ -408,7 +408,7 @@ export default function LearningMaterialsPage() {
     return baseQuery;
   }, [firestore, activeClassId, currentSubject]);
 
-  const { data: materials, isLoading } = useCollection<LearningMaterial>(materialsQuery);
+  const { data: materials, isLoading: isLoadingMaterials } = useCollection<LearningMaterial>(materialsQuery);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this topic?")) return;
@@ -429,6 +429,8 @@ export default function LearningMaterialsPage() {
       setEditingMaterial(null);
       setIsFormOpen(true);
   };
+  
+  const pageLoading = (role === 'Student' && isStudentLoading) || isLoadingMaterials;
 
   // --- RENDER HELPERS ---
 
@@ -446,6 +448,15 @@ export default function LearningMaterialsPage() {
                       </Select>
                   </CardContent>
               </Card>
+          </div>
+      )
+  }
+
+  // GLOBAL LOADING STATE FOR STUDENTS (BEFORE CLASS ID IS KNOWN)
+  if (pageLoading) {
+      return (
+          <div className="flex items-center justify-center p-12">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
       )
   }
@@ -510,7 +521,7 @@ export default function LearningMaterialsPage() {
          {canManage && <Button onClick={handleCreate}><Plus className="mr-2 h-4 w-4"/> Add Topic to {currentSubject}</Button>}
       </div>
 
-      {isLoading ? (
+      {isLoadingMaterials ? (
         <div className="text-center p-12"><Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" /></div>
       ) : (!materials || materials.length === 0) ? (
         <div className="text-center py-16 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50/50">
