@@ -1,3 +1,4 @@
+
 "use client";
 
 import { 
@@ -151,11 +152,11 @@ export function RoleGuard({ children }: { children: ReactNode }) {
 
         // --- A. STAFF LOGIC ---
         if (isStaff) {
-            // If they try to go to Student or Parent portal, kick them to Staff Dashboard
-            if (pathname.startsWith('/dashboard/student') || pathname.startsWith('/dashboard/parent')) {
-                router.push('/dashboard/staff'); 
+            // If Staff tries to go to Student or Parent portal
+            if (pathname.startsWith('/dashboard/students') || pathname.startsWith('/dashboard/parents')) {
+                router.push('/dashboard/staff'); // Or /dashboard/academics
             }
-            // If they are at the root dashboard, send them to Staff Dashboard
+            // If Staff is at root dashboard
             else if (pathname === '/dashboard') {
                 router.push('/dashboard/staff');
             }
@@ -163,17 +164,18 @@ export function RoleGuard({ children }: { children: ReactNode }) {
         
         // --- B. STUDENT LOGIC ---
         else if (role === 'Student') {
-             // If they try to go to Staff or Parent portal, kick them to Student Dashboard
-             if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/parent') || pathname === '/dashboard') {
-                 router.push('/dashboard/student');
+             // If Student tries to go to Staff or Parent portal
+             if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/parents') || pathname === '/dashboard') {
+                 router.push('/dashboard/students'); // Make sure you have a 'students' folder (plural)
              }
         }
 
-        // --- C. PARENT LOGIC ---
+        // --- C. PARENT LOGIC (The 404 Fix) ---
         else if (role === 'Parent') {
-            // If they try to go to Staff or Student portal, kick them to Parent Dashboard
-            if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/student') || pathname === '/dashboard') {
-                router.push('/dashboard/parent');
+            // If Parent tries to go to Staff or Student portal
+            if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/students') || pathname === '/dashboard') {
+                // FIX: Changed from '/dashboard/parent' to '/dashboard/parents'
+                router.push('/dashboard/parents'); 
             }
         }
       }
@@ -192,3 +194,5 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   
   return <>{children}</>;
 }
+
+    
