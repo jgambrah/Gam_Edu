@@ -11,8 +11,7 @@ import {
   useEffect
 } from 'react';
 import type { UserRole } from '@/lib/types';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { useDoc } from '@/firebase/firestore/use-doc';
+import { useUser, useFirestore } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
@@ -26,26 +25,43 @@ type RoleContextType = {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 function RoleProviderContent({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>('Parent');
+  const [role, setRole] = useState<UserRole>('Parent'); // Default safe role
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const [isRoleLoading, setIsRoleLoading] = useState(true);
 
   useEffect(() => {
     const determineRole = async () => {
-      if (isAuthLoading || !firestore) {
-        return;
-      }
+      // Wait for Auth to initialize
+      if (isAuthLoading || !firestore) return;
 
       setIsRoleLoading(true);
 
       if (!user) {
-        setRole('Parent'); // Default for non-logged-in users
+        setRole('Parent');
         setIsRoleLoading(false);
         return;
       }
+
+      console.log("Checking role for:", user.uid);
+
+      // 1. Check Custom Claims First (Fastest & Most Reliable)
+      // This requires your backend to set custom claims on signup/update
+      try {
+        const idTokenResult = await user.getIdTokenResult(true); // Force refresh
+        const claimsRole = idTokenResult.claims.role;
+        
+        if (claimsRole && typeof claimsRole === 'string') {
+          console.log("Found Role via Claims:", claimsRole);
+          setRole(claimsRole as UserRole);
+          setIsRoleLoading(false);
+          return;
+        }
+      } catch (e) {
+        console.warn("Failed to check ID Token claims:", e);
+      }
       
-      // 1. Check Staff Collection
+      // 2. Check Staff Collection
       try {
         const staffDocRef = doc(firestore, 'staff', user.uid);
         const staffDocSnap = await getDoc(staffDocRef);
@@ -53,16 +69,19 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
         if (staffDocSnap.exists()) {
           const staffData = staffDocSnap.data();
           if (staffData.role) {
+            console.log("Found Role via Staff DB:", staffData.role);
             setRole(staffData.role as UserRole);
             setIsRoleLoading(false);
             return;
           }
         }
-      } catch (e) {
-        console.error("Error checking staff collection:", e);
+      } catch (e: any) {
+        // Important: If permission denied, it means they MIGHT be a student/parent
+        // because staff rules usually block non-staff.
+        console.warn("Staff check failed (likely permission denied):", e.code);
       }
 
-      // 2. Check Students Collection
+      // 3. Check Students Collection
       try {
         const studentDocRef = doc(firestore, 'students', user.uid);
         const studentDocSnap = await getDoc(studentDocRef);
@@ -72,25 +91,13 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
           return;
         }
       } catch (e) {
-          console.error("Error checking students collection:", e);
+          console.warn("Student check failed:", e);
       }
 
-      // 3. Check Parents Collection
-      try {
-        const parentDocRef = doc(firestore, 'parents', user.uid);
-        const parentDocSnap = await getDoc(parentDocRef);
-        if (parentDocSnap.exists()) {
-          setRole('Parent');
-          setIsRoleLoading(false);
-          return;
-        }
-      } catch (e) {
-          console.error("Error checking parents collection:", e);
-      }
-      
-      // 4. Fallback if user document doesn't exist in any collection
-      // This might happen if a user is created in Auth but their DB record fails
-      setRole('Parent'); // Default to a restrictive role
+      // 4. Default to Parent (Fallthrough)
+      // If we reached here, we checked Claims, Staff, and Student, and found nothing.
+      console.log("No specific role found, defaulting to Parent.");
+      setRole('Parent');
       setIsRoleLoading(false);
     };
 
@@ -126,25 +133,39 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   const isLoading = isAuthLoading || isRoleLoading;
 
   useEffect(() => {
-      // 1. Redirect unauthenticated users from dashboard to login
+      // 1. Redirect unauthenticated users
       if (!isLoading && !user && pathname.startsWith('/dashboard')) {
         router.push('/');
         return;
       }
 
-      // 2. Redirect authenticated users based on role mismatch
+      // 2. Redirect Authenticated Users based on Role
       if (!isLoading && user && role) {
-        const isStaffRole = role === 'Teacher' || role === 'Administrator' || role === 'Director';
-        const isParentPage = pathname.startsWith('/dashboard/parents') || pathname.startsWith('/dashboard/student-registration');
-
-        // If a staff member lands on a parent-only page, redirect them.
-        if (isStaffRole && isParentPage) {
-           router.push('/dashboard'); 
+        
+        const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
+        
+        // --- REDIRECT RULES ---
+        
+        // A. STAFF: Should not see Parent Registration or Student Registration
+        if (isStaff) {
+            if (pathname === '/dashboard/parent' || pathname === '/dashboard/student-registration') {
+                 // Redirect Teachers to their main dashboard or academics
+                 router.push('/dashboard/academics'); 
+            }
         }
         
-        // If a student lands on a parent-only page, redirect them.
-        else if (role === 'Student' && isParentPage) {
-           router.push('/dashboard');
+        // B. STUDENTS: Should not see Staff/Parent pages
+        else if (role === 'Student') {
+             if (pathname === '/dashboard/parent' || pathname.startsWith('/dashboard/staff')) {
+                 router.push('/dashboard/student');
+             }
+        }
+
+        // C. PARENTS: Should not see Staff/Student pages
+        else if (role === 'Parent') {
+            if (pathname.startsWith('/dashboard/staff') || pathname === '/dashboard/academics') {
+                router.push('/dashboard/parent');
+            }
         }
       }
   }, [isLoading, user, role, pathname, router]);
