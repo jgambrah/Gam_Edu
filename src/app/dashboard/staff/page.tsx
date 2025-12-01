@@ -181,101 +181,101 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
 }
 
 function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | null, isLoading: boolean, forceRefetch: () => void }) {
-  const { role } = useRole();
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  const [editingStaff, setEditingStaff] = useState<StaffData | null>(null);
-
-  const canManage = role === 'Director' || role === 'Administrator';
-
-  const handleDelete = async (staffId: string) => {
-    try {
-        await deleteDoc(doc(firestore, 'staff', staffId));
-        toast({ title: 'Success', description: 'Staff member has been deleted.'});
-        forceRefetch();
-    } catch(error) {
-        console.error(error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete staff member.' });
+    const { role } = useRole();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [editingStaff, setEditingStaff] = useState<StaffData | null>(null);
+  
+    const canManage = role === 'Director' || role === 'Administrator';
+  
+    const handleDelete = async (staffId: string) => {
+      try {
+          await deleteDoc(doc(firestore, 'staff', staffId));
+          toast({ title: 'Success', description: 'Staff member has been deleted.'});
+          forceRefetch();
+      } catch(error) {
+          console.error(error);
+          toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete staff member.' });
+      }
     }
-  }
-
-  if (isLoading) {
+  
+    if (isLoading) {
+      return (
+        <div className="space-y-2">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      );
+    }
+  
     return (
-      <div className="space-y-2">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-      </div>
+      <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Existing Staff</CardTitle>
+          <CardDescription>A list of all staff members in the system.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {staff && staff.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>First Name</TableHead>
+                  <TableHead>Last Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  {canManage && <TableHead className="text-right">Actions</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {staff.map((staffMember) => (
+                  <TableRow key={staffMember.id}>
+                    <TableCell>{staffMember.firstName}</TableCell>
+                    <TableCell>{staffMember.lastName}</TableCell>
+                    <TableCell>{staffMember.email}</TableCell>
+                    <TableCell>{staffMember.role}</TableCell>
+                    {canManage && (
+                        <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" onClick={() => setEditingStaff(staffMember)}>
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>
+                                            This action will delete the staff member's profile from the database. It will not delete their login account. This cannot be undone.
+                                        </AlertDialogDescription></AlertDialogHeader>
+                                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No staff members found. Add your first staff member above.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+  
+      {editingStaff && (
+          <Dialog open={!!editingStaff} onOpenChange={(open) => { if (!open) { setEditingStaff(null); forceRefetch(); }}}>
+              <DialogContent>
+                  <DialogHeader>
+                      <DialogTitle>Edit Staff: {editingStaff.firstName} {editingStaff.lastName}</DialogTitle>
+                  </DialogHeader>
+                  <EditStaffForm staff={editingStaff} setOpen={() => { setEditingStaff(null); forceRefetch(); }} />
+              </DialogContent>
+          </Dialog>
+      )}
+      </>
     );
   }
-
-  return (
-    <>
-    <Card>
-      <CardHeader>
-        <CardTitle>Existing Staff</CardTitle>
-        <CardDescription>A list of all staff members in the system.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {staff && staff.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>First Name</TableHead>
-                <TableHead>Last Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                {canManage && <TableHead className="text-right">Actions</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {staff.map((staffMember) => (
-                <TableRow key={staffMember.id}>
-                  <TableCell>{staffMember.firstName}</TableCell>
-                  <TableCell>{staffMember.lastName}</TableCell>
-                  <TableCell>{staffMember.email}</TableCell>
-                  <TableCell>{staffMember.role}</TableCell>
-                  {canManage && (
-                      <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => setEditingStaff(staffMember)}>
-                              <Edit className="h-4 w-4" />
-                          </Button>
-                          <AlertDialog>
-                              <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                              <AlertDialogContent>
-                                  <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>
-                                          This action will delete the staff member's profile from the database. It will not delete their login account. This cannot be undone.
-                                      </AlertDialogDescription></AlertDialogHeader>
-                                  <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(staffMember.id)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
-                              </AlertDialogContent>
-                          </AlertDialog>
-                      </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            No staff members found. Add your first staff member above.
-          </div>
-        )}
-      </CardContent>
-    </Card>
-
-    {editingStaff && (
-        <Dialog open={!!editingStaff} onOpenChange={(open) => { if (!open) { setEditingStaff(null); forceRefetch(); }}}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Edit Staff: {editingStaff.firstName} {editingStaff.lastName}</DialogTitle>
-                </DialogHeader>
-                <EditStaffForm staff={editingStaff} setOpen={() => { setEditingStaff(null); forceRefetch(); }} />
-            </DialogContent>
-        </Dialog>
-    )}
-    </>
-  );
-}
 
 function StaffPageContent() {
   const firestore = useFirestore();
@@ -340,7 +340,7 @@ function StaffPageContent() {
       form.reset();
       
     } catch (error: any) {
-      console.error('Error adding staff:', error);
+      console.error('❌ Error adding staff:', error);
       toast({
         variant: 'destructive',
         title: 'Error Adding Staff',

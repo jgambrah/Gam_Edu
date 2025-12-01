@@ -162,90 +162,90 @@ function EditParentForm({ parent, students, setOpen }: { parent: ParentData, stu
     )
 }
 
-function ParentList({ forceRefetch }: { forceRefetch: () => void }) {
-  const firestore = useFirestore();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const parentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'parents') : null, [firestore, user]);
-  const { data: parents, isLoading } = useCollection<ParentData>(parentsCollectionRef);
-  const studentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]);
-  const { data: students } = useCollection(studentsCollectionRef);
-
-  const [editingParent, setEditingParent] = useState<ParentData | null>(null);
-
-  const handleDelete = async (parentUid: string) => {
-    try {
-        await deleteDoc(doc(firestore, 'parents', parentUid));
-        toast({ title: 'Success', description: 'Parent has been deleted.'});
-        forceRefetch();
-    } catch(error) {
-        console.error(error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete parent.' });
+function ParentList({ parents, students, isLoading, forceRefetch }: { parents: ParentData[] | null; students: any[] | null, isLoading: boolean; forceRefetch: () => void; }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [editingParent, setEditingParent] = useState<ParentData | null>(null);
+  
+    const handleDelete = async (parentUid: string) => {
+      try {
+          await deleteDoc(doc(firestore, 'parents', parentUid));
+          toast({ title: 'Success', description: 'Parent has been deleted.'});
+          forceRefetch();
+      } catch(error) {
+          console.error(error);
+          toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete parent.' });
+      }
     }
-  }
-
-  if (isLoading) {
+  
+    if (isLoading) {
+      return (
+        <div className="space-y-2">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      );
+    }
+  
     return (
-      <div className="space-y-2">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-      </div>
+      <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Parent List</CardTitle>
+          <CardDescription>A list of all parents in the system.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {parents && parents.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>First Name</TableHead>
+                  <TableHead>Last Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {parents.map((parent) => (
+                  <TableRow key={parent.id}>
+                    <TableCell>{parent.firstName}</TableCell>
+                    <TableCell>{parent.lastName}</TableCell>
+                    <TableCell>{parent.email}</TableCell>
+                    <TableCell>{parent.phone}</TableCell>
+                    <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" onClick={() => setEditingParent(parent)}><Edit className="h-4 w-4" /></Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This action will delete the parent's profile from the database. It will not delete their login account. This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
+                                <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(parent.uid)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+             <div className="text-center py-8 text-muted-foreground">
+                No parents found. Add your first parent above.
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      {editingParent && (
+          <Dialog open={!!editingParent} onOpenChange={(open) => { if (!open) { setEditingParent(null); forceRefetch(); }}}>
+              <DialogContent>
+                  <DialogHeader><DialogTitle>Edit Parent: {editingParent.firstName} {editingParent.lastName}</DialogTitle></DialogHeader>
+                  <EditParentForm parent={editingParent} students={students} setOpen={() => { setEditingParent(null); forceRefetch(); }} />
+              </DialogContent>
+          </Dialog>
+      )}
+      </>
     );
   }
-
-  return (
-    <>
-    <Card>
-      <CardHeader>
-        <CardTitle>Parent List</CardTitle>
-        <CardDescription>A list of all parents in the system.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>First Name</TableHead>
-              <TableHead>Last Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {parents?.map((parent) => (
-              <TableRow key={parent.id}>
-                <TableCell>{parent.firstName}</TableCell>
-                <TableCell>{parent.lastName}</TableCell>
-                <TableCell>{parent.email}</TableCell>
-                <TableCell>{parent.phone}</TableCell>
-                <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => setEditingParent(parent)}><Edit className="h-4 w-4" /></Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader><AlertDialogTitle>Are you sure?</AlertDialogTitle><AlertDialogDescription>This action will delete the parent's profile from the database. It will not delete their login account. This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                            <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(parent.uid)}>Confirm Delete</AlertDialogAction></AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
-    {editingParent && (
-        <Dialog open={!!editingParent} onOpenChange={(open) => { if (!open) { setEditingParent(null); forceRefetch(); }}}>
-            <DialogContent>
-                <DialogHeader><DialogTitle>Edit Parent: {editingParent.firstName} {editingParent.lastName}</DialogTitle></DialogHeader>
-                <EditParentForm parent={editingParent} students={students} setOpen={() => { setEditingParent(null); forceRefetch(); }} />
-            </DialogContent>
-        </Dialog>
-    )}
-    </>
-  );
-}
 
 function ParentsPageContent() {
   const firestore = useFirestore();
@@ -253,12 +253,14 @@ function ParentsPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
-  const [refetchKey, setRefetchKey] = useState(0);
+  
+  const parentsCollectionRef = useMemoFirebase(() => (firestore && user) ? collection(firestore, 'parents') : null, [firestore, user]);
+  const { data: parents, isLoading: isParentsLoading, forceRefetch } = useCollection<ParentData>(parentsCollectionRef);
 
   const studentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]);
-  const { data: students } = useCollection(studentsCollectionRef);
+  const { data: students, isLoading: isStudentsLoading } = useCollection(studentsCollectionRef);
 
-  const forceRefetch = () => setRefetchKey(prev => prev + 1);
+  const isLoading = isParentsLoading || isStudentsLoading;
 
   const filteredStudents = useMemo(() => {
     if (!students) return [];
@@ -295,7 +297,7 @@ function ParentsPageContent() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const result = await createNewUser(values.email, values.password);
+      const result = await createNewUser(values.email, values.password, 'Parent', { firstName: values.firstName, lastName: values.lastName });
 
       if ('error' in result) {
         throw new Error(result.error);
@@ -495,7 +497,7 @@ function ParentsPageContent() {
         </CardContent>
       </Card>
 
-      <ParentList forceRefetch={forceRefetch} />
+      <ParentList parents={parents} students={students} isLoading={isLoading} forceRefetch={forceRefetch} />
     </div>
   );
 }
