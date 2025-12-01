@@ -19,7 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileText, Video, Link as LinkIcon, FileSpreadsheet, File, 
-  Plus, Trash2, Edit, ExternalLink, Loader2, X, Folder, UploadCloud, Globe, ArrowLeft, BookOpen 
+  Plus, Trash2, Edit, ExternalLink, Loader2, X, Folder, UploadCloud, Globe, ArrowLeft, BookOpen, AlertTriangle 
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAuth } from 'firebase/auth';
@@ -98,7 +98,6 @@ function MaterialForm({
   // Form State
   const [topicTitle, setTopicTitle] = useState(materialToEdit?.topicTitle || '');
   const [description, setDescription] = useState(materialToEdit?.description || '');
-  // FIX: Use pre-selected class ID if available
   const [classId, setClassId] = useState(materialToEdit?.classId || preSelectedClassId || '');
   const [subject, setSubject] = useState(materialToEdit?.subject || preSelectedSubject || ''); 
   const [resources, setResources] = useState<ResourceItem[]>(materialToEdit?.resources || []);
@@ -356,7 +355,7 @@ export default function LearningMaterialsPage() {
   const [editingMaterial, setEditingMaterial] = useState<LearningMaterial | null>(null);
   
   const [currentSubject, setCurrentSubject] = useState<string | null>(null);
-  const [selectedClassId, setSelectedClassId] = useState<string>('');
+  const [selectedClassId, setSelectedClassId] = useState<string>(''); 
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
@@ -374,22 +373,21 @@ export default function LearningMaterialsPage() {
     useMemoFirebase(() => (canManage && firestore) ? query(collection(firestore, 'classes')) : null, [canManage, firestore])
   );
 
-  // 3. Materials Query (FIXED: Removed orderBy to prevent missing index crash)
+  // 3. Materials Query (No orderBy)
   const materialsQuery = useMemoFirebase(() => {
     if (!firestore || !activeClassId) return null;
     
-    console.log("Fetching materials for:", { activeClassId, currentSubject });
+    console.log("🔍 Materials Query:", { 
+        classId: activeClassId, 
+        subject: currentSubject 
+    });
 
-    // Base Query: Filter by Class ID
     let baseQuery = query(
         collection(firestore, 'learning_materials'), 
         where('classId', '==', activeClassId)
     );
 
-    // If Subject selected, filter by Subject
     if (currentSubject) {
-        // IMPORTANT: I removed 'orderBy' here to ensure the query works immediately.
-        // You can sort the results in the browser instead.
         baseQuery = query(baseQuery, where('subject', '==', currentSubject));
     }
 
@@ -398,7 +396,6 @@ export default function LearningMaterialsPage() {
 
   const { data: materials, isLoading: isLoadingMaterials } = useCollection<LearningMaterial>(materialsQuery);
 
-  // Sort materials client-side since we removed orderBy from Firestore
   const sortedMaterials = useMemo(() => {
       if (!materials) return [];
       return materials.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
@@ -428,6 +425,7 @@ export default function LearningMaterialsPage() {
 
   // --- RENDER HELPERS ---
 
+  // 1. CLASS SELECTOR (Admin)
   if (canManage && !activeClassId) {
       return (
           <div className="p-8 max-w-2xl mx-auto space-y-4">
@@ -453,14 +451,17 @@ export default function LearningMaterialsPage() {
       )
   }
 
+  // 2. SUBJECT FOLDER VIEW (Top Level)
   if (!currentSubject) {
       return (
         <div className="space-y-6 p-6">
-            <Card className="bg-slate-50">
+            <Card className="bg-slate-50 border-slate-200">
                 <CardHeader className="flex flex-row justify-between items-center pb-2">
                     <div>
                         <CardTitle>Subject Folders</CardTitle>
-                        <CardDescription>Select a subject to view topics for <strong>{classes?.find(c => c.id === activeClassId)?.name || 'Class'}</strong></CardDescription>
+                        <CardDescription>
+                            Materials for <strong>{classes?.find(c => c.id === activeClassId)?.name || (role === 'Student' ? 'Your Class' : 'Selected Class')}</strong>
+                        </CardDescription>
                     </div>
                     <div className="flex gap-2">
                         {canManage && <Button variant="outline" onClick={() => setSelectedClassId('')}>Switch Class</Button>}
@@ -478,7 +479,7 @@ export default function LearningMaterialsPage() {
                                 <Folder className="h-8 w-8 text-blue-500 fill-blue-500/20" />
                             </div>
                             <h3 className="font-semibold text-slate-700 group-hover:text-blue-700">{subject}</h3>
-                            <span className="text-xs text-muted-foreground">Click to open</span>
+                            <span className="text-xs text-muted-foreground">Open Folder</span>
                         </div>
                     ))}
                 </CardContent>
@@ -497,6 +498,7 @@ export default function LearningMaterialsPage() {
       );
   }
 
+  // 3. TOPIC VIEW (Inside a Subject)
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-4">
@@ -504,7 +506,14 @@ export default function LearningMaterialsPage() {
               <ArrowLeft className="h-4 w-4" /> Back to Subjects
           </Button>
           <h1 className="text-2xl font-bold text-slate-800">{currentSubject}</h1>
-          <Badge variant="outline" className="text-xs">{classes?.find(c => c.id === activeClassId)?.name}</Badge>
+          {/* DEBUG INFO FOR STUDENT */}
+          {role === 'Student' && !materials?.length && (
+              <div className="ml-auto p-2 bg-red-50 text-red-800 text-xs font-mono border border-red-200 rounded">
+                  <div className='flex items-center gap-2 font-bold'><AlertTriangle className="h-4 w-4"/> Debug Info</div>
+                  Student Class ID: <strong>{activeClassId || "Not Found"}</strong><br/>
+                  Looking for Subject: <strong>{currentSubject}</strong>
+              </div>
+          )}
       </div>
 
       <div className="flex justify-end">
@@ -575,3 +584,5 @@ export default function LearningMaterialsPage() {
     </div>
   );
 }
+
+    
