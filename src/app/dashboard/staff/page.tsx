@@ -51,7 +51,7 @@ import {
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase'; 
 import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'; 
-import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from 'firebase/auth'; 
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { Loader2, Edit, Trash2, ShieldCheck, LogIn, UserPlus } from 'lucide-react';
@@ -216,7 +216,9 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
 
 function StaffPageContent() {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth(); 
+  // We use local state for user to bypass potential Context lag
+  const [currentUser, setCurrentUser] = useState<any>(null); 
+  const { isUserLoading } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -228,15 +230,62 @@ function StaffPageContent() {
   const [manualPass, setManualPass] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+  // --- 1. AUTH LISTENER (The Source of Truth) ---
+  useEffect(() => {
+      const auth = getAuth();
+      const unsub = onAuthStateChanged(auth, (user) => {
+          if (user) {
+              console.log("✅ Auth State: Logged In as", user.email);
+              setCurrentUser(user);
+          } else {
+              console.log("❌ Auth State: Logged Out");
+              setCurrentUser(null);
+              setIsLoadingData(false);
+          }
+      });
+      return () => unsub();
+  }, []);
+
+  // --- 2. DATA LISTENER ---
+  useEffect(() => {
+    // Wait for user to be determined
+    if (isUserLoading || !currentUser || !firestore) {
+      if(!currentUser) setIsLoadingData(false); // If we know user is null, stop loading
+      return;
+    }
+    
+    setIsLoadingData(true);
+    console.log("🔄 Connecting to Staff Collection...");
+
+    const q = collection(firestore, 'staff');
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
+        console.log(`✅ Listener Updated: Found ${staffList.length} staff.`);
+        setStaff(staffList);
+        setIsLoadingData(false);
+    }, (error) => {
+        console.error("❌ Listener Error:", error);
+        toast({ variant: "destructive", title: "Access Error", description: error.message });
+        setIsLoadingData(false);
+    });
+
+    // Cleanup listener when leaving page or user changes
+    return () => unsubscribe();
+  }, [firestore, currentUser, isUserLoading, toast]);
+
+
   const handleManualLogin = async () => {
       if(!manualEmail || !manualPass) return;
       setIsLoggingIn(true);
       try {
           const auth = getAuth();
           await setPersistence(auth, browserLocalPersistence);
-          await signInWithEmailAndPassword(auth, manualEmail, manualPass);
-          toast({ title: "Login Successful", description: "Connection re-established." });
-          window.location.reload();
+          const userCredential = await signInWithEmailAndPassword(auth, manualEmail, manualPass);
+          // Manually set the user to trigger the data fetch useEffect
+          setCurrentUser(userCredential.user);
+          toast({ title: "Login Successful", description: "Loading data..." });
+          // DO NOT RELOAD PAGE
       } catch (e: any) {
           toast({ variant: "destructive", title: "Login Failed", description: e.message });
       } finally {
@@ -244,16 +293,15 @@ function StaffPageContent() {
       }
   };
 
-  // --- NEW: REPAIR ACCOUNT FUNCTION ---
+  // --- REPAIR ACCOUNT ---
   const handleRepairAccount = async () => {
-    if(!user || !firestore) return;
+    if(!currentUser || !firestore) return;
     try {
-        // Create/Overwrite the staff document for the CURRENT user
-        await setDoc(doc(firestore, 'staff', user.uid), {
-            uid: user.uid,
+        await setDoc(doc(firestore, 'staff', currentUser.uid), {
+            uid: currentUser.uid,
             firstName: "Director",
             lastName: "Admin",
-            email: user.email,
+            email: currentUser.email,
             role: "Director",
             createdAt: serverTimestamp()
         }, { merge: true });
@@ -262,27 +310,6 @@ function StaffPageContent() {
         toast({ variant: "destructive", title: "Repair Failed", description: e.message });
     }
   };
-
-  // Real-Time Listener
-  useEffect(() => {
-    if (isUserLoading) return;
-    if (!user || !firestore) {
-        setIsLoadingData(false);
-        return;
-    }
-    
-    setIsLoadingData(true);
-    const q = collection(firestore, 'staff');
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        setStaff(staffList);
-        setIsLoadingData(false);
-    }, (error) => {
-        console.error("Listener Error:", error);
-        setIsLoadingData(false);
-    });
-    return () => unsubscribe();
-  }, [firestore, user, isUserLoading, toast]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -334,18 +361,17 @@ function StaffPageContent() {
           <CardContent className="space-y-4">
               <div className="text-xs font-mono text-blue-900 flex justify-between items-center">
                 <div>
-                    <div><strong>Status:</strong> {user ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
-                    {user && <div><strong>User:</strong> {user.email}</div>}
+                    <div><strong>Status:</strong> {currentUser ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
+                    {currentUser && <div><strong>User:</strong> {currentUser.email}</div>}
                 </div>
-                {/* REPAIR BUTTON */}
-                {user && (
+                {currentUser && (
                     <Button onClick={handleRepairAccount} size="sm" variant="outline" className="bg-white border-blue-300 hover:bg-blue-100 text-blue-700">
                         <UserPlus className="h-4 w-4 mr-2"/> Repair/Create My Admin Profile
                     </Button>
                 )}
               </div>
 
-              {!user && (
+              {!currentUser && (
                   <div className="p-4 bg-white rounded border border-blue-100 space-y-3">
                       <p className="text-xs text-slate-500">Session lost. Please re-connect here:</p>
                       <Input placeholder="Director Email" value={manualEmail} onChange={e => setManualEmail(e.target.value)} className="h-8 text-xs"/>
@@ -403,3 +429,5 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
+    
+    
