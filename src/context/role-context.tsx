@@ -127,60 +127,54 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
       if (isLoading) return;
 
-      // Not logged in? -> Home
+      // 1. Not Logged In? -> Go Home
       if (!user && pathname.startsWith('/dashboard')) {
         router.push('/');
         return;
       }
 
-      // Logged in? -> Check access
-      if (user) {
-        if (!role) {
-            // Role is NULL (User exists in Auth but not in DB)
-            // Do nothing, let the component render the "Access Denied" screen below
-            return;
-        }
-
-        const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
+      // 2. Logged In? -> Check Redirects
+      if (user && role) {
+        const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian'].includes(role);
 
         // A. STAFF Redirects
         if (isStaff) {
-            if (pathname.startsWith('/dashboard/students') || pathname.startsWith('/dashboard/parents')) {
-                router.push('/dashboard/staff'); 
-            } else if (pathname === '/dashboard') {
+            if (pathname === '/dashboard' || pathname.startsWith('/dashboard/students') || pathname.startsWith('/dashboard/parents')) {
                 router.push('/dashboard/staff');
             }
         }
-        
-        // B. STUDENT Redirects
+        // B. STUDENT
         else if (role === 'Student') {
-             if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/parents') || pathname === '/dashboard') {
-                 // IMPORTANT: Redirect to the correct plural/singular folder you have
-                 router.push('/dashboard/students'); 
+             if (pathname === '/dashboard' || pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/parents')) {
+                 router.push('/dashboard/students'); // Redirect to Student Portal
              }
         }
-
-        // C. PARENT Redirects
+        // C. PARENT
         else if (role === 'Parent') {
-            if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/students') || pathname === '/dashboard') {
-                router.push('/dashboard/parents');
+            if (pathname === '/dashboard' || pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/students')) {
+                router.push('/dashboard/parents'); // Redirect to Parent Portal
             }
         }
       }
   }, [isLoading, user, role, pathname, router]);
 
-  if (isLoading && pathname.startsWith('/dashboard')) {
+  // --- AMENDMENT: Loading Screen ---
+  // If loading, OR if we are sitting on the root '/dashboard' (waiting to be redirected), show the spinner.
+  // This prevents the "wrong" dashboard from flashing on the screen.
+  if (isLoading || (user && pathname === '/dashboard')) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-slate-50">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground animate-pulse">Verifying account access...</p>
+            <p className="text-muted-foreground animate-pulse">
+                {isLoading ? "Verifying account..." : "Loading your portal..."}
+            </p>
           </div>
       </div>
     )
   }
 
-  // Handling the "No Role" case explicitly
+  // --- AMENDMENT: Account Not Configured ---
   if (!isLoading && user && !role && pathname.startsWith('/dashboard')) {
       return (
         <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 p-4">
