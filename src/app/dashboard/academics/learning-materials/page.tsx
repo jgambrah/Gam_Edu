@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
@@ -78,13 +78,15 @@ function MaterialForm({
   setOpen, 
   materialToEdit, 
   classes,
-  preSelectedSubject 
+  preSelectedSubject,
+  preSelectedClassId
 }: { 
   open: boolean; 
   setOpen: (o: boolean) => void; 
   materialToEdit?: LearningMaterial | null; 
   classes: Class[] | undefined;
   preSelectedSubject?: string;
+  preSelectedClassId?: string;
 }) {
   const firestore = useFirestore();
   const { user: hookUser } = useAuth();
@@ -96,8 +98,9 @@ function MaterialForm({
   // Form State
   const [topicTitle, setTopicTitle] = useState(materialToEdit?.topicTitle || '');
   const [description, setDescription] = useState(materialToEdit?.description || '');
-  const [classId, setClassId] = useState(materialToEdit?.classId || '');
-  const [subject, setSubject] = useState(materialToEdit?.subject || preSelectedSubject || ''); // Subject State
+  // FIX: Use pre-selected class ID if available
+  const [classId, setClassId] = useState(materialToEdit?.classId || preSelectedClassId || '');
+  const [subject, setSubject] = useState(materialToEdit?.subject || preSelectedSubject || ''); 
   const [resources, setResources] = useState<ResourceItem[]>(materialToEdit?.resources || []);
 
   const [inputType, setInputType] = useState<'link' | 'file'>('link');
@@ -115,7 +118,6 @@ function MaterialForm({
   });
 
   const handleAddResource = async () => {
-    // 1. Basic Validation
     if (!tempTitle) {
         toast({ variant: 'destructive', title: 'Missing Info', description: 'Please describe this item.' });
         return;
@@ -133,29 +135,16 @@ function MaterialForm({
     let finalUrl = tempUrl;
 
     try {
-        // 2. Handle File Upload
         if (inputType === 'file' && tempFile) {
             console.log("Starting upload for:", tempFile.name);
-
-            // A. Get the initialized Firebase App
             const app = getApp(); 
-            
-            // B. Initialize Storage with the App AND the Bucket URL
-            // FIX: Point to the bucket where we enabled CORS
             const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
-            
-            // C. Create Reference
             const sanitizedName = tempFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
             const storageRef = ref(storage, `materials/${Date.now()}_${sanitizedName}`);
-            
-            // D. Upload
             const snapshot = await uploadBytes(storageRef, tempFile);
-            
-            // E. Get URL
             finalUrl = await getDownloadURL(snapshot.ref);
         }
 
-        // 3. Add to Local List
         const newItem: ResourceItem = {
             id: Date.now().toString(),
             type: tempType as ResourceType,
@@ -164,8 +153,6 @@ function MaterialForm({
         };
 
         setResources([...resources, newItem]);
-        
-        // 4. Reset Input Fields
         setTempTitle('');
         setTempUrl('');
         setTempFile(null);
@@ -274,7 +261,7 @@ function MaterialForm({
               </div>
               <div className="space-y-2">
                 <Label>Description</Label>
-                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description of this topic..." className="h-16" />
+                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description..." className="h-16" />
               </div>
           </div>
 
@@ -368,13 +355,12 @@ export default function LearningMaterialsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<LearningMaterial | null>(null);
   
-  // Navigation State
   const [currentSubject, setCurrentSubject] = useState<string | null>(null);
-  const [selectedClassId, setSelectedClassId] = useState<string>(''); // For filtering in Admin view
+  const [selectedClassId, setSelectedClassId] = useState<string>('');
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. Student Data (for class ID)
+  // 1. Student Data
   const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
     useMemoFirebase(() => {
         if (role !== 'Student' || !user || !firestore) return null;
@@ -382,33 +368,41 @@ export default function LearningMaterialsPage() {
     }, [user, role, firestore])
   );
   
-  // Automatically set class ID for students
   const activeClassId = role === 'Student' ? studentData?.[0]?.classId : selectedClassId;
 
-  // 2. Classes (for Staff dropdown)
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (canManage && firestore) ? query(collection(firestore, 'classes')) : null, [canManage, firestore])
   );
 
-  // 3. Materials Query (Depends on whether we are inside a Subject Folder)
+  // 3. Materials Query (FIXED: Removed orderBy to prevent missing index crash)
   const materialsQuery = useMemoFirebase(() => {
     if (!firestore || !activeClassId) return null;
     
-    // Base Query: Must match Class ID
+    console.log("Fetching materials for:", { activeClassId, currentSubject });
+
+    // Base Query: Filter by Class ID
     let baseQuery = query(
         collection(firestore, 'learning_materials'), 
         where('classId', '==', activeClassId)
     );
 
-    // If a Subject Folder is open, filter by that subject
+    // If Subject selected, filter by Subject
     if (currentSubject) {
-        baseQuery = query(baseQuery, where('subject', '==', currentSubject), orderBy('createdAt', 'desc'));
+        // IMPORTANT: I removed 'orderBy' here to ensure the query works immediately.
+        // You can sort the results in the browser instead.
+        baseQuery = query(baseQuery, where('subject', '==', currentSubject));
     }
 
     return baseQuery;
   }, [firestore, activeClassId, currentSubject]);
 
   const { data: materials, isLoading: isLoadingMaterials } = useCollection<LearningMaterial>(materialsQuery);
+
+  // Sort materials client-side since we removed orderBy from Firestore
+  const sortedMaterials = useMemo(() => {
+      if (!materials) return [];
+      return materials.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+  }, [materials]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this topic?")) return;
@@ -434,7 +428,6 @@ export default function LearningMaterialsPage() {
 
   // --- RENDER HELPERS ---
 
-  // 1. CLASS SELECTOR (For Admins)
   if (canManage && !activeClassId) {
       return (
           <div className="p-8 max-w-2xl mx-auto space-y-4">
@@ -452,7 +445,6 @@ export default function LearningMaterialsPage() {
       )
   }
 
-  // GLOBAL LOADING STATE FOR STUDENTS (BEFORE CLASS ID IS KNOWN)
   if (pageLoading) {
       return (
           <div className="flex items-center justify-center p-12">
@@ -461,7 +453,6 @@ export default function LearningMaterialsPage() {
       )
   }
 
-  // 2. SUBJECT FOLDER VIEW (Top Level)
   if (!currentSubject) {
       return (
         <div className="space-y-6 p-6">
@@ -469,7 +460,7 @@ export default function LearningMaterialsPage() {
                 <CardHeader className="flex flex-row justify-between items-center pb-2">
                     <div>
                         <CardTitle>Subject Folders</CardTitle>
-                        <CardDescription>Select a subject to view topics and materials for <strong>{classes?.find(c => c.id === activeClassId)?.name || 'Class'}</strong></CardDescription>
+                        <CardDescription>Select a subject to view topics for <strong>{classes?.find(c => c.id === activeClassId)?.name || 'Class'}</strong></CardDescription>
                     </div>
                     <div className="flex gap-2">
                         {canManage && <Button variant="outline" onClick={() => setSelectedClassId('')}>Switch Class</Button>}
@@ -493,20 +484,19 @@ export default function LearningMaterialsPage() {
                 </CardContent>
             </Card>
 
-            {/* Form Dialog (Can be opened from top level) */}
             {isFormOpen && (
                 <MaterialForm 
                     open={isFormOpen} 
                     setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
                     classes={classes}
                     materialToEdit={editingMaterial}
+                    preSelectedClassId={activeClassId}
                 />
             )}
         </div>
       );
   }
 
-  // 3. TOPIC VIEW (Inside a Subject)
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-4">
@@ -521,9 +511,7 @@ export default function LearningMaterialsPage() {
          {canManage && <Button onClick={handleCreate}><Plus className="mr-2 h-4 w-4"/> Add Topic to {currentSubject}</Button>}
       </div>
 
-      {isLoadingMaterials ? (
-        <div className="text-center p-12"><Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" /></div>
-      ) : (!materials || materials.length === 0) ? (
+      {(!sortedMaterials || sortedMaterials.length === 0) ? (
         <div className="text-center py-16 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50/50">
             <BookOpen className="mx-auto h-12 w-12 mb-2 opacity-30"/>
             <p>No topics found for {currentSubject}.</p>
@@ -531,12 +519,12 @@ export default function LearningMaterialsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-            {materials.map((mat) => (
+            {sortedMaterials.map((mat) => (
                 <Card key={mat.id} className="flex flex-col shadow-sm border-l-4 border-l-blue-500">
                     <CardHeader className="pb-2">
                         <div className="flex justify-between items-start">
                             <div>
-                                <CardTitle className="text-lg">{mat.topicTitle}</CardTitle>
+                                <CardTitle className="text-lg">{mat.topicTitle || (mat as any).title}</CardTitle>
                                 {mat.description && <p className="text-sm text-slate-600 mt-1">{mat.description}</p>}
                             </div>
                             {canManage && (
@@ -581,10 +569,9 @@ export default function LearningMaterialsPage() {
             classes={classes}
             materialToEdit={editingMaterial}
             preSelectedSubject={currentSubject || undefined}
+            preSelectedClassId={activeClassId}
         />
       )}
     </div>
   );
 }
-
-    
