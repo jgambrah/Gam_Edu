@@ -45,11 +45,22 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
         return;
       }
 
-      console.log("🔍 Checking Role for UID:", user.uid);
+      console.log("🔍 STARTING ROLE CHECK for:", user.uid);
 
-      // --- PRIORITY 1: CHECK DATABASE (Source of Truth) ---
+      // --- PRIORITY 1: CHECK DATABASE (The Truth) ---
       
-      // 1. Check Staff Collection
+      // 1. Check Students Collection (Moved to Top for Students)
+      try {
+        const studentDoc = await getDoc(doc(firestore, 'students', user.uid));
+        if (studentDoc.exists()) {
+          console.log("✅ Found in Students DB");
+          setRole('Student');
+          setIsRoleLoading(false);
+          return; // STOP HERE if found
+        }
+      } catch (e) { console.log("Not student check error"); }
+
+      // 2. Check Staff Collection
       try {
         const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
         if (staffDoc.exists()) {
@@ -57,20 +68,9 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
           console.log("✅ Found in Staff DB:", r);
           setRole(r as UserRole);
           setIsRoleLoading(false);
-          return;
+          return; // STOP HERE if found
         }
-      } catch (e) { console.log("Not staff/Permission denied"); }
-
-      // 2. Check Students Collection
-      try {
-        const studentDoc = await getDoc(doc(firestore, 'students', user.uid));
-        if (studentDoc.exists()) {
-          console.log("✅ Found in Students DB");
-          setRole('Student');
-          setIsRoleLoading(false);
-          return;
-        }
-      } catch (e) { console.log("Not student/Permission denied"); }
+      } catch (e) { console.log("Not staff check error"); }
 
       // 3. Check Parents Collection
       try {
@@ -79,17 +79,18 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
           console.log("✅ Found in Parents DB");
           setRole('Parent');
           setIsRoleLoading(false);
-          return;
+          return; // STOP HERE if found
         }
-      } catch (e) { console.log("Not parent/Permission denied"); }
+      } catch (e) { console.log("Not parent check error"); }
 
-      // --- PRIORITY 2: CHECK CLAIMS (Backup) ---
-      // Only check this if the database lookups failed (or returned nothing)
+
+      // --- PRIORITY 2: CHECK CLAIMS (Backup Only) ---
+      // Only runs if NOT found in any database collection above
       try {
-        const idTokenResult = await user.getIdTokenResult();
+        const idTokenResult = await user.getIdTokenResult(); // Don't force refresh to save speed
         const claimsRole = idTokenResult.claims.role;
         if (claimsRole && typeof claimsRole === 'string') {
-          console.log("⚠️ DB check failed, falling back to Claims:", claimsRole);
+          console.log("⚠️ Database check failed. Using Claim:", claimsRole);
           setRole(claimsRole as UserRole);
           setIsRoleLoading(false);
           return;
@@ -97,8 +98,8 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
       } catch (e) { console.warn(e); }
       
       // --- FINAL FALLBACK ---
-      console.warn("❌ User not found in DB or Claims. Setting Role to NULL.");
-      setRole(null); 
+      console.warn("❌ User not found in DB or Claims.");
+      setRole(null); // No role found -> Show Error Screen
       setIsRoleLoading(false);
     };
 
@@ -106,8 +107,11 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
     
   }, [user, firestore, isAuthLoading]);
 
-  // @ts-ignore
-  return <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>{children}</RoleContext.Provider>;
+  return (
+    <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
+      {children}
+    </RoleContext.Provider>
+  );
 }
 
 export function RoleProvider({ children }: { children: ReactNode }) {
@@ -120,7 +124,7 @@ export function useRole() {
   return context;
 }
 
-// --- ROLE GUARD (Traffic Control) ---
+// --- ROLE GUARD ---
 export function RoleGuard({ children }: { children: ReactNode }) {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const { role, isRoleLoading } = useRole();
@@ -132,26 +136,27 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
       if (isLoading) return;
 
-      // 1. Not Logged In -> Home
       if (!user && pathname.startsWith('/dashboard')) {
         router.push('/');
         return;
       }
 
-      // 2. Logged In -> Redirect based on Role
       if (user && role) {
         const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
 
+        // A. STAFF
         if (isStaff) {
             if (pathname.startsWith('/dashboard/students') || pathname.startsWith('/dashboard/parents') || pathname === '/dashboard') {
                 router.push('/dashboard/staff');
             }
         }
+        // B. STUDENT
         else if (role === 'Student') {
              if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/parents') || pathname === '/dashboard') {
-                 router.push('/dashboard/students'); 
+                 router.push('/dashboard/students'); // <--- Redirects to Student Portal
              }
         }
+        // C. PARENT
         else if (role === 'Parent') {
             if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/students') || pathname === '/dashboard') {
                 router.push('/dashboard/parents');
@@ -165,7 +170,7 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full items-center justify-center bg-slate-50">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground animate-pulse">Loading your portal...</p>
+            <p className="text-muted-foreground animate-pulse">Loading Portal...</p>
           </div>
       </div>
     )
@@ -179,15 +184,12 @@ export function RoleGuard({ children }: { children: ReactNode }) {
                     <div className="mx-auto bg-red-100 p-3 rounded-full w-fit mb-2">
                         <AlertCircle className="h-8 w-8 text-red-600" />
                     </div>
-                    <CardTitle className="text-red-700">Account Not Configured</CardTitle>
+                    <CardTitle className="text-red-700">Account Not Found</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center space-y-4">
-                    <p className="text-slate-600">
-                        Logged in as: <strong>{user.email}</strong>
-                    </p>
+                    <p className="text-slate-600">Logged in as <strong>{user.email}</strong></p>
                     <div className="bg-slate-100 p-3 rounded text-xs font-mono text-left">
-                        UID: {user.uid} <br/>
-                        DB Status: Not found in Staff/Students/Parents
+                        UID: {user.uid}<br/>Status: No profile in Students/Staff/Parents
                     </div>
                     <Button onClick={() => router.push('/')} variant="outline">Back to Home</Button>
                 </CardContent>
