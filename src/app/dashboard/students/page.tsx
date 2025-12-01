@@ -47,8 +47,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useMemo } from 'react';
 import { Loader2, Edit, Trash2 } from 'lucide-react';
@@ -244,15 +244,16 @@ function StudentList({ students, classes, isLoading, searchTerm, classFilter, fo
 
 function StudentsPageContent() {
   const firestore = useFirestore();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   
-  const classesCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
+  const classesCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'classes') : null, [firestore, user]);
   const { data: classes } = useCollection<{id: string, name: string}>(classesCollectionRef);
   
-  const studentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  const studentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]);
   const { data: students, isLoading, forceRefetch } = useCollection<StudentData>(studentsCollectionRef);
 
   const form = useForm<z.infer<typeof studentFormSchema>>({
@@ -293,14 +294,26 @@ function StudentsPageContent() {
         throw new Error(result.error);
       }
       
+      const { uid } = result;
+
+      await setDoc(doc(firestore, 'students', uid), {
+        uid: uid,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        classId: values.classId,
+        dateOfBirth: values.dateOfBirth,
+        gender: values.gender,
+        address: values.address,
+        enrollmentStatus: 'Active',
+      }, { merge: true });
+      
       toast({
         title: 'Student Added Successfully',
         description: `${values.firstName} ${values.lastName} has been added. Login: ${values.email} / ${values.password}`,
         duration: 8000,
       });
       
-      // The createNewUser function already handles Firestore creation
-      // so we just need to refetch the data.
       setTimeout(() => {
         forceRefetch();
       }, 500);

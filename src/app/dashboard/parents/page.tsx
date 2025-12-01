@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,7 +40,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useMemo } from 'react';
@@ -163,10 +164,11 @@ function EditParentForm({ parent, students, setOpen }: { parent: ParentData, stu
 
 function ParentList({ forceRefetch }: { forceRefetch: () => void }) {
   const firestore = useFirestore();
+  const { user } = useAuth();
   const { toast } = useToast();
-  const parentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'parents') : null, [firestore]);
+  const parentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'parents') : null, [firestore, user]);
   const { data: parents, isLoading } = useCollection<ParentData>(parentsCollectionRef);
-  const studentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  const studentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]);
   const { data: students } = useCollection(studentsCollectionRef);
 
   const [editingParent, setEditingParent] = useState<ParentData | null>(null);
@@ -247,12 +249,13 @@ function ParentList({ forceRefetch }: { forceRefetch: () => void }) {
 
 function ParentsPageContent() {
   const firestore = useFirestore();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
   const [refetchKey, setRefetchKey] = useState(0);
 
-  const studentsCollectionRef = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  const studentsCollectionRef = useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]);
   const { data: students } = useCollection(studentsCollectionRef);
 
   const forceRefetch = () => setRefetchKey(prev => prev + 1);
