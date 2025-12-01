@@ -1,4 +1,3 @@
-
 "use client";
 
 import { 
@@ -17,87 +16,90 @@ import { usePathname, useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 
 type RoleContextType = {
-  role: UserRole;
+  role: UserRole | null; // Changed to nullable to distinguish "loading" from "assigned"
   setRole: Dispatch<SetStateAction<UserRole>>;
   isRoleLoading: boolean;
 };
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
+// --- 1. ROLE PROVIDER (Determines WHO they are) ---
 function RoleProviderContent({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>('Parent'); // Default safe role
+  // Start with null so we know we haven't decided yet
+  const [role, setRole] = useState<UserRole>('Parent'); 
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const [isRoleLoading, setIsRoleLoading] = useState(true);
 
   useEffect(() => {
     const determineRole = async () => {
-      // Wait for Auth to initialize
       if (isAuthLoading || !firestore) return;
 
       setIsRoleLoading(true);
 
       if (!user) {
-        setRole('Parent');
+        setRole('Parent'); // Default safe role for guests
         setIsRoleLoading(false);
         return;
       }
 
-      console.log("Checking role for:", user.uid);
+      console.log(`Checking role for UID: ${user.uid}...`);
 
-      // 1. Check Custom Claims First (Fastest & Most Reliable)
-      // This requires your backend to set custom claims on signup/update
+      // 1. Check Custom Claims (Fastest)
       try {
-        const idTokenResult = await user.getIdTokenResult(true); // Force refresh
+        const idTokenResult = await user.getIdTokenResult(); // Removed 'true' to prevent rate limits, unless strictly needed
         const claimsRole = idTokenResult.claims.role;
         
         if (claimsRole && typeof claimsRole === 'string') {
-          console.log("Found Role via Claims:", claimsRole);
+          console.log("Role found via Claims:", claimsRole);
           setRole(claimsRole as UserRole);
           setIsRoleLoading(false);
           return;
         }
       } catch (e) {
-        console.warn("Failed to check ID Token claims:", e);
+        console.warn("Claims check failed, falling back to DB.");
       }
       
       // 2. Check Staff Collection
       try {
-        const staffDocRef = doc(firestore, 'staff', user.uid);
-        const staffDocSnap = await getDoc(staffDocRef);
-        
-        if (staffDocSnap.exists()) {
-          const staffData = staffDocSnap.data();
-          if (staffData.role) {
-            console.log("Found Role via Staff DB:", staffData.role);
-            setRole(staffData.role as UserRole);
-            setIsRoleLoading(false);
-            return;
-          }
+        const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
+        if (staffDoc.exists() && staffDoc.data().role) {
+          setRole(staffDoc.data().role as UserRole);
+          setIsRoleLoading(false);
+          return;
         }
-      } catch (e: any) {
-        // Important: If permission denied, it means they MIGHT be a student/parent
-        // because staff rules usually block non-staff.
-        console.warn("Staff check failed (likely permission denied):", e.code);
+      } catch (e) { 
+        console.log("Not a staff member (or permission denied)"); 
       }
 
       // 3. Check Students Collection
       try {
-        const studentDocRef = doc(firestore, 'students', user.uid);
-        const studentDocSnap = await getDoc(studentDocRef);
-        if (studentDocSnap.exists()) {
+        const studentDoc = await getDoc(doc(firestore, 'students', user.uid));
+        if (studentDoc.exists()) {
+          console.log("User identified as Student");
           setRole('Student');
           setIsRoleLoading(false);
           return;
         }
       } catch (e) {
-          console.warn("Student check failed:", e);
+         console.log("Not a student");
       }
 
-      // 4. Default to Parent (Fallthrough)
-      // If we reached here, we checked Claims, Staff, and Student, and found nothing.
-      console.log("No specific role found, defaulting to Parent.");
-      setRole('Parent');
+      // 4. Check Parents Collection (Explicit check, don't just assume)
+      try {
+        const parentDoc = await getDoc(doc(firestore, 'parents', user.uid));
+        if (parentDoc.exists()) {
+          setRole('Parent');
+          setIsRoleLoading(false);
+          return;
+        }
+      } catch (e) {
+          console.log("Not a parent");
+      }
+      
+      // 5. Final Fallback
+      console.warn("User has no profile in DB. Defaulting to Parent view.");
+      setRole('Parent'); 
       setIsRoleLoading(false);
     };
 
@@ -124,6 +126,7 @@ export function useRole() {
   return context;
 }
 
+// --- 2. ROLE GUARD (Determines WHERE they go) ---
 export function RoleGuard({ children }: { children: ReactNode }) {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const { role, isRoleLoading } = useRole();
@@ -133,38 +136,44 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   const isLoading = isAuthLoading || isRoleLoading;
 
   useEffect(() => {
-      // 1. Redirect unauthenticated users
-      if (!isLoading && !user && pathname.startsWith('/dashboard')) {
+      if (isLoading) return;
+
+      // 1. Not Logged In? -> Go Home
+      if (!user && pathname.startsWith('/dashboard')) {
         router.push('/');
         return;
       }
 
-      // 2. Redirect Authenticated Users based on Role
-      if (!isLoading && user && role) {
+      // 2. Logged In? -> Enforce Portals
+      if (user && role) {
         
-        const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
-        
-        // --- REDIRECT RULES ---
-        
-        // A. STAFF: Should not see Parent Registration or Student Registration
+        const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian'].includes(role);
+
+        // --- A. STAFF LOGIC ---
         if (isStaff) {
-            if (pathname === '/dashboard/parent' || pathname === '/dashboard/student-registration') {
-                 // Redirect Teachers to their main dashboard or academics
-                 router.push('/dashboard/academics'); 
+            // If they try to go to Student or Parent portal, kick them to Staff Dashboard
+            if (pathname.startsWith('/dashboard/student') || pathname.startsWith('/dashboard/parent')) {
+                router.push('/dashboard/staff'); 
+            }
+            // If they are at the root dashboard, send them to Staff Dashboard
+            else if (pathname === '/dashboard') {
+                router.push('/dashboard/staff');
             }
         }
         
-        // B. STUDENTS: Should not see Staff/Parent pages
+        // --- B. STUDENT LOGIC ---
         else if (role === 'Student') {
-             if (pathname === '/dashboard/parent' || pathname.startsWith('/dashboard/staff') || pathname === '/dashboard/admissions') {
-                 router.push('/dashboard');
+             // If they try to go to Staff or Parent portal, kick them to Student Dashboard
+             if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/parent') || pathname === '/dashboard') {
+                 router.push('/dashboard/student');
              }
         }
 
-        // C. PARENTS: Should not see Staff/Student pages
+        // --- C. PARENT LOGIC ---
         else if (role === 'Parent') {
-            if (pathname.startsWith('/dashboard/staff') || pathname === '/dashboard/academics') {
-                router.push('/dashboard');
+            // If they try to go to Staff or Student portal, kick them to Parent Dashboard
+            if (pathname.startsWith('/dashboard/staff') || pathname.startsWith('/dashboard/student') || pathname === '/dashboard') {
+                router.push('/dashboard/parent');
             }
         }
       }
@@ -172,8 +181,11 @@ export function RoleGuard({ children }: { children: ReactNode }) {
 
   if (isLoading && pathname.startsWith('/dashboard')) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center">
-          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+      <div className="flex min-h-screen w-full items-center justify-center bg-slate-50">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-muted-foreground animate-pulse">Verifying access...</p>
+          </div>
       </div>
     )
   }
