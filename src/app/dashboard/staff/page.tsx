@@ -50,16 +50,17 @@ import {
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase'; 
+// IMPORT onSnapshot for Real-Time updates & addDoc for debugging
 import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp, addDoc } from 'firebase/firestore'; 
-import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'; // IMPORT AUTH FUNCTIONS
+import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState, useCallback } from 'react';
-import { Loader2, Edit, Trash2, RefreshCw, ShieldCheck, LogIn } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Loader2, Edit, Trash2, ShieldCheck, LogIn, UserPlus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
 import { useRole } from '@/context/role-context';
 
-// ... (Schemas remain the same) ...
+// --- SCHEMAS ---
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
   lastName: z.string().min(1, { message: 'Last name is required.' }),
@@ -85,8 +86,9 @@ type StaffData = {
   phone?: string;
 };
 
-// --- EDIT FORM COMPONENT ---
-function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpen: (open: boolean) => void, onSuccess: () => void }) {
+// --- COMPONENTS ---
+
+function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,7 +100,6 @@ function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpe
       lastName: staff.lastName,
       phone: staff.phone || '',
       role: staff.role,
-      dateOfBirth: '', gender: '', nationality: '', address: '', // Simplified for brevity
     },
   });
 
@@ -108,7 +109,6 @@ function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpe
       const staffRef = doc(firestore, 'staff', staff.id);
       await updateDoc(staffRef, values);
       toast({ title: 'Success', description: 'Updated successfully.' });
-      onSuccess();
       setOpen(false);
     } catch (error) {
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to update.' });
@@ -126,7 +126,12 @@ function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpe
         </div>
         <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)}/>
         <FormField control={form.control} name="role" render={({ field }) => (
-            <FormItem><FormLabel>Role</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+            <FormItem><FormLabel>Role</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
+                    <SelectContent>{ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                </Select>
+            <FormMessage /></FormItem>
         )}/>
          <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Save Changes</Button>
       </form>
@@ -134,7 +139,6 @@ function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpe
   )
 }
 
-// --- STAFF LIST COMPONENT ---
 function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading: boolean }) {
     const { role } = useRole();
     const firestore = useFirestore();
@@ -180,7 +184,13 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
                     {canManage && (
                         <TableCell className="text-right">
                             <Button variant="ghost" size="icon" onClick={() => setEditingStaff(s)}><Edit className="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="icon" className="text-red-500" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4" /></Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader><AlertDialogTitle>Delete Staff?</AlertDialogTitle><AlertDialogDescription>This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
+                                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(s.id)}>Delete</AlertDialogAction></AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </TableCell>
                     )}
                   </TableRow>
@@ -195,7 +205,7 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
       {editingStaff && (
           <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
               <DialogContent><DialogHeader><DialogTitle>Edit Staff</DialogTitle></DialogHeader>
-                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} onSuccess={() => {}} />
+                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} />
               </DialogContent>
           </Dialog>
       )}
@@ -203,7 +213,6 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
     );
   }
 
-// --- MAIN PAGE CONTENT ---
 function StaffPageContent() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useAuth(); 
@@ -213,7 +222,7 @@ function StaffPageContent() {
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // --- NEW: Manual Login State ---
+  // Manual Login State
   const [manualEmail, setManualEmail] = useState('');
   const [manualPass, setManualPass] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -223,11 +232,10 @@ function StaffPageContent() {
       setIsLoggingIn(true);
       try {
           const auth = getAuth();
-          // Force persistence to LOCAL so it stays after refresh
           await setPersistence(auth, browserLocalPersistence);
           await signInWithEmailAndPassword(auth, manualEmail, manualPass);
           toast({ title: "Login Successful", description: "Connection re-established." });
-          window.location.reload(); // Reload to pick up the new session
+          window.location.reload();
       } catch (e: any) {
           toast({ variant: "destructive", title: "Login Failed", description: e.message });
       } finally {
@@ -235,30 +243,43 @@ function StaffPageContent() {
       }
   };
 
+  // --- NEW: REPAIR ACCOUNT FUNCTION ---
+  const handleRepairAccount = async () => {
+    if(!user || !firestore) return;
+    try {
+        // Create/Overwrite the staff document for the CURRENT user
+        await setDoc(doc(firestore, 'staff', user.uid), {
+            uid: user.uid,
+            firstName: "Director",
+            lastName: "Admin",
+            email: user.email,
+            role: "Director",
+            createdAt: serverTimestamp()
+        }, { merge: true });
+        toast({ title: "Account Repaired", description: "You should now appear in the list below." });
+    } catch (e: any) {
+        toast({ variant: "destructive", title: "Repair Failed", description: e.message });
+    }
+  };
+
+  // Real-Time Listener
   useEffect(() => {
     if (isUserLoading) return;
-    
     if (!user || !firestore) {
         setIsLoadingData(false);
         return;
     }
     
     setIsLoadingData(true);
-    console.log("🔄 Listening to 'staff' collection...");
-
     const q = collection(firestore, 'staff');
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        console.log(`✅ Listener Updated: Found ${staffList.length} staff.`);
         setStaff(staffList);
         setIsLoadingData(false);
     }, (error) => {
-        console.error("❌ Listener Error:", error);
-        toast({ variant: "destructive", title: "Access Error", description: error.message });
+        console.error("Listener Error:", error);
         setIsLoadingData(false);
     });
-
     return () => unsubscribe();
   }, [firestore, user, isUserLoading, toast]);
 
@@ -303,7 +324,6 @@ function StaffPageContent() {
   return (
     <div className="space-y-6">
       
-      {/* --- SYSTEM CHECK CARD WITH LOGIN --- */}
       <Card className="bg-blue-50 border-blue-200">
           <CardHeader className="pb-2">
               <CardTitle className="text-blue-800 flex items-center gap-2 text-sm">
@@ -311,9 +331,17 @@ function StaffPageContent() {
               </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-              <div className="text-xs font-mono text-blue-900">
-                <div><strong>Status:</strong> {user ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
-                {user && <div><strong>User:</strong> {user.email}</div>}
+              <div className="text-xs font-mono text-blue-900 flex justify-between items-center">
+                <div>
+                    <div><strong>Status:</strong> {user ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
+                    {user && <div><strong>User:</strong> {user.email}</div>}
+                </div>
+                {/* REPAIR BUTTON */}
+                {user && (
+                    <Button onClick={handleRepairAccount} size="sm" variant="outline" className="bg-white border-blue-300 hover:bg-blue-100 text-blue-700">
+                        <UserPlus className="h-4 w-4 mr-2"/> Repair/Create My Admin Profile
+                    </Button>
+                )}
               </div>
 
               {!user && (
@@ -350,7 +378,7 @@ function StaffPageContent() {
                   <FormField control={form.control} name="role" render={({ field }) => (
                       <FormItem><FormLabel>Role</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="Select a role" /></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
                           <SelectContent>{ALL_ROLES.map((role) => (<SelectItem key={role} value={role}>{role}</SelectItem>))}</SelectContent>
                         </Select><FormMessage /></FormItem>
                     )}/>
@@ -374,3 +402,5 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
+
+    
