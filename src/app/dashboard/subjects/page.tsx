@@ -26,12 +26,10 @@ const subjectSchema = z.object({
 
 function SubjectForm({
   setOpen,
-  onSubjectChange,
   allTeachers,
   initialData,
 }: {
   setOpen: (open: boolean) => void;
-  onSubjectChange: () => void;
   allTeachers: Staff[];
   initialData?: Subject;
 }) {
@@ -57,7 +55,6 @@ function SubjectForm({
         await addDoc(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
-      onSubjectChange();
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -107,7 +104,7 @@ function SubjectForm({
                               checked={field.value?.includes(teacher.uid)}
                               onCheckedChange={(checked) => {
                                 return checked
-                                  ? field.onChange([...field.value, teacher.uid])
+                                  ? field.onChange([...(field.value || []), teacher.uid])
                                   : field.onChange(field.value?.filter((value) => value !== teacher.uid));
                               }}
                             />
@@ -138,11 +135,10 @@ export default function SubjectsPage() {
   const { user } = useAuth();
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
-  const [refetchKey, setRefetchKey] = useState(0);
 
   const canManage = role === 'Director' || role === 'Administrator';
 
-  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refetchKey]);
+  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
   const teachersQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]);
@@ -159,7 +155,7 @@ export default function SubjectsPage() {
   };
   
   const onSubjectChange = () => {
-      setRefetchKey(prev => prev + 1);
+      // No longer needed due to real-time updates
   }
 
   const getTeacherNames = (teacherIds: string[]) => {
@@ -185,7 +181,7 @@ export default function SubjectsPage() {
             <CardTitle className="flex items-center gap-2"><BookCopy /> Subject Management</CardTitle>
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
-          <Button onClick={() => handleOpenDialog()}>
+          <Button onClick={() => handleOpenDialog()} disabled={isLoadingTeachers}>
             <PlusCircle className="mr-2 h-4 w-4" />
             New Subject
           </Button>
@@ -202,7 +198,7 @@ export default function SubjectsPage() {
                 <div key={subject.id} className="flex items-center justify-between p-4 border-b last:border-b-0">
                   <div>
                     <p className="font-semibold">{subject.name}</p>
-                    <p className="text-sm text-muted-foreground">Teachers: {getTeacherNames(subject.teacherIds)}</p>
+                    <p className="text-sm text-muted-foreground">{subject.teacherIds.length} teacher(s) assigned</p>
                   </div>
                   <Button variant="outline" size="sm" onClick={() => handleOpenDialog(subject)}>
                     Manage
