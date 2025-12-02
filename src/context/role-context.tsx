@@ -1,3 +1,4 @@
+
 'use client';
 
 import { 
@@ -33,78 +34,64 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const determineRole = async () => {
-      // Wait for Auth & Firestore
-      if (isAuthLoading || !firestore) return;
+      if (isAuthLoading || !firestore) {
+        // Still waiting for auth or firestore to be ready
+        return;
+      }
 
       setIsRoleLoading(true);
 
       if (!user) {
-        setRole('Parent'); 
+        // No user is logged in, so they have no role.
+        setRole(null);
         setIsRoleLoading(false);
         return;
       }
 
-      console.log("🔍 STARTING ROLE CHECK for:", user.uid);
-
-      // --- PRIORITY 1: CHECK DATABASE (The Truth) ---
+      console.log("🔍 Checking role for user:", user.uid);
       
-      // 1. Check Students Collection (Moved to Top for Students)
-      try {
-        const studentDoc = await getDoc(doc(firestore, 'students', user.uid));
-        if (studentDoc.exists()) {
-          console.log("✅ Found in Students DB");
-          setRole('Student');
-          setIsRoleLoading(false);
-          return; // STOP HERE if found
-        }
-      } catch (e) { console.log("Not student check error"); }
+      // Sequentially check collections. This is a robust way to find the user's role.
+      const collectionsToTest: { name: string; roleField?: string, fixedRole?: UserRole }[] = [
+        { name: 'staff', roleField: 'role' },
+        { name: 'students', fixedRole: 'Student' },
+        { name: 'parents', fixedRole: 'Parent' },
+      ];
 
-      // 2. Check Staff Collection
-      try {
-        const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
-        if (staffDoc.exists()) {
-          const r = staffDoc.data().role || 'Teacher';
-          console.log("✅ Found in Staff DB:", r);
-          setRole(r as UserRole);
-          setIsRoleLoading(false);
-          return; // STOP HERE if found
-        }
-      } catch (e) { console.log("Not staff check error"); }
+      for (const collectionInfo of collectionsToTest) {
+        try {
+            const docRef = doc(firestore, collectionInfo.name, user.uid);
+            const docSnap = await getDoc(docRef);
 
-      // 3. Check Parents Collection
-      try {
-        const parentDoc = await getDoc(doc(firestore, 'parents', user.uid));
-        if (parentDoc.exists()) {
-          console.log("✅ Found in Parents DB");
-          setRole('Parent');
-          setIsRoleLoading(false);
-          return; // STOP HERE if found
+            if (docSnap.exists()) {
+                let userRole: UserRole | null = null;
+                if (collectionInfo.fixedRole) {
+                    userRole = collectionInfo.fixedRole;
+                } else if (collectionInfo.roleField) {
+                    userRole = docSnap.data()[collectionInfo.roleField] as UserRole;
+                }
+                
+                if (userRole) {
+                    console.log(`✅ Found user in '${collectionInfo.name}' with role: ${userRole}`);
+                    setRole(userRole);
+                    setIsRoleLoading(false);
+                    return; // Role found, exit the loop and function.
+                }
+            }
+        } catch (e) {
+            console.warn(`Could not check collection '${collectionInfo.name}':`, e);
         }
-      } catch (e) { console.log("Not parent check error"); }
+      }
 
-
-      // --- PRIORITY 2: CHECK CLAIMS (Backup Only) ---
-      // Only runs if NOT found in any database collection above
-      try {
-        const idTokenResult = await user.getIdTokenResult(); // Don't force refresh to save speed
-        const claimsRole = idTokenResult.claims.role;
-        if (claimsRole && typeof claimsRole === 'string') {
-          console.log("⚠️ Database check failed. Using Claim:", claimsRole);
-          setRole(claimsRole as UserRole);
-          setIsRoleLoading(false);
-          return;
-        }
-      } catch (e) { console.warn(e); }
-      
       // --- FINAL FALLBACK ---
-      console.warn("❌ User not found in DB or Claims.");
-      setRole(null); // No role found -> Show Error Screen
+      // If the loop completes without finding a role, the user has an auth record but no profile in the DB.
+      console.warn("❌ User authenticated but has no profile in 'staff', 'students', or 'parents'.");
+      setRole(null); // Set role to null to indicate a problem.
       setIsRoleLoading(false);
     };
 
     determineRole();
     
-  }, [user?.uid, firestore, isAuthLoading]); // Use user.uid for stability
+  }, [user, firestore, isAuthLoading]);
 
   return (
     <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
@@ -139,8 +126,8 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       router.push('/');
       return;
     }
-
-    // Only redirect if the user is on the base dashboard page
+    
+    // Only redirect if the user is on the base dashboard page and has a role
     if (user && role && pathname === '/dashboard') {
       const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
 
@@ -166,6 +153,7 @@ export function RoleGuard({ children }: { children: ReactNode }) {
     )
   }
 
+  // If user is authenticated but has no valid role, show an error screen.
   if (!isLoading && user && !role && pathname.startsWith('/dashboard')) {
       return (
         <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 p-4">
@@ -174,13 +162,11 @@ export function RoleGuard({ children }: { children: ReactNode }) {
                     <div className="mx-auto bg-red-100 p-3 rounded-full w-fit mb-2">
                         <AlertCircle className="h-8 w-8 text-red-600" />
                     </div>
-                    <CardTitle className="text-red-700">Account Not Found</CardTitle>
+                    <CardTitle className="text-red-700">Profile Not Found</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center space-y-4">
-                    <p className="text-slate-600">Logged in as <strong>{user.email}</strong></p>
-                    <div className="bg-slate-100 p-3 rounded text-xs font-mono text-left">
-                        UID: {user.uid}<br/>Status: No profile in Students/Staff/Parents
-                    </div>
+                    <p className="text-slate-600">Your account (<strong>{user.email}</strong>) is authenticated, but we couldn't find an associated staff, student, or parent profile.</p>
+                    <p className="text-sm text-muted-foreground">Please contact your school administrator to get your account set up correctly.</p>
                     <Button onClick={() => router.push('/')} variant="outline">Back to Home</Button>
                 </CardContent>
             </Card>
