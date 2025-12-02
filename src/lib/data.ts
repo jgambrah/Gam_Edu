@@ -66,12 +66,6 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/students',
-            title: 'Students',
-            icon: GraduationCap,
-            roles: ['Director', 'Administrator'],
-        },
-        {
             path: '/dashboard/students-v2',
             title: 'Students V2',
             icon: GraduationCap,

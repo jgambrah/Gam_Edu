@@ -145,19 +145,19 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
 
       if (isStaff) {
-        const forbiddenPaths = ['/dashboard/students', '/dashboard/parents'];
+        const forbiddenPaths = ['/dashboard/parents-v2'];
         if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
           router.push('/dashboard/staff-management-v2');
         }
       }
       else if (role === 'Student') {
-        const forbiddenPaths = ['/dashboard/staff', '/dashboard/parents', '/dashboard/staff-management-v2', '/dashboard/parents-v2'];
+        const forbiddenPaths = ['/dashboard/staff-management-v2', '/dashboard/parents-v2'];
         if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
           router.push('/dashboard/students-v2');
         }
       }
       else if (role === 'Parent') {
-        const forbiddenPaths = ['/dashboard/staff', '/dashboard/students', '/dashboard/staff-management-v2'];
+        const forbiddenPaths = ['/dashboard/staff-management-v2'];
         if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
           router.push('/dashboard/parents-v2');
         }
