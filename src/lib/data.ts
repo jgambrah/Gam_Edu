@@ -121,6 +121,12 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher', 'Student'],
         },
         {
+            path: '/dashboard/academics/learning-materials-v2',
+            title: 'Learning Materials V2',
+            icon: FolderKanban,
+            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+        },
+        {
             path: '/dashboard/assessments',
             title: 'Assessments',
             icon: ClipboardCheck,
