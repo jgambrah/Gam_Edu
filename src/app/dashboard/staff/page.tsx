@@ -49,9 +49,8 @@ import {
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
-import { useAuth, useFirestore } from '@/firebase'; 
-// FIX: Changed imports to use getDocs instead of onSnapshot
-import { collection, doc, deleteDoc, updateDoc, setDoc, getDocs, serverTimestamp } from 'firebase/firestore'; 
+import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase'; 
+import { collection, doc, deleteDoc, updateDoc, setDoc, serverTimestamp, query } from 'firebase/firestore'; 
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useCallback } from 'react';
 import { Loader2, Edit, Trash2, RefreshCw, UserPlus } from 'lucide-react';
@@ -233,45 +232,15 @@ function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | nu
 
 function StaffPageContent() {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth(); 
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // --- DIRECT FETCH STATE ---
-  const [staff, setStaff] = useState<StaffData[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
-
-  // --- ROBUST FETCH FUNCTION ---
-  const fetchStaff = useCallback(async () => {
-    if (!firestore || !user) return;
-
-    setIsLoadingData(true);
-    console.log("🔄 Fetching Staff List...");
-    
-    try {
-        // Direct Fetch (getDocs) - Immune to listener timeouts
-        const querySnapshot = await getDocs(collection(firestore, 'staff'));
-        const staffList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        
-        console.log(`✅ Fetched ${staffList.length} staff members.`);
-        setStaff(staffList);
-    } catch (error: any) {
-        console.error("❌ Fetch Error:", error);
-        // Don't show toast for permission errors to avoid spamming, just log it
-        if (error.code !== 'permission-denied') {
-            toast({ variant: "destructive", title: "Error", description: "Could not load staff list." });
-        }
-    } finally {
-        setIsLoadingData(false);
-    }
-  }, [firestore, user, toast]);
-
-  // Initial Load
-  useEffect(() => {
-      if (!isUserLoading && user) {
-          fetchStaff();
-      }
-  }, [isUserLoading, user, fetchStaff]);
+  const staffQuery = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'staff'));
+  }, [firestore, user]);
+  const { data: staff, isLoading, forceRefetch } = useCollection<StaffData>(staffQuery);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -303,7 +272,7 @@ function StaffPageContent() {
       });
 
       toast({ title: 'Staff Added', description: `${values.firstName} ${values.lastName} added.` });
-      await fetchStaff(); // Refresh list immediately
+      forceRefetch(); // Refresh list immediately
       form.reset();
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -348,7 +317,7 @@ function StaffPageContent() {
         </CardContent>
       </Card>
 
-      <StaffList staff={staff} isLoading={isLoadingData} forceRefetch={fetchStaff} />
+      <StaffList staff={staff} isLoading={isLoading} forceRefetch={forceRefetch} />
     </div>
   );
 }

@@ -284,6 +284,7 @@ function StudentsPageContent() {
   }, [firstName, lastName, form]);
 
   async function onSubmit(values: z.infer<typeof studentFormSchema>) {
+    if (!firestore) return;
     setIsSubmitting(true);
     try {
       const result = await createNewUser(values.email, values.password, 'Student', { firstName: values.firstName, lastName: values.lastName });
@@ -313,7 +314,6 @@ function StudentsPageContent() {
         duration: 5000,
       });
       
-      // Real-time listener will update the list automatically. No need for manual refetch.
       form.reset();
     } catch (error: any) {
       console.error('❌ Error adding student:', error);

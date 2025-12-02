@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { UserRole } from '@/lib/types';
+import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
+import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI
@@ -40,58 +41,27 @@ type Student = {
 // --- MAIN PAGE COMPONENT ---
 export default function ParentsV2Page() {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  // Component State
-  const [parents, setParents] = useState<ParentMember[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   
-  // Modal & Form States
+  const parentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'parents')) : null, [user, firestore]);
+  const {data: parents, isLoading: isLoadingParents, forceRefetch: forceRefetchParents } = useCollection<ParentMember>(parentsQuery);
+
+  const studentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'students')) : null, [user, firestore]);
+  const {data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
 
-  // Reset submit state when a modal opens
   useEffect(() => {
     if (isAddOpen || editingParent) {
         setIsSubmitting(false);
     }
   }, [isAddOpen, editingParent]);
-
-  // --- DATA FETCHING ---
-  const fetchData = useCallback(async () => {
-    if (!user || !firestore) return;
-    setIsLoading(true);
-
-    try {
-        const [parentSnap, studentSnap] = await Promise.all([
-            getDocs(collection(firestore, 'parents')),
-            getDocs(collection(firestore, 'students'))
-        ]);
-        
-        const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() } as ParentMember));
-        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() } as Student));
-        
-        setParents(parentList);
-        setStudents(studentList);
-
-    } catch (err: any) {
-        toast({ variant: 'destructive', title: "Error", description: err.message });
-    } finally {
-        setIsLoading(false);
-    }
-  }, [user, firestore, toast]);
-
-  useEffect(() => {
-      if (!isUserLoading && user) {
-          fetchData();
-      }
-  }, [isUserLoading, user, fetchData]);
   
-  // --- FORM ACTIONS ---
   const handleAddParent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
@@ -119,7 +89,7 @@ export default function ParentsV2Page() {
 
           toast({ title: "Success", description: "Parent created successfully." });
           setIsAddOpen(false);
-          fetchData();
+          forceRefetchParents();
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error creating parent", description: error.message });
@@ -143,7 +113,7 @@ export default function ParentsV2Page() {
 
         toast({ title: "Updated", description: "Parent details saved." });
         setEditingParent(null);
-        fetchData();
+        forceRefetchParents();
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -156,16 +126,18 @@ export default function ParentsV2Page() {
     try {
         await deleteDoc(doc(firestore, 'parents', id));
         toast({ title: "Deleted" });
-        fetchData();
+        forceRefetchParents();
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  const filteredParents = parents.filter(p => 
+  const filteredParents = (parents || []).filter(p => 
     (p.firstName + ' ' + p.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  const isLoading = isLoadingParents || isLoadingStudents;
 
   return (
     <div className="space-y-6 p-6">
@@ -178,7 +150,7 @@ export default function ParentsV2Page() {
                 <CardDescription>Manage parents and link them to their children.</CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={fetchData} disabled={isLoading}>
+                <Button variant="outline" onClick={forceRefetchParents} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600">
@@ -244,7 +216,7 @@ export default function ParentsV2Page() {
                 <div className="space-y-2 pt-2">
                     <Label>Link Students</Label>
                     <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4">
-                        {students.map(s => (
+                        {(students || []).map(s => (
                             <div key={s.id} className="flex items-center space-x-2">
                                 <Checkbox id={`add-${s.id}`} name="studentIds" value={s.id} />
                                 <Label htmlFor={`add-${s.id}`}>{s.firstName} {s.lastName}</Label>
@@ -276,7 +248,7 @@ export default function ParentsV2Page() {
                      <div className="space-y-2 pt-2">
                         <Label>Link Students</Label>
                         <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4">
-                            {students.map(s => (
+                            {(students || []).map(s => (
                                 <div key={s.id} className="flex items-center space-x-2">
                                     <Checkbox id={`edit-${s.id}`} name="studentIds" value={s.id} defaultChecked={editingParent.studentIds?.includes(s.id)} />
                                     <Label htmlFor={`edit-${s.id}`}>{s.firstName} {s.lastName}</Label>

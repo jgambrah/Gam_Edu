@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -140,59 +140,34 @@ function SubjectForm({
 export default function SubjectsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
   
-  // Data State
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [teachers, setTeachers] = useState<Staff[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
   const canManage = role === 'Director' || role === 'Administrator';
 
-  // --- ROBUST FETCH LOGIC ---
-  const fetchData = useCallback(async () => {
-      if(!user || !firestore) return;
-      setIsLoading(true);
-      try {
-          // 1. Fetch Subjects
-          const subSnap = await getDocs(collection(firestore, 'subjects'));
-          const subList = subSnap.docs.map(d => ({ id: d.id, ...d.data() } as Subject));
-          // Sort alphabetically
-          setSubjects(subList.sort((a,b) => a.name.localeCompare(b.name)));
+  const subjectsQuery = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return query(collection(firestore, 'subjects'));
+  }, [user, firestore]);
+  const { data: subjects, isLoading: isLoadingSubjects, forceRefetch } = useCollection<Subject>(subjectsQuery);
 
-          // 2. Fetch Teachers (Only if Admin)
-          if (canManage) {
-              // Try simple query first to avoid index issues
-              const staffSnap = await getDocs(collection(firestore, 'staff'));
-              const teacherList = staffSnap.docs
-                  .map(d => ({ uid: d.id, ...d.data() } as Staff))
-                  .filter(s => s.role === 'Teacher');
-              setTeachers(teacherList);
-          }
+  const teachersQuery = useMemoFirebase(() => {
+    if (!user || !firestore || !canManage) return null;
+    return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
+  }, [user, firestore, canManage]);
+  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
-      } catch (e: any) {
-          toast({ variant: 'destructive', title: "Error", description: e.message });
-      } finally {
-          setIsLoading(false);
-      }
-  }, [user, firestore, canManage, toast]);
-
-  useEffect(() => {
-      if(!isUserLoading && user) {
-          fetchData();
-      }
-  }, [isUserLoading, user, fetchData]);
+  const isLoading = isLoadingSubjects || (canManage && isLoadingTeachers);
 
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this subject?")) return;
       try {
           await deleteDoc(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
-          fetchData();
+          forceRefetch();
       } catch (e) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
@@ -207,6 +182,11 @@ export default function SubjectsPage() {
     setFormOpen(false);
     setEditingSubject(undefined);
   };
+
+  const sortedSubjects = useMemo(() => {
+    if (!subjects) return [];
+    return [...subjects].sort((a,b) => a.name.localeCompare(b.name));
+  }, [subjects]);
 
   if (!canManage) {
     return (
@@ -225,7 +205,7 @@ export default function SubjectsPage() {
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
           <div className="flex gap-2">
-             <Button variant="outline" onClick={fetchData} disabled={isLoading}><RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Refresh</Button>
+             <Button variant="outline" onClick={forceRefetch} disabled={isLoading}><RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Refresh</Button>
              <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" /> New Subject
              </Button>
@@ -236,7 +216,7 @@ export default function SubjectsPage() {
             <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
-              {subjects.map((subject) => (
+              {sortedSubjects.map((subject) => (
                 <div key={subject.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all">
                   <div>
                     <p className="font-bold text-lg text-slate-800">{subject.name}</p>
@@ -254,7 +234,7 @@ export default function SubjectsPage() {
                   </div>
                 </div>
               ))}
-              {subjects.length === 0 && <p className="text-center text-muted-foreground p-8">No subjects created yet.</p>}
+              {sortedSubjects.length === 0 && <p className="text-center text-muted-foreground p-8">No subjects created yet.</p>}
             </div>
           )}
         </CardContent>
@@ -267,9 +247,9 @@ export default function SubjectsPage() {
           </DialogHeader>
           <SubjectForm
             setOpen={handleCloseDialog}
-            allTeachers={teachers}
+            allTeachers={teachers || []}
             initialData={editingSubject}
-            onSuccess={fetchData}
+            onSuccess={forceRefetch}
           />
         </DialogContent>
       </Dialog>
