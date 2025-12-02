@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
 
+// --- UPDATED TYPE DEFINITION ---
 type StaffMember = {
   id: string;
   firstName: string;
@@ -26,6 +27,8 @@ type StaffMember = {
   email: string;
   role: string;
   phone?: string;
+  gender?: string;  // New
+  address?: string; // New
 };
 
 export default function StaffManagementV2() {
@@ -38,11 +41,11 @@ export default function StaffManagementV2() {
   
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null); // Stores the staff being edited
+  const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Safety Valve: Reset loading state when modals open/close
+  // Reset loading state when modals open/close
   useEffect(() => {
     if (isAddOpen || editingStaff) {
         setIsSubmitting(false);
@@ -81,7 +84,7 @@ export default function StaffManagementV2() {
       }
   }, [isUserLoading, user, fetchStaff]);
 
-  // --- 2. ADD STAFF LOGIC ---
+  // --- 2. ADD STAFF LOGIC (Updated with Gender/Address) ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return; 
@@ -93,6 +96,8 @@ export default function StaffManagementV2() {
       const role = formData.get('role') as UserRole;
       const email = formData.get('email') as string;
       const phone = formData.get('phone') as string;
+      const gender = formData.get('gender') as string;
+      const address = formData.get('address') as string;
       const password = "password123"; 
 
       try {
@@ -106,8 +111,10 @@ export default function StaffManagementV2() {
               firstName,
               lastName,
               email,
-              phone,
               role,
+              phone,
+              gender,
+              address,
               createdAt: serverTimestamp()
           });
 
@@ -122,7 +129,7 @@ export default function StaffManagementV2() {
       }
   };
 
-  // --- 3. UPDATE STAFF LOGIC (NEW) ---
+  // --- 3. UPDATE STAFF LOGIC (Updated with Gender/Address) ---
   const handleUpdateStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!editingStaff || isSubmitting) return;
@@ -133,6 +140,8 @@ export default function StaffManagementV2() {
       const lastName = formData.get('lastName') as string;
       const phone = formData.get('phone') as string;
       const role = formData.get('role') as string;
+      const gender = formData.get('gender') as string;
+      const address = formData.get('address') as string;
 
       try {
           const staffRef = doc(firestore, 'staff', editingStaff.id);
@@ -142,7 +151,8 @@ export default function StaffManagementV2() {
               lastName,
               phone,
               role,
-              // Note: We usually don't update email/uid here as that requires Auth changes
+              gender,
+              address
           });
 
           toast({ title: "Updated", description: "Staff details saved successfully." });
@@ -252,70 +262,99 @@ export default function StaffManagementV2() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[600px]">
             <DialogHeader><DialogTitle>Add New Staff</DialogTitle></DialogHeader>
             <form onSubmit={handleAddStaff} className="space-y-4 mt-4">
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>First Name</Label><Input name="firstName" required placeholder="Jane"/></div>
-                    <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" required placeholder="Doe"/></div>
+                    <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="Jane"/></div>
+                    <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Doe"/></div>
                 </div>
+                
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Email</Label><Input name="email" type="email" required placeholder="jane@school.com"/></div>
-                    <div className="space-y-2"><Label>Phone</Label><Input name="phone" placeholder="123-456-7890"/></div>
+                     <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="jane@school.com"/></div>
+                     <div className="space-y-2"><Label>Phone</Label><Input name="phone" placeholder="024-xxx-xxxx"/></div>
                 </div>
-                <div className="space-y-2">
-                    <Label>Role</Label>
-                    <Select name="role" defaultValue="Teacher">
-                        <SelectTrigger><SelectValue/></SelectTrigger>
-                        <SelectContent>
-                            {ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="pt-2">
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Staff Account"}
-                    </Button>
-                </div>
-            </form>
-        </DialogContent>
-      </Dialog>
 
-      {/* EDIT MODAL (NEW) */}
-      <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
-        <DialogContent>
-            <DialogHeader><DialogTitle>Edit Staff Member</DialogTitle></DialogHeader>
-            {editingStaff && (
-                <form onSubmit={handleUpdateStaff} className="space-y-4 mt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>First Name</Label>
-                            <Input name="firstName" defaultValue={editingStaff.firstName} required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Last Name</Label>
-                            <Input name="lastName" defaultValue={editingStaff.lastName} required />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Email</Label>
-                            <Input value={editingStaff.email} disabled className="bg-slate-100" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Phone</Label>
-                            <Input name="phone" defaultValue={editingStaff.phone} />
-                        </div>
-                    </div>
-                    <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-4">
+                     <div className="space-y-2">
+                        <Label>Gender</Label>
+                        <Select name="gender">
+                            <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Male">Male</SelectItem>
+                                <SelectItem value="Female">Female</SelectItem>
+                            </SelectContent>
+                        </Select>
+                     </div>
+                     <div className="space-y-2">
                         <Label>Role</Label>
-                        <Select name="role" defaultValue={editingStaff.role}>
+                        <Select name="role" defaultValue="Teacher">
                             <SelectTrigger><SelectValue/></SelectTrigger>
                             <SelectContent>
                                 {ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label>Address</Label>
+                    <Input name="address" placeholder="Residential Address" />
+                </div>
+
+                <div className="pt-2">
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Staff Account"}
+                    </Button>
+                    <p className="text-xs text-center text-muted-foreground mt-2">Default password: password123</p>
+                </div>
+            </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* EDIT MODAL */}
+      <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader><DialogTitle>Edit Staff Member</DialogTitle></DialogHeader>
+            {editingStaff && (
+                <form onSubmit={handleUpdateStaff} className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStaff.firstName} required /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStaff.lastName} required /></div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Email</Label><Input value={editingStaff.email} disabled className="bg-slate-100" /></div>
+                        <div className="space-y-2"><Label>Phone</Label><Input name="phone" defaultValue={editingStaff.phone} /></div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Gender</Label>
+                            <Select name="gender" defaultValue={editingStaff.gender}>
+                                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Male">Male</SelectItem>
+                                    <SelectItem value="Female">Female</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Role</Label>
+                            <Select name="role" defaultValue={editingStaff.role}>
+                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                <SelectContent>
+                                    {ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>Address</Label>
+                        <Input name="address" defaultValue={editingStaff.address} />
+                    </div>
+
                     <div className="pt-2">
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Update Staff Details"}
@@ -329,3 +368,5 @@ export default function StaffManagementV2() {
     </div>
   );
 }
+
+    
