@@ -47,8 +47,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
-import { useAuth, useFirestore } from '@/firebase'; // Removed useCollection/useMemoFirebase
-import { collection, doc, deleteDoc, updateDoc, setDoc, getDocs, query, orderBy } from 'firebase/firestore';
+import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, doc, deleteDoc, updateDoc, setDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { Loader2, Edit, Trash2, RefreshCw } from 'lucide-react';
@@ -253,53 +253,15 @@ function StudentsPageContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
   
-  // DATA STATES (Replaced Hooks with State + Effect for Robustness)
-  const [classes, setClasses] = useState<{id: string, name: string}[]>([]);
-  const [students, setStudents] = useState<StudentData[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
+  // --- REAL-TIME DATA FETCHING ---
+  const studentsQuery = useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), orderBy('firstName')) : null, [firestore, user]);
+  const { data: students, isLoading: isLoadingStudents, forceRefetch: forceRefetchStudents } = useCollection<StudentData>(studentsQuery);
+
+  const classesQuery = useMemoFirebase(() => (user && firestore) ? collection(firestore, 'classes') : null, [firestore, user]);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<{id: string, name: string}>(classesQuery);
+
+  const isLoadingData = isLoadingStudents || isLoadingClasses;
   
-  // --- DIRECT DATA FETCHING ---
-  const fetchData = useCallback(async () => {
-      if (!firestore || !user) return;
-      
-      setIsLoadingData(true);
-      try {
-          console.log("🔄 Fetching Classes & Students...");
-
-          // 1. Fetch Classes
-          const classSnap = await getDocs(collection(firestore, 'classes'));
-          const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name }));
-          setClasses(classList);
-
-          // 2. Fetch Students (Try with orderBy, fallback if index missing)
-          try {
-              const studentQ = query(collection(firestore, 'students'), orderBy('firstName'));
-              const studentSnap = await getDocs(studentQ);
-              const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() } as StudentData));
-              setStudents(studentList);
-              console.log(`✅ Found ${studentList.length} students.`);
-          } catch (sortError) {
-              console.warn("Sorting failed (Index?), trying unsorted fetch...", sortError);
-              const studentQ = collection(firestore, 'students');
-              const studentSnap = await getDocs(studentQ);
-              const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() } as StudentData));
-              setStudents(studentList);
-          }
-
-      } catch (error) {
-          console.error("❌ Fatal Data Load Error:", error);
-          toast({ variant: "destructive", title: "Data Load Error", description: "Please refresh the page." });
-      } finally {
-          setIsLoadingData(false);
-      }
-  }, [firestore, user, toast]);
-
-  // Initial Load
-  useEffect(() => {
-      fetchData();
-  }, [fetchData]);
-
-
   const form = useForm<z.infer<typeof studentFormSchema>>({
     resolver: zodResolver(studentFormSchema),
     defaultValues: {
@@ -351,9 +313,7 @@ function StudentsPageContent() {
         duration: 5000,
       });
       
-      // REFRESH DATA INSTANTLY
-      await fetchData();
-      
+      // Real-time listener will update the list automatically. No need for manual refetch.
       form.reset();
     } catch (error: any) {
       console.error('❌ Error adding student:', error);
@@ -403,7 +363,7 @@ function StudentsPageContent() {
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl><SelectTrigger><SelectValue placeholder="Select a class to assign" /></SelectTrigger></FormControl>
                         <SelectContent>
-                          {classes.map((c) => (
+                          {classes?.map((c) => (
                             <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
                           ))}
                         </SelectContent>
@@ -447,7 +407,7 @@ function StudentsPageContent() {
       <Card>
         <CardHeader>
           <CardTitle>Student List</CardTitle>
-          <CardDescription>Total Students: {students.length}</CardDescription>
+          <CardDescription>Total Students: {students?.length || 0}</CardDescription>
           <div className="pt-4 flex gap-4">
             <Input 
               placeholder="Search by name..."
@@ -461,14 +421,11 @@ function StudentsPageContent() {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">All Classes</SelectItem>
-                    {classes.map((c) => (
+                    {classes?.map((c) => (
                         <SelectItem key={c.id} value={c.id}>{c.name || c.id}</SelectItem>
                     ))}
                 </SelectContent>
             </Select>
-            <Button variant="outline" size="icon" onClick={fetchData} title="Refresh List">
-                <RefreshCw className={`h-4 w-4 ${isLoadingData ? 'animate-spin' : ''}`}/>
-            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -478,7 +435,7 @@ function StudentsPageContent() {
                 isLoading={isLoadingData} 
                 searchTerm={searchTerm} 
                 classFilter={classFilter} 
-                forceRefetch={fetchData} 
+                forceRefetch={forceRefetchStudents} 
             />
         </CardContent>
       </Card>
