@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'; // Removing 'query' to be safe
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -18,7 +17,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
 
 // --- TYPE DEFINITIONS ---
 type StaffMember = {
@@ -29,13 +27,13 @@ type StaffMember = {
   email: string;
   role: string;
   phone?: string;
-  gender?: string;  // New
-  address?: string; // New
+  gender?: string;
+  address?: string;
 };
 
 export default function StaffManagementV2() {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const [staff, setStaff] = useState<StaffMember[]>([]);
@@ -54,16 +52,17 @@ export default function StaffManagementV2() {
     }
   }, [isAddOpen, editingStaff]);
 
-  // --- 1. FETCH LOGIC ---
+  // --- 1. FETCH LOGIC (Simplified) ---
   const fetchStaff = useCallback(async () => {
-    if (!user || !firestore) return;
+    if (!firestore) return; // Don't wait for user, just firestore
 
     setIsLoading(true);
     console.log("🔄 Fetching Staff List...");
 
     try {
-        const q = collection(firestore, 'staff');
-        const snapshot = await getDocs(q);
+        // Basic collection reference (No queries, No sorts)
+        const staffCollection = collection(firestore, 'staff');
+        const snapshot = await getDocs(staffCollection);
         
         const data = snapshot.docs.map(doc => ({
             id: doc.id,
@@ -74,19 +73,20 @@ export default function StaffManagementV2() {
         setStaff(data);
     } catch (err: any) {
         console.error("Fetch Error:", err);
-        toast({ variant: 'destructive', title: "Error", description: err.message });
+        toast({ variant: 'destructive', title: "Error", description: "Failed to load staff list." });
     } finally {
         setIsLoading(false);
     }
-  }, [user, firestore, toast]);
+  }, [firestore, toast]); // Only depend on firestore instance
 
+  // Run fetch immediately when firestore is ready
   useEffect(() => {
-      if (!isUserLoading && user) {
+      if (firestore) {
           fetchStaff();
       }
-  }, [isUserLoading, user, fetchStaff]);
+  }, [firestore, fetchStaff]);
 
-  // --- 2. ADD STAFF LOGIC (Updated with Gender/Address) ---
+  // --- 2. ADD STAFF LOGIC ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return; 
@@ -131,7 +131,7 @@ export default function StaffManagementV2() {
       }
   };
 
-  // --- 3. UPDATE STAFF LOGIC (Updated with Gender/Address) ---
+  // --- 3. UPDATE STAFF LOGIC ---
   const handleUpdateStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!editingStaff || isSubmitting) return;
@@ -158,8 +158,8 @@ export default function StaffManagementV2() {
           });
 
           toast({ title: "Updated", description: "Staff details saved successfully." });
-          setEditingStaff(null); // Close modal
-          await fetchStaff(); // Refresh list
+          setEditingStaff(null); 
+          await fetchStaff(); 
 
       } catch (error: any) {
           console.error("Update Error:", error);
@@ -181,6 +181,7 @@ export default function StaffManagementV2() {
       }
   };
 
+  // Client-side filtering
   const filteredStaff = staff.filter(s => 
     (s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -370,5 +371,3 @@ export default function StaffManagementV2() {
     </div>
   );
 }
-
-    
