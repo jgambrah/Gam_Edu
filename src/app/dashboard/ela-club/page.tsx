@@ -586,7 +586,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
   const [topic, setTopic] = useState('');
   const [readingLevel, setReadingLevel] = useState('Grade 9');
   const [numQuestions, setNumQuestions] = useState(3);
-  const [selectedClassId, setSelectedClassId] = useState(''); // New state for class selection
+  const [selectedClassId, setSelectedClassId] = useState<string>(''); // New state for class selection
 
   const [generatedPassage, setGeneratedPassage] = useState<z.infer<typeof elaReadingPassageSchema> | null>(null);
 
@@ -1202,4 +1202,3 @@ function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }
         </Form>
     );
 }
-```
