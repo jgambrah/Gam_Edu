@@ -12,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import {
   Select,
@@ -49,16 +50,15 @@ import {
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase'; 
-import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'; 
-import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from 'firebase/auth'; 
+// FIX: Changed imports to use getDocs instead of onSnapshot
+import { collection, doc, deleteDoc, updateDoc, setDoc, getDocs, serverTimestamp } from 'firebase/firestore'; 
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useCallback } from 'react';
-import { Loader2, Edit, Trash2, RefreshCw, ShieldCheck, LogIn, UserPlus } from 'lucide-react';
+import { Loader2, Edit, Trash2, RefreshCw, UserPlus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createNewUser } from '@/app/actions/create-user';
 import { useRole } from '@/context/role-context';
 
-// --- SCHEMAS ---
 const formSchema = z.object({
   firstName: z.string().min(1, { message: 'First name is required.' }),
   lastName: z.string().min(1, { message: 'Last name is required.' }),
@@ -84,9 +84,7 @@ type StaffData = {
   phone?: string;
 };
 
-// --- COMPONENTS ---
-
-function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: boolean) => void }) {
+function EditStaffForm({ staff, setOpen, onSuccess }: { staff: StaffData, setOpen: (open: boolean) => void, onSuccess: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,6 +105,7 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
       const staffRef = doc(firestore, 'staff', staff.id);
       await updateDoc(staffRef, values);
       toast({ title: 'Success', description: 'Updated successfully.' });
+      onSuccess(); // Refresh list after edit
       setOpen(false);
     } catch (error) {
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to update.' });
@@ -139,7 +138,7 @@ function EditStaffForm({ staff, setOpen }: { staff: StaffData, setOpen: (open: b
   )
 }
 
-function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading: boolean }) {
+function StaffList({ staff, isLoading, forceRefetch }: { staff: StaffData[] | null, isLoading: boolean, forceRefetch: () => void }) {
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -150,6 +149,7 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
       try {
           await deleteDoc(doc(firestore, 'staff', staffId));
           toast({ title: 'Deleted', description: 'Staff member removed.'});
+          forceRefetch(); // Refresh list after delete
       } catch(error) {
           toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete.' });
       }
@@ -161,11 +161,19 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
       <>
       <Card>
         <CardHeader>
-          <CardTitle>Existing Staff</CardTitle>
-          <CardDescription>Total Staff: {staff?.length || 0}</CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+                <CardTitle>Existing Staff</CardTitle>
+                <CardDescription>Total Staff: {staff?.length || 0}</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={forceRefetch}>
+                <RefreshCw className="h-4 w-4 mr-2"/> Refresh List
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {staff && staff.length > 0 ? (
+            <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -178,34 +186,44 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
               <TableBody>
                 {staff.map((s) => (
                   <TableRow key={s.id}>
-                    <TableCell>{s.firstName} {s.lastName}</TableCell>
+                    <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                     <TableCell>{s.email}</TableCell>
-                    <TableCell>{s.role}</TableCell>
+                    <TableCell>
+                        <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                            {s.role}
+                        </span>
+                    </TableCell>
                     {canManage && (
                         <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" onClick={() => setEditingStaff(s)}><Edit className="h-4 w-4" /></Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader><AlertDialogTitle>Delete Staff?</AlertDialogTitle><AlertDialogDescription>This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                                    <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(s.id)}>Delete</AlertDialogAction></AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                            <div className="flex justify-end gap-2">
+                                <Button variant="ghost" size="icon" onClick={() => setEditingStaff(s)}><Edit className="h-4 w-4 text-blue-500" /></Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-red-500" /></Button></AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader><AlertDialogTitle>Delete Staff?</AlertDialogTitle><AlertDialogDescription>This cannot be undone.</AlertDialogDescription></AlertDialogHeader>
+                                        <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete(s.id)}>Delete</AlertDialogAction></AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
                         </TableCell>
                     )}
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+            </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">No staff members found.</div>
+            <div className="text-center py-8 text-muted-foreground">
+                <p>No staff members found.</p>
+                <p className="text-xs mt-2 text-slate-400">Click "Refresh List" to try again.</p>
+            </div>
           )}
         </CardContent>
       </Card>
       {editingStaff && (
           <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
               <DialogContent><DialogHeader><DialogTitle>Edit Staff</DialogTitle></DialogHeader>
-                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} />
+                  <EditStaffForm staff={editingStaff} setOpen={() => setEditingStaff(null)} onSuccess={forceRefetch} />
               </DialogContent>
           </Dialog>
       )}
@@ -219,76 +237,41 @@ function StaffPageContent() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // --- DIRECT FETCH STATE ---
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  // Manual Login State
-  const [manualEmail, setManualEmail] = useState('');
-  const [manualPass, setManualPass] = useState('');
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  // --- ROBUST FETCH FUNCTION ---
+  const fetchStaff = useCallback(async () => {
+    if (!firestore || !user) return;
 
-  const handleManualLogin = async () => {
-      if(!manualEmail || !manualPass) return;
-      setIsLoggingIn(true);
-      try {
-          const auth = getAuth();
-          await setPersistence(auth, browserLocalPersistence);
-          await signInWithEmailAndPassword(auth, manualEmail, manualPass);
-          
-          toast({ title: "Login Successful", description: "Loading data..." });
-          // DO NOT RELOAD PAGE. Let the onAuthStateChanged listener pick it up.
-      } catch (e: any) {
-          toast({ variant: "destructive", title: "Login Failed", description: e.message });
-      } finally {
-          setIsLoggingIn(false);
-      }
-  };
-
-  // --- REPAIR ACCOUNT ---
-  const handleRepairAccount = async () => {
-    if(!user || !firestore) return;
-    try {
-        await setDoc(doc(firestore, 'staff', user.uid), {
-            uid: user.uid,
-            firstName: "Director",
-            lastName: "Admin",
-            email: user.email,
-            role: "Director",
-            createdAt: serverTimestamp()
-        }, { merge: true });
-        toast({ title: "Account Repaired", description: "You should now appear in the list below." });
-    } catch (e: any) {
-        toast({ variant: "destructive", title: "Repair Failed", description: e.message });
-    }
-  };
-
-  // Real-Time Listener
-  useEffect(() => {
-    if (isUserLoading) return;
-    
-    if (!user || !firestore) {
-        setIsLoadingData(false);
-        return;
-    }
-    
     setIsLoadingData(true);
-    console.log("🔄 Listening to 'staff' collection...");
-
-    const q = collection(firestore, 'staff');
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        console.log(`✅ Listener Updated: Found ${staffList.length} staff.`);
+    console.log("🔄 Fetching Staff List...");
+    
+    try {
+        // Direct Fetch (getDocs) - Immune to listener timeouts
+        const querySnapshot = await getDocs(collection(firestore, 'staff'));
+        const staffList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
+        
+        console.log(`✅ Fetched ${staffList.length} staff members.`);
         setStaff(staffList);
+    } catch (error: any) {
+        console.error("❌ Fetch Error:", error);
+        // Don't show toast for permission errors to avoid spamming, just log it
+        if (error.code !== 'permission-denied') {
+            toast({ variant: "destructive", title: "Error", description: "Could not load staff list." });
+        }
+    } finally {
         setIsLoadingData(false);
-    }, (error) => {
-        console.error("❌ Listener Error:", error);
-        toast({ variant: "destructive", title: "Access Error", description: error.message });
-        setIsLoadingData(false);
-    });
+    }
+  }, [firestore, user, toast]);
 
-    return () => unsubscribe();
-  }, [firestore, user, isUserLoading, toast]);
+  // Initial Load
+  useEffect(() => {
+      if (!isUserLoading && user) {
+          fetchStaff();
+      }
+  }, [isUserLoading, user, fetchStaff]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -320,6 +303,7 @@ function StaffPageContent() {
       });
 
       toast({ title: 'Staff Added', description: `${values.firstName} ${values.lastName} added.` });
+      await fetchStaff(); // Refresh list immediately
       form.reset();
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -330,45 +314,10 @@ function StaffPageContent() {
 
   return (
     <div className="space-y-6">
-      
-      {/* --- SYSTEM CHECK CARD --- */}
-      <Card className="bg-blue-50 border-blue-200">
-          <CardHeader className="pb-2">
-              <CardTitle className="text-blue-800 flex items-center gap-2 text-sm">
-                  <ShieldCheck className="h-4 w-4"/> Connection Status
-              </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-              <div className="text-xs font-mono text-blue-900 flex justify-between items-center">
-                <div>
-                    <div><strong>Status:</strong> {user ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
-                    {user && <div><strong>User:</strong> {user.email}</div>}
-                </div>
-                {user && (
-                    <Button onClick={handleRepairAccount} size="sm" variant="outline" className="bg-white border-blue-300 hover:bg-blue-100 text-blue-700">
-                        <UserPlus className="h-4 w-4 mr-2"/> Repair/Create My Admin Profile
-                    </Button>
-                )}
-              </div>
-
-              {!user && (
-                  <div className="p-4 bg-white rounded border border-blue-100 space-y-3">
-                      <p className="text-xs text-slate-500">Session lost. Please re-connect here:</p>
-                      <Input placeholder="Director Email" value={manualEmail} onChange={e => setManualEmail(e.target.value)} className="h-8 text-xs"/>
-                      <Input type="password" placeholder="Password" value={manualPass} onChange={e => setManualPass(e.target.value)} className="h-8 text-xs"/>
-                      <Button onClick={handleManualLogin} disabled={isLoggingIn} size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                          {isLoggingIn ? <Loader2 className="h-4 w-4 animate-spin"/> : <LogIn className="h-4 w-4 mr-2"/>}
-                          Force Re-Login
-                      </Button>
-                  </div>
-              )}
-          </CardContent>
-      </Card>
-
       <Card>
         <CardHeader>
-          <CardTitle>Add New Staff</CardTitle>
-          <CardDescription>Create account and assign role.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><UserPlus className="h-5 w-5"/> Staff Management</CardTitle>
+          <CardDescription>Add new staff members and assign them roles.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -392,14 +341,14 @@ function StaffPageContent() {
                   <FormField control={form.control} name="password" render={({ field }) => (<FormItem><FormLabel>Default Password</FormLabel><FormControl><Input type="password" {...field} readOnly /></FormControl><FormMessage /></FormItem>)}/>
               </div>
               <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Add Staff
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Add Staff Member
               </Button>
             </form>
           </Form>
         </CardContent>
       </Card>
 
-      <StaffList staff={staff} isLoading={isLoadingData} />
+      <StaffList staff={staff} isLoading={isLoadingData} forceRefetch={fetchStaff} />
     </div>
   );
 }
