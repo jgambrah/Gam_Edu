@@ -1,50 +1,53 @@
+
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-// 1. Import initializeFirestore
 import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore'; 
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
-// Global variables to hold instances (Prevents re-initialization crashes)
+// Global variables to hold instances (Prevents re-initialization crashes in Next.js)
 let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 let storage: FirebaseStorage;
 
 export function initializeFirebase() {
+  // Don't run on server side
   if (typeof window === 'undefined') return null; 
 
   if (!getApps().length) {
     // --- INITIALIZATION FOR THE FIRST TIME ---
     firebaseApp = initializeApp({
         ...firebaseConfig,
-        // Ensure this matches your CORS-configured bucket
+        // Ensure this matches the bucket we fixed CORS for
         storageBucket: "studio-525105839-159e4.firebasestorage.app",
     });
 
     // 2. CRITICAL FIX: Force Long Polling
-    // This prevents ERR_QUIC_PROTOCOL_ERROR
+    // This fixes "Internal Assertion Failed" and random disconnects
     try {
       firestore = initializeFirestore(firebaseApp, {
         experimentalForceLongPolling: true, 
       });
+      console.log("🔥 Firestore initialized with Long Polling (Stable Mode)");
     } catch (e) {
-      // If it fails (rare), grab existing instance
       console.warn("Firestore init warning:", e);
+      // Fallback if special init fails
       firestore = getFirestore(firebaseApp);
     }
 
   } else {
     // --- ALREADY INITIALIZED (Hot Reload) ---
     firebaseApp = getApp();
-    // Grab the existing instance
     firestore = getFirestore(firebaseApp);
   }
 
   auth = getAuth(firebaseApp);
-  storage = getStorage(firebaseApp);
+  
+  // Initialize Storage with the specific bucket to fix Uploads
+  storage = getStorage(firebaseApp, "gs://studio-525105839-159e4.firebasestorage.app");
 
   return { firebaseApp, auth, firestore, storage };
 }
@@ -58,6 +61,7 @@ export function getSdks(app: FirebaseApp) {
     }
 }
 
+// Export existing hooks and providers
 export * from './provider';
 export * from './client-provider';
 export * from './firestore/use-collection';
