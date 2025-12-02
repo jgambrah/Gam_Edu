@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -18,10 +18,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
-// --- UPDATED TYPE DEFINITION ---
+// --- TYPE DEFINITIONS ---
 type StaffMember = {
   id: string;
+  uid: string;
   firstName: string;
   lastName: string;
   email: string;
