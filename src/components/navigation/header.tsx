@@ -15,20 +15,22 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings } from 'lucide-react';
 import { navItems } from '@/lib/data';
-import { useAuth, useUser } from '@/firebase';
+import { useFirebase, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useRole } from '@/context/role-context';
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const auth = useAuth();
+  const { auth } = useFirebase();
   const { user } = useUser();
   const { role } = useRole();
   const pageTitle = navItems.find((item) => item.path === pathname)?.title || 'Dashboard';
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) {
+        await signOut(auth);
+    }
     router.push('/');
   };
   
