@@ -85,7 +85,7 @@ export default function StudentsManagementV2() {
     console.log("🔄 Fetching Data...");
 
     try {
-        // 1. Fetch Classes
+        // 1. Fetch Classes (Wrapped in try/catch so it doesn't break the page if empty)
         let classList: Class[] = [];
         try {
             const classSnap = await getDocs(collection(firestore, 'classes'));
@@ -212,7 +212,7 @@ export default function StudentsManagementV2() {
     }
   };
 
-  // Filtering Logic
+  // Filter Logic
   const filteredStudents = students.filter(s => 
     ((s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -345,6 +345,7 @@ export default function StudentsManagementV2() {
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
+                    <p className="text-xs text-center text-muted-foreground mt-2">Default password: password123</p>
                 </div>
             </form>
         </DialogContent>
