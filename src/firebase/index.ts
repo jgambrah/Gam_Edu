@@ -1,4 +1,3 @@
-
 'use client';
 
 import { getApps, initializeApp, getApp, FirebaseApp } from 'firebase/app';
@@ -12,7 +11,7 @@ const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  storageBucket: "studio-525105839-159e4.firebasestorage.app", // Hardcoded to ensure uploads work
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
@@ -25,6 +24,14 @@ let storage: FirebaseStorage;
 
 export function initializeFirebase() {
   if (typeof window === 'undefined') return null; // Don't run on server
+
+  // --- DEBUGGING STEP ---
+  console.log("Firebase Config Object:", firebaseConfig);
+  // Check if the key is missing. This will be visible in the browser's developer console.
+  if (!firebaseConfig.apiKey) {
+    console.error("Firebase API Key is missing! Check your .env file and ensure it's loaded correctly.");
+  }
+  // --- END DEBUGGING STEP ---
 
   if (!getApps().length) {
     // 1. Initialize New App
@@ -50,6 +57,7 @@ export function initializeFirebase() {
 
   return { firebaseApp, auth, firestore, storage };
 }
+
 
 // --- HELPER HOOKS ---
 
