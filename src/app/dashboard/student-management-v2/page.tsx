@@ -6,7 +6,7 @@ import { useAuth, useFirestore } from '@/firebase';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
-// UI Components
+// UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,9 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Activity } from 'lucide-react';
 
-// --- TYPE DEFINITIONS ---
 type Student = {
   id: string;
   uid: string;
@@ -31,21 +30,20 @@ type Student = {
   address?: string;
 };
 
-type Class = {
-    id: string;
-    name: string;
-};
+type Class = { id: string; name: string; };
 
 export default function StudentsManagementV2() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
 
-  // Data State
+  // Data
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
+  
+  // State
   const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const [status, setStatus] = useState("Initializing..."); // <--- DEBUG STATUS
   
   // UI State
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -53,110 +51,90 @@ export default function StudentsManagementV2() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
-
-  // Form State (for Select inputs which are tricky with FormData)
+  
+  // Form State
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
-  // Reset states when modals open/close
+  // Reset logic
   useEffect(() => {
-    if (isAddOpen) {
-        setIsSubmitting(false);
-        setSelectedClassId('');
-        setSelectedGender('');
-    }
-    if (editingStudent) {
-        setIsSubmitting(false);
-        setSelectedClassId(editingStudent.classId || '');
-        setSelectedGender(editingStudent.gender || '');
-    }
+    if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
+    if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. FETCH LOGIC (Robust) ---
+  // --- DIAGNOSTIC FETCH ---
   const fetchData = useCallback(async () => {
+    setStatus("Checking Auth...");
     if (isUserLoading) return;
-    if (!user || !firestore) {
+
+    if (!user) {
+        setStatus("Error: Not Logged In");
+        setIsLoading(false);
+        return;
+    }
+    if (!firestore) {
+        setStatus("Error: Database Not Connected");
         setIsLoading(false);
         return;
     }
 
     setIsLoading(true);
-    setIsError(false);
-    console.log("🔄 Fetching Data...");
-
+    
     try {
-        // 1. Fetch Classes (Wrapped in try/catch so it doesn't break the page if empty)
-        let classList: Class[] = [];
-        try {
-            const classSnap = await getDocs(collection(firestore, 'classes'));
-            classList = classSnap.docs.map((d: any) => ({ id: d.id, name: d.data().name }));
-            setClasses(classList);
-        } catch (e) {
-            console.warn("⚠️ Could not load classes (collection might be missing):", e);
-            // We don't stop execution here; we continue to fetch students
-        }
+        // 1. Fetch Classes
+        setStatus("Loading Classes...");
+        console.log("Fetching classes...");
+        const classSnap = await getDocs(collection(firestore, 'classes'));
+        const classList = classSnap.docs.map((d: any) => ({ id: d.id, name: d.data().name }));
+        setClasses(classList);
+        console.log(`Classes loaded: ${classList.length}`);
 
         // 2. Fetch Students
+        setStatus("Loading Students...");
+        console.log("Fetching students...");
         const studentSnap = await getDocs(collection(firestore, 'students'));
-        const studentList = studentSnap.docs.map((d: any) => ({ 
-            id: d.id, 
-            ...d.data() 
-        })) as Student[];
-
-        console.log(`✅ Found ${studentList.length} students.`);
+        const studentList = studentSnap.docs.map((d: any) => ({ id: d.id, ...d.data() })) as Student[];
         setStudents(studentList);
+        console.log(`Students loaded: ${studentList.length}`);
 
+        setStatus("Ready");
     } catch (err: any) {
-        console.error("❌ Critical Fetch Error:", err);
-        setIsError(true);
-        if (err.code !== 'permission-denied') {
-             toast({ 
-                variant: 'destructive', 
-                title: "Connection Error", 
-                description: "Failed to load student list." 
-            });
-        }
+        console.error("Fetch Error:", err);
+        setStatus(`Error: ${err.message}`);
+        toast({ variant: 'destructive', title: "Error", description: err.message });
     } finally {
         setIsLoading(false);
     }
   }, [user, isUserLoading, firestore, toast]);
 
-  // --- 2. TRIGGER LOAD ---
   useEffect(() => {
-      if (!isUserLoading) {
-          fetchData();
-      }
+      if (!isUserLoading) fetchData();
   }, [isUserLoading, fetchData]);
 
-  // --- 3. FORM ACTIONS ---
+  // --- ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
+      setStatus("Creating User...");
       
       const formData = new FormData(e.currentTarget);
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const email = formData.get('email') as string;
-      const dateOfBirth = formData.get('dateOfBirth') as string;
-      const address = formData.get('address') as string;
-      const password = "password123";
+      const values = Object.fromEntries(formData.entries()) as any;
 
       try {
-          // Create Auth User
-          const result = await createNewUser(email, password, 'Student', { firstName, lastName });
+          const result = await createNewUser(values.email, "password123", 'Student', { firstName: values.firstName, lastName: values.lastName });
           if ('error' in result) throw new Error(result.error);
 
-          // Create Firestore Document
+          setStatus("Saving to Database...");
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              classId: selectedClassId, // Use state
-              gender: selectedGender,   // Use state
-              dateOfBirth,
-              address,
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
+              classId: selectedClassId,
+              gender: selectedGender,
+              dateOfBirth: values.dateOfBirth,
+              address: values.address,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
@@ -172,20 +150,20 @@ export default function StudentsManagementV2() {
       }
   };
 
+  // --- UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
     setIsSubmitting(true);
-
     const formData = new FormData(e.currentTarget);
-    
+
     try {
         const studentRef = doc(firestore, 'students', editingStudent.id);
         await updateDoc(studentRef, {
             firstName: formData.get('firstName'),
             lastName: formData.get('lastName'),
-            classId: selectedClassId, // Use state
-            gender: selectedGender,   // Use state
+            classId: selectedClassId,
+            gender: selectedGender,
             dateOfBirth: formData.get('dateOfBirth'),
             address: formData.get('address')
         });
@@ -200,9 +178,8 @@ export default function StudentsManagementV2() {
     }
   };
 
-  // --- 4. DELETE ---
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this student profile?")) return;
+    if (!confirm("Delete profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
         toast({ title: "Deleted" });
@@ -212,7 +189,6 @@ export default function StudentsManagementV2() {
     }
   };
 
-  // Filter Logic
   const filteredStudents = students.filter(s => 
     ((s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -221,14 +197,15 @@ export default function StudentsManagementV2() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* HEADER CARD */}
       <Card className="border-t-4 border-t-green-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management V2
+                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
                 </CardTitle>
-                <CardDescription>View, add, edit, and manage all students.</CardDescription>
+                <CardDescription>
+                    Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded">{status}</span>
+                </CardDescription>
             </div>
             <div className="flex gap-2">
                 <Button variant="outline" onClick={fetchData} disabled={isLoading}>
@@ -242,33 +219,29 @@ export default function StudentsManagementV2() {
         
         <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-grow">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search by name or email..." className="pl-8" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-                </div>
+                <Input placeholder="Search..." className="max-w-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
                 <Select value={classFilter} onValueChange={setClassFilter}>
-                    <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
+                    <SelectTrigger className="w-[200px]"><SelectValue placeholder="Filter Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
-                        {classes.map(c => (
-                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                        ))}
+                        {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                     </SelectContent>
                 </Select>
             </div>
 
-            {/* LIST STATES */}
             {isLoading ? (
-                <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-green-500"/></div>
-            ) : isError ? (
+                <div className="py-10 flex flex-col items-center gap-2 text-muted-foreground">
+                    <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
+                    <p>{status}</p>
+                </div>
+            ) : status.startsWith("Error") ? (
                 <div className="py-10 text-center border-2 border-red-100 bg-red-50 rounded-lg">
-                    <WifiOff className="h-10 w-10 text-red-400 mx-auto mb-2"/>
-                    <p className="text-red-600 font-semibold">Connection Error</p>
-                    <p className="text-xs text-red-500 mt-1">Database not responding. Check your connection.</p>
+                    <Activity className="h-8 w-8 mx-auto mb-2"/>
+                    <p>{status}</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
                 <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                    No students found.
+                    No students found. (Collection might be empty)
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -283,19 +256,11 @@ export default function StudentsManagementV2() {
                                 <TableRow key={s.id}>
                                     <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                     <TableCell>{s.email}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="secondary">
-                                            {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
-                                        </Badge>
-                                    </TableCell>
+                                    <TableCell><Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'Unassigned'}</Badge></TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}>
-                                                <Edit className="h-4 w-4 text-blue-600"/>
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}>
-                                                <Trash2 className="h-4 w-4 text-red-500"/>
-                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -310,23 +275,19 @@ export default function StudentsManagementV2() {
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>Add Student</DialogTitle></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
-                 <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
                 </div>
                 <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
-                
-                {/* FIXED: Using State for Select */}
                 <div className="space-y-2">
                     <Label>Class</Label>
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
+                            {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -354,7 +315,7 @@ export default function StudentsManagementV2() {
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>Edit Student</DialogTitle></DialogHeader>
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -362,16 +323,12 @@ export default function StudentsManagementV2() {
                         <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
                     </div>
                      <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
-                    
-                    {/* FIXED: Using State for Select */}
                     <div className="space-y-2">
                         <Label>Class</Label>
                         <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
                             <SelectContent>
-                                {classes.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
+                                {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
@@ -380,7 +337,7 @@ export default function StudentsManagementV2() {
                         <div className="space-y-2">
                             <Label>Gender</Label>
                             <Select value={selectedGender} onValueChange={setSelectedGender}>
-                                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
                                 <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                             </Select>
                         </div>
