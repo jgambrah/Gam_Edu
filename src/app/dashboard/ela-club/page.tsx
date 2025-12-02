@@ -143,7 +143,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                                                     disabled={showResults}
                                                 >
                                                     {q.options.map((opt, i) => (
-                                                        <div key={`${q.question}-${i}`} className="flex items-center space-x-2">
+                                                        <div key={`${passage.id}-${q.question}-${i}`} className="flex items-center space-x-2">
                                                             <RadioGroupItem value={opt} id={`q${idx}-opt${i}`} />
                                                             <Label htmlFor={`q${idx}-opt${i}`} className="font-normal cursor-pointer">{opt}</Label>
                                                         </div>
@@ -842,13 +842,154 @@ function ManagePassages() {
     );
 }
 
+function ChallengeCreationForm({ setOpen, onSuccess, initialData, classes }: { setOpen: (open: boolean) => void; onSuccess: () => void; initialData?: ElaWritingChallenge; classes?: Class[] }) {
+    const firestore = useFirestore();
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
+        resolver: zodResolver(elaWritingChallengeSchema),
+        defaultValues: initialData || {
+            title: '',
+            prompt: '',
+            challengeType: 'Creative Writing',
+            classId: '',
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
+        if (!user) return;
+        setIsSubmitting(true);
+        try {
+            if (initialData) {
+                await updateDocumentNonBlocking(doc(firestore, 'ela_writing_challenges', initialData.id), values);
+                toast({ title: 'Success', description: 'Challenge updated.' });
+            } else {
+                await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
+                    ...values,
+                    createdBy: user.uid,
+                    createdAt: serverTimestamp(),
+                });
+                toast({ title: 'Success', description: 'New writing challenge has been created.' });
+            }
+            onSuccess();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error saving challenge:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save the challenge.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="title" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="prompt" render={({ field }) => (
+                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage/></FormItem>
+                )}/>
+                <FormField control={form.control} name="challengeType" render={({ field }) => (
+                    <FormItem><FormLabel>Challenge Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                            <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                            <SelectItem value="Summarization">Summarization</SelectItem>
+                            <SelectItem value="Essay">Essay</SelectItem>
+                        </SelectContent></Select>
+                    <FormMessage/></FormItem>
+                )}/>
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} {initialData ? 'Save Changes' : 'Add Challenge'}</Button>
+            </form>
+        </Form>
+    );
+}
+
+function GradeSubmissionDialog({ submission, open, setOpen, onSuccess }: { submission: ElaUserSubmission, open: boolean, setOpen: (o: boolean) => void, onSuccess: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm({
+        defaultValues: {
+            teacher_score: submission.teacher_score || '',
+            teacher_feedback: submission.teacher_feedback || '',
+        }
+    });
+
+    async function onSubmit(values: { teacher_score: string | number, teacher_feedback: string }) {
+        setIsSubmitting(true);
+        try {
+            const docRef = doc(firestore, 'ela_user_submissions', submission.id);
+            await updateDoc(docRef, {
+                status: 'Graded',
+                teacher_score: Number(values.teacher_score),
+                teacher_feedback: values.teacher_feedback,
+            });
+            toast({ title: 'Success', description: 'Submission has been graded.' });
+            onSuccess();
+            setOpen(false);
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save grade.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+    
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>Grade Submission</DialogTitle>
+                    <DialogDescription>Challenge: {submission.challenge_title}</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <Card>
+                        <CardHeader><CardTitle>Student's Work</CardTitle></CardHeader>
+                        <CardContent><p className="prose prose-sm max-w-none">{submission.submission_text}</p></CardContent>
+                    </Card>
+                     <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <FormField control={form.control} name="teacher_score" render={({ field }) => (
+                                    <FormItem><FormLabel>Score (out of 100)</FormLabel><FormControl><Input type="number" {...field} /></FormControl></FormItem>
+                                )} />
+                            </div>
+                             <FormField control={form.control} name="teacher_feedback" render={({ field }) => (
+                                <FormItem><FormLabel>Feedback</FormLabel><FormControl><Textarea {...field} /></FormControl></FormItem>
+                            )} />
+                            <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2"/>} Submit Grade</Button>
+                        </form>
+                    </Form>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function ManageWritingChallenges() {
     const firestore = useFirestore();
-    const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_writing_challenges')) : null, [firestore]));
-    const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_user_submissions')) : null, [firestore]));
+    const { data: challenges, isLoading: isLoadingChallenges, forceRefetch: refetchChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_writing_challenges')) : null, [firestore]));
+    const { data: submissions, isLoading: isLoadingSubmissions, forceRefetch: refetchSubmissions } = useCollection<ElaUserSubmission>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_user_submissions')) : null, [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+    
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-    
+    const [editingChallenge, setEditingChallenge] = useState<ElaWritingChallenge | undefined>(undefined);
+    const [viewingSubmissions, setViewingSubmissions] = useState<ElaWritingChallenge | null>(null);
+    const [gradingSubmission, setGradingSubmission] = useState<ElaUserSubmission | null>(null);
+
     const submissionsByChallenge = useMemo(() => {
         if (!submissions) return {};
         return submissions.reduce((acc, sub) => {
@@ -856,44 +997,93 @@ function ManageWritingChallenges() {
             return acc;
         }, {} as Record<string, ElaUserSubmission[]>);
     }, [submissions]);
+    
+    const handleEdit = (challenge: ElaWritingChallenge) => {
+        setEditingChallenge(challenge);
+        setIsFormOpen(true);
+    };
+
+    const handleCreate = () => {
+        setEditingChallenge(undefined);
+        setIsFormOpen(true);
+    };
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle>Manage Writing Challenges</CardTitle>
-                    <CardDescription>Create challenges and review student submissions.</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Writing Challenge Generator</DialogTitle><DialogDescription>Generate a writing prompt for any topic.</DialogDescription></DialogHeader><AiChallengeGenerator setOpen={setIsAiFormOpen} /></DialogContent>
-                    </Dialog>
-                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4" />New Challenge</Button></DialogTrigger>
-                        <DialogContent><DialogHeader><DialogTitle>Create New Writing Challenge</DialogTitle></DialogHeader><ChallengeCreationForm setOpen={setIsFormOpen} /></DialogContent>
-                    </Dialog>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Accordion type="single" collapsible>
-                    {challenges?.map(challenge => (
-                        <AccordionItem key={challenge.id} value={challenge.id}>
-                            <AccordionTrigger>
-                                <div className="flex justify-between w-full pr-4">
-                                    <span>{challenge.title}</span>
-                                    <span className="text-sm text-muted-foreground">{submissionsByChallenge[challenge.id]?.length || 0} Submissions</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                               {/* Submission grading table would go here */}
-                               <p className="text-muted-foreground p-4 text-center">Submission review UI coming soon.</p>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </CardContent>
-        </Card>
+        <>
+            <Card>
+                <CardHeader className="flex flex-row justify-between items-center">
+                    <div>
+                        <CardTitle>Manage Writing Challenges</CardTitle>
+                        <CardDescription>Create challenges and review student submissions.</CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                        <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                            <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
+                            <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Writing Challenge Generator</DialogTitle><DialogDescription>Generate a writing prompt for any topic.</DialogDescription></DialogHeader><AiChallengeGenerator setOpen={setIsAiFormOpen} onSuccess={refetchChallenges} /></DialogContent>
+                        </Dialog>
+                        <Button onClick={handleCreate}><PlusCircle className="mr-2 h-4" />New Challenge</Button>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {isLoadingChallenges ? <Skeleton className="h-40 w-full" /> : (
+                        <Table>
+                            <TableHeader><TableRow><TableHead>Title</TableHead><TableHead>Type</TableHead><TableHead>Class</TableHead><TableHead>Submissions</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+                            <TableBody>
+                                {challenges?.map(challenge => (
+                                    <TableRow key={challenge.id}>
+                                        <TableCell>{challenge.title}</TableCell>
+                                        <TableCell><Badge variant="secondary">{challenge.challengeType}</Badge></TableCell>
+                                        <TableCell>{classes?.find(c => c.id === challenge.classId)?.name || 'N/A'}</TableCell>
+                                        <TableCell>{submissionsByChallenge[challenge.id]?.length || 0}</TableCell>
+                                        <TableCell>
+                                            <div className="flex gap-2">
+                                                <Button variant="outline" size="sm" onClick={() => setViewingSubmissions(challenge)}>Submissions</Button>
+                                                <Button variant="ghost" size="sm" onClick={() => handleEdit(challenge)}><Edit className="h-4 w-4" /></Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    )}
+                </CardContent>
+            </Card>
+
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>{editingChallenge ? 'Edit Challenge' : 'Create New Challenge'}</DialogTitle></DialogHeader>
+                    <ChallengeCreationForm setOpen={setIsFormOpen} initialData={editingChallenge} classes={classes} onSuccess={refetchChallenges} />
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!viewingSubmissions} onOpenChange={(open) => !open && setViewingSubmissions(null)}>
+                <DialogContent className="max-w-3xl">
+                    <DialogHeader><DialogTitle>Submissions for: {viewingSubmissions?.title}</DialogTitle></DialogHeader>
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Student</TableHead><TableHead>Status</TableHead><TableHead>Score</TableHead><TableHead>Action</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                           {(submissionsByChallenge[viewingSubmissions?.id || ''] || []).map(sub => (
+                                <TableRow key={sub.id}>
+                                    <TableCell>{/* Student Name Here */}</TableCell>
+                                    <TableCell><Badge variant={sub.status === 'Graded' ? 'default' : 'secondary'}>{sub.status}</Badge></TableCell>
+                                    <TableCell>{sub.teacher_score ?? 'N/A'}</TableCell>
+                                    <TableCell><Button size="sm" onClick={() => setGradingSubmission(sub)}>Grade</Button></TableCell>
+                                </TableRow>
+                           ))}
+                        </TableBody>
+                    </Table>
+                </DialogContent>
+            </Dialog>
+            
+            {gradingSubmission && (
+                <GradeSubmissionDialog 
+                    open={!!gradingSubmission} 
+                    setOpen={(open) => !open && setGradingSubmission(null)}
+                    submission={gradingSubmission}
+                    onSuccess={() => { refetchSubmissions(); setViewingSubmissions(null); }}
+                />
+            )}
+        </>
     );
 }
 
@@ -1004,7 +1194,7 @@ function ManageDrills() {
     )
 }
 
-function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
+function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) => void; onSuccess: () => void; }) {
     const firestore = useFirestore();
     const { user: hookUser } = useAuth();
     const { toast } = useToast();
@@ -1073,6 +1263,7 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 createdAt: serverTimestamp(),
             });
             toast({ title: 'Success!', description: 'Challenge saved and assigned to the class.' });
+            onSuccess();
             setOpen(false);
         } catch (e) {
             console.error(e);
@@ -1131,75 +1322,5 @@ function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void })
                 </Card>
             )}
         </div>
-    );
-}
-
-function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { user } = useAuth();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
-
-    const form = useForm<z.infer<typeof elaWritingChallengeSchema>>({
-        resolver: zodResolver(elaWritingChallengeSchema),
-        defaultValues: {
-            title: '',
-            prompt: '',
-            challengeType: 'Creative Writing',
-            classId: '',
-        }
-    });
-
-    async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
-        if (!user) return;
-        setIsSubmitting(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                ...values,
-                createdBy: user.uid,
-                createdAt: serverTimestamp(),
-            });
-            toast({ title: 'Success', description: 'New writing challenge has been created.' });
-            form.reset();
-            setOpen(false);
-        } catch (error) {
-            console.error('Error adding challenge:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the challenge.' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField control={form.control} name="title" render={({ field }) => (
-                    <FormItem><FormLabel>Challenge Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                 <FormField control={form.control} name="prompt" render={({ field }) => (
-                    <FormItem><FormLabel>Prompt</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage/></FormItem>
-                )}/>
-                <FormField control={form.control} name="challengeType" render={({ field }) => (
-                    <FormItem><FormLabel>Challenge Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                            <SelectItem value="Creative Writing">Creative Writing</SelectItem>
-                            <SelectItem value="Summarization">Summarization</SelectItem>
-                            <SelectItem value="Essay">Essay</SelectItem>
-                        </SelectContent></Select>
-                    <FormMessage/></FormItem>
-                )}/>
-                 <FormField control={form.control} name="classId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
-                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select><FormMessage/>
-                    </FormItem>
-                )}/>
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Challenge</Button>
-            </form>
-        </Form>
     );
 }
