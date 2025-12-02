@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -19,18 +20,22 @@ export interface FirebaseContextState {
 // Create the context with an undefined initial value.
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
-export const FirebaseProvider: React.FC<{ children: ReactNode, firebaseApp: FirebaseApp, firestore: Firestore, auth: Auth }> = ({
+export const FirebaseProvider: React.FC<{ children: ReactNode, firebaseApp: FirebaseApp | null, firestore: Firestore | null, auth: Auth | null }> = ({
   children,
   firebaseApp,
   firestore,
   auth,
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isUserLoading, setIsUserLoading] = useState(true); // Correctly start in a loading state
+  const [isUserLoading, setIsUserLoading] = useState(true);
   const [userError, setUserError] = useState<Error | null>(null);
 
   // Subscribe to Firebase auth state changes.
   useEffect(() => {
+    if (!auth) {
+        setIsUserLoading(false);
+        return;
+    }
     const unsubscribe = onAuthStateChanged(
       auth,
       (user) => {
@@ -76,9 +81,9 @@ function useFirebaseContext() {
 }
 
 export const useFirebase = () => useFirebaseContext();
-export const useAuth = (): Auth => useFirebaseContext().auth!;
-export const useFirestore = (): Firestore => useFirebaseContext().firestore!;
-export const useFirebaseApp = (): FirebaseApp => useFirebaseContext().firebaseApp!;
+export const useAuth = (): Auth | null => useFirebaseContext().auth;
+export const useFirestore = (): Firestore | null => useFirebaseContext().firestore;
+export const useFirebaseApp = (): FirebaseApp | null => useFirebaseContext().firebaseApp;
 export const useUser = () => {
     const { user, isUserLoading, userError } = useFirebaseContext();
     return { user, isUserLoading, userError };
