@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -142,7 +143,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                                                     disabled={showResults}
                                                 >
                                                     {q.options.map((opt, i) => (
-                                                        <div key={i} className="flex items-center space-x-2">
+                                                        <div key={`${q.question}-${i}`} className="flex items-center space-x-2">
                                                             <RadioGroupItem value={opt} id={`q${idx}-opt${i}`} />
                                                             <Label htmlFor={`q${idx}-opt${i}`} className="font-normal cursor-pointer">{opt}</Label>
                                                         </div>
