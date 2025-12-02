@@ -10,10 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Users } from 'lucide-react';
-import { Class, AttendanceRecord } from '@/lib/types';
+import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Users, Loader2 } from 'lucide-react';
+import { Class, AttendanceRecord, Student } from '@/lib/types';
 import Link from 'next/link';
-import { mockAttendanceRecords } from '@/lib/data';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -41,6 +40,7 @@ export default function AttendanceReportsPage() {
 
     const canAccess = ['Administrator', 'Director', 'Teacher'].includes(role);
 
+    // --- DATA FETCHING ---
     const classesQuery = useMemoFirebase(() => {
         if (!user || !firestore) return null;
         if (role === 'Administrator' || role === 'Director') {
@@ -53,23 +53,42 @@ export default function AttendanceReportsPage() {
     }, [firestore, user, role]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-    const filteredData = useMemo(() => {
-        let data = mockAttendanceRecords;
+    const attendanceQuery = useMemoFirebase(() => {
+        if (!firestore || !dateRange?.from || !dateRange?.to) return null;
+        return query(
+            collection(firestore, 'attendance'),
+            where('date', '>=', dateRange.from),
+            where('date', '<=', dateRange.to)
+        );
+    }, [firestore, dateRange]);
+    const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
+    
+    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
 
-        if (dateRange?.from && dateRange?.to) {
-            data = data.filter(record => 
-                record.date >= dateRange.from! && record.date <= dateRange.to!
-            );
-        }
+    const isLoading = isLoadingClasses || isLoadingAttendance || isLoadingStudents;
+
+    // --- DATA PROCESSING & FILTERING ---
+    const filteredData = useMemo(() => {
+        if (!attendanceRecords) return [];
+        let data = attendanceRecords;
+
         if (selectedClassId !== 'all') {
             data = data.filter(record => record.classId === selectedClassId);
         }
         if (selectedStatus !== 'all') {
             data = data.filter(record => record.status === selectedStatus);
         }
+        
+        // Add student names to the records
+        return data.map(record => {
+            const student = students?.find(s => s.uid === record.studentId);
+            return {
+                ...record,
+                studentName: student ? `${student.firstName} ${student.lastName}` : 'Unknown Student',
+            }
+        });
 
-        return data;
-    }, [dateRange, selectedClassId, selectedStatus]);
+    }, [attendanceRecords, selectedClassId, selectedStatus, students]);
 
     const summaryData = useMemo(() => {
         const totalRecords = filteredData.length;
@@ -87,8 +106,8 @@ export default function AttendanceReportsPage() {
             return acc;
         }, {} as Record<string, number>);
 
-        const totalPresent = statusCounts['Present'] || 0;
-        const attendanceRate = (totalPresent / totalRecords) * 100;
+        const totalPresentOrExcused = (statusCounts['Present'] || 0) + (statusCounts['Excused'] || 0);
+        const attendanceRate = (totalPresentOrExcused / totalRecords) * 100;
         
         const pieData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
 
@@ -123,7 +142,7 @@ export default function AttendanceReportsPage() {
                 <div className="flex gap-2">
                     <Button asChild variant="outline"><Link href="/dashboard/reports/academics">Academics</Link></Button>
                     <Button asChild variant="outline"><Link href="/dashboard/reports/enrollment">Enrollment</Link></Button>
-                    <Button asChild variant="outline"><Link href="#">Financials</Link></Button>
+                    <Button asChild variant="outline"><Link href="/dashboard/reports/financials">Financials</Link></Button>
                     <Button onClick={() => window.print()}><Printer className="mr-2"/>Print</Button>
                 </div>
             </div>
@@ -180,67 +199,75 @@ export default function AttendanceReportsPage() {
                 </CardContent>
             </Card>
 
-            <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader><CardTitle>Overall Attendance Rate</CardTitle></CardHeader>
-                    <CardContent><p className="text-3xl font-bold">{summaryData.attendanceRate}%</p></CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader><CardTitle>Total Absences</CardTitle></CardHeader>
-                    <CardContent><p className="text-3xl font-bold">{summaryData.totalAbsences}</p></CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader><CardTitle>Total Late Arrivals</CardTitle></CardHeader>
-                    <CardContent><p className="text-3xl font-bold">{summaryData.totalLate}</p></CardContent>
-                </Card>
-            </div>
-            
-            <div className="grid md:grid-cols-5 gap-6">
-                <Card className="md:col-span-2">
-                    <CardHeader><CardTitle>Attendance by Status</CardTitle></CardHeader>
-                    <CardContent>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie data={summaryData.pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                                    {summaryData.pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[entry.name as keyof typeof COLORS]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-                <Card className="md:col-span-3">
-                    <CardHeader><CardTitle>Detailed Log</CardTitle></CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Student</TableHead>
-                                    <TableHead>Class</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Notes</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filteredData.map(record => (
-                                    <TableRow key={record.id}>
-                                        <TableCell>{record.studentName}</TableCell>
-                                        <TableCell>{classes?.find(c => c.id === record.classId)?.name}</TableCell>
-                                        <TableCell>{format(record.date, 'PPP')}</TableCell>
-                                        <TableCell><Badge style={{ backgroundColor: COLORS[record.status as keyof typeof COLORS]}}>{record.status}</Badge></TableCell>
-                                        <TableCell>{record.notes}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                         {filteredData.length === 0 && <p className="text-center text-muted-foreground p-8">No records match the selected filters.</p>}
-                    </CardContent>
-                </Card>
-            </div>
+            {isLoading ? <div className="py-20 flex justify-center items-center"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
+                <>
+                    <div className="grid gap-4 md:grid-cols-3">
+                        <Card>
+                            <CardHeader><CardTitle>Overall Attendance Rate</CardTitle></CardHeader>
+                            <CardContent><p className="text-3xl font-bold">{summaryData.attendanceRate}%</p></CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader><CardTitle>Total Absences</CardTitle></CardHeader>
+                            <CardContent><p className="text-3xl font-bold">{summaryData.totalAbsences}</p></CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader><CardTitle>Total Late Arrivals</CardTitle></CardHeader>
+                            <CardContent><p className="text-3xl font-bold">{summaryData.totalLate}</p></CardContent>
+                        </Card>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-5 gap-6">
+                        <Card className="md:col-span-2">
+                            <CardHeader><CardTitle>Attendance by Status</CardTitle></CardHeader>
+                            <CardContent>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <PieChart>
+                                        <Pie data={summaryData.pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                                            {summaryData.pieData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[entry.name as keyof typeof COLORS] || '#8884d8'} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                        <Card className="md:col-span-3">
+                            <CardHeader><CardTitle>Detailed Log</CardTitle></CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Student</TableHead>
+                                            <TableHead>Class</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Notes</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredData.map(record => (
+                                            <TableRow key={record.id}>
+                                                <TableCell>{record.studentName}</TableCell>
+                                                <TableCell>{classes?.find(c => c.id === record.classId)?.name}</TableCell>
+                                                <TableCell>{format(record.date.toDate(), 'PPP')}</TableCell>
+                                                <TableCell>
+                                                    <Badge style={{ backgroundColor: COLORS[record.status as keyof typeof COLORS], color: 'white' }}>
+                                                        {record.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>{record.notes}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                {filteredData.length === 0 && <p className="text-center text-muted-foreground p-8">No records match the selected filters.</p>}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </>
+            )}
 
             <style jsx global>{`
                 @media print {
