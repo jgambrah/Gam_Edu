@@ -41,10 +41,18 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
+    if (!auth) {
+        toast({
+            variant: 'destructive',
+            title: 'Authentication Error',
+            description: 'Firebase Auth is not available. Please try again later.'
+        });
+        setIsLoading(false);
+        return;
+    }
+
     try {
       if (isSignUp) {
-        // For simplicity, we'll just create a 'Director' on first sign up
-        // In a real app, you'd have a more secure way to create the first admin
         await createNewUser(email, password, 'Director', { firstName: 'Admin', lastName: 'User' });
         toast({
           title: 'Account Creation Pending',
