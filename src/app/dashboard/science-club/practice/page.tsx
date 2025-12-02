@@ -66,6 +66,12 @@ function QuizComponent() {
     }
   };
 
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!problems) return;
     if (!user) {
@@ -150,7 +156,7 @@ function QuizComponent() {
       </CardHeader>
       <CardContent className="space-y-6">
         <p className="font-semibold text-lg">{currentProblem.question_text}</p>
-        <RadioGroup onValueChange={(value) => handleAnswerChange(currentQuestionIndex, value)}>
+        <RadioGroup onValueChange={(value) => handleAnswerChange(currentQuestionIndex, value)} value={String(answers[currentQuestionIndex] || '')}>
           {currentProblem.options?.map((option, i) => (
             <div key={i} className="flex items-center space-x-3">
               <RadioGroupItem value={String(option)} id={`q${currentQuestionIndex}-o${i}`} />
@@ -159,7 +165,10 @@ function QuizComponent() {
           ))}
         </RadioGroup>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex justify-between">
+        <Button variant="outline" onClick={handlePrevious} disabled={currentQuestionIndex === 0}>
+            Previous
+        </Button>
         {currentQuestionIndex < problems.length - 1 ? (
           <Button onClick={handleNext} disabled={answers[currentQuestionIndex] === undefined}>Next Question</Button>
         ) : (
