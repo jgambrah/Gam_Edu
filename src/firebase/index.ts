@@ -1,3 +1,4 @@
+
 'use client';
 
 import { getApps, initializeApp, getApp, FirebaseApp } from 'firebase/app';
@@ -23,31 +24,30 @@ let firestore: Firestore;
 let storage: FirebaseStorage;
 
 export function initializeFirebase() {
-  if (typeof window === 'undefined') return null; // Don't run on server
+  if (typeof window === 'undefined') return null;
 
-  // --- DEBUGGING STEP ---
-  console.log("Firebase Config Object:", firebaseConfig);
-  // Check if the key is missing. This will be visible in the browser's developer console.
-  if (!firebaseConfig.apiKey) {
-    console.error("Firebase API Key is missing! Check your .env file and ensure it's loaded correctly.");
+  // DEBUG: Check if keys are loading
+  // Open your browser console (F12) and look for this object
+  console.log("Firebase Config Check:", {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  });
+
+  if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+    console.error("CRITICAL: API Key is missing! Check .env.local");
   }
-  // --- END DEBUGGING STEP ---
 
   if (!getApps().length) {
-    // 1. Initialize New App
     firebaseApp = initializeApp(firebaseConfig);
     
-    // 2. FORCE LONG POLLING (The Network Fix)
     try {
       firestore = initializeFirestore(firebaseApp, {
         experimentalForceLongPolling: true, 
       });
     } catch (e) {
-      // If it fails (rare), fallback to default
       firestore = getFirestore(firebaseApp);
     }
   } else {
-    // 3. Use Existing App (Hot Reload safe)
     firebaseApp = getApp();
     firestore = getFirestore(firebaseApp);
   }
