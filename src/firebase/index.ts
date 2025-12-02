@@ -1,37 +1,45 @@
-
 'use client';
 
 import { getApps, initializeApp, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth, User } from 'firebase/auth'; // Import User type
-import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore'; 
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, initializeFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 // Your Config
 const firebaseConfig = {
-  "projectId": "studio-525105839-159e4",
-  "appId": "1:793841793308:web:408f4035e4178bf2f962d9",
-  "storageBucket": "studio-525105839-159e4.firebasestorage.app",
-  "apiKey": "AIzaSyBZly_kWYNRG5Kgt_uyTqDXGXa4_T3jGzk",
-  "authDomain": "studio-525105839-159e4.firebaseapp.com",
-  "messagingSenderId": "793841793308"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: "studio-525105839-159e4.firebasestorage.app", // Hardcoded to ensure uploads work
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Global instances to prevent re-initialization during hot-reload
+// Global variables to prevent crashing during hot-reloads
 let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 let storage: FirebaseStorage;
 
 export function initializeFirebase() {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') return null; // Don't run on server
 
   if (!getApps().length) {
+    // 1. Initialize New App
     firebaseApp = initializeApp(firebaseConfig);
-    firestore = initializeFirestore(firebaseApp, {
-      experimentalForceLongPolling: true, 
-    });
+    
+    // 2. FORCE LONG POLLING (The Network Fix)
+    try {
+      firestore = initializeFirestore(firebaseApp, {
+        experimentalForceLongPolling: true, 
+      });
+    } catch (e) {
+      // If it fails (rare), fallback to default
+      firestore = getFirestore(firebaseApp);
+    }
   } else {
+    // 3. Use Existing App (Hot Reload safe)
     firebaseApp = getApp();
     firestore = getFirestore(firebaseApp);
   }
@@ -40,6 +48,47 @@ export function initializeFirebase() {
   storage = getStorage(firebaseApp);
 
   return { firebaseApp, auth, firestore, storage };
+}
+
+// --- HELPER HOOKS ---
+
+export const useAuth = () => {
+  const [user, setUser] = useState<any>(null);
+  const [isUserLoading, setIsUserLoading] = useState(true);
+  
+  useEffect(() => {
+    const sdk = initializeFirebase();
+    if(!sdk?.auth) return;
+
+    const unsub = sdk.auth.onAuthStateChanged((u) => {
+      setUser(u);
+      setIsUserLoading(false);
+    });
+    return () => unsub();
+  }, []);
+  
+  return { user, isUserLoading };
+};
+
+export const useFirestore = () => {
+  const sdk = initializeFirebase();
+  return sdk?.firestore || null;
+};
+
+// Added useUser alias for compatibility with your other code
+export const useUser = useAuth;
+
+// Compatibility exports if you use them elsewhere
+export const useMemoFirebase = <T>(factory: () => T, deps: React.DependencyList): T => {
+    const memoized = useMemo(factory, deps);
+    if (typeof memoized === 'object' && memoized !== null && !(memoized as any).__memo) {
+        Object.defineProperty(memoized, '__memo', {
+            value: true,
+            writable: false,
+            enumerable: false,
+        });
+    }
+    return memoized;
 }
 
 export * from './provider';
