@@ -1,10 +1,4 @@
 
-export const firebaseConfig = {
-  "projectId": "studio-525105839-159e4",
-  "appId": "1:793841793308:web:408f4035e4178bf2f962d9",
-  "storageBucket": "studio-525105839-159e4.appspot.com",
-  "apiKey": "AIzaSyBZly_kWYNRG5Kgt_uyTqDXGXa4_T3jGzk",
-  "authDomain": "studio-525105839-159e4.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "793841793308"
-};
+// This file is no longer needed as the configuration has been
+// moved into src/firebase/index.ts to support the new initialization logic.
+export const firebaseConfig = {};
