@@ -302,7 +302,8 @@ export default function StudentsManagementV2() {
                 <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
                 <div className="space-y-2">
                     <Label>Class</Label>
-                    <Select name="classId" required><SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
+                    <Select name="classId" required>
+                        <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
                             {classes.map(c => (
                                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
