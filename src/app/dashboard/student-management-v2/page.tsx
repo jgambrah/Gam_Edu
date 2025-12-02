@@ -45,7 +45,7 @@ export default function StudentsManagementV2() {
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false); // Added Error State
+  const [isError, setIsError] = useState(false);
   
   // UI State
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -61,21 +61,29 @@ export default function StudentsManagementV2() {
     }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. FETCH LOGIC WITH TIMEOUT ---
+  // --- 1. FETCH LOGIC (FIXED FOR AUTH TIMING) ---
   const fetchData = useCallback(async () => {
-    if (!user || !firestore) return;
+    // A. If Auth is still determining status, DO NOTHING (Keep spinner)
+    if (isUserLoading) return;
 
+    // B. If Auth finished but No User -> STOP SPINNER (Don't hang)
+    if (!user || !firestore) {
+        console.log("❌ No User found, stopping fetch.");
+        setIsLoading(false);
+        return;
+    }
+
+    // C. User exists -> Proceed
     setIsLoading(true);
     setIsError(false);
     console.log("🔄 Fetching Students & Classes...");
 
-    // TIMEOUT PROMISE: Rejects after 8 seconds to stop infinite rolling
+    // Timeout protection (8 seconds)
     const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error("Network Request Timed Out")), 8000)
     );
 
     try {
-        // Race the Fetch against the Timeout
         const results = await Promise.race([
             Promise.all([
                 getDocs(collection(firestore, 'classes')),
@@ -86,11 +94,9 @@ export default function StudentsManagementV2() {
 
         const [classSnap, studentSnap] = results;
 
-        // Process Classes
         const classList = classSnap.docs.map((d: any) => ({ id: d.id, name: d.data().name })) as Class[];
         setClasses(classList);
 
-        // Process Students
         const studentList = studentSnap.docs.map((d: any) => ({ 
             id: d.id, 
             ...d.data() 
@@ -102,26 +108,30 @@ export default function StudentsManagementV2() {
     } catch (err: any) {
         console.error("Fetch Error:", err);
         setIsError(true);
-        toast({ 
-            variant: 'destructive', 
-            title: "Connection Error", 
-            description: err.message === "Network Request Timed Out" 
-                ? "Database is not responding. Check internet connection." 
-                : err.message 
-        });
+        // Only show toast if it's not a permission error (to avoid spamming on logout)
+        if (err.code !== 'permission-denied') {
+             toast({ 
+                variant: 'destructive', 
+                title: "Connection Error", 
+                description: err.message === "Network Request Timed Out" 
+                    ? "Database is not responding." 
+                    : err.message 
+            });
+        }
     } finally {
         setIsLoading(false);
     }
-  }, [user, firestore, toast]);
+  }, [user, isUserLoading, firestore, toast]);
 
-  // Load on mount
+  // --- 2. TRIGGER LOAD CORRECTLY ---
   useEffect(() => {
-      if (!isUserLoading && user) {
+      // Only trigger fetch when User Loading finishes
+      if (!isUserLoading) {
           fetchData();
       }
-  }, [isUserLoading, user, fetchData]);
+  }, [isUserLoading, fetchData]);
 
-  // --- 2. ADD STUDENT ---
+  // --- 3. FORM ACTIONS ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
@@ -150,7 +160,7 @@ export default function StudentsManagementV2() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          await fetchData(); // Refresh list
+          await fetchData(); 
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -159,7 +169,6 @@ export default function StudentsManagementV2() {
       }
   };
 
-  // --- 3. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
@@ -224,7 +233,7 @@ export default function StudentsManagementV2() {
             <div className="flex gap-4">
                 <div className="relative flex-grow">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search students..." className="pl-8 max-w-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                    <Input placeholder="Search by name or email..." className="pl-8 max-w-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
                 </div>
                 <Select value={classFilter} onValueChange={setClassFilter}>
                     <SelectTrigger className="w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
@@ -244,7 +253,7 @@ export default function StudentsManagementV2() {
                 <div className="py-10 text-center border-2 border-red-100 bg-red-50 rounded-lg">
                     <WifiOff className="h-10 w-10 text-red-400 mx-auto mb-2"/>
                     <p className="text-red-600 font-semibold">Connection Error</p>
-                    <p className="text-xs text-red-500 mt-1">Database not responding.</p>
+                    <p className="text-xs text-red-500 mt-1">Database not responding. Check if you are logged in.</p>
                     <Button variant="link" onClick={fetchData} className="mt-2 text-red-700">Try Again</Button>
                 </div>
             ) : filteredStudents.length === 0 ? (
@@ -315,7 +324,6 @@ export default function StudentsManagementV2() {
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
-                    <p className="text-xs text-center text-muted-foreground mt-2">Default password: password123</p>
                 </div>
             </form>
         </DialogContent>
