@@ -54,19 +54,27 @@ export default function StudentsManagementV2() {
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
 
-  // Safety Valve: Reset submitting state when modals close
+  // Form State (for Select inputs which are tricky with FormData)
+  const [selectedClassId, setSelectedClassId] = useState('');
+  const [selectedGender, setSelectedGender] = useState('');
+
+  // Reset states when modals open/close
   useEffect(() => {
-    if (isAddOpen || editingStudent) {
+    if (isAddOpen) {
         setIsSubmitting(false);
+        setSelectedClassId('');
+        setSelectedGender('');
+    }
+    if (editingStudent) {
+        setIsSubmitting(false);
+        setSelectedClassId(editingStudent.classId || '');
+        setSelectedGender(editingStudent.gender || '');
     }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. FETCH LOGIC (FIXED: Independent Requests) ---
+  // --- 1. FETCH LOGIC (Robust) ---
   const fetchData = useCallback(async () => {
-    // A. Wait for Auth
     if (isUserLoading) return;
-
-    // B. Stop if not logged in
     if (!user || !firestore) {
         setIsLoading(false);
         return;
@@ -77,7 +85,7 @@ export default function StudentsManagementV2() {
     console.log("🔄 Fetching Data...");
 
     try {
-        // 1. Fetch Classes (Wrapped in try/catch so it doesn't break the page if empty)
+        // 1. Fetch Classes
         let classList: Class[] = [];
         try {
             const classSnap = await getDocs(collection(firestore, 'classes'));
@@ -88,7 +96,7 @@ export default function StudentsManagementV2() {
             // We don't stop execution here; we continue to fetch students
         }
 
-        // 2. Fetch Students (The Main Data)
+        // 2. Fetch Students
         const studentSnap = await getDocs(collection(firestore, 'students'));
         const studentList = studentSnap.docs.map((d: any) => ({ 
             id: d.id, 
@@ -101,8 +109,6 @@ export default function StudentsManagementV2() {
     } catch (err: any) {
         console.error("❌ Critical Fetch Error:", err);
         setIsError(true);
-        
-        // Don't show permission errors as toasts (annoying on logout)
         if (err.code !== 'permission-denied') {
              toast({ 
                 variant: 'destructive', 
@@ -129,24 +135,28 @@ export default function StudentsManagementV2() {
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const values = Object.fromEntries(formData.entries()) as any;
+      const firstName = formData.get('firstName') as string;
+      const lastName = formData.get('lastName') as string;
+      const email = formData.get('email') as string;
+      const dateOfBirth = formData.get('dateOfBirth') as string;
+      const address = formData.get('address') as string;
       const password = "password123";
 
       try {
           // Create Auth User
-          const result = await createNewUser(values.email, password, 'Student', { firstName: values.firstName, lastName: values.lastName });
+          const result = await createNewUser(email, password, 'Student', { firstName, lastName });
           if ('error' in result) throw new Error(result.error);
 
           // Create Firestore Document
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: values.firstName,
-              lastName: values.lastName,
-              email: values.email,
-              classId: values.classId || '',
-              dateOfBirth: values.dateOfBirth || '',
-              gender: values.gender || '',
-              address: values.address || '',
+              firstName: firstName,
+              lastName: lastName,
+              email: email,
+              classId: selectedClassId, // Use state
+              gender: selectedGender,   // Use state
+              dateOfBirth,
+              address,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
@@ -168,11 +178,17 @@ export default function StudentsManagementV2() {
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
-    const values = Object.fromEntries(formData.entries()) as any;
-
+    
     try {
         const studentRef = doc(firestore, 'students', editingStudent.id);
-        await updateDoc(studentRef, values);
+        await updateDoc(studentRef, {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            classId: selectedClassId, // Use state
+            gender: selectedGender,   // Use state
+            dateOfBirth: formData.get('dateOfBirth'),
+            address: formData.get('address')
+        });
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
@@ -249,7 +265,6 @@ export default function StudentsManagementV2() {
                     <WifiOff className="h-10 w-10 text-red-400 mx-auto mb-2"/>
                     <p className="text-red-600 font-semibold">Connection Error</p>
                     <p className="text-xs text-red-500 mt-1">Database not responding. Check your connection.</p>
-                    <Button variant="link" onClick={fetchData} className="mt-2 text-red-700">Try Again</Button>
                 </div>
             ) : filteredStudents.length === 0 ? (
                 <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
@@ -270,7 +285,7 @@ export default function StudentsManagementV2() {
                                     <TableCell>{s.email}</TableCell>
                                     <TableCell>
                                         <Badge variant="secondary">
-                                            {classes.find(c => c.id === s.classId)?.name || s.classId || 'Unassigned'}
+                                            {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -302,9 +317,11 @@ export default function StudentsManagementV2() {
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
                 </div>
                 <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
+                
+                {/* FIXED: Using State for Select */}
                 <div className="space-y-2">
                     <Label>Class</Label>
-                    <Select name="classId" >
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
                             {classes.map(c => (
@@ -317,7 +334,7 @@ export default function StudentsManagementV2() {
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
                     <div className="space-y-2">
                         <Label>Gender</Label>
-                        <Select name="gender">
+                        <Select value={selectedGender} onValueChange={setSelectedGender}>
                             <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
                             <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                         </Select>
@@ -328,7 +345,6 @@ export default function StudentsManagementV2() {
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
-                    <p className="text-xs text-center text-muted-foreground mt-2">Default password: password123</p>
                 </div>
             </form>
         </DialogContent>
@@ -345,9 +361,11 @@ export default function StudentsManagementV2() {
                         <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
                     </div>
                      <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                    
+                    {/* FIXED: Using State for Select */}
                     <div className="space-y-2">
                         <Label>Class</Label>
-                        <Select name="classId" defaultValue={editingStudent.classId}>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
                             <SelectContent>
                                 {classes.map(c => (
@@ -360,7 +378,7 @@ export default function StudentsManagementV2() {
                         <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
                         <div className="space-y-2">
                             <Label>Gender</Label>
-                            <Select name="gender" defaultValue={editingStudent.gender}>
+                            <Select value={selectedGender} onValueChange={setSelectedGender}>
                                 <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                                 <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                             </Select>
