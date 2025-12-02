@@ -201,8 +201,10 @@ service cloud.firestore {
     }
     
     match /ela_leaderboard/{userId} {
-        allow read: if isSignedIn();
-        allow write: if request.auth.uid == userId;
+        // Allow anyone signed in to read the whole leaderboard collection
+        allow list: if isSignedIn(); 
+        // Allow users to update their own entry
+        allow get, write: if request.auth.uid == userId;
     }
 
      match /coding-club-projects/{userId} {
@@ -215,4 +217,3 @@ service cloud.firestore {
     }
   }
 }
-
