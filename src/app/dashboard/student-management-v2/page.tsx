@@ -3,7 +3,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
+import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI
@@ -17,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // --- TYPE DEFINITIONS ---
 type Student = {
@@ -61,7 +63,7 @@ export default function StudentsManagementV2() {
     }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. FETCH LOGIC (FIXED FOR AUTH TIMING) ---
+  // --- 1. FETCH LOGIC (Direct Fetch) ---
   const fetchData = useCallback(async () => {
     // A. If Auth is still determining status, DO NOTHING (Keep spinner)
     if (isUserLoading) return;
@@ -160,7 +162,7 @@ export default function StudentsManagementV2() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          await fetchData(); 
+          await fetchData(); // Refresh list
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -211,6 +213,7 @@ export default function StudentsManagementV2() {
 
   return (
     <div className="space-y-6 p-6">
+      {/* HEADER CARD */}
       <Card className="border-t-4 border-t-green-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -257,7 +260,9 @@ export default function StudentsManagementV2() {
                     <Button variant="link" onClick={fetchData} className="mt-2 text-red-700">Try Again</Button>
                 </div>
             ) : filteredStudents.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No students found.</div>
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                    No students found.
+                </div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
@@ -278,8 +283,12 @@ export default function StudentsManagementV2() {
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}>
+                                                <Edit className="h-4 w-4 text-blue-600"/>
+                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}>
+                                                <Trash2 className="h-4 w-4 text-red-500"/>
+                                            </Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -293,7 +302,8 @@ export default function StudentsManagementV2() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
@@ -315,7 +325,8 @@ export default function StudentsManagementV2() {
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
                     <div className="space-y-2">
                         <Label>Gender</Label>
-                        <Select name="gender"><SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
+                        <Select name="gender">
+                            <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
                             <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                         </Select>
                     </div>
@@ -332,7 +343,8 @@ export default function StudentsManagementV2() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
