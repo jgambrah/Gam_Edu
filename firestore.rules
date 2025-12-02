@@ -81,14 +81,14 @@ service cloud.firestore {
 
     // Students and Parents can be managed by admins, but can read their own profiles
     match /students/{studentId} {
-      allow read: if isSignedIn();
-      allow write: if isAdmin();
+      allow get: if isSignedIn(); // Allow reading own doc
+      allow list, write: if isAdmin(); // Admins can list all and write
       allow update: if request.auth.uid == studentId; // Students can update their own profiles
     }
     match /parents/{parentId} {
-      allow read: if request.auth.uid == parentId || isAdmin();
-      allow write: if isAdmin();
-      allow update: if request.auth.uid == parentId;
+      allow get: if request.auth.uid == parentId || isAdmin(); // Allow reading own doc or if admin
+      allow list, write: if isAdmin(); // Admins can list all and write
+      allow update: if request.auth.uid == parentId; // Parents can update own profile
     }
     
     // Announcements are readable by their audience, writable by admins
