@@ -1,15 +1,15 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useAuth } from '@/firebase';
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, addDoc, updateDoc, query, where } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, BookCopy } from 'lucide-react';
+import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,14 +24,17 @@ const subjectSchema = z.object({
   teacherIds: z.array(z.string()).default([]),
 });
 
+// --- FORM COMPONENT ---
 function SubjectForm({
   setOpen,
   allTeachers,
   initialData,
+  onSuccess
 }: {
   setOpen: (open: boolean) => void;
   allTeachers: Staff[];
   initialData?: Subject;
+  onSuccess: () => void;
 }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -55,6 +58,7 @@ function SubjectForm({
         await addDoc(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
+      onSuccess();
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -87,7 +91,8 @@ function SubjectForm({
                 <FormLabel>Assign Teachers</FormLabel>
                 <FormDescription>Select all teachers qualified to teach this subject.</FormDescription>
               </div>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
+              <div className="space-y-2 max-h-64 overflow-y-auto border p-2 rounded-md">
+                {allTeachers.length === 0 && <p className="text-sm text-muted-foreground text-center">No teachers found.</p>}
                 {allTeachers.map((teacher) => (
                   <FormField
                     key={teacher.uid}
@@ -97,7 +102,7 @@ function SubjectForm({
                       return (
                         <FormItem
                           key={teacher.uid}
-                          className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4"
+                          className="flex flex-row items-center space-x-3 space-y-0 py-2"
                         >
                           <FormControl>
                             <Checkbox
@@ -109,7 +114,9 @@ function SubjectForm({
                               }}
                             />
                           </FormControl>
-                          <FormLabel className="font-normal">{teacher.firstName} {teacher.lastName}</FormLabel>
+                          <FormLabel className="font-normal cursor-pointer w-full">
+                             {teacher.firstName} {teacher.lastName}
+                          </FormLabel>
                         </FormItem>
                       );
                     }}
@@ -129,20 +136,67 @@ function SubjectForm({
   );
 }
 
+// --- MAIN PAGE COMPONENT ---
 export default function SubjectsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user, isUserLoading } = useAuth();
+  const { toast } = useToast();
+
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
+  
+  // Data State
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [teachers, setTeachers] = useState<Staff[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const canManage = role === 'Director' || role === 'Administrator';
 
-  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
-  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
+  // --- ROBUST FETCH LOGIC ---
+  const fetchData = useCallback(async () => {
+      if(!user || !firestore) return;
+      setIsLoading(true);
+      try {
+          // 1. Fetch Subjects
+          const subSnap = await getDocs(collection(firestore, 'subjects'));
+          const subList = subSnap.docs.map(d => ({ id: d.id, ...d.data() } as Subject));
+          // Sort alphabetically
+          setSubjects(subList.sort((a,b) => a.name.localeCompare(b.name)));
 
-  const teachersQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]);
-  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
+          // 2. Fetch Teachers (Only if Admin)
+          if (canManage) {
+              // Try simple query first to avoid index issues
+              const staffSnap = await getDocs(collection(firestore, 'staff'));
+              const teacherList = staffSnap.docs
+                  .map(d => ({ uid: d.id, ...d.data() } as Staff))
+                  .filter(s => s.role === 'Teacher');
+              setTeachers(teacherList);
+          }
+
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsLoading(false);
+      }
+  }, [user, firestore, canManage, toast]);
+
+  useEffect(() => {
+      if(!isUserLoading && user) {
+          fetchData();
+      }
+  }, [isUserLoading, user, fetchData]);
+
+  const handleDelete = async (id: string) => {
+      if(!confirm("Delete this subject?")) return;
+      try {
+          await deleteDoc(doc(firestore, 'subjects', id));
+          toast({ title: "Deleted" });
+          fetchData();
+      } catch (e) {
+          toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
+      }
+  }
 
   const handleOpenDialog = (subject?: Subject) => {
     setEditingSubject(subject);
@@ -153,59 +207,54 @@ export default function SubjectsPage() {
     setFormOpen(false);
     setEditingSubject(undefined);
   };
-  
-  const onSubjectChange = () => {
-      // No longer needed due to real-time updates
-  }
-
-  const getTeacherNames = (teacherIds: string[]) => {
-    if (!teachers) return 'Loading...';
-    return teacherIds.map(id => teachers.find(t => t.uid === id)?.firstName).filter(Boolean).join(', ') || 'None Assigned';
-  };
 
   if (!canManage) {
     return (
       <Card>
-        <CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This page is restricted to Administrators and Directors.</CardDescription></CardHeader>
+        <CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>Restricted area.</CardDescription></CardHeader>
       </Card>
     );
   }
 
-  const isLoading = isLoadingSubjects || isLoadingTeachers;
-
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="space-y-6 p-6">
+      <Card className="border-t-4 border-t-purple-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2"><BookCopy /> Subject Management</CardTitle>
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
-          <Button onClick={() => handleOpenDialog()} disabled={isLoadingTeachers}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            New Subject
-          </Button>
+          <div className="flex gap-2">
+             <Button variant="outline" onClick={fetchData} disabled={isLoading}><RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Refresh</Button>
+             <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
+                <PlusCircle className="mr-2 h-4 w-4" /> New Subject
+             </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-2">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-            </div>
+            <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
           ) : (
-            <div className="border rounded-lg">
-              {subjects?.map((subject) => (
-                <div key={subject.id} className="flex items-center justify-between p-4 border-b last:border-b-0">
+            <div className="grid grid-cols-1 gap-4">
+              {subjects.map((subject) => (
+                <div key={subject.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all">
                   <div>
-                    <p className="font-semibold">{subject.name}</p>
-                    <p className="text-sm text-muted-foreground">{subject.teacherIds.length} teacher(s) assigned</p>
+                    <p className="font-bold text-lg text-slate-800">{subject.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                        {subject.teacherIds?.length || 0} teachers assigned
+                    </p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => handleOpenDialog(subject)}>
-                    Manage
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" onClick={() => handleOpenDialog(subject)}>
+                        <Edit className="h-4 w-4 text-blue-600"/>
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(subject.id)}>
+                        <Trash2 className="h-4 w-4 text-red-600"/>
+                    </Button>
+                  </div>
                 </div>
               ))}
-              {subjects?.length === 0 && <p className="text-center text-muted-foreground p-8">No subjects created yet.</p>}
+              {subjects.length === 0 && <p className="text-center text-muted-foreground p-8">No subjects created yet.</p>}
             </div>
           )}
         </CardContent>
@@ -218,8 +267,9 @@ export default function SubjectsPage() {
           </DialogHeader>
           <SubjectForm
             setOpen={handleCloseDialog}
-            allTeachers={teachers || []}
+            allTeachers={teachers}
             initialData={editingSubject}
+            onSuccess={fetchData}
           />
         </DialogContent>
       </Dialog>
