@@ -883,6 +883,136 @@ function ChallengeCreationForm({ setOpen }: { setOpen: (open: boolean) => void }
     );
 }
 
+function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user: hookUser } = useAuth();
+    const { toast } = useToast();
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [selectedClassId, setSelectedClassId] = useState<string>("");
+
+    const [generatedChallenge, setGeneratedChallenge] = useState<{
+        title: string;
+        prompt: string;
+        challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
+    } | null>(null);
+
+    const { data: classes } = useCollection<Class>(
+        useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
+    );
+
+    const form = useForm({
+        defaultValues: { topic: '', challengeType: 'Creative Writing' as const }
+    });
+
+    async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay' }) {
+        setIsGenerating(true);
+        setGeneratedChallenge(null);
+        toast({ title: 'Generating Challenge...', description: 'Please wait...' });
+
+        try {
+            const result = await generateWritingChallenge(values);
+            setGeneratedChallenge(result);
+            toast({ title: 'Challenge Generated!', description: 'Review the prompt below.' });
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'AI Error.' });
+        } finally {
+            setIsGenerating(false);
+        }
+    }
+
+    async function onSave() {
+        const auth = getAuth();
+        const currentUser = auth.currentUser || hookUser;
+
+        if (!generatedChallenge) {
+            toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
+            return;
+        }
+
+        if (!selectedClassId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Please select a class to assign this challenge.' });
+            return;
+        }
+
+        if (!currentUser) {
+            toast({ variant: 'destructive', title: 'Critical Auth Error', description: 'Browser has no session. Try Hard Refresh (Ctrl+F5).' });
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
+                title: generatedChallenge.title,
+                prompt: generatedChallenge.prompt,
+                challengeType: generatedChallenge.challengeType,
+                classId: selectedClassId,
+                createdBy: currentUser.uid,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success!', description: 'Challenge saved and assigned to the class.' });
+            setOpen(false);
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Save failed.' });
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
+    return (
+        <div className="space-y-4">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="topic" render={({ field }) => (
+                            <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        
+                        <FormField control={form.control} name="challengeType" render={({ field }) => (
+                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
+                                <SelectItem value="Creative Writing">Creative Writing</SelectItem>
+                                <SelectItem value="Summarization">Summarization</SelectItem>
+                                <SelectItem value="Essay">Essay</SelectItem>
+                            </SelectContent></Select><FormMessage /></FormItem>
+                        )}/>
+                    </div>
+                    <Button type="submit" disabled={isGenerating}>
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        Generate Challenge
+                    </Button>
+                </form>
+            </Form>
+
+            {generatedChallenge && (
+                <Card className="bg-muted/50">
+                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="italic">{generatedChallenge.prompt}</p>
+                        
+                        <div className="space-y-2">
+                            <Label>Assign to Class *</Label>
+                            <Select onValueChange={setSelectedClassId} value={selectedClassId}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a class" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        
+                        <Button onClick={onSave} disabled={isSaving || !selectedClassId}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+    );
+}
+
 function ManageWritingChallenges() {
     const firestore = useFirestore();
     const { data: challenges, isLoading: isLoadingChallenges } = useCollection<ElaWritingChallenge>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_writing_challenges')) : null, [firestore]));
@@ -935,145 +1065,6 @@ function ManageWritingChallenges() {
                 </Accordion>
             </CardContent>
         </Card>
-    );
-}
-
-function AiChallengeGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
-    const firestore = useFirestore();
-    const { user: hookUser } = useAuth();
-    const { toast } = useToast();
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-
-    const [selectedClassId, setSelectedClassId] = useState<string>("");
-
-    const [generatedChallenge, setGeneratedChallenge] = useState<{
-        title: string;
-        prompt: string;
-        challengeType: 'Creative Writing' | 'Summarization' | 'Essay';
-    } | null>(null);
-
-    const { data: classes } = useCollection<Class>(
-        useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
-    );
-
-    const form = useForm({
-        defaultValues: { topic: '', challengeType: 'Creative Writing' as const }
-    });
-
-    async function onGenerate(values: { topic: string; challengeType: 'Creative Writing' | 'Summarization' | 'Essay' }) {
-        setIsGenerating(true);
-        setGeneratedChallenge(null);
-        toast({ title: 'Generating Challenge...', description: 'Please wait...' });
-
-        try {
-            const result = await generateWritingChallenge(values);
-            setGeneratedChallenge(result);
-            toast({ title: 'Challenge Generated!', description: 'Review the prompt below.' });
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'AI Error.' });
-        } finally {
-            setIsGenerating(false);
-        }
-    }
-
-    async function onSave() {
-        const auth = getAuth();
-        const currentUser = auth.currentUser || hookUser; 
-
-        if (!generatedChallenge) {
-             toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
-             return;
-        }
-
-        if (!selectedClassId) {
-             toast({ variant: 'destructive', title: 'Error', description: 'Please select a class.' });
-             return;
-        }
-
-        if (!currentUser) {
-             toast({ variant: 'destructive', title: 'Critical Auth Error', description: 'Browser has no session. Try Hard Refresh (Ctrl+F5).' });
-             return;
-        }
-
-        setIsSaving(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                title: generatedChallenge.title,
-                prompt: generatedChallenge.prompt,
-                challengeType: generatedChallenge.challengeType,
-                classId: selectedClassId,
-                createdBy: currentUser.uid,
-                createdAt: serverTimestamp(),
-            });
-            toast({ title: 'Success!', description: 'Challenge saved.' });
-            setOpen(false);
-        } catch (e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Save failed.' });
-        } finally {
-            setIsSaving(false);
-        }
-    }
-
-    return (
-        <div className="space-y-4">
-             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onGenerate)} className="space-y-4 p-4 border rounded-md">
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <FormField control={form.control} name="topic" render={({ field }) => (
-                            <FormItem><FormLabel>Topic/Theme</FormLabel><FormControl><Input placeholder="e.g., A Journey to Mars" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        
-                        <FormField control={form.control} name="challengeType" render={({ field }) => (
-                            <FormItem><FormLabel>Challenge Type</FormLabel><Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>
-                                <SelectItem value="Creative Writing">Creative Writing</SelectItem>
-                                <SelectItem value="Summarization">Summarization</SelectItem>
-                                <SelectItem value="Essay">Essay</SelectItem>
-                            </SelectContent></Select><FormMessage /></FormItem>
-                        )}/>
-                        
-                        <div className="space-y-2">
-                            <Label>Assign to Class</Label>
-                            <Select 
-                                value={selectedClassId} 
-                                onValueChange={(val) => setSelectedClassId(val)}
-                            >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select a class" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {classes?.map(c => (
-                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {selectedClassId && <p className="text-xs text-green-600 font-bold">Selected: {classes?.find(c => c.id === selectedClassId)?.name}</p>}
-                        </div>
-
-                    </div>
-                    
-                    <Button type="submit" disabled={isGenerating}>
-                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Generate Challenge
-                    </Button>
-                </form>
-            </Form>
-
-            {generatedChallenge && (
-                <Card className="bg-muted/50">
-                    <CardHeader><CardTitle>{generatedChallenge.title}</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="italic">{generatedChallenge.prompt}</p>
-                        
-                        <Button onClick={onSave} disabled={isSaving}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Save Challenge
-                        </Button>
-                    </CardContent>
-                </Card>
-            )}
-        </div>
     );
 }
 
