@@ -54,16 +54,16 @@ export default function AttendanceReportsPage() {
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !dateRange?.from || !dateRange?.to) return null;
+        if (!user || !firestore || !dateRange?.from || !dateRange?.to) return null;
         return query(
             collection(firestore, 'attendance'),
             where('date', '>=', dateRange.from),
             where('date', '<=', dateRange.to)
         );
-    }, [firestore, dateRange]);
+    }, [firestore, user, dateRange]);
     const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
     
-    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
+    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]));
 
     const isLoading = isLoadingClasses || isLoadingAttendance || isLoadingStudents;
 
@@ -107,7 +107,7 @@ export default function AttendanceReportsPage() {
         }, {} as Record<string, number>);
 
         const totalPresentOrExcused = (statusCounts['Present'] || 0) + (statusCounts['Excused'] || 0);
-        const attendanceRate = (totalPresentOrExcused / totalRecords) * 100;
+        const attendanceRate = totalRecords > 0 ? (totalPresentOrExcused / totalRecords) * 100 : 0;
         
         const pieData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
 
