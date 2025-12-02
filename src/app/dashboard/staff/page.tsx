@@ -49,7 +49,7 @@ import {
   } from '@/components/ui/alert-dialog';
 import { ALL_ROLES, UserRole } from '@/lib/types';
 import { useAuth, useFirestore } from '@/firebase'; 
-import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp, getDocs } from 'firebase/firestore'; 
+import { collection, doc, deleteDoc, updateDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'; 
 import { signInWithEmailAndPassword, getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from 'firebase/auth'; 
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useCallback } from 'react';
@@ -215,63 +215,23 @@ function StaffList({ staff, isLoading }: { staff: StaffData[] | null, isLoading:
 
 function StaffPageContent() {
   const firestore = useFirestore();
-  // We use local state for user to bypass potential Context lag
-  const [currentUser, setCurrentUser] = useState<any>(null); 
+  const { user, isUserLoading } = useAuth(); 
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [staff, setStaff] = useState<StaffData[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
+  // Manual Login State
   const [manualEmail, setManualEmail] = useState('');
   const [manualPass, setManualPass] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  // --- 1. AUTH LISTENER (The Source of Truth) ---
-  useEffect(() => {
-      const auth = getAuth();
-      const unsub = onAuthStateChanged(auth, (user) => {
-          if (user) {
-              console.log("✅ Auth State: Logged In as", user.email);
-              setCurrentUser(user);
-          } else {
-              console.log("❌ Auth State: Logged Out");
-              setCurrentUser(null);
-              setIsLoadingData(false);
-          }
-      });
-      return () => unsub();
-  }, []);
-
-  // --- 2. DATA LISTENER ---
-  useEffect(() => {
-    if (!currentUser || !firestore) return;
-    
-    setIsLoadingData(true);
-    console.log("🔄 Connecting to Staff Collection...");
-
-    const q = collection(firestore, 'staff');
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
-        console.log(`✅ Listener Found ${staffList.length} staff.`);
-        setStaff(staffList);
-        setIsLoadingData(false);
-    }, (error) => {
-        console.error("❌ Listener Error:", error);
-        toast({ variant: "destructive", title: "Access Error", description: error.message });
-        setIsLoadingData(false);
-    });
-
-    return () => unsubscribe();
-  }, [firestore, currentUser, toast]);
 
   const handleManualLogin = async () => {
       if(!manualEmail || !manualPass) return;
       setIsLoggingIn(true);
       try {
           const auth = getAuth();
-          // Try Persistence
           await setPersistence(auth, browserLocalPersistence);
           await signInWithEmailAndPassword(auth, manualEmail, manualPass);
           
@@ -286,13 +246,13 @@ function StaffPageContent() {
 
   // --- REPAIR ACCOUNT ---
   const handleRepairAccount = async () => {
-    if(!currentUser || !firestore) return;
+    if(!user || !firestore) return;
     try {
-        await setDoc(doc(firestore, 'staff', currentUser.uid), {
-            uid: currentUser.uid,
+        await setDoc(doc(firestore, 'staff', user.uid), {
+            uid: user.uid,
             firstName: "Director",
             lastName: "Admin",
-            email: currentUser.email,
+            email: user.email,
             role: "Director",
             createdAt: serverTimestamp()
         }, { merge: true });
@@ -301,6 +261,34 @@ function StaffPageContent() {
         toast({ variant: "destructive", title: "Repair Failed", description: e.message });
     }
   };
+
+  // Real-Time Listener
+  useEffect(() => {
+    if (isUserLoading) return;
+    
+    if (!user || !firestore) {
+        setIsLoadingData(false);
+        return;
+    }
+    
+    setIsLoadingData(true);
+    console.log("🔄 Listening to 'staff' collection...");
+
+    const q = collection(firestore, 'staff');
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const staffList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StaffData));
+        console.log(`✅ Listener Updated: Found ${staffList.length} staff.`);
+        setStaff(staffList);
+        setIsLoadingData(false);
+    }, (error) => {
+        console.error("❌ Listener Error:", error);
+        toast({ variant: "destructive", title: "Access Error", description: error.message });
+        setIsLoadingData(false);
+    });
+
+    return () => unsubscribe();
+  }, [firestore, user, isUserLoading, toast]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -353,17 +341,17 @@ function StaffPageContent() {
           <CardContent className="space-y-4">
               <div className="text-xs font-mono text-blue-900 flex justify-between items-center">
                 <div>
-                    <div><strong>Status:</strong> {currentUser ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
-                    {currentUser && <div><strong>User:</strong> {currentUser.email}</div>}
+                    <div><strong>Status:</strong> {user ? <span className="text-green-600">AUTHENTICATED</span> : <span className="text-red-600">DISCONNECTED</span>}</div>
+                    {user && <div><strong>User:</strong> {user.email}</div>}
                 </div>
-                {currentUser && (
+                {user && (
                     <Button onClick={handleRepairAccount} size="sm" variant="outline" className="bg-white border-blue-300 hover:bg-blue-100 text-blue-700">
                         <UserPlus className="h-4 w-4 mr-2"/> Repair/Create My Admin Profile
                     </Button>
                 )}
               </div>
 
-              {!currentUser && (
+              {!user && (
                   <div className="p-4 bg-white rounded border border-blue-100 space-y-3">
                       <p className="text-xs text-slate-500">Session lost. Please re-connect here:</p>
                       <Input placeholder="Director Email" value={manualEmail} onChange={e => setManualEmail(e.target.value)} className="h-8 text-xs"/>
@@ -421,3 +409,5 @@ export default function StaffPage() {
         <StaffPageContent />
     )
 }
+
+    
