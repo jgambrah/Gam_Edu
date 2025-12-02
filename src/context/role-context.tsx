@@ -134,39 +134,37 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   const isLoading = isAuthLoading || isRoleLoading;
 
   useEffect(() => {
-      if (isLoading) return;
+    if (isLoading) return;
 
-      if (!user && pathname.startsWith('/dashboard')) {
-        router.push('/');
-        return;
-      }
+    if (!user && pathname.startsWith('/dashboard')) {
+      router.push('/');
+      return;
+    }
 
-      if (user && role) {
-        const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
+    if (user && role) {
+      const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
 
-        // A. STAFF
-        if (isStaff) {
-            const forbiddenPaths = ['/dashboard/students', '/dashboard/parents'];
-            if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
-                router.push('/dashboard/staff');
-            }
-        }
-        // B. STUDENT
-        else if (role === 'Student') {
-             const forbiddenPaths = ['/dashboard/staff', '/dashboard/parents'];
-             if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
-                 router.push('/dashboard/students');
-             }
-        }
-        // C. PARENT
-        else if (role === 'Parent') {
-            const forbiddenPaths = ['/dashboard/staff', '/dashboard/students'];
-            if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
-                router.push('/dashboard/parents');
-            }
+      if (isStaff) {
+        const forbiddenPaths = ['/dashboard/students', '/dashboard/parents', '/dashboard/parents-v2'];
+        if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
+          router.push('/dashboard/staff-management-v2');
         }
       }
+      else if (role === 'Student') {
+        const forbiddenPaths = ['/dashboard/staff', '/dashboard/parents', '/dashboard/staff-management-v2', '/dashboard/parents-v2'];
+        if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
+          router.push('/dashboard/students');
+        }
+      }
+      else if (role === 'Parent') {
+        const forbiddenPaths = ['/dashboard/staff', '/dashboard/students', '/dashboard/staff-management-v2'];
+        if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
+          router.push('/dashboard/parents-v2');
+        }
+      }
+    }
   }, [isLoading, user, role, pathname, router]);
+
 
   if (isLoading || (user && pathname === '/dashboard')) {
     return (
