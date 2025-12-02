@@ -841,6 +841,15 @@ export type ElaUserSubmission = {
     teacher_feedback?: string | null;
 };
 
+export type ElaLeaderboardEntry = {
+    userId: string;
+    userName: string;
+    profilePictureUrl?: string;
+    total_correct_answers: number;
+    total_challenges_completed: number;
+};
+
+
 // Game Zone Schemas
 export type GameLobby = {
     id: string; // The 6-digit game pin

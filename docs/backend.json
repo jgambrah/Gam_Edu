@@ -1309,6 +1309,33 @@
         }
       },
       "required": ["userId", "challenge_id", "submission_text", "date_submitted", "status"]
+    },
+    "ElaLeaderboard": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ElaLeaderboard",
+      "type": "object",
+      "description": "Stores aggregated scores for each student for the ELA leaderboard.",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "total_correct_answers": {
+          "type": "number",
+          "description": "Aggregated score from grammar and reading drills."
+        },
+        "total_challenges_completed": {
+          "type": "number",
+          "description": "Count of writing challenges submitted."
+        }
+      },
+      "required": ["userId", "userName", "total_correct_answers", "total_challenges_completed"]
     }
   },
   "auth": {
@@ -1777,6 +1804,15 @@
         }
       },
       {
+        "path": "/ela_leaderboard/{userId}",
+        "definition": {
+          "entityName": "ElaLeaderboard",
+          "schema": { "$ref": "#/backend/entities/ElaLeaderboard" },
+          "description": "Stores aggregated scores for each student for the ELA leaderboard.",
+          "params": [{ "name": "userId" }]
+        }
+      },
+      {
           "path": "/science_lab_questions/{id}",
           "definition": { "entityName": "LabQuestion", "schema": { "$ref": "#/backend/entities/ScienceProblem" }, "description": "Stores questions for The Science Lab.", "params": [{ "name": "id" }] }
       },
@@ -1800,3 +1836,4 @@
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
   }
 }
+

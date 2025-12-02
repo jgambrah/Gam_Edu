@@ -200,6 +200,11 @@ service cloud.firestore {
         allow update: if isTeacher() || isAdmin();
     }
     
+    match /ela_leaderboard/{userId} {
+        allow read: if isSignedIn();
+        allow write: if request.auth.uid == userId;
+    }
+
      match /coding-club-projects/{userId} {
       allow read, write: if request.auth.uid == userId;
     }
@@ -210,3 +215,4 @@ service cloud.firestore {
     }
   }
 }
+

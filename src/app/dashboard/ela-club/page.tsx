@@ -10,14 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, addDoc, where, serverTimestamp, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student } from '@/lib/types';
+import { collection, query, addDoc, where, serverTimestamp, getDocs, doc, updateDoc, increment, setDoc } from 'firebase/firestore';
+import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student, ElaLeaderboardEntry } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -44,148 +44,136 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getAuth } from 'firebase/auth';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
-// --- SUB-COMPONENT: The Reading Reader Modal ---
-function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPassage | null, open: boolean, setOpen: (o: boolean) => void }) {
-    const [answers, setAnswers] = useState<Record<number, string>>({});
-    const [showResults, setShowResults] = useState(false);
+// --- LEADERBOARD ---
+function ElaLeaderboard() {
     const firestore = useFirestore();
+    const leaderboardQuery = useMemoFirebase(
+      () => firestore ? query(collection(firestore, 'ela_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+      [firestore]
+    );
+    const { data: leaderboard, isLoading } = useCollection<ElaLeaderboardEntry>(leaderboardQuery);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-2">
+                {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+            </div>
+        )
+    }
+
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Rank</TableHead>
+                    <TableHead>Student</TableHead>
+                    <TableHead className="text-right">Correct Answers</TableHead>
+                    <TableHead className="text-right">Challenges Completed</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {leaderboard?.map((entry, index) => (
+                    <TableRow key={entry.userId}>
+                        <TableCell className="font-bold text-lg">{index + 1}</TableCell>
+                        <TableCell>
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarImage src={entry.profilePictureUrl} />
+                                    <AvatarFallback>{entry.userName?.charAt(0) || 'S'}</AvatarFallback>
+                                </Avatar>
+                                <span>{entry.userName}</span>
+                            </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">{entry.total_correct_answers}</TableCell>
+                        <TableCell className="text-right">{entry.total_challenges_completed}</TableCell>
+                    </TableRow>
+                ))}
+                {leaderboard?.length === 0 && (
+                    <TableRow><TableCell colSpan={4} className="text-center">The leaderboard is empty. Be the first to get a correct answer!</TableCell></TableRow>
+                )}
+            </TableBody>
+        </Table>
+    )
+}
+
+// --- SUB-COMPONENT: The Actual Drill Modal ---
+function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | null, open: boolean, setOpen: (o: boolean) => void }) {
+    const [selectedOption, setSelectedOption] = useState('');
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isCorrect, setIsCorrect] = useState(false);
     const { user } = useUser();
+    const firestore = useFirestore();
 
-    if (!passage) return null;
-
-    // Calculate score
-    const calculateScore = () => {
-        let correct = 0;
-        let total = passage.question_set.length;
-        passage.question_set.forEach((q, idx) => {
-            // Simple case-insensitive match for short answers, exact match for MCQ
-            if (answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase()) {
-                correct++;
-            }
-        });
-        return { correct, total, percentage: (correct / total) * 100 };
-    };
+    if (!drill) return null;
 
     const handleSubmit = async () => {
-        setShowResults(true);
-        const { percentage } = calculateScore();
+        if (!selectedOption) return;
+        
+        const correct = selectedOption === drill.correct_answer;
+        setIsCorrect(correct);
+        setIsSubmitted(true);
 
-        // Save progress to Firestore
-        if (user && firestore) {
+        if (correct && user && firestore) {
             try {
-                await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
-                    userId: user.uid,
-                    challenge_id: passage.id,
-                    challenge_title: passage.title,
-                    type: 'Reading Comprehension',
-                    answers: answers,
-                    teacher_score: percentage,
-                    date_submitted: serverTimestamp(),
-                    status: 'Graded'
-                });
-            } catch (e) {
-                console.error("Failed to save reading progress", e);
-            }
+                 const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+                 await setDoc(leaderboardRef, {
+                     userId: user.uid,
+                     userName: user.displayName || user.email,
+                     profilePictureUrl: user.photoURL || '',
+                     total_correct_answers: increment(1),
+                 }, { merge: true });
+            } catch (e) { console.error("Failed to update ELA leaderboard", e); }
         }
     };
 
-    const handleClose = () => {
+    const handleReset = () => {
+        setIsSubmitted(false);
+        setSelectedOption('');
         setOpen(false);
-        setTimeout(() => {
-            setShowResults(false);
-            setAnswers({});
-        }, 300);
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+        <Dialog open={open} onOpenChange={handleReset}>
+            <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>{passage.title}</DialogTitle>
-                    <DialogDescription>Read the passage on the left and answer the questions on the right.</DialogDescription>
+                    <DialogTitle>{drill.topic} Practice</DialogTitle>
+                    <DialogDescription>Read the prompt and select the correct answer.</DialogDescription>
                 </DialogHeader>
                 
-                <div className="flex flex-1 gap-6 overflow-hidden min-h-0">
-                    {/* LEFT SIDE: PASSAGE TEXT */}
-                    <div className="w-1/2 flex flex-col border-r pr-6">
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                            <FileText className="h-4 w-4"/> Passage Text 
-                            <Badge variant="outline">{passage.reading_level}</Badge>
-                        </h4>
-                        <ScrollArea className="flex-1 bg-muted/30 p-4 rounded-md border">
-                            <div className="prose prose-sm max-w-none whitespace-pre-wrap">
-                                {passage.passage_text}
-                            </div>
-                        </ScrollArea>
+                <div className="py-4 space-y-4">
+                    <div className="bg-muted p-4 rounded-md text-lg font-medium">
+                        {drill.question_prompt}
                     </div>
 
-                    {/* RIGHT SIDE: QUESTIONS */}
-                    <div className="w-1/2 flex flex-col">
-                        <h4 className="font-semibold mb-2">Comprehension Questions</h4>
-                        <ScrollArea className="flex-1 pr-4">
-                            <div className="space-y-6">
-                                {passage.question_set.map((q, idx) => {
-                                    const isCorrect = answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase();
-                                    return (
-                                        <div key={idx} className={cn("p-4 border rounded-lg", 
-                                            showResults && isCorrect ? "bg-green-50 border-green-200" : "",
-                                            showResults && !isCorrect ? "bg-red-50 border-red-200" : ""
-                                        )}>
-                                            <p className="font-medium mb-3">{idx + 1}. {q.question}</p>
-                                            
-                                            {/* RENDER OPTIONS OR INPUT */}
-                                            {q.options && q.options.length > 0 ? (
-                                                <RadioGroup 
-                                                    value={answers[idx] || ''} 
-                                                    onValueChange={(val) => setAnswers(prev => ({...prev, [idx]: val}))}
-                                                    disabled={showResults}
-                                                >
-                                                    {q.options.map((opt, i) => (
-                                                        <div key={`${passage.id}-${q.question}-${i}`} className="flex items-center space-x-2">
-                                                            <RadioGroupItem value={opt} id={`q${idx}-opt${i}`} />
-                                                            <Label htmlFor={`q${idx}-opt${i}`} className="font-normal cursor-pointer">{opt}</Label>
-                                                        </div>
-                                                    ))}
-                                                </RadioGroup>
-                                            ) : (
-                                                <Input 
-                                                    placeholder="Type your answer..." 
-                                                    value={answers[idx] || ''}
-                                                    onChange={(e) => setAnswers(prev => ({...prev, [idx]: e.target.value}))}
-                                                    disabled={showResults}
-                                                />
-                                            )}
-
-                                            {/* SHOW FEEDBACK */}
-                                            {showResults && (
-                                                <div className="mt-2 text-xs font-semibold">
-                                                    {isCorrect ? (
-                                                        <span className="text-green-600 flex items-center gap-1"><CheckCircle2 className="h-3 w-3"/> Correct</span>
-                                                    ) : (
-                                                        <span className="text-red-600">Correct Answer: {q.correct_answer_key}</span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
+                    <RadioGroup value={selectedOption} onValueChange={setSelectedOption} disabled={isSubmitted}>
+                        {drill.options.map((option, idx) => (
+                            <div key={idx} className={cn("flex items-center space-x-2 border p-3 rounded-md transition-colors", 
+                                isSubmitted && option === drill.correct_answer ? "border-green-500 bg-green-50" : "",
+                                isSubmitted && option === selectedOption && !isCorrect ? "border-red-500 bg-red-50" : ""
+                            )}>
+                                <RadioGroupItem value={option} id={`opt-${idx}`} />
+                                <Label htmlFor={`opt-${idx}`} className="flex-grow cursor-pointer">{option}</Label>
+                                {isSubmitted && option === drill.correct_answer && <CheckCircle2 className="h-5 w-5 text-green-600" />}
+                                {isSubmitted && option === selectedOption && !isCorrect && <XCircle className="h-5 w-5 text-red-600" />}
                             </div>
-                        </ScrollArea>
-                    </div>
+                        ))}
+                    </RadioGroup>
+
+                    {isSubmitted && (
+                        <div className={cn("p-4 rounded-md text-center font-bold", isCorrect ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")}>
+                            {isCorrect ? "Correct! Great job." : `Incorrect. The correct answer was: ${drill.correct_answer}`}
+                        </div>
+                    )}
                 </div>
 
-                <DialogFooter className="pt-4 border-t mt-4">
-                    {!showResults ? (
-                        <Button onClick={handleSubmit} className="w-full md:w-auto">Submit Answers</Button>
+                <DialogFooter>
+                    {!isSubmitted ? (
+                        <Button onClick={handleSubmit} disabled={!selectedOption}>Check Answer</Button>
                     ) : (
-                        <div className="flex justify-between w-full items-center">
-                            <div className="font-bold">
-                                Score: {calculateScore().correct} / {passage.question_set.length}
-                            </div>
-                            <Button onClick={handleClose}>Finish Practice</Button>
-                        </div>
+                        <Button onClick={handleReset}>Close & Continue</Button>
                     )}
                 </DialogFooter>
             </DialogContent>
@@ -255,13 +243,13 @@ function ReadingPracticeTab() {
         </CardHeader>
         <CardContent>
             {isLoading ? (
-                <div className="flex flex-col space-y-4">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                    <div className="flex justify-center text-muted-foreground text-sm gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Loading library...
-                    </div>
+            <div className="flex flex-col space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <div className="flex justify-center text-muted-foreground text-sm gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Loading library...
                 </div>
+            </div>
             ) :
             (!isStaff && !studentClassId) ? (
                 <div className="text-center py-8">
@@ -322,6 +310,149 @@ function ReadingPracticeTab() {
   );
 }
 
+// --- SUB-COMPONENT: The Reading Reader Modal ---
+function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPassage | null, open: boolean, setOpen: (o: boolean) => void }) {
+    const [answers, setAnswers] = useState<Record<number, string>>({});
+    const [showResults, setShowResults] = useState(false);
+    const firestore = useFirestore();
+    const { user } = useUser();
+
+    if (!passage) return null;
+
+    // Calculate score
+    const calculateScore = () => {
+        let correct = 0;
+        let total = passage.question_set.length;
+        passage.question_set.forEach((q, idx) => {
+            if (answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase()) {
+                correct++;
+            }
+        });
+        return { correct, total, percentage: (correct / total) * 100 };
+    };
+
+    const handleSubmit = async () => {
+        setShowResults(true);
+        const { correct } = calculateScore();
+
+        // Save progress to Firestore
+        if (user && firestore && correct > 0) {
+            try {
+                const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+                await setDoc(leaderboardRef, {
+                    userId: user.uid,
+                    userName: user.displayName || user.email,
+                    profilePictureUrl: user.photoURL || '',
+                    total_correct_answers: increment(correct),
+                }, { merge: true });
+            } catch (e) {
+                console.error("Failed to save reading progress", e);
+            }
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setTimeout(() => {
+            setShowResults(false);
+            setAnswers({});
+        }, 300);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={handleClose}>
+            <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>{passage.title}</DialogTitle>
+                    <DialogDescription>Read the passage on the left and answer the questions on the right.</DialogDescription>
+                </DialogHeader>
+                
+                <div className="flex flex-1 gap-6 overflow-hidden min-h-0">
+                    {/* LEFT SIDE: PASSAGE TEXT */}
+                    <div className="w-1/2 flex flex-col border-r pr-6">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <FileText className="h-4 w-4"/> Passage Text 
+                            <Badge variant="outline">{passage.reading_level}</Badge>
+                        </h4>
+                        <ScrollArea className="flex-1 bg-muted/30 p-4 rounded-md border">
+                            <div className="prose prose-sm max-w-none whitespace-pre-wrap">
+                                {passage.passage_text}
+                            </div>
+                        </ScrollArea>
+                    </div>
+
+                    {/* RIGHT SIDE: QUESTIONS */}
+                    <div className="w-1/2 flex flex-col">
+                        <h4 className="font-semibold mb-2">Comprehension Questions</h4>
+                        <ScrollArea className="flex-1 pr-4">
+                            <div className="space-y-6">
+                                {passage.question_set.map((q, idx) => {
+                                    const isCorrect = answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase();
+                                    return (
+                                        <div key={`${passage.id}-${idx}`} className={cn("p-4 border rounded-lg", 
+                                            showResults && isCorrect ? "bg-green-50 border-green-200" : "",
+                                            showResults && !isCorrect ? "bg-red-50 border-red-200" : ""
+                                        )}>
+                                            <p className="font-medium mb-3">{idx + 1}. {q.question}</p>
+                                            
+                                            {/* RENDER OPTIONS OR INPUT */}
+                                            {q.options && q.options.length > 0 ? (
+                                                <RadioGroup 
+                                                    value={answers[idx] || ''} 
+                                                    onValueChange={(val) => setAnswers(prev => ({...prev, [idx]: val}))}
+                                                    disabled={showResults}
+                                                >
+                                                    {q.options.map((opt, i) => (
+                                                        <div key={`${passage.id}-${q.question}-${i}`} className="flex items-center space-x-2">
+                                                            <RadioGroupItem value={opt} id={`q${idx}-opt${i}`} />
+                                                            <Label htmlFor={`q${idx}-opt${i}`} className="font-normal cursor-pointer">{opt}</Label>
+                                                        </div>
+                                                    ))}
+                                                </RadioGroup>
+                                            ) : (
+                                                <Input 
+                                                    placeholder="Type your answer..." 
+                                                    value={answers[idx] || ''}
+                                                    onChange={(e) => setAnswers(prev => ({...prev, [idx]: e.target.value}))}
+                                                    disabled={showResults}
+                                                />
+                                            )}
+
+                                            {/* SHOW FEEDBACK */}
+                                            {showResults && (
+                                                <div className="mt-2 text-xs font-semibold">
+                                                    {isCorrect ? (
+                                                        <span className="text-green-600 flex items-center gap-1"><CheckCircle2 className="h-3 w-3"/> Correct</span>
+                                                    ) : (
+                                                        <span className="text-red-600">Correct Answer: {q.correct_answer_key}</span>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </ScrollArea>
+                    </div>
+                </div>
+
+                <DialogFooter className="pt-4 border-t mt-4">
+                    {!showResults ? (
+                        <Button onClick={handleSubmit} className="w-full md:w-auto">Submit Answers</Button>
+                    ) : (
+                        <div className="flex justify-between w-full items-center">
+                            <div className="font-bold">
+                                Score: {calculateScore().correct} / {passage.question_set.length}
+                            </div>
+                            <Button onClick={handleClose}>Finish Practice</Button>
+                        </div>
+                    )}
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 // --- SUB-COMPONENT: Writing Workspace Modal ---
 function ActiveChallengeDialog({ 
     challenge, 
@@ -358,6 +489,15 @@ function ActiveChallengeDialog({
                 teacher_score: null,
                 teacher_feedback: ''
             });
+
+             const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+             await setDoc(leaderboardRef, {
+                 userId: user.uid,
+                 userName: user.displayName || user.email,
+                 profilePictureUrl: user.photoURL || '',
+                 total_challenges_completed: increment(1),
+             }, { merge: true });
+
             toast({ title: 'Success', description: 'Your work has been submitted for review.' });
             setOpen(false);
         } catch (error) {
@@ -434,6 +574,92 @@ function ActiveChallengeDialog({
         </Dialog>
     );
 }
+
+// --- Main ELA Club Page Component ---
+export default function ElaClubPage() {
+  const { role } = useRole();
+  const isTeacherOrAdmin =
+    role === 'Teacher' || role === 'Administrator' || role === 'Director';
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpenCheck />
+            ELA Club
+          </CardTitle>
+          <CardDescription>
+            Improve your reading, writing, and grammar skills.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      <Tabs defaultValue="grammar" className="w-full">
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-7" : "grid-cols-4")}>
+          <TabsTrigger value="grammar">
+            <Edit className="mr-2 h-4 w-4" />
+            Grammar Practice
+          </TabsTrigger>
+          <TabsTrigger value="reading">
+            <FileText className="mr-2 h-4 w-4" />
+            Reading Practice
+          </TabsTrigger>
+          <TabsTrigger value="writing">
+            <PenSquare className="mr-2 h-4 w-4" />
+            Writing Challenges
+          </TabsTrigger>
+           <TabsTrigger value="leaderboard">
+            <Trophy className="mr-2 h-4 w-4" />
+            Leaderboard
+          </TabsTrigger>
+          {isTeacherOrAdmin && <TabsTrigger value="manage-drills">Manage Drills</TabsTrigger>}
+          {isTeacherOrAdmin && <TabsTrigger value="manage-passages">Manage Passages</TabsTrigger>}
+          {isTeacherOrAdmin && <TabsTrigger value="manage-writing">Manage Writing</TabsTrigger>}
+        </TabsList>
+        <TabsContent value="grammar">
+          <GrammarPractice />
+        </TabsContent>
+        <TabsContent value="reading">
+          <ReadingPracticeTab />
+        </TabsContent>
+        <TabsContent value="writing">
+          <WritingSubmissionTab />
+        </TabsContent>
+        <TabsContent value="leaderboard">
+            <Card>
+                <CardHeader>
+                    <CardTitle>ELA Club Leaderboard</CardTitle>
+                    <CardDescription>Ranking based on correct answers in grammar and reading drills.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ElaLeaderboard />
+                </CardContent>
+            </Card>
+        </TabsContent>
+        {isTeacherOrAdmin && (
+            <TabsContent value="manage-drills">
+                <ManageDrills />
+            </TabsContent>
+        )}
+         {isTeacherOrAdmin && (
+            <TabsContent value="manage-passages">
+                <ManagePassages />
+            </TabsContent>
+        )}
+        {isTeacherOrAdmin && (
+            <TabsContent value="manage-writing">
+                <ManageWritingChallenges />
+            </TabsContent>
+        )}
+      </Tabs>
+    </div>
+  );
+}
+
+// Duplicated components from the rest of the file...
+// These were copied from the provided context, they should be identical
+// to the ones already in the file.
 
 function WritingSubmissionTab() {
     const firestore = useFirestore();
@@ -1087,73 +1313,6 @@ function ManageWritingChallenges() {
     );
 }
 
-// --- Main ELA Club Page Component ---
-export default function ElaClubPage() {
-  const { role } = useRole();
-  const isTeacherOrAdmin =
-    role === 'Teacher' || role === 'Administrator' || role === 'Director';
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpenCheck />
-            ELA Club
-          </CardTitle>
-          <CardDescription>
-            Improve your reading, writing, and grammar skills.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      <Tabs defaultValue="grammar" className="w-full">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-6" : "grid-cols-3")}>
-          <TabsTrigger value="grammar">
-            <Edit className="mr-2 h-4 w-4" />
-            Grammar Practice
-          </TabsTrigger>
-          <TabsTrigger value="reading">
-            <FileText className="mr-2 h-4 w-4" />
-            Reading Practice
-          </TabsTrigger>
-          <TabsTrigger value="writing">
-            <PenSquare className="mr-2 h-4 w-4" />
-            Writing Challenges
-          </TabsTrigger>
-          {isTeacherOrAdmin && <TabsTrigger value="manage-drills">Manage Drills</TabsTrigger>}
-          {isTeacherOrAdmin && <TabsTrigger value="manage-passages">Manage Passages</TabsTrigger>}
-          {isTeacherOrAdmin && <TabsTrigger value="manage-writing">Manage Writing</TabsTrigger>}
-        </TabsList>
-        <TabsContent value="grammar">
-          <GrammarPractice />
-        </TabsContent>
-        <TabsContent value="reading">
-          <ReadingPracticeTab />
-        </TabsContent>
-        <TabsContent value="writing">
-          <WritingSubmissionTab />
-        </TabsContent>
-        {isTeacherOrAdmin && (
-            <TabsContent value="manage-drills">
-                <ManageDrills />
-            </TabsContent>
-        )}
-         {isTeacherOrAdmin && (
-            <TabsContent value="manage-passages">
-                <ManagePassages />
-            </TabsContent>
-        )}
-        {isTeacherOrAdmin && (
-            <TabsContent value="manage-writing">
-                <ManageWritingChallenges />
-            </TabsContent>
-        )}
-      </Tabs>
-    </div>
-  );
-}
-
 function ManageDrills() {
     const firestore = useFirestore();
     const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_grammar_drills')) : null, [firestore]));
@@ -1324,3 +1483,4 @@ function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean)
         </div>
     );
 }
+
