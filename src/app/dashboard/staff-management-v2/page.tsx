@@ -3,8 +3,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-// FIX: Using getDocs (Direct Fetch) instead of onSnapshot (Listener)
-import { collection, getDocs, orderBy, query, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+// FIX: All imports at the top
+import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -35,11 +35,20 @@ export default function StaffManagementV2() {
 
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Modal State
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // --- 1. DIRECT DATA FETCHING ---
+  // SAFETY VALVE: Reset loading state when modal opens
+  useEffect(() => {
+    if (isAddOpen) {
+        setIsSubmitting(false);
+    }
+  }, [isAddOpen]);
+
+  // --- 1. FETCH LOGIC ---
   const fetchStaff = useCallback(async () => {
     if (!user || !firestore) return;
 
@@ -47,7 +56,6 @@ export default function StaffManagementV2() {
     console.log("🔄 Fetching Staff List...");
 
     try {
-        // Simple fetch - no complex logic
         const q = collection(firestore, 'staff');
         const snapshot = await getDocs(q);
         
@@ -73,9 +81,11 @@ export default function StaffManagementV2() {
       }
   }, [isUserLoading, user, fetchStaff]);
 
-  // --- 2. ADD STAFF LOGIC ---
+  // --- 2. ADD STAFF LOGIC (FIXED) ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      
+      if (isSubmitting) return; // Prevent double clicks
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
@@ -85,12 +95,21 @@ export default function StaffManagementV2() {
       const email = formData.get('email') as string;
       const password = "password123"; 
 
-      try {
-          // A. Create Auth User
-          const result = await createNewUser(email, password, role, { firstName, lastName });
-          if ('error' in result) throw new Error(result.error);
+      console.log("🚀 Starting Add Staff Process...");
 
-          // B. Create Firestore Doc
+      try {
+          // A. Create Auth User (Server Action)
+          console.log("1. Creating Auth User...");
+          const result = await createNewUser(email, password, role, { firstName, lastName });
+          
+          if ('error' in result) {
+              throw new Error(result.error);
+          }
+
+          console.log("2. Auth Created (UID):", result.uid);
+
+          // B. Create Firestore Doc (Client SDK)
+          console.log("3. Saving to Firestore...");
           await setDoc(doc(firestore, 'staff', result.uid), {
               uid: result.uid,
               firstName,
@@ -100,17 +119,18 @@ export default function StaffManagementV2() {
               createdAt: serverTimestamp()
           });
 
+          console.log("4. Success!");
           toast({ title: "Success", description: `${firstName} added.` });
           setIsAddOpen(false);
           
-          // C. REFRESH LIST MANUALLY
+          // C. Refresh List
           await fetchStaff(); 
 
       } catch (error: any) {
-          console.error(error);
+          console.error("❌ Add Staff Error:", error);
           toast({ variant: 'destructive', title: "Error", description: error.message });
       } finally {
-          setIsSubmitting(false);
+          setIsSubmitting(false); // This will always run now
       }
   };
 
