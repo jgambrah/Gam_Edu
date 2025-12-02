@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -77,7 +78,7 @@ export default function StaffManagementV2() {
     } finally {
         setIsLoading(false);
     }
-  }, [firestore, toast]); // Only depend on firestore instance
+  }, [firestore]); // Only depend on firestore instance
 
   // Run fetch immediately when firestore is ready
   useEffect(() => {
@@ -245,7 +246,6 @@ export default function StaffManagementV2() {
                                     <TableCell><Badge variant="outline">{s.role}</Badge></TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            {/* EDIT BUTTON */}
                                             <Button variant="ghost" size="sm" onClick={() => setEditingStaff(s)}>
                                                 <Edit className="h-4 w-4 text-blue-600"/>
                                             </Button>
