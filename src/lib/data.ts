@@ -1,4 +1,3 @@
-
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -66,22 +65,10 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/students-v2',
-            title: 'Students V2',
-            icon: GraduationCap,
-            roles: ['Director', 'Administrator'],
-        },
-        {
             path: '/dashboard/staff-management-v2',
             title: 'Staff Management V2',
             icon: UserCog,
             roles: ['Director', 'Administrator', 'Teacher'],
-        },
-        {
-            path: '/dashboard/parents-v2',
-            title: 'Parents V2',
-            icon: HeartHandshake,
-            roles: ['Director', 'Administrator'],
         },
         {
             path: '/dashboard/alumni',
@@ -110,7 +97,7 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
-            path: '/dashboard/subjects',
+            path: '/dashboard/academics/subjects',
             title: 'Subjects',
             icon: BookCopy,
             roles: ['Director', 'Administrator'],
@@ -130,12 +117,6 @@ export const navItems: NavItem[] = [
          {
             path: '/dashboard/academics/learning-materials',
             title: 'Learning Materials',
-            icon: FolderKanban,
-            roles: ['Director', 'Administrator', 'Teacher', 'Student'],
-        },
-        {
-            path: '/dashboard/academics/learning-materials-v2',
-            title: 'Learning Materials V2',
             icon: FolderKanban,
             roles: ['Director', 'Administrator', 'Teacher', 'Student'],
         },
