@@ -1,9 +1,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, onSnapshot, orderBy, query, addDoc, serverTimestamp, deleteDoc, doc, setDoc } from 'firebase/firestore';
+// FIX: Using getDocs (Direct Fetch) instead of onSnapshot (Listener)
+import { collection, getDocs, orderBy, query, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -17,9 +18,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw } from 'lucide-react';
 
-// Simple Type
 type StaffMember = {
   id: string;
   firstName: string;
@@ -39,37 +39,39 @@ export default function StaffManagementV2() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // --- 1. ROBUST DATA LOADING ---
-  useEffect(() => {
-    // Wait for Auth
-    if (isUserLoading) return;
-    if (!user || !firestore) {
-        setIsLoading(false);
-        return;
-    }
+  // --- 1. DIRECT DATA FETCHING ---
+  const fetchStaff = useCallback(async () => {
+    if (!user || !firestore) return;
 
-    console.log("🔄 V2: Connecting to Staff DB...");
+    setIsLoading(true);
+    console.log("🔄 Fetching Staff List...");
 
-    // Simple Query - No complex filters yet
-    const q = collection(firestore, 'staff');
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    try {
+        // Simple fetch - no complex logic
+        const q = collection(firestore, 'staff');
+        const snapshot = await getDocs(q);
+        
         const data = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         })) as StaffMember[];
-        
-        console.log(`✅ V2: Loaded ${data.length} staff.`);
-        setStaff(data);
-        setIsLoading(false);
-    }, (err) => {
-        console.error("❌ V2 Error:", err);
-        toast({ variant: 'destructive', title: "Database Error", description: err.message });
-        setIsLoading(false);
-    });
 
-    return () => unsubscribe();
-  }, [user, firestore, isUserLoading]);
+        console.log(`✅ Found ${data.length} staff members.`);
+        setStaff(data);
+    } catch (err: any) {
+        console.error("Fetch Error:", err);
+        toast({ variant: 'destructive', title: "Error", description: err.message });
+    } finally {
+        setIsLoading(false);
+    }
+  }, [user, firestore, toast]);
+
+  // Load on mount
+  useEffect(() => {
+      if (!isUserLoading && user) {
+          fetchStaff();
+      }
+  }, [isUserLoading, user, fetchStaff]);
 
   // --- 2. ADD STAFF LOGIC ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -81,15 +83,14 @@ export default function StaffManagementV2() {
       const lastName = formData.get('lastName') as string;
       const role = formData.get('role') as UserRole;
       const email = formData.get('email') as string;
-      const password = "password123"; // Default
+      const password = "password123"; 
 
       try {
-          // A. Create Auth User (Server Action)
+          // A. Create Auth User
           const result = await createNewUser(email, password, role, { firstName, lastName });
           if ('error' in result) throw new Error(result.error);
 
-          // B. Create Firestore Doc (Client SDK)
-          // Note: We use the UID from Auth as the Doc ID
+          // B. Create Firestore Doc
           await setDoc(doc(firestore, 'staff', result.uid), {
               uid: result.uid,
               firstName,
@@ -99,8 +100,12 @@ export default function StaffManagementV2() {
               createdAt: serverTimestamp()
           });
 
-          toast({ title: "Success", description: "Staff member created." });
+          toast({ title: "Success", description: `${firstName} added.` });
           setIsAddOpen(false);
+          
+          // C. REFRESH LIST MANUALLY
+          await fetchStaff(); 
+
       } catch (error: any) {
           console.error(error);
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -111,16 +116,16 @@ export default function StaffManagementV2() {
 
   // --- 3. DELETE LOGIC ---
   const handleDelete = async (id: string) => {
-      if(!confirm("Delete this staff profile? (This does not delete the login account)")) return;
+      if(!confirm("Delete this staff profile?")) return;
       try {
           await deleteDoc(doc(firestore, 'staff', id));
           toast({ title: "Deleted" });
+          fetchStaff(); // Refresh list
       } catch (e) {
           toast({ variant: 'destructive', title: "Error", description: "Delete failed" });
       }
   };
 
-  // --- 4. FILTERING ---
   const filteredStaff = staff.filter(s => 
     (s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -128,6 +133,7 @@ export default function StaffManagementV2() {
 
   return (
     <div className="space-y-6 p-6">
+      {/* HEADER */}
       <Card className="border-t-4 border-t-blue-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -136,13 +142,17 @@ export default function StaffManagementV2() {
                 </CardTitle>
                 <CardDescription>Manage teachers and administrators.</CardDescription>
             </div>
-            <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-                <UserPlus className="h-4 w-4 mr-2"/> Add Staff
-            </Button>
+            <div className="flex gap-2">
+                <Button variant="outline" onClick={fetchStaff}>
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
+                </Button>
+                <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                    <UserPlus className="h-4 w-4 mr-2"/> Add Staff
+                </Button>
+            </div>
         </CardHeader>
         
         <CardContent className="space-y-4">
-            {/* Search Bar */}
             <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input 
@@ -153,12 +163,12 @@ export default function StaffManagementV2() {
                 />
             </div>
 
-            {/* List */}
+            {/* LIST */}
             {isLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-blue-500"/></div>
             ) : filteredStaff.length === 0 ? (
                 <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                    No staff found.
+                    No staff found in database.
                 </div>
             ) : (
                 <div className="rounded-md border">
