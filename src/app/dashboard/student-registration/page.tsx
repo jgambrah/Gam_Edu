@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,13 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -151,7 +146,13 @@ function StudentRegistrationForm() {
                     <FormItem><FormLabel>Previous School (Optional)</FormLabel><FormControl><Input placeholder="Old School Name" {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="student.desiredGrade" render={({ field }) => (
-                    <FormItem><FormLabel>Desired Grade Level</FormLabel><FormControl><Input placeholder="e.g., Grade 9" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Desired Grade Level</FormLabel><Select onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Select grade..." /></SelectTrigger></FormControl>
+                    <SelectContent>
+                        {['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'JHS 1', 'JHS 2', 'JHS 3'].map(grade => (
+                            <SelectItem key={grade} value={grade}>{grade}</SelectItem>
+                        ))}
+                    </SelectContent>
+                    </Select><FormMessage /></FormItem>
                 )}/>
                </div>
             </section>
