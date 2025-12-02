@@ -16,7 +16,7 @@ import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, addDoc, where, serverTimestamp, getDocs, doc, updateDoc, increment, setDoc } from 'firebase/firestore';
+import { collection, query, addDoc, where, serverTimestamp, getDocs, doc, updateDoc, increment, setDoc, orderBy } from 'firebase/firestore';
 import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student, ElaLeaderboardEntry } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -149,7 +149,7 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
                     </div>
 
                     <RadioGroup value={selectedOption} onValueChange={setSelectedOption} disabled={isSubmitted}>
-                        {drill.options.map((option, idx) => (
+                        {drill.options?.map((option, idx) => (
                             <div key={idx} className={cn("flex items-center space-x-2 border p-3 rounded-md transition-colors", 
                                 isSubmitted && option === drill.correct_answer ? "border-green-500 bg-green-50" : "",
                                 isSubmitted && option === selectedOption && !isCorrect ? "border-red-500 bg-red-50" : ""
@@ -804,7 +804,7 @@ function WritingSubmissionTab() {
 }
 
 // --- Teacher/Admin Management Components ---
-function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
+function AiPassageGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) => void; onSuccess: () => void; }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -859,6 +859,7 @@ function AiPassageGenerator({ setOpen }: { setOpen: (open: boolean) => void }) {
         classId: selectedClassId, // Save with the selected classId
       });
       toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
+      onSuccess();
       setOpen(false);
     } catch (e) {
       console.error("Error saving passage:", e);
@@ -1030,7 +1031,7 @@ function ManagePassages() {
                 <div className="flex gap-2">
                     <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
                         <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4" />Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Passage Generator</DialogTitle><DialogDescription>Generate a complete reading passage with comprehension questions.</DialogDescription></DialogHeader><AiPassageGenerator setOpen={setIsAiFormOpen} /></DialogContent>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Passage Generator</DialogTitle><DialogDescription>Generate a complete reading passage with comprehension questions.</DialogDescription></DialogHeader><AiPassageGenerator setOpen={setIsAiFormOpen} onSuccess={forceRefetch} /></DialogContent>
                     </Dialog>
                     <Button onClick={handleCreate}><PlusCircle className="mr-2 h-4" />New Passage</Button>
                 </div>
@@ -1483,4 +1484,6 @@ function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean)
         </div>
     );
 }
+
+
 
