@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import { 
   createContext, 
@@ -141,26 +140,16 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       return;
     }
 
-    if (user && role) {
+    // Only redirect if the user is on the base dashboard page
+    if (user && role && pathname === '/dashboard') {
       const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
 
       if (isStaff) {
-        const forbiddenPaths = ['/dashboard/parents-v2'];
-        if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
-          router.push('/dashboard/staff-management-v2');
-        }
-      }
-      else if (role === 'Student') {
-        const forbiddenPaths = ['/dashboard/staff-management-v2', '/dashboard/parents-v2'];
-        if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
-          router.push('/dashboard/students-v2');
-        }
-      }
-      else if (role === 'Parent') {
-        const forbiddenPaths = ['/dashboard/staff-management-v2'];
-        if (forbiddenPaths.includes(pathname) || pathname === '/dashboard') {
-          router.push('/dashboard/parents-v2');
-        }
+        router.push('/dashboard/staff-management-v2');
+      } else if (role === 'Student') {
+        router.push('/dashboard/students-v2');
+      } else if (role === 'Parent') {
+        router.push('/dashboard/parents-v2');
       }
     }
   }, [isLoading, user, role, pathname, router]);
