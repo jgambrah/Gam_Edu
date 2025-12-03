@@ -148,12 +148,11 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       console.log("🔀 Redirecting based on role:", role);
 
       if (role === 'Teacher') {
-        // Redirect teachers to Academics (Safest bet) or Assignments
-        router.push('/dashboard/academics'); 
+        router.push('/dashboard/academics');
       } else if (role === 'Student') {
-        router.push('/dashboard/student'); // Or /dashboard/academics
+        router.push('/dashboard/assignments');
       } else if (role === 'Parent') {
-        router.push('/dashboard/parents-v2'); // Or /dashboard/parent
+        router.push('/dashboard/report-cards');
       } else {
         // Admins, Directors, etc.
         router.push('/dashboard/staff-management-v2');
