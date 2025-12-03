@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 // --- TYPES ---
 type Staff = {
@@ -115,7 +115,6 @@ function SubjectForm({
                     render={({ field }) => {
                       return (
                         <FormItem
-                          key={teacher.uid}
                           className="flex flex-row items-center space-x-3 space-y-0 py-2 hover:bg-slate-50 rounded px-2"
                         >
                           <FormControl>
@@ -155,6 +154,7 @@ export default function SubjectsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const [refetchKey, setRefetchKey] = useState(0);
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
@@ -162,19 +162,19 @@ export default function SubjectsPage() {
   
   const canManage = role === 'Director' || role === 'Administrator';
 
-  // --- REFACTORED: Use useCollection hook ---
-  const subjectsQuery = useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]);
-  const { data: subjects, isLoading: isLoadingSubjects, forceRefetch } = useCollection<Subject>(subjectsQuery);
+  const forceRefetch = useCallback(() => setRefetchKey(prev => prev + 1), []);
+
+  const subjectsQuery = useMemoFirebase(() => collection(firestore, 'subjects'), [firestore, refetchKey]);
+  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
   const teachersQuery = useMemoFirebase(() => {
     if (!canManage) return null;
     return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
-  }, [firestore, canManage]);
+  }, [firestore, canManage, refetchKey]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
   const isLoading = isLoadingSubjects || (canManage && isLoadingTeachers);
 
-  // --- FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -185,7 +185,7 @@ export default function SubjectsPage() {
               createdAt: serverTimestamp()
           });
           toast({ title: "Success", description: "Test subject created." });
-          forceRefetch(); // Trigger a refetch
+          forceRefetch();
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -202,18 +202,15 @@ export default function SubjectsPage() {
       return;
     }
     try {
-      const subjectRef = doc(firestore, 'subjects', id);
-      await deleteDoc(subjectRef);
+      await deleteDoc(doc(firestore, 'subjects', id));
       toast({ title: 'Subject Deleted', description: 'The subject has been successfully deleted.' });
-      forceRefetch(); // Refresh the list
+      forceRefetch();
     } catch (error) {
       console.error('Error deleting subject:', error);
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete subject.' });
     }
   };
 
-
-  // --- DIALOG HANDLERS ---
   const handleOpenDialog = (subject?: Subject) => {
     setEditingSubject(subject);
     setFormOpen(true);
