@@ -12,11 +12,12 @@ import {
 } from 'react';
 import type { UserRole } from '@/lib/types';
 import { useUser, useFirestore } from '@/firebase';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, LogOut } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { getAuth, signOut } from 'firebase/auth';
 
 type RoleContextType = {
   role: UserRole | null; 
@@ -33,24 +34,25 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   const [isRoleLoading, setIsRoleLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const determineRole = async () => {
-      if (isAuthLoading || !firestore) {
-        // Still waiting for auth or firestore to be ready
-        return;
-      }
+      // 1. Wait for Auth and Firestore to be ready
+      if (isAuthLoading || !firestore) return;
 
-      setIsRoleLoading(true);
-
+      // 2. If no user, stop loading
       if (!user) {
-        // No user is logged in, so they have no role.
-        setRole(null);
-        setIsRoleLoading(false);
+        if(isMounted) {
+            setRole(null);
+            setIsRoleLoading(false);
+        }
         return;
       }
 
+      if(isMounted) setIsRoleLoading(true);
       console.log("🔍 Checking role for user:", user.uid);
       
-      // Sequentially check collections. This is a robust way to find the user's role.
+      // 3. Check Collections Sequentially
       const collectionsToTest: { name: string; roleField?: string, fixedRole?: UserRole }[] = [
         { name: 'staff', roleField: 'role' },
         { name: 'students', fixedRole: 'Student' },
@@ -64,17 +66,26 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
 
             if (docSnap.exists()) {
                 let userRole: UserRole | null = null;
+                
                 if (collectionInfo.fixedRole) {
                     userRole = collectionInfo.fixedRole;
                 } else if (collectionInfo.roleField) {
-                    userRole = docSnap.data()[collectionInfo.roleField] as UserRole;
+                    const data = docSnap.data();
+                    // Handle case sensitivity (e.g. "Teacher" vs "teacher")
+                    const rawRole = data[collectionInfo.roleField];
+                    if (rawRole) {
+                        // Capitalize first letter to match UserRole type
+                        userRole = (rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase()) as UserRole;
+                    }
                 }
                 
                 if (userRole) {
                     console.log(`✅ Found user in '${collectionInfo.name}' with role: ${userRole}`);
-                    setRole(userRole);
-                    setIsRoleLoading(false);
-                    return; // Role found, exit the loop and function.
+                    if(isMounted) {
+                        setRole(userRole);
+                        setIsRoleLoading(false);
+                    }
+                    return; 
                 }
             }
         } catch (e) {
@@ -82,14 +93,17 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
         }
       }
 
-      // --- FINAL FALLBACK ---
-      // If the loop completes without finding a role, the user has an auth record but no profile in the DB.
-      console.warn("❌ User authenticated but has no profile in 'staff', 'students', or 'parents'.");
-      setRole(null); // Set role to null to indicate a problem.
-      setIsRoleLoading(false);
+      // 4. No Role Found
+      console.warn("❌ User authenticated but has no profile.");
+      if(isMounted) {
+          setRole(null); 
+          setIsRoleLoading(false);
+      }
     };
 
     determineRole();
+
+    return () => { isMounted = false; };
     
   }, [user, firestore, isAuthLoading]);
 
@@ -119,43 +133,50 @@ export function RoleGuard({ children }: { children: ReactNode }) {
 
   const isLoading = isAuthLoading || isRoleLoading;
 
+  // Handle Redirects
   useEffect(() => {
     if (isLoading) return;
 
+    // 1. Not logged in -> Login Page
     if (!user && pathname.startsWith('/dashboard')) {
       router.push('/');
       return;
     }
     
-    // Only redirect if the user is on the base dashboard page and has a role
+    // 2. Logged In + On Dashboard Root -> Redirect to Portal
     if (user && role && pathname === '/dashboard') {
-      const isStaff = ['Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
+      console.log("🔀 Redirecting based on role:", role);
 
       if (role === 'Teacher') {
-        router.push('/dashboard/assignments');
-      } else if (isStaff) {
-        router.push('/dashboard/staff-management-v2');
+        // Redirect teachers to Academics (Safest bet) or Assignments
+        router.push('/dashboard/academics'); 
       } else if (role === 'Student') {
-        router.push('/dashboard/assignments');
+        router.push('/dashboard/student'); // Or /dashboard/academics
       } else if (role === 'Parent') {
-        router.push('/dashboard/parents-v2');
+        router.push('/dashboard/parents-v2'); // Or /dashboard/parent
+      } else {
+        // Admins, Directors, etc.
+        router.push('/dashboard/staff-management-v2');
       }
     }
   }, [isLoading, user, role, pathname, router]);
 
 
-  if (isLoading || (user && pathname === '/dashboard')) {
+  // --- LOADING SCREEN ---
+  if (isLoading || (user && role && pathname === '/dashboard')) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-slate-50">
           <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground animate-pulse">Loading Portal...</p>
+            <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+            <p className="text-muted-foreground animate-pulse font-medium">
+                {isAuthLoading ? "Verifying account..." : "Loading your portal..."}
+            </p>
           </div>
       </div>
     )
   }
 
-  // If user is authenticated but has no valid role, show an error screen.
+  // --- ERROR: NO ROLE FOUND ---
   if (!isLoading && user && !role && pathname.startsWith('/dashboard')) {
       return (
         <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 p-4">
@@ -167,9 +188,23 @@ export function RoleGuard({ children }: { children: ReactNode }) {
                     <CardTitle className="text-red-700">Profile Not Found</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center space-y-4">
-                    <p className="text-slate-600">Your account (<strong>{user.email}</strong>) is authenticated, but we couldn't find an associated staff, student, or parent profile.</p>
-                    <p className="text-sm text-muted-foreground">Please contact your school administrator to get your account set up correctly.</p>
-                    <Button onClick={() => router.push('/')} variant="outline">Back to Home</Button>
+                    <p className="text-slate-600">
+                        We found your account (<strong>{user.email}</strong>), but we could not find your 
+                        <strong> Staff, Student, or Parent</strong> profile in the database.
+                    </p>
+                    <div className="text-sm text-muted-foreground bg-slate-100 p-3 rounded text-left">
+                        <strong>Troubleshooting:</strong>
+                        <ul className="list-disc list-inside mt-1">
+                            <li>Are you logged into the correct account?</li>
+                            <li>Has the admin created your profile yet?</li>
+                        </ul>
+                    </div>
+                    <div className="flex gap-2 justify-center pt-2">
+                        <Button onClick={() => window.location.reload()} variant="outline">Retry</Button>
+                        <Button onClick={() => signOut(getAuth())} variant="destructive">
+                            <LogOut className="mr-2 h-4 w-4"/> Sign Out
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>
