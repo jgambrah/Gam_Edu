@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 import { 
   collection, 
-  getDocs, // Using getDocs instead of onSnapshot for stability
+  getDocs, 
   doc, 
   setDoc, 
   updateDoc, 
@@ -25,7 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug } from 'lucide-react';
 
 // --- TYPES ---
 type Student = {
@@ -57,6 +57,7 @@ export default function StudentsPage() {
   
   const [isLoading, setIsLoading] = useState(true);
   const [statusMsg, setStatusMsg] = useState("Initializing...");
+  const [isInitializing, setIsInitializing] = useState(false);
   
   // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -71,14 +72,13 @@ export default function StudentsPage() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
-  // Reset logic
   useEffect(() => {
     if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
     if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
 
-  // --- 1. DIRECT DATA FETCH (The Fix) ---
+  // --- 1. DIRECT DATA FETCH ---
   const loadData = useCallback(async () => {
     if (isUserLoading) return;
     
@@ -92,12 +92,10 @@ export default function StudentsPage() {
     setStatusMsg("Fetching Data...");
 
     try {
-        // A. Fetch Classes
         const classSnap = await getDocs(collection(firestore, 'classes'));
         const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown" })) as Class[];
         setClasses(classList);
 
-        // B. Fetch Students (This is what worked in Debug!)
         const studentSnap = await getDocs(collection(firestore, 'students'));
         console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
         
@@ -114,19 +112,74 @@ export default function StudentsPage() {
     }
   }, [user, isUserLoading, firestore, toast]);
 
-  // Trigger load on mount
   useEffect(() => {
       loadData();
   }, [loadData]);
 
-  // --- 3. ADD STUDENT ---
+    // --- 2. DEBUGGING TOOL ---
+  const debugDatabase = async () => {
+      console.log("--- STARTING DEBUG ---");
+      if (!firestore) {
+          alert("Firestore not initialized.");
+          return;
+      }
+      try {
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
+          
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (snapshot.empty) {
+              alert("The app connected, but the 'students' collection is empty.");
+          } else {
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
+              alert(`FOUND ${snapshot.size} STUDENTS! Check Console (F12) for details.`);
+          }
+      } catch (e: any) {
+          console.error("Debug Error:", e);
+          alert(`Read Failed: ${e.message}`);
+      }
+  };
+
+
+  // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
+  const handleForceInitialize = async () => {
+      if (!firestore) return;
+      setIsInitializing(true);
+      try {
+          const classRef = await addDoc(collection(firestore, 'classes'), {
+              name: "JHS 1 (Test)",
+              createdAt: serverTimestamp()
+          });
+          
+          await addDoc(collection(firestore, 'students'), {
+              firstName: "Test",
+              lastName: "Student",
+              email: `test${Date.now()}@school.com`,
+              classId: classRef.id,
+              enrollmentStatus: 'Active',
+              createdAt: serverTimestamp(),
+              uid: "test-uid-" + Date.now()
+          });
+
+          toast({ title: "Success", description: "Dummy data created. List should update." });
+          loadData();
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsInitializing(false);
+      }
+  };
+
+  // --- 4. ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const values = Object.fromEntries(formData.entries()) as any;
       const firstName = formData.get('firstName') as string;
       const lastName = formData.get('lastName') as string;
       const email = formData.get('email') as string;
@@ -141,9 +194,9 @@ export default function StudentsPage() {
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: values.firstName,
-              lastName: values.lastName,
-              email: values.email,
+              firstName: firstName,
+              lastName: lastName,
+              email: email,
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: formData.get('dateOfBirth'),
@@ -154,7 +207,7 @@ export default function StudentsPage() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          loadData(); // Reload list manually
+          loadData(); 
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -163,7 +216,7 @@ export default function StudentsPage() {
       }
   };
 
-  // --- 4. UPDATE STUDENT ---
+  // --- 5. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
@@ -183,7 +236,7 @@ export default function StudentsPage() {
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
-        loadData(); // Reload list manually
+        loadData(); 
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -191,19 +244,19 @@ export default function StudentsPage() {
     }
   };
 
-  // --- 5. DELETE STUDENT ---
+  // --- 6. DELETE STUDENT ---
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
         toast({ title: "Deleted", description: "Profile removed." });
-        loadData(); // Reload list manually
+        loadData(); 
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  // --- SAFE FILTER LOGIC ---
+  // --- FILTER LOGIC ---
   const filteredStudents = students.filter(s => {
     const first = (s.firstName || '').toLowerCase();
     const last = (s.lastName || '').toLowerCase();
@@ -233,6 +286,15 @@ export default function StudentsPage() {
             <div className="flex gap-2">
                 <Button variant="outline" onClick={loadData} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
+                </Button>
+                
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                    <Bug className="h-4 w-4 mr-2"/> Debug Data
+                </Button>
+
+                <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
+                    {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
+                    Force Initialize DB
                 </Button>
                 
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
@@ -272,8 +334,7 @@ export default function StudentsPage() {
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p>No students visible.</p>
-                    {students.length > 0 && <p className="text-xs text-orange-600">Data is loaded ({students.length}), but filters are hiding them.</p>}
-                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty.</p>}
+                    <p className="text-xs text-slate-400">Click the <strong>Red Initialize Button</strong> if you see this.</p>
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -315,8 +376,7 @@ export default function StudentsPage() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
@@ -326,7 +386,6 @@ export default function StudentsPage() {
                 
                 <div className="space-y-2">
                     <Label>Class</Label>
-                    {/* FIX: Controlled Input */}
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
@@ -340,7 +399,6 @@ export default function StudentsPage() {
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
                     <div className="space-y-2">
                         <Label>Gender</Label>
-                        {/* FIX: Controlled Input */}
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
                             <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
                             <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
@@ -359,8 +417,7 @@ export default function StudentsPage() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Edit Student</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -368,19 +425,14 @@ export default function StudentsPage() {
                         <Input name="lastName" defaultValue={editingStudent.lastName} required />
                     </div>
                     <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    
-                    <div className="space-y-2">
-                        <Label>Class</Label>
-                         {/* FIX: Controlled Input */}
-                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                            <SelectContent>
-                                {classes.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                        <SelectContent>
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
