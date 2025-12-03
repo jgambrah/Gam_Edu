@@ -56,11 +56,12 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
+  // Loading State
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState("Initializing...");
   const [isInitializing, setIsInitializing] = useState(false);
   
-  // Modals
+  // UI State
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -289,9 +290,6 @@ export default function StudentsPage() {
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                 <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-                    <Bug className="h-4 w-4 mr-2"/> Debug
-                </Button>
                 {/* INIT BUTTON: Show if empty */}
                 {(students.length === 0 && !isLoading) && (
                     <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
@@ -337,8 +335,8 @@ export default function StudentsPage() {
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <AlertCircle className="h-10 w-10 text-slate-300" />
-                    <p>No students found.</p>
-                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students, but the filter is hiding them.)</p>}
+                    <p>No students found matching your search.</p>
+                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students in DB, but filter hides them)</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -433,10 +431,10 @@ export default function StudentsPage() {
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
-                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
+                        <Input name="firstName" defaultValue={editingStudent.firstName} required />
+                        <Input name="lastName" defaultValue={editingStudent.lastName} required />
                     </div>
-                    <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                    <Input value={editingStudent.email} disabled className="bg-slate-100" />
                     
                     <div className="space-y-2">
                         <Label>Class</Label>
@@ -450,21 +448,16 @@ export default function StudentsPage() {
                         </Select>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
-                        <div className="space-y-2">
-                            <Label>Gender</Label>
-                            <Select value={selectedGender} onValueChange={setSelectedGender}>
-                                <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                                <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
-                            </Select>
-                        </div>
+                        <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
+                        <Select value={selectedGender} onValueChange={setSelectedGender}>
+                            <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                            <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                        </Select>
                     </div>
-                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
-                    <div className="pt-2">
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-                        </Button>
-                    </div>
+                    <Input name="address" defaultValue={editingStudent.address} />
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                    </Button>
                 </form>
             )}
         </DialogContent>
