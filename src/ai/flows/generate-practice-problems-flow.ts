@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating practice problems for various subjects.
@@ -19,6 +20,7 @@ const PracticeProblemSchema = z.object({
     question_text: z.string().describe("The text of the practice question."),
     options: z.array(z.string()).length(4).describe("An array of 4 possible answers for multiple-choice questions."),
     correct_answer: z.string().describe("The correct answer from the options."),
+    explanation: z.string().describe("A brief explanation for why the answer is correct.")
 });
 
 const GeneratePracticeProblemsOutputSchema = z.object({
@@ -48,7 +50,8 @@ For each question, you must:
 1.  Create a clear and concise question text relevant to the topic and difficulty.
 2.  Provide exactly 4 multiple-choice options.
 3.  Identify the single correct answer.
-4.  Ensure the question is appropriate for a student practice session, not a formal graded quiz.`,
+4.  Provide a brief explanation for why the answer is correct.
+5.  Ensure the question is appropriate for a student practice session, not a formal graded quiz.`,
 });
 
 const generatePracticeProblemsFlow = ai.defineFlow(

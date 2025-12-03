@@ -2,7 +2,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -14,9 +14,11 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const topic = searchParams.get('topic');
   const difficulty = searchParams.get('difficulty');
   const version = searchParams.get('version'); // To know which collection to query
@@ -135,13 +137,43 @@ function QuizComponent() {
   if (isFinished) {
     return (
         <Card>
-            <CardHeader><CardTitle>Practice Complete!</CardTitle></CardHeader>
-            <CardContent className="text-center">
-                <p className="text-4xl font-bold">Your score: {score.toFixed(1)} / 10</p>
-                <p>You got {Math.round(score / 10 * problems.length)} out of {problems.length} questions correct.</p>
+            <CardHeader>
+                <CardTitle>Practice Review: {topic}</CardTitle>
+                <CardDescription>You scored {score.toFixed(1)} / 10. Review your answers below.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {problems.map((p, index) => {
+                    const userAnswer = answers[index];
+                    const isCorrect = userAnswer == p.correct_answer;
+                    return (
+                        <div key={p.id} className={cn("p-4 rounded-lg border", isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')}>
+                            <p className="font-semibold mb-2">{index + 1}. {p.question_text}</p>
+                            <div className="space-y-2 mb-3">
+                                {p.options?.map((option, i) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                        {userAnswer == option ? (
+                                            isCorrect ? <CheckCircle2 className="h-4 w-4 text-green-600"/> : <XCircle className="h-4 w-4 text-red-600"/>
+                                        ) : (
+                                            <div className="w-4 h-4" />
+                                        )}
+                                        <p className={cn("text-sm", userAnswer == option && !isCorrect && "line-through text-muted-foreground")}>{option}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            {!isCorrect && (
+                                <p className="text-sm font-semibold text-green-700">Correct Answer: {p.correct_answer}</p>
+                            )}
+                            {p.explanation && (
+                                <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-black/10">
+                                    <span className="font-semibold">Explanation:</span> {p.explanation}
+                                </p>
+                            )}
+                        </div>
+                    )
+                })}
             </CardContent>
             <CardFooter>
-                 <Button onClick={() => window.location.reload()} className="w-full">Try Another Practice</Button>
+                 <Button onClick={() => router.push('/dashboard/science-club')} className="w-full">Back to Science Club</Button>
             </CardFooter>
         </Card>
     )
