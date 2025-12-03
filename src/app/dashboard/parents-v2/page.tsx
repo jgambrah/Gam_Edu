@@ -1,10 +1,9 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
-import { UserRole, ALL_ROLES } from '@/lib/types';
+import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI
@@ -13,11 +12,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { HeartHandshake, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import type { UserRole } from '@/lib/types';
+
 
 // --- TYPE DEFINITIONS ---
 type ParentMember = {
@@ -46,6 +46,7 @@ export default function ParentsV2Page() {
 
   const [searchTerm, setSearchTerm] = useState('');
   
+  // Refactored to use the useCollection hook for stable data fetching
   const parentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'parents')) : null, [user, firestore]);
   const {data: parents, isLoading: isLoadingParents, forceRefetch: forceRefetchParents } = useCollection<ParentMember>(parentsQuery);
 
