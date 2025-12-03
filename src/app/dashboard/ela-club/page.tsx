@@ -174,10 +174,10 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
                             {isCorrect ? "Correct! Great job." : `Incorrect. The correct answer was: ${drill.correct_answer}`}
                         </div>
                     )}
-                    {isSubmitted && drill.explanation && (
+                    {isSubmitted && (drill as any).explanation && (
                          <div className="p-4 rounded-md bg-sky-50 border border-sky-200 text-sm text-sky-800">
                            <p className="font-bold">Explanation</p>
-                           <p>{drill.explanation}</p>
+                           <p>{(drill as any).explanation}</p>
                          </div>
                     )}
                 </div>
@@ -348,7 +348,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
         setShowResults(true);
         const { correct } = calculateScore();
 
-        if (user && firestore && correct > 0) {
+        if (correct > 0 && user && firestore) {
             const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
             const data = {
                 userId: user.uid,
@@ -441,7 +441,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                                                     ) : (
                                                         <>
                                                             <p className="text-red-600 font-semibold">Correct Answer: {q.correct_answer_key}</p>
-                                                            {q.explanation && <p className="mt-1 text-sky-700"><strong>Explanation:</strong> {q.explanation}</p>}
+                                                            {(q as any).explanation && <p className="mt-1 text-sky-700"><strong>Explanation:</strong> {(q as any).explanation}</p>}
                                                         </>
                                                     )}
                                                 </div>
