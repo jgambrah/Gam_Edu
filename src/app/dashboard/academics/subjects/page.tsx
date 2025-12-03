@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, addDoc, serverTimestamp, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, query, where, addDoc, serverTimestamp, deleteDoc, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -65,10 +65,13 @@ function SubjectForm({
         await updateDoc(subjectRef, values);
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
-        await addDoc(collection(firestore, 'subjects'), values);
+        await addDoc(collection(firestore, 'subjects'), {
+            ...values,
+            createdAt: serverTimestamp()
+        });
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
-      onSuccess(); // Refresh parent list
+      onSuccess(); // This will trigger a re-fetch in the parent component
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -112,7 +115,7 @@ function SubjectForm({
                       return (
                         <FormItem
                           key={teacher.uid}
-                          className="flex flex-row items-center space-x-3 space-y-0 py-2"
+                          className="flex flex-row items-center space-x-3 space-y-0 py-2 hover:bg-slate-50 rounded px-2"
                         >
                           <FormControl>
                             <Checkbox
@@ -146,6 +149,7 @@ function SubjectForm({
   );
 }
 
+
 // --- MAIN PAGE COMPONENT ---
 export default function SubjectsPage() {
   const { role } = useRole();
@@ -159,18 +163,19 @@ export default function SubjectsPage() {
   
   const canManage = role === 'Director' || role === 'Administrator';
 
-  // --- DATA FETCHING using useCollection ---
+  // --- REFACTORED: Use useCollection hook ---
   const subjectsQuery = useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]);
   const { data: subjects, isLoading: isLoadingSubjects, forceRefetch } = useCollection<Subject>(subjectsQuery);
 
-  const teachersQuery = useMemoFirebase(() => 
-      canManage ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null
-  , [firestore, canManage]);
+  const teachersQuery = useMemoFirebase(() => {
+    if (!canManage) return null;
+    return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
+  }, [firestore, canManage]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
   const isLoading = isLoadingSubjects || (canManage && isLoadingTeachers);
 
-  // --- ACTIONS ---
+  // --- FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -180,8 +185,8 @@ export default function SubjectsPage() {
               teacherIds: [],
               createdAt: serverTimestamp()
           });
-          toast({ title: "Success", description: "Test subject created. The list will update automatically." });
-          // No need to call forceRefetch manually, useCollection handles it.
+          toast({ title: "Success", description: "Test subject created." });
+          forceRefetch(); // Trigger a refetch
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -189,18 +194,20 @@ export default function SubjectsPage() {
       }
   };
 
+  // --- DELETE LOGIC ---
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this subject?")) return;
       if(!firestore) return;
       try {
           await deleteDoc(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
-          // useCollection will update the UI.
+          forceRefetch(); // Trigger a refetch
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
   }
 
+  // --- DIALOG HANDLERS ---
   const handleOpenDialog = (subject?: Subject) => {
     setEditingSubject(subject);
     setFormOpen(true);
@@ -210,7 +217,7 @@ export default function SubjectsPage() {
     setFormOpen(false);
     setEditingSubject(undefined);
   };
-
+  
   const sortedSubjects = useMemo(() => {
     if (!subjects) return [];
     return [...subjects].sort((a,b) => a.name.localeCompare(b.name));
@@ -233,9 +240,6 @@ export default function SubjectsPage() {
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
           <div className="flex gap-2">
-             <Button variant="outline" onClick={forceRefetch} disabled={isLoading}>
-                <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Refresh
-             </Button>
              <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" /> New Subject
              </Button>
