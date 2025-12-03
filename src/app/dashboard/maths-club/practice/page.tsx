@@ -2,12 +2,12 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { MathProblem, Student } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,7 @@ import { Progress } from '@/components/ui/progress';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const topic = searchParams.get('topic');
   const difficulty = searchParams.get('difficulty');
 
@@ -52,7 +53,7 @@ function QuizComponent() {
     if (problems && problems.length > 0 && !startTime) {
       setStartTime(new Date());
     }
-  }, [problems]);
+  }, [problems, startTime]);
 
   const handleAnswerChange = (questionIndex: number, answer: string | number) => {
     setAnswers(prev => ({ ...prev, [questionIndex]: answer }));
@@ -139,13 +140,43 @@ function QuizComponent() {
   if (isFinished) {
     return (
         <Card>
-            <CardHeader><CardTitle>Practice Complete!</CardTitle></CardHeader>
-            <CardContent className="text-center">
-                <p className="text-4xl font-bold">Your score: {score.toFixed(1)} / 10</p>
-                <p>You got {Math.round(score / 10 * problems.length)} out of {problems.length} questions correct.</p>
+            <CardHeader>
+                <CardTitle>Practice Review: {topic}</CardTitle>
+                <CardDescription>You scored {score.toFixed(1)} / 10. Review your answers below.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {problems.map((p, index) => {
+                    const userAnswer = answers[index];
+                    const isCorrect = userAnswer == p.correct_answer;
+                    return (
+                        <div key={p.id} className={cn("p-4 rounded-lg border", isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')}>
+                            <p className="font-semibold mb-2">{index + 1}. {p.question_text}</p>
+                            <div className="space-y-2 mb-3">
+                                {p.options?.map((option, i) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                        {userAnswer == option ? (
+                                            isCorrect ? <CheckCircle2 className="h-4 w-4 text-green-600"/> : <XCircle className="h-4 w-4 text-red-600"/>
+                                        ) : (
+                                            <div className="w-4 h-4" />
+                                        )}
+                                        <p className={cn("text-sm", userAnswer == option && !isCorrect && "line-through text-muted-foreground")}>{option}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            {!isCorrect && (
+                                <p className="text-sm font-semibold text-green-700">Correct Answer: {p.correct_answer}</p>
+                            )}
+                            {(p as any).explanation && (
+                                <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-black/10">
+                                    <span className="font-semibold">Explanation:</span> {(p as any).explanation}
+                                </p>
+                            )}
+                        </div>
+                    )
+                })}
             </CardContent>
             <CardFooter>
-                 <Button onClick={() => window.location.reload()} className="w-full">Try Another Practice</Button>
+                 <Button onClick={() => router.push('/dashboard/maths-club-v2')} className="w-full">Back to Maths Club</Button>
             </CardFooter>
         </Card>
     )
