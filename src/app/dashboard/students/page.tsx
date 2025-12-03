@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,9 +11,7 @@ import {
   updateDoc, 
   deleteDoc, 
   serverTimestamp, 
-  addDoc, 
-  query, 
-  orderBy 
+  addDoc 
 } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -57,6 +56,7 @@ export default function StudentsPage() {
   const [classes, setClasses] = useState<Class[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState("Initializing...");
   const [isInitializing, setIsInitializing] = useState(false);
   
   // Modals
@@ -88,38 +88,40 @@ export default function StudentsPage() {
 
   // --- 1. REAL-TIME DATA LISTENERS (The Robust Fix) ---
   useEffect(() => {
-    // Wait for auth check to finish
+    // Case 1: Still checking if user exists? Wait.
     if (isUserLoading) return;
 
-    // If not logged in or no DB, stop loading
+    // Case 2: Not logged in or DB not ready? Stop loading and exit.
     if (!user || !firestore) {
         setIsLoading(false);
         return;
     }
 
     setIsLoading(true);
+    console.log("Starting Listeners...");
 
     // Listener 1: Classes
-    const unsubClasses = onSnapshot(
-        collection(firestore, 'classes'),
+    const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
         (snapshot) => {
             const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name }));
             setClasses(list);
         },
-        (error) => console.warn("Classes Error:", error) // Non-critical, don't block students
+        (error) => console.warn("Classes Error (Ignored):", error)
     );
 
     // Listener 2: Students
-    const unsubStudents = onSnapshot(
-        collection(firestore, 'students'),
+    const unsubStudents = onSnapshot(collection(firestore, 'students'), 
         (snapshot) => {
+            console.log(`Snapshot received! Found ${snapshot.docs.length} students.`);
             const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
             setStudents(list);
-            setIsLoading(false); // Stop spinner as soon as we connect
+            setIsLoading(false); // <--- STOP SPINNER HERE
+            setConnectionStatus("Connected");
         },
         (error) => {
             console.error("Students Error:", error);
-            toast({ variant: 'destructive', title: "Connection Error", description: error.message });
+            setConnectionStatus(`Permission Error: ${error.message}`);
+            toast({ variant: 'destructive', title: "Connection Failed", description: error.message });
             setIsLoading(false);
         }
     );
@@ -153,7 +155,7 @@ export default function StudentsPage() {
               uid: "test-uid-" + Date.now()
           });
 
-          toast({ title: "Success", description: "Database initialized. List should update." });
+          toast({ title: "Success", description: "Database initialized. List should update automatically." });
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -169,10 +171,9 @@ export default function StudentsPage() {
       
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries()) as any;
-      const password = "password123"; // Default password
+      const password = "password123"; 
 
       try {
-          // 1. Create Auth Account
           const result = await createNewUser(values.email, password, 'Student', { 
               firstName: values.firstName, 
               lastName: values.lastName 
@@ -180,7 +181,6 @@ export default function StudentsPage() {
           
           if ('error' in result) throw new Error(result.error);
 
-          // 2. Save to Firestore
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
               firstName: values.firstName,
@@ -260,7 +260,7 @@ export default function StudentsPage() {
                 <CardDescription>Manage student records and enrollment.</CardDescription>
             </div>
             <div className="flex gap-2">
-                {/* INIT BUTTON: Only show if list is empty and not loading */}
+                {/* INIT BUTTON: Only show if list is empty */}
                 {(students.length === 0 && !isLoading) && (
                     <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                         {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
@@ -372,7 +372,7 @@ export default function StudentsPage() {
                 <div className="space-y-2">
                     <Label>Class</Label>
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
                             {classes.map(c => (
                                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
