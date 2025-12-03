@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -74,16 +73,8 @@ export default function StudentsV3Page() {
 
   // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen) { 
-        setIsSubmitting(false); 
-        setSelectedClassId(''); 
-        setSelectedGender(''); 
-    }
-    if (editingStudent) { 
-        setIsSubmitting(false); 
-        setSelectedClassId(editingStudent.classId || ''); 
-        setSelectedGender(editingStudent.gender || ''); 
-    }
+    if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
+    if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
 
@@ -132,24 +123,37 @@ export default function StudentsV3Page() {
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
-          alert("Firestore not initialized.");
+          toast({ variant: 'destructive', title: "Debug Error", description: "Firestore not initialized." });
           return;
       }
       try {
-          const colRef = collection(firestore, 'students'); 
-          console.log("Looking in collection: 'students'");
+          // Check Classes
+          console.log("🔎 Checking 'classes' collection...");
+          const classSnap = await getDocs(collection(firestore, 'classes'));
+          console.log(`Result: Found ${classSnap.size} class documents.`);
           
-          const snapshot = await getDocs(colRef);
-          console.log(`Raw Snapshot Size: ${snapshot.size}`);
-          
-          if (snapshot.empty) {
-              console.log("The 'students' collection is empty.");
+          if (classSnap.empty) {
+              console.warn("⚠️ 'classes' collection is empty! Dropdown will be empty.");
           } else {
-              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-              console.log("Raw Data from DB:", rawData);
+              classSnap.docs.forEach(d => console.log("Class Doc:", d.id, d.data()));
           }
+
+          // Check Students
+          console.log("🔎 Checking 'students' collection...");
+          const studentSnap = await getDocs(collection(firestore, 'students'));
+          console.log(`Result: Found ${studentSnap.size} student documents.`);
+          
+          if (studentSnap.empty) {
+              console.warn("⚠️ 'students' collection is empty! Table will be empty.");
+          } else {
+              studentSnap.docs.forEach(d => console.log("Student Doc:", d.id, d.data()));
+          }
+
+          toast({ title: "Debug Complete", description: `Found ${classSnap.size} classes and ${studentSnap.size} students. Check the console for details.` });
+          
       } catch (e: any) {
           console.error("Debug Error:", e);
+          toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
       }
   };
 
@@ -404,11 +408,16 @@ export default function StudentsV3Page() {
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
+                            {classes.length === 0 ? (
+                                <SelectItem value="none" disabled>No classes found. Use Debug button.</SelectItem>
+                            ) : (
+                                classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))
+                            )}
                         </SelectContent>
                     </Select>
+                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please click "Check Data" to initialize if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
