@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, addDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { collection, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -30,12 +30,10 @@ function SubjectForm({
   setOpen,
   allTeachers,
   initialData,
-  onSuccess
 }: {
   setOpen: (open: boolean) => void;
   allTeachers: Staff[];
   initialData?: Subject;
-  onSuccess: () => void;
 }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -60,7 +58,6 @@ function SubjectForm({
         addDocumentNonBlocking(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
-      onSuccess();
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -154,7 +151,7 @@ export default function SubjectsPage() {
     if (!user || !firestore) return null;
     return query(collection(firestore, 'subjects'));
   }, [user, firestore]);
-  const { data: subjects, isLoading: isLoadingSubjects, forceRefetch } = useCollection<Subject>(subjectsQuery);
+  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
   const teachersQuery = useMemoFirebase(() => {
     if (!user || !firestore || !canManage) return null;
@@ -170,7 +167,6 @@ export default function SubjectsPage() {
       try {
           deleteDocumentNonBlocking(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
-          forceRefetch();
       } catch (e) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
@@ -208,7 +204,7 @@ export default function SubjectsPage() {
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
           <div className="flex gap-2">
-             <Button variant="outline" onClick={forceRefetch} disabled={isLoading}><RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Refresh</Button>
+             <Button variant="outline" onClick={() => {}} disabled={true}><RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Live</Button>
              <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" /> New Subject
              </Button>
@@ -253,7 +249,6 @@ export default function SubjectsPage() {
             setOpen={handleCloseDialog}
             allTeachers={teachers || []}
             initialData={editingSubject}
-            onSuccess={forceRefetch}
           />
         </DialogContent>
       </Dialog>
