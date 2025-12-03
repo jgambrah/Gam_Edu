@@ -1,22 +1,21 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useAuth, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, query, where, addDoc, serverTimestamp, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, Database } from 'lucide-react';
+import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, Database, Bug } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { updateDocumentNonBlocking, addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 // --- TYPES ---
 type Staff = {
@@ -63,13 +62,13 @@ function SubjectForm({
     try {
       if (initialData) {
         const subjectRef = doc(firestore, 'subjects', initialData.id);
-        await updateDoc(subjectRef, values); // Using updateDoc directly for simplicity here
+        await updateDoc(subjectRef, values);
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
         await addDoc(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
-      onSuccess();
+      onSuccess(); // Refresh parent list
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -151,30 +150,60 @@ function SubjectForm({
 export default function SubjectsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
 
+  // State
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [teachers, setTeachers] = useState<Staff[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(false);
+
+  // UI State
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
-  const [isInitializing, setIsInitializing] = useState(false);
   
   const canManage = role === 'Director' || role === 'Administrator';
 
-  const subjectsQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
-    return query(collection(firestore, 'subjects'));
-  }, [user, firestore]);
-  
-  const { data: subjects, isLoading: isLoadingSubjects, forceRefetch } = useCollection<Subject>(subjectsQuery);
+  // --- 1. DIRECT FETCH LOGIC ---
+  const fetchSubjects = useCallback(async () => {
+      if (isUserLoading) return;
+      if (!user || !firestore) {
+          setIsLoading(false);
+          return;
+      }
 
-  const teachersQuery = useMemoFirebase(() => {
-    if (!user || !firestore || !canManage) return null;
-    return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
-  }, [user, firestore, canManage]);
-  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
+      setIsLoading(true);
+      try {
+          // Fetch Subjects
+          console.log("Fetching Subjects...");
+          const snap = await getDocs(collection(firestore, 'subjects'));
+          const list = snap.docs.map(d => ({ id: d.id, ...d.data() })) as Subject[];
+          setSubjects(list);
+          console.log(`Loaded ${list.length} subjects`);
 
-  const isLoading = isLoadingSubjects || (canManage && isLoadingTeachers);
+          // Fetch Teachers (Only if admin)
+          if (canManage) {
+              const teachersQ = query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
+              const teacherSnap = await getDocs(teachersQ);
+              const teacherList = teacherSnap.docs.map(d => ({ uid: d.id, ...d.data() })) as Staff[];
+              setTeachers(teacherList);
+          }
 
+      } catch (e: any) {
+          console.error("Fetch Error:", e);
+          toast({ variant: 'destructive', title: "Error", description: "Failed to load data." });
+      } finally {
+          setIsLoading(false);
+      }
+  }, [user, isUserLoading, firestore, canManage, toast]);
+
+  // Trigger Load
+  useEffect(() => {
+      fetchSubjects();
+  }, [fetchSubjects]);
+
+  // --- 2. FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -184,8 +213,8 @@ export default function SubjectsPage() {
               teacherIds: [],
               createdAt: serverTimestamp()
           });
-          toast({ title: "Success", description: "Test subject created. List should update." });
-          forceRefetch(); // Trigger a re-fetch of the collection
+          toast({ title: "Success", description: "Test subject created. Refreshing..." });
+          await fetchSubjects();
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -193,14 +222,15 @@ export default function SubjectsPage() {
       }
   };
 
+  // --- 3. DELETE LOGIC ---
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this subject?")) return;
       if(!firestore) return;
       try {
-          await deleteDoc(doc(firestore, 'subjects', id)); // Using await for confirmation
+          await deleteDoc(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
-          forceRefetch(); // Re-fetch after deletion
-      } catch (e: any) {
+          fetchSubjects();
+      } catch (e) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
   }
@@ -215,10 +245,14 @@ export default function SubjectsPage() {
     setEditingSubject(undefined);
   };
 
-  const sortedSubjects = useMemo(() => {
-    if (!subjects) return [];
-    return [...subjects].sort((a,b) => a.name.localeCompare(b.name));
-  }, [subjects]);
+  // Debug Tool
+  const handleDebug = async () => {
+      if (!firestore) return;
+      const s = await getDocs(collection(firestore, 'subjects'));
+      alert(`Debug: Found ${s.size} docs in 'subjects' collection.`);
+  };
+
+  const sortedSubjects = [...subjects].sort((a,b) => a.name.localeCompare(b.name));
 
   if (!canManage) {
     return (
@@ -237,6 +271,15 @@ export default function SubjectsPage() {
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
           <div className="flex gap-2">
+             <Button variant="outline" onClick={fetchSubjects} disabled={isLoading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Refresh
+             </Button>
+             
+             {/* DEBUG BUTTON */}
+             <Button variant="secondary" onClick={handleDebug} className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
+                <Bug className="h-4 w-4 mr-2"/> Debug
+             </Button>
+
              <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" /> New Subject
              </Button>
@@ -291,7 +334,7 @@ export default function SubjectsPage() {
             setOpen={handleCloseDialog}
             allTeachers={teachers || []}
             initialData={editingSubject}
-            onSuccess={forceRefetch}
+            onSuccess={fetchSubjects}
           />
         </DialogContent>
       </Dialog>
