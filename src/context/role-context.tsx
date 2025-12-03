@@ -129,9 +129,11 @@ export function RoleGuard({ children }: { children: ReactNode }) {
     
     // Only redirect if the user is on the base dashboard page and has a role
     if (user && role && pathname === '/dashboard') {
-      const isStaff = ['Teacher', 'Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
+      const isStaff = ['Administrator', 'Director', 'Accountant', 'Librarian', 'Cook'].includes(role);
 
-      if (isStaff) {
+      if (role === 'Teacher') {
+        router.push('/dashboard/assignments');
+      } else if (isStaff) {
         router.push('/dashboard/staff-management-v2');
       } else if (role === 'Student') {
         router.push('/dashboard/assignments');
