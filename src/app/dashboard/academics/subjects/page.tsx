@@ -1,13 +1,13 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Subject, Staff } from '@/lib/types';
+import { updateDocumentNonBlocking, addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const subjectSchema = z.object({
   name: z.string().min(1, 'Subject name is required.'),
@@ -46,16 +47,17 @@ function SubjectForm({
   });
 
   async function onSubmit(values: z.infer<typeof subjectSchema>) {
+    if (!firestore) return;
     setIsSubmitting(true);
     try {
       if (initialData) {
         // Update existing subject
         const subjectRef = doc(firestore, 'subjects', initialData.id);
-        await updateDoc(subjectRef, values);
+        updateDocumentNonBlocking(subjectRef, values);
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
         // Create new subject
-        await addDoc(collection(firestore, 'subjects'), values);
+        addDocumentNonBlocking(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
       onSuccess();
@@ -164,8 +166,9 @@ export default function SubjectsPage() {
 
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this subject?")) return;
+      if(!firestore) return;
       try {
-          await deleteDoc(doc(firestore, 'subjects', id));
+          deleteDocumentNonBlocking(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
           forceRefetch();
       } catch (e) {
@@ -214,8 +217,10 @@ export default function SubjectsPage() {
         <CardContent>
           {isLoading ? (
             <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
+          ) : sortedSubjects.length === 0 ? (
+             <p className="text-center text-muted-foreground p-8">No subjects created yet.</p>
           ) : (
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {sortedSubjects.map((subject) => (
                 <div key={subject.id} className="flex items-center justify-between p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition-all">
                   <div>
@@ -225,16 +230,15 @@ export default function SubjectsPage() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => handleOpenDialog(subject)}>
+                    <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(subject)}>
                         <Edit className="h-4 w-4 text-blue-600"/>
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(subject.id)}>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(subject.id)}>
                         <Trash2 className="h-4 w-4 text-red-600"/>
                     </Button>
                   </div>
                 </div>
               ))}
-              {sortedSubjects.length === 0 && <p className="text-center text-muted-foreground p-8">No subjects created yet.</p>}
             </div>
           )}
         </CardContent>
