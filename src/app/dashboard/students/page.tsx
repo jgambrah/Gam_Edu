@@ -132,29 +132,25 @@ export default function StudentsPage() {
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
-          console.error("Firestore not initialized.");
+          alert("Firestore not initialized.");
           return;
       }
       try {
-          // Check Classes
-          console.log("🔎 Checking 'classes' collection...");
-          const classSnap = await getDocs(collection(firestore, 'classes'));
-          console.log(`Result: Found ${classSnap.size} class documents.`);
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
           
-          if (classSnap.empty) {
-              console.warn("⚠️ 'classes' collection is empty! Dropdown will be empty.");
-              console.log("Creating a test class now...");
-              await addDoc(collection(firestore, 'classes'), { name: "JHS 1 (Debug)", createdAt: serverTimestamp() });
-              console.log("Created 'JHS 1 (Debug)'. Please refresh page.");
-              toast({ title: "Debug", description: "Created test class. Refresh page." });
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (snapshot.empty) {
+              alert("The app connected, but the 'students' collection is empty.");
           } else {
-              classSnap.docs.forEach(d => console.log("Class Doc:", d.id, d.data()));
-              toast({ title: "Debug", description: `Found ${classSnap.size} classes. Check Console.` });
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
           }
-          
       } catch (e: any) {
           console.error("Debug Error:", e);
-          toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
+          alert(`Read Failed: ${e.message}`);
       }
   };
 
@@ -315,8 +311,8 @@ export default function StudentsPage() {
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 
-                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-                    <Bug className="h-4 w-4 mr-2"/> Debug Data
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200">
+                    <Bug className="h-4 w-4 mr-2"/> Check Data
                 </Button>
 
                 <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
@@ -360,9 +356,16 @@ export default function StudentsPage() {
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
-                    <p>No students visible.</p>
-                    {students.length > 0 && <p className="text-xs text-orange-600">Data is loaded ({students.length}), but filters are hiding them.</p>}
-                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty.</p>}
+                    <p className="font-medium">No students visible.</p>
+                    
+                    {/* DEBUG INFO */}
+                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs text-left text-yellow-800 w-full max-w-xs">
+                        <p><strong>Debug Stats:</strong></p>
+                        <p>Total Fetched: {students.length}</p>
+                        <p>Search Term: "{searchTerm}"</p>
+                        <p>Class Filter: "{classFilter}"</p>
+                        {students.length > 0 && <p className="mt-2">Data exists but filters are hiding it.</p>}
+                    </div>
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -405,7 +408,7 @@ export default function StudentsPage() {
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter the student's details to create an account.</DialogDescription></DialogHeader>
+            <DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
@@ -418,11 +421,16 @@ export default function StudentsPage() {
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
+                            {classes.length === 0 ? (
+                                <SelectItem value="none" disabled>No classes found</SelectItem>
+                            ) : (
+                                classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))
+                            )}
                         </SelectContent>
                     </Select>
+                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please use a Debug/Initialize button if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -436,7 +444,7 @@ export default function StudentsPage() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 <div className="pt-2">
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
                 </div>
