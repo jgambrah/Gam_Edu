@@ -148,7 +148,7 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       console.log("🔀 Redirecting based on role:", role);
 
       if (role === 'Teacher') {
-        router.push('/dashboard/academics');
+        router.push('/dashboard/academics'); 
       } else if (role === 'Student') {
         router.push('/dashboard/assignments');
       } else if (role === 'Parent') {
