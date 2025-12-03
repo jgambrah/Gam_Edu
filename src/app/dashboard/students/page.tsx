@@ -93,13 +93,24 @@ export default function StudentsPage() {
 
     try {
         // A. Fetch Classes
+        console.log("Fetching Classes...");
         const classSnap = await getDocs(collection(firestore, 'classes'));
-        const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown" })) as Class[];
+        
+        // Safe mapping: Checks for 'name', 'className', or defaults to 'Unknown'
+        const classList = classSnap.docs.map(d => {
+            const data = d.data();
+            return { 
+                id: d.id, 
+                name: data.name || data.className || data.title || "Unknown Class" 
+            };
+        }) as Class[];
+        
+        console.log(`✅ Loaded ${classList.length} classes.`);
         setClasses(classList);
 
         // B. Fetch Students
         const studentSnap = await getDocs(collection(firestore, 'students'));
-        console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
+        console.log(`✅ Loaded ${studentSnap.size} students via Direct Fetch.`);
         
         const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
         setStudents(studentList);
@@ -118,31 +129,36 @@ export default function StudentsPage() {
       loadData();
   }, [loadData]);
 
-   // --- 2. DEBUGGING TOOL ---
+  // --- 2. DEBUGGING TOOL (CONSOLE ONLY) ---
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
-          console.error("Firestore not initialized.");
+          toast({ variant: 'destructive', title: 'Debug Failed', description: 'Firestore not initialized.'});
           return;
       }
+
       try {
-          const colRef = collection(firestore, 'students'); 
-          console.log("Looking in collection: 'students'");
+          // Check Classes
+          console.log("🔎 Checking 'classes' collection...");
+          const classSnap = await getDocs(collection(firestore, 'classes'));
+          console.log(`Result: Found ${classSnap.size} class documents.`);
           
-          const snapshot = await getDocs(colRef);
-          console.log(`Raw Snapshot Size: ${snapshot.size}`);
-          
-          if (snapshot.empty) {
-              console.log("The 'students' collection is empty.");
+          if (classSnap.empty) {
+              console.warn("⚠️ 'classes' collection is empty! Dropdown will be empty.");
+              console.log("Creating a test class now...");
+              await addDoc(collection(firestore, 'classes'), { name: "JHS 1 (Debug)", createdAt: serverTimestamp() });
+              console.log("Created 'JHS 1 (Debug)'. Please refresh page.");
+              toast({ title: "Debug", description: "Created test class. Refresh page." });
           } else {
-              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-              console.log("Raw Data from DB:", rawData);
+              classSnap.docs.forEach(d => console.log("Class Doc:", d.id, d.data()));
+              toast({ title: "Debug", description: `Found ${classSnap.size} classes. Check Console.` });
           }
+          
       } catch (e: any) {
           console.error("Debug Error:", e);
+          toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
       }
   };
-
 
   // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
   const handleForceInitialize = async () => {
@@ -288,10 +304,10 @@ export default function StudentsPage() {
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 
-                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-                    <Bug className="h-4 w-4 mr-2"/> Debug Data
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200">
+                    <Bug className="h-4 w-4 mr-2"/> Check Data
                 </Button>
-                
+
                 <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                     {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
                     Force Initialize DB
@@ -334,8 +350,8 @@ export default function StudentsPage() {
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p>No students visible.</p>
-                    {students.length > 0 && <p className="text-xs text-orange-600">(Data is loaded ({students.length}), but filters are hiding them.)</p>}
-                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty. Try using the Initialize button.</p>}
+                    {students.length > 0 && <p className="text-xs text-orange-600">Data is loaded ({students.length}), but filters are hiding them.</p>}
+                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty. Try Initialize button.</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -378,11 +394,8 @@ export default function StudentsPage() {
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-                <DialogTitle>Add New Student</DialogTitle>
-                <DialogDescription>Enter the student's information to create an account.</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
+            <DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
@@ -394,9 +407,13 @@ export default function StudentsPage() {
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
+                            {classes.length === 0 ? (
+                                <SelectItem value="none" disabled>No classes found. Use Debug button.</SelectItem>
+                            ) : (
+                                classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))
+                            )}
                         </SelectContent>
                     </Select>
                 </div>
@@ -412,7 +429,7 @@ export default function StudentsPage() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 <div className="pt-2">
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
                 </div>
@@ -422,30 +439,22 @@ export default function StudentsPage() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-                <DialogTitle>Edit Student</DialogTitle>
-                <DialogDescription>Update student profile information.</DialogDescription>
-            </DialogHeader>
+        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
             {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="firstName" defaultValue={editingStudent.firstName} required />
                         <Input name="lastName" defaultValue={editingStudent.lastName} required />
                     </div>
                     <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    
-                    <div className="space-y-2">
-                        <Label>Class</Label>
-                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                            <SelectContent>
-                                {classes.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                        <SelectContent>
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
