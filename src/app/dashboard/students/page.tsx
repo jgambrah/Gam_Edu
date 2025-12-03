@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 import { 
   collection, 
@@ -26,9 +26,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, Edit, GraduationCap, Database, AlertCircle, Bug } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, Database, AlertCircle, Bug } from 'lucide-react';
 
-// --- TYPES ---
+// --- TYPE DEFINITIONS ---
 type Student = {
   id: string;
   uid: string;
@@ -61,7 +61,7 @@ export default function StudentsPage() {
   const [connectionStatus, setConnectionStatus] = useState("Initializing...");
   const [isInitializing, setIsInitializing] = useState(false);
   
-  // UI State
+  // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -156,7 +156,6 @@ export default function StudentsPage() {
       }
   };
 
-
   // --- 3. FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
@@ -206,9 +205,9 @@ export default function StudentsPage() {
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: values.firstName,
-              lastName: values.lastName,
-              email: values.email,
+              firstName: formData.get('firstName'),
+              lastName: formData.get('lastName'),
+              email: formData.get('email'),
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: formData.get('dateOfBirth'),
@@ -263,9 +262,8 @@ export default function StudentsPage() {
     }
   };
 
-  // --- SAFE FILTER LOGIC (The Fix) ---
+  // --- SAFE FILTER LOGIC ---
   const filteredStudents = students.filter(s => {
-    // SAFETY: Default to empty string if field is missing in DB
     const first = (s.firstName || '').toLowerCase();
     const last = (s.lastName || '').toLowerCase();
     const email = (s.email || '').toLowerCase();
@@ -288,20 +286,19 @@ export default function StudentsPage() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    {/* Debug Counter */}
-                    Found: {students.length} | Showing: {filteredStudents.length}
+                    Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{connectionStatus}</span> | Found: {students.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300">
+                    <Bug className="h-4 w-4 mr-2"/> Debug Data
+                </Button>
                 {(students.length === 0 && !isLoading) && (
                     <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                         {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
                         Force Initialize DB
                     </Button>
                 )}
-                 <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300">
-                    <Bug className="h-4 w-4 mr-2"/> Debug Data
-                </Button>
                 
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
@@ -418,8 +415,8 @@ export default function StudentsPage() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 <div className="pt-2">
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
                 </div>
             </form>
@@ -440,14 +437,18 @@ export default function StudentsPage() {
                         <Input name="lastName" defaultValue={editingStudent.lastName} required />
                     </div>
                     <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                        <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
