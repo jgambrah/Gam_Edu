@@ -160,7 +160,7 @@ export default function SubjectsPage() {
   const [isInitializing, setIsInitializing] = useState(false);
 
   // UI State
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
   
   const canManage = role === 'Director' || role === 'Administrator';
@@ -192,7 +192,7 @@ export default function SubjectsPage() {
 
       } catch (e: any) {
           console.error("Fetch Error:", e);
-          toast({ variant: 'destructive', title: "Error", description: "Failed to load data." });
+          toast({ variant: 'destructive', title: "Error", description: "Failed to load data. Check console." });
       } finally {
           setIsLoading(false);
       }
@@ -230,7 +230,7 @@ export default function SubjectsPage() {
           await deleteDoc(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
           fetchSubjects();
-      } catch (e: any) {
+      } catch (e) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
   }
@@ -245,11 +245,20 @@ export default function SubjectsPage() {
     setEditingSubject(undefined);
   };
 
-  // Debug Tool
+  // --- 4. DEBUG TOOL (Fixed for Sandbox) ---
   const handleDebug = async () => {
       if (!firestore) return;
-      const s = await getDocs(collection(firestore, 'subjects'));
-      alert(`Debug: Found ${s.size} docs in 'subjects' collection.`);
+      try {
+          const s = await getDocs(collection(firestore, 'subjects'));
+          console.log("Raw Subjects:", s.docs.map(d => d.data()));
+          // Use TOAST instead of alert to avoid sandbox blocks
+          toast({ 
+              title: "Debug Result", 
+              description: `Found ${s.size} subjects. Check browser console (F12) for data.` 
+          });
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
+      }
   };
 
   const sortedSubjects = [...subjects].sort((a,b) => a.name.localeCompare(b.name));
@@ -275,7 +284,7 @@ export default function SubjectsPage() {
                 <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin':''}`}/> Refresh
              </Button>
              
-             {/* DEBUG BUTTON */}
+             {/* DEBUG BUTTON (Yellow) */}
              <Button variant="secondary" onClick={handleDebug} className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
                 <Bug className="h-4 w-4 mr-2"/> Debug
              </Button>
@@ -291,12 +300,14 @@ export default function SubjectsPage() {
           ) : sortedSubjects.length === 0 ? (
              <div className="text-center text-muted-foreground p-10 border-2 border-dashed rounded-lg bg-slate-50">
                  <p className="mb-4">No subjects created yet.</p>
+                 
+                 {/* INITIALIZE BUTTON (Red) */}
                  <Button 
                     variant="destructive" 
                     onClick={handleForceInitialize} 
                     disabled={isInitializing}
                  >
-                    {isInitializing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
+                    {isInitializing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Database className="mr-2 h-4 w-4"/>}
                     Force Initialize Database
                  </Button>
              </div>
