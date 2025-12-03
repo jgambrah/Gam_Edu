@@ -717,6 +717,7 @@ export const mathProblemSchema = z.object({
 
 export type MathProblem = z.infer<typeof mathProblemSchema> & {
     id: string;
+    explanation?: string;
 };
 
 export type UserResult = {
@@ -754,6 +755,7 @@ export const scienceProblemSchema = z.object({
 
 export type ScienceProblem = z.infer<typeof scienceProblemSchema> & {
     id: string;
+    explanation?: string;
 };
 
 export type ScienceResult = {
@@ -794,6 +796,7 @@ export const elaGrammarDrillSchema = z.object({
 
 export type ElaGrammarDrill = z.infer<typeof elaGrammarDrillSchema> & {
     id: string;
+    explanation?: string;
 };
 
 const elaQuestionSchema = z.object({
@@ -801,6 +804,7 @@ const elaQuestionSchema = z.object({
     type: z.enum(["MCQ", "Short Answer"]),
     options: z.array(z.string()).optional(),
     correct_answer_key: z.string().min(1, "Correct answer is required"),
+    explanation: z.string().optional(),
 });
 
 export const elaReadingPassageSchema = z.object({

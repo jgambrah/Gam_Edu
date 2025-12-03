@@ -17,6 +17,7 @@ export type GenerateReadingPassageInput = z.infer<typeof GenerateReadingPassageI
 const ComprehensionQuestionSchema = z.object({
   question: z.string().describe("The text of the comprehension question."),
   correct_answer_key: z.string().describe("The correct answer to the question."),
+  explanation: z.string().describe("A brief explanation for why the answer is correct."),
 });
 
 const GenerateReadingPassageOutputSchema = z.object({
@@ -47,7 +48,8 @@ Instructions:
 1.  Write an engaging and informative reading passage of about 200-300 words, suitable for the specified reading level.
 2.  Create a suitable title for the passage.
 3.  Generate {{{numQuestions}}} short-answer comprehension questions that test understanding of the passage.
-4.  For each question, provide a concise, correct answer based directly on the text.`,
+4.  For each question, provide a concise, correct answer based directly on the text.
+5.  For each question, provide a brief explanation for why the answer is correct.`,
 });
 
 const generateReadingPassageFlow = ai.defineFlow(

@@ -167,6 +167,12 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
                             {isCorrect ? "Correct! Great job." : `Incorrect. The correct answer was: ${drill.correct_answer}`}
                         </div>
                     )}
+                    {isSubmitted && drill.explanation && (
+                         <div className="p-4 rounded-md bg-sky-50 border border-sky-200 text-sm text-sky-800">
+                           <p className="font-bold">Explanation</p>
+                           <p>{drill.explanation}</p>
+                         </div>
+                    )}
                 </div>
 
                 <DialogFooter>
@@ -395,7 +401,6 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                                         )}>
                                             <p className="font-medium mb-3">{idx + 1}. {q.question}</p>
                                             
-                                            {/* RENDER OPTIONS OR INPUT */}
                                             {q.options && q.options.length > 0 ? (
                                                 <RadioGroup 
                                                     value={answers[idx] || ''} 
@@ -418,13 +423,15 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                                                 />
                                             )}
 
-                                            {/* SHOW FEEDBACK */}
                                             {showResults && (
-                                                <div className="mt-2 text-xs font-semibold">
+                                                <div className="mt-3 text-xs pt-3 border-t">
                                                     {isCorrect ? (
-                                                        <span className="text-green-600 flex items-center gap-1"><CheckCircle2 className="h-3 w-3"/> Correct</span>
+                                                        <span className="text-green-600 flex items-center gap-1 font-semibold"><CheckCircle2 className="h-3 w-3"/> Correct</span>
                                                     ) : (
-                                                        <span className="text-red-600">Correct Answer: {q.correct_answer_key}</span>
+                                                        <>
+                                                            <p className="text-red-600 font-semibold">Correct Answer: {q.correct_answer_key}</p>
+                                                            {q.explanation && <p className="mt-1 text-sky-700"><strong>Explanation:</strong> {q.explanation}</p>}
+                                                        </>
                                                     )}
                                                 </div>
                                             )}
@@ -1484,6 +1491,7 @@ function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean)
         </div>
     );
 }
+
 
 
 
