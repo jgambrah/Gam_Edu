@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore'; // Added addDoc
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI Components
@@ -13,10 +13,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'; // Imported DialogDescription
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, AlertCircle } from 'lucide-react';
 
 // --- TYPE DEFINITIONS ---
 type Student = {
@@ -45,10 +45,9 @@ export default function StudentsManagementV2() {
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
-  // Status State
+  // Loading State
   const [isLoading, setIsLoading] = useState(true);
-  const [statusMessage, setStatusMessage] = useState("Waiting for login...");
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState("Initializing..."); // Detailed status text
   
   // UI State
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -67,86 +66,92 @@ export default function StudentsManagementV2() {
     if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. FORCE INITIALIZE FUNCTION (The Fix) ---
-  const handleForceInitialize = async () => {
-      if (!firestore) return;
-      setIsInitializing(true);
-      setStatusMessage("Creating collections...");
-      try {
-          // 1. Create a Class
-          const classRef = await addDoc(collection(firestore, 'classes'), {
-              name: "JHS 1 (Test Class)",
-              createdAt: serverTimestamp()
-          });
-          
-          // 2. Create a Student
-          await addDoc(collection(firestore, 'students'), {
-              firstName: "Test",
-              lastName: "Student",
-              email: "test.student@school.com",
-              classId: classRef.id,
-              enrollmentStatus: 'Active',
-              createdAt: serverTimestamp(),
-              uid: "test-uid-" + Date.now() 
-          });
+  // --- 1. SAFETY TIMEOUT (Stops the infinite rolling) ---
+  useEffect(() => {
+      const timer = setTimeout(() => {
+          if (isLoading) {
+              console.warn("Force stopping spinner due to timeout.");
+              setIsLoading(false);
+              setLoadingStatus("Timed out. Database may be empty or unreachable.");
+          }
+      }, 8000); // 8 seconds max wait time
 
-          toast({ title: "System Initialized", description: "Collections created. Refreshing..." });
-          await fetchData(); // Try fetching again
-      } catch (e: any) {
-          console.error(e);
-          setStatusMessage("Init Failed: " + e.message);
-          toast({ variant: 'destructive', title: "Error", description: e.message });
-      } finally {
-          setIsInitializing(false);
-      }
-  };
+      return () => clearTimeout(timer);
+  }, [isLoading]);
 
   // --- 2. FETCH LOGIC ---
   const fetchData = useCallback(async () => {
-    if (isUserLoading) return;
+    // Step 1: Check Auth
+    if (isUserLoading) {
+        setLoadingStatus("Waiting for login...");
+        return;
+    }
+
     if (!user || !firestore) {
         setIsLoading(false);
-        setStatusMessage("Not connected.");
+        setLoadingStatus("Not connected to system.");
         return;
     }
 
     setIsLoading(true);
-    setStatusMessage("Loading data...");
-
+    setLoadingStatus("Connecting to database...");
+    
     try {
-        // 1. Fetch Classes
+        // Step 2: Fetch Classes
+        setLoadingStatus("Loading Classes...");
         let classList: Class[] = [];
         try {
             const classSnap = await getDocs(collection(firestore, 'classes'));
             classList = classSnap.docs.map((d: any) => ({ id: d.id, name: d.data().name }));
             setClasses(classList);
         } catch (e) {
-            console.warn("Class fetch failed (ignoring):", e);
+            console.warn("Classes fetch issue:", e);
         }
 
-        // 2. Fetch Students
+        // Step 3: Fetch Students
+        setLoadingStatus("Loading Students...");
         const studentSnap = await getDocs(collection(firestore, 'students'));
-        const studentList = studentSnap.docs.map((d: any) => ({ 
-            id: d.id, 
-            ...d.data() 
-        })) as Student[];
+        
+        if (studentSnap.empty) {
+            setLoadingStatus("Collection empty. Creating Test Student...");
+            // AUTO-FIX: Create a dummy student if none exist
+            await addDoc(collection(firestore, 'students'), {
+                firstName: "Test",
+                lastName: "Student",
+                email: "test.student@school.com",
+                classId: "",
+                enrollmentStatus: "Active",
+                createdAt: serverTimestamp(),
+                uid: "test-uid-" + Date.now() 
+            });
+            setStatusMessage("Created Test Student. Refreshing...");
+            // Recursive call to fetch the new student
+            const retrySnap = await getDocs(collection(firestore, 'students'));
+            const retryList = retrySnap.docs.map((d: any) => ({ id: d.id, ...d.data() })) as Student[];
+            setStudents(retryList);
+        } else {
+            const studentList = studentSnap.docs.map((d: any) => ({ 
+                id: d.id, 
+                ...d.data() 
+            })) as Student[];
+            setStudents(studentList);
+        }
 
-        setStudents(studentList);
-        setStatusMessage("Ready");
+        setLoadingStatus("Ready");
 
     } catch (err: any) {
         console.error("Fetch Error:", err);
-        setStatusMessage(`Error: ${err.message}`);
-        // If permission denied, it implies connection works but rules block. 
-        // If network error, it implies DB doesn't exist or is unreachable.
+        setLoadingStatus(`Error: ${err.message}`);
+        toast({ variant: 'destructive', title: "Error", description: err.message });
     } finally {
         setIsLoading(false);
     }
-  }, [user, isUserLoading, firestore]);
+  }, [user, isUserLoading, firestore, toast]);
 
+  // Trigger Fetch
   useEffect(() => {
-      if (!isUserLoading) fetchData();
-  }, [isUserLoading, fetchData]);
+      fetchData();
+  }, [fetchData]); // Simplified dependency
 
   // --- 3. FORM ACTIONS ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -155,28 +160,30 @@ export default function StudentsManagementV2() {
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const values = Object.fromEntries(formData.entries()) as any;
+      const firstName = formData.get('firstName') as string;
+      const lastName = formData.get('lastName') as string;
+      const email = formData.get('email') as string;
 
       try {
-          const result = await createNewUser(values.email, "password123", 'Student', { firstName: values.firstName, lastName: values.lastName });
+          const result = await createNewUser(email, "password123", 'Student', { firstName, lastName });
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: values.firstName,
-              lastName: values.lastName,
-              email: values.email,
+              firstName,
+              lastName,
+              email,
               classId: selectedClassId,
               gender: selectedGender,
-              dateOfBirth: values.dateOfBirth,
-              address: values.address,
+              dateOfBirth: formData.get('dateOfBirth'),
+              address: formData.get('address'),
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          await fetchData(); 
+          fetchData(); 
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -204,7 +211,7 @@ export default function StudentsManagementV2() {
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
-        await fetchData();
+        fetchData();
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -235,21 +242,14 @@ export default function StudentsManagementV2() {
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management V2
+                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
                 </CardTitle>
                 <CardDescription>
-                    System Status: <span className="font-mono font-bold">{statusMessage}</span>
+                    {/* Debugging Status Text */}
+                    Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{loadingStatus}</span>
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                {/* INITIALIZE BUTTON: Visible if list is empty or error */}
-                {(students.length === 0) && (
-                    <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
-                        {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
-                        Force Initialize DB
-                    </Button>
-                )}
-                
                 <Button variant="outline" onClick={fetchData} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
@@ -274,19 +274,20 @@ export default function StudentsManagementV2() {
             </div>
 
             {isLoading ? (
-                <div className="py-10 flex flex-col items-center gap-2 text-muted-foreground">
+                <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
                     <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
-                    <p>{statusMessage}</p>
+                    <p className="text-sm font-medium">{loadingStatus}</p>
                 </div>
-            ) : statusMessage.startsWith("Error") ? (
+            ) : status.startsWith("Error") ? (
                 <div className="py-10 text-center text-red-500 border border-red-200 bg-red-50 rounded-lg">
-                    <WifiOff className="h-10 w-10 text-red-400 mx-auto mb-2"/>
-                    <p className="font-semibold">{statusMessage}</p>
-                    <p className="text-xs mt-1">Database might not be created. Try Force Initialize.</p>
+                    <Activity className="h-8 w-8 mx-auto mb-2"/>
+                    <p>{loadingStatus}</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                    No students found.
+                <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg flex flex-col items-center gap-2">
+                    <AlertCircle className="h-10 w-10 text-slate-300" />
+                    <p>No students found.</p>
+                    <p className="text-xs text-slate-400">Click "Add Student" to get started.</p>
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -317,69 +318,96 @@ export default function StudentsManagementV2() {
         </CardContent>
       </Card>
 
-      {/* ADD MODAL */}
+      {/* ADD MODAL - Fixed DialogDescription Warning */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Add Student</DialogTitle></DialogHeader>
+            <DialogHeader>
+                <DialogTitle>Add New Student</DialogTitle>
+                <DialogDescription>Enter the student's details below to create their account.</DialogDescription>
+            </DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                 <div className="grid grid-cols-2 gap-4">
                     <Input name="firstName" required placeholder="First Name"/>
                     <Input name="lastName" required placeholder="Last Name"/>
                 </div>
                 <Input name="email" type="email" required placeholder="Email"/>
-                <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                    <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
-                    <SelectContent>
-                        {classes.map(c => (
-                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <div className="grid grid-cols-2 gap-4">
-                    <Input name="dateOfBirth" type="date" />
-                    <Select value={selectedGender} onValueChange={setSelectedGender}>
-                        <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                        <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
-                    </Select>
-                </div>
-                <Input name="address" placeholder="Address"/>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create"}
-                </Button>
-            </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* EDIT MODAL */}
-      <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Edit Student</DialogTitle></DialogHeader>
-            {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input name="firstName" defaultValue={editingStudent.firstName} required />
-                        <Input name="lastName" defaultValue={editingStudent.lastName} required />
-                    </div>
-                    <Input value={editingStudent.email} disabled className="bg-slate-100" />
+                
+                {/* FIXED: Using State for Select */}
+                <div className="space-y-2">
+                    <Label>Class</Label>
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
                             {classes.map(c => (
                                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
+                    <div className="space-y-2">
+                        <Label>Gender</Label>
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
-                            <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                            <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
                             <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                         </Select>
                     </div>
-                    <Input name="address" defaultValue={editingStudent.address} />
+                </div>
+                <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
+                <div className="pt-2">
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
+                    <p className="text-xs text-center text-muted-foreground mt-2">Default password: password123</p>
+                </div>
+            </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* EDIT MODAL - Fixed DialogDescription Warning */}
+      <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Edit Student Details</DialogTitle>
+                <DialogDescription>Update the student's information below.</DialogDescription>
+            </DialogHeader>
+            {editingStudent && (
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
+                    </div>
+                     <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                    
+                    {/* FIXED: Using State for Select */}
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
+                        <div className="space-y-2">
+                            <Label>Gender</Label>
+                            <Select value={selectedGender} onValueChange={setSelectedGender}>
+                                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
+                    <div className="pt-2">
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        </Button>
+                    </div>
                 </form>
             )}
         </DialogContent>
@@ -387,4 +415,4 @@ export default function StudentsManagementV2() {
     </div>
   );
 }
-    
+
