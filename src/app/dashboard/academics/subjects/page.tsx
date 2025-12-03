@@ -9,14 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, Database, Bug } from 'lucide-react';
+import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, Database } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 // --- TYPES ---
 type Staff = {
