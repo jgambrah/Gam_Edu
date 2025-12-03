@@ -25,7 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, Edit, GraduationCap, Database, AlertCircle } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, Edit, GraduationCap, Database, AlertCircle, Bug } from 'lucide-react';
 
 // --- TYPES ---
 type Student = {
@@ -55,6 +55,7 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
+  // Loading State
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState("Initializing...");
   const [isInitializing, setIsInitializing] = useState(false);
@@ -72,24 +73,21 @@ export default function StudentsPage() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
-  // Reset form state when opening modals
+  // Reset form state
   useEffect(() => {
     if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
     if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
 
-  // --- 1. REAL-TIME DATA LISTENERS (The Robust Fix) ---
+  // --- 1. REAL-TIME DATA LISTENERS ---
   useEffect(() => {
-    // Case 1: Still checking auth? Wait.
     if (isUserLoading) {
         setConnectionStatus("Checking Auth...");
         return;
     }
 
-    // Case 2: Not logged in or DB missing? Stop loading and exit.
     if (!user || !firestore) {
-        console.log("User not logged in or Firestore missing. Stopping spinner.");
         setIsLoading(false);
         setConnectionStatus("Not Connected");
         return;
@@ -101,7 +99,7 @@ export default function StudentsPage() {
     // Listener 1: Classes
     const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
         (snapshot) => {
-            const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name }));
+            const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown Class" }));
             setClasses(list);
         },
         (error) => console.warn("Classes Error (Ignored):", error)
@@ -113,49 +111,47 @@ export default function StudentsPage() {
             console.log(`Snapshot received! Found ${snapshot.docs.length} students.`);
             const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
             setStudents(list);
-            setIsLoading(false); // Stop spinner as soon as we connect
+            setIsLoading(false);
             setConnectionStatus("Connected");
         },
         (error) => {
             console.error("Students Error:", error);
             setConnectionStatus(`Error: ${error.message}`);
             toast({ variant: 'destructive', title: "Database Error", description: error.message });
-            setIsLoading(false); // Stop spinner on error too
+            setIsLoading(false);
         }
     );
 
-    // Cleanup
     return () => {
         unsubClasses();
         unsubStudents();
     };
   }, [user, isUserLoading, firestore, toast]);
 
-  // --- 2. FORCE INITIALIZE ---
-  const handleForceInitialize = async () => {
-      if (!firestore) return;
-      setIsInitializing(true);
+  // --- 2. DEBUGGING TOOL ---
+  const debugDatabase = async () => {
+      console.log("--- STARTING DEBUG ---");
+      if (!firestore) {
+          alert("Firestore not initialized.");
+          return;
+      }
       try {
-          const classRef = await addDoc(collection(firestore, 'classes'), {
-              name: "JHS 1 (Test)",
-              createdAt: serverTimestamp()
-          });
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
           
-          await addDoc(collection(firestore, 'students'), {
-              firstName: "Test",
-              lastName: "Student",
-              email: `test${Date.now()}@school.com`,
-              classId: classRef.id,
-              enrollmentStatus: 'Active',
-              createdAt: serverTimestamp(),
-              uid: "test-uid-" + Date.now()
-          });
-
-          toast({ title: "Success", description: "Dummy data created." });
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (snapshot.empty) {
+              alert("The app connected, but the 'students' collection is empty.");
+          } else {
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
+              alert(`FOUND ${snapshot.size} STUDENTS! Check Console (F12) for details.`);
+          }
       } catch (e: any) {
-          toast({ variant: 'destructive', title: "Error", description: e.message });
-      } finally {
-          setIsInitializing(false);
+          console.error("Debug Error:", e);
+          alert(`Read Failed: ${e.message}`);
       }
   };
 
@@ -180,9 +176,9 @@ export default function StudentsPage() {
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
+              firstName,
+              lastName,
+              email,
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: formData.get('dateOfBirth'),
@@ -231,14 +227,13 @@ export default function StudentsPage() {
     if (!confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
-        toast({ title: "Deleted", description: "Profile removed." });
+        toast({ title: "Deleted" });
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  // --- SAFE FILTER LOGIC (The Fix) ---
-  // This prevents crashes if data is missing fields
+  // --- SAFE FILTER LOGIC ---
   const filteredStudents = students.filter(s => {
     const first = (s.firstName || '').toLowerCase();
     const last = (s.lastName || '').toLowerCase();
@@ -262,19 +257,13 @@ export default function StudentsPage() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    {/* Debug Counter */}
-                    Found: {students.length} | Showing: {filteredStudents.length}
+                    Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{connectionStatus}</span>
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                {/* INIT BUTTON: Show if empty */}
-                {(students.length === 0 && !isLoading) && (
-                    <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
-                        {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
-                        Force Initialize DB
-                    </Button>
-                )}
-                
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                    <Bug className="h-4 w-4 mr-2"/> Debug
+                </Button>
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
@@ -282,7 +271,6 @@ export default function StudentsPage() {
         </CardHeader>
         
         <CardContent className="space-y-4">
-            {/* FILTERS */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-grow">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -294,7 +282,7 @@ export default function StudentsPage() {
                     />
                 </div>
                 <Select value={classFilter} onValueChange={setClassFilter}>
-                    <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter Class" /></SelectTrigger>
+                    <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
                         <SelectItem value="unassigned">Unassigned</SelectItem>
@@ -313,8 +301,8 @@ export default function StudentsPage() {
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <AlertCircle className="h-10 w-10 text-slate-300" />
-                    <p className="font-medium">No students found</p>
-                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students, but the filter is hiding them.)</p>}
+                    <p>No students found matching your search.</p>
+                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students in DB, but the filter hides them.)</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -394,7 +382,6 @@ export default function StudentsPage() {
                     <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
-                    <p className="text-xs text-center text-muted-foreground mt-2">Default password is <strong>password123</strong></p>
                 </div>
             </form>
         </DialogContent>
@@ -440,3 +427,4 @@ export default function StudentsPage() {
     </div>
   );
 }
+
