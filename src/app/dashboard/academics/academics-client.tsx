@@ -30,12 +30,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect } from 'react';
-import { collection, doc, query, where, updateDoc, onSnapshot, setDoc } from 'firebase/firestore';
-import { Loader2, PlusCircle, User, Users, Ratio, BookOpen, UserCircle, CalendarCheck } from 'lucide-react';
+import { collection, doc, query, where, updateDoc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
+import { Loader2, PlusCircle, User, Users, Ratio, BookOpen, UserCircle, CalendarCheck, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
 import {
@@ -251,6 +263,23 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
             });
     }
 
+    const handleDeleteClass = async () => {
+        if (!firestore) return;
+        try {
+            await deleteDoc(doc(firestore, 'classes', classData.id));
+            toast({
+                title: "Class Deleted",
+                description: `The class "${classData.name}" has been removed.`
+            });
+        } catch (error: any) {
+             toast({
+                variant: 'destructive',
+                title: 'Error Deleting Class',
+                description: error.message || 'An unknown error occurred.',
+            });
+        }
+    };
+
     const canManage = role === 'Director' || role === 'Administrator';
     const isClassTeacher = user?.uid === classData.teacherId;
     const canTakeAttendance = canManage || isClassTeacher;
@@ -290,6 +319,33 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                         </form>
                                     </Form>
                                 </CardContent>
+                                {canManage && (
+                                     <CardFooter className="border-t pt-4">
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="destructive" className="w-full">
+                                                    <Trash2 className="mr-2 h-4 w-4"/> Delete Class
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete the class
+                                                    <strong> {classData.name}</strong>. 
+                                                    {enrolledStudents.length > 0 && <span className="font-bold text-destructive"> This class still has {enrolledStudents.length} student(s) enrolled.</span>}
+                                                </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={handleDeleteClass}>
+                                                    Yes, delete this class
+                                                </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </CardFooter>
+                                )}
                             </Card>
                              <Card>
                                 <CardHeader>
@@ -454,3 +510,5 @@ export default function AcademicsPageContent() {
     </div>
   );
 }
+
+    
