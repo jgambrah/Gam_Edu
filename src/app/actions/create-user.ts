@@ -71,54 +71,56 @@ export async function createNewUser(
 
     if (selectedRole === 'Parent') {
         const docRef = firestore.collection('parents').doc(userRecord.uid);
-        const docSnap = await docRef.get();
-        if (!docSnap.exists) {
-            await docRef.set({
-                uid: userRecord.uid,
-                email: email,
-                firstName: details?.firstName,
-                lastName: details?.lastName,
-            });
-        }
+        await docRef.set({
+            uid: userRecord.uid,
+            email: email,
+            firstName: details?.firstName,
+            lastName: details?.lastName,
+        }, { merge: true });
+        
     } else if (selectedRole === 'Student') {
         const docRef = firestore.collection('students').doc(userRecord.uid);
-        const docSnap = await docRef.get();
-        if (!docSnap.exists) {
-            await docRef.set({
-                uid: userRecord.uid,
-                email: email,
-                firstName: details?.firstName,
-                lastName: details?.lastName,
-                 // Add any other student-specific fields here from the form if needed
-            });
-        }
+        await docRef.set({
+            uid: userRecord.uid,
+            email: email,
+            firstName: details?.firstName,
+            lastName: details?.lastName,
+             // Add any other student-specific fields here from the form if needed
+        }, { merge: true });
+        
     } else { // All other roles are considered 'staff'
         const docRef = firestore.collection('staff').doc(userRecord.uid);
-        const docSnap = await docRef.get();
-        if (!docSnap.exists) {
-            await docRef.set({
-                uid: userRecord.uid,
-                email: email,
-                role: selectedRole,
-                firstName: details?.firstName,
-                lastName: details?.lastName,
-            });
-        }
+        await docRef.set({
+            uid: userRecord.uid,
+            email: email,
+            role: selectedRole,
+            firstName: details?.firstName,
+            lastName: details?.lastName,
+        }, { merge: true });
     }
 
     // Special handling for the specific director user to ensure profile exists
     if (email === 'jgambrah@sunnyside.com' || email === 'gambrahjames@sunnyside.com') {
         const directorDocRef = firestore.collection('staff').doc(userRecord.uid);
-        const directorDocSnap = await directorDocRef.get();
-        if (!directorDocSnap.exists) {
-            await directorDocRef.set({
-                uid: userRecord.uid,
-                email: email,
-                role: 'Director',
-                firstName: details?.firstName || 'James',
-                lastName: details?.lastName || 'Gambrah',
-            }, { merge: true });
-        }
+        await directorDocRef.set({
+            uid: userRecord.uid,
+            email: email,
+            role: 'Director',
+            firstName: details?.firstName || 'James',
+            lastName: details?.lastName || 'Gambrah',
+        }, { merge: true });
+    }
+
+    // Special handling for the teacher user to ensure profile exists
+    if (email === 'graceantwi@sunnyside.com') {
+        const teacherDocRef = firestore.collection('staff').doc(userRecord.uid);
+        await teacherDocRef.set({
+            uid: userRecord.uid,
+            email: email,
+            role: 'Teacher',
+            firstName: details?.firstName || 'Grace',
+            lastName: details?.lastName || 'Antwi',
+        }, { merge: true });
     }
 
     return { uid: userRecord.uid };
