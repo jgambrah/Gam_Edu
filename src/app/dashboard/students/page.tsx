@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -169,15 +168,14 @@ export default function StudentsPage() {
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const email = formData.get('email') as string;
+      const values = Object.fromEntries(formData.entries()) as any;
+      const password = "password123"; // Default password
 
       try {
           // 1. Create Auth Account
-          const result = await createNewUser(email, "password123", 'Student', { 
-              firstName: firstName, 
-              lastName: lastName 
+          const result = await createNewUser(values.email, password, 'Student', { 
+              firstName: values.firstName, 
+              lastName: values.lastName 
           });
           
           if ('error' in result) throw new Error(result.error);
@@ -262,7 +260,7 @@ export default function StudentsPage() {
                 <CardDescription>Manage student records and enrollment.</CardDescription>
             </div>
             <div className="flex gap-2">
-                {/* INIT BUTTON: Only show if list is empty */}
+                {/* INIT BUTTON: Only show if list is empty and not loading */}
                 {(students.length === 0 && !isLoading) && (
                     <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                         {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
@@ -289,7 +287,7 @@ export default function StudentsPage() {
                     />
                 </div>
                 <Select value={classFilter} onValueChange={setClassFilter}>
-                    <SelectTrigger className="w-full sm:w-[250px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
+                    <SelectTrigger className="w-full sm:w-[250px]"><SelectValue placeholder="Filter Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
                         {classes.map(c => (
@@ -306,14 +304,10 @@ export default function StudentsPage() {
                     <p>Connecting to database...</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg flex flex-col items-center gap-2">
+                <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <AlertCircle className="h-10 w-10 text-slate-300" />
-                    <p className="font-medium">No students found</p>
-                    <p className="text-xs text-slate-400">
-                        {searchTerm || classFilter !== 'all' 
-                          ? 'Try adjusting your filters' 
-                          : 'Click "Add Student" or "Force Initialize DB"'}
-                    </p>
+                    <p>No students found.</p>
+                    <p className="text-xs text-slate-400">If this is your first time, click <strong>"Force Initialize DB"</strong>.</p>
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -331,7 +325,7 @@ export default function StudentsPage() {
                             {filteredStudents.map((s) => (
                                 <TableRow key={s.id}>
                                     <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
-                                    <TableCell className="text-sm text-muted-foreground">{s.email}</TableCell>
+                                    <TableCell>{s.email}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">
                                             {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
@@ -343,19 +337,11 @@ export default function StudentsPage() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <div className="flex justify-end gap-1">
-                                            <Button 
-                                                variant="ghost" 
-                                                size="sm" 
-                                                onClick={() => setEditingStudent(s)}
-                                            >
+                                        <div className="flex justify-end gap-2">
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}>
                                                 <Edit className="h-4 w-4 text-blue-600"/>
                                             </Button>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="sm" 
-                                                onClick={() => handleDelete(s.id)}
-                                            >
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}>
                                                 <Trash2 className="h-4 w-4 text-red-500"/>
                                             </Button>
                                         </div>
@@ -369,145 +355,96 @@ export default function StudentsPage() {
         </CardContent>
       </Card>
 
-      {/* ADD DIALOG */}
+      {/* ADD STUDENT DIALOG */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Add New Student</DialogTitle>
-            <DialogDescription>Create a new student account.</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleAddStudent} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>First Name *</Label>
-                <Input name="firstName" required placeholder="John"/>
-              </div>
-              <div className="space-y-2">
-                <Label>Last Name *</Label>
-                <Input name="lastName" required placeholder="Smith"/>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Email *</Label>
-              <Input name="email" type="email" required placeholder="john.smith@school.com"/>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Class</Label>
-              <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
-                <SelectContent>
-                  {classes.map(c => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Date of Birth</Label>
-                <Input name="dateOfBirth" type="date" />
-              </div>
-              <div className="space-y-2">
-                <Label>Gender</Label>
-                <Select value={selectedGender} onValueChange={setSelectedGender}>
-                  <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Address</Label>
-              <Input name="address" placeholder="123 School Lane"/>
-            </div>
-            
-            <div className="pt-2">
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2"/> : null}
-                {isSubmitting ? 'Creating...' : 'Create Account'}
-              </Button>
-              <p className="text-xs text-center text-muted-foreground mt-2">Default password is <strong>password123</strong></p>
-            </div>
-          </form>
+            <DialogHeader>
+                <DialogTitle>Add New Student</DialogTitle>
+                <DialogDescription>Enter the student's information to create an account.</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
+                    <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
+                </div>
+                <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
+                
+                <div className="space-y-2">
+                    <Label>Class</Label>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                        <SelectContent>
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
+                    <div className="space-y-2">
+                        <Label>Gender</Label>
+                        <Select value={selectedGender} onValueChange={setSelectedGender}>
+                            <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
+                            <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
+                <div className="pt-2">
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
+                    </Button>
+                    <p className="text-xs text-center text-muted-foreground mt-2">Default password is <strong>password123</strong></p>
+                </div>
+            </form>
         </DialogContent>
       </Dialog>
 
-      {/* EDIT DIALOG */}
-      <Dialog open={!!editingStudent} onOpenChange={(open) => {
-        if (!open) {
-          setEditingStudent(null);
-        }
-      }}>
+      {/* EDIT STUDENT DIALOG */}
+      <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Edit Student</DialogTitle>
-            <DialogDescription>Update student information.</DialogDescription>
-          </DialogHeader>
-          {editingStudent && (
-            <form onSubmit={handleUpdateStudent} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>First Name *</Label>
-                  <Input name="firstName" defaultValue={editingStudent.firstName} required />
-                </div>
-                <div className="space-y-2">
-                  <Label>Last Name *</Label>
-                  <Input name="lastName" defaultValue={editingStudent.lastName} required />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input value={editingStudent.email} disabled className="bg-slate-100" />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Class</Label>
-                <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                  <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
-                  <SelectContent>
-                    {classes.map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Date of Birth</Label>
-                  <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Gender</Label>
-                  <Select value={selectedGender} onValueChange={setSelectedGender}>
-                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Address</Label>
-                <Input name="address" defaultValue={editingStudent.address} />
-              </div>
-              
-              <div className="pt-2">
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2"/> : null}
-                  {isSubmitting ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </div>
-            </form>
-          )}
+            <DialogHeader>
+                <DialogTitle>Edit Student</DialogTitle>
+                <DialogDescription>Update student profile information.</DialogDescription>
+            </DialogHeader>
+            {editingStudent && (
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
+                    </div>
+                    <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                    
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
+                        <div className="space-y-2">
+                            <Label>Gender</Label>
+                            <Select value={selectedGender} onValueChange={setSelectedGender}>
+                                <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                                <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
+                    <div className="pt-2">
+                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        </Button>
+                    </div>
+                </form>
+            )}
         </DialogContent>
       </Dialog>
     </div>
