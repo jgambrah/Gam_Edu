@@ -74,31 +74,25 @@ export default function StudentsPage() {
 
   // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen) { 
-        setIsSubmitting(false); 
-        setSelectedClassId(''); 
-        setSelectedGender(''); 
-    }
-    if (editingStudent) { 
-        setIsSubmitting(false); 
-        setSelectedClassId(editingStudent.classId || ''); 
-        setSelectedGender(editingStudent.gender || ''); 
-    }
+    if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
+    if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. REAL-TIME DATA LISTENERS (The Robust Fix) ---
+  // --- 1. REAL-TIME DATA LISTENERS (The Core Engine) ---
   useEffect(() => {
-    // Case 1: Still checking if user exists? Wait.
-    if (isUserLoading) return;
+    if (isUserLoading) {
+        setConnectionStatus("Checking Auth...");
+        return;
+    }
 
-    // Case 2: Not logged in or DB not ready? Stop loading and exit.
     if (!user || !firestore) {
         setIsLoading(false);
+        setConnectionStatus("Not Connected (User logged out or DB missing)");
         return;
     }
 
     setIsLoading(true);
-    console.log("Starting Listeners...");
+    setConnectionStatus("Listening for updates...");
 
     // Listener 1: Classes
     const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
@@ -115,7 +109,7 @@ export default function StudentsPage() {
             console.log(`Snapshot received! Found ${snapshot.docs.length} students.`);
             const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
             setStudents(list);
-            setIsLoading(false); // <--- STOP SPINNER HERE
+            setIsLoading(false);
             setConnectionStatus("Connected");
         },
         (error) => {
@@ -133,7 +127,7 @@ export default function StudentsPage() {
     };
   }, [user, isUserLoading, firestore, toast]);
 
-  // --- 2. FORCE INITIALIZE (For Missing Collections) ---
+  // --- 2. FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -155,7 +149,7 @@ export default function StudentsPage() {
               uid: "test-uid-" + Date.now()
           });
 
-          toast({ title: "Success", description: "Database initialized. List should update automatically." });
+          toast({ title: "Success", description: "Dummy data created. List should update automatically." });
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -242,11 +236,18 @@ export default function StudentsPage() {
   };
 
   // Filter Logic
-  const filteredStudents = students.filter(s => 
-    ((s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (classFilter === 'all' || s.classId === classFilter)
-  );
+  const filteredStudents = students.filter(s => {
+    const first = (s.firstName || '').toLowerCase();
+    const last = (s.lastName || '').toLowerCase();
+    const email = (s.email || '').toLowerCase();
+    const term = searchTerm.toLowerCase();
+    const sClassId = s.classId || 'unassigned';
+
+    const matchesSearch = first.includes(term) || last.includes(term) || email.includes(term);
+    const matchesClass = classFilter === 'all' || sClassId === classFilter;
+
+    return matchesSearch && matchesClass;
+  });
 
   return (
     <div className="space-y-6 p-6">
@@ -257,10 +258,12 @@ export default function StudentsPage() {
                 <CardTitle className="text-2xl flex items-center gap-2">
                     <GraduationCap className="h-6 w-6 text-blue-600"/> Students
                 </CardTitle>
-                <CardDescription>Manage student records and enrollment.</CardDescription>
+                <CardDescription>
+                    System Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{connectionStatus}</span>
+                </CardDescription>
             </div>
             <div className="flex gap-2">
-                {/* INIT BUTTON: Only show if list is empty */}
+                {/* INIT BUTTON: Show if empty */}
                 {(students.length === 0 && !isLoading) && (
                     <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                         {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
@@ -287,9 +290,10 @@ export default function StudentsPage() {
                     />
                 </div>
                 <Select value={classFilter} onValueChange={setClassFilter}>
-                    <SelectTrigger className="w-full sm:w-[250px]"><SelectValue placeholder="Filter Class" /></SelectTrigger>
+                    <SelectTrigger className="w-full sm:w-[250px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
                         {classes.map(c => (
                             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                         ))}
@@ -306,8 +310,12 @@ export default function StudentsPage() {
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <AlertCircle className="h-10 w-10 text-slate-300" />
-                    <p>No students found.</p>
-                    <p className="text-xs text-slate-400">If this is your first time, click <strong>"Force Initialize DB"</strong>.</p>
+                    <p className="font-medium">No students found</p>
+                    <p className="text-xs text-slate-400">
+                        {students.length > 0 && searchTerm || classFilter !== 'all' 
+                            ? 'Try adjusting your filters.' 
+                            : 'Click "Add Student" or "Force Initialize DB" to get started.'}
+                    </p>
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -392,8 +400,8 @@ export default function StudentsPage() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 <div className="pt-2">
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
                     <p className="text-xs text-center text-muted-foreground mt-2">Default password is <strong>password123</strong></p>
                 </div>
@@ -439,7 +447,7 @@ export default function StudentsPage() {
                     </div>
                     <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
                     <div className="pt-2">
-                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
                         </Button>
                     </div>
