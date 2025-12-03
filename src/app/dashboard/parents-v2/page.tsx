@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI
@@ -41,15 +41,14 @@ type Student = {
 // --- MAIN PAGE COMPONENT ---
 export default function ParentsV2Page() {
   const firestore = useFirestore();
-  const { user } = useAuth();
   const { toast } = useToast();
 
   const [searchTerm, setSearchTerm] = useState('');
   
-  const parentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'parents')) : null, [firestore, user]);
+  const parentsQuery = useMemoFirebase(() => collection(firestore, 'parents'), [firestore]);
   const {data: parents, isLoading: isLoadingParents, forceRefetch: forceRefetchParents } = useCollection<ParentMember>(parentsQuery);
 
-  const studentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'students')) : null, [firestore, user]);
+  const studentsQuery = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
   const {data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
