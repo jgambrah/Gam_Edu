@@ -1,10 +1,11 @@
 
+
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, query, where, serverTimestamp, addDoc, doc, setDoc, increment } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
@@ -107,27 +108,39 @@ function QuizComponent() {
         date_completed: serverTimestamp(),
         correct_count: correctCount,
     };
+    
+    const leaderboardRef = doc(firestore, 'global_leaderboard', user.uid);
+    const leaderboardData = {
+        userId: user.uid,
+        userName: user.displayName || user.email || 'Anonymous', // Ensure userName is never null
+        profilePictureUrl: user.photoURL || '',
+        total_correct_answers: increment(correctCount),
+        total_quizzes_completed: increment(1)
+    };
+
 
     const resultsCollection = collection(firestore, 'user_results');
     
-    addDoc(resultsCollection, resultData)
-      .then(() => {
-          setScore(finalScore);
-          setIsFinished(true);
-          toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
-      })
-      .catch((serverError) => {
+    try {
+        await setDoc(leaderboardRef, leaderboardData, { merge: true });
+        await addDoc(resultsCollection, resultData);
+
+        setScore(finalScore);
+        setIsFinished(true);
+        toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
+
+    } catch (serverError) {
+        console.error("Submission Error:", serverError);
         const permissionError = new FirestorePermissionError({
-            path: resultsCollection.path,
+            path: `user_results or global_leaderboard`,
             operation: 'create',
-            requestResourceData: resultData,
+            requestResourceData: { resultData, leaderboardData },
         });
         errorEmitter.emit('permission-error', permissionError);
-        toast({ variant: 'destructive', title: 'Submission Error', description: 'Check permissions and try again.' });
-      })
-      .finally(() => {
+        toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your results. Check permissions and try again.' });
+    } finally {
         setIsSubmitting(false);
-      });
+    }
   };
 
   if (isLoading || isUserLoading) {
