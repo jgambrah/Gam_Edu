@@ -160,7 +160,7 @@ export default function SubjectsPage() {
   const [isInitializing, setIsInitializing] = useState(false);
 
   // UI State
-  const [isFormOpen, setFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
   
   const canManage = role === 'Director' || role === 'Administrator';
@@ -230,7 +230,7 @@ export default function SubjectsPage() {
           await deleteDoc(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
           fetchSubjects();
-      } catch (e) {
+      } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
   }
@@ -296,7 +296,7 @@ export default function SubjectsPage() {
                     onClick={handleForceInitialize} 
                     disabled={isInitializing}
                  >
-                    {isInitializing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Database className="mr-2 h-4 w-4"/>}
+                    {isInitializing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
                     Force Initialize Database
                  </Button>
              </div>
