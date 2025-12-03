@@ -3,24 +3,25 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+// All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment } from 'firebase/firestore';
 import { 
-  FlaskConical, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Wand2
+  FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
+  Trash2, Lightbulb, CheckCircle2, Database, Wand2, Sparkles, XCircle 
 } from 'lucide-react';
 import { format } from 'date-fns';
 
 // UI Components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -28,20 +29,25 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { AiProblemGenerator } from '../ai-problem-generator';
+import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 // --- SUB-COMPONENT: Fact of the Day ---
-function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
+function FactOfTheDay() {
     const firestore = useFirestore();
     const { user } = useAuth();
+    const { role } = useRole();
     const { toast } = useToast();
     const [factText, setFactText] = useState('');
     const [isPosting, setIsPosting] = useState(false);
+    
+    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-    // Simple query to avoid index crashes
     const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
 
-    // Sort in browser
     const latestFact = useMemo(() => {
         if (!facts || facts.length === 0) return null;
         return facts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))[0];
@@ -111,7 +117,7 @@ function LeaderboardV2() {
   // Perform sorting on the client-side after data is fetched.
   const sortedLeaderboard = useMemo(() => {
     if (!leaderboard) return [];
-    return leaderboard.sort((a, b) => b.total_correct_answers - a.total_correct_answers);
+    return leaderboard.sort((a, b) => (b.total_correct_answers || 0) - (a.total_correct_answers || 0));
   }, [leaderboard]);
 
   if (isLoading) return <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>;
