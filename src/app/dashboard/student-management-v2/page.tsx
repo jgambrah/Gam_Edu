@@ -1,10 +1,9 @@
-
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 // 1. IMPORT onSnapshot
-import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore'; 
+import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc, onSnapshot, query, orderBy, getDocs } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI Components
@@ -17,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, Database } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, Database, AlertCircle } from 'lucide-react';
 
 // --- TYPE DEFINITIONS ---
 type Student = {
@@ -68,14 +67,18 @@ export default function StudentsManagementV2() {
   }, [isAddOpen, editingStudent]);
 
 
-  // --- 1. NEW STRATEGY: REAL-TIME LISTENERS ---
+  // --- 1. REAL-TIME DATA LISTENERS ---
   useEffect(() => {
-    if (isUserLoading || !user || !firestore) return;
+    if (isUserLoading) return;
+
+    if (!user || !firestore) {
+        setIsDataLoading(false);
+        return;
+    }
 
     setIsDataLoading(true);
 
-    // A. Listen to Classes
-    // Using 'onSnapshot' avoids the Promise hang issue
+    // Listener 1: Classes
     const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
         (snapshot) => {
             const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name }));
@@ -87,7 +90,7 @@ export default function StudentsManagementV2() {
         }
     );
 
-    // B. Listen to Students
+    // Listener 2: Students
     const unsubStudents = onSnapshot(collection(firestore, 'students'), 
         (snapshot) => {
             const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
@@ -170,8 +173,6 @@ export default function StudentsManagementV2() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          // No need to call fetch() - onSnapshot updates automatically!
-
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
       } finally {
@@ -196,7 +197,7 @@ export default function StudentsManagementV2() {
             address: formData.get('address')
         });
 
-        toast({ title: "Updated", description: "Student saved." });
+        toast({ title: "Updated", description: "Student details saved." });
         setEditingStudent(null);
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -221,6 +222,35 @@ export default function StudentsManagementV2() {
     (classFilter === 'all' || s.classId === classFilter)
   );
 
+    // --- DEBUGGING TOOL ---
+  const debugDatabase = async () => {
+      if (!firestore) {
+        alert("Firestore is not connected.");
+        return;
+      }
+      console.log("--- STARTING DEBUG ---");
+      try {
+          // 1. Check Collection Name
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
+          
+          // 2. Force a direct fetch (Bypassing listeners)
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (snapshot.empty) {
+              alert("The app connected, but the 'students' collection is empty.");
+          } else {
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
+              alert(`FOUND ${snapshot.size} STUDENTS! Check Console (F12) for details.`);
+          }
+      } catch (e: any) {
+          console.error("Debug Error:", e);
+          alert(`Read Failed: ${e.message}`);
+      }
+  };
+
   return (
     <div className="space-y-6 p-6">
       <Card className="border-t-4 border-t-green-600 shadow-sm">
@@ -232,11 +262,14 @@ export default function StudentsManagementV2() {
                 <CardDescription>View and manage students (Real-time).</CardDescription>
             </div>
             <div className="flex gap-2">
-                {/* INITIALIZE BUTTON: Visible if list is empty */}
-                {(students.length === 0 && !isDataLoading) && (
+                <Button variant="outline" onClick={debugDatabase} disabled={isLoading}>
+                    <Database className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Debug DB
+                </Button>
+                {/* INIT BUTTON: Visible if list is empty */}
+                {(students.length === 0 && !isLoading) && (
                     <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                         {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
-                        Force Initialize DB
+                        Force Initialize
                     </Button>
                 )}
                 
@@ -263,7 +296,7 @@ export default function StudentsManagementV2() {
                 </Select>
             </div>
 
-            {isDataLoading ? (
+            {isLoading ? (
                 <div className="py-12 flex flex-col items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
                     <p>Connecting to database...</p>
