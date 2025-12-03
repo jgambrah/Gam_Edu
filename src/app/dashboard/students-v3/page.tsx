@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -46,7 +45,7 @@ type Class = {
     name: string;
 };
 
-export default function StudentsV3Page() {
+export default function StudentsPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
@@ -87,7 +86,7 @@ export default function StudentsV3Page() {
   }, [isAddOpen, editingStudent]);
 
 
-  // --- 1. DIRECT DATA FETCH ---
+  // --- 1. DIRECT DATA FETCH (The Stable Fix) ---
   const loadData = useCallback(async () => {
     if (isUserLoading) return;
     
@@ -128,7 +127,7 @@ export default function StudentsV3Page() {
       loadData();
   }, [loadData]);
 
-  // --- 2. DEBUGGING TOOL ---
+  // --- 2. DEBUGGING TOOL (CONSOLE ONLY) ---
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
@@ -143,21 +142,15 @@ export default function StudentsV3Page() {
           
           if (classSnap.empty) {
               console.warn("⚠️ 'classes' collection is empty! Dropdown will be empty.");
+              console.log("Creating a test class now...");
+              await addDoc(collection(firestore, 'classes'), { name: "JHS 1 (Debug)", createdAt: serverTimestamp() });
+              console.log("Created 'JHS 1 (Debug)'. Please refresh page.");
+              toast({ title: "Debug", description: "Created test class. Refresh page." });
           } else {
               classSnap.docs.forEach(d => console.log("Class Doc:", d.id, d.data()));
+              toast({ title: "Debug", description: `Found ${classSnap.size} classes. Check Console.` });
           }
           
-          // Check Students
-          console.log("🔎 Checking 'students' collection...");
-          const studentSnap = await getDocs(collection(firestore, 'students'));
-          console.log(`Result: Found ${studentSnap.size} student documents.`);
-
-          if (studentSnap.empty) {
-              console.warn("⚠️ 'students' collection is empty!");
-          } else {
-              studentSnap.docs.forEach(d => console.log("Student Doc:", d.id, d.data()));
-          }
-
       } catch (e: any) {
           console.error("Debug Error:", e);
           toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
@@ -165,16 +158,18 @@ export default function StudentsV3Page() {
   };
 
 
-  // --- 3. FORCE INITIALIZE ---
+  // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
       try {
+          // 1. Create Test Class
           const classRef = await addDoc(collection(firestore, 'classes'), {
               name: "JHS 1 (Test)",
               createdAt: serverTimestamp()
           });
           
+          // 2. Create Test Student
           await addDoc(collection(firestore, 'students'), {
               firstName: "Test",
               lastName: "Student",
@@ -187,6 +182,7 @@ export default function StudentsV3Page() {
 
           toast({ title: "Success", description: "Dummy data created. Refreshing list..." });
           
+          // 3. Reload Data immediately
           await loadData();
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
@@ -229,7 +225,7 @@ export default function StudentsV3Page() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          loadData(); 
+          loadData(); // Reload list manually
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -258,7 +254,7 @@ export default function StudentsV3Page() {
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
-        loadData(); 
+        loadData(); // Reload list manually
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -272,7 +268,7 @@ export default function StudentsV3Page() {
     try {
         await deleteDoc(doc(firestore, 'students', id));
         toast({ title: "Deleted", description: "Profile removed." });
-        loadData(); 
+        loadData(); // Reload list manually
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
@@ -280,13 +276,21 @@ export default function StudentsV3Page() {
 
   // --- SAFE FILTER LOGIC ---
   const filteredStudents = students.filter(s => {
+    // Safely get values (Default to empty string to prevent crashes on missing data)
     const first = (s.firstName || '').toLowerCase();
     const last = (s.lastName || '').toLowerCase();
     const email = (s.email || '').toLowerCase();
-    const term = searchTerm.toLowerCase();
+    
+    const term = searchTerm.toLowerCase().trim();
     const sClassId = s.classId || 'unassigned';
 
-    const matchesSearch = first.includes(term) || last.includes(term) || email.includes(term);
+    // Check Search (Match first, last, or email)
+    const matchesSearch = term === '' || 
+                          first.includes(term) || 
+                          last.includes(term) || 
+                          email.includes(term);
+
+    // Check Class Filter
     const matchesClass = classFilter === 'all' || sClassId === classFilter;
 
     return matchesSearch && matchesClass;
@@ -295,11 +299,11 @@ export default function StudentsV3Page() {
   return (
     <div className="space-y-6 p-6">
       
-      <Card className="border-t-4 border-t-purple-600 shadow-sm">
+      <Card className="border-t-4 border-t-green-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <GraduationCap className="h-6 w-6 text-purple-600"/> Student Roster V3
+                    <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
                     Found: {students.length} | Showing: {filteredStudents.length}
@@ -319,7 +323,7 @@ export default function StudentsV3Page() {
                     Force Initialize DB
                 </Button>
                 
-                <Button onClick={() => setIsAddOpen(true)} className="bg-purple-600 hover:bg-purple-700">
+                <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
             </div>
@@ -349,7 +353,7 @@ export default function StudentsV3Page() {
 
             {isLoading ? (
                 <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
-                    <Loader2 className="h-8 w-8 animate-spin text-purple-500"/>
+                    <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
                     <p>Loading data...</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
@@ -399,7 +403,8 @@ export default function StudentsV3Page() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter the student's details to create an account.</DialogDescription></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter the student's details to create an account.</DialogDescription></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
@@ -478,5 +483,3 @@ export default function StudentsV3Page() {
     </div>
   );
 }
-
-  

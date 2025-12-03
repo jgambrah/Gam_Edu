@@ -74,8 +74,16 @@ export default function StudentsPage() {
 
   // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
-    if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
+    if (isAddOpen) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(''); 
+        setSelectedGender(''); 
+    }
+    if (editingStudent) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(editingStudent.classId || ''); 
+        setSelectedGender(editingStudent.gender || ''); 
+    }
   }, [isAddOpen, editingStudent]);
 
 
@@ -120,30 +128,33 @@ export default function StudentsPage() {
       loadData();
   }, [loadData]);
 
-  // --- 2. DEBUGGING TOOL ---
+  // --- 2. DEBUGGING TOOL (CONSOLE ONLY) ---
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
-          alert("Firestore not initialized.");
+          console.error("Firestore not initialized.");
           return;
       }
       try {
-          const colRef = collection(firestore, 'students'); 
-          console.log("Looking in collection: 'students'");
+          // Check Classes
+          console.log("🔎 Checking 'classes' collection...");
+          const classSnap = await getDocs(collection(firestore, 'classes'));
+          console.log(`Result: Found ${classSnap.size} class documents.`);
           
-          const snapshot = await getDocs(colRef);
-          console.log(`Raw Snapshot Size: ${snapshot.size}`);
-          
-          if (snapshot.empty) {
-              alert("The app connected, but the 'students' collection is empty.");
+          if (classSnap.empty) {
+              console.warn("⚠️ 'classes' collection is empty! Dropdown will be empty.");
+              console.log("Creating a test class now...");
+              await addDoc(collection(firestore, 'classes'), { name: "JHS 1 (Debug)", createdAt: serverTimestamp() });
+              console.log("Created 'JHS 1 (Debug)'. Please refresh page.");
+              toast({ title: "Debug", description: "Created test class. Refresh page." });
           } else {
-              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-              console.log("Raw Data from DB:", rawData);
-              alert(`FOUND ${snapshot.size} STUDENTS! Check Console (F12) for details.`);
+              classSnap.docs.forEach(d => console.log("Class Doc:", d.id, d.data()));
+              toast({ title: "Debug", description: `Found ${classSnap.size} classes. Check Console.` });
           }
+          
       } catch (e: any) {
           console.error("Debug Error:", e);
-          alert(`Read Failed: ${e.message}`);
+          toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
       }
   };
 
@@ -266,13 +277,21 @@ export default function StudentsPage() {
 
   // --- SAFE FILTER LOGIC ---
   const filteredStudents = students.filter(s => {
+    // Safely get values (Default to empty string to prevent crashes on missing data)
     const first = (s.firstName || '').toLowerCase();
     const last = (s.lastName || '').toLowerCase();
     const email = (s.email || '').toLowerCase();
-    const term = searchTerm.toLowerCase();
+    
+    const term = searchTerm.toLowerCase().trim();
     const sClassId = s.classId || 'unassigned';
 
-    const matchesSearch = first.includes(term) || last.includes(term) || email.includes(term);
+    // Check Search (Match first, last, or email)
+    const matchesSearch = term === '' || 
+                          first.includes(term) || 
+                          last.includes(term) || 
+                          email.includes(term);
+
+    // Check Class Filter
     const matchesClass = classFilter === 'all' || sClassId === classFilter;
 
     return matchesSearch && matchesClass;
@@ -288,7 +307,7 @@ export default function StudentsPage() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    Found: {students.length} | Classes: {classes.length}
+                    Found: {students.length} | Showing: {filteredStudents.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -296,7 +315,7 @@ export default function StudentsPage() {
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 
-                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
                     <Bug className="h-4 w-4 mr-2"/> Debug Data
                 </Button>
 
@@ -385,8 +404,9 @@ export default function StudentsPage() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
-            <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter the student's details to create an account.</DialogDescription></DialogHeader>
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
@@ -398,16 +418,11 @@ export default function StudentsPage() {
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.length === 0 ? (
-                                <SelectItem value="none" disabled>No classes found. Use Debug button.</SelectItem>
-                            ) : (
-                                classes.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))
-                            )}
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
-                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please click "Check Data" to initialize if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -431,22 +446,26 @@ export default function StudentsPage() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle><DialogDescription>Modify the student's profile.</DialogDescription></DialogHeader>
             {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="firstName" defaultValue={editingStudent.firstName} required />
                         <Input name="lastName" defaultValue={editingStudent.lastName} required />
                     </div>
                     <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                        <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
