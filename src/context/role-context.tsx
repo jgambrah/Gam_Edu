@@ -134,7 +134,7 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       if (isStaff) {
         router.push('/dashboard/staff-management-v2');
       } else if (role === 'Student') {
-        router.push('/dashboard/students-v2');
+        router.push('/dashboard/student-management');
       } else if (role === 'Parent') {
         router.push('/dashboard/parents-v2');
       }
