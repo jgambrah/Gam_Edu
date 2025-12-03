@@ -118,7 +118,7 @@ export default function StudentsPage() {
       loadData();
   }, [loadData]);
 
-  // --- 2. DEBUGGING TOOL ---
+   // --- 2. DEBUGGING TOOL ---
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
@@ -143,7 +143,8 @@ export default function StudentsPage() {
       }
   };
 
-  // --- 3. FORCE INITIALIZE ---
+
+  // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -193,9 +194,9 @@ export default function StudentsPage() {
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName,
-              lastName,
-              email,
+              firstName: firstName,
+              lastName: lastName,
+              email: email,
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: formData.get('dateOfBirth'),
@@ -287,7 +288,7 @@ export default function StudentsPage() {
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 
-                 <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
                     <Bug className="h-4 w-4 mr-2"/> Debug Data
                 </Button>
                 
@@ -334,7 +335,7 @@ export default function StudentsPage() {
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p>No students visible.</p>
                     {students.length > 0 && <p className="text-xs text-orange-600">(Data is loaded ({students.length}), but filters are hiding them.)</p>}
-                    {students.length === 0 && <p className="text-xs text-slate-400">Database appears empty.</p>}
+                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty. Try using the Initialize button.</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -376,8 +377,12 @@ export default function StudentsPage() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
-            <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Add New Student</DialogTitle>
+                <DialogDescription>Enter the student's information to create an account.</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
@@ -417,22 +422,30 @@ export default function StudentsPage() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Edit Student</DialogTitle>
+                <DialogDescription>Update student profile information.</DialogDescription>
+            </DialogHeader>
             {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="firstName" defaultValue={editingStudent.firstName} required />
                         <Input name="lastName" defaultValue={editingStudent.lastName} required />
                     </div>
                     <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                        <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
@@ -450,5 +463,4 @@ export default function StudentsPage() {
       </Dialog>
     </div>
   );
-
-    
+}
