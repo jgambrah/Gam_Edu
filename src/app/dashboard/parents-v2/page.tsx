@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { HeartHandshake, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -46,11 +46,10 @@ export default function ParentsV2Page() {
 
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Refactored to use the useCollection hook for stable data fetching
-  const parentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'parents')) : null, [user, firestore]);
+  const parentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'parents')) : null, [firestore, user]);
   const {data: parents, isLoading: isLoadingParents, forceRefetch: forceRefetchParents } = useCollection<ParentMember>(parentsQuery);
 
-  const studentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'students')) : null, [user, firestore]);
+  const studentsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'students')) : null, [firestore, user]);
   const {data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
