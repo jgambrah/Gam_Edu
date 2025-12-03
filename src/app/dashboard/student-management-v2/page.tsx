@@ -1,9 +1,19 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-// 1. IMPORT onSnapshot
-import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc, onSnapshot, query, orderBy, getDocs } from 'firebase/firestore'; 
+import { 
+  collection, 
+  onSnapshot, 
+  doc, 
+  setDoc, 
+  updateDoc, 
+  deleteDoc, 
+  serverTimestamp, 
+  addDoc,
+  getDocs
+} from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI Components
@@ -16,7 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, Database, AlertCircle } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, Edit, GraduationCap, Database, AlertCircle } from 'lucide-react';
 
 // --- TYPE DEFINITIONS ---
 type Student = {
@@ -26,9 +36,10 @@ type Student = {
   lastName: string;
   email: string;
   classId: string;
-  dateOfBirth?: string;
   gender?: string;
   address?: string;
+  dateOfBirth?: string;
+  enrollmentStatus?: string;
 };
 
 type Class = {
@@ -41,21 +52,23 @@ export default function StudentsManagementV2() {
   const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
 
-  // Data State
+  // --- STATE ---
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
-  // Loading State
-  const [isDataLoading, setIsDataLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState("Initializing...");
   const [isInitializing, setIsInitializing] = useState(false);
   
-  // UI State
+  // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
-  
+
   // Form State
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
@@ -69,71 +82,73 @@ export default function StudentsManagementV2() {
 
   // --- 1. REAL-TIME DATA LISTENERS ---
   useEffect(() => {
-    if (isUserLoading) return;
-
-    if (!user || !firestore) {
-        setIsDataLoading(false);
+    if (isUserLoading) {
+        setConnectionStatus("Checking Auth...");
         return;
     }
 
-    setIsDataLoading(true);
+    if (!user || !firestore) {
+        setIsLoading(false);
+        setConnectionStatus("Not Connected");
+        return;
+    }
+
+    setIsLoading(true);
+    setConnectionStatus("Listening...");
 
     // Listener 1: Classes
     const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
         (snapshot) => {
-            const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name }));
+            const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown Class" }));
             setClasses(list);
         },
-        (error) => {
-            console.error("Classes Listener Error:", error);
-            // Do not block UI, just log
-        }
+        (error) => console.warn("Classes Error (Ignored):", error)
     );
 
     // Listener 2: Students
     const unsubStudents = onSnapshot(collection(firestore, 'students'), 
         (snapshot) => {
+            console.log(`Snapshot received! Found ${snapshot.docs.length} students.`);
             const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
             setStudents(list);
-            setIsDataLoading(false); // Stop spinner as soon as we get a response (even empty)
+            setIsLoading(false);
+            setConnectionStatus("Connected");
         },
         (error) => {
-            console.error("Students Listener Error:", error);
+            console.error("Students Error:", error);
+            setConnectionStatus(`Error: ${error.message}`);
             toast({ variant: 'destructive', title: "Database Error", description: error.message });
-            setIsDataLoading(false);
+            setIsLoading(false);
         }
     );
 
-    // Cleanup listeners on unmount
     return () => {
         unsubClasses();
         unsubStudents();
     };
   }, [user, isUserLoading, firestore, toast]);
 
-
-  // --- 2. FORCE INITIALIZE (Backup Plan) ---
+  // --- 2. FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
       try {
-          // Create a Class
           const classRef = await addDoc(collection(firestore, 'classes'), {
-              name: "JHS 1",
+              name: "JHS 1 (Test)",
               createdAt: serverTimestamp()
           });
           
-          // Create a Student
           await addDoc(collection(firestore, 'students'), {
-              firstName: "Demo",
+              firstName: "Test",
               lastName: "Student",
-              email: "demo@school.com",
+              email: `test${Date.now()}@school.com`,
               classId: classRef.id,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp(),
-              uid: "demo-" + Date.now()
+              uid: "test-uid-" + Date.now()
           });
-          toast({ title: "Initialized", description: "Dummy data created." });
+
+          toast({ title: "Success", description: "Dummy data created." });
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -141,32 +156,33 @@ export default function StudentsManagementV2() {
       }
   };
 
-  // --- 3. FORM ACTIONS ---
+  // --- 3. ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const email = formData.get('email') as string;
+      const values = Object.fromEntries(formData.entries()) as any;
+      const password = "password123"; 
 
       try {
-          // Auth Creation
-          const result = await createNewUser(email, "password123", 'Student', { firstName, lastName });
+          const result = await createNewUser(values.email, password, 'Student', { 
+              firstName: values.firstName, 
+              lastName: values.lastName 
+          });
+          
           if ('error' in result) throw new Error(result.error);
 
-          // Firestore Creation
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName,
-              lastName,
-              email,
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
               classId: selectedClassId,
               gender: selectedGender,
-              dateOfBirth: formData.get('dateOfBirth'),
-              address: formData.get('address'),
+              dateOfBirth: values.dateOfBirth,
+              address: values.address,
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
@@ -180,6 +196,7 @@ export default function StudentsManagementV2() {
       }
   };
 
+  // --- 4. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
@@ -210,24 +227,14 @@ export default function StudentsManagementV2() {
     if (!confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
-        toast({ title: "Deleted" });
+        toast({ title: "Deleted", description: "Profile removed." });
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  const filteredStudents = students.filter(s => 
-    ((s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (classFilter === 'all' || s.classId === classFilter)
-  );
-
-    // --- DEBUGGING TOOL ---
+  // --- DEBUGGING TOOL ---
   const debugDatabase = async () => {
-      if (!firestore) {
-        alert("Firestore is not connected.");
-        return;
-      }
       console.log("--- STARTING DEBUG ---");
       try {
           // 1. Check Collection Name
@@ -251,27 +258,45 @@ export default function StudentsManagementV2() {
       }
   };
 
+  // --- SAFE FILTER LOGIC ---
+  const filteredStudents = students.filter(s => {
+    const first = (s.firstName || '').toLowerCase();
+    const last = (s.lastName || '').toLowerCase();
+    const email = (s.email || '').toLowerCase();
+    const term = searchTerm.toLowerCase();
+    const sClassId = s.classId || 'unassigned';
+
+    const matchesSearch = first.includes(term) || last.includes(term) || email.includes(term);
+    const matchesClass = classFilter === 'all' || sClassId === classFilter;
+
+    return matchesSearch && matchesClass;
+  });
+
   return (
     <div className="space-y-6 p-6">
+      
       <Card className="border-t-4 border-t-green-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
                     <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
                 </CardTitle>
-                <CardDescription>View and manage students (Real-time).</CardDescription>
+                <CardDescription>
+                    System Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{connectionStatus}</span>
+                </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={debugDatabase} disabled={isLoading}>
-                    <Database className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Debug DB
-                </Button>
-                {/* INIT BUTTON: Visible if list is empty */}
+                {/* INIT BUTTON: Show if empty */}
                 {(students.length === 0 && !isLoading) && (
                     <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                         {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
-                        Force Initialize
+                        Force Initialize DB
                     </Button>
                 )}
+
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300">
+                    🐛 Debug Data
+                </Button>
                 
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
@@ -280,15 +305,22 @@ export default function StudentsManagementV2() {
         </CardHeader>
         
         <CardContent className="space-y-4">
+            {/* FILTERS */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-grow">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search by name or email..." className="pl-8" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                    <Input 
+                        placeholder="Search name or email..." 
+                        className="pl-8" 
+                        value={searchTerm} 
+                        onChange={e => setSearchTerm(e.target.value)} 
+                    />
                 </div>
                 <Select value={classFilter} onValueChange={setClassFilter}>
-                    <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
+                    <SelectTrigger className="w-full sm:w-[250px]"><SelectValue placeholder="Filter Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
                         {classes.map(c => (
                             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                         ))}
@@ -297,21 +329,22 @@ export default function StudentsManagementV2() {
             </div>
 
             {isLoading ? (
-                <div className="py-12 flex flex-col items-center gap-2 text-muted-foreground">
+                <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
                     <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
                     <p>Connecting to database...</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50">
-                    <p className="mb-2">No students found.</p>
-                    <p className="text-xs">Click <strong>"Add Student"</strong> or <strong>"Force Initialize"</strong> to get started.</p>
+                <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
+                    <AlertCircle className="h-10 w-10 text-slate-300" />
+                    <p>No students found matching your search.</p>
+                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students in DB, but filter hides them)</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -319,7 +352,16 @@ export default function StudentsManagementV2() {
                                 <TableRow key={s.id}>
                                     <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                     <TableCell>{s.email}</TableCell>
-                                    <TableCell><Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'Unassigned'}</Badge></TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">
+                                            {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge className={s.enrollmentStatus === 'Active' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 'bg-gray-100 text-gray-800'}>
+                                            {s.enrollmentStatus || 'Active'}
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
@@ -335,14 +377,14 @@ export default function StudentsManagementV2() {
         </CardContent>
       </Card>
 
-      {/* ADD MODAL */}
+      {/* ADD STUDENT DIALOG */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
                 <DialogTitle>Add New Student</DialogTitle>
                 <DialogDescription>Enter student details.</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
@@ -372,47 +414,56 @@ export default function StudentsManagementV2() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 <div className="pt-2">
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
                 </div>
             </form>
         </DialogContent>
       </Dialog>
 
-      {/* EDIT MODAL */}
+      {/* EDIT STUDENT DIALOG */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
                 <DialogTitle>Edit Student</DialogTitle>
-                <DialogDescription>Update student details.</DialogDescription>
+                <DialogDescription>Update student profile information.</DialogDescription>
             </DialogHeader>
             {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
                     <div className="grid grid-cols-2 gap-4">
-                        <Input name="firstName" defaultValue={editingStudent.firstName} required />
-                        <Input name="lastName" defaultValue={editingStudent.lastName} required />
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
                     </div>
-                    <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                        <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
-                        <Select value={selectedGender} onValueChange={setSelectedGender}>
-                            <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                            <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                    <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                    
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
                     </div>
-                    <Input name="address" defaultValue={editingStudent.address} />
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-                    </Button>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
+                        <div className="space-y-2">
+                            <Label>Gender</Label>
+                            <Select value={selectedGender} onValueChange={setSelectedGender}>
+                                <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                                <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
+                    <div className="pt-2">
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        </Button>
+                    </div>
                 </form>
             )}
         </DialogContent>
