@@ -5,14 +5,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 import { 
   collection, 
-  onSnapshot, 
+  getDocs, // Using getDocs instead of onSnapshot for stability
   doc, 
   setDoc, 
   updateDoc, 
   deleteDoc, 
   serverTimestamp, 
-  addDoc,
-  getDocs
+  addDoc 
 } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -26,9 +25,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, Database, AlertCircle, Bug } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff } from 'lucide-react';
 
-// --- TYPE DEFINITIONS ---
+// --- TYPES ---
 type Student = {
   id: string;
   uid: string;
@@ -56,10 +55,8 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
-  // Loading State
   const [isLoading, setIsLoading] = useState(true);
-  const [connectionStatus, setConnectionStatus] = useState("Initializing...");
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("Initializing...");
   
   // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -81,116 +78,55 @@ export default function StudentsPage() {
   }, [isAddOpen, editingStudent]);
 
 
-  // --- 1. REAL-TIME DATA LISTENERS ---
-  useEffect(() => {
-    if (isUserLoading) {
-        setConnectionStatus("Checking Auth...");
-        return;
-    }
-
+  // --- 1. DIRECT DATA FETCH (The Fix) ---
+  const loadData = useCallback(async () => {
+    if (isUserLoading) return;
+    
     if (!user || !firestore) {
         setIsLoading(false);
-        setConnectionStatus("Not Connected");
+        setStatusMsg("Not Connected");
         return;
     }
 
     setIsLoading(true);
-    setConnectionStatus("Listening...");
+    setStatusMsg("Fetching Data...");
 
-    // Listener 1: Classes
-    const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
-        (snapshot) => {
-            const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown Class" }));
-            setClasses(list);
-        },
-        (error) => console.warn("Classes Error (Ignored):", error)
-    );
+    try {
+        // A. Fetch Classes
+        const classSnap = await getDocs(collection(firestore, 'classes'));
+        const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown" })) as Class[];
+        setClasses(classList);
 
-    // Listener 2: Students
-    const unsubStudents = onSnapshot(collection(firestore, 'students'), 
-        (snapshot) => {
-            console.log(`Snapshot received! Found ${snapshot.docs.length} students.`);
-            const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
-            setStudents(list);
-            setIsLoading(false);
-            setConnectionStatus("Connected");
-        },
-        (error) => {
-            console.error("Students Error:", error);
-            setConnectionStatus(`Error: ${error.message}`);
-            toast({ variant: 'destructive', title: "Database Error", description: error.message });
-            setIsLoading(false);
-        }
-    );
-
-    return () => {
-        unsubClasses();
-        unsubStudents();
-    };
+        // B. Fetch Students (This is what worked in Debug!)
+        const studentSnap = await getDocs(collection(firestore, 'students'));
+        console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
+        
+        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+        setStudents(studentList);
+        
+        setStatusMsg("Ready");
+    } catch (err: any) {
+        console.error("Load Error:", err);
+        setStatusMsg("Error loading data");
+        toast({ variant: 'destructive', title: "Error", description: err.message });
+    } finally {
+        setIsLoading(false);
+    }
   }, [user, isUserLoading, firestore, toast]);
 
-  // --- 2. DEBUGGING TOOL ---
-  const debugDatabase = async () => {
-      console.log("--- STARTING DEBUG ---");
-      if (!firestore) {
-          alert("Firestore not initialized.");
-          return;
-      }
-      try {
-          const colRef = collection(firestore, 'students'); 
-          console.log("Looking in collection: 'students'");
-          
-          const snapshot = await getDocs(colRef);
-          console.log(`Raw Snapshot Size: ${snapshot.size}`);
-          
-          if (snapshot.empty) {
-              alert("The app connected, but the 'students' collection is empty.");
-          } else {
-              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-              console.log("Raw Data from DB:", rawData);
-              alert(`FOUND ${snapshot.size} STUDENTS! Check Console (F12) for details.`);
-          }
-      } catch (e: any) {
-          console.error("Debug Error:", e);
-          alert(`Read Failed: ${e.message}`);
-      }
-  };
+  // Trigger load on mount
+  useEffect(() => {
+      loadData();
+  }, [loadData]);
 
-  // --- 3. FORCE INITIALIZE ---
-  const handleForceInitialize = async () => {
-      if (!firestore) return;
-      setIsInitializing(true);
-      try {
-          const classRef = await addDoc(collection(firestore, 'classes'), {
-              name: "JHS 1 (Test)",
-              createdAt: serverTimestamp()
-          });
-          
-          await addDoc(collection(firestore, 'students'), {
-              firstName: "Test",
-              lastName: "Student",
-              email: `test${Date.now()}@school.com`,
-              classId: classRef.id,
-              enrollmentStatus: 'Active',
-              createdAt: serverTimestamp(),
-              uid: "test-uid-" + Date.now()
-          });
-
-          toast({ title: "Success", description: "Dummy data created." });
-      } catch (e: any) {
-          toast({ variant: 'destructive', title: "Error", description: e.message });
-      } finally {
-          setIsInitializing(false);
-      }
-  };
-
-  // --- 4. ADD STUDENT ---
+  // --- 3. ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
+      const values = Object.fromEntries(formData.entries()) as any;
       const firstName = formData.get('firstName') as string;
       const lastName = formData.get('lastName') as string;
       const email = formData.get('email') as string;
@@ -205,9 +141,9 @@ export default function StudentsPage() {
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: formData.get('firstName'),
-              lastName: formData.get('lastName'),
-              email: formData.get('email'),
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: formData.get('dateOfBirth'),
@@ -218,6 +154,8 @@ export default function StudentsPage() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
+          loadData(); // Reload list manually
+
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
       } finally {
@@ -225,7 +163,7 @@ export default function StudentsPage() {
       }
   };
 
-  // --- 5. UPDATE STUDENT ---
+  // --- 4. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
@@ -243,8 +181,9 @@ export default function StudentsPage() {
             address: formData.get('address')
         });
 
-        toast({ title: "Updated", description: "Student details saved." });
+        toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
+        loadData(); // Reload list manually
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -252,11 +191,13 @@ export default function StudentsPage() {
     }
   };
 
+  // --- 5. DELETE STUDENT ---
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
         toast({ title: "Deleted", description: "Profile removed." });
+        loadData(); // Reload list manually
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
@@ -286,19 +227,13 @@ export default function StudentsPage() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{connectionStatus}</span> | Found: {students.length}
+                    Found: {students.length} | Showing: {filteredStudents.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300">
-                    <Bug className="h-4 w-4 mr-2"/> Debug Data
+                <Button variant="outline" onClick={loadData} disabled={isLoading}>
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
-                {(students.length === 0 && !isLoading) && (
-                    <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
-                        {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
-                        Force Initialize DB
-                    </Button>
-                )}
                 
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
@@ -321,7 +256,6 @@ export default function StudentsPage() {
                     <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
-                        <SelectItem value="unassigned">Unassigned</SelectItem>
                         {classes.map(c => (
                             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                         ))}
@@ -332,13 +266,14 @@ export default function StudentsPage() {
             {isLoading ? (
                 <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
                     <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
-                    <p>Connecting to database...</p>
+                    <p>Loading data...</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
-                    <AlertCircle className="h-10 w-10 text-slate-300" />
-                    <p>No students found matching your search.</p>
-                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students in DB, but filter hides them)</p>}
+                    <WifiOff className="h-10 w-10 text-slate-300" />
+                    <p>No students visible.</p>
+                    {students.length > 0 && <p className="text-xs text-orange-600">Data is loaded ({students.length}), but filters are hiding them.</p>}
+                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty.</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -381,11 +316,8 @@ export default function StudentsPage() {
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-                <DialogTitle>Add New Student</DialogTitle>
-                <DialogDescription>Enter student details.</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
+            <DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
@@ -394,6 +326,7 @@ export default function StudentsPage() {
                 
                 <div className="space-y-2">
                     <Label>Class</Label>
+                    {/* FIX: Controlled Input */}
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
@@ -407,6 +340,7 @@ export default function StudentsPage() {
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
                     <div className="space-y-2">
                         <Label>Gender</Label>
+                        {/* FIX: Controlled Input */}
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
                             <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
                             <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
@@ -426,12 +360,9 @@ export default function StudentsPage() {
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-                <DialogTitle>Edit Student</DialogTitle>
-                <DialogDescription>Update student details.</DialogDescription>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Edit Student</DialogTitle></DialogHeader>
             {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="firstName" defaultValue={editingStudent.firstName} required />
                         <Input name="lastName" defaultValue={editingStudent.lastName} required />
@@ -440,6 +371,7 @@ export default function StudentsPage() {
                     
                     <div className="space-y-2">
                         <Label>Class</Label>
+                         {/* FIX: Controlled Input */}
                         <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>
