@@ -1,9 +1,10 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+// 1. IMPORT onSnapshot
+import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI Components
@@ -16,7 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, AlertCircle } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, Database, WifiOff } from 'lucide-react';
 
 // --- TYPE DEFINITIONS ---
 type Student = {
@@ -36,9 +37,9 @@ type Class = {
     name: string;
 };
 
-export default function StudentsManagementV2() {
+export default function StudentsManagementPage() {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
 
   // Data State
@@ -46,8 +47,8 @@ export default function StudentsManagementV2() {
   const [classes, setClasses] = useState<Class[]>([]);
   
   // Loading State
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadingStatus, setLoadingStatus] = useState("Initializing...");
+  const [isDataLoading, setIsDataLoading] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(false);
   
   // UI State
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -60,85 +61,84 @@ export default function StudentsManagementV2() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
-  // Reset logic for forms
+  // Reset logic
   useEffect(() => {
-    if (isAddOpen) { 
-      setIsSubmitting(false); 
-      setSelectedClassId(''); 
-      setSelectedGender(''); 
-    }
-  }, [isAddOpen]);
+    if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
+    if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
+  }, [isAddOpen, editingStudent]);
 
+
+  // --- 1. NEW STRATEGY: REAL-TIME LISTENERS ---
   useEffect(() => {
-    if (editingStudent) { 
-      setIsSubmitting(false); 
-      setSelectedClassId(editingStudent.classId || ''); 
-      setSelectedGender(editingStudent.gender || ''); 
-    }
-  }, [editingStudent]);
+    if (isUserLoading || !user || !firestore) return;
 
-  // --- FETCH DATA (FIXED - No useCallback, direct function) ---
-  const fetchData = async () => {
-    console.log('🔄 Fetch triggered');
-    
-    if (!firestore) {
-      console.log('⏳ Waiting for Firestore...');
-      setIsLoading(false);
-      setLoadingStatus("Waiting for Firestore connection...");
-      return;
-    }
+    setIsDataLoading(true);
 
-    if (!user) {
-        console.log('⏳ Waiting for User login...');
-        setIsLoading(false);
-        setLoadingStatus("Waiting for user authentication...");
-        return;
-    }
+    // A. Listen to Classes
+    // Using 'onSnapshot' avoids the Promise hang issue
+    const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
+        (snapshot) => {
+            const list = snapshot.docs.map(d => ({ id: d.id, name: d.data().name }));
+            setClasses(list);
+        },
+        (error) => {
+            console.error("Classes Listener Error:", error);
+            // Do not block UI, just log
+        }
+    );
 
-    setIsLoading(true);
-    setLoadingStatus("Loading data...");
-    
-    try {
-      console.log('📚 Fetching classes...');
-      const classSnap = await getDocs(collection(firestore, 'classes'));
-      const classList: Class[] = classSnap.docs.map((d) => ({ 
-        id: d.id, 
-        name: d.data().name || d.id 
-      }));
-      console.log(`✅ Loaded ${classList.length} classes`);
-      setClasses(classList);
+    // B. Listen to Students
+    const unsubStudents = onSnapshot(collection(firestore, 'students'), 
+        (snapshot) => {
+            const list = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+            setStudents(list);
+            setIsDataLoading(false); // <--- STOP SPINNER HERE
+        },
+        (error) => {
+            console.error("Students Listener Error:", error);
+            toast({ variant: 'destructive', title: "Database Error", description: error.message });
+            setIsDataLoading(false); // <--- OR STOP SPINNER HERE
+        }
+    );
 
-      console.log('👥 Fetching students...');
-      const studentSnap = await getDocs(collection(firestore, 'students'));
-      const studentList = studentSnap.docs.map((d) => ({ 
-        id: d.id, 
-        ...d.data() 
-      })) as Student[];
-      console.log(`✅ Loaded ${studentList.length} students`);
-      setStudents(studentList);
-      
-      setLoadingStatus("Ready");
+    // Cleanup listeners on unmount
+    return () => {
+        unsubClasses();
+        unsubStudents();
+    };
+  }, [user, isUserLoading, firestore, toast]);
 
-    } catch (err: any) {
-      console.error('❌ Fetch Error:', err);
-      setLoadingStatus("Error loading data");
-      toast({ 
-        variant: 'destructive', 
-        title: "Error Loading Data", 
-        description: err.message 
-      });
-    } finally {
-      setIsLoading(false);
-    }
+
+  // --- 2. FORCE INITIALIZE (Backup Plan) ---
+  const handleForceInitialize = async () => {
+      if (!firestore) return;
+      setIsInitializing(true);
+      try {
+          // Create a Class
+          const classRef = await addDoc(collection(firestore, 'classes'), {
+              name: "JHS 1",
+              createdAt: serverTimestamp()
+          });
+          
+          // Create a Student
+          await addDoc(collection(firestore, 'students'), {
+              firstName: "Demo",
+              lastName: "Student",
+              email: "demo@school.com",
+              classId: classRef.id,
+              enrollmentStatus: 'Active',
+              createdAt: serverTimestamp(),
+              uid: "demo-" + Date.now()
+          });
+          toast({ title: "Initialized", description: "Dummy data created." });
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsInitializing(false);
+      }
   };
 
-  // --- INITIAL LOAD (FIXED - Only runs when user/firestore ready) ---
-  useEffect(() => {
-    console.log('🎯 useEffect triggered');
-    fetchData();
-  }, [user, firestore]);
-
-  // --- FORM ACTIONS ---
+  // --- 3. FORM ACTIONS ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
@@ -150,46 +150,30 @@ export default function StudentsManagementV2() {
       const email = formData.get('email') as string;
 
       try {
-          console.log('🎓 Creating student account...');
+          // Auth Creation
           const result = await createNewUser(email, "password123", 'Student', { firstName, lastName });
-          
-          if ('error' in result) {
-            throw new Error(result.error);
-          }
+          if ('error' in result) throw new Error(result.error);
 
-          console.log('💾 Saving student to Firestore...');
+          // Firestore Creation
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
               firstName,
               lastName,
               email,
-              classId: selectedClassId || '',
-              gender: selectedGender || '',
-              dateOfBirth: formData.get('dateOfBirth') || '',
-              address: formData.get('address') || '',
+              classId: selectedClassId,
+              gender: selectedGender,
+              dateOfBirth: formData.get('dateOfBirth'),
+              address: formData.get('address'),
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
 
-          toast({ 
-            title: "Success", 
-            description: `${firstName} ${lastName} added successfully.` 
-          });
-          
+          toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          
-          // Refresh after short delay
-          setTimeout(() => {
-            fetchData();
-          }, 500);
+          // No need to call fetch() - onSnapshot updates automatically!
 
       } catch (error: any) {
-          console.error('❌ Error adding student:', error);
-          toast({ 
-            variant: 'destructive', 
-            title: "Error", 
-            description: error.message 
-          });
+          toast({ variant: 'destructive', title: "Error", description: error.message });
       } finally {
           setIsSubmitting(false);
       }
@@ -202,269 +186,213 @@ export default function StudentsManagementV2() {
     const formData = new FormData(e.currentTarget);
 
     try {
-      console.log('💾 Updating student...');
-      const studentRef = doc(firestore, 'students', editingStudent.id);
-      await updateDoc(studentRef, {
-        firstName: formData.get('firstName'),
-        lastName: formData.get('lastName'),
-        classId: selectedClassId || '',
-        gender: selectedGender || '',
-        dateOfBirth: formData.get('dateOfBirth') || '',
-        address: formData.get('address') || ''
-      });
+        const studentRef = doc(firestore, 'students', editingStudent.id);
+        await updateDoc(studentRef, {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            classId: selectedClassId,
+            gender: selectedGender,
+            dateOfBirth: formData.get('dateOfBirth'),
+            address: formData.get('address')
+        });
 
-      toast({ title: "Updated", description: "Student details saved." });
-      setEditingStudent(null);
-      
-      // Refresh after short delay
-      setTimeout(() => {
-        fetchData();
-      }, 500);
-
+        toast({ title: "Updated", description: "Student saved." });
+        setEditingStudent(null);
     } catch (error: any) {
-      console.error('❌ Error updating student:', error);
-      toast({ 
-        variant: 'destructive', 
-        title: "Error", 
-        description: error.message 
-      });
+        toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this student profile? This cannot be undone.")) return;
-    
+    if (!confirm("Delete this student profile?")) return;
     try {
-      console.log('🗑️ Deleting student...');
-      await deleteDoc(doc(firestore, 'students', id));
-      toast({ title: "Deleted", description: "Student removed." });
-      
-      // Reload after short delay
-      setTimeout(() => {
-        fetchData();
-      }, 500);
-
+        await deleteDoc(doc(firestore, 'students', id));
+        toast({ title: "Deleted" });
     } catch (e: any) {
-      console.error('❌ Error deleting student:', e);
-      toast({ 
-        variant: 'destructive', 
-        title: "Error", 
-        description: e.message 
-      });
+        toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  // Filter students
-  const filteredStudents = students.filter(s => {
-    const nameMatch = `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
-    const emailMatch = s.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const classMatch = classFilter === 'all' || s.classId === classFilter;
-    
-    return (nameMatch || emailMatch) && classMatch;
-  });
+  const filteredStudents = students.filter(s => 
+    ((s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (classFilter === 'all' || s.classId === classFilter)
+  );
 
   return (
     <div className="space-y-6 p-6">
       <Card className="border-t-4 border-t-green-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-2xl flex items-center gap-2">
-              <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
-            </CardTitle>
-            <CardDescription>
-              Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{loadingStatus}</span>
-            </CardDescription>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              onClick={fetchData} 
-              disabled={isLoading}
-              size="sm"
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> 
-              Refresh
-            </Button>
-            <Button 
-              onClick={() => setIsAddOpen(true)} 
-              className="bg-green-600 hover:bg-green-700"
-              size="sm"
-            >
-              <UserPlus className="h-4 w-4 mr-2"/> Add Student
-            </Button>
-          </div>
+            <div>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
+                </CardTitle>
+                <CardDescription>View and manage students (Real-time).</CardDescription>
+            </div>
+            <div className="flex gap-2">
+                {/* INITIALIZE BUTTON: Visible if list is empty */}
+                {(students.length === 0 && !isDataLoading) && (
+                    <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
+                        {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
+                        Force Initialize DB
+                    </Button>
+                )}
+                
+                <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
+                    <UserPlus className="h-4 w-4 mr-2"/> Add Student
+                </Button>
+            </div>
         </CardHeader>
         
         <CardContent className="space-y-4">
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-grow">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search by name or email..." 
-                className="pl-8" 
-                value={searchTerm} 
-                onChange={e => setSearchTerm(e.target.value)} 
-              />
-            </div>
-            <Select value={classFilter} onValueChange={setClassFilter}>
-              <SelectTrigger className="w-full sm:w-[280px]">
-                <SelectValue placeholder="Filter by Class" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Classes</SelectItem>
-                {classes.map(c => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            {/* NOT LOGGED IN STATE */}
+            {!isUserLoading && !user && (
+                 <div className="p-4 bg-red-50 text-red-800 rounded-md flex items-center gap-2">
+                    <WifiOff className="h-5 w-5"/> You are not logged in. Please refresh the page.
+                 </div>
+            )}
 
-          {/* Loading State */}
-          {isLoading && (
-            <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
-              <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
-              <p className="text-sm font-medium">{loadingStatus}</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+                <div className="relative flex-grow">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input placeholder="Search by name or email..." className="pl-8" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                </div>
+                <Select value={classFilter} onValueChange={setClassFilter}>
+                    <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Classes</SelectItem>
+                        {classes.map(c => (
+                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
-          )}
 
-          {/* Empty State */}
-          {!isLoading && filteredStudents.length === 0 && (
-            <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg flex flex-col items-center gap-2">
-              <AlertCircle className="h-10 w-10 text-slate-300" />
-              <p className="font-medium">No students found</p>
-              <p className="text-xs text-slate-400">
-                {searchTerm || classFilter !== 'all' 
-                  ? 'Try adjusting your filters' 
-                  : 'Click "Add Student" to get started'}
-              </p>
-            </div>
-          )}
-
-          {/* Table */}
-          {!isLoading && filteredStudents.length > 0 && (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Class</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredStudents.map((s) => (
-                    <TableRow key={s.id}>
-                      <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{s.email}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">
-                          {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => loadStudentForEdit(s)}
-                          >
-                            <Edit className="h-4 w-4 text-blue-600"/>
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleDelete(s.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500"/>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+            {isDataLoading ? (
+                <div className="py-12 flex flex-col items-center gap-2 text-muted-foreground">
+                    <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
+                    <p>Connecting to database...</p>
+                </div>
+            ) : filteredStudents.length === 0 ? (
+                <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50">
+                    <p className="mb-2">No students found.</p>
+                    <p className="text-xs">Click <strong>"Force Initialize DB"</strong> above to check connection.</p>
+                </div>
+            ) : (
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredStudents.map((s) => (
+                                <TableRow key={s.id}>
+                                    <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
+                                    <TableCell>{s.email}</TableCell>
+                                    <TableCell><Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'Unassigned'}</Badge></TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
         </CardContent>
       </Card>
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Add New Student</DialogTitle>
-            <DialogDescription>Enter the student's details below to create their account.</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
-            <div className="grid grid-cols-2 gap-4">
-                <Input name="firstName" required placeholder="First Name"/>
-                <Input name="lastName" required placeholder="Last Name"/>
-            </div>
-            <Input name="email" type="email" required placeholder="Email"/>
-            <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
-                <SelectContent>
-                    {classes.map(c => (
-                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <div className="grid grid-cols-2 gap-4">
-                <Input name="dateOfBirth" type="date" />
-                <Select value={selectedGender} onValueChange={setSelectedGender}>
-                    <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                    <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
-                </Select>
-            </div>
-            <Input name="address" placeholder="Address"/>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
-            </Button>
-          </form>
+            <DialogHeader>
+                <DialogTitle>Add New Student</DialogTitle>
+                <DialogDescription>Enter student details.</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
+                    <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
+                </div>
+                <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
+                
+                <div className="space-y-2">
+                    <Label>Class</Label>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
+                        <SelectContent>
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
+                    <div className="space-y-2">
+                        <Label>Gender</Label>
+                        <Select value={selectedGender} onValueChange={setSelectedGender}>
+                            <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
+                            <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
+                <div className="pt-2">
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
+                    </Button>
+                </div>
+            </form>
         </DialogContent>
       </Dialog>
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Edit Student</DialogTitle>
-            <DialogDescription>Update student information.</DialogDescription>
-          </DialogHeader>
-          {editingStudent && (
-            <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
-                  <Input name="firstName" defaultValue={editingStudent.firstName} required />
-                  <Input name="lastName" defaultValue={editingStudent.lastName} required />
-              </div>
-              <Input value={editingStudent.email} disabled className="bg-slate-100" />
-              <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                  <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                  <SelectContent>
-                      {classes.map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                      ))}
-                  </SelectContent>
-              </Select>
-              <div className="grid grid-cols-2 gap-4">
-                  <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
-                  <Select value={selectedGender} onValueChange={setSelectedGender}>
-                      <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                      <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
-                  </Select>
-              </div>
-              <Input name="address" defaultValue={editingStudent.address} />
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-              </Button>
-            </form>
-          )}
+            <DialogHeader>
+                <DialogTitle>Edit Student</DialogTitle>
+                <DialogDescription>Update student details.</DialogDescription>
+            </DialogHeader>
+            {editingStudent && (
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <Input name="firstName" defaultValue={editingStudent.firstName} required />
+                        <Input name="lastName" defaultValue={editingStudent.lastName} required />
+                    </div>
+                    <Input value={editingStudent.email} disabled className="bg-slate-100" />
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                        <SelectContent>
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
+                        <Select value={selectedGender} onValueChange={setSelectedGender}>
+                            <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                            <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                    <Input name="address" defaultValue={editingStudent.address} />
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                    </Button>
+                </form>
+            )}
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+
+```
