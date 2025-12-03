@@ -235,13 +235,6 @@ export default function SubjectsPage() {
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
           <div className="flex gap-2">
-             {/* INIT BUTTON: Show if empty */}
-             {(subjects?.length === 0 && !isLoading) && (
-                <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
-                    {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
-                    Init DB
-                </Button>
-             )}
              <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" /> New Subject
              </Button>
@@ -251,9 +244,18 @@ export default function SubjectsPage() {
           {isLoading ? (
             <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
           ) : sortedSubjects.length === 0 ? (
-             <div className="text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
-                 <p>No subjects created yet.</p>
-                 <p className="text-xs mt-2">Click <strong>"Init DB"</strong> if this is your first time.</p>
+             <div className="text-center text-muted-foreground p-10 border-2 border-dashed rounded-lg bg-slate-50">
+                 <p className="mb-4">No subjects created yet.</p>
+                 
+                 {/* MOVED BUTTON HERE - CENTER OF SCREEN */}
+                 <Button 
+                    variant="destructive" 
+                    onClick={handleForceInitialize} 
+                    disabled={isInitializing}
+                 >
+                    {isInitializing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Database className="mr-2 h-4 w-4"/>}
+                    Force Initialize Database
+                 </Button>
              </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
