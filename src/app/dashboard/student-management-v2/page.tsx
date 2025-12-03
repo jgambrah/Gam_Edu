@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore'; // Added addDoc
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI Components
@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Activity } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database } from 'lucide-react';
 
 // --- TYPE DEFINITIONS ---
 type Student = {
@@ -41,13 +41,14 @@ export default function StudentsManagementV2() {
   const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
 
-  // Data
+  // Data State
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
-  // State
+  // Status State
   const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState("Initializing..."); // <--- DEBUG STATUS
+  const [statusMessage, setStatusMessage] = useState("Waiting for login...");
+  const [isInitializing, setIsInitializing] = useState(false);
   
   // UI State
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -66,80 +67,92 @@ export default function StudentsManagementV2() {
     if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. SELF-HEALING FETCH LOGIC ---
-  const fetchData = useCallback(async () => {
-    setStatus("Checking Auth...");
-    if (isUserLoading) return;
+  // --- 1. FORCE INITIALIZE FUNCTION (The Fix) ---
+  const handleForceInitialize = async () => {
+      if (!firestore) return;
+      setIsInitializing(true);
+      setStatusMessage("Creating collections...");
+      try {
+          // 1. Create a Class
+          const classRef = await addDoc(collection(firestore, 'classes'), {
+              name: "JHS 1 (Test Class)",
+              createdAt: serverTimestamp()
+          });
+          
+          // 2. Create a Student
+          await addDoc(collection(firestore, 'students'), {
+              firstName: "Test",
+              lastName: "Student",
+              email: "test.student@school.com",
+              classId: classRef.id,
+              enrollmentStatus: 'Active',
+              createdAt: serverTimestamp(),
+              uid: "test-uid-" + Date.now() 
+          });
 
-    if (!user) {
-        setStatus("Error: Not Logged In");
+          toast({ title: "System Initialized", description: "Collections created. Refreshing..." });
+          await fetchData(); // Try fetching again
+      } catch (e: any) {
+          console.error(e);
+          setStatusMessage("Init Failed: " + e.message);
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsInitializing(false);
+      }
+  };
+
+  // --- 2. FETCH LOGIC ---
+  const fetchData = useCallback(async () => {
+    if (isUserLoading) return;
+    if (!user || !firestore) {
         setIsLoading(false);
-        return;
-    }
-    if (!firestore) {
-        setStatus("Error: Database Not Connected");
-        setIsLoading(false);
+        setStatusMessage("Not connected.");
         return;
     }
 
     setIsLoading(true);
-    
-    try {
-        // 1. Fetch Classes (Independent)
-        setStatus("Loading Classes...");
-        console.log("Fetching classes...");
-        const classSnap = await getDocs(collection(firestore, 'classes'));
-        const classList = classSnap.docs.map((d: any) => ({ id: d.id, name: d.data().name }));
-        setClasses(classList);
-        console.log(`Classes loaded: ${classList.length}`);
+    setStatusMessage("Loading data...");
 
-        // 2. Fetch Students
-        setStatus("Loading Students...");
-        console.log("Fetching students...");
-        const studentSnap = await getDocs(collection(firestore, 'students'));
-        
-        if (studentSnap.empty) {
-            setStatus("Collection empty. Creating Test Student...");
-            // AUTO-FIX: Create a dummy student if none exist
-            await addDoc(collection(firestore, 'students'), {
-                firstName: "Test",
-                lastName: "Student",
-                email: "test.student@school.com",
-                classId: "",
-                enrollmentStatus: "Active",
-                createdAt: serverTimestamp(),
-                uid: "test-uid-" + Date.now() 
-            });
-            setStatus("Created Test Student. Refreshing...");
-            // Recursive call to fetch the new student
-            const retrySnap = await getDocs(collection(firestore, 'students'));
-            const retryList = retrySnap.docs.map((d: any) => ({ id: d.id, ...d.data() })) as Student[];
-            setStudents(retryList);
-        } else {
-            const studentList = studentSnap.docs.map((d: any) => ({ id: d.id, ...d.data() })) as Student[];
-            setStudents(studentList);
+    try {
+        // 1. Fetch Classes
+        let classList: Class[] = [];
+        try {
+            const classSnap = await getDocs(collection(firestore, 'classes'));
+            classList = classSnap.docs.map((d: any) => ({ id: d.id, name: d.data().name }));
+            setClasses(classList);
+        } catch (e) {
+            console.warn("Class fetch failed (ignoring):", e);
         }
 
-        setStatus("Ready");
+        // 2. Fetch Students
+        const studentSnap = await getDocs(collection(firestore, 'students'));
+        const studentList = studentSnap.docs.map((d: any) => ({ 
+            id: d.id, 
+            ...d.data() 
+        })) as Student[];
+
+        setStudents(studentList);
+        setStatusMessage("Ready");
+
     } catch (err: any) {
         console.error("Fetch Error:", err);
-        setStatus(`Error: ${err.message}`);
-        toast({ variant: 'destructive', title: "Error", description: err.message });
+        setStatusMessage(`Error: ${err.message}`);
+        // If permission denied, it implies connection works but rules block. 
+        // If network error, it implies DB doesn't exist or is unreachable.
     } finally {
         setIsLoading(false);
     }
-  }, [user, isUserLoading, firestore, toast]);
+  }, [user, isUserLoading, firestore]);
 
   useEffect(() => {
       if (!isUserLoading) fetchData();
   }, [isUserLoading, fetchData]);
 
-  // --- ADD STUDENT ---
+  // --- 3. FORM ACTIONS ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
-      setStatus("Creating User...");
       
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries()) as any;
@@ -148,7 +161,6 @@ export default function StudentsManagementV2() {
           const result = await createNewUser(values.email, "password123", 'Student', { firstName: values.firstName, lastName: values.lastName });
           if ('error' in result) throw new Error(result.error);
 
-          setStatus("Saving to Database...");
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
               firstName: values.firstName,
@@ -173,7 +185,6 @@ export default function StudentsManagementV2() {
       }
   };
 
-  // --- UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
@@ -224,13 +235,21 @@ export default function StudentsManagementV2() {
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
+                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management V2
                 </CardTitle>
                 <CardDescription>
-                    Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded">{status}</span>
+                    System Status: <span className="font-mono font-bold">{statusMessage}</span>
                 </CardDescription>
             </div>
             <div className="flex gap-2">
+                {/* INITIALIZE BUTTON: Visible if list is empty or error */}
+                {(students.length === 0) && (
+                    <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
+                        {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
+                        Force Initialize DB
+                    </Button>
+                )}
+                
                 <Button variant="outline" onClick={fetchData} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
@@ -247,7 +266,9 @@ export default function StudentsManagementV2() {
                     <SelectTrigger className="w-[200px]"><SelectValue placeholder="Filter Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
-                        {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        {classes.map(c => (
+                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
             </div>
@@ -255,12 +276,13 @@ export default function StudentsManagementV2() {
             {isLoading ? (
                 <div className="py-10 flex flex-col items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
-                    <p>{status}</p>
+                    <p>{statusMessage}</p>
                 </div>
-            ) : status.startsWith("Error") ? (
+            ) : statusMessage.startsWith("Error") ? (
                 <div className="py-10 text-center text-red-500 border border-red-200 bg-red-50 rounded-lg">
-                    <Activity className="h-8 w-8 mx-auto mb-2"/>
-                    <p>{status}</p>
+                    <WifiOff className="h-10 w-10 text-red-400 mx-auto mb-2"/>
+                    <p className="font-semibold">{statusMessage}</p>
+                    <p className="text-xs mt-1">Database might not be created. Try Force Initialize.</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
                 <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
@@ -308,7 +330,9 @@ export default function StudentsManagementV2() {
                 <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                     <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
                     <SelectContent>
-                        {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        {classes.map(c => (
+                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
                 <div className="grid grid-cols-2 gap-4">
@@ -340,7 +364,9 @@ export default function StudentsManagementV2() {
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                     <div className="grid grid-cols-2 gap-4">
@@ -361,3 +387,4 @@ export default function StudentsManagementV2() {
     </div>
   );
 }
+    
