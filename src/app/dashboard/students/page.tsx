@@ -11,7 +11,8 @@ import {
   updateDoc, 
   deleteDoc, 
   serverTimestamp, 
-  addDoc 
+  addDoc,
+  getDocs
 } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -55,7 +56,6 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
-  // Loading State
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState("Initializing...");
   const [isInitializing, setIsInitializing] = useState(false);
@@ -73,7 +73,7 @@ export default function StudentsPage() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
-  // Reset form state
+  // Reset logic
   useEffect(() => {
     if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
     if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
@@ -155,30 +155,57 @@ export default function StudentsPage() {
       }
   };
 
-  // --- 3. ADD STUDENT ---
+  // --- 3. FORCE INITIALIZE ---
+  const handleForceInitialize = async () => {
+      if (!firestore) return;
+      setIsInitializing(true);
+      try {
+          const classRef = await addDoc(collection(firestore, 'classes'), {
+              name: "JHS 1 (Test)",
+              createdAt: serverTimestamp()
+          });
+          
+          await addDoc(collection(firestore, 'students'), {
+              firstName: "Test",
+              lastName: "Student",
+              email: `test${Date.now()}@school.com`,
+              classId: classRef.id,
+              enrollmentStatus: 'Active',
+              createdAt: serverTimestamp(),
+              uid: "test-uid-" + Date.now()
+          });
+
+          toast({ title: "Success", description: "Dummy data created." });
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsInitializing(false);
+      }
+  };
+
+  // --- 4. ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const email = formData.get('email') as string;
+      const values = Object.fromEntries(formData.entries()) as any;
+      const password = "password123";
 
       try {
-          const result = await createNewUser(email, "password123", 'Student', { 
-              firstName: firstName, 
-              lastName: lastName 
+          const result = await createNewUser(values.email, password, 'Student', { 
+              firstName: values.firstName, 
+              lastName: values.lastName 
           });
           
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName,
-              lastName,
-              email,
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: formData.get('dateOfBirth'),
@@ -196,7 +223,7 @@ export default function StudentsPage() {
       }
   };
 
-  // --- 4. UPDATE STUDENT ---
+  // --- 5. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
@@ -227,7 +254,7 @@ export default function StudentsPage() {
     if (!confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
-        toast({ title: "Deleted" });
+        toast({ title: "Deleted", description: "Profile removed." });
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
@@ -257,13 +284,22 @@ export default function StudentsPage() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    Status: <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">{connectionStatus}</span>
+                    {/* Debug Counter */}
+                    Found: {students.length} | Showing: {filteredStudents.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                 <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
                     <Bug className="h-4 w-4 mr-2"/> Debug
                 </Button>
+                {/* INIT BUTTON: Show if empty */}
+                {(students.length === 0 && !isLoading) && (
+                    <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
+                        {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
+                        Force Initialize DB
+                    </Button>
+                )}
+                
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
@@ -301,8 +337,8 @@ export default function StudentsPage() {
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <AlertCircle className="h-10 w-10 text-slate-300" />
-                    <p>No students found matching your search.</p>
-                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students in DB, but the filter hides them.)</p>}
+                    <p>No students found.</p>
+                    {students.length > 0 && <p className="text-xs text-orange-500">(There are {students.length} total students, but the filter is hiding them.)</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -349,7 +385,7 @@ export default function StudentsPage() {
                 <DialogTitle>Add New Student</DialogTitle>
                 <DialogDescription>Enter student details.</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
+            <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
@@ -395,31 +431,40 @@ export default function StudentsPage() {
                 <DialogDescription>Update student details.</DialogDescription>
             </DialogHeader>
             {editingStudent && (
-                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
+                <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <Input name="firstName" defaultValue={editingStudent.firstName} required />
-                        <Input name="lastName" defaultValue={editingStudent.lastName} required />
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
                     </div>
-                    <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                        <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
-                        <Select value={selectedGender} onValueChange={setSelectedGender}>
-                            <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                            <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                    <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                    
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
                     </div>
-                    <Input name="address" defaultValue={editingStudent.address} />
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-                    </Button>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
+                        <div className="space-y-2">
+                            <Label>Gender</Label>
+                            <Select value={selectedGender} onValueChange={setSelectedGender}>
+                                <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                                <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
+                    <div className="pt-2">
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        </Button>
+                    </div>
                 </form>
             )}
         </DialogContent>
@@ -427,4 +472,3 @@ export default function StudentsPage() {
     </div>
   );
 }
-
