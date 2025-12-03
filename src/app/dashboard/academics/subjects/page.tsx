@@ -4,7 +4,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, doc, query, where, addDoc, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -66,13 +66,13 @@ function SubjectForm({
         await updateDoc(subjectRef, values);
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
-        await addDocumentNonBlocking(collection(firestore, 'subjects'), {
+        await addDoc(collection(firestore, 'subjects'), {
             ...values,
             createdAt: serverTimestamp()
         });
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
-      onSuccess(); // This will trigger a re-fetch in the parent component
+      onSuccess(); // Refresh parent list
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -150,12 +150,10 @@ function SubjectForm({
   );
 }
 
-
 // --- MAIN PAGE COMPONENT ---
 export default function SubjectsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user } = useAuth();
   const { toast } = useToast();
 
   const [isFormOpen, setFormOpen] = useState(false);
@@ -281,6 +279,9 @@ export default function SubjectsPage() {
                   <div className="flex gap-2">
                     <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(subject)}>
                         <Edit className="h-4 w-4 text-blue-600"/>
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(subject.id)}>
+                        <Trash2 className="h-4 w-4 text-red-600"/>
                     </Button>
                   </div>
                 </div>
