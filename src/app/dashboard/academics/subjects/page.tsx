@@ -41,10 +41,12 @@ function SubjectForm({
   setOpen,
   allTeachers,
   initialData,
+  onSuccess
 }: {
   setOpen: (open: boolean) => void;
   allTeachers: Staff[];
   initialData?: Subject;
+  onSuccess: () => void;
 }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -61,12 +63,13 @@ function SubjectForm({
     try {
       if (initialData) {
         const subjectRef = doc(firestore, 'subjects', initialData.id);
-        await updateDocumentNonBlocking(subjectRef, values);
+        await updateDoc(subjectRef, values); // Using updateDoc directly for simplicity here
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
-        await addDocumentNonBlocking(collection(firestore, 'subjects'), values);
+        await addDoc(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
+      onSuccess();
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -153,19 +156,17 @@ export default function SubjectsPage() {
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
-  const [isInitializing, setIsInitializing] = useState(false); // NEW STATE
+  const [isInitializing, setIsInitializing] = useState(false);
   
   const canManage = role === 'Director' || role === 'Administrator';
 
-  // Query
   const subjectsQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
     return query(collection(firestore, 'subjects'));
   }, [user, firestore]);
   
-  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
+  const { data: subjects, isLoading: isLoadingSubjects, forceRefetch } = useCollection<Subject>(subjectsQuery);
 
-  // Fetch Teachers
   const teachersQuery = useMemoFirebase(() => {
     if (!user || !firestore || !canManage) return null;
     return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
@@ -174,7 +175,6 @@ export default function SubjectsPage() {
 
   const isLoading = isLoadingSubjects || (canManage && isLoadingTeachers);
 
-  // --- NEW: Force Initialize ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -185,6 +185,7 @@ export default function SubjectsPage() {
               createdAt: serverTimestamp()
           });
           toast({ title: "Success", description: "Test subject created. List should update." });
+          forceRefetch(); // Trigger a re-fetch of the collection
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -196,9 +197,10 @@ export default function SubjectsPage() {
       if(!confirm("Delete this subject?")) return;
       if(!firestore) return;
       try {
-          deleteDocumentNonBlocking(doc(firestore, 'subjects', id));
+          await deleteDoc(doc(firestore, 'subjects', id)); // Using await for confirmation
           toast({ title: "Deleted" });
-      } catch (e) {
+          forceRefetch(); // Re-fetch after deletion
+      } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
   }
@@ -246,8 +248,6 @@ export default function SubjectsPage() {
           ) : sortedSubjects.length === 0 ? (
              <div className="text-center text-muted-foreground p-10 border-2 border-dashed rounded-lg bg-slate-50">
                  <p className="mb-4">No subjects created yet.</p>
-                 
-                 {/* MOVED BUTTON HERE - CENTER OF SCREEN */}
                  <Button 
                     variant="destructive" 
                     onClick={handleForceInitialize} 
@@ -291,6 +291,7 @@ export default function SubjectsPage() {
             setOpen={handleCloseDialog}
             allTeachers={teachers || []}
             initialData={editingSubject}
+            onSuccess={forceRefetch}
           />
         </DialogContent>
       </Dialog>
