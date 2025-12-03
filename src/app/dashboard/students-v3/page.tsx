@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -73,8 +74,16 @@ export default function StudentsV3Page() {
 
   // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
-    if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
+    if (isAddOpen) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(''); 
+        setSelectedGender(''); 
+    }
+    if (editingStudent) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(editingStudent.classId || ''); 
+        setSelectedGender(editingStudent.gender || ''); 
+    }
   }, [isAddOpen, editingStudent]);
 
 
@@ -123,53 +132,36 @@ export default function StudentsV3Page() {
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
-          toast({ variant: 'destructive', title: "Debug Error", description: "Firestore not initialized." });
+          console.error("Firestore not initialized.");
           return;
       }
       try {
-          // Check Classes
-          console.log("🔎 Checking 'classes' collection...");
-          const classSnap = await getDocs(collection(firestore, 'classes'));
-          console.log(`Result: Found ${classSnap.size} class documents.`);
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
           
-          if (classSnap.empty) {
-              console.warn("⚠️ 'classes' collection is empty! Dropdown will be empty.");
-          } else {
-              classSnap.docs.forEach(d => console.log("Class Doc:", d.id, d.data()));
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (!snapshot.empty) {
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
           }
-
-          // Check Students
-          console.log("🔎 Checking 'students' collection...");
-          const studentSnap = await getDocs(collection(firestore, 'students'));
-          console.log(`Result: Found ${studentSnap.size} student documents.`);
-          
-          if (studentSnap.empty) {
-              console.warn("⚠️ 'students' collection is empty! Table will be empty.");
-          } else {
-              studentSnap.docs.forEach(d => console.log("Student Doc:", d.id, d.data()));
-          }
-
-          toast({ title: "Debug Complete", description: `Found ${classSnap.size} classes and ${studentSnap.size} students. Check the console for details.` });
-          
       } catch (e: any) {
           console.error("Debug Error:", e);
-          toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
       }
   };
 
 
-  // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
+  // --- 3. FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
       try {
-          // 1. Create Test Class
           const classRef = await addDoc(collection(firestore, 'classes'), {
               name: "JHS 1 (Test)",
               createdAt: serverTimestamp()
           });
           
-          // 2. Create Test Student
           await addDoc(collection(firestore, 'students'), {
               firstName: "Test",
               lastName: "Student",
@@ -182,7 +174,6 @@ export default function StudentsV3Page() {
 
           toast({ title: "Success", description: "Dummy data created. Refreshing list..." });
           
-          // 3. Reload Data immediately
           await loadData();
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
@@ -225,7 +216,7 @@ export default function StudentsV3Page() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          loadData(); // Reload list manually
+          loadData(); 
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -254,7 +245,7 @@ export default function StudentsV3Page() {
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
-        loadData(); // Reload list manually
+        loadData(); 
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -268,7 +259,7 @@ export default function StudentsV3Page() {
     try {
         await deleteDoc(doc(firestore, 'students', id));
         toast({ title: "Deleted", description: "Profile removed." });
-        loadData(); // Reload list manually
+        loadData(); 
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
@@ -395,7 +386,11 @@ export default function StudentsV3Page() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Add New Student</DialogTitle>
+                <DialogDescription>Enter the student's details to create an account.</DialogDescription>
+            </DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
@@ -408,16 +403,11 @@ export default function StudentsV3Page() {
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.length === 0 ? (
-                                <SelectItem value="none" disabled>No classes found. Use Debug button.</SelectItem>
-                            ) : (
-                                classes.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))
-                            )}
+                            {classes.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
-                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please click "Check Data" to initialize if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -431,7 +421,7 @@ export default function StudentsV3Page() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 <div className="pt-2">
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
                 </div>
@@ -441,7 +431,11 @@ export default function StudentsV3Page() {
 
       {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+                <DialogTitle>Edit Student Details</DialogTitle>
+                <DialogDescription>Modify the student's profile.</DialogDescription>
+            </DialogHeader>
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -449,14 +443,18 @@ export default function StudentsV3Page() {
                         <Input name="lastName" defaultValue={editingStudent.lastName} required />
                     </div>
                     <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
-                        <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
-                        <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    
+                    <div className="space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
                         <Select value={selectedGender} onValueChange={setSelectedGender}>
@@ -474,4 +472,5 @@ export default function StudentsV3Page() {
       </Dialog>
     </div>
   );
-}
+
+    
