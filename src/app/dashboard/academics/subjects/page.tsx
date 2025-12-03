@@ -1,25 +1,35 @@
 
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where } from 'firebase/firestore';
+import { collection, doc, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, BookCopy, Edit, Trash2 } from 'lucide-react';
+import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, Database } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Subject, Staff } from '@/lib/types';
 import { updateDocumentNonBlocking, addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { setDoc } from 'firebase/firestore';
+
+// --- TYPES ---
+type Staff = {
+    uid: string;
+    firstName: string;
+    lastName: string;
+};
+
+type Subject = {
+    id: string;
+    name: string;
+    teacherIds: string[];
+};
 
 const subjectSchema = z.object({
   name: z.string().min(1, 'Subject name is required.'),
@@ -31,12 +41,10 @@ function SubjectForm({
   setOpen,
   allTeachers,
   initialData,
-  onSuccess,
 }: {
   setOpen: (open: boolean) => void;
   allTeachers: Staff[];
   initialData?: Subject;
-  onSuccess: () => void;
 }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -44,13 +52,7 @@ function SubjectForm({
 
   const form = useForm<z.infer<typeof subjectSchema>>({
     resolver: zodResolver(subjectSchema),
-    defaultValues: initialData ? {
-        name: initialData.name,
-        teacherIds: initialData.teacherIds || [],
-    } : {
-        name: '',
-        teacherIds: [],
-    },
+    defaultValues: initialData || { name: '', teacherIds: [] },
   });
 
   async function onSubmit(values: z.infer<typeof subjectSchema>) {
@@ -58,15 +60,13 @@ function SubjectForm({
     setIsSubmitting(true);
     try {
       if (initialData) {
-        // Update existing subject
-        await updateDocumentNonBlocking(doc(firestore, 'subjects', initialData.id), values);
+        const subjectRef = doc(firestore, 'subjects', initialData.id);
+        await updateDocumentNonBlocking(subjectRef, values);
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
-        // Create new subject
         await addDocumentNonBlocking(collection(firestore, 'subjects'), values);
         toast({ title: 'Success', description: 'New subject has been created.' });
       }
-      onSuccess(); // Trigger refetch
       setOpen(false);
     } catch (error) {
       console.error('Error saving subject:', error);
@@ -151,36 +151,53 @@ export default function SubjectsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [refetchKey, setRefetchKey] = useState(0);
-  const forceRefetch = useCallback(() => setRefetchKey(k => k + 1), []);
-
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
+  const [isInitializing, setIsInitializing] = useState(false); // NEW STATE
   
   const canManage = role === 'Director' || role === 'Administrator';
 
-  // Use the refetchKey in the dependency array to force re-fetching
+  // Query
   const subjectsQuery = useMemoFirebase(() => {
     if (!user || !firestore) return null;
     return query(collection(firestore, 'subjects'));
-  }, [user, firestore, refetchKey]);
+  }, [user, firestore]);
+  
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
+  // Fetch Teachers
   const teachersQuery = useMemoFirebase(() => {
     if (!user || !firestore || !canManage) return null;
     return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
-  }, [user, firestore, canManage, refetchKey]);
+  }, [user, firestore, canManage]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
   const isLoading = isLoadingSubjects || (canManage && isLoadingTeachers);
+
+  // --- NEW: Force Initialize ---
+  const handleForceInitialize = async () => {
+      if (!firestore) return;
+      setIsInitializing(true);
+      try {
+          await addDoc(collection(firestore, 'subjects'), {
+              name: "General Science (Test)",
+              teacherIds: [],
+              createdAt: serverTimestamp()
+          });
+          toast({ title: "Success", description: "Test subject created. List should update." });
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsInitializing(false);
+      }
+  };
 
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this subject?")) return;
       if(!firestore) return;
       try {
-          await deleteDocumentNonBlocking(doc(firestore, 'subjects', id));
+          deleteDocumentNonBlocking(doc(firestore, 'subjects', id));
           toast({ title: "Deleted" });
-          forceRefetch(); // Trigger a refetch after deletion
       } catch (e) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
       }
@@ -218,6 +235,13 @@ export default function SubjectsPage() {
             <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
           </div>
           <div className="flex gap-2">
+             {/* INIT BUTTON: Show if empty */}
+             {(subjects?.length === 0 && !isLoading) && (
+                <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
+                    {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
+                    Init DB
+                </Button>
+             )}
              <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" /> New Subject
              </Button>
@@ -227,7 +251,10 @@ export default function SubjectsPage() {
           {isLoading ? (
             <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
           ) : sortedSubjects.length === 0 ? (
-             <p className="text-center text-muted-foreground p-8">No subjects created yet.</p>
+             <div className="text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
+                 <p>No subjects created yet.</p>
+                 <p className="text-xs mt-2">Click <strong>"Init DB"</strong> if this is your first time.</p>
+             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {sortedSubjects.map((subject) => (
@@ -262,7 +289,6 @@ export default function SubjectsPage() {
             setOpen={handleCloseDialog}
             allTeachers={teachers || []}
             initialData={editingSubject}
-            onSuccess={forceRefetch}
           />
         </DialogContent>
       </Dialog>
