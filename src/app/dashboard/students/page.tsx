@@ -92,10 +92,12 @@ export default function StudentsPage() {
     setStatusMsg("Fetching Data...");
 
     try {
+        // A. Fetch Classes
         const classSnap = await getDocs(collection(firestore, 'classes'));
         const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown" })) as Class[];
         setClasses(classList);
 
+        // B. Fetch Students
         const studentSnap = await getDocs(collection(firestore, 'students'));
         console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
         
@@ -116,11 +118,11 @@ export default function StudentsPage() {
       loadData();
   }, [loadData]);
 
-    // --- 2. DEBUGGING TOOL ---
+  // --- 2. DEBUGGING TOOL ---
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
-          alert("Firestore not initialized.");
+          console.error("Firestore not initialized.");
           return;
       }
       try {
@@ -131,20 +133,17 @@ export default function StudentsPage() {
           console.log(`Raw Snapshot Size: ${snapshot.size}`);
           
           if (snapshot.empty) {
-              alert("The app connected, but the 'students' collection is empty.");
+              console.log("The 'students' collection is empty.");
           } else {
               const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
               console.log("Raw Data from DB:", rawData);
-              alert(`FOUND ${snapshot.size} STUDENTS! Check Console (F12) for details.`);
           }
       } catch (e: any) {
           console.error("Debug Error:", e);
-          alert(`Read Failed: ${e.message}`);
       }
   };
 
-
-  // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
+  // --- 3. FORCE INITIALIZE ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -194,9 +193,9 @@ export default function StudentsPage() {
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
+              firstName,
+              lastName,
+              email,
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: formData.get('dateOfBirth'),
@@ -288,10 +287,10 @@ export default function StudentsPage() {
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 
-                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
+                 <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
                     <Bug className="h-4 w-4 mr-2"/> Debug Data
                 </Button>
-
+                
                 <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
                     {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
                     Force Initialize DB
@@ -334,7 +333,8 @@ export default function StudentsPage() {
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p>No students visible.</p>
-                    <p className="text-xs text-slate-400">Click the <strong>Red Initialize Button</strong> if you see this.</p>
+                    {students.length > 0 && <p className="text-xs text-orange-600">(Data is loaded ({students.length}), but filters are hiding them.)</p>}
+                    {students.length === 0 && <p className="text-xs text-slate-400">Database appears empty.</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -450,4 +450,5 @@ export default function StudentsPage() {
       </Dialog>
     </div>
   );
-}
+
+    
