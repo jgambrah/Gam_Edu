@@ -306,17 +306,13 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                 <CardContent>
                                     <Form {...form}>
                                         <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
-                                            <React.Fragment key="teacherId">
+                                            <React.Fragment key="class-info-form">
                                                 <FormField control={form.control} name="teacherId" render={({ field }) => (
                                                     <FormItem><FormLabel>Class Teacher</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canManage}><FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl><SelectContent>{teachers.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}</SelectContent></Select></FormItem>
                                                 )}/>
-                                            </React.Fragment>
-                                            <React.Fragment key="capacity">
                                                 <FormField control={form.control} name="capacity" render={({ field }) => (
                                                     <FormItem><FormLabel>Class Capacity</FormLabel><FormControl><Input type="number" {...field} disabled={!canManage} /></FormControl></FormItem>
                                                 )}/>
-                                            </React.Fragment>
-                                            <React.Fragment key="description">
                                                 <FormField control={form.control} name="description" render={({ field }) => (
                                                     <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} disabled={!canManage} /></FormControl></FormItem>
                                                 )}/>
