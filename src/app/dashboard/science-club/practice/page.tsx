@@ -107,7 +107,7 @@ function QuizComponent() {
     const leaderboardRef = doc(firestore, 'science_leaderboard', user.uid);
     const leaderboardData = {
         userId: user.uid,
-        userName: user.displayName || user.email,
+        userName: user.displayName || user.email || 'Anonymous', // Ensure userName is never null
         profilePictureUrl: user.photoURL || '',
         total_correct_answers: increment(correctCount),
         total_quizzes_completed: increment(1)
@@ -116,18 +116,15 @@ function QuizComponent() {
     const resultsCollection = collection(firestore, 'science_results');
 
     try {
-        // Run both saves in parallel
-        await Promise.all([
-            addDoc(resultsCollection, resultData),
-            setDoc(leaderboardRef, leaderboardData, { merge: true })
-        ]);
+        await setDoc(leaderboardRef, leaderboardData, { merge: true });
+        await addDoc(resultsCollection, resultData);
 
         setScore(finalScore);
         setIsFinished(true);
         toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10. Your leaderboard stats have been updated!`});
 
     } catch (serverError) {
-        // This simplified error handling is fine for now. If specific errors for leaderboard vs results are needed, we can expand.
+        console.error("Submission Error:", serverError);
         const permissionError = new FirestorePermissionError({
             path: `science_results or science_leaderboard`,
             operation: 'create',

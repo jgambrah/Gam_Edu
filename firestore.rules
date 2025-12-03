@@ -147,6 +147,10 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
     
+    match /science_leaderboard/{userId} {
+        allow read, write: if request.auth.uid == userId;
+    }
+
     match /science_problems_v4/{problemId} {
       allow read: if isSignedIn();
       allow write: if isTeacher() || isAdmin();
