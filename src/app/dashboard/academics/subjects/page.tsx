@@ -4,7 +4,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, addDoc, serverTimestamp, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, query, where, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 // --- TYPES ---
 type Staff = {
@@ -65,7 +66,7 @@ function SubjectForm({
         await updateDoc(subjectRef, values);
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
-        await addDoc(collection(firestore, 'subjects'), {
+        await addDocumentNonBlocking(collection(firestore, 'subjects'), {
             ...values,
             createdAt: serverTimestamp()
         });
@@ -194,18 +195,25 @@ export default function SubjectsPage() {
       }
   };
 
-  // --- DELETE LOGIC ---
   const handleDelete = async (id: string) => {
-      if(!confirm("Delete this subject?")) return;
-      if(!firestore) return;
-      try {
-          await deleteDoc(doc(firestore, 'subjects', id));
-          toast({ title: "Deleted" });
-          forceRefetch(); // Trigger a refetch
-      } catch (e: any) {
-          toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
-      }
-  }
+    if (!confirm("Are you sure you want to delete this subject? This action cannot be undone.")) {
+      return;
+    }
+    if (!firestore) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Firestore is not available.' });
+      return;
+    }
+    try {
+      const subjectRef = doc(firestore, 'subjects', id);
+      await deleteDoc(subjectRef);
+      toast({ title: 'Subject Deleted', description: 'The subject has been successfully deleted.' });
+      forceRefetch(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting subject:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete subject.' });
+    }
+  };
+
 
   // --- DIALOG HANDLERS ---
   const handleOpenDialog = (subject?: Subject) => {
@@ -273,9 +281,6 @@ export default function SubjectsPage() {
                   <div className="flex gap-2">
                     <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(subject)}>
                         <Edit className="h-4 w-4 text-blue-600"/>
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(subject.id)}>
-                        <Trash2 className="h-4 w-4 text-red-600"/>
                     </Button>
                   </div>
                 </div>
