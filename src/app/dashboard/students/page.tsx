@@ -72,13 +72,14 @@ export default function StudentsPage() {
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
+  // Reset form state when opening modals
   useEffect(() => {
     if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
     if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
   }, [isAddOpen, editingStudent]);
 
 
-  // --- 1. DIRECT DATA FETCH ---
+  // --- 1. DIRECT DATA FETCH (The Stable Fix) ---
   const loadData = useCallback(async () => {
     if (isUserLoading) return;
     
@@ -93,24 +94,13 @@ export default function StudentsPage() {
 
     try {
         // A. Fetch Classes
-        console.log("Fetching Classes...");
         const classSnap = await getDocs(collection(firestore, 'classes'));
-        
-        // Safe mapping: Checks for 'name', 'className', or defaults to 'Unknown'
-        const classList = classSnap.docs.map(d => {
-            const data = d.data();
-            return { 
-                id: d.id, 
-                name: data.name || data.className || data.title || "Unknown Class" 
-            };
-        }) as Class[];
-        
-        console.log(`✅ Loaded ${classList.length} classes.`);
+        const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown" })) as Class[];
         setClasses(classList);
 
         // B. Fetch Students
         const studentSnap = await getDocs(collection(firestore, 'students'));
-        console.log(`✅ Loaded ${studentSnap.size} students via Direct Fetch.`);
+        console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
         
         const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
         setStudents(studentList);
@@ -125,51 +115,51 @@ export default function StudentsPage() {
     }
   }, [user, isUserLoading, firestore, toast]);
 
+  // Trigger load on mount
   useEffect(() => {
       loadData();
   }, [loadData]);
 
-  // --- 2. DEBUGGING TOOL (CONSOLE ONLY) ---
+  // --- 2. DEBUGGING TOOL ---
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
-          toast({ variant: 'destructive', title: 'Debug Failed', description: 'Firestore not initialized.'});
+          alert("Firestore not initialized.");
           return;
       }
-
       try {
-          // Check Classes
-          console.log("🔎 Checking 'classes' collection...");
-          const classSnap = await getDocs(collection(firestore, 'classes'));
-          console.log(`Result: Found ${classSnap.size} class documents.`);
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
           
-          if (classSnap.empty) {
-              console.warn("⚠️ 'classes' collection is empty! Dropdown will be empty.");
-              console.log("Creating a test class now...");
-              await addDoc(collection(firestore, 'classes'), { name: "JHS 1 (Debug)", createdAt: serverTimestamp() });
-              console.log("Created 'JHS 1 (Debug)'. Please refresh page.");
-              toast({ title: "Debug", description: "Created test class. Refresh page." });
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (snapshot.empty) {
+              alert("The app connected, but the 'students' collection is empty.");
           } else {
-              classSnap.docs.forEach(d => console.log("Class Doc:", d.id, d.data()));
-              toast({ title: "Debug", description: `Found ${classSnap.size} classes. Check Console.` });
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
+              alert(`FOUND ${snapshot.size} STUDENTS! Check Console (F12) for details.`);
           }
-          
       } catch (e: any) {
           console.error("Debug Error:", e);
-          toast({ variant: 'destructive', title: "Debug Failed", description: e.message });
+          alert(`Read Failed: ${e.message}`);
       }
   };
+
 
   // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
       try {
+          // 1. Create Test Class
           const classRef = await addDoc(collection(firestore, 'classes'), {
               name: "JHS 1 (Test)",
               createdAt: serverTimestamp()
           });
           
+          // 2. Create Test Student
           await addDoc(collection(firestore, 'students'), {
               firstName: "Test",
               lastName: "Student",
@@ -180,8 +170,10 @@ export default function StudentsPage() {
               uid: "test-uid-" + Date.now()
           });
 
-          toast({ title: "Success", description: "Dummy data created. List should update." });
-          loadData();
+          toast({ title: "Success", description: "Dummy data created. Refreshing list..." });
+          
+          // 3. Reload Data immediately
+          await loadData();
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
       } finally {
@@ -223,7 +215,7 @@ export default function StudentsPage() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          loadData(); 
+          loadData(); // Reload list manually
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -252,7 +244,7 @@ export default function StudentsPage() {
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
-        loadData(); 
+        loadData(); // Reload list manually
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -266,13 +258,13 @@ export default function StudentsPage() {
     try {
         await deleteDoc(doc(firestore, 'students', id));
         toast({ title: "Deleted", description: "Profile removed." });
-        loadData(); 
+        loadData(); // Reload list manually
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  // --- FILTER LOGIC ---
+  // --- SAFE FILTER LOGIC ---
   const filteredStudents = students.filter(s => {
     const first = (s.firstName || '').toLowerCase();
     const last = (s.lastName || '').toLowerCase();
@@ -296,7 +288,7 @@ export default function StudentsPage() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    Found: {students.length} | Showing: {filteredStudents.length}
+                    Found: {students.length} | Classes: {classes.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -304,8 +296,8 @@ export default function StudentsPage() {
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 
-                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200">
-                    <Bug className="h-4 w-4 mr-2"/> Check Data
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">
+                    <Bug className="h-4 w-4 mr-2"/> Debug Data
                 </Button>
 
                 <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
@@ -351,7 +343,7 @@ export default function StudentsPage() {
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p>No students visible.</p>
                     {students.length > 0 && <p className="text-xs text-orange-600">Data is loaded ({students.length}), but filters are hiding them.</p>}
-                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty. Try Initialize button.</p>}
+                    {students.length === 0 && <p className="text-xs text-slate-400">Database is empty.</p>}
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -393,8 +385,7 @@ export default function StudentsPage() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-4">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
@@ -416,6 +407,7 @@ export default function StudentsPage() {
                             )}
                         </SelectContent>
                     </Select>
+                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please click "Check Data" to initialize if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -429,8 +421,8 @@ export default function StudentsPage() {
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
                 <div className="pt-2">
-                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
                 </div>
             </form>
