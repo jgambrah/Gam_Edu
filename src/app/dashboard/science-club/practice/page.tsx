@@ -4,17 +4,16 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, query, where, serverTimestamp, addDoc, doc, setDoc, increment } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { ScienceProblem, Student } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, XCircle } from 'lucide-react';
 
 function QuizComponent() {
   const searchParams = useSearchParams();
@@ -104,27 +103,41 @@ function QuizComponent() {
         date_completed: serverTimestamp(),
         correct_count: correctCount,
     };
+    
+    const leaderboardRef = doc(firestore, 'science_leaderboard', user.uid);
+    const leaderboardData = {
+        userId: user.uid,
+        userName: user.displayName || user.email,
+        profilePictureUrl: user.photoURL || '',
+        total_correct_answers: increment(correctCount),
+        total_quizzes_completed: increment(1)
+    };
 
     const resultsCollection = collection(firestore, 'science_results');
 
-    addDoc(resultsCollection, resultData)
-      .then(() => {
+    try {
+        // Run both saves in parallel
+        await Promise.all([
+            addDoc(resultsCollection, resultData),
+            setDoc(leaderboardRef, leaderboardData, { merge: true })
+        ]);
+
         setScore(finalScore);
         setIsFinished(true);
-        toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
-      })
-      .catch((serverError) => {
+        toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10. Your leaderboard stats have been updated!`});
+
+    } catch (serverError) {
+        // This simplified error handling is fine for now. If specific errors for leaderboard vs results are needed, we can expand.
         const permissionError = new FirestorePermissionError({
-            path: resultsCollection.path,
+            path: `science_results or science_leaderboard`,
             operation: 'create',
-            requestResourceData: resultData,
+            requestResourceData: { resultData, leaderboardData },
         });
         errorEmitter.emit('permission-error', permissionError);
-        toast({ variant: 'destructive', title: 'Submission Error', description: 'Check permissions and try again.' });
-      })
-      .finally(() => {
+        toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your results. Check permissions and try again.' });
+    } finally {
         setIsSubmitting(false);
-      });
+    }
   };
 
   if (isLoading || isUserLoading) {
