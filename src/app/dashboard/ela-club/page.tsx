@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, query, addDoc, where, serverTimestamp, getDocs, doc, updateDoc, increment, setDoc, orderBy } from 'firebase/firestore';
 import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student, ElaLeaderboardEntry } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -117,15 +117,22 @@ function ActiveDrillDialog({ drill, open, setOpen }: { drill: ElaGrammarDrill | 
         setIsSubmitted(true);
 
         if (correct && user && firestore) {
-            try {
-                 const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
-                 await setDoc(leaderboardRef, {
-                     userId: user.uid,
-                     userName: user.displayName || user.email,
-                     profilePictureUrl: user.photoURL || '',
-                     total_correct_answers: increment(1),
-                 }, { merge: true });
-            } catch (e) { console.error("Failed to update ELA leaderboard", e); }
+            const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+            const data = {
+                 userId: user.uid,
+                 userName: user.displayName || user.email,
+                 profilePictureUrl: user.photoURL || '',
+                 total_correct_answers: increment(1),
+            };
+            setDoc(leaderboardRef, data, { merge: true })
+             .catch(error => {
+                const permissionError = new FirestorePermissionError({
+                    path: leaderboardRef.path,
+                    operation: 'write',
+                    requestResourceData: data,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
         }
     };
 
@@ -341,19 +348,23 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
         setShowResults(true);
         const { correct } = calculateScore();
 
-        // Save progress to Firestore
         if (user && firestore && correct > 0) {
-            try {
-                const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
-                await setDoc(leaderboardRef, {
-                    userId: user.uid,
-                    userName: user.displayName || user.email,
-                    profilePictureUrl: user.photoURL || '',
-                    total_correct_answers: increment(correct),
-                }, { merge: true });
-            } catch (e) {
-                console.error("Failed to save reading progress", e);
-            }
+            const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+            const data = {
+                userId: user.uid,
+                userName: user.displayName || user.email,
+                profilePictureUrl: user.photoURL || '',
+                total_correct_answers: increment(correct),
+            };
+            setDoc(leaderboardRef, data, { merge: true })
+            .catch(error => {
+                const permissionError = new FirestorePermissionError({
+                    path: leaderboardRef.path,
+                    operation: 'write',
+                    requestResourceData: data,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
         }
     };
 
@@ -482,37 +493,48 @@ function ActiveChallengeDialog({
     if (!challenge) return null;
 
     const handleSubmit = async () => {
-        if (!user || !text.trim()) return;
+        if (!user || !text.trim() || !firestore) return;
         setIsSubmitting(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
-                userId: user.uid,
-                challenge_id: challenge.id,
-                challenge_title: challenge.title,
-                type: 'Writing Challenge',
-                submission_text: text,
-                date_submitted: serverTimestamp(),
-                status: 'Submitted',
-                teacher_score: null,
-                teacher_feedback: ''
-            });
+        const submissionData = {
+            userId: user.uid,
+            challenge_id: challenge.id,
+            challenge_title: challenge.title,
+            type: 'Writing Challenge',
+            submission_text: text,
+            date_submitted: serverTimestamp(),
+            status: 'Submitted',
+            teacher_score: null,
+            teacher_feedback: ''
+        };
 
-             const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
-             await setDoc(leaderboardRef, {
+        const submissionsCollection = collection(firestore, 'ela_user_submissions');
+        
+        addDoc(submissionsCollection, submissionData)
+        .then(async () => {
+            const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+            const leaderboardData = {
                  userId: user.uid,
                  userName: user.displayName || user.email,
                  profilePictureUrl: user.photoURL || '',
                  total_challenges_completed: increment(1),
-             }, { merge: true });
+            };
+            await setDoc(leaderboardRef, leaderboardData, { merge: true });
 
             toast({ title: 'Success', description: 'Your work has been submitted for review.' });
             setOpen(false);
-        } catch (error) {
-            console.error('Error submitting work:', error);
+        })
+        .catch(error => {
+            const permissionError = new FirestorePermissionError({
+                path: submissionsCollection.path,
+                operation: 'create',
+                requestResourceData: submissionData
+            });
+            errorEmitter.emit('permission-error', permissionError);
             toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your work.' });
-        } finally {
+        })
+        .finally(() => {
             setIsSubmitting(false);
-        }
+        });
     };
 
     return (
@@ -855,25 +877,31 @@ function AiPassageGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) =
   }
 
   async function onSave() {
-    if (!generatedPassage || !selectedClassId) { // Check for selected class
+    if (!generatedPassage || !selectedClassId || !firestore) { // Check for selected class
       toast({ variant: 'destructive', title: 'Error', description: 'Please select a class before saving.' });
       return;
     }
     setIsSaving(true);
-    try {
-      await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), {
+    const dataToSave = {
         ...generatedPassage,
         classId: selectedClassId, // Save with the selected classId
-      });
-      toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
-      onSuccess();
-      setOpen(false);
-    } catch (e) {
-      console.error("Error saving passage:", e);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save the generated passage.' });
-    } finally {
-      setIsSaving(false);
-    }
+      };
+
+    addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), dataToSave)
+    .then(() => {
+        toast({ title: 'Success!', description: 'The new reading passage has been saved.' });
+        onSuccess();
+        setOpen(false);
+    })
+    .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: collection(firestore, 'ela_reading_passages').path,
+            operation: 'create',
+            requestResourceData: dataToSave,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    })
+    .finally(() => setIsSaving(false));
   }
 
   return (
@@ -944,24 +972,25 @@ function PassageCreationForm({ setOpen, initialData, classes, onSuccess }: { set
     });
 
     async function onSubmit(values: z.infer<typeof elaReadingPassageSchema>) {
+        if(!firestore) return;
         setIsSubmitting(true);
-        try {
-            if (initialData) {
-                await updateDocumentNonBlocking(doc(firestore, 'ela_reading_passages', initialData.id), values);
-                toast({ title: 'Success', description: 'Passage updated.' });
-            } else {
-                await addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), values);
-                toast({ title: 'Success', description: 'New reading passage has been added.' });
-            }
+        const action = initialData ? updateDocumentNonBlocking(doc(firestore, 'ela_reading_passages', initialData.id), values) : addDocumentNonBlocking(collection(firestore, 'ela_reading_passages'), values);
+        
+        action
+        .then(() => {
+            toast({ title: 'Success', description: `Passage ${initialData ? 'updated' : 'added'}.` });
             onSuccess();
-            form.reset();
             setOpen(false);
-        } catch (error) {
-            console.error('Error saving passage:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save the passage.' });
-        } finally {
-            setIsSubmitting(false);
-        }
+        })
+        .catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: initialData ? doc(firestore, 'ela_reading_passages', initialData.id).path : collection(firestore, 'ela_reading_passages').path,
+                operation: initialData ? 'update' : 'create',
+                requestResourceData: values,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => setIsSubmitting(false));
     }
 
     return (
@@ -1093,28 +1122,33 @@ function ChallengeCreationForm({ setOpen, onSuccess, initialData, classes }: { s
     });
 
     async function onSubmit(values: z.infer<typeof elaWritingChallengeSchema>) {
-        if (!user) return;
+        if (!user || !firestore) return;
         setIsSubmitting(true);
-        try {
-            if (initialData) {
-                await updateDocumentNonBlocking(doc(firestore, 'ela_writing_challenges', initialData.id), values);
-                toast({ title: 'Success', description: 'Challenge updated.' });
-            } else {
-                await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                    ...values,
-                    createdBy: user.uid,
-                    createdAt: serverTimestamp(),
-                });
-                toast({ title: 'Success', description: 'New writing challenge has been created.' });
-            }
+        const dataToSave = {
+            ...values,
+            createdBy: user.uid,
+            createdAt: serverTimestamp(),
+        };
+
+        const action = initialData ? 
+            updateDocumentNonBlocking(doc(firestore, 'ela_writing_challenges', initialData.id), values) : 
+            addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), dataToSave);
+
+        action
+        .then(() => {
+            toast({ title: 'Success', description: `Challenge ${initialData ? 'updated' : 'created'}.` });
             onSuccess();
             setOpen(false);
-        } catch (error) {
-            console.error('Error saving challenge:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save the challenge.' });
-        } finally {
-            setIsSubmitting(false);
-        }
+        })
+        .catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: initialData ? doc(firestore, 'ela_writing_challenges', initialData.id).path : collection(firestore, 'ela_writing_challenges').path,
+                operation: initialData ? 'update' : 'create',
+                requestResourceData: values,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => setIsSubmitting(false));
     }
 
     return (
@@ -1162,23 +1196,30 @@ function GradeSubmissionDialog({ submission, open, setOpen, onSuccess }: { submi
     });
 
     async function onSubmit(values: { teacher_score: string | number, teacher_feedback: string }) {
+        if(!firestore) return;
         setIsSubmitting(true);
-        try {
-            const docRef = doc(firestore, 'ela_user_submissions', submission.id);
-            await updateDoc(docRef, {
-                status: 'Graded',
-                teacher_score: Number(values.teacher_score),
-                teacher_feedback: values.teacher_feedback,
-            });
+        const docRef = doc(firestore, 'ela_user_submissions', submission.id);
+        const data = {
+            status: 'Graded',
+            teacher_score: Number(values.teacher_score),
+            teacher_feedback: values.teacher_feedback,
+        };
+
+        updateDocumentNonBlocking(docRef, data)
+        .then(() => {
             toast({ title: 'Success', description: 'Submission has been graded.' });
             onSuccess();
             setOpen(false);
-        } catch (e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save grade.' });
-        } finally {
-            setIsSubmitting(false);
-        }
+        })
+        .catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: docRef.path,
+                operation: 'update',
+                requestResourceData: data,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => setIsSubmitting(false));
     }
     
     return (
@@ -1404,7 +1445,7 @@ function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean)
         const auth = getAuth();
         const currentUser = auth.currentUser || hookUser;
 
-        if (!generatedChallenge) {
+        if (!generatedChallenge || !firestore) {
             toast({ variant: 'destructive', title: 'Error', description: 'No challenge generated.' });
             return;
         }
@@ -1420,24 +1461,30 @@ function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean)
         }
 
         setIsSaving(true);
-        try {
-            await addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), {
-                title: generatedChallenge.title,
-                prompt: generatedChallenge.prompt,
-                challengeType: generatedChallenge.challengeType,
-                classId: selectedClassId,
-                createdBy: currentUser.uid,
-                createdAt: serverTimestamp(),
-            });
+        const dataToSave = {
+            title: generatedChallenge.title,
+            prompt: generatedChallenge.prompt,
+            challengeType: generatedChallenge.challengeType,
+            classId: selectedClassId,
+            createdBy: currentUser.uid,
+            createdAt: serverTimestamp(),
+        };
+
+        addDocumentNonBlocking(collection(firestore, 'ela_writing_challenges'), dataToSave)
+        .then(() => {
             toast({ title: 'Success!', description: 'Challenge saved and assigned to the class.' });
             onSuccess();
             setOpen(false);
-        } catch (e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Save failed.' });
-        } finally {
-            setIsSaving(false);
-        }
+        })
+        .catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: collection(firestore, 'ela_writing_challenges').path,
+                operation: 'create',
+                requestResourceData: dataToSave,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => setIsSaving(false));
     }
 
     return (
@@ -1491,7 +1538,3 @@ function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean)
         </div>
     );
 }
-
-
-
-

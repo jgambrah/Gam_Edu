@@ -3,7 +3,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,7 +76,7 @@ function QuizComponent() {
         console.error("Submission Failed: No problems loaded.");
         return;
     }
-    if (!user) {
+    if (!user || !firestore) {
         alert("Error: You seem to be logged out. Please refresh.");
         return;
     }
@@ -97,33 +97,37 @@ function QuizComponent() {
     
     const safeStartTime = startTime || new Date(); 
     const timeTaken = Math.round((new Date().getTime() - safeStartTime.getTime()) / 1000);
+    
+    const resultData = { 
+        userId: user.uid,
+        topic,
+        difficulty,
+        score: finalScore,
+        time_taken_seconds: timeTaken,
+        date_completed: serverTimestamp(),
+        correct_count: correctCount,
+    };
 
-    try {
-        await addDoc(collection(firestore, 'user_results'), { 
-            userId: user.uid,
-            topic,
-            difficulty,
-            score: finalScore,
-            time_taken_seconds: timeTaken,
-            date_completed: serverTimestamp(),
-            correct_count: correctCount,
+    const resultsCollection = collection(firestore, 'user_results');
+    
+    addDoc(resultsCollection, resultData)
+      .then(() => {
+          setScore(finalScore);
+          setIsFinished(true);
+          toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
+      })
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: resultsCollection.path,
+            operation: 'create',
+            requestResourceData: resultData,
         });
-
-        setScore(finalScore);
-        setIsFinished(true);
-
-        toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
-    } catch (error: any) {
-        console.error("FULL FIREBASE ERROR:", error);
-        
-        toast({ 
-            variant: 'destructive', 
-            title: 'Submission Error', 
-            description: error.message || 'Check console for details.'
-        });
-    } finally {
+        errorEmitter.emit('permission-error', permissionError);
+        toast({ variant: 'destructive', title: 'Submission Error', description: 'Check permissions and try again.' });
+      })
+      .finally(() => {
         setIsSubmitting(false);
-    }
+      });
   };
 
   if (isLoading || isUserLoading) {
@@ -166,9 +170,9 @@ function QuizComponent() {
                             {!isCorrect && (
                                 <p className="text-sm font-semibold text-green-700">Correct Answer: {p.correct_answer}</p>
                             )}
-                            {(p as any).explanation && (
+                            {p.explanation && (
                                 <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-black/10">
-                                    <span className="font-semibold">Explanation:</span> {(p as any).explanation}
+                                    <span className="font-semibold">Explanation:</span> {p.explanation}
                                 </p>
                             )}
                         </div>

@@ -3,7 +3,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, query, where, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -76,7 +76,7 @@ function QuizComponent() {
 
   const handleSubmit = async () => {
     if (!problems) return;
-    if (!user) {
+    if (!user || !firestore) {
         alert("Error: You seem to be logged out. Please refresh.");
         return;
     }
@@ -95,32 +95,36 @@ function QuizComponent() {
     const safeStartTime = startTime || new Date(); 
     const timeTaken = Math.round((new Date().getTime() - safeStartTime.getTime()) / 1000);
 
-    try {
-        await addDoc(collection(firestore, 'science_results'), { 
-            userId: user.uid,
-            topic,
-            difficulty,
-            score: finalScore,
-            time_taken_seconds: timeTaken,
-            date_completed: serverTimestamp(),
-            correct_count: correctCount,
-        });
+    const resultData = { 
+        userId: user.uid,
+        topic,
+        difficulty,
+        score: finalScore,
+        time_taken_seconds: timeTaken,
+        date_completed: serverTimestamp(),
+        correct_count: correctCount,
+    };
 
+    const resultsCollection = collection(firestore, 'science_results');
+
+    addDoc(resultsCollection, resultData)
+      .then(() => {
         setScore(finalScore);
         setIsFinished(true);
-
         toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
-    } catch (error: any) {
-        console.error("FULL FIREBASE ERROR:", error);
-        
-        toast({ 
-            variant: 'destructive', 
-            title: 'Submission Error', 
-            description: error.message || 'Check console for details.'
+      })
+      .catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: resultsCollection.path,
+            operation: 'create',
+            requestResourceData: resultData,
         });
-    } finally {
+        errorEmitter.emit('permission-error', permissionError);
+        toast({ variant: 'destructive', title: 'Submission Error', description: 'Check permissions and try again.' });
+      })
+      .finally(() => {
         setIsSubmitting(false);
-    }
+      });
   };
 
   if (isLoading || isUserLoading) {
