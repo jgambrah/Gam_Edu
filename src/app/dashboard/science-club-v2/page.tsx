@@ -9,7 +9,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Database, Wand2, Sparkles, XCircle 
+  Trash2, Lightbulb, CheckCircle2, Database, Wand2, Sparkles, XCircle, PlusCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -376,89 +376,79 @@ export default function ScienceClubPageV2() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {/* Loading State */}
-                    {isLoading && (
-                        <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
-                            <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
-                            <p>Loading Science Lab...</p>
+                    {(isLoading) ? (
+                        <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div>
+                    ) : 
+                    (role === 'Student' && !studentClassId) ? (
+                        <div className="text-center">
+                            <p className="text-muted-foreground">You are not assigned to a class. Please contact an administrator.</p>
+                            <p className="text-xs text-red-500 mt-1">Debug: {user?.uid}</p>
                         </div>
-                    )}
-
-                    {/* Student No Class State */}
-                    {!isLoading && role === 'Student' && !studentClassId && (
-                        <div className="p-4 bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-md text-center">
-                            <p className="font-semibold">Notice</p>
-                            <p>You are not currently assigned to a class. You can only see global practice questions.</p>
-                        </div>
-                    )}
-
-                    {/* Filters */}
-                    {!isLoading && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border">
-                            <div className="space-y-2">
-                                <Label>Topic</Label>
-                                <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                                    <SelectTrigger><SelectValue placeholder="All Topics" /></SelectTrigger>
-                                    <SelectContent>
-                                        {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Difficulty</Label>
-                                <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-                                    <SelectTrigger><SelectValue placeholder="All Difficulties" /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Easy">Easy</SelectItem>
-                                        <SelectItem value="Medium">Medium</SelectItem>
-                                        <SelectItem value="Hard">Hard</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Results / Action */}
-                    {!isLoading && (
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <p className="text-sm font-medium text-slate-500">
-                                    Found {filteredProblems.length} available problems.
-                                </p>
-                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-teal-600 hover:bg-teal-700">
-                                    Start Practice Session
-                                </Button>
-                            </div>
-
-                            {/* Staff View: Show Table of Problems to Manage */}
-                            {isStaff && filteredProblems.length > 0 && (
-                                <div className="border rounded-md">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Topic</TableHead>
-                                                <TableHead>Question</TableHead>
-                                                <TableHead>Class</TableHead>
-                                                <TableHead className="text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredProblems.map(p => (
-                                                <TableRow key={p.id}>
-                                                    <TableCell><Badge variant="outline">{p.topic}</Badge></TableCell>
-                                                    <TableCell className="max-w-[300px] truncate">{p.question_text}</TableCell>
-                                                    <TableCell>{classes?.find(c => c.id === p.classId)?.name || 'All'}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)}>
-                                                            <Trash2 className="h-4 w-4 text-red-500"/>
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                    ) : 
+                    (
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border">
+                                <div className="space-y-2">
+                                    <Label>Topic</Label>
+                                    <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+                                        <SelectTrigger><SelectValue placeholder="All Topics" /></SelectTrigger>
+                                        <SelectContent>
+                                            {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
-                            )}
-                        </div>
+                                <div className="space-y-2">
+                                    <Label>Difficulty</Label>
+                                    <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
+                                        <SelectTrigger><SelectValue placeholder="All Difficulties" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Easy">Easy</SelectItem>
+                                            <SelectItem value="Medium">Medium</SelectItem>
+                                            <SelectItem value="Hard">Hard</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <p className="text-sm font-medium text-slate-500">
+                                        Found {filteredProblems.length} available problems.
+                                    </p>
+                                    <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-teal-600 hover:bg-teal-700">
+                                        Start Practice Session
+                                    </Button>
+                                </div>
+
+                                {isStaff && filteredProblems.length > 0 && (
+                                    <div className="border rounded-md">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Topic</TableHead>
+                                                    <TableHead>Question</TableHead>
+                                                    <TableHead>Class</TableHead>
+                                                    <TableHead className="text-right">Actions</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredProblems.map(p => (
+                                                    <TableRow key={p.id}>
+                                                        <TableCell><Badge variant="outline">{p.topic}</Badge></TableCell>
+                                                        <TableCell className="max-w-[300px] truncate">{p.question_text}</TableCell>
+                                                        <TableCell>{classes?.find(c => c.id === p.classId)?.name || 'All'}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)}>
+                                                                <Trash2 className="h-4 w-4 text-red-500"/>
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                )}
+                            </div>
+                        </>
                     )}
                 </CardContent>
             </Card>
