@@ -59,6 +59,8 @@ export default function AttendanceReportsPage() {
         const start = startOfDay(dateRange.from);
         const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
+        // **FIX**: Removed the `where('status', ...)` clause to prevent indexing error.
+        // Filtering by status will now happen on the client-side.
         return query(
             collection(firestore, 'attendance'),
             where('date', '>=', Timestamp.fromDate(start)),
