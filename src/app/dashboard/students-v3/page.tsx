@@ -263,7 +263,7 @@ export default function StudentsV3Page() {
                                             {getClassName(s.classId)}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>
+                                     <TableCell>
                                         {s.usesBusService && <Bus className="h-4 w-4 text-muted-foreground" title="Uses Bus Service" />}
                                      </TableCell>
                                     <TableCell className="text-right">

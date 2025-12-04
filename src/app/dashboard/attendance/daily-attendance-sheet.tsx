@@ -252,42 +252,38 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     {!propClassId ? (
-                        <div className="flex-1">
-                             <FormField
-                                control={form.control}
-                                name="classId" 
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Class</FormLabel>
-                                    <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
-                                        <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                                    </Select>
-                                </FormItem>
-                                )}
-                            />
-                        </div>
-                    ) : null}
-                     <div className="flex-1">
                         <FormField
                             control={form.control}
-                            name="date"
+                            name="classId" 
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Date</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
-                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
-                                    </Popover>
-                                </FormItem>
+                            <FormItem className="flex-1">
+                                <FormLabel>Class</FormLabel>
+                                <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
+                                    <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                                    <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </FormItem>
                             )}
                         />
-                    </div>
+                    ) : null}
+                     <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                            <FormItem className="flex-1 flex flex-col">
+                                <FormLabel>Date</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
+                                </Popover>
+                            </FormItem>
+                        )}
+                    />
                 </div>
 
                 {isLoading && !studentsLoaded && (
