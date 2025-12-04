@@ -39,7 +39,7 @@ function CanteenSettings() {
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
-    const settingsRef = useMemoFirebase(() => doc(firestore, 'schoolSettings', 'canteen'), [firestore]);
+    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolSettings', 'canteen') : null, [firestore]);
     const { data: canteenSettings, isLoading } = useDoc(settingsRef);
 
     const form = useForm<z.infer<typeof canteenRateSchema>>({
@@ -107,7 +107,7 @@ function TransportSettings() {
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
-    const settingsRef = useMemoFirebase(() => doc(firestore, 'schoolSettings', 'transport'), [firestore]);
+    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolSettings', 'transport') : null, [firestore]);
     const { data: transportSettings, isLoading } = useDoc(settingsRef);
 
     const form = useForm<z.infer<typeof transportRateSchema>>({
@@ -220,7 +220,7 @@ export default function PayrollSettingsPage() {
     return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
   
-  if (!['Administrator', 'Accountant'].includes(role)) {
+  if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
     return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;
   }
 
