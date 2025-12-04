@@ -244,14 +244,13 @@ export default function CashTillPage() {
     }
     
     const isDirector = role === 'Administrator' || role === 'Director';
+    const isAccountant = role === 'Accountant';
 
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold">Cash Till Management</h1>
             {isDirector && <DirectorTillView />}
-            <AccountantTillView />
+            {isAccountant && <AccountantTillView />}
         </div>
     );
 }
-
-    
