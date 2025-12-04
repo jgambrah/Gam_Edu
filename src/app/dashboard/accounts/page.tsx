@@ -33,33 +33,36 @@ import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymen
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
 
+const canteenRateSchema = z.object({
+    dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
+});
+
 // --- Canteen Rate Settings Component ---
 function CanteenSettings() {
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [dailyRate, setDailyRate] = useState('');
     const [isSaving, setIsSaving] = useState(false);
 
     const settingsRef = useMemoFirebase(() => doc(firestore, 'schoolSettings', 'canteen'), [firestore]);
     const { data: canteenSettings, isLoading } = useDoc(settingsRef);
 
+    const form = useForm<z.infer<typeof canteenRateSchema>>({
+        resolver: zodResolver(canteenRateSchema),
+        defaultValues: { dailyRate: 0 }
+    });
+
     useEffect(() => {
         if (canteenSettings?.dailyRate) {
-            setDailyRate(canteenSettings.dailyRate.toString());
+            form.setValue('dailyRate', canteenSettings.dailyRate);
         }
-    }, [canteenSettings]);
+    }, [canteenSettings, form]);
 
-    const handleSave = async () => {
+    const handleSave = async (values: z.infer<typeof canteenRateSchema>) => {
         if (!firestore) return;
-        const rate = parseFloat(dailyRate);
-        if (isNaN(rate) || rate < 0) {
-            toast({ variant: 'destructive', title: 'Invalid Rate', description: 'Please enter a valid positive number for the daily rate.' });
-            return;
-        }
-
+        
         setIsSaving(true);
         try {
-            await setDoc(settingsRef, { dailyRate: rate }, { merge: true });
+            await setDoc(settingsRef, { dailyRate: values.dailyRate }, { merge: true });
             toast({ title: 'Success', description: 'Canteen daily rate has been updated.' });
         } catch (error) {
             console.error('Error saving canteen rate:', error);
@@ -75,15 +78,28 @@ function CanteenSettings() {
                 <CardTitle className="flex items-center gap-2"><Utensils /> Canteen Settings</CardTitle>
                 <CardDescription>Set the daily fee for canteen usage, which will be billed automatically based on attendance.</CardDescription>
             </CardHeader>
-            <CardContent className="flex items-end gap-4">
-                <div className="flex-grow space-y-2">
-                    <FormLabel htmlFor="canteen-rate">Daily Canteen Fee</FormLabel>
-                    <Input id="canteen-rate" type="number" value={dailyRate} onChange={(e) => setDailyRate(e.target.value)} placeholder="e.g., 5.00" disabled={isLoading} />
-                </div>
-                <Button onClick={handleSave} disabled={isSaving || isLoading}>
-                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Rate
-                </Button>
+            <CardContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSave)} className="flex items-end gap-4">
+                        <FormField
+                            control={form.control}
+                            name="dailyRate"
+                            render={({ field }) => (
+                                <FormItem className="flex-grow">
+                                    <FormLabel>Daily Canteen Fee</FormLabel>
+                                    <FormControl>
+                                        <Input type="number" placeholder="e.g., 5.00" {...field} disabled={isLoading} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <Button type="submit" disabled={isSaving || isLoading}>
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Rate
+                        </Button>
+                    </form>
+                </Form>
             </CardContent>
         </Card>
     );
