@@ -906,6 +906,35 @@ export interface LearningMaterial {
     updatedAt?: any;
 }
 
+// --- CASH TILL MANAGEMENT ---
+export type TillStatus = 'Open' | 'PendingApproval' | 'Closed';
+
+export type Till = {
+    id: string;
+    accountantId: string;
+    accountantName: string;
+    openingBalance: number;
+    closingBalance: number | null;
+    dateOpened: any;
+    dateClosed: any | null;
+    status: TillStatus;
+    directorApproval: {
+        directorId: string | null;
+        directorName: string | null;
+        approvedAt: any | null;
+        rejectionReason?: string;
+    };
+};
+
+export type TillTransaction = {
+    id: string;
+    tillId: string;
+    financialRecordId: string;
+    studentId: string;
+    studentName: string;
+    amount: number;
+    timestamp: any;
+};
     
 
   

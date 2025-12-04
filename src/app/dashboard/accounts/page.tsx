@@ -1,10 +1,11 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -29,7 +30,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, isPast } from 'date-fns';
-import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student } from '@/lib/types';
+import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student, Till } from '@/lib/types';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -324,6 +325,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
 
 function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialRecord, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
+    const { user } = useUser();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const balance = record.billedAmount - record.amountPaid - (record.waiverAmount || 0);
@@ -334,28 +336,50 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     });
 
     async function onSubmit(values: z.infer<typeof recordPaymentSchema>) {
-        if (!firestore) return;
+        if (!firestore || !user) return;
         if(values.amount > balance) {
             form.setError('amount', { message: 'Payment cannot exceed balance.' });
             return;
         }
         setIsSubmitting(true);
         try {
+            const batch = writeBatch(firestore);
             const recordRef = doc(firestore, 'financialRecords', record.id);
             const newAmountPaid = record.amountPaid + values.amount;
             const newStatus = newAmountPaid >= record.billedAmount ? 'Paid' : record.status;
             
-            await updateDoc(recordRef, {
+            batch.update(recordRef, {
                 amountPaid: newAmountPaid,
                 status: newStatus,
-                // In a real app, you'd save payment details to a subcollection
             });
+
+            // If payment is cash, log it to the active till
+            if (values.method === 'Cash') {
+                const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'));
+                const tillSnapshot = await getDocs(tillQuery);
+                if (tillSnapshot.empty) {
+                    throw new Error("You do not have an open till. Please open a till before recording cash payments.");
+                }
+                const activeTill = tillSnapshot.docs[0];
+                const transactionRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
+                batch.set(transactionRef, {
+                    tillId: activeTill.id,
+                    financialRecordId: record.id,
+                    studentId: record.studentId,
+                    studentName: record.studentName,
+                    amount: values.amount,
+                    timestamp: serverTimestamp(),
+                });
+            }
+
+            await batch.commit();
+
             toast({ title: 'Success', description: 'Payment recorded.' });
             onUpdate();
             setOpen(false);
-        } catch(e) {
+        } catch(e: any) {
             console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to record payment.' });
+            toast({ variant: 'destructive', title: 'Error', description: e.message || 'Failed to record payment.' });
         } finally {
             setIsSubmitting(false);
         }
@@ -695,6 +719,3 @@ export default function AccountsPage() {
     </div>
   );
 }
-
-
-    

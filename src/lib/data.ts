@@ -1,4 +1,5 @@
 
+
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -38,6 +39,7 @@ import {
   Gamepad2,
   AlertCircle,
   Atom,
+  Wallet,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -233,6 +235,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/accounts',
         title: 'Student Billing',
         icon: Banknote,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/accounts/cash-till',
+        title: 'Cash Till',
+        icon: Wallet,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
       {
