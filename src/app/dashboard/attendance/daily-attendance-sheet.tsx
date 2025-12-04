@@ -158,65 +158,78 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             await attendanceBatch.commit();
             toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
 
-            // --- CANTEEN & TRANSPORT BILLING LOGIC (REVISED) ---
+            // --- CANTEEN & TRANSPORT BILLING LOGIC (ROBUST FIX) ---
             const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
             const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
             const canteenRate = canteenSettingsSnap.exists() ? canteenSettingsSnap.data().dailyRate : 0;
             const transportRate = transportSettingsSnap.exists() ? transportSettingsSnap.data().dailyRate : 0;
-
-            const billingBatch = writeBatch(firestore);
             
             const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
 
-            for (const record of presentStudents) {
-                const year = getYear(record.date);
-                const month = getMonth(record.date) + 1; // 1-12
-                const period = `${year}-${String(month).padStart(2, '0')}`;
-
-                // Canteen Billing
-                if (canteenRate > 0) {
-                    const canteenRecordId = `canteen-${record.studentId}-${period}`;
-                    const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
-                    
-                    billingBatch.set(financialRecordRef, {
-                        billedAmount: increment(canteenRate),
-                        // Fields to set on creation
-                        studentId: record.studentId,
-                        studentName: record.studentName,
-                        classId: record.classId,
-                        type: 'Canteen Fee',
-                        description: `Canteen Bill for ${period}`,
-                        status: 'Unpaid',
-                        dueDate: new Date(year, month, 0),
-                        createdAt: serverTimestamp(),
-                        amountPaid: 0,
-                    }, { merge: true });
-                }
-
-                // Transport Billing
-                if (transportRate > 0 && record.usesBusService) {
-                    const transportRecordId = `transport-${record.studentId}-${period}`;
-                    const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
-
-                     billingBatch.set(financialRecordRef, {
-                        billedAmount: increment(transportRate),
-                        // Fields to set on creation
-                        studentId: record.studentId,
-                        studentName: record.studentName,
-                        classId: record.classId,
-                        type: 'Transport Fee',
-                        description: `Transport Bill for ${period}`,
-                        status: 'Unpaid',
-                        dueDate: new Date(year, month, 0),
-                        createdAt: serverTimestamp(),
-                        amountPaid: 0,
-                    }, { merge: true });
-                }
-            }
-
             if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
-                await billingBatch.commit();
-                toast({ title: 'Auto-Billing Complete', description: `Daily fees have been applied.` });
+                toast({ title: 'Processing Daily Fees...', description: 'Applying canteen and transport charges.' });
+            
+                // Use a loop of transactions for robustness
+                for (const record of presentStudents) {
+                    const year = getYear(record.date);
+                    const month = getMonth(record.date) + 1;
+                    const period = `${year}-${String(month).padStart(2, '0')}`;
+            
+                    // Canteen Billing Transaction
+                    if (canteenRate > 0) {
+                        const canteenRecordId = `canteen-${record.studentId}-${period}`;
+                        const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                        
+                        await runTransaction(firestore, async (transaction) => {
+                            const frDoc = await transaction.get(financialRecordRef);
+                            if (!frDoc.exists()) {
+                                transaction.set(financialRecordRef, {
+                                    billedAmount: canteenRate,
+                                    studentId: record.studentId,
+                                    studentName: record.studentName,
+                                    classId: record.classId,
+                                    type: 'Canteen Fee',
+                                    description: `Canteen Bill for ${period}`,
+                                    status: 'Unpaid',
+                                    dueDate: new Date(year, month, 0),
+                                    createdAt: serverTimestamp(),
+                                    amountPaid: 0,
+                                });
+                            } else {
+                                const newAmount = (frDoc.data().billedAmount || 0) + canteenRate;
+                                transaction.update(financialRecordRef, { billedAmount: newAmount });
+                            }
+                        });
+                    }
+
+                    // Transport Billing Transaction
+                    if (transportRate > 0 && record.usesBusService) {
+                        const transportRecordId = `transport-${record.studentId}-${period}`;
+                        const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+
+                         await runTransaction(firestore, async (transaction) => {
+                            const frDoc = await transaction.get(financialRecordRef);
+                            if (!frDoc.exists()) {
+                                transaction.set(financialRecordRef, {
+                                    billedAmount: transportRate,
+                                    studentId: record.studentId,
+                                    studentName: record.studentName,
+                                    classId: record.classId,
+                                    type: 'Transport Fee',
+                                    description: `Transport Bill for ${period}`,
+                                    status: 'Unpaid',
+                                    dueDate: new Date(year, month, 0),
+                                    createdAt: serverTimestamp(),
+                                    amountPaid: 0,
+                                });
+                            } else {
+                                const newAmount = (frDoc.data().billedAmount || 0) + transportRate;
+                                transaction.update(financialRecordRef, { billedAmount: newAmount });
+                            }
+                        });
+                    }
+                }
+                 toast({ title: 'Auto-Billing Complete', description: `Daily fees have been applied successfully.` });
             }
 
              data.records.forEach(record => {
