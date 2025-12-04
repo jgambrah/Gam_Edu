@@ -12,4 +12,5 @@ import '@/ai/flows/generate-reading-passage-flow.ts';
 import '@/ai/flows/generate-writing-challenge-flow.ts';
 import '@/ai/flows/campus-assistant-flow.ts';
 import '@/ai/flows/generate-science-question.ts';
+import '@/ai/flows/generate-daily-fact-flow.ts';
     

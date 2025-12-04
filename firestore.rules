@@ -145,7 +145,7 @@ service cloud.firestore {
     }
     
     match /science_leaderboard/{userId} {
-        allow read, write: if request.auth.uid == userId;
+        allow read, write: if isSignedIn();
     }
 
     match /science_problems_v4/{problemId} {
@@ -166,7 +166,10 @@ service cloud.firestore {
 
     match /daily_facts/{factId} {
       allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      // Allow any signed-in user to create a fact (since it's triggered client-side)
+      allow create: if isSignedIn();
+      // Only admins/teachers can update/delete
+      allow update, delete: if isTeacher() || isAdmin();
     }
     
     match /science_lab_questions/{id} {

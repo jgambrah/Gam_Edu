@@ -1,15 +1,14 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, getDocs, limit } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2, BookOpen, CheckCircle2, Wand2 
+  Trash2, BookOpen, CheckCircle2, Wand2, Lightbulb 
 } from 'lucide-react';
 
 // UI Components
@@ -25,8 +24,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceProblem } from '@/lib/types';
+import { Class, Student, ScienceProblem, DailyFact } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { format, isToday } from 'date-fns';
+import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
+
 
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
@@ -162,6 +165,62 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
     );
 }
 
+// --- Fact of the Day Component ---
+function FactOfTheDay() {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+
+    // Query for the latest fact
+    const factsQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc'), limit(1)) : null,
+    [firestore]);
+    const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
+
+    const latestFact = facts?.[0];
+    const factIsFromToday = latestFact?.createdAt && isToday(latestFact.createdAt.toDate());
+
+    useEffect(() => {
+        const generateNewFactIfNeeded = async () => {
+            // Only run on client, if not loading, if user exists, and if no fact for today exists
+            if (typeof window !== 'undefined' && !isLoading && user && !factIsFromToday) {
+                console.log("No fact for today. Generating a new one...");
+                try {
+                    const result = await generateDailyFact();
+                    await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
+                        factText: result.fact,
+                        createdAt: serverTimestamp(),
+                        postedBy: user.uid,
+                    });
+                    toast({ title: "New Fact of the Day Generated!" });
+                } catch (error) {
+                    console.error("Failed to generate new fact:", error);
+                }
+            }
+        };
+
+        generateNewFactIfNeeded();
+    }, [isLoading, factIsFromToday, user, firestore, toast]);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Lightbulb/> Science Fact of the Day</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
+                    <blockquote className="border-l-4 pl-4 italic">
+                        {latestFact.factText}
+                    </blockquote>
+                ) : (
+                    <p className="text-muted-foreground text-sm">Generating today's fact...</p>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+
 // --- MAIN PAGE COMPONENT ---
 export default function ScienceClubPageV2() {
   const router = useRouter();
@@ -182,7 +241,6 @@ export default function ScienceClubPageV2() {
   // 1. Get Student Data (Safely)
   const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
     useMemoFirebase(() => {
-        // Only run if user is logged in AND is a Student
         if (!user || !firestore || role !== 'Student') return null;
         return query(collection(firestore, 'students'), where('uid', '==', user.uid));
     }, [user, role, firestore])
@@ -253,12 +311,15 @@ export default function ScienceClubPageV2() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FlaskConical className="h-6 w-6 text-teal-600"/> 
-            Science Club 2.0
+            Science Club
           </CardTitle>
           <CardDescription>
             Explore the world of science through practice and competition.
           </CardDescription>
         </CardHeader>
+        <CardContent>
+            <FactOfTheDay />
+        </CardContent>
       </Card>
 
       <Tabs defaultValue="practice" className="w-full">
