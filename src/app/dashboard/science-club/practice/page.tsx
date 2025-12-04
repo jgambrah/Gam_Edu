@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
@@ -75,7 +76,7 @@ function QuizComponent() {
   const handleSubmit = async () => {
     if (!problems) return;
     if (!user || !firestore) {
-        alert("Error: You seem to be logged out. Please refresh.");
+        toast({ variant: 'destructive', title: "Authentication Error", description: "You must be logged in to submit."});
         return;
     }
     
@@ -89,10 +90,9 @@ function QuizComponent() {
     });
 
     const finalScore = (correctCount / problems.length) * 10;
-    
     const safeStartTime = startTime || new Date(); 
     const timeTaken = Math.round((new Date().getTime() - safeStartTime.getTime()) / 1000);
-
+    
     const resultData = { 
         userId: user.uid,
         topic,
@@ -106,7 +106,7 @@ function QuizComponent() {
     const leaderboardRef = doc(firestore, 'science_leaderboard', user.uid);
     const leaderboardData = {
         userId: user.uid,
-        userName: user.displayName || user.email || 'Anonymous', // Ensure userName is never null
+        userName: user.displayName || user.email || 'Anonymous',
         profilePictureUrl: user.photoURL || '',
         total_correct_answers: increment(correctCount),
         total_quizzes_completed: increment(1)
@@ -114,23 +114,24 @@ function QuizComponent() {
 
     const resultsCollection = collection(firestore, 'science_results');
 
+    // Perform writes and catch potential errors to emit a contextual error.
     try {
-        await setDoc(leaderboardRef, leaderboardData, { merge: true });
-        await addDoc(resultsCollection, resultData);
+        await Promise.all([
+            setDoc(leaderboardRef, leaderboardData, { merge: true }),
+            addDoc(resultsCollection, resultData)
+        ]);
 
         setScore(finalScore);
         setIsFinished(true);
-        toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10. Your leaderboard stats have been updated!`});
-
+        toast({ title: 'Practice Complete!', description: `You scored ${finalScore.toFixed(1)}/10.`});
     } catch (serverError) {
-        console.error("Submission Error:", serverError);
+        // Create and emit a detailed error for the listener
         const permissionError = new FirestorePermissionError({
-            path: `science_results or science_leaderboard`,
-            operation: 'create',
-            requestResourceData: { resultData, leaderboardData },
+            path: `science_leaderboard/${user.uid} or science_results`,
+            operation: 'write', // Covers both set and add
+            requestResourceData: { leaderboard: leaderboardData, result: resultData },
         });
         errorEmitter.emit('permission-error', permissionError);
-        toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your results. Check permissions and try again.' });
     } finally {
         setIsSubmitting(false);
     }
