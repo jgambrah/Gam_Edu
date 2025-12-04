@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { format, addDays } from 'date-fns';
+import { format, addDays, startOfDay, endOfDay } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 
@@ -32,8 +32,8 @@ export default function AttendanceReportsPage() {
     const firestore = useFirestore();
     const { user } = useUser();
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
-        from: addDays(new Date(), -30),
-        to: new Date(),
+        from: startOfDay(new Date()),
+        to: endOfDay(new Date()),
       });
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -54,11 +54,16 @@ export default function AttendanceReportsPage() {
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !dateRange?.from || !dateRange?.to) return null;
+        if (!user || !firestore || !dateRange?.from) return null;
+        
+        const start = startOfDay(dateRange.from);
+        // If 'to' is not selected, use the end of the 'from' day
+        const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+
         return query(
             collection(firestore, 'attendance'),
-            where('date', '>=', dateRange.from),
-            where('date', '<=', dateRange.to)
+            where('date', '>=', Timestamp.fromDate(start)),
+            where('date', '<=', Timestamp.fromDate(end))
         );
     }, [firestore, user, dateRange]);
     const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
@@ -79,7 +84,6 @@ export default function AttendanceReportsPage() {
             data = data.filter(record => record.status === selectedStatus);
         }
         
-        // Add student names to the records
         return data.map(record => {
             const student = students?.find(s => s.uid === record.studentId);
             return {
@@ -200,6 +204,11 @@ export default function AttendanceReportsPage() {
             </Card>
 
             {isLoading ? <div className="py-20 flex justify-center items-center"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
+                (filteredData.length === 0 && attendanceRecords?.length === 0) ? (
+                     <div className="text-center py-20 bg-muted rounded-lg">
+                        <p className="text-muted-foreground">Attendance has not been taken for this day yet.</p>
+                    </div>
+                ) : (
                 <>
                     <div className="grid gap-4 md:grid-cols-3">
                         <Card>
@@ -267,7 +276,7 @@ export default function AttendanceReportsPage() {
                         </Card>
                     </div>
                 </>
-            )}
+            ))}
 
             <style jsx global>{`
                 @media print {
