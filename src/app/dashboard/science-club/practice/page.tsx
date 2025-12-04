@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
@@ -163,7 +162,7 @@ function QuizComponent() {
                         <div key={p.id} className={cn("p-4 rounded-lg border", isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')}>
                             <p className="font-semibold mb-2">{index + 1}. {p.question_text}</p>
                             <div className="space-y-2 mb-3">
-                                {p.options?.map((option, i) => (
+                                {(p.options || []).map((option, i) => (
                                     <div key={i} className="flex items-center gap-2">
                                         {userAnswer == option ? (
                                             isCorrect ? <CheckCircle2 className="h-4 w-4 text-green-600"/> : <XCircle className="h-4 w-4 text-red-600"/>
@@ -203,7 +202,7 @@ function QuizComponent() {
       <CardContent className="space-y-6">
         <p className="font-semibold text-lg">{currentProblem.question_text}</p>
         <RadioGroup onValueChange={(value) => handleAnswerChange(currentQuestionIndex, value)} value={String(answers[currentQuestionIndex] || '')}>
-          {currentProblem.options?.map((option, i) => (
+          {(currentProblem.options || []).map((option, i) => (
             <div key={i} className="flex items-center space-x-3">
               <RadioGroupItem value={String(option)} id={`q${currentQuestionIndex}-o${i}`} />
               <Label htmlFor={`q${currentQuestionIndex}-o${i}`} className="font-normal">{option}</Label>
