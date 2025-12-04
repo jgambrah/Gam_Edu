@@ -19,7 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, ChevronUp, DollarSign, HandCoins, Receipt } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -550,6 +550,44 @@ export default function AccountsPage() {
   const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
   const isLoading = isLoadingRecords || isLoadingStudents;
 
+  const dashboardStats = useMemo(() => {
+    if (!records) {
+        return {
+            totalRevenue: 0,
+            totalOutstanding: 0,
+            outstandingTuition: 0,
+            outstandingCanteen: 0,
+            outstandingTransport: 0,
+        };
+    }
+
+    let totalPaid = 0;
+    let totalBilled = 0;
+    let outstandingTuition = 0;
+    let outstandingCanteen = 0;
+    let outstandingTransport = 0;
+
+    for (const record of records) {
+        const balance = record.billedAmount - record.amountPaid - (record.waiverAmount || 0);
+        totalBilled += record.billedAmount;
+        totalPaid += record.amountPaid + (record.waiverAmount || 0);
+
+        if (balance > 0) {
+            if (record.type === 'Tuition Fee') outstandingTuition += balance;
+            else if (record.type === 'Canteen Fee') outstandingCanteen += balance;
+            else if (record.type === 'Transport Fee') outstandingTransport += balance;
+        }
+    }
+    
+    return {
+        totalRevenue: totalPaid,
+        totalOutstanding: totalBilled - totalPaid,
+        outstandingTuition,
+        outstandingCanteen,
+        outstandingTransport
+    };
+  }, [records]);
+
   const getStudentById = (studentId: string) => students?.find(s => s.uid === studentId);
 
   const studentFinancials = useMemo(() => {
@@ -611,6 +649,32 @@ export default function AccountsPage() {
 
   return (
     <div className="space-y-6">
+        <Card>
+            <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle><DollarSign className="h-4 w-4 text-muted-foreground" /></CardHeader>
+                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Revenue (Paid)</CardTitle><HandCoins className="h-4 w-4 text-muted-foreground" /></CardHeader>
+                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle><Receipt className="h-4 w-4 text-muted-foreground" /></CardHeader>
+                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle><Utensils className="h-4 w-4 text-muted-foreground" /></CardHeader>
+                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle><Bus className="h-4 w-4 text-muted-foreground" /></CardHeader>
+                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent>
+                </Card>
+            </CardContent>
+        </Card>
+
        <div className="grid lg:grid-cols-2 gap-6">
         <Card>
             <CardHeader>
