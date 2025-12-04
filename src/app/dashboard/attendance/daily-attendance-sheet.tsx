@@ -123,7 +123,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                     date: startOfDay(selectedDate),
                     status: existingRecord?.status || 'Present',
                     notes: existingRecord?.notes || '',
-                    usesBusService: student.usesBusService || false,
+                    // Ensure this is boolean
+                    usesBusService: !!student.usesBusService, 
                 };
             });
 
@@ -152,19 +153,20 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         // 1. SAVE ATTENDANCE
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            const { id, ...dataToSave } = record as any; 
+            // We remove 'usesBusService' from the object saved to attendance to keep it clean, 
+            // but we keep studentName for historical reference.
+            const { usesBusService, id, ...dataToSave } = record as any; 
             batch.set(recordRef, dataToSave, { merge: true });
         });
 
         try {
-            // 2. Commit Attendance FIRST (To ensure it saves even if billing fails)
             await batch.commit();
             toast({ title: 'Success', description: 'Attendance saved.' });
 
-            // 3. Fetch Rates (Safe Check)
+            // 2. BILLING LOGIC
+            // Fetch settings
             let canteenRate = 0;
             let transportRate = 0;
-
             try {
                 const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
                 if (canteenSnap.exists()) canteenRate = Number(canteenSnap.data().dailyRate) || 0;
@@ -172,24 +174,28 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
                 if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
             } catch (e) {
-                console.warn("Could not load settings, using 0 rates:", e);
+                console.warn("Settings read error (check rules):", e);
             }
 
             console.log("Billing Rates:", { canteenRate, transportRate });
 
-            // 4. Process Billing if rates exist
+            // Filter present students
             const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
             
             if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
                 const billingBatch = writeBatch(firestore);
+                const year = getYear(selectedDate);
+                const month = getMonth(selectedDate) + 1;
+                const period = `${year}-${String(month).padStart(2, '0')}`;
                 let billsCount = 0;
 
                 for (const record of presentStudents) {
-                    const safeStudentName = record.studentName || "Unknown Student";
+                    const safeStudentName = (record as any).studentName || "Unknown Student";
+                    const usesBus = (record as any).usesBusService === true || (record as any).usesBusService === "true";
 
                     // Canteen Bill
                     if (canteenRate > 0) {
-                        const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
+                        const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                         
                         billingBatch.set(financialRecordRef, {
@@ -202,13 +208,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                             status: 'Unpaid',
                             dueDate: selectedDate,
                             createdAt: serverTimestamp()
-                        }, { merge: true }); // Merge ensures we don't double-charge if attendance is re-submitted
+                        }, { merge: true });
                         billsCount++;
                     }
 
                     // Transport Bill
-                    if (transportRate > 0 && record.usesBusService) {
-                        const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
+                    if (transportRate > 0 && usesBus) {
+                        const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                         
                         billingBatch.set(financialRecordRef, {
@@ -228,13 +234,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 
                 if (billsCount > 0) {
                     await billingBatch.commit();
-                    toast({ title: 'Billing Updated', description: `Applied ${billsCount} daily fees.` });
+                    toast({ title: 'Billing Updated', description: `Applied fees to ${billsCount} records.` });
                 }
             }
-
         } catch (error: any) {
-            console.error("Attendance/Billing Error:", error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save data.' });
+            console.error("Error:", error);
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save.' });
         } finally {
             setIsLoading(false);
         }
@@ -248,46 +253,37 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
-                    {!propClassId ? (
-                        <FormField
-                            control={form.control}
-                            name="classId" 
-                            render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormLabel>Class</FormLabel>
-                                <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
-                                    <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                    <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                                </Select>
-                            </FormItem>
-                            )}
-                        />
-                    ) : null}
-                     <FormField
-                        control={form.control}
-                        name="date"
-                        render={({ field }) => (
-                            <FormItem className="flex-1 flex flex-col">
-                                <FormLabel>Date</FormLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
-                                </Popover>
-                            </FormItem>
-                        )}
-                    />
+                    {!propClassId && (
+                        <div className="flex-1">
+                            <Label>Class</Label>
+                            <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
+                                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    <div className="flex-1">
+                        <Label>Date</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
+                        </Popover>
+                    </div>
+                    {!propClassId && (
+                        <div className="flex items-end">
+                            <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
+                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Load Students
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
-                {isLoading && !studentsLoaded && (
-                    <div className="flex justify-center p-8">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                    </div>
-                )}
+                {isLoading && !studentsLoaded && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>}
 
                 {studentsLoaded && (
                     <Form {...form}>
@@ -296,14 +292,30 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                                 <div className="space-y-4">
                                     {fields.map((field, index) => (
                                         <Card key={field.id} className="p-4">
-                                            {/* FIX: REGISTER HIDDEN FIELDS so data isn't lost */}
+                                            
+                                            {/* --- FIX: HIDDEN INPUTS TO PERSIST DATA --- */}
+                                            {/* These ensure the data exists when onSubmit is called */}
                                             <input type="hidden" {...form.register(`records.${index}.studentName`)} value={field.studentName} />
                                             <input type="hidden" {...form.register(`records.${index}.studentId`)} value={field.studentId} />
                                             <input type="hidden" {...form.register(`records.${index}.classId`)} value={field.classId} />
-                                            <input type="hidden" {...form.register(`records.${index}.usesBusService`)} value={field.usesBusService ? 'true' : ''} />
+                                            
+                                            {/* CRITICAL: This keeps the Bus status alive! */}
+                                            <input 
+                                                type="hidden" 
+                                                {...form.register(`records.${index}.usesBusService`)} 
+                                                // React Hook Form needs strings for hidden inputs usually
+                                                value={field.usesBusService ? "true" : "false"} 
+                                            />
 
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                                                <p className="font-medium">{field.studentName}</p>
+                                                <div className="flex flex-col">
+                                                    <p className="font-medium">{field.studentName}</p>
+                                                    {/* Visual indicator for the teacher */}
+                                                    {(field as any).usesBusService && (
+                                                        <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-1 rounded w-fit">Bus User</span>
+                                                    )}
+                                                </div>
+                                                
                                                 <FormField
                                                     control={form.control}
                                                     name={`records.${index}.status`}
@@ -339,3 +351,4 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         </Card>
     );
 }
+
