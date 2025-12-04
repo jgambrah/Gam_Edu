@@ -147,72 +147,99 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         if (!firestore) return;
         setIsLoading(true);
         
-        const attendanceBatch = writeBatch(firestore);
+        const batch = writeBatch(firestore);
         
+        // 1. SAVE ATTENDANCE
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            const { studentName, id, ...dataToSave } = record as any; 
-            attendanceBatch.set(recordRef, { ...dataToSave, date: startOfDay(selectedDate) }, { merge: true });
+            // FIX: We now SAVE 'studentName' to Firestore so it exists for retrospective billing
+            const { id, ...dataToSave } = record as any; 
+            batch.set(recordRef, dataToSave, { merge: true });
         });
 
         try {
-            await attendanceBatch.commit();
+            // 2. Commit Attendance FIRST (To ensure it saves even if billing fails)
+            await batch.commit();
             toast({ title: 'Success', description: 'Attendance saved.' });
 
+            // 3. Fetch Rates (Safe Check)
             let canteenRate = 0;
             let transportRate = 0;
+
             try {
                 const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
                 if (canteenSnap.exists()) canteenRate = Number(canteenSnap.data().dailyRate) || 0;
+
                 const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
                 if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
             } catch (e) {
-                console.warn("Could not load settings, billing skipped:", e);
+                console.warn("Settings load failed", e);
             }
 
+            console.log("Billing Rates:", { canteenRate, transportRate });
+
+            // 4. BILLING LOGIC
             const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
             
             if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
-                let billsCount = 0;
                 const billingBatch = writeBatch(firestore);
-                
-                for (const record of presentStudents) {
-                    const studentName = record.studentName || "Unknown Student";
+                const year = getYear(selectedDate);
+                const month = getMonth(selectedDate) + 1;
+                const period = `${year}-${String(month).padStart(2, '0')}`;
+                let billsCount = 0;
 
-                    // Canteen Billing
+                for (const record of presentStudents) {
+                    // SAFETY CHECK: Ensure studentName is not undefined
+                    const safeStudentName = (record as any).studentName || "Unknown Student";
+
+                    // Canteen
                     if (canteenRate > 0) {
-                        const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
+                        const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
                         const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                        
                         billingBatch.set(financialRecordRef, {
                             billedAmount: canteenRate,
-                            studentId: record.studentId, studentName: studentName, classId: record.classId,
-                            type: 'Canteen Fee', description: `Lunch for ${format(selectedDate, 'PPP')}`,
-                            status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
-                        }, { merge: true });
+                            studentId: record.studentId,
+                            studentName: safeStudentName,
+                            classId: record.classId,
+                            type: 'Canteen Fee',
+                            description: `Lunch for ${format(selectedDate, 'PPP')}`,
+                            status: 'Unpaid',
+                            dueDate: selectedDate,
+                            createdAt: serverTimestamp()
+                        }, { merge: true }); // Merge ensures we don't double-charge if attendance is re-submitted
                         billsCount++;
                     }
-                    // Transport Billing
-                    if (transportRate > 0 && record.usesBusService) {
-                        const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
+
+                    // Transport
+                    if (transportRate > 0 && (record as any).usesBusService) {
+                        const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                        
                         billingBatch.set(financialRecordRef, {
                             billedAmount: transportRate,
-                            studentId: record.studentId, studentName: studentName, classId: record.classId,
-                            type: 'Transport Fee', description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
-                            status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
+                            studentId: record.studentId,
+                            studentName: safeStudentName,
+                            classId: record.classId,
+                            type: 'Transport Fee',
+                            description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
+                            status: 'Unpaid',
+                            dueDate: selectedDate,
+                            createdAt: serverTimestamp()
                         }, { merge: true });
                         billsCount++;
                     }
                 }
                 
                 if (billsCount > 0) {
-                     await billingBatch.commit();
-                    toast({ title: 'Billing Updated', description: `Applied ${billsCount} daily fees.` });
+                    await billingBatch.commit();
+                    toast({ title: 'Billing Updated', description: `Applied ${billsCount} fee records.` });
                 }
             }
+
         } catch (error: any) {
-            console.error("Attendance/Billing Error:", error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save data.' });
+            console.error("Submission Error:", error);
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save.' });
         } finally {
             setIsLoading(false);
         }
@@ -227,7 +254,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     {!propClassId ? (
-                         <div className="flex-1">
+                        <div className="flex-1">
                             <Label>Class</Label>
                             <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
                                 <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
@@ -262,6 +289,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                                 <div className="space-y-4">
                                     {fields.map((field, index) => (
                                         <Card key={field.id} className="p-4">
+                                            {/* FIX: REGISTER HIDDEN FIELDS so data isn't lost */}
+                                            <input type="hidden" {...form.register(`records.${index}.studentName`)} value={field.studentName} />
+                                            <input type="hidden" {...form.register(`records.${index}.studentId`)} value={field.studentId} />
+                                            <input type="hidden" {...form.register(`records.${index}.classId`)} value={field.classId} />
+                                            <input type="hidden" {...form.register(`records.${index}.usesBusService`)} value={field.usesBusService ? 'true' : ''} />
+
+
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                 <p className="font-medium">{field.studentName}</p>
                                                 <FormField
@@ -299,3 +333,4 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         </Card>
     );
 }
+

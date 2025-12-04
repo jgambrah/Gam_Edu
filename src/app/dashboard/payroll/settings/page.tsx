@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -224,12 +225,15 @@ function RetrospectiveBilling() {
                 const record = attendanceDoc.data();
                 const recordDate = record.date.toDate();
 
+                // Get studentName safely from the attendance record
+                const studentName = record.studentName || 'Unknown Student';
+
                 if (canteenRate > 0) {
                     const canteenRecordId = `canteen-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: canteenRate,
-                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        studentId: record.studentId, studentName: studentName, classId: record.classId,
                         type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
                         createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
@@ -240,7 +244,7 @@ function RetrospectiveBilling() {
                     const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: transportRate,
-                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        studentId: record.studentId, studentName: studentName, classId: record.classId,
                         type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
                         createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
@@ -309,3 +313,4 @@ export default function FinancialSettingsPage() {
     </div>
   );
 }
+
