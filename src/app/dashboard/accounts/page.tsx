@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -34,152 +35,6 @@ import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/no
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-
-
-const canteenRateSchema = z.object({
-    dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
-});
-
-const transportRateSchema = z.object({
-    dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
-});
-
-
-// --- Canteen Rate Settings Component ---
-function CanteenSettings() {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSaving, setIsSaving] = useState(false);
-
-    const settingsRef = useMemoFirebase(() => doc(firestore, 'schoolSettings', 'canteen'), [firestore]);
-    const { data: canteenSettings, isLoading } = useDoc(settingsRef);
-
-    const form = useForm<z.infer<typeof canteenRateSchema>>({
-        resolver: zodResolver(canteenRateSchema),
-        defaultValues: { dailyRate: 0 }
-    });
-
-    useEffect(() => {
-        if (canteenSettings?.dailyRate) {
-            form.setValue('dailyRate', canteenSettings.dailyRate);
-        }
-    }, [canteenSettings, form]);
-
-    const handleSave = async (values: z.infer<typeof canteenRateSchema>) => {
-        if (!firestore) return;
-        
-        setIsSaving(true);
-        try {
-            await setDoc(settingsRef, { dailyRate: values.dailyRate }, { merge: true });
-            toast({ title: 'Success', description: 'Canteen daily rate has been updated.' });
-        } catch (error) {
-            console.error('Error saving canteen rate:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save canteen settings.' });
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Utensils /> Canteen Settings</CardTitle>
-                <CardDescription>Set the daily fee for canteen usage, which will be billed automatically based on attendance.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSave)} className="flex items-end gap-4">
-                        <FormField
-                            control={form.control}
-                            name="dailyRate"
-                            render={({ field }) => (
-                                <FormItem className="flex-grow">
-                                    <FormLabel>Daily Canteen Fee (GH₵)</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" placeholder="e.g., 5.00" {...field} disabled={isLoading} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit" disabled={isSaving || isLoading}>
-                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Rate
-                        </Button>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
-    );
-}
-
-// --- Transport Rate Settings Component ---
-function TransportSettings() {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSaving, setIsSaving] = useState(false);
-
-    const settingsRef = useMemoFirebase(() => doc(firestore, 'schoolSettings', 'transport'), [firestore]);
-    const { data: transportSettings, isLoading } = useDoc(settingsRef);
-
-    const form = useForm<z.infer<typeof transportRateSchema>>({
-        resolver: zodResolver(transportRateSchema),
-        defaultValues: { dailyRate: 0 }
-    });
-
-    useEffect(() => {
-        if (transportSettings?.dailyRate) {
-            form.setValue('dailyRate', transportSettings.dailyRate);
-        }
-    }, [transportSettings, form]);
-
-    const handleSave = async (values: z.infer<typeof transportRateSchema>) => {
-        if (!firestore) return;
-        
-        setIsSaving(true);
-        try {
-            await setDoc(settingsRef, { dailyRate: values.dailyRate }, { merge: true });
-            toast({ title: 'Success', description: 'Transport daily rate has been updated.' });
-        } catch (error) {
-            console.error('Error saving transport rate:', error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not save transport settings.' });
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Bus /> Transport Settings</CardTitle>
-                <CardDescription>Set the daily fee for bus usage, billed automatically for enrolled students on attendance.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSave)} className="flex items-end gap-4">
-                        <FormField
-                            control={form.control}
-                            name="dailyRate"
-                            render={({ field }) => (
-                                <FormItem className="flex-grow">
-                                    <FormLabel>Daily Transport Fee (GH₵)</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" placeholder="e.g., 10.00" {...field} disabled={isLoading} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit" disabled={isSaving || isLoading}>
-                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Save Rate
-                        </Button>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
-    );
-}
 
 
 // --- Forms ---
@@ -674,7 +529,7 @@ export default function AccountsPage() {
             </CardContent>
         </Card>
 
-       <div className="grid lg:grid-cols-2 gap-6">
+       <div className="grid lg:grid-cols-1 gap-6">
         <Card>
             <CardHeader>
             <div className="flex justify-between items-center">
@@ -697,10 +552,6 @@ export default function AccountsPage() {
                 {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
             </CardContent>
         </Card>
-        <div className="space-y-6">
-            <CanteenSettings />
-            <TransportSettings />
-        </div>
       </div>
 
       <Card>
@@ -782,7 +633,3 @@ export default function AccountsPage() {
       </Dialog>
     </div>
   );
-
-    
-
-    

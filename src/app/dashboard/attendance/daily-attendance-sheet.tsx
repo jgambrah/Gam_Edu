@@ -29,7 +29,7 @@ import { format, startOfDay, getYear, getMonth } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, FirestorePermissionError, errorEmitter } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp, runTransaction, setDoc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp, runTransaction } from 'firebase/firestore';
 import { attendanceRecordSchema, type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
