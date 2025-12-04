@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, setDoc, updateDoc, writeBatch, serverTimestamp, getDoc } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, updateDoc, writeBatch, serverTimestamp, getDoc, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -141,7 +141,7 @@ function DirectorTillView() {
     const firestore = useFirestore();
     const { toast } = useToast();
 
-    const pendingTillsQuery = useMemoFirebase(() => query(collection(firestore, 'tills'), where('status', '==', 'PendingApproval')), [firestore]);
+    const pendingTillsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'tills'), where('status', '==', 'PendingApproval')) : null, [firestore, user]);
     const { data: pendingTills, isLoading, forceRefetch } = useCollection<Till>(pendingTillsQuery);
     
     const [selectedTill, setSelectedTill] = useState<Till | null>(null);
@@ -254,3 +254,4 @@ export default function CashTillPage() {
     );
 }
 
+    
