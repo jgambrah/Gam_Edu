@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, getDocs, getDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
@@ -320,7 +320,7 @@ function MaterialForm({
 
 // --- MAIN PAGE ---
 export default function LearningMaterialsPage() {
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -332,71 +332,45 @@ export default function LearningMaterialsPage() {
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // --- FETCHING LOGIC ---
+  // --- FETCHING LOGIC REFACTORED ---
   
-  // 1. Student Profile
-  const [studentClassId, setStudentClassId] = useState<string | null>(null);
-  const [isStudentLoading, setIsStudentLoading] = useState(true);
+  // 1. Student Profile & Class ID
+  const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
+    useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user, firestore])
+  );
+  const studentClassId = useMemo(() => studentData?.[0]?.classId, [studentData]);
 
-  useEffect(() => {
-      async function fetchStudentProfile() {
-          if (role !== 'Student' || !user || !firestore) {
-              setIsStudentLoading(false);
-              return;
-          }
-          try {
-              const docRef = doc(firestore, 'students', user.uid);
-              const docSnap = await getDoc(docRef);
-              if (docSnap.exists()) {
-                  setStudentClassId(docSnap.data().classId);
-              }
-          } catch (e) { console.error(e); } 
-          finally { setIsStudentLoading(false); }
-      }
-      fetchStudentProfile();
-  }, [role, user, firestore]);
-
+  // Determine which class ID to use for querying materials
   const activeClassId = role === 'Student' ? studentClassId : selectedClassId;
 
-  // 2. Classes
+  // 2. Classes (for managers)
   const { data: classes } = useCollection<Class>(
     useMemoFirebase(() => (canManage && firestore) ? query(collection(firestore, 'classes')) : null, [canManage, firestore])
   );
 
-  // 3. SUBJECTS (Fetched dynamically)
+  // 3. Subjects
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
   const { data: subjectsData, isLoading: isLoadingSubjects } = useCollection<{id:string, name:string}>(subjectsQuery);
   
-  // Fallback list in case DB is empty
   const subjectsList = useMemo(() => {
       if (subjectsData && subjectsData.length > 0) {
           return subjectsData.map(s => s.name).sort();
       }
-      return [
-        "Integrated Science", "Mathematics", "English Language", 
-        "Social Studies", "R.M.E", "I.C.T", "French", "Ghanaian Language"
-      ];
+      return [ "Integrated Science", "Mathematics", "English Language", "Social Studies", "R.M.E", "I.C.T", "French", "Ghanaian Language" ];
   }, [subjectsData]);
 
-  // 4. Materials Query
+  // 4. Materials Query (now depends on activeClassId)
   const materialsQuery = useMemoFirebase(() => {
     if (!firestore || !activeClassId) return null;
-    
-    let baseQuery = query(
-        collection(firestore, 'learning_materials'), 
-        where('classId', '==', activeClassId)
-    );
-
+    let q = query(collection(firestore, 'learning_materials'), where('classId', '==', activeClassId));
     if (currentSubject) {
-        baseQuery = query(baseQuery, where('subject', '==', currentSubject));
+        q = query(q, where('subject', '==', currentSubject));
     }
-
-    return baseQuery;
+    return q;
   }, [firestore, activeClassId, currentSubject]);
 
   const { data: materials, isLoading: isLoadingMaterials } = useCollection<LearningMaterial>(materialsQuery);
 
-  // Client-side Sort
   const sortedMaterials = useMemo(() => {
       if (!materials) return [];
       return materials.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
@@ -420,7 +394,7 @@ export default function LearningMaterialsPage() {
       setIsFormOpen(true);
   };
   
-  const pageLoading = (role === 'Student' && isStudentLoading) || isLoadingMaterials || isLoadingSubjects;
+  const pageLoading = isUserLoading || (role === 'Student' && isStudentLoading) || isLoadingSubjects || (!!activeClassId && isLoadingMaterials);
 
   if (canManage && !activeClassId) {
       return (
@@ -444,6 +418,16 @@ export default function LearningMaterialsPage() {
           <div className="flex items-center justify-center p-12"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>
       )
   }
+  
+  if (role === 'Student' && !studentClassId && !pageLoading) {
+      return (
+          <div className="p-8 text-center">
+              <p className="text-muted-foreground">Your class assignment could not be found.</p>
+              <p className="text-sm text-red-400">Please contact your administrator.</p>
+          </div>
+      );
+  }
+
 
   if (!currentSubject) {
       return (
