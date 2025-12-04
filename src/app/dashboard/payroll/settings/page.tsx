@@ -19,10 +19,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, doc, setDoc } from 'firebase/firestore';
-import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus } from 'lucide-react';
+import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
+import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw } from 'lucide-react';
 import { PayrollSettings, payrollSettingsFormSchema } from '@/lib/types';
 import { useRole } from '@/context/role-context';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { DateRange } from 'react-day-picker';
+import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -169,120 +175,139 @@ function TransportSettings() {
     );
 }
 
-export default function PayrollSettingsPage() {
+// --- Retrospective Billing Component ---
+function RetrospectiveBilling() {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(),
+        to: new Date(),
+    });
+
+    const handleReprocess = async () => {
+        if (!firestore || !dateRange?.from) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range.' });
+            return;
+        }
+        setIsProcessing(true);
+        toast({ title: "Reprocessing billing...", description: `Scanning attendance from ${format(dateRange.from, 'PPP')} to ${dateRange.to ? format(dateRange.to, 'PPP') : format(dateRange.from, 'PPP')}`});
+
+        try {
+            const start = startOfDay(dateRange.from);
+            const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+
+            const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
+            const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
+            const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
+            const transportRate = transportSettingsSnap.data()?.dailyRate || 0;
+            
+            const attendanceQuery = query(
+                collection(firestore, 'attendance'),
+                where('date', '>=', Timestamp.fromDate(start)),
+                where('date', '<=', Timestamp.fromDate(end)),
+                where('status', 'in', ['Present', 'Late'])
+            );
+
+            const attendanceSnapshot = await getDocs(attendanceQuery);
+            const recordsToProcess = attendanceSnapshot.docs;
+
+            if(recordsToProcess.length === 0) {
+                toast({ title: 'Nothing to Process', description: 'No "Present" or "Late" attendance records found in the selected range.' });
+                setIsProcessing(false);
+                return;
+            }
+            
+            const billingBatch = writeBatch(firestore);
+            
+            for (const attendanceDoc of recordsToProcess) {
+                const record = attendanceDoc.data();
+                const recordDate = record.date.toDate();
+                const year = getYear(recordDate);
+                const month = getMonth(recordDate) + 1;
+                const period = `${year}-${String(month).padStart(2, '0')}`;
+
+                if (canteenRate > 0) {
+                    const canteenRecordId = `canteen-${record.studentId}-${period}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                    billingBatch.set(financialRecordRef, {
+                        billedAmount: increment(canteenRate),
+                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        type: 'Canteen Fee', description: `Canteen Bill for ${period}`, status: 'Unpaid', dueDate: new Date(year, month, 0),
+                    }, { merge: true });
+                }
+
+                if (transportRate > 0 && record.usesBusService) {
+                    const transportRecordId = `transport-${record.studentId}-${period}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                    billingBatch.set(financialRecordRef, {
+                        billedAmount: increment(transportRate),
+                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        type: 'Transport Fee', description: `Transport Bill for ${period}`, status: 'Unpaid', dueDate: new Date(year, month, 0),
+                    }, { merge: true });
+                }
+            }
+
+            await billingBatch.commit();
+            toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
+
+        } catch (error) {
+            console.error('Error reprocessing billing:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to reprocess billing.' });
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
+                <CardDescription>Recalculate and apply fees for a past date range. Use this if rates have changed or if billing failed previously.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-end gap-4">
+                 <div className="flex-1">
+                    <FormLabel>Date Range</FormLabel>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date range</span>)}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
+                        </PopoverContent>
+                    </Popover>
+                 </div>
+                 <Button onClick={handleReprocess} disabled={isProcessing}>
+                    {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                    Reprocess
+                </Button>
+            </CardContent>
+        </Card>
+    );
+}
+
+export default function FinancialSettingsPage() {
   const { role } = useRole();
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const settingsQuery = useMemoFirebase(() => collection(firestore, 'payrollSettings'), [firestore]);
-  const { data: settingsList, isLoading } = useCollection<PayrollSettings>(settingsQuery);
-  const existingSettings = settingsList?.[0];
-
-  const form = useForm<z.infer<typeof payrollSettingsFormSchema>>({
-    resolver: zodResolver(payrollSettingsFormSchema),
-    defaultValues: {
-        ssnitEmployeeContributionRate: 0,
-        ssnitEmployerContributionRate: 0,
-        payeeBrackets: [{ from: 0, to: null, rate: 0 }],
-    }
-  });
-  
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "payeeBrackets",
-  });
-
-  useEffect(() => {
-    if (existingSettings) {
-      form.reset({
-        ...existingSettings,
-        payeeBrackets: existingSettings.payeeBrackets.map(b => ({...b, to: b.to === undefined ? null : b.to }))
-      });
-    }
-  }, [existingSettings, form]);
-
-  async function onSubmit(values: z.infer<typeof payrollSettingsFormSchema>) {
-    setIsSubmitting(true);
-    try {
-      const settingsRef = doc(firestore, 'payrollSettings', existingSettings?.id || 'global');
-      await setDoc(settingsRef, values);
-      toast({ title: 'Success', description: 'Payroll settings have been updated.' });
-    } catch (error) {
-      console.error('Error updating settings:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not update settings.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  if (isLoading) {
-    return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
-  }
-  
-  if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
+  if (!['Administrator', 'Director', 'Accountant'].includes(role)) {
     return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;
   }
 
   return (
     <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Financial Settings</h1>
         <div className="grid lg:grid-cols-2 gap-6">
             <CanteenSettings />
             <TransportSettings />
         </div>
-        <Card>
-        <CardHeader>
-            <CardTitle className="flex items-center gap-2"><FileText /> Payroll Settings</CardTitle>
-            <CardDescription>Configure global statutory rates and tax brackets for payroll processing.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <Card>
-                    <CardHeader><CardTitle>SSNIT Contribution Rates</CardTitle></CardHeader>
-                    <CardContent className="grid grid-cols-2 gap-6">
-                        <FormField control={form.control} name="ssnitEmployeeContributionRate" render={({ field }) => (
-                            <FormItem><FormLabel>Employee Rate (e.g., 0.055 for 5.5%)</FormLabel><FormControl><Input type="number" step="0.001" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                        <FormField control={form.control} name="ssnitEmployerContributionRate" render={({ field }) => (
-                            <FormItem><FormLabel>Employer Rate (e.g., 0.13 for 13%)</FormLabel><FormControl><Input type="number" step="0.001" {...field} /></FormControl><FormMessage /></FormItem>
-                        )}/>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <div className="flex justify-between items-center">
-                            <CardTitle>PAYE Tax Brackets</CardTitle>
-                            <Button type="button" variant="outline" size="sm" onClick={() => append({ from: 0, to: null, rate: 0 })}><PlusCircle className="mr-2"/>Add Bracket</Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="flex items-end gap-4 p-4 border rounded-md">
-                                <FormField control={form.control} name={`payeeBrackets.${index}.from`} render={({ field }) => (
-                                    <FormItem><FormLabel>From ($)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                                )}/>
-                                <FormField control={form.control} name={`payeeBrackets.${index}.to`} render={({ field }) => (
-                                    <FormItem><FormLabel>To ($)</FormLabel><FormControl><Input type="number" placeholder="Leave empty for last tier" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
-                                )}/>
-                                <FormField control={form.control} name={`payeeBrackets.${index}.rate`} render={({ field }) => (
-                                    <FormItem><FormLabel>Rate (e.g., 0.1 for 10%)</FormLabel><FormControl><Input type="number" step="0.01" {...field} /></FormControl><FormMessage /></FormItem>
-                                )}/>
-                                <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}><Trash2/></Button>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
-
-                <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Settings
-                </Button>
-            </form>
-            </Form>
-        </CardContent>
-        </Card>
+        <RetrospectiveBilling />
     </div>
   );
 }
+
