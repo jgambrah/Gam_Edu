@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
@@ -183,9 +182,9 @@ export default function GeneralLedgerPage() {
                                     {ledger.entries.map(entry => (
                                         <TableRow key={entry.id}>
                                             <TableCell>{entry.date}</TableCell><TableCell>{entry.description}</TableCell><TableCell>{entry.ref}</TableCell>
-                                            <TableCell className="text-right">{entry.debit > 0 ? `$${entry.debit.toFixed(2)}` : '-'}</TableCell>
-                                            <TableCell className="text-right">{entry.credit > 0 ? `$${entry.credit.toFixed(2)}` : '-'}</TableCell>
-                                            <TableCell className="text-right font-medium">${entry.balance.toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">{entry.debit > 0 ? `GH₵${entry.debit.toFixed(2)}` : '-'}</TableCell>
+                                            <TableCell className="text-right">{entry.credit > 0 ? `GH₵${entry.credit.toFixed(2)}` : '-'}</TableCell>
+                                            <TableCell className="text-right font-medium">GH₵{entry.balance.toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -193,9 +192,9 @@ export default function GeneralLedgerPage() {
                         </CardContent>
                         <CardFooter>
                             <div className="w-full grid md:grid-cols-3 gap-4">
-                                <Card><CardHeader><CardTitle>Total Debits</CardTitle></CardHeader><CardContent><p className="text-xl font-bold">${ledger.summary.totalDebits.toFixed(2)}</p></CardContent></Card>
-                                <Card><CardHeader><CardTitle>Total Credits</CardTitle></CardHeader><CardContent><p className="text-xl font-bold">${ledger.summary.totalCredits.toFixed(2)}</p></CardContent></Card>
-                                <Card className="border-primary"><CardHeader><CardTitle>Ending Balance</CardTitle></CardHeader><CardContent><p className="text-xl font-bold">${ledger.summary.endingBalance.toFixed(2)}</p></CardContent></Card>
+                                <Card><CardHeader><CardTitle>Total Debits</CardTitle></CardHeader><CardContent><p className="text-xl font-bold">GH₵{ledger.summary.totalDebits.toFixed(2)}</p></CardContent></Card>
+                                <Card><CardHeader><CardTitle>Total Credits</CardTitle></CardHeader><CardContent><p className="text-xl font-bold">GH₵{ledger.summary.totalCredits.toFixed(2)}</p></CardContent></Card>
+                                <Card className="border-primary"><CardHeader><CardTitle>Ending Balance</CardTitle></CardHeader><CardContent><p className="text-xl font-bold">GH₵{ledger.summary.endingBalance.toFixed(2)}</p></CardContent></Card>
                             </div>
                         </CardFooter>
                     </Card>

@@ -188,9 +188,9 @@ export default function PayrollPage() {
       {fetchedRecords.length > 0 && (
         <>
             <div className="grid gap-4 md:grid-cols-3">
-                <Card><CardHeader><CardTitle>Total Gross Salary</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">${summary.gross.toFixed(2)}</p></CardContent></Card>
-                <Card><CardHeader><CardTitle>Total Deductions</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">${summary.deductions.toFixed(2)}</p></CardContent></Card>
-                <Card><CardHeader><CardTitle>Total Net Payout</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">${summary.net.toFixed(2)}</p></CardContent></Card>
+                <Card><CardHeader><CardTitle>Total Gross Salary</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{summary.gross.toFixed(2)}</p></CardContent></Card>
+                <Card><CardHeader><CardTitle>Total Deductions</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{summary.deductions.toFixed(2)}</p></CardContent></Card>
+                <Card><CardHeader><CardTitle>Total Net Payout</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{summary.net.toFixed(2)}</p></CardContent></Card>
             </div>
             <Card>
                 <CardHeader><CardTitle>Payroll Records for {period}</CardTitle></CardHeader>
@@ -201,9 +201,9 @@ export default function PayrollPage() {
                             {fetchedRecords.map(rec => (
                                 <TableRow key={rec.id}>
                                     <TableCell className="font-medium">{rec.staffName}</TableCell>
-                                    <TableCell>${rec.grossSalary.toFixed(2)}</TableCell>
-                                    <TableCell>${rec.totalDeductions.toFixed(2)}</TableCell>
-                                    <TableCell className="font-bold">${rec.netSalary.toFixed(2)}</TableCell>
+                                    <TableCell>GH₵{rec.grossSalary.toFixed(2)}</TableCell>
+                                    <TableCell>GH₵{rec.totalDeductions.toFixed(2)}</TableCell>
+                                    <TableCell className="font-bold">GH₵{rec.netSalary.toFixed(2)}</TableCell>
                                     <TableCell className="text-right">
                                         <Dialog>
                                             <DialogTrigger asChild>

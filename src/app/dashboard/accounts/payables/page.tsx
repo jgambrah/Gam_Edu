@@ -125,7 +125,7 @@ function PayBillDialog({ bill, setOpen, onBillPaid }: { bill: AccountsPayableRec
     
     return (
         <DialogContent>
-            <DialogHeader><DialogTitle>Confirm Bill Payment</DialogTitle><DialogDescription>You are about to pay a bill for ${bill.amount.toFixed(2)} to a vendor.</DialogDescription></DialogHeader>
+            <DialogHeader><DialogTitle>Confirm Bill Payment</DialogTitle><DialogDescription>You are about to pay a bill for GH₵{bill.amount.toFixed(2)} to a vendor.</DialogDescription></DialogHeader>
             <div className="space-y-4 py-4">
                 <Select onValueChange={setPaymentAccountId}><SelectTrigger><SelectValue placeholder="Select payment account (e.g., bank)"/></SelectTrigger><SelectContent>{/* TODO: Fetch asset accounts */}</SelectContent></Select>
             </div>
@@ -189,7 +189,7 @@ export default function AccountsPayablePage() {
                                             <TableRow key={bill.id}>
                                                 <TableCell>{getVendorName(bill.vendorId)}</TableCell>
                                                 <TableCell>{bill.description}</TableCell>
-                                                <TableCell>${bill.amount.toFixed(2)}</TableCell>
+                                                <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
                                                 <TableCell>{bill.dueDate.toDate ? format(bill.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
                                                 <TableCell><Button size="sm" onClick={() => setPayingBill(bill)}>Pay Bill</Button></TableCell>
                                             </TableRow>
@@ -207,7 +207,7 @@ export default function AccountsPayablePage() {
                                             <TableRow key={bill.id}>
                                                 <TableCell>{getVendorName(bill.vendorId)}</TableCell>
                                                 <TableCell>{bill.description}</TableCell>
-                                                <TableCell>${bill.amount.toFixed(2)}</TableCell>
+                                                <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
                                                 <TableCell>{bill.paidAt?.toDate ? format(bill.paidAt.toDate(), 'PPP') : 'N/A'}</TableCell>
                                             </TableRow>
                                         ))}

@@ -213,7 +213,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     }
     return (
         <DialogContent>
-            <DialogHeader><DialogTitle>Record Payment for {record.studentName}</DialogTitle><DialogDescription>Balance due: ${balance.toFixed(2)}</DialogDescription></DialogHeader>
+            <DialogHeader><DialogTitle>Record Payment for {record.studentName}</DialogTitle><DialogDescription>Balance due: GH₵{balance.toFixed(2)}</DialogDescription></DialogHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField control={form.control} name="amount" render={({ field }) => (
@@ -380,9 +380,9 @@ export default function AccountsPage() {
                             <TableRow key={rec.id}>
                                 <TableCell className="font-medium">{rec.studentName}</TableCell>
                                 <TableCell>{rec.description}</TableCell>
-                                <TableCell>${rec.billedAmount.toFixed(2)}</TableCell>
-                                <TableCell>${rec.amountPaid.toFixed(2)}</TableCell>
-                                <TableCell className="font-semibold">${balance.toFixed(2)}</TableCell>
+                                <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
+                                <TableCell>GH₵{rec.amountPaid.toFixed(2)}</TableCell>
+                                <TableCell className="font-semibold">GH₵{balance.toFixed(2)}</TableCell>
                                 <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
                                 <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
                                 <TableCell>

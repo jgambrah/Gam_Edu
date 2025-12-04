@@ -51,8 +51,8 @@ export default function MyPayslipsPage() {
                 {payslips.map((slip) => (
                   <TableRow key={slip.id}>
                     <TableCell className="font-medium">{slip.period}</TableCell>
-                    <TableCell>${slip.grossSalary.toFixed(2)}</TableCell>
-                    <TableCell className="font-semibold">${slip.netSalary.toFixed(2)}</TableCell>
+                    <TableCell>GH₵{slip.grossSalary.toFixed(2)}</TableCell>
+                    <TableCell className="font-semibold">GH₵{slip.netSalary.toFixed(2)}</TableCell>
                     <TableCell className="text-right">
                        <Dialog>
                             <DialogTrigger asChild>

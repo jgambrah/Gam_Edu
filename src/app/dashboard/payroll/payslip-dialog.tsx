@@ -40,17 +40,17 @@ export function PayslipDialog({ payslip }: { payslip: PayrollRecord }) {
               <TableBody>
                 <TableRow>
                   <TableCell>Basic Salary</TableCell>
-                  <TableCell className="text-right">${payslip.basicSalary.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">GH₵{payslip.basicSalary.toFixed(2)}</TableCell>
                 </TableRow>
                 {payslip.allowances.map((allowance, index) => (
                   <TableRow key={`allowance-${index}`}>
                     <TableCell>{allowance.name}</TableCell>
-                    <TableCell className="text-right">${allowance.amount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">GH₵{allowance.amount.toFixed(2)}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="font-bold bg-muted/50">
                   <TableCell>Gross Salary</TableCell>
-                  <TableCell className="text-right">${payslip.grossSalary.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">GH₵{payslip.grossSalary.toFixed(2)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -61,21 +61,21 @@ export function PayslipDialog({ payslip }: { payslip: PayrollRecord }) {
               <TableBody>
                 <TableRow>
                   <TableCell>SSNIT (Employee)</TableCell>
-                  <TableCell className="text-right">${payslip.statutory.ssnitEmployee.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">GH₵{payslip.statutory.ssnitEmployee.toFixed(2)}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>PAYE Tax</TableCell>
-                  <TableCell className="text-right">${payslip.statutory.paye.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">GH₵{payslip.statutory.paye.toFixed(2)}</TableCell>
                 </TableRow>
                 {payslip.deductions.map((deduction, index) => (
                   <TableRow key={`deduction-${index}`}>
                     <TableCell>{deduction.name}</TableCell>
-                    <TableCell className="text-right">${deduction.amount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">GH₵{deduction.amount.toFixed(2)}</TableCell>
                   </TableRow>
                 ))}
                  <TableRow className="font-bold bg-muted/50">
                   <TableCell>Total Deductions</TableCell>
-                  <TableCell className="text-right">${payslip.totalDeductions.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">GH₵{payslip.totalDeductions.toFixed(2)}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -83,10 +83,10 @@ export function PayslipDialog({ payslip }: { payslip: PayrollRecord }) {
         </div>
         <div className="bg-primary text-primary-foreground p-4 rounded-md flex justify-between items-center">
             <span className="text-xl font-bold">Net Salary</span>
-            <span className="text-2xl font-bold">${payslip.netSalary.toFixed(2)}</span>
+            <span className="text-2xl font-bold">GH₵{payslip.netSalary.toFixed(2)}</span>
         </div>
         <div className="mt-4 text-xs text-muted-foreground">
-            <p>Employer SSNIT Contribution: ${payslip.statutory.ssnitEmployer.toFixed(2)}</p>
+            <p>Employer SSNIT Contribution: GH₵{payslip.statutory.ssnitEmployer.toFixed(2)}</p>
         </div>
       </div>
        <div className="flex justify-end mt-4 print:hidden">

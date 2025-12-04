@@ -111,7 +111,7 @@ export default function InventoryReportsPage() {
                 <>
                     <div className="grid gap-4 md:grid-cols-3">
                         <Card><CardHeader><CardTitle>Total Items</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold">{reportData.totalItems}</p></CardContent></Card>
-                        <Card><CardHeader><CardTitle>Total Estimated Value</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold">${reportData.totalValue.toFixed(2)}</p></CardContent></Card>
+                        <Card><CardHeader><CardTitle>Total Estimated Value</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold">GH₵{reportData.totalValue.toFixed(2)}</p></CardContent></Card>
                         <Card><CardHeader><CardTitle>Items Currently In Use</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold">{reportData.itemsInUse}</p></CardContent></Card>
                     </div>
 
@@ -164,7 +164,7 @@ export default function InventoryReportsPage() {
                                             <TableCell><Badge variant={getStatusVariant(item.status)}>{item.status}</Badge></TableCell>
                                             <TableCell>{item.currentHolderName || 'N/A'}</TableCell>
                                             <TableCell>{item.location}</TableCell>
-                                            <TableCell className="text-right">${((item.unitPrice || 0) * item.quantity).toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">GH₵{((item.unitPrice || 0) * item.quantity).toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

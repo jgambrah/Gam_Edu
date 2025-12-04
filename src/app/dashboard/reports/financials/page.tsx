@@ -62,8 +62,8 @@ function TrialBalance() {
                             return (
                                 <TableRow key={account.accountId}>
                                     <TableCell>{account.accountId} - {account.name}</TableCell>
-                                    <TableCell className="text-right">{finalBalance > 0 ? `$${finalBalance.toFixed(2)}` : '-'}</TableCell>
-                                    <TableCell className="text-right">{finalBalance < 0 ? `$${(-finalBalance).toFixed(2)}` : '-'}</TableCell>
+                                    <TableCell className="text-right">{finalBalance > 0 ? `GH₵${finalBalance.toFixed(2)}` : '-'}</TableCell>
+                                    <TableCell className="text-right">{finalBalance < 0 ? `GH₵${(-finalBalance).toFixed(2)}` : '-'}</TableCell>
                                 </TableRow>
                             );
                         })}
@@ -71,8 +71,8 @@ function TrialBalance() {
                     <CardFooter className="font-bold text-lg">
                         <TableRow>
                             <TableCell>Totals</TableCell>
-                            <TableCell className="text-right">${totalDebits.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">${totalCredits.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">GH₵{totalDebits.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">GH₵{totalCredits.toFixed(2)}</TableCell>
                         </TableRow>
                     </CardFooter>
                 </Table>
@@ -99,8 +99,8 @@ function IncomeStatement() {
                     <h3 className="text-lg font-semibold mb-2">Revenue</h3>
                     <Table>
                         <TableBody>
-                            {revenues.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">${(-(balances.get(acc.accountId) || 0)).toFixed(2)}</TableCell></TableRow>)}
-                            <TableRow className="font-bold"><TableCell>Total Revenue</TableCell><TableCell className="text-right">${totalRevenue.toFixed(2)}</TableCell></TableRow>
+                            {revenues.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">GH₵{(-(balances.get(acc.accountId) || 0)).toFixed(2)}</TableCell></TableRow>)}
+                            <TableRow className="font-bold"><TableCell>Total Revenue</TableCell><TableCell className="text-right">GH₵{totalRevenue.toFixed(2)}</TableCell></TableRow>
                         </TableBody>
                     </Table>
                 </div>
@@ -108,15 +108,15 @@ function IncomeStatement() {
                     <h3 className="text-lg font-semibold mb-2">Expenses</h3>
                     <Table>
                         <TableBody>
-                            {expenses.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">${(balances.get(acc.accountId) || 0).toFixed(2)}</TableCell></TableRow>)}
-                            <TableRow className="font-bold"><TableCell>Total Expenses</TableCell><TableCell className="text-right">${totalExpense.toFixed(2)}</TableCell></TableRow>
+                            {expenses.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">GH₵{(balances.get(acc.accountId) || 0).toFixed(2)}</TableCell></TableRow>)}
+                            <TableRow className="font-bold"><TableCell>Total Expenses</TableCell><TableCell className="text-right">GH₵{totalExpense.toFixed(2)}</TableCell></TableRow>
                         </TableBody>
                     </Table>
                 </div>
             </CardContent>
             <CardFooter className="font-bold text-xl justify-between p-6 bg-muted rounded-b-lg">
                 <span>Net Income</span>
-                <span className={cn(netIncome >= 0 ? 'text-green-600' : 'text-red-600')}>${netIncome.toFixed(2)}</span>
+                <span className={cn(netIncome >= 0 ? 'text-green-600' : 'text-red-600')}>GH₵{netIncome.toFixed(2)}</span>
             </CardFooter>
         </Card>
     );
@@ -143,8 +143,8 @@ function BalanceSheet() {
                     <h3 className="text-lg font-semibold mb-2">Assets</h3>
                      <Table>
                         <TableBody>
-                            {assets.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">${(balances.get(acc.accountId) || 0).toFixed(2)}</TableCell></TableRow>)}
-                             <TableRow className="font-bold"><TableCell>Total Assets</TableCell><TableCell className="text-right">${totalAssets.toFixed(2)}</TableCell></TableRow>
+                            {assets.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">GH₵{(balances.get(acc.accountId) || 0).toFixed(2)}</TableCell></TableRow>)}
+                             <TableRow className="font-bold"><TableCell>Total Assets</TableCell><TableCell className="text-right">GH₵{totalAssets.toFixed(2)}</TableCell></TableRow>
                         </TableBody>
                     </Table>
                 </div>
@@ -153,15 +153,15 @@ function BalanceSheet() {
                      <Table>
                         <TableHeader><TableRow><TableHead colSpan={2}>Liabilities</TableHead></TableRow></TableHeader>
                         <TableBody>
-                            {liabilities.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">${(-(balances.get(acc.accountId) || 0)).toFixed(2)}</TableCell></TableRow>)}
-                             <TableRow className="font-semibold"><TableCell>Total Liabilities</TableCell><TableCell className="text-right">${totalLiabilities.toFixed(2)}</TableCell></TableRow>
+                            {liabilities.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">GH₵{(-(balances.get(acc.accountId) || 0)).toFixed(2)}</TableCell></TableRow>)}
+                             <TableRow className="font-semibold"><TableCell>Total Liabilities</TableCell><TableCell className="text-right">GH₵{totalLiabilities.toFixed(2)}</TableCell></TableRow>
                         </TableBody>
                         <TableHeader><TableRow><TableHead colSpan={2}>Equity</TableHead></TableRow></TableHeader>
                         <TableBody>
-                             {equity.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">${(-(balances.get(acc.accountId) || 0)).toFixed(2)}</TableCell></TableRow>)}
-                             <TableRow><TableCell>Net Income</TableCell><TableCell className="text-right">${netIncome.toFixed(2)}</TableCell></TableRow>
-                             <TableRow className="font-semibold"><TableCell>Total Equity</TableCell><TableCell className="text-right">${totalEquity.toFixed(2)}</TableCell></TableRow>
-                             <TableRow className="font-bold"><TableCell>Total Liabilities & Equity</TableCell><TableCell className="text-right">${(totalLiabilities + totalEquity).toFixed(2)}</TableCell></TableRow>
+                             {equity.map(acc => <TableRow key={acc.accountId}><TableCell>{acc.name}</TableCell><TableCell className="text-right">GH₵{(-(balances.get(acc.accountId) || 0)).toFixed(2)}</TableCell></TableRow>)}
+                             <TableRow><TableCell>Net Income</TableCell><TableCell className="text-right">GH₵{netIncome.toFixed(2)}</TableCell></TableRow>
+                             <TableRow className="font-semibold"><TableCell>Total Equity</TableCell><TableCell className="text-right">GH₵{totalEquity.toFixed(2)}</TableCell></TableRow>
+                             <TableRow className="font-bold"><TableCell>Total Liabilities & Equity</TableCell><TableCell className="text-right">GH₵{(totalLiabilities + totalEquity).toFixed(2)}</TableCell></TableRow>
                         </TableBody>
                     </Table>
                 </div>
@@ -187,14 +187,14 @@ function CashFlowStatement() {
                  <Table>
                     <TableHeader><TableRow><TableHead>Cash Flow from Operating Activities</TableHead><TableHead></TableHead></TableRow></TableHeader>
                     <TableBody>
-                        <TableRow><TableCell>Net Income</TableCell><TableCell className="text-right">${netIncome.toFixed(2)}</TableCell></TableRow>
-                        <TableRow><TableCell>Change in Accounts Receivable</TableCell><TableCell className="text-right">(${(arBalance).toFixed(2)})</TableCell></TableRow>
-                        <TableRow><TableCell>Change in Accounts Payable</TableCell><TableCell className="text-right">${apBalance.toFixed(2)}</TableCell></TableRow>
-                        <TableRow className="font-bold"><TableCell>Net Cash from Operating Activities</TableCell><TableCell className="text-right">${cashFromOps.toFixed(2)}</TableCell></TableRow>
+                        <TableRow><TableCell>Net Income</TableCell><TableCell className="text-right">GH₵{netIncome.toFixed(2)}</TableCell></TableRow>
+                        <TableRow><TableCell>Change in Accounts Receivable</TableCell><TableCell className="text-right">(GH₵{(arBalance).toFixed(2)})</TableCell></TableRow>
+                        <TableRow><TableCell>Change in Accounts Payable</TableCell><TableCell className="text-right">GH₵{apBalance.toFixed(2)}</TableCell></TableRow>
+                        <TableRow className="font-bold"><TableCell>Net Cash from Operating Activities</TableCell><TableCell className="text-right">GH₵{cashFromOps.toFixed(2)}</TableCell></TableRow>
                     </TableBody>
                     <CardFooter className="font-bold text-lg justify-between p-6">
                         <span>Net Increase in Cash</span>
-                        <span>${netCashFlow.toFixed(2)}</span>
+                        <span>GH₵{netCashFlow.toFixed(2)}</span>
                     </CardFooter>
                  </Table>
             </CardContent>
