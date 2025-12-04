@@ -1,13 +1,14 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 // FIX: Using getDocs instead of useCollection hooks
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
-// UI
+// UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +18,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // --- TYPE DEFINITIONS ---
 type Student = {
@@ -27,9 +29,11 @@ type Student = {
   lastName: string;
   email: string;
   classId: string;
-  dateOfBirth?: string;
   gender?: string;
   address?: string;
+  dateOfBirth?: string;
+  enrollmentStatus?: string;
+  usesBusService?: boolean;
 };
 
 type Class = {
@@ -45,71 +49,160 @@ export default function StudentsManagementV2() {
   // Data State
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   
-  // UI State
+  const [isLoading, setIsLoading] = useState(true);
+  const [statusMsg, setStatusMsg] = useState("Initializing...");
+  const [isInitializing, setIsInitializing] = useState(false);
+  
+  // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
 
-  // Safety Valve
+  // Form State
+  const [selectedClassId, setSelectedClassId] = useState('');
+  const [selectedGender, setSelectedGender] = useState('');
+
+  // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen || editingStudent) {
-        setIsSubmitting(false);
+    if (isAddOpen) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(''); 
+        setSelectedGender(''); 
+    }
+    if (editingStudent) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(editingStudent.classId || ''); 
+        setSelectedGender(editingStudent.gender || ''); 
     }
   }, [isAddOpen, editingStudent]);
 
-  // --- 1. FETCH LOGIC (Direct Fetch) ---
-  const fetchData = useCallback(async () => {
-    if (!user || !firestore) return;
+
+  // --- 1. DIRECT DATA FETCH (The Stable Fix) ---
+  const loadData = useCallback(async () => {
+    if (isUserLoading) return;
+    
+    if (!user || !firestore) {
+        setIsLoading(false);
+        setStatusMsg("Not Connected");
+        return;
+    }
 
     setIsLoading(true);
-    console.log("🔄 Fetching Students & Classes...");
+    setStatusMsg("Fetching Data...");
 
     try {
-        // Fetch Classes
+        // A. Fetch Classes
         const classSnap = await getDocs(collection(firestore, 'classes'));
-        const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name })) as Class[];
+        const classList = classSnap.docs.map(d => ({ id: d.id, name: d.data().name || "Unknown" })) as Class[];
         setClasses(classList);
 
-        // Fetch Students (No orderBy to prevent index crash)
+        // B. Fetch Students
         const studentSnap = await getDocs(collection(firestore, 'students'));
+        console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
+        
         const studentList = studentSnap.docs.map(d => ({ 
             id: d.id, 
             ...d.data() 
         })) as Student[];
-
-        console.log(`✅ Found ${studentList.length} students.`);
         setStudents(studentList);
+        
+        setStatusMsg("Ready");
     } catch (err: any) {
-        console.error("Fetch Error:", err);
+        console.error("Load Error:", err);
+        setStatusMsg("Error loading data");
         toast({ variant: 'destructive', title: "Error", description: err.message });
     } finally {
         setIsLoading(false);
     }
-  }, [user, firestore, toast]);
+  }, [user, isUserLoading, firestore, toast]);
 
   // Load on mount
   useEffect(() => {
       if (!isUserLoading && user) {
-          fetchData();
+          loadData();
       }
-  }, [isUserLoading, user, fetchData]);
+  }, [isUserLoading, user, loadData]);
 
-  // --- 2. ADD STUDENT ---
+  // --- 2. DEBUGGING TOOL (CONSOLE ONLY) ---
+  const debugDatabase = async () => {
+      console.log("--- STARTING DEBUG ---");
+      if (!firestore) {
+          alert("Firestore not initialized.");
+          return;
+      }
+      try {
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
+          
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (snapshot.empty) {
+              alert("The app connected, but the 'students' collection is empty.");
+          } else {
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
+          }
+      } catch (e: any) {
+          console.error("Debug Error:", e);
+          alert(`Read Failed: ${e.message}`);
+      }
+  };
+
+
+  // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
+  const handleForceInitialize = async () => {
+      if (!firestore) return;
+      setIsInitializing(true);
+      try {
+          // 1. Create Test Class
+          const classRef = await addDoc(collection(firestore, 'classes'), {
+              name: "JHS 1 (Test)",
+              createdAt: serverTimestamp()
+          });
+          
+          // 2. Create Test Student
+          await addDoc(collection(firestore, 'students'), {
+              firstName: "Test",
+              lastName: "Student",
+              email: `test${Date.now()}@school.com`,
+              classId: classRef.id,
+              enrollmentStatus: 'Active',
+              createdAt: serverTimestamp(),
+              uid: "test-uid-" + Date.now()
+          });
+
+          toast({ title: "Success", description: "Dummy data created. Refreshing list..." });
+          
+          // 3. Reload Data immediately
+          await loadData();
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsInitializing(false);
+      }
+  };
+
+  // --- 4. ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const values = Object.fromEntries(formData.entries()) as any;
-      const password = "password123";
+      const values = Object.fromEntries(formData.entries());
 
       try {
-          const result = await createNewUser(values.email, password, 'Student', { firstName: values.firstName, lastName: values.lastName });
+          const result = await createNewUser(values.email as string, "password123", 'Student', { 
+              firstName: values.firstName as string, 
+              lastName: values.lastName as string 
+          });
+          
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'students', result.uid), {
@@ -117,17 +210,18 @@ export default function StudentsManagementV2() {
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
-              classId: values.classId,
+              classId: selectedClassId,
+              gender: selectedGender,
               dateOfBirth: values.dateOfBirth,
-              gender: values.gender,
               address: values.address,
+              usesBusService: values.usesBusService === 'on',
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          await fetchData(); // Refresh list
+          loadData(); // Reload list manually
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -136,22 +230,29 @@ export default function StudentsManagementV2() {
       }
   };
 
-  // --- 3. UPDATE STUDENT ---
+  // --- 5. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting) return;
     setIsSubmitting(true);
-
     const formData = new FormData(e.currentTarget);
-    const values = Object.fromEntries(formData.entries()) as any;
+    const values = Object.fromEntries(formData.entries());
 
     try {
         const studentRef = doc(firestore, 'students', editingStudent.id);
-        await updateDoc(studentRef, values);
+        await updateDoc(studentRef, {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            classId: selectedClassId,
+            gender: selectedGender,
+            dateOfBirth: values.dateOfBirth,
+            address: values.address,
+            usesBusService: values.usesBusService === 'on',
+        });
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
-        await fetchData();
+        loadData(); // Reload list manually
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -159,13 +260,13 @@ export default function StudentsManagementV2() {
     }
   };
 
-  // --- 4. DELETE ---
+  // --- 6. DELETE STUDENT ---
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
-        toast({ title: "Deleted" });
-        fetchData();
+        toast({ title: "Deleted", description: "Profile removed." });
+        loadData(); // Reload list manually
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
@@ -173,8 +274,7 @@ export default function StudentsManagementV2() {
 
   // Filter Logic
   const filteredStudents = students.filter(s => 
-    ((s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    ((s.firstName || '').toLowerCase() + ' ' + (s.lastName || '').toLowerCase()).includes(searchTerm.toLowerCase()) &&
     (classFilter === 'all' || s.classId === classFilter)
   );
 
@@ -187,10 +287,12 @@ export default function StudentsManagementV2() {
                 <CardTitle className="text-2xl flex items-center gap-2">
                     <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
                 </CardTitle>
-                <CardDescription>Manage student enrollment.</CardDescription>
+                <CardDescription>
+                    Found: {students.length} | Showing: {filteredStudents.length}
+                </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={fetchData} disabled={isLoading}>
+                <Button variant="outline" onClick={loadData} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
@@ -219,9 +321,7 @@ export default function StudentsManagementV2() {
             {isLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-green-500"/></div>
             ) : filteredStudents.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                    No students found.
-                </div>
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No students found.</div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
@@ -230,6 +330,7 @@ export default function StudentsManagementV2() {
                                 <TableHead>Name</TableHead>
                                 <TableHead>Email</TableHead>
                                 <TableHead>Class</TableHead>
+                                <TableHead>Services</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -243,14 +344,13 @@ export default function StudentsManagementV2() {
                                             {classes.find(c => c.id === s.classId)?.name || s.classId || 'Unassigned'}
                                         </Badge>
                                     </TableCell>
+                                     <TableCell>
+                                        {s.usesBusService && <Bus className="h-4 w-4 text-muted-foreground" title="Uses Bus Service" />}
+                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}>
-                                                <Edit className="h-4 w-4 text-blue-600"/>
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}>
-                                                <Trash2 className="h-4 w-4 text-red-500"/>
-                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -274,12 +374,10 @@ export default function StudentsManagementV2() {
                 <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
                 <div className="space-y-2">
                     <Label>Class</Label>
-                    <Select name="classId" required>
+                    <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                            ))}
+                            {classes.map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -287,18 +385,21 @@ export default function StudentsManagementV2() {
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
                     <div className="space-y-2">
                         <Label>Gender</Label>
-                        <Select name="gender">
+                        <Select value={selectedGender} onValueChange={setSelectedGender}>
                             <SelectTrigger><SelectValue placeholder="Select"/></SelectTrigger>
                             <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                         </Select>
                     </div>
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="usesBusService" name="usesBusService" />
+                    <Label htmlFor="usesBusService">This student uses the bus service</Label>
+                </div>
                 <div className="pt-2">
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Student Account"}
                     </Button>
-                    <p className="text-xs text-center text-muted-foreground mt-2">Default password: password123</p>
                 </div>
             </form>
         </DialogContent>
@@ -317,12 +418,10 @@ export default function StudentsManagementV2() {
                      <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
                     <div className="space-y-2">
                         <Label>Class</Label>
-                        <Select name="classId" defaultValue={editingStudent.classId}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>
-                                {classes.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
+                                {classes.map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
                             </SelectContent>
                         </Select>
                     </div>
@@ -330,18 +429,20 @@ export default function StudentsManagementV2() {
                         <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
                         <div className="space-y-2">
                             <Label>Gender</Label>
-                            <Select name="gender" defaultValue={editingStudent.gender}>
-                                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                            <Select value={selectedGender} onValueChange={setSelectedGender}>
+                                <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
                                 <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
                             </Select>
                         </div>
                     </div>
                     <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
-                    <div className="pt-2">
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-                        </Button>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="editUsesBusService" name="usesBusService" defaultChecked={editingStudent.usesBusService} />
+                        <Label htmlFor="editUsesBusService">This student uses the bus service</Label>
                     </div>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                    </Button>
                 </form>
             )}
         </DialogContent>
@@ -349,3 +450,5 @@ export default function StudentsManagementV2() {
     </div>
   );
 }
+
+  

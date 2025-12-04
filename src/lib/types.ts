@@ -359,6 +359,7 @@ export type Student = {
     graduationYear?: number;
     alumniDetails?: AlumniDetails;
     transportStopId?: string;
+    usesBusService?: boolean;
 };
 
 export type Class = {
@@ -438,7 +439,7 @@ export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
 // Financial Schemas
 export const financialRecordSchema = z.object({
   studentId: z.string().min(1, "A student must be selected."),
-  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Other']),
+  type: z.enum(['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other']),
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
@@ -446,7 +447,7 @@ export const financialRecordSchema = z.object({
 
 export const bulkBillingSchema = z.object({
   classId: z.string().min(1, "A class must be selected."),
-  type: z.enum(['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Other']),
+  type: z.enum(['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other']),
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
@@ -468,7 +469,7 @@ export type FinancialRecord = {
     studentId: string;
     studentName: string;
     classId: string;
-    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Canteen Fee' | 'Other';
+    type: 'Tuition Fee' | 'Library Fine' | 'Lab Fee' | 'Sports Fee' | 'Canteen Fee' | 'Transport Fee' | 'Other';
     description: string;
     billedAmount: number;
     amountPaid: number;
@@ -906,3 +907,5 @@ export interface LearningMaterial {
 }
 
     
+
+  
