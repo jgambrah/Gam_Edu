@@ -11,7 +11,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -29,6 +28,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
 import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
+import { Label } from '@/components/ui/label';
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -223,27 +223,26 @@ function RetrospectiveBilling() {
             for (const attendanceDoc of recordsToProcess) {
                 const record = attendanceDoc.data();
                 const recordDate = record.date.toDate();
-                const year = getYear(recordDate);
-                const month = getMonth(recordDate) + 1;
-                const period = `${year}-${String(month).padStart(2, '0')}`;
 
                 if (canteenRate > 0) {
-                    const canteenRecordId = `canteen-${record.studentId}-${period}`;
+                    const canteenRecordId = `canteen-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                     billingBatch.set(financialRecordRef, {
-                        billedAmount: increment(canteenRate),
+                        billedAmount: canteenRate,
                         studentId: record.studentId, studentName: record.studentName, classId: record.classId,
-                        type: 'Canteen Fee', description: `Canteen Bill for ${period}`, status: 'Unpaid', dueDate: new Date(year, month, 0),
+                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
+                        createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
                 }
 
                 if (transportRate > 0 && record.usesBusService) {
-                    const transportRecordId = `transport-${record.studentId}-${period}`;
+                     const transportRecordId = `transport-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                     billingBatch.set(financialRecordRef, {
-                        billedAmount: increment(transportRate),
+                        billedAmount: transportRate,
                         studentId: record.studentId, studentName: record.studentName, classId: record.classId,
-                        type: 'Transport Fee', description: `Transport Bill for ${period}`, status: 'Unpaid', dueDate: new Date(year, month, 0),
+                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
+                        createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
                 }
             }
@@ -267,7 +266,7 @@ function RetrospectiveBilling() {
             </CardHeader>
             <CardContent className="flex items-end gap-4">
                  <div className="flex-1">
-                    <FormLabel>Date Range</FormLabel>
+                    <Label>Date Range</Label>
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button
@@ -310,4 +309,3 @@ export default function FinancialSettingsPage() {
     </div>
   );
 }
-
