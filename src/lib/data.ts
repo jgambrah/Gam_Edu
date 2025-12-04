@@ -1,5 +1,4 @@
 
-
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -267,7 +266,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/operations',
     title: 'Operations',
     icon: Boxes,
-    roles: ['Director', 'Administrator', 'Librarian', 'Transport Staff', 'Student', 'Teacher'],
+    roles: ['Director', 'Administrator', 'Librarian', 'Transport Staff', 'Student', 'Teacher', 'Accountant'],
      subItems: [
         {
             path: '/dashboard/library',
@@ -279,7 +278,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/inventory',
             title: 'Inventory',
             icon: Boxes,
-            roles: ['Administrator', 'Director'],
+            roles: ['Administrator', 'Director', 'Accountant'],
         },
         {
             path: '/dashboard/transport',
