@@ -407,7 +407,15 @@ export default function AcademicsPageContent() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
 
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(useMemoFirebase(() => firestore && user ? collection(firestore, 'classes') : null, [firestore, user]));
+  const classesQuery = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    if (role === 'Teacher') {
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    }
+    return collection(firestore, 'classes');
+  }, [firestore, user, role]);
+
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(useMemoFirebase(() => firestore && user ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]));
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]));
   const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(useMemoFirebase(() => firestore && user ? collection(firestore, 'timetables') : null, [firestore, user]));
@@ -442,7 +450,7 @@ export default function AcademicsPageContent() {
           <div>
             <CardTitle>Class Management</CardTitle>
             <CardDescription>
-              View, create, and manage academic classes. Click on a class to see more details.
+              {role === 'Teacher' ? 'Showing classes assigned to you.' : 'View, create, and manage academic classes.'}
             </CardDescription>
           </div>
           {canManageClasses && (
@@ -503,7 +511,7 @@ export default function AcademicsPageContent() {
             </div>
           ) : (
             <div className="text-center py-10">
-              <p className="text-muted-foreground">No classes have been created yet.</p>
+              <p className="text-muted-foreground">{role === 'Teacher' ? 'You are not assigned to any classes.' : 'No classes found.'}</p>
               {canManageClasses && <p className='text-sm text-muted-foreground'>Click "Create Class" to get started.</p>}
             </div>
           )}
@@ -512,3 +520,5 @@ export default function AcademicsPageContent() {
     </div>
   );
 }
+
+    
