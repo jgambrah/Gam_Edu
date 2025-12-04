@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
+import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment, getDoc } from 'firebase/firestore';
 import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw } from 'lucide-react';
 import { PayrollSettings, payrollSettingsFormSchema } from '@/lib/types';
 import { useRole } from '@/context/role-context';
@@ -28,7 +28,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
 import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
-import { Label as PlainLabel } from '@/components/ui/label'; // Renamed to avoid conflict
+import { Label as PlainLabel } from '@/components/ui/label';
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -309,4 +309,3 @@ export default function FinancialSettingsPage() {
     </div>
   );
 }
-
