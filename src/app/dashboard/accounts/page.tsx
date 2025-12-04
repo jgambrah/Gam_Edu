@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -713,7 +712,7 @@ export default function AccountsPage() {
                 <div className="space-y-4">
                     {studentFinancials.map(({ student, records, balance, hasOverdue }) => (
                          <Collapsible key={student.uid} className="border rounded-lg">
-                            <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center">
+                            <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
                                 <div className="flex items-center gap-3">
                                     <Avatar>
                                         <AvatarFallback>{student.firstName.charAt(0)}{student.lastName.charAt(0)}</AvatarFallback>

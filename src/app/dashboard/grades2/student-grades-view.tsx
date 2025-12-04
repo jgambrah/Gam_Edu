@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -5,14 +6,15 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { Assessment } from '@/lib/types';
+import { Assessment, FinancialRecord } from '@/lib/types';
 import { collection, query, where } from 'firebase/firestore';
 import { useMemo } from 'react';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
-export function StudentGradesView({ student, term, year }: { student: Student, term: string, year: string }) {
+export function StudentGradesView({ student, term, year, financialRecords }: { student: Student, term: string, year: string, financialRecords: FinancialRecord[] }) {
     const firestore = useFirestore();
 
     const assessmentsQuery = useMemoFirebase(

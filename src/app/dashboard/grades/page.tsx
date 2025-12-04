@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense, useState, useMemo } from 'react';
@@ -15,10 +16,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { MOCK_SUBJECTS, MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { Loader2, Send, CheckCircle, ShieldCheck, Printer } from 'lucide-react';
+import { Loader2, Send, CheckCircle, ShieldCheck, Printer, TrendingUp } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StudentReportCard } from './student-report-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Link from 'next/link';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -177,10 +179,17 @@ function ReportCardManager() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Report Card Management</CardTitle>
-          <CardDescription>Select a class and term to manage student report card comments and approvals.</CardDescription>
-        </CardHeader>
+          <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                    <CardTitle>Report Card Management</CardTitle>
+                    <CardDescription>Select a class and term to manage student report card comments and approvals.</CardDescription>
+                </div>
+                <Button variant="outline" asChild>
+                    <Link href="/dashboard/grades2"><TrendingUp className="mr-2 h-4 w-4" /> Go to New Gradebook</Link>
+                </Button>
+              </div>
+          </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
             <SelectTrigger><SelectValue /></SelectTrigger>

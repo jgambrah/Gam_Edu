@@ -443,6 +443,8 @@ export const financialRecordSchema = z.object({
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
+  academicYear: z.string().optional(),
+  term: z.string().optional(),
 });
 
 export const bulkBillingSchema = z.object({
@@ -478,6 +480,8 @@ export type FinancialRecord = {
     status: 'Paid' | 'Unpaid' | 'Overdue';
     dueDate: any;
     createdAt: any;
+    academicYear?: string;
+    term?: string;
 };
 
 export type Staff = {
@@ -938,5 +942,3 @@ export type TillTransaction = {
     description: string; // For POS, "Sale of: Book"
 };
     
-
-  

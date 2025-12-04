@@ -12,9 +12,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, TrendingUp, User, PlusCircle } from 'lucide-react';
 import { StudentGradesView } from './student-grades-view';
-import { Assessment } from '@/lib/types';
+import { Assessment, FinancialRecord } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { format } from 'date-fns';
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -77,6 +79,8 @@ export default function Gradebook2Manager() {
   const firestore = useFirestore();
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
+  const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
+  const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
   
   const teacherClassesQuery = useMemoFirebase(
     () => user && (role === 'Administrator' || role === 'Director') ? collection(firestore, 'classes') : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')),
@@ -94,12 +98,55 @@ export default function Gradebook2Manager() {
     if (!selectedClassId) return null;
     return query(
         collection(firestore, 'assessments'),
-        where('classId', '==', selectedClassId)
+        where('classId', '==', selectedClassId),
+        where('academicYear', '==', selectedYear),
+        where('term', '==', selectedTerm)
     );
-  }, [firestore, selectedClassId]);
+  }, [firestore, selectedClassId, selectedYear, selectedTerm]);
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-  const isLoading = isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments));
+  const financialRecordsQuery = useMemoFirebase(() => {
+    if (!selectedClassId) return null;
+    return query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId));
+  }, [firestore, selectedClassId]);
+
+  const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
+
+  const isLoading = isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
+
+  const studentFinancials = useMemo(() => {
+    if (!students || !financialRecords) return {};
+    const financials: Record<string, { openingBalance: number, currentCharges: number, totalPaid: number, balance: number }> = {};
+
+    const termIndex = MOCK_TERMS.indexOf(selectedTerm);
+
+    students.forEach(student => {
+        const studentRecords = financialRecords.filter(r => r.studentId === student.uid);
+        
+        let openingBalance = 0;
+        let currentCharges = 0;
+        let totalPaid = 0;
+
+        studentRecords.forEach(record => {
+            const recordTermIndex = MOCK_TERMS.indexOf(record.term || '');
+            
+            if (record.academicYear < selectedYear || (record.academicYear === selectedYear && recordTermIndex < termIndex)) {
+                openingBalance += record.billedAmount - (record.amountPaid + (record.waiverAmount || 0));
+            } else if (record.academicYear === selectedYear && recordTermIndex === termIndex) {
+                currentCharges += record.billedAmount;
+                totalPaid += record.amountPaid + (record.waiverAmount || 0);
+            }
+        });
+
+        financials[student.uid] = {
+            openingBalance,
+            currentCharges,
+            totalPaid,
+            balance: openingBalance + currentCharges - totalPaid
+        };
+    });
+    return financials;
+  }, [students, financialRecords, selectedYear, selectedTerm]);
 
   const toggleForm = (formName: string) => {
     setActiveForm(activeForm === formName ? null : formName);
@@ -112,7 +159,7 @@ export default function Gradebook2Manager() {
             <div className="flex justify-between items-center">
                 <div>
                     <CardTitle className="flex items-center gap-2"><TrendingUp /> Gradebook</CardTitle>
-                    <CardDescription>Select a class to view student grades and performance.</CardDescription>
+                    <CardDescription>Select a class and term to view student performance and financial status.</CardDescription>
                 </div>
                 <Button variant={activeForm === 'grade' ? 'default' : 'outline'} onClick={() => toggleForm('grade')} disabled={!selectedClassId}>
                     <PlusCircle className="mr-2 h-4 w-4" />
@@ -120,9 +167,17 @@ export default function Gradebook2Manager() {
                 </Button>
             </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+          </Select>
+          <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+          </Select>
           <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
-            <SelectTrigger className="w-full md:w-1/3"><SelectValue placeholder="Select a class" /></SelectTrigger>
+            <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
             <SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
           </Select>
         </CardContent>
@@ -133,7 +188,7 @@ export default function Gradebook2Manager() {
       {selectedClassId && (
         <Card>
             <CardHeader>
-                <CardTitle>Student Grades</CardTitle>
+                <CardTitle>Student Overview for {selectedYear} - {selectedTerm}</CardTitle>
             </CardHeader>
             <CardContent>
                 {isLoading ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin" /></div> :
@@ -141,18 +196,56 @@ export default function Gradebook2Manager() {
                 <Accordion type="single" collapsible>
                     {students.map(student => {
                         const { finalGrade, percentage } = calculateStudentGrade(student.uid, assessments);
+                        const financials = studentFinancials[student.uid] || { openingBalance: 0, balance: 0 };
                         return (
                             <AccordionItem value={student.uid} key={student.uid}>
                                 <AccordionTrigger>
                                     <div className='flex justify-between items-center w-full pr-4'>
                                         <span className="flex items-center gap-2"><User className="h-4 w-4"/>{student.firstName} {student.lastName}</span>
-                                        <Badge variant={percentage > 0 ? "default" : "secondary"}>
-                                            Overall: {finalGrade} ({percentage}%)
-                                        </Badge>
+                                        <div className="flex items-center gap-4">
+                                            <Badge variant={percentage > 0 ? "default" : "secondary"}>
+                                                Academics: {finalGrade} ({percentage}%)
+                                            </Badge>
+                                            <Badge variant={financials.balance > 0 ? "destructive" : "outline"}>
+                                                Balance: GH₵{financials.balance.toFixed(2)}
+                                            </Badge>
+                                        </div>
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent>
-                                    <StudentGradesDetail student={student} assessments={assessments}/>
+                                <AccordionContent className="p-2">
+                                    <Tabs defaultValue="academics">
+                                        <TabsList>
+                                            <TabsTrigger value="academics">Academics</TabsTrigger>
+                                            <TabsTrigger value="financials">Financials</TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="academics">
+                                            <StudentGradesDetail student={student} assessments={assessments}/>
+                                        </TabsContent>
+                                        <TabsContent value="financials">
+                                            <div className="p-4 bg-muted/50 rounded-md">
+                                                <Table>
+                                                    <TableBody>
+                                                        <TableRow>
+                                                            <TableCell className="font-semibold">Balance Brought Forward</TableCell>
+                                                            <TableCell className="text-right">GH₵{financials.openingBalance.toFixed(2)}</TableCell>
+                                                        </TableRow>
+                                                        <TableRow>
+                                                            <TableCell className="font-semibold">Charges for this Term</TableCell>
+                                                            <TableCell className="text-right">GH₵{financials.currentCharges.toFixed(2)}</TableCell>
+                                                        </TableRow>
+                                                        <TableRow>
+                                                            <TableCell className="font-semibold">Payments this Term</TableCell>
+                                                            <TableCell className="text-right text-green-600">GH₵{financials.totalPaid.toFixed(2)}</TableCell>
+                                                        </TableRow>
+                                                        <TableRow className="font-bold text-lg border-t-2">
+                                                            <TableCell>Outstanding Balance</TableCell>
+                                                            <TableCell className="text-right">GH₵{financials.balance.toFixed(2)}</TableCell>
+                                                        </TableRow>
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                        </TabsContent>
+                                    </Tabs>
                                 </AccordionContent>
                             </AccordionItem>
                         )
@@ -160,7 +253,7 @@ export default function Gradebook2Manager() {
                 </Accordion>
                 ) : (
                     <p className="text-muted-foreground text-center py-8">
-                      {isLoadingStudents ? 'Loading students...' : 'No students or assessments found for this class.'}
+                      {isLoadingStudents ? 'Loading students...' : 'No students or records found for this class and term.'}
                     </p>
                 )}
             </CardContent>

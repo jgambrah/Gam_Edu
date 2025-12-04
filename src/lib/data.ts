@@ -148,9 +148,9 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/grades2',
-            title: 'Gradebook 2',
+            title: 'Gradebook',
             icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
         },
         {
             path: '/dashboard/report-cards',
