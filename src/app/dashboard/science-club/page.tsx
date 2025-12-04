@@ -217,10 +217,9 @@ function FactOfTheDay() {
     const [isPosting, setIsPosting] = useState(false);
     const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-    // FIX 2: Simplified Query (No orderBy) to prevent index crash
-    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
-    const latestFact = facts?.[0]; // Just take the first one for now
+    const latestFact = facts?.[0];
 
     const handlePostFact = async () => {
         if (!factText.trim() || !user) return;
@@ -287,21 +286,15 @@ export default function ScienceClubPage() {
   
   const studentClassId = studentData?.[0]?.classId;
   
-  // FIX 3: Robust Query Logic (Copied from Maths Club)
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    
-    // Teachers see everything
     if (isTeacherOrAdmin) {
       return query(collection(firestore, 'science_problems'));
     }
-    
-    // Students see only their class content
     if (role === 'Student') {
         if (studentClassId) {
              return query(collection(firestore, 'science_problems'), where('classId', '==', studentClassId));
         }
-        // If classId is missing, return null to avoid query error
         return null;
     }
     return null;
@@ -350,14 +343,13 @@ export default function ScienceClubPage() {
                 <CardDescription>Select a topic and difficulty to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {/* FIX 4: Better Loading State Logic */}
                 {(isLoadingProblems || (role === 'Student' && isLoadingStudent) || isUserLoading) ? (
-                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div>
+                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
                 ) : 
                 (role === 'Student' && !studentClassId) ? (
-                    <div className="text-center">
-                        <p className="text-muted-foreground">You are not assigned to a class. Please contact an administrator.</p>
-                        <p className="text-xs text-red-500 mt-1">Debug: {user?.uid}</p>
+                    <div className="text-center space-y-2">
+                        <p className="text-muted-foreground">We could not find your class assignment.</p>
+                        <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
                     </div>
                 ) : 
                 (
