@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useState, useMemo, useEffect } from 'react';
+import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -18,7 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -33,8 +33,63 @@ import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymen
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
 
-// --- Forms ---
+// --- Canteen Rate Settings Component ---
+function CanteenSettings() {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [dailyRate, setDailyRate] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
 
+    const settingsRef = useMemoFirebase(() => doc(firestore, 'schoolSettings', 'canteen'), [firestore]);
+    const { data: canteenSettings, isLoading } = useDoc(settingsRef);
+
+    useEffect(() => {
+        if (canteenSettings?.dailyRate) {
+            setDailyRate(canteenSettings.dailyRate.toString());
+        }
+    }, [canteenSettings]);
+
+    const handleSave = async () => {
+        if (!firestore) return;
+        const rate = parseFloat(dailyRate);
+        if (isNaN(rate) || rate < 0) {
+            toast({ variant: 'destructive', title: 'Invalid Rate', description: 'Please enter a valid positive number for the daily rate.' });
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await setDoc(settingsRef, { dailyRate: rate }, { merge: true });
+            toast({ title: 'Success', description: 'Canteen daily rate has been updated.' });
+        } catch (error) {
+            console.error('Error saving canteen rate:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not save canteen settings.' });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Utensils /> Canteen Settings</CardTitle>
+                <CardDescription>Set the daily fee for canteen usage, which will be billed automatically based on attendance.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-end gap-4">
+                <div className="flex-grow space-y-2">
+                    <FormLabel htmlFor="canteen-rate">Daily Canteen Fee</FormLabel>
+                    <Input id="canteen-rate" type="number" value={dailyRate} onChange={(e) => setDailyRate(e.target.value)} placeholder="e.g., 5.00" disabled={isLoading} />
+                </div>
+                <Button onClick={handleSave} disabled={isSaving || isLoading}>
+                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Rate
+                </Button>
+            </CardContent>
+        </Card>
+    );
+}
+
+// --- Forms ---
 function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (open: boolean) => void; students: Student[], onRecordAdded: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -79,7 +134,7 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
             <FormItem><FormLabel>Student</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a student"/></SelectTrigger></FormControl><SelectContent>{students.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
         )}/>
         <FormField control={form.control} name="type" render={({ field }) => (
-            <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+            <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
         )}/>
         <FormField control={form.control} name="description" render={({ field }) => (
             <FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -153,7 +208,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
                 <FormItem><FormLabel>Class</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl><SelectContent>{classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="type" render={({ field }) => (
-                <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem><FormLabel>Description</FormLabel><FormControl><Input placeholder="e.g., Spring Term Tuition" {...field} /></FormControl><FormMessage /></FormItem>
@@ -334,7 +389,7 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField control={form.control} name="type" render={({ field }) => (
-                        <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                     )}/>
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -357,7 +412,6 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
 }
 
 // --- Main Page ---
-
 export default function AccountsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
@@ -416,28 +470,32 @@ export default function AccountsPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Student Billing</CardTitle>
-              <CardDescription>Create, manage, and track all student financial records.</CardDescription>
+       <div className="grid lg:grid-cols-2 gap-6">
+        <Card>
+            <CardHeader>
+            <div className="flex justify-between items-center">
+                <div>
+                <CardTitle>Student Billing</CardTitle>
+                <CardDescription>Create, manage, and track all student financial records.</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add Single Bill
+                </Button>
+                <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
+                    <FileCog className="mr-2 h-4 w-4" /> Add Bulk Bill
+                </Button>
+                </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add Single Bill
-              </Button>
-              <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
-                <FileCog className="mr-2 h-4 w-4" /> Add Bulk Bill
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-            {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
-            {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent>
+                {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
+                {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
+            </CardContent>
+        </Card>
+        <CanteenSettings />
+      </div>
+
       <Card>
         <CardHeader>
             <div className="flex gap-4">

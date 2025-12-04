@@ -24,11 +24,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Card, CardContent, CardDescription, CardHeader, CardTitle }from '@/components/ui/card';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, startOfDay } from 'date-fns';
+import { format, startOfDay, getYear, getMonth } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, FirestorePermissionError, errorEmitter } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp, runTransaction } from 'firebase/firestore';
 import { attendanceRecordSchema, type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
@@ -145,33 +145,79 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         if (!firestore) return;
         setIsLoading(true);
         
-        const batch = writeBatch(firestore);
+        const attendanceBatch = writeBatch(firestore);
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
             const { studentName, id, ...dataToSave } = record;
-            batch.set(recordRef, dataToSave, { merge: true });
+            attendanceBatch.set(recordRef, dataToSave, { merge: true });
         });
 
-        batch.commit()
-            .then(() => {
-                toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
-                data.records.forEach(record => {
-                    if (record.status === 'Absent' || record.status === 'Late') {
-                        console.log(`Placeholder: Sending notification to parent of ${record.studentName} for being ${record.status}.`);
-                    }
-                });
-            })
-            .catch(serverError => {
-                const permissionError = new FirestorePermissionError({
-                    path: 'attendance', // The batch writes to the 'attendance' collection
-                    operation: 'write',
-                    requestResourceData: data.records,
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsLoading(false);
+        try {
+            await attendanceBatch.commit();
+            toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
+
+            // --- CANTEEN BILLING LOGIC ---
+            const canteenSettingsRef = doc(firestore, 'schoolSettings', 'canteen');
+            const canteenSettingsSnap = await getDoc(canteenSettingsRef);
+
+            if (canteenSettingsSnap.exists()) {
+                const canteenRate = canteenSettingsSnap.data().dailyRate;
+                if (canteenRate > 0) {
+                    const billingPromises = data.records
+                        .filter(r => r.status === 'Present' || r.status === 'Late')
+                        .map(async (record) => {
+                            const year = getYear(record.date);
+                            const month = getMonth(record.date) + 1; // 1-12
+                            const period = `${year}-${String(month).padStart(2, '0')}`;
+                            const canteenRecordId = `canteen-${record.studentId}-${period}`;
+                            const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                            
+                            try {
+                                await runTransaction(firestore, async (transaction) => {
+                                    const finDoc = await transaction.get(financialRecordRef);
+                                    if (!finDoc.exists()) {
+                                        transaction.set(financialRecordRef, {
+                                            studentId: record.studentId,
+                                            studentName: record.studentName,
+                                            classId: record.classId,
+                                            type: 'Canteen Fee',
+                                            description: `Canteen Bill for ${period}`,
+                                            billedAmount: canteenRate,
+                                            amountPaid: 0,
+                                            status: 'Unpaid',
+                                            dueDate: new Date(year, month, 0), // Last day of month
+                                            createdAt: serverTimestamp(),
+                                        });
+                                    } else {
+                                        const newBilledAmount = (finDoc.data().billedAmount || 0) + canteenRate;
+                                        transaction.update(financialRecordRef, { billedAmount: newBilledAmount });
+                                    }
+                                });
+                            } catch (e) {
+                                console.error(`Failed to bill canteen fee for ${record.studentName}:`, e);
+                            }
+                        });
+                    
+                    await Promise.all(billingPromises);
+                    toast({ title: 'Canteen Billed', description: `Daily canteen fees have been applied.` });
+                }
+            }
+             data.records.forEach(record => {
+                if (record.status === 'Absent' || record.status === 'Late') {
+                    console.log(`Placeholder: Sending notification to parent of ${record.studentName} for being ${record.status}.`);
+                }
             });
+
+        } catch (serverError) {
+             const permissionError = new FirestorePermissionError({
+                path: 'attendance', 
+                operation: 'write',
+                requestResourceData: data.records,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
