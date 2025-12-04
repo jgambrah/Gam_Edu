@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 // All imports consolidated here.
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Database, Wand2, Sparkles, XCircle, PlusCircle
+  Trash2, Lightbulb, CheckCircle2, Database, Wand2, PlusCircle 
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -104,18 +104,11 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
   const firestore = useFirestore();
-  // FIX: Removed `orderBy` from the query to prevent internal assertion failure.
   const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'science_leaderboard')) : null,
+    () => firestore ? query(collection(firestore, 'science_leaderboard_v4'), orderBy('total_correct_answers', 'desc')) : null,
     [firestore]
   );
   const { data: leaderboard, isLoading } = useCollection<ScienceLeaderboardEntry>(leaderboardQuery);
-
-  // Perform sorting on the client-side after data is fetched.
-  const sortedLeaderboard = useMemo(() => {
-    if (!leaderboard) return [];
-    return leaderboard.sort((a, b) => (b.total_correct_answers || 0) - (a.total_correct_answers || 0));
-  }, [leaderboard]);
 
   if (isLoading) return <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>;
 
@@ -129,14 +122,14 @@ function LeaderboardV2() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {sortedLeaderboard.map((entry, index) => (
+        {leaderboard?.map((entry, index) => (
           <TableRow key={entry.userId || index}>
             <TableCell className="font-bold">#{index + 1}</TableCell>
             <TableCell>{entry.userName || "Unknown Student"}</TableCell>
             <TableCell className="text-right">{entry.total_correct_answers}</TableCell>
           </TableRow>
         ))}
-        {(!sortedLeaderboard || sortedLeaderboard.length === 0) && (
+        {(!leaderboard || leaderboard.length === 0) && (
             <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No records yet.</TableCell></TableRow>
         )}
       </TableBody>
@@ -172,7 +165,7 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
         }
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'science_problems'), {
+            await addDoc(collection(firestore, 'science_problems_v4'), {
                 topic, difficulty, classId, question_text: questionText, options, correct_answer: correctAnswer,
                 createdAt: serverTimestamp()
             });
@@ -250,7 +243,6 @@ export default function ScienceClubPageV2() {
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  // --- NEW: AI State in Main Component ---
   const [isAiFormOpen, setIsAiFormOpen] = useState(false);
   
   // Filters
@@ -277,7 +269,7 @@ export default function ScienceClubPageV2() {
   // 3. Get Problems (SAFE QUERY)
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'science_problems'));
+    return query(collection(firestore, 'science_problems_v4'));
   }, [firestore]);
 
   const { data: rawProblems, isLoading: isProblemsLoading } = useCollection<ScienceProblem>(problemsQuery);
@@ -286,13 +278,10 @@ export default function ScienceClubPageV2() {
   const filteredProblems = useMemo(() => {
     if (!rawProblems) return [];
     
-    // Filter for Students
     let list = rawProblems;
     if (role === 'Student') {
         list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
     }
-
-    // Filter by UI Selections
     if (selectedTopic) list = list.filter(p => p.topic === selectedTopic);
     if (selectedDifficulty) list = list.filter(p => p.difficulty === selectedDifficulty);
 
@@ -304,18 +293,17 @@ export default function ScienceClubPageV2() {
       return Array.from(new Set(rawProblems.map(p => p.topic))).sort();
   }, [rawProblems]);
 
-  // Loading State Calculation
   const isLoading = isUserLoading || isRoleLoading || isProblemsLoading || (role === 'Student' && isStudentLoading);
 
   const handleStart = () => {
       if (!selectedTopic || !selectedDifficulty) return;
-      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
+      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}&version=4`);
   };
 
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this problem?")) return;
       try {
-          await deleteDoc(doc(firestore, 'science_problems', id));
+          await deleteDoc(doc(firestore, 'science_problems_v4', id));
           toast({ title: "Deleted" });
       } catch(e) {
           toast({ variant: 'destructive', title: "Error", description: "Delete failed" });
@@ -328,10 +316,10 @@ export default function ScienceClubPageV2() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FlaskConical className="h-6 w-6 text-teal-600"/> 
-            Science Club 2.0
+            Science Club 4.0 (New)
           </CardTitle>
           <CardDescription>
-            Explore the universe through science practice and competition.
+            A fresh start to explore the universe through science practice and competition.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -355,7 +343,6 @@ export default function ScienceClubPageV2() {
                     </div>
                     {isStaff && (
                         <div className="flex gap-2">
-                            {/* --- NEW: AI Button --- */}
                             <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
                                 <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
                                 <DialogContent className="max-w-3xl">
@@ -363,7 +350,6 @@ export default function ScienceClubPageV2() {
                                         <DialogTitle>AI Problem Generator</DialogTitle>
                                         <DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription>
                                     </DialogHeader>
-                                    {/* Use the existing AiProblemGenerator but set subject to Science */}
                                     <AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} />
                                 </DialogContent>
                             </Dialog>
@@ -376,7 +362,7 @@ export default function ScienceClubPageV2() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {/* Loading State */}
-                    {(isLoading) ? (
+                    {isLoading ? (
                         <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div>
                     ) : 
                     (role === 'Student' && !studentClassId) ? (
@@ -458,7 +444,7 @@ export default function ScienceClubPageV2() {
         <TabsContent value="leaderboard">
             <Card>
                 <CardHeader>
-                    <CardTitle>Science Leaderboard</CardTitle>
+                    <CardTitle>Science Leaderboard 4.0</CardTitle>
                     <CardDescription>See how you rank against other students in science.</CardDescription>
                 </CardHeader>
                 <CardContent>
