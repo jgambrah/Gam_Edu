@@ -19,10 +19,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, doc, setDoc } from 'firebase/firestore';
-import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus } from 'lucide-react';
+import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
+import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw } from 'lucide-react';
 import { PayrollSettings, payrollSettingsFormSchema } from '@/lib/types';
 import { useRole } from '@/context/role-context';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { DateRange } from 'react-day-picker';
+import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -169,6 +175,122 @@ function TransportSettings() {
     );
 }
 
+// --- Retrospective Billing Component ---
+function RetrospectiveBilling() {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(),
+        to: new Date(),
+    });
+
+    const handleReprocess = async () => {
+        if (!firestore || !dateRange?.from) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range.' });
+            return;
+        }
+        setIsProcessing(true);
+        toast({ title: "Reprocessing billing...", description: `Scanning attendance from ${format(dateRange.from, 'PPP')} to ${dateRange.to ? format(dateRange.to, 'PPP') : format(dateRange.from, 'PPP')}`});
+
+        try {
+            const start = startOfDay(dateRange.from);
+            const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+
+            const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
+            const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
+            const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
+            const transportRate = transportSettingsSnap.data()?.dailyRate || 0;
+            
+            const attendanceQuery = query(
+                collection(firestore, 'attendance'),
+                where('date', '>=', Timestamp.fromDate(start)),
+                where('date', '<=', Timestamp.fromDate(end)),
+                where('status', 'in', ['Present', 'Late'])
+            );
+
+            const attendanceSnapshot = await getDocs(attendanceQuery);
+            const recordsToProcess = attendanceSnapshot.docs;
+
+            if(recordsToProcess.length === 0) {
+                toast({ title: 'Nothing to Process', description: 'No "Present" or "Late" attendance records found in the selected range.' });
+                setIsProcessing(false);
+                return;
+            }
+            
+            const billingBatch = writeBatch(firestore);
+            
+            for (const attendanceDoc of recordsToProcess) {
+                const record = attendanceDoc.data();
+                const recordDate = record.date.toDate();
+
+                if (canteenRate > 0) {
+                    const canteenRecordId = `canteen-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                    billingBatch.set(financialRecordRef, {
+                        billedAmount: canteenRate,
+                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
+                        createdAt: serverTimestamp(), amountPaid: 0,
+                    }, { merge: true });
+                }
+
+                if (transportRate > 0 && record.usesBusService) {
+                     const transportRecordId = `transport-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                    billingBatch.set(financialRecordRef, {
+                        billedAmount: transportRate,
+                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
+                        createdAt: serverTimestamp(), amountPaid: 0,
+                    }, { merge: true });
+                }
+            }
+
+            await billingBatch.commit();
+            toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
+
+        } catch (error) {
+            console.error('Error reprocessing billing:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to reprocess billing.' });
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
+                <CardDescription>Recalculate and apply fees for a past date range. Use this if rates have changed or if billing failed previously.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-end gap-4">
+                 <div className="flex-1">
+                    <FormLabel>Date Range</FormLabel>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date range</span>)}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
+                        </PopoverContent>
+                    </Popover>
+                 </div>
+                 <Button onClick={handleReprocess} disabled={isProcessing}>
+                    {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                    Reprocess
+                </Button>
+            </CardContent>
+        </Card>
+    );
+}
+
 export default function FinancialSettingsPage() {
   const { role } = useRole();
   
@@ -183,6 +305,7 @@ export default function FinancialSettingsPage() {
             <CanteenSettings />
             <TransportSettings />
         </div>
+        <RetrospectiveBilling />
     </div>
   );
 }

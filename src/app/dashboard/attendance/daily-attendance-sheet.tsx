@@ -137,95 +137,105 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         }
     }, [selectedClassId, selectedDate, firestore, toast, replace, propClassId]);
 
-    // Automatically load students if classId is passed as a prop or when date changes for a pre-selected class
     useEffect(() => {
         if (selectedClassId) {
             handleLoadStudents();
         }
     }, [selectedClassId, selectedDate, handleLoadStudents]);
     
+    // --- UPDATED SUBMIT FUNCTION ---
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore) return;
         setIsLoading(true);
         
-        const attendanceBatch = writeBatch(firestore);
+        const batch = writeBatch(firestore);
+        
+        // 1. Prepare Attendance Records
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            const { studentName, id, ...dataToSave } = record as any; // Exclude client-side fields
-            attendanceBatch.set(recordRef, dataToSave, { merge: true });
+            const { studentName, id, ...dataToSave } = record as any; 
+            batch.set(recordRef, dataToSave, { merge: true });
         });
 
         try {
-            await attendanceBatch.commit();
-            toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
+            // 2. Commit Attendance FIRST (To ensure it saves even if billing fails)
+            await batch.commit();
+            toast({ title: 'Success', description: 'Attendance saved.' });
 
-            // --- CANTEEN & TRANSPORT BILLING LOGIC (ROBUST FIX V3) ---
-            const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
-            const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
-            const canteenRate = canteenSettingsSnap.exists() ? canteenSettingsSnap.data().dailyRate : 0;
-            const transportRate = transportSettingsSnap.exists() ? transportSettingsSnap.data().dailyRate : 0;
-            
+            // 3. Fetch Rates (Safe Check)
+            let canteenRate = 0;
+            let transportRate = 0;
+
+            try {
+                const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
+                if (canteenSnap.exists()) canteenRate = Number(canteenSnap.data().dailyRate) || 0;
+
+                const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
+                if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
+            } catch (e) {
+                console.warn("Could not load settings, using 0 rates:", e);
+            }
+
+            console.log("Billing Rates:", { canteenRate, transportRate });
+
+            // 4. Process Billing if rates exist
             const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
-
+            
             if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
-                toast({ title: 'Processing Daily Fees...', description: 'Applying canteen and transport charges.' });
-            
                 const billingBatch = writeBatch(firestore);
-                const year = getYear(selectedDate);
-                const month = getMonth(selectedDate) + 1;
-                const period = `${year}-${String(month).padStart(2, '0')}`;
-            
+                let billsCount = 0;
+
                 for (const record of presentStudents) {
-                     // Canteen Billing
+                    // Canteen Bill
                     if (canteenRate > 0) {
-                        const canteenRecordId = `canteen-${record.studentId}-${period}`;
+                        const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
                         const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                        
                         billingBatch.set(financialRecordRef, {
-                            billedAmount: increment(canteenRate),
+                            billedAmount: canteenRate, // Use simple amount, not increment, since IDs are unique per day
                             studentId: record.studentId,
-                            studentName: record.studentName,
+                            studentName: (record as any).studentName,
                             classId: record.classId,
                             type: 'Canteen Fee',
-                            description: `Canteen Bill for ${period}`,
+                            description: `Lunch for ${format(selectedDate, 'PPP')}`,
                             status: 'Unpaid',
-                            dueDate: new Date(year, month, 0), // Last day of the month
-                        }, { merge: true });
+                            dueDate: selectedDate,
+                            createdAt: serverTimestamp(),
+                            amountPaid: 0 // Explicitly set amountPaid to 0
+                        }, { merge: true }); // Merge ensures we don't double-charge if attendance is re-submitted
+                        billsCount++;
                     }
 
-                    // Transport Billing
-                    if (transportRate > 0 && record.usesBusService) {
-                        const transportRecordId = `transport-${record.studentId}-${period}`;
+                    // Transport Bill
+                    if (transportRate > 0 && (record as any).usesBusService) {
+                        const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                        
                         billingBatch.set(financialRecordRef, {
-                            billedAmount: increment(transportRate),
+                            billedAmount: transportRate,
                             studentId: record.studentId,
-                            studentName: record.studentName,
+                            studentName: (record as any).studentName,
                             classId: record.classId,
                             type: 'Transport Fee',
-                            description: `Transport Bill for ${period}`,
+                            description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
                             status: 'Unpaid',
-                            dueDate: new Date(year, month, 0),
+                            dueDate: selectedDate,
+                            createdAt: serverTimestamp(),
+                            amountPaid: 0 // Explicitly set amountPaid to 0
                         }, { merge: true });
+                        billsCount++;
                     }
                 }
                 
-                await billingBatch.commit();
-                toast({ title: 'Auto-Billing Complete', description: `Daily fees have been applied successfully.` });
+                if (billsCount > 0) {
+                    await billingBatch.commit();
+                    toast({ title: 'Billing Updated', description: `Applied ${billsCount} daily fees.` });
+                }
             }
 
-             data.records.forEach(record => {
-                if (record.status === 'Absent' || record.status === 'Late') {
-                    console.log(`Placeholder: Sending notification to parent of ${record.studentName} for being ${record.status}.`);
-                }
-            });
-
-        } catch (serverError) {
-             const permissionError = new FirestorePermissionError({
-                path: 'attendance or financialRecords', 
-                operation: 'write',
-                requestResourceData: data.records,
-            });
-            errorEmitter.emit('permission-error', permissionError);
+        } catch (error: any) {
+            console.error("Attendance/Billing Error:", error);
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save data.' });
         } finally {
             setIsLoading(false);
         }
