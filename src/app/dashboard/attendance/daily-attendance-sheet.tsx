@@ -73,9 +73,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
 
     const form = useForm<AttendanceFormData>({
         resolver: zodResolver(attendanceFormSchema),
-        defaultValues: {
-            records: [],
-        },
+        defaultValues: { records: [] },
     });
 
     const { fields, replace } = useFieldArray({
@@ -83,6 +81,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         name: "records",
     });
 
+    // --- LOAD STUDENTS ---
     const handleLoadStudents = useCallback(async () => {
         if (!selectedClassId) {
             if (!propClassId) toast({ variant: 'destructive', title: 'Error', description: 'Please select a class first.' });
@@ -98,13 +97,14 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             const studentList = studentSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
 
             if (studentList.length === 0) {
-                toast({ title: 'No Students', description: 'No students found in the selected class.' });
+                toast({ title: 'No Students', description: 'No students found in this class.' });
                 replace([]);
                 setStudentsLoaded(true);
                 setIsLoading(false);
                 return;
             }
 
+            // Check existing attendance for today
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('classId', '==', selectedClassId),
@@ -115,6 +115,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
 
             const formRecords = studentList.map(student => {
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
+                
+                // DEBUG: Check if bus data is coming from DB
+                // console.log(`Loaded ${student.firstName}: Bus=${student.usesBusService}`);
+
                 return {
                     id: existingRecord?.id,
                     studentId: student.uid,
@@ -123,8 +127,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                     date: startOfDay(selectedDate),
                     status: existingRecord?.status || 'Present',
                     notes: existingRecord?.notes || '',
-                    // Ensure this is boolean
-                    usesBusService: !!student.usesBusService, 
+                    // Force boolean true/false
+                    usesBusService: student.usesBusService === true, 
                 };
             });
 
@@ -139,22 +143,20 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     }, [selectedClassId, selectedDate, firestore, toast, replace, propClassId]);
 
     useEffect(() => {
-        if (selectedClassId) {
-            handleLoadStudents();
-        }
+        if (selectedClassId) handleLoadStudents();
     }, [selectedClassId, selectedDate, handleLoadStudents]);
     
+    // --- SUBMIT & BILLING LOGIC ---
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore) return;
         setIsLoading(true);
         
         const batch = writeBatch(firestore);
         
-        // 1. SAVE ATTENDANCE
+        // 1. Save Attendance
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            // We remove 'usesBusService' from the object saved to attendance to keep it clean, 
-            // but we keep studentName for historical reference.
+            // Remove helper fields before saving to attendance collection
             const { usesBusService, id, ...dataToSave } = record as any; 
             batch.set(recordRef, dataToSave, { merge: true });
         });
@@ -163,8 +165,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             await batch.commit();
             toast({ title: 'Success', description: 'Attendance saved.' });
 
-            // 2. BILLING LOGIC
-            // Fetch settings
+            // 2. Get Financial Settings
             let canteenRate = 0;
             let transportRate = 0;
             try {
@@ -174,72 +175,80 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
                 if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
             } catch (e) {
-                console.warn("Settings read error (check rules):", e);
+                console.warn("Settings Check Failed:", e);
             }
 
-            console.log("Billing Rates:", { canteenRate, transportRate });
+            console.log(`💰 Billing Rates: Canteen=${canteenRate}, Transport=${transportRate}`);
 
-            // Filter present students
+            // 3. Calculate Billing
             const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
+            let billingBatch = writeBatch(firestore);
+            let billsCount = 0;
             
-            if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
-                const billingBatch = writeBatch(firestore);
-                const year = getYear(selectedDate);
-                const month = getMonth(selectedDate) + 1;
-                const period = `${year}-${String(month).padStart(2, '0')}`;
-                let billsCount = 0;
+            // Date Formatting for IDs
+            const year = getYear(selectedDate);
+            const month = getMonth(selectedDate) + 1;
+            const dateStr = format(selectedDate, 'yyyy-MM-dd');
+            const period = `${year}-${String(month).padStart(2, '0')}`;
 
-                for (const record of presentStudents) {
-                    const safeStudentName = (record as any).studentName || "Unknown Student";
-                    const usesBus = (record as any).usesBusService === true || (record as any).usesBusService === "true";
-
-                    // Canteen Bill
-                    if (canteenRate > 0) {
-                        const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
-                        const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
-                        
-                        billingBatch.set(financialRecordRef, {
-                            billedAmount: canteenRate,
-                            studentId: record.studentId,
-                            studentName: safeStudentName,
-                            classId: record.classId,
-                            type: 'Canteen Fee',
-                            description: `Lunch for ${format(selectedDate, 'PPP')}`,
-                            status: 'Unpaid',
-                            dueDate: selectedDate,
-                            createdAt: serverTimestamp()
-                        }, { merge: true });
-                        billsCount++;
-                    }
-
-                    // Transport Bill
-                    if (transportRate > 0 && usesBus) {
-                        const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
-                        const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
-                        
-                        billingBatch.set(financialRecordRef, {
-                            billedAmount: transportRate,
-                            studentId: record.studentId,
-                            studentName: safeStudentName,
-                            classId: record.classId,
-                            type: 'Transport Fee',
-                            description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
-                            status: 'Unpaid',
-                            dueDate: selectedDate,
-                            createdAt: serverTimestamp()
-                        }, { merge: true });
-                        billsCount++;
-                    }
-                }
+            for (const record of presentStudents) {
+                const r = record as any; // Access custom fields
                 
-                if (billsCount > 0) {
-                    await billingBatch.commit();
-                    toast({ title: 'Billing Updated', description: `Applied fees to ${billsCount} records.` });
+                // ROBUST CHECK: Convert string "true" or boolean true to boolean
+                const usesBus = String(r.usesBusService) === "true";
+
+                console.log(`Processing ${r.studentName}: Bus=${usesBus}, Rate=${transportRate}`);
+
+                // A. Canteen Billing
+                if (canteenRate > 0) {
+                    const canteenRecordId = `canteen-${r.studentId}-${dateStr}`;
+                    const ref = doc(firestore, 'financialRecords', canteenRecordId);
+                    
+                    billingBatch.set(ref, {
+                        amount: canteenRate,
+                        studentId: r.studentId,
+                        studentName: r.studentName || "Unknown",
+                        classId: r.classId,
+                        type: 'Canteen Fee',
+                        description: `Lunch for ${format(selectedDate, 'PPP')}`,
+                        status: 'Unpaid',
+                        dueDate: selectedDate,
+                        createdAt: serverTimestamp()
+                    }, { merge: true });
+                    billsCount++;
+                }
+
+                // B. Transport Billing
+                if (transportRate > 0 && usesBus) {
+                    console.log(` -> Creating Transport Bill for ${r.studentName}`);
+                    const transportRecordId = `transport-${r.studentId}-${dateStr}`;
+                    const ref = doc(firestore, 'financialRecords', transportRecordId);
+                    
+                    billingBatch.set(ref, {
+                        amount: transportRate,
+                        studentId: r.studentId,
+                        studentName: r.studentName || "Unknown",
+                        classId: r.classId,
+                        type: 'Transport Fee',
+                        description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
+                        status: 'Unpaid',
+                        dueDate: selectedDate,
+                        createdAt: serverTimestamp()
+                    }, { merge: true });
+                    billsCount++;
                 }
             }
+            
+            if (billsCount > 0) {
+                await billingBatch.commit();
+                toast({ title: 'Billing Updated', description: `Applied ${billsCount} fee records.` });
+            } else {
+                console.log("No bills generated. Check Rates > 0 and Student Bus Status.");
+            }
+
         } catch (error: any) {
-            console.error("Error:", error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save.' });
+            console.error("Submit Error:", error);
+            toast({ variant: 'destructive', title: 'Error', description: error.message });
         } finally {
             setIsLoading(false);
         }
@@ -249,7 +258,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         <Card>
             <CardHeader>
                 <CardTitle>Take Daily Attendance</CardTitle>
-                <CardDescription>Select a class and date, then load the roster to mark attendance.</CardDescription>
+                <CardDescription>Select a class and date.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -293,26 +302,26 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                                     {fields.map((field, index) => (
                                         <Card key={field.id} className="p-4">
                                             
-                                            {/* --- FIX: HIDDEN INPUTS TO PERSIST DATA --- */}
-                                            {/* These ensure the data exists when onSubmit is called */}
+                                            {/* CRITICAL: Hidden inputs to persist data through form submit */}
                                             <input type="hidden" {...form.register(`records.${index}.studentName`)} value={field.studentName} />
                                             <input type="hidden" {...form.register(`records.${index}.studentId`)} value={field.studentId} />
                                             <input type="hidden" {...form.register(`records.${index}.classId`)} value={field.classId} />
                                             
-                                            {/* CRITICAL: This keeps the Bus status alive! */}
+                                            {/* --- THE FIX: FORCE STRING 'true'/'false' --- */}
                                             <input 
                                                 type="hidden" 
                                                 {...form.register(`records.${index}.usesBusService`)} 
-                                                // React Hook Form needs strings for hidden inputs usually
-                                                value={field.usesBusService ? "true" : "false"} 
+                                                value={(field as any).usesBusService ? "true" : "false"} 
                                             />
 
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                 <div className="flex flex-col">
                                                     <p className="font-medium">{field.studentName}</p>
-                                                    {/* Visual indicator for the teacher */}
+                                                    {/* Visual check: If this badge shows, data is correct */}
                                                     {(field as any).usesBusService && (
-                                                        <span className="text-xs text-blue-600 font-semibold bg-blue-50 px-1 rounded w-fit">Bus User</span>
+                                                        <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit font-semibold">
+                                                            Bus User
+                                                        </span>
                                                     )}
                                                 </div>
                                                 
