@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -18,7 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -32,6 +32,9 @@ import { format, isPast } from 'date-fns';
 import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student } from '@/lib/types';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -507,24 +510,47 @@ export default function AccountsPage() {
   const firestore = useFirestore();
   const [activeForm, setActiveForm] = useState<'single' | 'bulk' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver'; record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
 
 
   const finQuery = useMemoFirebase(() => firestore ? collection(firestore, 'financialRecords') : null, [firestore]);
-  const { data: records, isLoading, forceRefetch } = useCollection<FinancialRecord>(finQuery);
-  const { data: students } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
+  const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
+  
+  const studentQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentQuery);
+
   const { data: classes } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
   const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+  const isLoading = isLoadingRecords || isLoadingStudents;
 
-  const filteredRecords = useMemo(() => {
-    if (!records) return [];
-    return records
-      .filter(r => statusFilter === 'All' || r.status === statusFilter)
-      .filter(r => r.studentName.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [records, statusFilter, searchTerm]);
+  const getStudentById = (studentId: string) => students?.find(s => s.uid === studentId);
+
+  const studentFinancials = useMemo(() => {
+    if (!records || !students) return [];
+
+    const financialsByStudent = students.map(student => {
+      const studentRecords = records.filter(r => r.studentId === student.uid);
+      const totalBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+      const totalPaid = studentRecords.reduce((acc, r) => acc + r.amountPaid, 0);
+      const totalWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
+      const balance = totalBilled - totalPaid - totalWaivers;
+
+      return {
+        student,
+        records: studentRecords,
+        balance,
+        hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
+      };
+    });
+
+    return financialsByStudent.filter(sf => 
+        sf.records.length > 0 &&
+        (sf.student.firstName + " " + sf.student.lastName).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [records, students, searchTerm]);
+
 
   const getStatusVariant = (status: FinancialRecord['status']) => {
     switch (status) {
@@ -591,45 +617,64 @@ export default function AccountsPage() {
 
       <Card>
         <CardHeader>
-            <div className="flex gap-4">
-                <Input placeholder="Search by student name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-                <Select onValueChange={setStatusFilter} defaultValue={statusFilter}>
-                    <SelectTrigger className="w-[180px]"><SelectValue/></SelectTrigger>
-                    <SelectContent>{['All', 'Paid', 'Unpaid', 'Overdue'].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                </Select>
-            </div>
+            <Input placeholder="Search by student name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="max-w-sm"/>
         </CardHeader>
         <CardContent>
             {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
-                <Table>
-                    <TableHeader><TableRow><TableHead>Student</TableHead><TableHead>Description</TableHead><TableHead>Billed</TableHead><TableHead>Paid</TableHead><TableHead>Balance</TableHead><TableHead>Due</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {filteredRecords.map(rec => {
-                            const balance = rec.billedAmount - rec.amountPaid - (rec.waiverAmount || 0);
-                            return (
-                            <TableRow key={rec.id}>
-                                <TableCell className="font-medium">{rec.studentName}</TableCell>
-                                <TableCell>{rec.description}</TableCell>
-                                <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                                <TableCell>GH₵{rec.amountPaid.toFixed(2)}</TableCell>
-                                <TableCell className="font-semibold">GH₵{balance.toFixed(2)}</TableCell>
-                                <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical /></Button></DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver/Concession</DropdownMenuItem>
-                                            <DropdownMenuItem disabled>View Student Profile</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        )})}
-                    </TableBody>
-                </Table>
+                <div className="space-y-4">
+                    {studentFinancials.map(({ student, records, balance, hasOverdue }) => (
+                         <Collapsible key={student.uid} className="border rounded-lg">
+                            <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarFallback>{student.firstName.charAt(0)}{student.lastName.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="text-left">
+                                        <p className="font-semibold">{student.firstName} {student.lastName}</p>
+                                        <p className="text-sm text-muted-foreground">{getStudentById(student.uid)?.classId || 'N/A'}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className="text-right">
+                                        <p className="text-sm text-muted-foreground">Balance</p>
+                                        <p className={cn("font-bold text-lg", balance > 0 && "text-destructive")}>GH₵{balance.toFixed(2)}</p>
+                                    </div>
+                                    <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                                </div>
+                            </CollapsibleTrigger>
+                             <CollapsibleContent className="p-4 bg-slate-50 border-t">
+                                 <Table>
+                                    <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Type</TableHead><TableHead>Billed</TableHead><TableHead>Paid</TableHead><TableHead>Balance</TableHead><TableHead>Due</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {records.map(rec => {
+                                            const recordBalance = rec.billedAmount - rec.amountPaid - (rec.waiverAmount || 0);
+                                            return (
+                                            <TableRow key={rec.id}>
+                                                <TableCell className="font-medium">{rec.description}</TableCell>
+                                                <TableCell>{rec.type}</TableCell>
+                                                <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
+                                                <TableCell>GH₵{rec.amountPaid.toFixed(2)}</TableCell>
+                                                <TableCell className="font-semibold">GH₵{recordBalance.toFixed(2)}</TableCell>
+                                                <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                                                <TableCell>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical /></Button></DropdownMenuTrigger>
+                                                        <DropdownMenuContent>
+                                                            <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver/Concession</DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+                                        )})}
+                                    </TableBody>
+                                </Table>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    ))}
+                </div>
             )}
         </CardContent>
       </Card>
@@ -651,4 +696,5 @@ export default function AccountsPage() {
   );
 }
 
-  
+
+    
