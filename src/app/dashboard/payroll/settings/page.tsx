@@ -241,7 +241,7 @@ function RetrospectiveBilling() {
                 const dateStr = format(recordDate, 'yyyy-MM-dd');
 
                 if (canteenRate > 0) {
-                    const canteenRecordId = `canteen-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                    const canteenRecordId = `canteen-${record.studentId}-${dateStr}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: canteenRate,
@@ -253,7 +253,7 @@ function RetrospectiveBilling() {
                 }
 
                 if (transportRate > 0 && record.usesBusService) {
-                     const transportRecordId = `transport-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                     const transportRecordId = `transport-${record.studentId}-${dateStr}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: transportRate,
@@ -272,7 +272,7 @@ function RetrospectiveBilling() {
                  toast({ title: 'No Changes', description: 'No billable services found for the selected attendance records.' });
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error reprocessing billing:', error);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to reprocess billing.' });
         } finally {

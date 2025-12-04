@@ -188,15 +188,15 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 let billsCount = 0;
 
                 for (const record of presentStudents) {
-                    // SAFETY CHECK: Ensure studentName is not undefined
-                    const safeStudentName = (record as any).studentName || "Unknown Student";
+                    const safeStudentName = record.studentName || "Unknown Student";
 
                     // Canteen Bill
                     if (canteenRate > 0) {
                         const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
                         const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                        
                         billingBatch.set(financialRecordRef, {
-                            billedAmount: canteenRate, // Use simple amount, not increment, since IDs are unique per day
+                            billedAmount: canteenRate,
                             studentId: record.studentId,
                             studentName: safeStudentName,
                             classId: record.classId,
@@ -210,9 +210,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                     }
 
                     // Transport Bill
-                    if (transportRate > 0 && (record as any).usesBusService) {
+                    if (transportRate > 0 && record.usesBusService) {
                         const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                        
                         billingBatch.set(financialRecordRef, {
                             billedAmount: transportRate,
                             studentId: record.studentId,
@@ -252,9 +253,9 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     {!propClassId ? (
                         <div className="flex-1">
-                            <FormField
+                             <FormField
                                 control={form.control}
-                                name="classId" // This doesn't exist on the main schema, but that's okay for a selector
+                                name="classId" 
                                 render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Class</FormLabel>
@@ -268,18 +269,24 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                         </div>
                     ) : null}
                      <div className="flex-1">
-                        <FormItem>
-                            <FormLabel>Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
-                            </Popover>
-                        </FormItem>
+                        <FormField
+                            control={form.control}
+                            name="date"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Date</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
+                                    </Popover>
+                                </FormItem>
+                            )}
+                        />
                     </div>
                 </div>
 
