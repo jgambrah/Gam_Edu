@@ -29,7 +29,7 @@ import { format, startOfDay, getYear, getMonth } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, FirestorePermissionError, errorEmitter } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp, runTransaction } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp, runTransaction, setDoc, increment } from 'firebase/firestore';
 import { attendanceRecordSchema, type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
@@ -158,76 +158,64 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             await attendanceBatch.commit();
             toast({ title: 'Success', description: 'Attendance has been saved successfully.' });
 
-            // --- CANTEEN & TRANSPORT BILLING LOGIC ---
+            // --- CANTEEN & TRANSPORT BILLING LOGIC (REVISED) ---
             const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
             const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
             const canteenRate = canteenSettingsSnap.exists() ? canteenSettingsSnap.data().dailyRate : 0;
             const transportRate = transportSettingsSnap.exists() ? transportSettingsSnap.data().dailyRate : 0;
 
-            const billingPromises = data.records
-                .filter(r => r.status === 'Present' || r.status === 'Late')
-                .flatMap(record => {
-                    const studentPromises = [];
-                    const year = getYear(record.date);
-                    const month = getMonth(record.date) + 1; // 1-12
-                    const period = `${year}-${String(month).padStart(2, '0')}`;
-
-                    // Canteen Billing
-                    if (canteenRate > 0) {
-                        const canteenRecordId = `canteen-${record.studentId}-${period}`;
-                        const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
-                        studentPromises.push(runTransaction(firestore, async (transaction) => {
-                            const finDoc = await transaction.get(financialRecordRef);
-                            if (!finDoc.exists()) {
-                                transaction.set(financialRecordRef, {
-                                    studentId: record.studentId,
-                                    studentName: record.studentName,
-                                    classId: record.classId,
-                                    type: 'Canteen Fee',
-                                    description: `Canteen Bill for ${period}`,
-                                    billedAmount: canteenRate,
-                                    amountPaid: 0,
-                                    status: 'Unpaid',
-                                    dueDate: new Date(year, month, 0),
-                                    createdAt: serverTimestamp(),
-                                });
-                            } else {
-                                const newBilledAmount = (finDoc.data().billedAmount || 0) + canteenRate;
-                                transaction.update(financialRecordRef, { billedAmount: newBilledAmount });
-                            }
-                        }));
-                    }
-
-                    // Transport Billing
-                    if (transportRate > 0 && record.usesBusService) {
-                        const transportRecordId = `transport-${record.studentId}-${period}`;
-                        const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
-                        studentPromises.push(runTransaction(firestore, async (transaction) => {
-                            const finDoc = await transaction.get(financialRecordRef);
-                             if (!finDoc.exists()) {
-                                transaction.set(financialRecordRef, {
-                                    studentId: record.studentId,
-                                    studentName: record.studentName,
-                                    classId: record.classId,
-                                    type: 'Transport Fee',
-                                    description: `Transport Bill for ${period}`,
-                                    billedAmount: transportRate,
-                                    amountPaid: 0,
-                                    status: 'Unpaid',
-                                    dueDate: new Date(year, month, 0),
-                                    createdAt: serverTimestamp(),
-                                });
-                            } else {
-                                const newBilledAmount = (finDoc.data().billedAmount || 0) + transportRate;
-                                transaction.update(financialRecordRef, { billedAmount: newBilledAmount });
-                            }
-                        }));
-                    }
-                    return studentPromises;
-                });
+            const billingBatch = writeBatch(firestore);
             
-            if (billingPromises.length > 0) {
-                await Promise.all(billingPromises);
+            const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
+
+            for (const record of presentStudents) {
+                const year = getYear(record.date);
+                const month = getMonth(record.date) + 1; // 1-12
+                const period = `${year}-${String(month).padStart(2, '0')}`;
+
+                // Canteen Billing
+                if (canteenRate > 0) {
+                    const canteenRecordId = `canteen-${record.studentId}-${period}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                    
+                    billingBatch.set(financialRecordRef, {
+                        billedAmount: increment(canteenRate),
+                        // Fields to set on creation
+                        studentId: record.studentId,
+                        studentName: record.studentName,
+                        classId: record.classId,
+                        type: 'Canteen Fee',
+                        description: `Canteen Bill for ${period}`,
+                        status: 'Unpaid',
+                        dueDate: new Date(year, month, 0),
+                        createdAt: serverTimestamp(),
+                        amountPaid: 0,
+                    }, { merge: true });
+                }
+
+                // Transport Billing
+                if (transportRate > 0 && record.usesBusService) {
+                    const transportRecordId = `transport-${record.studentId}-${period}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+
+                     billingBatch.set(financialRecordRef, {
+                        billedAmount: increment(transportRate),
+                        // Fields to set on creation
+                        studentId: record.studentId,
+                        studentName: record.studentName,
+                        classId: record.classId,
+                        type: 'Transport Fee',
+                        description: `Transport Bill for ${period}`,
+                        status: 'Unpaid',
+                        dueDate: new Date(year, month, 0),
+                        createdAt: serverTimestamp(),
+                        amountPaid: 0,
+                    }, { merge: true });
+                }
+            }
+
+            if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
+                await billingBatch.commit();
                 toast({ title: 'Auto-Billing Complete', description: `Daily fees have been applied.` });
             }
 
@@ -239,7 +227,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
 
         } catch (serverError) {
              const permissionError = new FirestorePermissionError({
-                path: 'attendance', 
+                path: 'attendance or financialRecords', 
                 operation: 'write',
                 requestResourceData: data.records,
             });
