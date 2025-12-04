@@ -686,6 +686,7 @@ export const attendanceRecordSchema = z.object({
   date: z.date(),
   status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
   notes: z.string().optional(),
+  usesBusService: z.boolean().optional(),
 });
 
 export type AttendanceRecord = z.infer<typeof attendanceRecordSchema> & {

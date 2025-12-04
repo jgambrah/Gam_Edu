@@ -150,7 +150,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         const attendanceBatch = writeBatch(firestore);
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            const { studentName, id, usesBusService, ...dataToSave } = record as any; // Exclude client-side fields
+            const { studentName, id, ...dataToSave } = record as any; // Exclude client-side fields
             attendanceBatch.set(recordRef, dataToSave, { merge: true });
         });
 
@@ -199,7 +199,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                     }
 
                     // Transport Billing
-                    if (transportRate > 0 && (record as any).usesBusService) {
+                    if (transportRate > 0 && record.usesBusService) {
                         const transportRecordId = `transport-${record.studentId}-${period}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                         studentPromises.push(runTransaction(firestore, async (transaction) => {
@@ -338,5 +338,3 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         </Card>
     );
 }
-
-  
