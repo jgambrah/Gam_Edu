@@ -8,7 +8,7 @@ import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { 
-  Sigma, Trophy, PencilRuler, PlusCircle, Loader2, 
+  FlaskConical, Trophy, PencilRuler, PlusCircle, Loader2, 
   Trash2, BookOpen, CheckCircle2, Wand2 
 } from 'lucide-react';
 
@@ -25,15 +25,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, MathProblem } from '@/lib/types';
+import { Class, Student, ScienceProblem } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
   const firestore = useFirestore();
-  // Simple query to avoid index issues initially
   const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'global_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+    () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
     [firestore]
   );
   const { data: leaderboard, isLoading } = useCollection<any>(leaderboardQuery);
@@ -66,7 +65,7 @@ function LeaderboardV2() {
 }
 
 // --- SUB-COMPONENT: Add Problem Form ---
-function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
+function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,7 +92,7 @@ function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen
         }
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'math_problems'), {
+            await addDoc(collection(firestore, 'science_problems'), {
                 topic, difficulty, classId, question_text: questionText, options, correct_answer: correctAnswer,
                 createdAt: serverTimestamp()
             });
@@ -112,12 +111,12 @@ function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Add Math Problem</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>Add Science Problem</DialogTitle></DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 py-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Topic</Label>
-                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Algebra" />
+                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Photosynthesis" />
                         </div>
                         <div className="space-y-2">
                             <Label>Difficulty</Label>
@@ -143,7 +142,7 @@ function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen
                     </div>
                     <div className="space-y-2">
                         <Label>Question</Label>
-                        <Textarea value={questionText} onChange={e => setQuestionText(e.target.value)} placeholder="What is 2 + 2?" />
+                        <Textarea value={questionText} onChange={e => setQuestionText(e.target.value)} placeholder="What is the powerhouse of the cell?" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         {options.map((opt, i) => (
@@ -152,7 +151,7 @@ function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen
                     </div>
                     <div className="space-y-2">
                         <Label>Correct Answer (Must match one option exactly)</Label>
-                        <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="e.g. 4" />
+                        <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="e.g. Mitochondria" />
                     </div>
                     <Button type="submit" disabled={isSubmitting} className="w-full">
                         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Problem
@@ -164,7 +163,7 @@ function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen
 }
 
 // --- MAIN PAGE COMPONENT ---
-export default function MathsClubPageV2() {
+export default function ScienceClubPageV2() {
   const router = useRouter();
   const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();
@@ -199,36 +198,26 @@ export default function MathsClubPageV2() {
   // 3. Get Problems
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-
-    // Staff: See EVERYTHING
     if (isStaff) {
-        return query(collection(firestore, 'math_problems'));
+        return query(collection(firestore, 'science_problems'));
     }
-
-    // Student: See CLASS-SPECIFIC or GLOBAL (missing classId)
-    // We intentionally grab ALL problems first, then filter in memory to avoid "Missing Permissions" crashes
-    // caused by the specific 'where' clause not matching the Rule perfectly.
-    // This assumes your Rule is: allow read: if isSignedIn();
     if (role === 'Student') {
-        return query(collection(firestore, 'math_problems')); 
+        return query(collection(firestore, 'science_problems')); 
     }
-
     return null;
   }, [firestore, isStaff, role]);
 
-  const { data: rawProblems, isLoading: isProblemsLoading } = useCollection<MathProblem>(problemsQuery);
+  const { data: rawProblems, isLoading: isProblemsLoading } = useCollection<ScienceProblem>(problemsQuery);
 
   // 4. Process Data (Client-Side Filtering for stability)
   const filteredProblems = useMemo(() => {
     if (!rawProblems) return [];
     
-    // Filter for Students (Only show my class OR global items)
     let list = rawProblems;
     if (role === 'Student') {
         list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
     }
 
-    // Filter by UI Selections
     if (selectedTopic) list = list.filter(p => p.topic === selectedTopic);
     if (selectedDifficulty) list = list.filter(p => p.difficulty === selectedDifficulty);
 
@@ -245,13 +234,13 @@ export default function MathsClubPageV2() {
 
   const handleStart = () => {
       if (!selectedTopic || !selectedDifficulty) return;
-      router.push(`/dashboard/maths-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
+      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
   };
 
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this problem?")) return;
       try {
-          await deleteDoc(doc(firestore, 'math_problems', id));
+          await deleteDoc(doc(firestore, 'science_problems', id));
           toast({ title: "Deleted" });
       } catch(e) {
           toast({ variant: 'destructive', title: "Error", description: "Delete failed" });
@@ -260,14 +249,14 @@ export default function MathsClubPageV2() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-t-4 border-t-indigo-500 shadow-sm">
+      <Card className="border-t-4 border-t-teal-500 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sigma className="h-6 w-6 text-indigo-600"/> 
-            Maths Club 2.0
+            <FlaskConical className="h-6 w-6 text-teal-600"/> 
+            Science Club 2.0
           </CardTitle>
           <CardDescription>
-            Master mathematics through practice and competition.
+            Explore the world of science through practice and competition.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -290,7 +279,7 @@ export default function MathsClubPageV2() {
                         <div className="flex gap-2">
                             <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
                                 <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                                <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Math" setOpen={setIsAiFormOpen} /></DialogContent>
+                                <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice science questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} /></DialogContent>
                             </Dialog>
                             <Button onClick={() => setIsFormOpen(true)} size="sm">
                                 <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
@@ -302,8 +291,8 @@ export default function MathsClubPageV2() {
                     {/* Loading State */}
                     {isLoading && (
                         <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
-                            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-                            <p>Loading Math Lab...</p>
+                            <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+                            <p>Loading Science Lab...</p>
                         </div>
                     )}
 
@@ -348,7 +337,7 @@ export default function MathsClubPageV2() {
                                 <p className="text-sm font-medium text-slate-500">
                                     Found {filteredProblems.length} available problems.
                                 </p>
-                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-indigo-600 hover:bg-indigo-700">
+                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-teal-600 hover:bg-teal-700">
                                     Start Practice Session
                                 </Button>
                             </div>
@@ -392,8 +381,8 @@ export default function MathsClubPageV2() {
         <TabsContent value="leaderboard">
             <Card>
                 <CardHeader>
-                    <CardTitle>Top Mathematicians</CardTitle>
-                    <CardDescription>Global ranking based on correct answers.</CardDescription>
+                    <CardTitle>Top Scientists</CardTitle>
+                    <CardDescription>Global ranking based on correct answers in science.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <LeaderboardV2 />
@@ -404,7 +393,7 @@ export default function MathsClubPageV2() {
 
       {/* Add Problem Modal */}
       {isFormOpen && (
-          <AddMathProblemForm 
+          <AddScienceProblemForm 
             open={isFormOpen} 
             setOpen={setIsFormOpen} 
             classes={classes} 
