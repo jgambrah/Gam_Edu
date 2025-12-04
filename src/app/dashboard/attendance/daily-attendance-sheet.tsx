@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,8 +39,6 @@ import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const attendanceFormSchema = z.object({
     records: z.array(attendanceRecordSchema),
-    classId: z.string().optional(),
-    date: z.date().optional(),
 });
 
 type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
@@ -58,24 +55,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     const [isLoading, setIsLoading] = useState(false);
     const [studentsLoaded, setStudentsLoaded] = useState(false);
     
-    // Move selectedClassId and selectedDate into form state
-    const form = useForm<AttendanceFormData>({
-        resolver: zodResolver(attendanceFormSchema),
-        defaultValues: {
-            records: [],
-            classId: propClassId || '',
-            date: new Date(),
-        },
-    });
-
-    const { fields, replace } = useFieldArray({
-        control: form.control,
-        name: "records",
-    });
-    
-    const selectedClassId = form.watch('classId');
-    const selectedDate = form.watch('date');
-
+    const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const classesQuery = useMemoFirebase(() => {
         if (!user || !firestore) return null;
@@ -89,12 +70,24 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     }, [firestore, user, role]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
+    const form = useForm<AttendanceFormData>({
+        resolver: zodResolver(attendanceFormSchema),
+        defaultValues: {
+            records: [],
+        },
+    });
+
+    const { fields, replace } = useFieldArray({
+        control: form.control,
+        name: "records",
+    });
+
     const handleLoadStudents = useCallback(async () => {
         if (!selectedClassId) {
             if (!propClassId) toast({ variant: 'destructive', title: 'Error', description: 'Please select a class first.' });
             return;
         }
-        if (!firestore || !selectedDate) return;
+        if (!firestore) return;
 
         setIsLoading(true);
         setStudentsLoaded(false);
@@ -145,13 +138,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     }, [selectedClassId, selectedDate, firestore, toast, replace, propClassId]);
 
     useEffect(() => {
-        if (selectedClassId && selectedDate) {
+        if (selectedClassId) {
             handleLoadStudents();
         }
     }, [selectedClassId, selectedDate, handleLoadStudents]);
     
     async function onSubmit(data: AttendanceFormData) {
-        if (!firestore || !selectedDate) return;
+        if (!firestore) return;
         setIsLoading(true);
         
         const attendanceBatch = writeBatch(firestore);
@@ -183,16 +176,19 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 let billsCount = 0;
                 for (const record of presentStudents) {
                     await runTransaction(firestore, async (transaction) => {
+                        const studentDetails = data.records.find(r => r.studentId === record.studentId);
+                        const studentName = studentDetails?.studentName || "Unknown Student";
+
                         // Canteen Billing
                         if (canteenRate > 0) {
                             const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
                             const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                             const finDoc = await transaction.get(financialRecordRef);
                             
-                            if (!finDoc.exists()) {
+                             if (!finDoc.exists()) {
                                 transaction.set(financialRecordRef, {
                                     billedAmount: canteenRate,
-                                    studentId: record.studentId, studentName: (record as any).studentName, classId: record.classId,
+                                    studentId: record.studentId, studentName: studentName, classId: record.classId,
                                     type: 'Canteen Fee', description: `Lunch for ${format(selectedDate, 'PPP')}`,
                                     status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
                                 });
@@ -208,7 +204,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                             if (!finDoc.exists()) {
                                 transaction.set(financialRecordRef, {
                                     billedAmount: transportRate,
-                                    studentId: record.studentId, studentName: (record as any).studentName, classId: record.classId,
+                                    studentId: record.studentId, studentName: studentName, classId: record.classId,
                                     type: 'Transport Fee', description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
                                     status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
                                 });
@@ -236,55 +232,53 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 <CardDescription>Select a class and date, then load the roster to mark attendance.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Form {...form}>
-                    <div className="flex flex-col md:flex-row gap-4 mb-6">
-                        {!propClassId && (
-                            <FormField
-                                control={form.control}
-                                name="classId"
-                                render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                        <FormLabel>Class</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value} disabled={isLoadingClasses}>
-                                            <FormControl>
-                                                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                                        </Select>
-                                    </FormItem>
-                                )}
-                            />
-                        )}
-                         <FormField
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    {!propClassId && (
+                        <FormField
                             control={form.control}
-                            name="date"
+                            name="classId"
                             render={({ field }) => (
-                                <FormItem className="flex flex-col flex-1">
-                                <FormLabel>Date</FormLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
+                                <FormItem className="flex-1">
+                                    <FormLabel>Class</FormLabel>
+                                    <Select onValueChange={(val) => { field.onChange(val); setSelectedClassId(val); }} value={field.value} disabled={isLoadingClasses}>
                                         <FormControl>
-                                        <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !field.value && 'text-muted-foreground')}>
-                                            <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                                        </Button>
+                                            <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
                                         </FormControl>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent>
-                                </Popover>
+                                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                    </Select>
                                 </FormItem>
                             )}
                         />
-                        {!propClassId && ( 
-                            <div className="flex items-end">
-                                <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
-                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Load Students
-                                </Button>
-                            </div>
+                    )}
+                     <FormField
+                        control={form.control}
+                        name="date"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col flex-1">
+                            <FormLabel>Date</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                    <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !field.value && 'text-muted-foreground')}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                    </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={(date) => { field.onChange(date); if(date) setSelectedDate(date); }} initialFocus /></PopoverContent>
+                            </Popover>
+                            </FormItem>
                         )}
-                    </div>
-                </Form>
+                    />
+                    {!propClassId && ( 
+                        <div className="flex items-end">
+                            <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
+                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Load Students
+                            </Button>
+                        </div>
+                    )}
+                </div>
 
                 {isLoading && !studentsLoaded && (
                     <div className="flex justify-center p-8">
@@ -336,3 +330,5 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         </Card>
     );
 }
+
+    
