@@ -180,34 +180,40 @@ function RetrospectiveBilling() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState(false);
-    const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: new Date(), to: new Date() });
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(),
+        to: new Date(),
+    });
 
     const handleReprocess = async () => {
-        if (!firestore || !dateRange?.from) return;
+        if (!firestore || !dateRange?.from) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range.' });
+            return;
+        }
         setIsProcessing(true);
-        toast({ title: "Processing...", description: "This may take a moment."});
+        toast({ title: "Reprocessing billing...", description: `Scanning attendance from ${format(dateRange.from, 'PPP')} to ${dateRange.to ? format(dateRange.to, 'PPP') : format(dateRange.from, 'PPP')}`});
 
         try {
             const start = startOfDay(dateRange.from);
             const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
-            // 1. Get Rates
-            const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
-            const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
-            const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
-            const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
+            const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
+            const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
+            const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
+            const transportRate = transportSettingsSnap.data()?.dailyRate || 0;
             
-            // 2. Get Attendance
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('date', '>=', Timestamp.fromDate(start)),
                 where('date', '<=', Timestamp.fromDate(end)),
                 where('status', 'in', ['Present', 'Late'])
             );
-            const attendanceSnapshot = await getDocs(attendanceQuery);
 
-            if(attendanceSnapshot.empty) {
-                toast({ title: 'No Records', description: 'No matching attendance found.' });
+            const attendanceSnapshot = await getDocs(attendanceQuery);
+            const recordsToProcess = attendanceSnapshot.docs;
+
+            if(recordsToProcess.length === 0) {
+                toast({ title: 'Nothing to Process', description: 'No "Present" or "Late" attendance records found in the selected range.' });
                 setIsProcessing(false);
                 return;
             }
@@ -215,9 +221,8 @@ function RetrospectiveBilling() {
             const billingBatch = writeBatch(firestore);
             let billsCount = 0;
             
-            // 3. Loop and Bill
-            for (const attDoc of attendanceSnapshot.docs) {
-                const record = attDoc.data();
+            for (const attendanceDoc of recordsToProcess) {
+                const record = attendanceDoc.data();
                 let studentName = record.studentName;
 
                 // FIX: If name is missing (legacy data), fetch it
@@ -236,25 +241,25 @@ function RetrospectiveBilling() {
                 const dateStr = format(recordDate, 'yyyy-MM-dd');
 
                 if (canteenRate > 0) {
-                    const ref = doc(firestore, 'financialRecords', `canteen-${record.studentId}-${dateStr}`);
-                    billingBatch.set(ref, {
+                    const canteenRecordId = `canteen-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                    billingBatch.set(financialRecordRef, {
                         billedAmount: canteenRate,
-                        studentId: record.studentId, studentName, classId: record.classId,
-                        type: 'Canteen Fee', description: `Lunch for ${format(recordDate, 'PPP')}`,
-                        status: 'Unpaid', dueDate: recordDate, createdAt: serverTimestamp(),
-                        amountPaid: 0,
+                        studentId: record.studentId, studentName: studentName, classId: record.classId,
+                        type: 'Canteen Fee', description: `Lunch for ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: recordDate,
+                        createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
                     billsCount++;
                 }
 
                 if (transportRate > 0 && record.usesBusService) {
-                    const ref = doc(firestore, 'financialRecords', `transport-${record.studentId}-${dateStr}`);
-                    billingBatch.set(ref, {
+                     const transportRecordId = `transport-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
+                    const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                    billingBatch.set(financialRecordRef, {
                         billedAmount: transportRate,
-                        studentId: record.studentId, studentName, classId: record.classId,
-                        type: 'Transport Fee', description: `Bus Ride for ${format(recordDate, 'PPP')}`,
-                        status: 'Unpaid', dueDate: recordDate, createdAt: serverTimestamp(),
-                        amountPaid: 0,
+                        studentId: record.studentId, studentName: studentName, classId: record.classId,
+                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: recordDate,
+                        createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
                     billsCount++;
                 }
@@ -262,14 +267,14 @@ function RetrospectiveBilling() {
 
             if (billsCount > 0) {
                 await billingBatch.commit();
-                toast({ title: 'Success!', description: `Generated ${billsCount} bills.` });
+                toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
             } else {
-                toast({ title: 'No Changes', description: 'No billable services found.' });
+                 toast({ title: 'No Changes', description: 'No billable services found for the selected attendance records.' });
             }
 
-        } catch (error: any) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message });
+        } catch (error) {
+            console.error('Error reprocessing billing:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to reprocess billing.' });
         } finally {
             setIsProcessing(false);
         }
@@ -279,16 +284,19 @@ function RetrospectiveBilling() {
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
-                <CardDescription>Recalculate fees for past dates.</CardDescription>
+                <CardDescription>Recalculate and apply fees for a past date range. Use this if rates have changed or if billing failed previously.</CardDescription>
             </CardHeader>
             <CardContent className="flex items-end gap-4">
                  <div className="flex-1">
                     <Label className="mb-2 block">Date Range</Label>
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}>
+                            <Button
+                                variant={"outline"}
+                                className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+                            >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</> : format(dateRange.from, "LLL dd, y")) : <span>Pick a date range</span>}
+                                {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date range</span>)}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -297,7 +305,8 @@ function RetrospectiveBilling() {
                     </Popover>
                  </div>
                  <Button onClick={handleReprocess} disabled={isProcessing}>
-                    {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Reprocess
+                    {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                    Reprocess
                 </Button>
             </CardContent>
         </Card>
