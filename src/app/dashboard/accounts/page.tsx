@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -17,7 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,7 +30,7 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, isPast } from 'date-fns';
 import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student } from '@/lib/types';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
 
 // --- Forms ---
@@ -287,6 +288,74 @@ function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRec
     );
 }
 
+function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialRecord, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Create a schema specifically for editing, inheriting from the base schema
+    const editSchema = financialRecordSchema.omit({ studentId: true }); // Can't change the student
+
+    const form = useForm<z.infer<typeof editSchema>>({
+        resolver: zodResolver(editSchema),
+        defaultValues: {
+            type: record.type,
+            description: record.description,
+            billedAmount: record.billedAmount,
+            dueDate: record.dueDate.toDate(), // Convert Firestore Timestamp to Date
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof editSchema>) {
+        if (!firestore) return;
+        setIsSubmitting(true);
+        try {
+            const recordRef = doc(firestore, 'financialRecords', record.id);
+            await updateDocumentNonBlocking(recordRef, values);
+            toast({ title: 'Success', description: 'Record updated successfully.' });
+            onUpdate();
+            setOpen(false);
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to update record.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Edit Financial Record</DialogTitle>
+                <DialogDescription>
+                    Editing record for <strong>{record.studentName}</strong>.
+                </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField control={form.control} name="type" render={({ field }) => (
+                        <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                    )}/>
+                    <FormField control={form.control} name="description" render={({ field }) => (
+                        <FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )}/>
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField control={form.control} name="billedAmount" render={({ field }) => (
+                            <FormItem><FormLabel>Billed Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="dueDate" render={({ field }) => (
+                            <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
+                            <Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button>
+                            </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/></PopoverContent></Popover><FormMessage /></FormItem>
+                        )}/>
+                    </div>
+                    <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Changes</Button>
+                </form>
+            </Form>
+        </DialogContent>
+    );
+}
+
 // --- Main Page ---
 
 export default function AccountsPage() {
@@ -296,6 +365,7 @@ export default function AccountsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver'; record: FinancialRecord | null }>({ type: 'payment', record: null });
+  const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
 
 
   const finQuery = useMemoFirebase(() => firestore ? collection(firestore, 'financialRecords') : null, [firestore]);
@@ -334,6 +404,15 @@ export default function AccountsPage() {
   const handleCloseDialog = () => {
     setDialogState({ type: 'payment', record: null });
   };
+  
+  const handleOpenEditDialog = (record: FinancialRecord) => {
+    setEditingRecord(record);
+  };
+  
+  const handleCloseEditDialog = () => {
+    setEditingRecord(null);
+  };
+
 
   return (
     <div className="space-y-6">
@@ -389,6 +468,7 @@ export default function AccountsPage() {
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical /></Button></DropdownMenuTrigger>
                                         <DropdownMenuContent>
+                                            <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver/Concession</DropdownMenuItem>
                                             <DropdownMenuItem disabled>View Student Profile</DropdownMenuItem>
@@ -408,6 +488,12 @@ export default function AccountsPage() {
             dialogState.type === 'payment' 
             ? <RecordPaymentDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />
             : <ApplyWaiverDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />
+          )}
+      </Dialog>
+      
+      <Dialog open={!!editingRecord} onOpenChange={(open) => !open && handleCloseEditDialog()}>
+          {editingRecord && (
+            <EditRecordDialog record={editingRecord} setOpen={handleCloseEditDialog} onUpdate={forceRefetch} />
           )}
       </Dialog>
     </div>
