@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -35,16 +35,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 // --- SUB-COMPONENT: Fact of the Day ---
-function FactOfTheDay() {
+function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
     const firestore = useFirestore();
     const { user } = useAuth();
-    const { role } = useRole();
     const { toast } = useToast();
     const [factText, setFactText] = useState('');
     const [isPosting, setIsPosting] = useState(false);
     
-    const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
-
     const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts')) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
 
@@ -244,62 +241,6 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
     );
 }
 
-function ManageProblems() {
-    const firestore = useFirestore();
-    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore]));
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    // --- NEW: AI State ---
-    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-
-    return (
-        <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle>Problem Bank</CardTitle>
-                    <CardDescription>Manage the collection of science problems for student practice sessions.</CardDescription>
-                </div>
-                 <div className="flex gap-2">
-                    {/* --- NEW: AI Button & Dialog --- */}
-                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                                <DialogTitle>AI Problem Generator</DialogTitle>
-                                <DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription>
-                            </DialogHeader>
-                            <AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} />
-                        </DialogContent>
-                    </Dialog>
-                    
-                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Problem</Button></DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader><DialogTitle>Create New Science Problem</DialogTitle><DialogDescription>Add a new question to the problem bank.</DialogDescription></DialogHeader>
-                            <AddScienceProblemForm open={isFormOpen} setOpen={setIsFormOpen} classes={[]} />
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? <Skeleton className="h-40 w-full" /> : (
-                <Table>
-                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Difficulty</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {problems?.map(p => (
-                            <TableRow key={p.id}>
-                                <TableCell>{p.topic}</TableCell>
-                                <TableCell>{p.difficulty}</TableCell>
-                                <TableCell className="max-w-md truncate">{p.question_text}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                )}
-            </CardContent>
-        </Card>
-    )
-}
-
 // --- MAIN PAGE COMPONENT ---
 export default function ScienceClubPageV2() {
   const router = useRouter();
@@ -426,6 +367,7 @@ export default function ScienceClubPageV2() {
                                     <AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} />
                                 </DialogContent>
                             </Dialog>
+                            
                             <Button onClick={() => setIsFormOpen(true)} size="sm">
                                 <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
                             </Button>
