@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
@@ -11,13 +12,15 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, History, ArrowLeftRight, Check, Boxes, FileText } from 'lucide-react';
+import { Loader2, PlusCircle, History, ArrowLeftRight, Check, Boxes, FileText, ShoppingCart } from 'lucide-react';
 import { InventoryItem, InventoryTransaction, Staff } from '@/lib/types';
 import Link from 'next/link';
 import { InventoryItemForm } from './inventory-item-form';
 import { CheckoutForm } from './checkout-form';
 import { TransactionHistoryDialog } from './transaction-history-dialog';
+import { SaleDialog } from './sale-dialog';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Input } from '@/components/ui/input';
 
 export default function InventoryPage() {
     const { role } = useRole();
@@ -25,9 +28,10 @@ export default function InventoryPage() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [refetchKey, setRefetchKey] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const [activeDialog, setActiveDialog] = useState<
-        'addItem' | 'checkOut' | 'history' | null
+        'addItem' | 'checkOut' | 'history' | 'sellItem' | null
     >(null);
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
@@ -39,9 +43,10 @@ export default function InventoryPage() {
     const staffListQuery = useMemoFirebase(() => (user && firestore) ? collection(firestore, 'staff') : null, [firestore, user]);
     const { data: staffList } = useCollection<Staff>(staffListQuery);
 
-    const canAccess = role === 'Administrator' || role === 'Director';
+    const canManage = role === 'Administrator' || role === 'Director';
+    const canSell = role === 'Accountant';
 
-    const handleOpenDialog = (dialog: 'addItem' | 'checkOut' | 'history', item?: InventoryItem) => {
+    const handleOpenDialog = (dialog: 'addItem' | 'checkOut' | 'history' | 'sellItem', item?: InventoryItem) => {
         setSelectedItem(item || null);
         setActiveDialog(dialog);
     };
@@ -53,27 +58,12 @@ export default function InventoryPage() {
 
     const handleCheckIn = async (item: InventoryItem) => {
         if (!item.currentHolderId) return;
-
         try {
-            const batch = writeBatch(firestore);
-
-            const itemRef = doc(firestore, 'inventory', item.id);
-            batch.update(itemRef, {
+            await updateDocumentNonBlocking(doc(firestore, 'inventory', item.id), {
                 status: 'Available',
                 currentHolderId: '',
                 currentHolderName: ''
             });
-
-            const transactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
-            batch.set(transactionRef, {
-                itemId: item.id,
-                transactionType: 'Check-In',
-                timestamp: serverTimestamp(),
-                staffId: item.currentHolderId,
-                notes: `Returned by ${item.currentHolderName}`
-            });
-
-            await batch.commit();
             toast({ title: 'Success', description: `${item.name} has been checked in.` });
             forceRefetch();
         } catch (error) {
@@ -86,17 +76,27 @@ export default function InventoryPage() {
         switch(status) {
             case 'Available': return 'default';
             case 'In Use': return 'secondary';
+            case 'Out of Stock': return 'destructive';
             case 'Under Maintenance': return 'destructive';
             default: return 'outline';
         }
     }
+    
+    const filteredInventory = useMemo(() => {
+        if (!inventory) return [];
+        return inventory.filter(item => 
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            item.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [inventory, searchTerm]);
 
-    if (!canAccess) {
+
+    if (!canManage && !canSell) {
         return (
             <Card>
                 <CardHeader>
                     <CardTitle>Access Denied</CardTitle>
-                    <CardDescription>This module is restricted to Administrators and Directors.</CardDescription>
+                    <CardDescription>This module is restricted to Administrators, Directors, and Accountants.</CardDescription>
                 </CardHeader>
             </Card>
         );
@@ -108,13 +108,22 @@ export default function InventoryPage() {
                 <CardHeader>
                     <div className="flex justify-between items-center">
                         <div>
-                            <CardTitle className="flex items-center gap-2"><Boxes /> Inventory Management</CardTitle>
-                            <CardDescription>Track and manage all physical assets owned by the school.</CardDescription>
+                            <CardTitle className="flex items-center gap-2"><Boxes /> Inventory & Sales</CardTitle>
+                            <CardDescription>Track and manage all physical assets and items for sale.</CardDescription>
                         </div>
+                        {canManage && (
                         <div className="flex gap-2">
-                            <Button asChild variant="outline"><Link href="#"><FileText className="mr-2"/> View Reports</Link></Button>
                             <Button onClick={() => handleOpenDialog('addItem')}><PlusCircle className="mr-2"/> Add New Item</Button>
                         </div>
+                        )}
+                    </div>
+                     <div className="pt-4">
+                        <Input 
+                            placeholder="Search inventory..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="max-w-sm"
+                        />
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -124,26 +133,27 @@ export default function InventoryPage() {
                                 <TableRow>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Category</TableHead>
-                                    <TableHead>Condition</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead>Current Holder</TableHead>
                                     <TableHead>Qty</TableHead>
+                                    <TableHead>Unit Price</TableHead>
+                                    <TableHead>Current Holder</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {inventory?.map(item => (
+                                {filteredInventory?.map(item => (
                                     <TableRow key={item.id}>
                                         <TableCell className="font-medium">{item.name}</TableCell>
                                         <TableCell>{item.category}</TableCell>
-                                        <TableCell>{item.condition}</TableCell>
                                         <TableCell><Badge variant={getStatusVariant(item.status)}>{item.status}</Badge></TableCell>
-                                        <TableCell>{item.currentHolderName || 'N/A'}</TableCell>
                                         <TableCell>{item.quantity}</TableCell>
+                                        <TableCell>GH₵{(item.unitPrice || 0).toFixed(2)}</TableCell>
+                                        <TableCell>{item.currentHolderName || 'N/A'}</TableCell>
                                         <TableCell className="text-right space-x-2">
                                             <Button variant="outline" size="sm" onClick={() => handleOpenDialog('history', item)}><History className="mr-1 h-4 w-4"/> History</Button>
-                                            {item.status === 'Available' && <Button size="sm" onClick={() => handleOpenDialog('checkOut', item)}><ArrowLeftRight className="mr-1 h-4 w-4"/> Check Out</Button>}
-                                            {item.status === 'In Use' && <Button size="sm" variant="secondary" onClick={() => handleCheckIn(item)}><Check className="mr-1 h-4 w-4"/> Check In</Button>}
+                                            {canManage && item.status === 'Available' && <Button size="sm" onClick={() => handleOpenDialog('checkOut', item)}><ArrowLeftRight className="mr-1 h-4 w-4"/> Check Out</Button>}
+                                            {canManage && item.status === 'In Use' && <Button size="sm" variant="secondary" onClick={() => handleCheckIn(item)}><Check className="mr-1 h-4 w-4"/> Check In</Button>}
+                                            {canSell && item.status === 'Available' && item.quantity > 0 && <Button size="sm" variant="destructive" onClick={() => handleOpenDialog('sellItem', item)}><ShoppingCart className="mr-1 h-4 w-4" /> Sell</Button>}
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -165,6 +175,9 @@ export default function InventoryPage() {
                         <DialogHeader><DialogTitle>Check Out: {selectedItem.name}</DialogTitle><DialogDescription>Assign this item to a staff member.</DialogDescription></DialogHeader>
                         <CheckoutForm item={selectedItem} staffList={staffList || []} setOpen={handleCloseDialog} onCheckedOut={forceRefetch} />
                     </DialogContent>
+                )}
+                 {activeDialog === 'sellItem' && selectedItem && (
+                   <SaleDialog item={selectedItem} open={true} onOpenChange={handleCloseDialog} onSaleComplete={forceRefetch} />
                 )}
                 {activeDialog === 'history' && selectedItem && (
                     <TransactionHistoryDialog item={selectedItem} open={true} setOpen={handleCloseDialog} />

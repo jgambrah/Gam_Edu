@@ -95,7 +95,7 @@ function CanteenSettings() {
                             name="dailyRate"
                             render={({ field }) => (
                                 <FormItem className="flex-grow">
-                                    <FormLabel>Daily Canteen Fee</FormLabel>
+                                    <FormLabel>Daily Canteen Fee (GH₵)</FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="e.g., 5.00" {...field} disabled={isLoading} />
                                     </FormControl>
@@ -163,7 +163,7 @@ function TransportSettings() {
                             name="dailyRate"
                             render={({ field }) => (
                                 <FormItem className="flex-grow">
-                                    <FormLabel>Daily Transport Fee</FormLabel>
+                                    <FormLabel>Daily Transport Fee (GH₵)</FormLabel>
                                     <FormControl>
                                         <Input type="number" placeholder="e.g., 10.00" {...field} disabled={isLoading} />
                                     </FormControl>
@@ -235,7 +235,7 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
         )}/>
         <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                <FormItem><FormLabel>Billed Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="dueDate" render={({ field }) => (
                 <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -309,7 +309,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
             )}/>
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                    <FormItem><FormLabel>Amount per Student</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Amount per Student (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="dueDate" render={({ field }) => (
                     <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -369,6 +369,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
                     studentName: record.studentName,
                     amount: values.amount,
                     timestamp: serverTimestamp(),
+                    description: `Fee Payment: ${record.description}`
                 });
             }
 
@@ -390,7 +391,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem><FormLabel>Payment Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <FormField control={form.control} name="method" render={({ field }) => (
                         <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
@@ -448,7 +449,7 @@ function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRec
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>Waiver Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                     )}/>
                     <FormField control={form.control} name="reason" render={({ field }) => (
                         <FormItem><FormLabel>Reason for Waiver</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
@@ -513,7 +514,7 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
                     )}/>
                     <div className="grid grid-cols-2 gap-4">
                         <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                            <FormItem><FormLabel>Billed Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                         )}/>
                         <FormField control={form.control} name="dueDate" render={({ field }) => (
                             <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
