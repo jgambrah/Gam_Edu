@@ -349,7 +349,7 @@ export default function LearningMaterialsPage() {
   );
 
   // 3. Subjects
-  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
+  const subjectsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'subjects') : null, [firestore, user]);
   const { data: subjectsData, isLoading: isLoadingSubjects } = useCollection<{id:string, name:string}>(subjectsQuery);
   
   const subjectsList = useMemo(() => {
