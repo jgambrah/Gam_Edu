@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -11,6 +10,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
 import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
-import { Label } from '@/components/ui/label';
+import { Label as PlainLabel } from '@/components/ui/label'; // Renamed to avoid conflict
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -266,7 +266,7 @@ function RetrospectiveBilling() {
             </CardHeader>
             <CardContent className="flex items-end gap-4">
                  <div className="flex-1">
-                    <Label>Date Range</Label>
+                    <PlainLabel>Date Range</PlainLabel>
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button
@@ -309,3 +309,4 @@ export default function FinancialSettingsPage() {
     </div>
   );
 }
+
