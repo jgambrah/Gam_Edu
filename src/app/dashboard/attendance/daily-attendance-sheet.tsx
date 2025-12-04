@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -151,7 +152,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         // 1. SAVE ATTENDANCE
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            // FIX: We now SAVE 'studentName' to Firestore so it exists for retrospective billing
             const { id, ...dataToSave } = record as any; 
             batch.set(recordRef, dataToSave, { merge: true });
         });
@@ -182,9 +182,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             
             if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
                 const billingBatch = writeBatch(firestore);
-                const year = getYear(selectedDate);
-                const month = getMonth(selectedDate) + 1;
-                const period = `${year}-${String(month).padStart(2, '0')}`;
                 let billsCount = 0;
 
                 for (const record of presentStudents) {
