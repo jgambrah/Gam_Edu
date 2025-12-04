@@ -57,7 +57,6 @@ export default function AttendanceReportsPage() {
         if (!user || !firestore || !dateRange?.from) return null;
         
         const start = startOfDay(dateRange.from);
-        // If 'to' is not selected, use the end of the 'from' day
         const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
         return query(
@@ -95,7 +94,10 @@ export default function AttendanceReportsPage() {
     }, [attendanceRecords, selectedClassId, selectedStatus, students]);
 
     const summaryData = useMemo(() => {
-        const totalRecords = filteredData.length;
+        // Use all attendance records for the date range before filtering for summary stats
+        const dataForSummary = attendanceRecords || [];
+
+        const totalRecords = dataForSummary.length;
         if (totalRecords === 0) {
             return {
                 attendanceRate: 0,
@@ -105,7 +107,7 @@ export default function AttendanceReportsPage() {
             };
         }
 
-        const statusCounts = filteredData.reduce((acc, record) => {
+        const statusCounts = dataForSummary.reduce((acc, record) => {
             acc[record.status] = (acc[record.status] || 0) + 1;
             return acc;
         }, {} as Record<string, number>);
@@ -122,7 +124,7 @@ export default function AttendanceReportsPage() {
             pieData,
         };
 
-    }, [filteredData]);
+    }, [attendanceRecords]);
     
 
     if (!canAccess) {
