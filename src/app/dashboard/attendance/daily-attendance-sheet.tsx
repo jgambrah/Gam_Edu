@@ -39,7 +39,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const attendanceFormSchema = z.object({
-    records: z.array(attendanceRecordSchema)
+    records: z.array(attendanceRecordSchema),
+    classId: z.string().optional(),
+    date: z.date().optional(),
 });
 
 type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
@@ -56,8 +58,24 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     const [isLoading, setIsLoading] = useState(false);
     const [studentsLoaded, setStudentsLoaded] = useState(false);
     
-    const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    // Move selectedClassId and selectedDate into form state
+    const form = useForm<AttendanceFormData>({
+        resolver: zodResolver(attendanceFormSchema),
+        defaultValues: {
+            records: [],
+            classId: propClassId || '',
+            date: new Date(),
+        },
+    });
+
+    const { fields, replace } = useFieldArray({
+        control: form.control,
+        name: "records",
+    });
+    
+    const selectedClassId = form.watch('classId');
+    const selectedDate = form.watch('date');
+
 
     const classesQuery = useMemoFirebase(() => {
         if (!user || !firestore) return null;
@@ -71,24 +89,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     }, [firestore, user, role]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-    const form = useForm<AttendanceFormData>({
-        resolver: zodResolver(attendanceFormSchema),
-        defaultValues: {
-            records: [],
-        },
-    });
-
-    const { fields, replace } = useFieldArray({
-        control: form.control,
-        name: "records",
-    });
-
     const handleLoadStudents = useCallback(async () => {
         if (!selectedClassId) {
             if (!propClassId) toast({ variant: 'destructive', title: 'Error', description: 'Please select a class first.' });
             return;
         }
-        if (!firestore) return;
+        if (!firestore || !selectedDate) return;
+
         setIsLoading(true);
         setStudentsLoaded(false);
 
@@ -138,101 +145,82 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
     }, [selectedClassId, selectedDate, firestore, toast, replace, propClassId]);
 
     useEffect(() => {
-        if (selectedClassId) {
+        if (selectedClassId && selectedDate) {
             handleLoadStudents();
         }
     }, [selectedClassId, selectedDate, handleLoadStudents]);
     
-    // --- UPDATED SUBMIT FUNCTION ---
     async function onSubmit(data: AttendanceFormData) {
-        if (!firestore) return;
+        if (!firestore || !selectedDate) return;
         setIsLoading(true);
         
-        const batch = writeBatch(firestore);
+        const attendanceBatch = writeBatch(firestore);
         
-        // 1. Prepare Attendance Records
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
             const { studentName, id, ...dataToSave } = record as any; 
-            batch.set(recordRef, dataToSave, { merge: true });
+            attendanceBatch.set(recordRef, { ...dataToSave, date: startOfDay(selectedDate) }, { merge: true });
         });
 
         try {
-            // 2. Commit Attendance FIRST (To ensure it saves even if billing fails)
-            await batch.commit();
+            await attendanceBatch.commit();
             toast({ title: 'Success', description: 'Attendance saved.' });
 
-            // 3. Fetch Rates (Safe Check)
             let canteenRate = 0;
             let transportRate = 0;
-
             try {
                 const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
                 if (canteenSnap.exists()) canteenRate = Number(canteenSnap.data().dailyRate) || 0;
-
                 const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
                 if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
             } catch (e) {
-                console.warn("Could not load settings, using 0 rates:", e);
+                console.warn("Could not load settings, billing skipped:", e);
             }
 
-            console.log("Billing Rates:", { canteenRate, transportRate });
-
-            // 4. Process Billing if rates exist
             const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
             
             if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
-                const billingBatch = writeBatch(firestore);
                 let billsCount = 0;
-
                 for (const record of presentStudents) {
-                    // Canteen Bill
-                    if (canteenRate > 0) {
-                        const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
-                        const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
-                        
-                        billingBatch.set(financialRecordRef, {
-                            billedAmount: canteenRate, // Use simple amount, not increment, since IDs are unique per day
-                            studentId: record.studentId,
-                            studentName: (record as any).studentName,
-                            classId: record.classId,
-                            type: 'Canteen Fee',
-                            description: `Lunch for ${format(selectedDate, 'PPP')}`,
-                            status: 'Unpaid',
-                            dueDate: selectedDate,
-                            createdAt: serverTimestamp(),
-                            amountPaid: 0 // Explicitly set amountPaid to 0
-                        }, { merge: true }); // Merge ensures we don't double-charge if attendance is re-submitted
-                        billsCount++;
-                    }
+                    await runTransaction(firestore, async (transaction) => {
+                        // Canteen Billing
+                        if (canteenRate > 0) {
+                            const canteenRecordId = `canteen-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
+                            const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                            const finDoc = await transaction.get(financialRecordRef);
+                            
+                            if (!finDoc.exists()) {
+                                transaction.set(financialRecordRef, {
+                                    billedAmount: canteenRate,
+                                    studentId: record.studentId, studentName: (record as any).studentName, classId: record.classId,
+                                    type: 'Canteen Fee', description: `Lunch for ${format(selectedDate, 'PPP')}`,
+                                    status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
+                                });
+                                billsCount++;
+                            }
+                        }
+                        // Transport Billing
+                        if (transportRate > 0 && record.usesBusService) {
+                            const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`;
+                            const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                            const finDoc = await transaction.get(financialRecordRef);
 
-                    // Transport Bill
-                    if (transportRate > 0 && (record as any).usesBusService) {
-                        const transportRecordId = `transport-${record.studentId}-${format(selectedDate, 'yyyy-MM-dd')}`; // UNIQUE PER DAY
-                        const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
-                        
-                        billingBatch.set(financialRecordRef, {
-                            billedAmount: transportRate,
-                            studentId: record.studentId,
-                            studentName: (record as any).studentName,
-                            classId: record.classId,
-                            type: 'Transport Fee',
-                            description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
-                            status: 'Unpaid',
-                            dueDate: selectedDate,
-                            createdAt: serverTimestamp(),
-                            amountPaid: 0 // Explicitly set amountPaid to 0
-                        }, { merge: true });
-                        billsCount++;
-                    }
+                            if (!finDoc.exists()) {
+                                transaction.set(financialRecordRef, {
+                                    billedAmount: transportRate,
+                                    studentId: record.studentId, studentName: (record as any).studentName, classId: record.classId,
+                                    type: 'Transport Fee', description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
+                                    status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
+                                });
+                                billsCount++;
+                            }
+                        }
+                    });
                 }
-                
                 if (billsCount > 0) {
-                    await billingBatch.commit();
                     toast({ title: 'Billing Updated', description: `Applied ${billsCount} daily fees.` });
                 }
             }
-
         } catch (error: any) {
             console.error("Attendance/Billing Error:", error);
             toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save data.' });
@@ -248,37 +236,55 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 <CardDescription>Select a class and date, then load the roster to mark attendance.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="flex flex-col md:flex-row gap-4 mb-6">
-                    {!propClassId && ( // Only show class selector if not embedded in a specific class context
-                        <div className="flex-1">
-                            <Label>Class</Label>
-                            <Select onValueChange={setSelectedClassId} value={selectedClassId} disabled={isLoadingClasses}>
-                                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                    )}
-                    <div className="flex-1">
-                        <Label>Date</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !selectedDate && 'text-muted-foreground')}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
+                <Form {...form}>
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        {!propClassId && (
+                            <FormField
+                                control={form.control}
+                                name="classId"
+                                render={({ field }) => (
+                                    <FormItem className="flex-1">
+                                        <FormLabel>Class</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value} disabled={isLoadingClasses}>
+                                            <FormControl>
+                                                <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                        </Select>
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+                         <FormField
+                            control={form.control}
+                            name="date"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col flex-1">
+                                <FormLabel>Date</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <FormControl>
+                                        <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !field.value && 'text-muted-foreground')}>
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                        </Button>
+                                        </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent>
+                                </Popover>
+                                </FormItem>
+                            )}
+                        />
+                        {!propClassId && ( 
+                            <div className="flex items-end">
+                                <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Load Students
                                 </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
-                        </Popover>
+                            </div>
+                        )}
                     </div>
-                    {!propClassId && ( // Only show manual load button on standalone page
-                        <div className="flex items-end">
-                            <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Load Students
-                            </Button>
-                        </div>
-                    )}
-                </div>
+                </Form>
 
                 {isLoading && !studentsLoaded && (
                     <div className="flex justify-center p-8">
