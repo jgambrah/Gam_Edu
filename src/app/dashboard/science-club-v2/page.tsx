@@ -27,7 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, ScienceProblem, DailyFact } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { format, isToday } from 'date-fns';
+import { format } from 'date-fns';
 import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
 
 
@@ -178,13 +178,22 @@ function FactOfTheDay() {
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
 
     const latestFact = facts?.[0];
-    const factIsFromToday = latestFact?.createdAt && isToday(latestFact.createdAt.toDate());
+    
+    // Check if the latest fact is older than 12 hours
+    const isFactStale = useMemo(() => {
+        if (!latestFact?.createdAt) return true; // No fact exists, so it's stale
+        const twelveHoursInMs = 12 * 60 * 60 * 1000;
+        const factTime = latestFact.createdAt.toDate().getTime();
+        const currentTime = new Date().getTime();
+        return (currentTime - factTime) > twelveHoursInMs;
+    }, [latestFact]);
+
 
     useEffect(() => {
         const generateNewFactIfNeeded = async () => {
-            // Only run on client, if not loading, if user exists, and if no fact for today exists
-            if (typeof window !== 'undefined' && !isLoading && user && !factIsFromToday) {
-                console.log("No fact for today. Generating a new one...");
+            // Only run on client, if not loading, if user exists, and if the fact is stale
+            if (typeof window !== 'undefined' && !isLoading && user && isFactStale) {
+                console.log("Fact is stale. Generating a new one...");
                 try {
                     const result = await generateDailyFact();
                     await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
@@ -200,7 +209,7 @@ function FactOfTheDay() {
         };
 
         generateNewFactIfNeeded();
-    }, [isLoading, factIsFromToday, user, firestore, toast]);
+    }, [isLoading, isFactStale, user, firestore, toast]);
 
     return (
         <Card>
@@ -211,6 +220,7 @@ function FactOfTheDay() {
                 {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
                     <blockquote className="border-l-4 pl-4 italic">
                         {latestFact.factText}
+                        <footer className="text-xs text-muted-foreground mt-2">Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP p') : 'Today'}</footer>
                     </blockquote>
                 ) : (
                     <p className="text-muted-foreground text-sm">Generating today's fact...</p>
