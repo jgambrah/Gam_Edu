@@ -13,4 +13,5 @@ import '@/ai/flows/campus-assistant-flow.ts';
 import '@/ai/flows/generate-science-question.ts';
 import '@/ai/flows/generate-daily-fact-flow.ts';
 import '@/ai/flows/generate-announcement-flow.ts';
+import '@/ai/flows/generate-event-flow.ts';
     

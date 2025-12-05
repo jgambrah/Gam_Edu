@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, deleteDoc, doc, Timestamp, serverTimestamp } from 'firebase/firestore';
 import { 
   Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, 
-  MapPin, Clock, Trash2, Loader2, Info 
+  MapPin, Clock, Trash2, Loader2, Info, Wand2 
 } from 'lucide-react';
 import { 
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, 
@@ -25,6 +25,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { generateEvent } from '@/ai/flows/generate-event-flow';
 
 // --- TYPES ---
 type EventType = 'Academic' | 'Holiday' | 'Sports' | 'Meeting' | 'Event';
@@ -53,7 +54,9 @@ function AddEventForm({ open, setOpen, selectedDate }: { open: boolean, setOpen:
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
 
+    const [aiKeyPoints, setAiKeyPoints] = useState('');
     const [title, setTitle] = useState('');
     const [type, setType] = useState<EventType>('Academic');
     const [dateStr, setDateStr] = useState(format(selectedDate, 'yyyy-MM-dd'));
@@ -61,13 +64,32 @@ function AddEventForm({ open, setOpen, selectedDate }: { open: boolean, setOpen:
     const [location, setLocation] = useState('');
     const [description, setDescription] = useState('');
 
+    const handleGenerateWithAI = async () => {
+      if (!aiKeyPoints.trim()) {
+        toast({ variant: 'destructive', title: 'Key points required for AI.' });
+        return;
+      }
+      setIsGenerating(true);
+      toast({ title: 'AI is thinking...' });
+      try {
+        const result = await generateEvent({ keyPoints: aiKeyPoints });
+        setTitle(result.title);
+        setDescription(result.description);
+        toast({ title: 'Event details generated!' });
+      } catch (error) {
+        toast({ variant: 'destructive', title: 'AI Error' });
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title || !dateStr) return;
         
         setIsSubmitting(true);
         try {
-            // Create Date object from string input
             const eventDate = new Date(dateStr);
             
             await addDoc(collection(firestore, 'school_calendar'), {
@@ -82,8 +104,7 @@ function AddEventForm({ open, setOpen, selectedDate }: { open: boolean, setOpen:
 
             toast({ title: 'Success', description: 'Event added to calendar.' });
             setOpen(false);
-            // Reset form
-            setTitle(''); setDescription(''); setTime(''); setLocation('');
+            setTitle(''); setDescription(''); setTime(''); setLocation(''); setAiKeyPoints('');
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Error', description: error.message });
         } finally {
@@ -93,15 +114,33 @@ function AddEventForm({ open, setOpen, selectedDate }: { open: boolean, setOpen:
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>Add School Event</DialogTitle>
                     <DialogDescription>Add a new event to the public school calendar.</DialogDescription>
                 </DialogHeader>
+                 <div className="space-y-3 p-4 bg-muted/50 rounded-lg border">
+                    <Label className="flex items-center gap-2 font-semibold"><Wand2 className="h-4 w-4 text-primary"/> AI Assistant</Label>
+                    <div className="flex items-center gap-2">
+                        <Input 
+                            value={aiKeyPoints} 
+                            onChange={e => setAiKeyPoints(e.target.value)} 
+                            placeholder="e.g., PTA meeting for JHS 1 parents"
+                        />
+                        <Button onClick={handleGenerateWithAI} disabled={isGenerating || !aiKeyPoints.trim()}>
+                            {isGenerating ? <Loader2 className="h-4 w-4 animate-spin"/> : "Generate"}
+                        </Button>
+                    </div>
+                </div>
+
                 <form onSubmit={handleSubmit} className="space-y-4 py-2">
                     <div className="space-y-2">
                         <Label>Event Title *</Label>
-                        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Mid-Term Exams" required />
+                        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="AI will generate this, or you can type it." required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Description</Label>
+                        <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="AI will generate this, or you can type it." />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -121,10 +160,6 @@ function AddEventForm({ open, setOpen, selectedDate }: { open: boolean, setOpen:
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Time (Optional)</Label><Input value={time} onChange={e => setTime(e.target.value)} placeholder="09:00 AM" /></div>
                         <div className="space-y-2"><Label>Location (Optional)</Label><Input value={location} onChange={e => setLocation(e.target.value)} placeholder="Main Hall" /></div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Description</Label>
-                        <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Details about the event..." />
                     </div>
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Save Event"}
