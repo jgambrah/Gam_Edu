@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -29,9 +30,9 @@ export default function TimetablePage() {
   const [customConstraint, setCustomConstraint] = useState('');
 
   const classesQuery = useMemoFirebase(
-    () => user && (role === 'Administrator' || role === 'Director') 
+    () => user && (role === 'Administrator' || role === 'Director' || role === 'Teacher') 
       ? collection(firestore, 'classes') 
-      : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')),
+      : (user && role !== 'Student' ? query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')) : null),
     [firestore, user, role]
   );
   const { data: classes } = useCollection<ClassData>(classesQuery);
