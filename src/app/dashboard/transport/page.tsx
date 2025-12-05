@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Route, Stop, Student, Bus } from '@/lib/types';
 import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -200,7 +200,7 @@ const stopSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Stop name is required.'),
   address: z.string().min(1, 'Address is required.'),
-  order: z.number().min(1, 'Order must be at least 1.'),
+  order: z.coerce.number().min(1, 'Order must be at least 1.'),
   assignedStudentIds: z.array(z.string()).default([]),
 });
 
@@ -313,7 +313,7 @@ export default function TransportPage() {
   const { data: routes, forceRefetch: refetchRoutes, isLoading: isLoadingRoutes } = useCollection<Route>(useMemoFirebase(() => collection(firestore, 'routes'), [firestore]));
   const { data: buses, forceRefetch: refetchBuses, isLoading: isLoadingBuses } = useCollection<Bus>(useMemoFirebase(() => collection(firestore, 'buses'), [firestore]));
   const { data: students, forceRefetch: refetchStudents, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => collection(firestore, 'students'), [firestore]));
-  const { data: drivers } = useCollection(useMemoFirebase(() => query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')), [firestore]));
+  const { data: drivers } = useCollection<Student>(useMemoFirebase(() => query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')), [firestore]));
 
   const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents;
 
@@ -432,3 +432,5 @@ export default function TransportPage() {
     </div>
   );
 }
+
+    
