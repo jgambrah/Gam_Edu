@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -95,7 +96,7 @@ export function NoticeSummarizer() {
     };
 
     try {
-        await addDoc(collection(firestore, 'announcements'), announcementData)
+        await addDoc(collection(firestore, 'announcements_v2'), announcementData)
         toast({
           title: 'Announcement Posted!',
           description: 'The announcement is now live for all users.',

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -26,8 +27,9 @@ export default function CommunicationPage() {
 
   const announcementsQuery = useMemoFirebase(() => {
     if (!firestore || !role) return null;
+    // Switching to v2 to bypass cache/permission issues
     return query(
-        collection(firestore, 'announcements'),
+        collection(firestore, 'announcements_v2'),
         where('audience', 'array-contains-any', ['Everybody', role]),
         orderBy('publishedAt', 'desc')
     );

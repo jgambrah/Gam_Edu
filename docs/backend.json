@@ -1347,7 +1347,7 @@
   "firestore": {
     "structure": [
       {
-        "path": "/announcements/{announcementId}",
+        "path": "/announcements_v2/{announcementId}",
         "definition": {
           "entityName": "Announcement",
           "schema": {
