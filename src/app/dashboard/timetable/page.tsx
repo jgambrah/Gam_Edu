@@ -30,9 +30,15 @@ export default function TimetablePage() {
   const [customConstraint, setCustomConstraint] = useState('');
 
   const classesQuery = useMemoFirebase(
-    () => user && (role === 'Administrator' || role === 'Director' || role === 'Teacher') 
-      ? collection(firestore, 'classes') 
-      : (user && role !== 'Student' ? query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')) : null),
+    () => {
+      if (!user) return null;
+      // All non-student roles should be able to see all classes to select from.
+      if (role && role !== 'Student') {
+        return collection(firestore, 'classes');
+      }
+      // Students don't need this query, their class is determined from their profile.
+      return null;
+    },
     [firestore, user, role]
   );
   const { data: classes } = useCollection<ClassData>(classesQuery);
