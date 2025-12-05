@@ -88,7 +88,7 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/parents-v2',
-            title: 'Parents V2',
+            title: 'Parents',
             icon: HeartHandshake,
             roles: ['Director', 'Administrator'],
         },
