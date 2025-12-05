@@ -53,14 +53,25 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        await createNewUser(email, password, 'Director', { firstName: 'Admin', lastName: 'User' });
+        // First, create the user record in the backend and in Auth
+        const result = await createNewUser(email, password, 'Director', { firstName: 'Admin', lastName: 'User' });
+        
+        if ('error' in result) {
+            // If createNewUser returns an error, show it and stop
+            throw new Error(result.error);
+        }
+        
         toast({
-          title: 'Account Creation Pending',
-          description: "Your account is being created. You'll be redirected shortly.",
+          title: 'Account Created!',
+          description: "Logging you in now...",
         });
-        // Non-blocking sign-in will handle the redirect
+
+        // After successful creation, initiate the sign-in flow.
+        // The onAuthStateChanged listener will then handle the redirect.
         initiateEmailSignIn(auth, email, password);
+
       } else {
+        // For sign-in, just initiate the sign-in flow.
         initiateEmailSignIn(auth, email, password);
       }
     } catch (error: any) {
@@ -69,9 +80,10 @@ export default function LoginPage() {
         title: isSignUp ? 'Sign Up Failed' : 'Authentication Failed',
         description: error.message,
       });
-    } finally {
-      // Don't set loading to false here; the onAuthStateChanged listener will trigger redirect
-    }
+       // Only set loading to false on a caught error
+       setIsLoading(false);
+    } 
+    // Do not set isLoading to false on success; the redirect will handle it.
   };
 
   if (isUserLoading || user) {
