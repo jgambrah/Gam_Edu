@@ -1,4 +1,3 @@
-
 'use server';
 import { config } from 'dotenv';
 config();
@@ -13,4 +12,5 @@ import '@/ai/flows/generate-writing-challenge-flow.ts';
 import '@/ai/flows/campus-assistant-flow.ts';
 import '@/ai/flows/generate-science-question.ts';
 import '@/ai/flows/generate-daily-fact-flow.ts';
+import '@/ai/flows/generate-announcement-flow.ts';
     

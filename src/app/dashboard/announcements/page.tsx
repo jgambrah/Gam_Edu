@@ -6,7 +6,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { 
-  Megaphone, Plus, Trash2, Loader2, Calendar, User, AlertCircle 
+  Megaphone, Plus, Trash2, Loader2, Calendar, User, AlertCircle, Wand2
 } from 'lucide-react';
 
 // UI Components
@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { generateAnnouncement } from '@/ai/flows/generate-announcement-flow';
 
 // --- TYPE DEFINITION ---
 type Announcement = {
@@ -46,11 +47,35 @@ function PostAnnouncementForm({
     const { role } = useRole();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     // Form State
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [priority, setPriority] = useState('Normal');
+    const [aiKeyPoints, setAiKeyPoints] = useState('');
+
+    const handleGenerateWithAI = async () => {
+        if (!aiKeyPoints.trim()) {
+            toast({ variant: 'destructive', title: 'Key Points Required', description: 'Please provide some notes for the AI.' });
+            return;
+        }
+        setIsGenerating(true);
+        toast({ title: 'AI is thinking...', description: 'Generating an announcement from your notes.' });
+
+        try {
+            const result = await generateAnnouncement({ keyPoints: aiKeyPoints });
+            setTitle(result.title);
+            setContent(result.content);
+            toast({ title: 'Announcement Generated!', description: 'The title and content fields have been populated.' });
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'AI Error', description: 'Could not generate announcement.' });
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,6 +98,7 @@ function PostAnnouncementForm({
             setTitle('');
             setContent('');
             setPriority('Normal');
+            setAiKeyPoints('');
         } catch (error: any) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -83,49 +109,74 @@ function PostAnnouncementForm({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Post New Announcement</DialogTitle>
                     <DialogDescription>Share news with the entire school.</DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-                    <div className="space-y-2">
-                        <Label>Title</Label>
-                        <Input 
-                            placeholder="e.g., Mid-Term Break Dates" 
-                            value={title} 
-                            onChange={e => setTitle(e.target.value)} 
-                            required 
-                        />
-                    </div>
-                    
-                    <div className="space-y-2">
-                        <Label>Priority Level</Label>
-                        <Select value={priority} onValueChange={setPriority}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Normal">Normal</SelectItem>
-                                <SelectItem value="High">High Importance</SelectItem>
-                                <SelectItem value="Urgent">Urgent / Emergency</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>Content</Label>
-                        <Textarea 
-                            placeholder="Type your message here..." 
-                            className="h-32"
-                            value={content}
-                            onChange={e => setContent(e.target.value)}
-                            required
-                        />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+                    {/* AI Assistant Side */}
+                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                            <Wand2 className="h-5 w-5 text-primary" />
+                            <h3 className="text-lg font-semibold">AI Assistant</h3>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Key Points</Label>
+                            <Textarea
+                                placeholder="e.g., - Sports day postponed from Oct 20 to Nov 5
+- Reason: heavy rain forecast
+- Events and times are the same"
+                                value={aiKeyPoints}
+                                onChange={e => setAiKeyPoints(e.target.value)}
+                                className="h-32"
+                            />
+                        </div>
+                        <Button onClick={handleGenerateWithAI} disabled={isGenerating || !aiKeyPoints.trim()} className="w-full">
+                            {isGenerating ? <Loader2 className="h-4 w-4 animate-spin"/> : "Generate Announcement"}
+                        </Button>
                     </div>
 
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post Announcement"}
-                    </Button>
-                </form>
+                    {/* Form Side */}
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label>Title</Label>
+                            <Input 
+                                placeholder="AI will generate this, or you can type it." 
+                                value={title} 
+                                onChange={e => setTitle(e.target.value)} 
+                                required 
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <Label>Content</Label>
+                            <Textarea 
+                                placeholder="AI will generate this, or you can write your own." 
+                                className="h-32"
+                                value={content}
+                                onChange={e => setContent(e.target.value)}
+                                required
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <Label>Priority Level</Label>
+                            <Select value={priority} onValueChange={setPriority}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Normal">Normal</SelectItem>
+                                    <SelectItem value="High">High Importance</SelectItem>
+                                    <SelectItem value="Urgent">Urgent / Emergency</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post Announcement"}
+                        </Button>
+                    </form>
+                </div>
             </DialogContent>
         </Dialog>
     );
