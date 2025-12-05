@@ -21,14 +21,12 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
     .filter((ts, index, self) => self.findIndex(t => t.startTime === ts.startTime) === index)
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
-  const getEntry = (day: string, timeSlotId: string) => {
-    const originalTimeSlot = timeSlots.find(ts => ts.id === timeSlotId);
-    if (!originalTimeSlot) return null;
-
-    const slotInDay = timeSlots.find(ts => ts.day === day && ts.startTime === originalTimeSlot.startTime);
-    if (!slotInDay) return null;
-    
-    return timetable.find(entry => entry.timeSlotId === slotInDay.id);
+  const getEntry = (day: string, timeSlot: TimeSlot) => {
+    // Find the entry that matches the specific day and the start time of the passed timeSlot
+    return timetable.find(entry => {
+        const entryTimeSlot = timeSlots.find(ts => ts.id === entry.timeSlotId);
+        return entryTimeSlot?.day === day && entryTimeSlot?.startTime === timeSlot.startTime;
+    });
   };
 
   return (
@@ -44,7 +42,7 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
           <TableRow key={timeSlot.id}>
             <TableCell className="font-medium">{timeSlot.startTime} - {timeSlot.endTime}</TableCell>
             {days.map(day => {
-              const entry = getEntry(day, timeSlot.id);
+              const entry = getEntry(day, timeSlot);
               if (entry) {
                 const subject = subjects.find(s => s.id === entry.subjectId);
                 const teacher = teachers.find(t => t.uid === entry.teacherId);
