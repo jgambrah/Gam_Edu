@@ -75,19 +75,19 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/staff',
+            path: '/dashboard/staff-management-v2',
             title: 'Staff Management',
             icon: UserCog,
             roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
-            path: '/dashboard/students',
+            path: '/dashboard/students-v3',
             title: 'Students',
             icon: GraduationCap,
             roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
-            path: '/dashboard/parents',
+            path: '/dashboard/parents-v2',
             title: 'Parents',
             icon: HeartHandshake,
             roles: ['Director', 'Administrator'],
@@ -187,13 +187,13 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/maths-club',
+            path: '/dashboard/maths-club-v2',
             title: 'Math Club',
             icon: Sigma,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/science-club',
+            path: '/dashboard/science-club-v2',
             title: 'Science Club',
             icon: FlaskConical,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],

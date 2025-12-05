@@ -1336,6 +1336,43 @@
         }
       },
       "required": ["userId", "userName", "total_correct_answers", "total_challenges_completed"]
+    },
+    "Bus": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Bus",
+      "type": "object",
+      "description": "Represents a school bus.",
+      "properties": {
+        "name": { "type": "string", "description": "e.g., Yellow Eagle" },
+        "capacity": { "type": "number" },
+        "assignedDriverId": { "type": "string" }
+      },
+      "required": ["name", "capacity"]
+    },
+    "Route": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Route",
+      "type": "object",
+      "description": "Represents a bus route.",
+      "properties": {
+        "name": { "type": "string", "description": "e.g., Morning Route A - North" },
+        "busId": { "type": "string" },
+        "driverId": { "type": "string" }
+      },
+      "required": ["name", "busId", "driverId"]
+    },
+    "Stop": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Stop",
+      "type": "object",
+      "description": "Represents a single stop on a bus route.",
+      "properties": {
+        "name": { "type": "string", "description": "e.g., Oak Street & 1st" },
+        "address": { "type": "string" },
+        "order": { "type": "number" },
+        "assignedStudentIds": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["name", "order"]
     }
   },
   "auth": {
@@ -1831,6 +1868,30 @@
       {
         "path": "/science_leaderboard_v4/{userId}",
         "definition": { "entityName": "ScienceLeaderboard", "schema": { "$ref": "#/backend/entities/ScienceLeaderboard" }, "description": "Leaderboard for Science Club 4.0.", "params": [{ "name": "userId" }] }
+      },
+      {
+        "path": "/buses/{busId}",
+        "definition": {
+          "entityName": "Bus",
+          "schema": { "$ref": "#/backend/entities/Bus" },
+          "description": "Stores information about school buses."
+        }
+      },
+      {
+        "path": "/routes/{routeId}",
+        "definition": {
+          "entityName": "Route",
+          "schema": { "$ref": "#/backend/entities/Route" },
+          "description": "Defines a bus route, linking a bus and a driver."
+        }
+      },
+      {
+        "path": "/routes/{routeId}/stops/{stopId}",
+        "definition": {
+          "entityName": "Stop",
+          "schema": { "$ref": "#/backend/entities/Stop" },
+          "description": "Stores individual stops for a specific bus route."
+        }
       }
     ],
     "reasoning": "This design prioritizes role-based access control for the CampusConnect application, ensuring that Directors and Administrators can effectively manage staff roles and permissions. The structure uses dedicated collections for `roles` and `staff`, enabling straightforward security rules and efficient data retrieval. By denormalizing the `roleId` within the `/staff/{staffId}` document, authorization independence is achieved, eliminating the need for `get()` calls to the `roles` collection during security rule evaluation. This promotes atomic operations and simplifies security rule logic. The structure also provides clear segregation, ensuring that all documents within the `staff` collection share similar security needs. Access modeling is achieved using role-based access control. The `roles` collection allows easy management of permissions, and the `staff` collection links users to specific roles. This design supports QAPs by enabling secure `list` operations on both `roles` and `staff` collections based on administrative privileges. The structure ensures the integrity of ownership and relationships. All data is consistently and predictably named to follow semantic naming conventions to maintain clarity."
