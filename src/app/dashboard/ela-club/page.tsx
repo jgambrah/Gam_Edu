@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -341,7 +340,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                 correct++;
             }
         });
-        return { correct, total, percentage: (correct / total) * 100 };
+        return { correct, total, percentage: total > 0 ? (correct / total) * 100 : 0 };
     };
 
     const handleSubmit = async () => {
@@ -375,6 +374,8 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
             setAnswers({});
         }, 300);
     };
+    
+    const finalScore = calculateScore();
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
@@ -460,7 +461,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                     ) : (
                         <div className="flex justify-between w-full items-center">
                             <div className="font-bold">
-                                Score: {calculateScore().correct} / {passage.question_set.length}
+                                Score: {finalScore.correct} / {finalScore.total} ({finalScore.percentage.toFixed(0)}%)
                             </div>
                             <Button onClick={handleClose}>Finish Practice</Button>
                         </div>
