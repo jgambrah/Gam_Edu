@@ -1,12 +1,13 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { 
-  Megaphone, Plus, Trash2, Loader2, Calendar, User, AlertCircle, Wand2
+  Megaphone, Plus, Trash2, Loader2, Calendar, User, AlertCircle, Wand2, Users
 } from 'lucide-react';
 
 // UI Components
@@ -21,8 +22,13 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { generateAnnouncement } from '@/ai/flows/generate-announcement-flow';
+import { Checkbox } from '@/components/ui/checkbox';
+import type { Class } from '@/lib/types';
+
 
 // --- TYPE DEFINITION ---
+type Audience = 'Everybody' | 'Staff' | 'Students' | 'Parents';
+
 type Announcement = {
   id: string;
   title: string;
@@ -32,6 +38,8 @@ type Announcement = {
   authorRole: string;
   postedBy: string;
   createdAt: any;
+  audience: Audience[];
+  classId?: string;
 };
 
 // --- COMPONENT: Post Announcement Form ---
@@ -54,6 +62,19 @@ function PostAnnouncementForm({
     const [content, setContent] = useState('');
     const [priority, setPriority] = useState('Normal');
     const [aiKeyPoints, setAiKeyPoints] = useState('');
+    const [selectedAudience, setSelectedAudience] = useState<Audience[]>(['Everybody']);
+    const [selectedClassId, setSelectedClassId] = useState<string>('all');
+    
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
+    const handleAudienceChange = (audience: Audience, checked: boolean | 'indeterminate') => {
+        if (checked) {
+            setSelectedAudience(prev => [...prev, audience]);
+        } else {
+            setSelectedAudience(prev => prev.filter(a => a !== audience));
+        }
+    };
+
 
     const handleGenerateWithAI = async () => {
         if (!aiKeyPoints.trim()) {
@@ -83,13 +104,16 @@ function PostAnnouncementForm({
 
         setIsSubmitting(true);
         try {
-            await addDoc(collection(firestore, 'announcements'), {
+            await addDoc(collection(firestore, 'announcements_v2'), {
                 title,
                 content,
                 priority,
                 authorName: user?.displayName || 'Administrator',
                 authorRole: role,
                 postedBy: user?.uid,
+                audience: selectedAudience,
+                classId: selectedClassId === 'all' ? null : selectedClassId,
+                publishedAt: serverTimestamp(),
                 createdAt: serverTimestamp()
             });
 
@@ -99,6 +123,8 @@ function PostAnnouncementForm({
             setContent('');
             setPriority('Normal');
             setAiKeyPoints('');
+            setSelectedAudience(['Everybody']);
+            setSelectedClassId('all');
         } catch (error: any) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -109,12 +135,12 @@ function PostAnnouncementForm({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-2xl">
+            <DialogContent className="sm:max-w-3xl">
                 <DialogHeader>
                     <DialogTitle>Post New Announcement</DialogTitle>
-                    <DialogDescription>Share news with the entire school.</DialogDescription>
+                    <DialogDescription>Share news with the entire school or target specific groups.</DialogDescription>
                 </DialogHeader>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                     {/* AI Assistant Side */}
                     <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-2">
@@ -124,21 +150,21 @@ function PostAnnouncementForm({
                         <div className="space-y-2">
                             <Label>Key Points</Label>
                             <Textarea
-                                placeholder="e.g., - Sports day postponed from Oct 20 to Nov 5
-- Reason: heavy rain forecast
-- Events and times are the same"
+                                placeholder="e.g., - Sports day postponed to Nov 5
+- Reason: rain forecast
+- Target: All students and parents"
                                 value={aiKeyPoints}
                                 onChange={e => setAiKeyPoints(e.target.value)}
-                                className="h-32"
+                                className="h-24"
                             />
                         </div>
-                        <Button onClick={handleGenerateWithAI} disabled={isGenerating || !aiKeyPoints.trim()} className="w-full">
+                        <Button type="button" onClick={handleGenerateWithAI} disabled={isGenerating || !aiKeyPoints.trim()} className="w-full">
                             {isGenerating ? <Loader2 className="h-4 w-4 animate-spin"/> : "Generate Announcement"}
                         </Button>
                     </div>
 
                     {/* Form Side */}
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-4">
                         <div className="space-y-2">
                             <Label>Title</Label>
                             <Input 
@@ -153,34 +179,63 @@ function PostAnnouncementForm({
                             <Label>Content</Label>
                             <Textarea 
                                 placeholder="AI will generate this, or you can write your own." 
-                                className="h-32"
+                                className="h-24"
                                 value={content}
                                 onChange={e => setContent(e.target.value)}
                                 required
                             />
                         </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2">
+                                <Label>Priority Level</Label>
+                                <Select value={priority} onValueChange={setPriority}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Normal">Normal</SelectItem>
+                                        <SelectItem value="High">High Importance</SelectItem>
+                                        <SelectItem value="Urgent">Urgent / Emergency</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Target Class (Optional)</Label>
+                                <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Classes</SelectItem>
+                                        {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
                         
-                        <div className="space-y-2">
-                            <Label>Priority Level</Label>
-                            <Select value={priority} onValueChange={setPriority}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Normal">Normal</SelectItem>
-                                    <SelectItem value="High">High Importance</SelectItem>
-                                    <SelectItem value="Urgent">Urgent / Emergency</SelectItem>
-                                </SelectContent>
-                            </Select>
+                        <div className="space-y-3 pt-2">
+                            <Label>Target Audience</Label>
+                            <div className="flex flex-wrap gap-x-4 gap-y-2">
+                                {['Everybody', 'Staff', 'Students', 'Parents'].map(aud => (
+                                    <div key={aud} className="flex items-center space-x-2">
+                                        <Checkbox 
+                                            id={`aud-${aud}`} 
+                                            checked={selectedAudience.includes(aud as Audience)}
+                                            onCheckedChange={(checked) => handleAudienceChange(aud as Audience, checked)}
+                                        />
+                                        <Label htmlFor={`aud-${aud}`}>{aud}</Label>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Post Announcement"}
                         </Button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </DialogContent>
         </Dialog>
     );
 }
+
 
 // --- MAIN PAGE ---
 export default function AnnouncementsPage() {
@@ -195,7 +250,7 @@ export default function AnnouncementsPage() {
 
   // 1. FETCH ANNOUNCEMENTS (Ordered by newest first)
   const announcementsQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'announcements'), orderBy('createdAt', 'desc')) : null,
+    () => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc')) : null,
     [firestore]
   );
   const { data: announcements, isLoading } = useCollection<Announcement>(announcementsQuery);
@@ -203,7 +258,7 @@ export default function AnnouncementsPage() {
   const handleDelete = async (id: string) => {
       if (!confirm("Delete this announcement?")) return;
       try {
-          await deleteDoc(doc(firestore, 'announcements', id));
+          await deleteDoc(doc(firestore, 'announcements_v2', id));
           toast({ title: "Deleted", description: "Announcement removed." });
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: "Failed to delete." });
