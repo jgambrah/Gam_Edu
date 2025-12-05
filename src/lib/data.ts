@@ -76,7 +76,7 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/staff-management-v2',
-            title: 'Staff Management V2',
+            title: 'Staff Management',
             icon: UserCog,
             roles: ['Director', 'Administrator', 'Teacher'],
         },
