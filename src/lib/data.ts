@@ -1,5 +1,4 @@
 
-
 import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -188,7 +187,7 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/science-club-v2',
-            title: 'Science Club 2.0',
+            title: 'Science Club',
             icon: FlaskConical,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
