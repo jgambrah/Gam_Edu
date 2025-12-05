@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { addDoc, collection, doc, updateDoc, writeBatch, query, where } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // --- Student Assignment Dialog ---
 
@@ -431,5 +432,3 @@ export default function TransportPage() {
     </div>
   );
 }
-
-    
