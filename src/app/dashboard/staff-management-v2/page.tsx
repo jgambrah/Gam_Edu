@@ -32,7 +32,7 @@ type StaffMember = {
   address?: string;
 };
 
-export default function StaffManagementV2() {
+export default function StaffManagementPage() {
   const firestore = useFirestore();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -194,7 +194,7 @@ export default function StaffManagementV2() {
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <Users className="h-6 w-6 text-blue-600"/> Staff Management V2
+                    <Users className="h-6 w-6 text-blue-600"/> Staff Management
                 </CardTitle>
                 <CardDescription>Manage teachers and administrators.</CardDescription>
             </div>

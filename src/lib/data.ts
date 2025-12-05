@@ -40,6 +40,7 @@ import {
   Atom,
   Wallet,
   Settings,
+  Megaphone,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -50,9 +51,9 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
-    path: '/dashboard/communication',
-    title: 'Communication',
-    icon: MessageSquare,
+    path: '/dashboard/announcements',
+    title: 'Announcements',
+    icon: Megaphone,
     roles: 'all',
   },
   {
@@ -74,19 +75,19 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/staff-management-v2',
+            path: '/dashboard/staff-management',
             title: 'Staff Management',
             icon: UserCog,
             roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
-            path: '/dashboard/students-v3',
+            path: '/dashboard/students',
             title: 'Students',
             icon: GraduationCap,
             roles: ['Director', 'Administrator', 'Teacher'],
         },
         {
-            path: '/dashboard/parents-v2',
+            path: '/dashboard/parents',
             title: 'Parents',
             icon: HeartHandshake,
             roles: ['Director', 'Administrator'],
@@ -180,13 +181,13 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/maths-club-v2',
+            path: '/dashboard/maths-club',
             title: 'Math Club',
             icon: Sigma,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/science-club-v2',
+            path: '/dashboard/science-club',
             title: 'Science Club',
             icon: FlaskConical,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],

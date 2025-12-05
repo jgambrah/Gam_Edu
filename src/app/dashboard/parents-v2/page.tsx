@@ -39,7 +39,7 @@ type Student = {
 };
 
 // --- MAIN PAGE COMPONENT ---
-export default function ParentsV2Page() {
+export default function ParentsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
@@ -144,7 +144,7 @@ export default function ParentsV2Page() {
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <HeartHandshake className="h-6 w-6 text-pink-500"/> Parent Management V2
+                    <HeartHandshake className="h-6 w-6 text-pink-500"/> Parent Management
                 </CardTitle>
                 <CardDescription>Manage parents and link them to their children.</CardDescription>
             </div>

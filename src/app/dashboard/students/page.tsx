@@ -3,16 +3,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  setDoc, 
-  updateDoc, 
-  deleteDoc, 
-  serverTimestamp, 
-  addDoc 
-} from 'firebase/firestore';
+// FIX: Using getDocs instead of useCollection hooks
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI Components
@@ -22,12 +14,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
-// --- TYPES ---
+// --- TYPE DEFINITIONS ---
 type Student = {
   id: string;
   uid: string;
@@ -39,6 +32,7 @@ type Student = {
   address?: string;
   dateOfBirth?: string;
   enrollmentStatus?: string;
+  usesBusService?: boolean;
 };
 
 type Class = {
@@ -51,7 +45,7 @@ export default function StudentsPage() {
   const { user, isUserLoading } = useAuth();
   const { toast } = useToast();
 
-  // --- STATE ---
+  // Data State
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
@@ -110,7 +104,10 @@ export default function StudentsPage() {
         const studentSnap = await getDocs(collection(firestore, 'students'));
         console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
         
-        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+        const studentList = studentSnap.docs.map(d => ({ 
+            id: d.id, 
+            ...d.data() 
+        })) as Student[];
         setStudents(studentList);
         
         setStatusMsg("Ready");
@@ -123,7 +120,7 @@ export default function StudentsPage() {
     }
   }, [user, isUserLoading, firestore, toast]);
 
-  // Trigger load on mount
+  // Load on mount
   useEffect(() => {
       loadData();
   }, [loadData]);
@@ -195,27 +192,26 @@ export default function StudentsPage() {
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const email = formData.get('email') as string;
+      const values = Object.fromEntries(formData.entries());
 
       try {
-          const result = await createNewUser(email, "password123", 'Student', { 
-              firstName: firstName, 
-              lastName: lastName 
+          const result = await createNewUser(values.email as string, "password123", 'Student', { 
+              firstName: values.firstName as string, 
+              lastName: values.lastName as string 
           });
           
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
               classId: selectedClassId,
               gender: selectedGender,
-              dateOfBirth: formData.get('dateOfBirth'),
-              address: formData.get('address'),
+              dateOfBirth: values.dateOfBirth,
+              address: values.address,
+              usesBusService: values.usesBusService === 'on',
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
@@ -237,16 +233,18 @@ export default function StudentsPage() {
     if (!editingStudent || isSubmitting) return;
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
+    const values = Object.fromEntries(formData.entries());
 
     try {
         const studentRef = doc(firestore, 'students', editingStudent.id);
         await updateDoc(studentRef, {
-            firstName: formData.get('firstName'),
-            lastName: formData.get('lastName'),
+            firstName: values.firstName,
+            lastName: values.lastName,
             classId: selectedClassId,
             gender: selectedGender,
-            dateOfBirth: formData.get('dateOfBirth'),
-            address: formData.get('address')
+            dateOfBirth: values.dateOfBirth,
+            address: values.address,
+            usesBusService: values.usesBusService === 'on',
         });
 
         toast({ title: "Updated", description: "Student saved." });
@@ -372,7 +370,7 @@ export default function StudentsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead>Services</TableHead><TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -385,11 +383,9 @@ export default function StudentsPage() {
                                             {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>
-                                        <Badge className={s.enrollmentStatus === 'Active' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 'bg-gray-100 text-gray-800'}>
-                                            {s.enrollmentStatus || 'Active'}
-                                        </Badge>
-                                    </TableCell>
+                                     <TableCell>
+                                        {s.usesBusService && <Bus className="h-4 w-4 text-muted-foreground" title="Uses Bus Service" />}
+                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
@@ -443,6 +439,10 @@ export default function StudentsPage() {
                     </div>
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="usesBusService" name="usesBusService" />
+                    <Label htmlFor="usesBusService">This student uses the bus service</Label>
+                </div>
                 <div className="pt-2">
                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
@@ -458,30 +458,36 @@ export default function StudentsPage() {
             {editingStudent && (
                 <form onSubmit={handleUpdateStudent} className="space-y-4 mt-2">
                     <div className="grid grid-cols-2 gap-4">
-                        <Input name="firstName" defaultValue={editingStudent.firstName} required />
-                        <Input name="lastName" defaultValue={editingStudent.lastName} required />
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
                     </div>
-                    <Input value={editingStudent.email} disabled className="bg-slate-100" />
-                    
+                     <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
                     <div className="space-y-2">
                         <Label>Class</Label>
                         <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>
-                                {classes.map(c => (
+                                {(classes || []).map(c => (
                                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} />
-                        <Select value={selectedGender} onValueChange={setSelectedGender}>
-                            <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
-                            <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
-                        </Select>
+                        <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" defaultValue={editingStudent.dateOfBirth} /></div>
+                        <div className="space-y-2">
+                            <Label>Gender</Label>
+                            <Select value={selectedGender} onValueChange={setSelectedGender}>
+                                <SelectTrigger><SelectValue placeholder="Gender"/></SelectTrigger>
+                                <SelectContent><SelectItem value="Male">Male</SelectItem><SelectItem value="Female">Female</SelectItem></SelectContent>
+                            </Select>
+                        </div>
                     </div>
-                    <Input name="address" defaultValue={editingStudent.address} />
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="editUsesBusService" name="usesBusService" defaultChecked={editingStudent.usesBusService} />
+                        <Label htmlFor="editUsesBusService">This student uses the bus service</Label>
+                    </div>
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
                     </Button>

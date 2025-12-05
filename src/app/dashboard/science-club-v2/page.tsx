@@ -232,7 +232,7 @@ function FactOfTheDay() {
 
 
 // --- MAIN PAGE COMPONENT ---
-export default function ScienceClubPageV2() {
+export default function ScienceClubPage() {
   const router = useRouter();
   const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();

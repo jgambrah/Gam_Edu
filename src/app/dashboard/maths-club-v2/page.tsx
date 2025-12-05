@@ -5,10 +5,10 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, getDocs, limit } from 'firebase/firestore';
 import { 
   Sigma, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2, BookOpen, CheckCircle2, Wand2 
+  Trash2, BookOpen, CheckCircle2, Wand2, Lightbulb 
 } from 'lucide-react';
 
 // UI Components
@@ -26,6 +26,10 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, MathProblem } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { format } from 'date-fns';
+import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
+
 
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
@@ -163,7 +167,7 @@ function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen
 }
 
 // --- MAIN PAGE COMPONENT ---
-export default function MathsClubPageV2() {
+export default function MathClubPage() {
   const router = useRouter();
   const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();
@@ -221,13 +225,11 @@ export default function MathsClubPageV2() {
   const filteredProblems = useMemo(() => {
     if (!rawProblems) return [];
     
-    // Filter for Students (Only show my class OR global items)
     let list = rawProblems;
     if (role === 'Student') {
         list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
     }
 
-    // Filter by UI Selections
     if (selectedTopic) list = list.filter(p => p.topic === selectedTopic);
     if (selectedDifficulty) list = list.filter(p => p.difficulty === selectedDifficulty);
 
@@ -263,7 +265,7 @@ export default function MathsClubPageV2() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sigma className="h-6 w-6 text-indigo-600"/> 
-            Maths Club 2.0
+            Math Club
           </CardTitle>
           <CardDescription>
             Master mathematics through practice and competition.
