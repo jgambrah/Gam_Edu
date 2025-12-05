@@ -22,11 +22,11 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
   const getEntry = (day: string, timeSlot: TimeSlot) => {
-    // Find the entry that matches the specific day and the start time of the passed timeSlot
-    return timetable.find(entry => {
-        const entryTimeSlot = timeSlots.find(ts => ts.id === entry.timeSlotId);
-        return entryTimeSlot?.day === day && entryTimeSlot?.startTime === timeSlot.startTime;
-    });
+    // Find a timeSlotId that matches the day and startTime
+    const matchingTimeSlot = timeSlots.find(ts => ts.day === day && ts.startTime === timeSlot.startTime);
+    if (!matchingTimeSlot) return undefined;
+    // Find the timetable entry using that ID
+    return timetable.find(entry => entry.timeSlotId === matchingTimeSlot.id);
   };
 
   return (
