@@ -82,7 +82,7 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/students-v3',
-            title: 'Students V3',
+            title: 'Students',
             icon: GraduationCap,
             roles: ['Director', 'Administrator', 'Teacher'],
         },
