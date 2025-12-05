@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -533,9 +534,7 @@ function ActiveChallengeDialog({
             errorEmitter.emit('permission-error', permissionError);
             toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your work.' });
         })
-        .finally(() => {
-            setIsSubmitting(false);
-        });
+        .finally(() => setIsSubmitting(false));
     };
 
     return (
