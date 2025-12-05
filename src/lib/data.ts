@@ -75,7 +75,7 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/staff-management',
+            path: '/dashboard/staff',
             title: 'Staff Management',
             icon: UserCog,
             roles: ['Director', 'Administrator', 'Teacher'],
@@ -163,6 +163,12 @@ export const navItems: NavItem[] = [
         {
             path: '/dashboard/timetable',
             title: 'Timetable',
+            icon: CalendarDays,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/calendar',
+            title: 'School Calendar',
             icon: CalendarDays,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
