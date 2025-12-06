@@ -330,43 +330,31 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
     const [showResults, setShowResults] = useState(false);
     const firestore = useFirestore();
     const { user } = useUser();
+    const { toast } = useToast();
 
     if (!passage) return null;
 
-    // Calculate score
-    const calculateScore = () => {
-        let correct = 0;
-        let total = passage.question_set.length;
+    const handleSubmit = () => {
+        let correctCount = 0;
         passage.question_set.forEach((q, idx) => {
             if (answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase()) {
-                correct++;
+                correctCount++;
             }
         });
-        return { correct, total, percentage: total > 0 ? (correct / total) * 100 : 0 };
-    };
-
-    const handleSubmit = async () => {
-        setShowResults(true);
-        const { correct } = calculateScore();
-
-        if (correct > 0 && user && firestore) {
-            const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
-            const data = {
-                userId: user.uid,
-                userName: user.displayName || user.email,
-                profilePictureUrl: user.photoURL || '',
-                total_correct_answers: increment(correct),
-            };
-            setDoc(leaderboardRef, data, { merge: true })
-            .catch(error => {
-                const permissionError = new FirestorePermissionError({
-                    path: leaderboardRef.path,
-                    operation: 'write',
-                    requestResourceData: data,
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            });
+        
+        if (correctCount > 0 && user && firestore) {
+             const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
+             const data = {
+                 userId: user.uid,
+                 userName: user.displayName || user.email,
+                 profilePictureUrl: user.photoURL || '',
+                 total_correct_answers: increment(correctCount),
+             };
+             setDoc(leaderboardRef, data, { merge: true });
         }
+
+        setShowResults(true);
+        toast({ title: "Answers Checked", description: "Review your results below."})
     };
 
     const handleClose = () => {
@@ -376,8 +364,6 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
             setAnswers({});
         }, 300);
     };
-    
-    const finalScore = calculateScore();
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
@@ -459,11 +445,11 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
 
                 <DialogFooter className="pt-4 border-t mt-4">
                     {!showResults ? (
-                        <Button onClick={handleSubmit} className="w-full md:w-auto">Submit Answers</Button>
+                        <Button onClick={handleSubmit} className="w-full md:w-auto">Check Answers</Button>
                     ) : (
                         <div className="flex justify-between w-full items-center">
                             <div className="font-bold">
-                                Score: {finalScore.correct} / {finalScore.total} ({finalScore.percentage.toFixed(0)}%)
+                                Review your answers and compare with the correct solutions provided.
                             </div>
                             <Button onClick={handleClose}>Finish Practice</Button>
                         </div>
