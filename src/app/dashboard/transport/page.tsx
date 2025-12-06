@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Route, Stop, Student, Bus } from '@/lib/types';
+import { Route, Stop, Student, Bus, Class } from '@/lib/types';
 import { User, Users, Bus as BusIcon, MapPin, Route as RouteIcon, Loader2, PlusCircle, Trash2, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -314,8 +314,10 @@ export default function TransportPage() {
   const { data: buses, forceRefetch: refetchBuses, isLoading: isLoadingBuses } = useCollection<Bus>(useMemoFirebase(() => collection(firestore, 'buses'), [firestore]));
   const { data: students, forceRefetch: refetchStudents, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => collection(firestore, 'students'), [firestore]));
   const { data: drivers } = useCollection<Student>(useMemoFirebase(() => query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')), [firestore]));
+  const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
-  const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents;
+
+  const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents || isLoadingClasses;
 
   const selectedRoute = useMemo(() => {
     return routes?.find(r => r.id === selectedRouteId);
