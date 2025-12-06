@@ -213,6 +213,7 @@ function ReadingPracticeTab() {
       (user && firestore && !isStaff) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, 
     [firestore, user, isStaff])
   );
+  
   const studentClassId = studentData?.[0]?.classId;
 
   // 2. Fetch Passages
@@ -406,7 +407,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                         <ScrollArea className="flex-1 pr-4">
                             <div className="space-y-6">
                                 {passage.question_set.map((q, idx) => {
-                                    const isCorrect = answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase();
+                                    const isCorrect = showResults && (answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase());
                                     return (
                                         <div key={`${passage.id}-${idx}`} className={cn("p-4 border rounded-lg", 
                                             showResults && isCorrect ? "bg-green-50 border-green-200" : "",
