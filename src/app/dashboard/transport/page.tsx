@@ -331,6 +331,11 @@ export default function TransportPage() {
     return drivers.find(d => d.uid === selectedRoute.driverId);
   }, [selectedRoute, drivers]);
 
+  const subscribedStudents = useMemo(() => {
+    if (!students) return [];
+    return students.filter(s => s.usesBusService === true);
+  }, [students]);
+
   if (!canAccess) {
     return (
       <Card>
@@ -369,41 +374,73 @@ export default function TransportPage() {
 
       {isLoading && selectedRouteId && <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto"/></div>}
 
-      {selectedRoute && !isLoading && (
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-1 space-y-6">
-            <Card>
-              <CardHeader><CardTitle className="flex items-center gap-2"><BusIcon /> Bus & Driver</CardTitle></CardHeader>
-              <CardContent>
-                <p><strong>Bus:</strong> {assignedBus?.name || 'N/A'}</p>
-                <p><strong>Capacity:</strong> {assignedBus?.capacity || 'N/A'}</p>
-                <p><strong>Driver:</strong> {assignedDriver?.firstName ? `${assignedDriver.firstName} ${assignedDriver.lastName}`: 'N/A'}</p>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="md:col-span-2">
-            <Card>
-              <CardHeader><CardTitle className="flex items-center gap-2"><MapPin/> Route Stops & Assignments</CardTitle></CardHeader>
-              <CardContent className="space-y-4">
-                {selectedRoute.stops?.sort((a,b) => a.order - b.order).map(stop => (
-                  <div key={stop.id} className="p-4 border rounded-md">
-                    <h4 className="font-semibold">{stop.order}. {stop.name}</h4>
-                    <p className="text-sm text-muted-foreground">{stop.address}</p>
-                    <div className="mt-2 pl-4">
-                        {stop.assignedStudentIds?.length > 0 ? (
-                            stop.assignedStudentIds.map(studentId => {
-                                const student = students?.find(s => s.uid === studentId);
-                                return <div key={studentId} className="flex items-center gap-2 text-sm"><User className="h-4 w-4"/>{student ? `${student.firstName} ${student.lastName}` : 'Unknown Student'}</div>
-                            })
-                        ) : <p className="text-xs text-muted-foreground italic">No students assigned to this stop.</p>}
+      <div className="grid md:grid-cols-2 gap-6">
+        {selectedRoute && !isLoading && (
+            <div className="md:col-span-1 space-y-6">
+                <Card>
+                <CardHeader><CardTitle className="flex items-center gap-2"><BusIcon /> Bus & Driver</CardTitle></CardHeader>
+                <CardContent>
+                    <p><strong>Bus:</strong> {assignedBus?.name || 'N/A'}</p>
+                    <p><strong>Capacity:</strong> {assignedBus?.capacity || 'N/A'}</p>
+                    <p><strong>Driver:</strong> {assignedDriver?.firstName ? `${assignedDriver.firstName} ${assignedDriver.lastName}`: 'N/A'}</p>
+                </CardContent>
+                </Card>
+                <Card>
+                <CardHeader><CardTitle className="flex items-center gap-2"><MapPin/> Route Stops & Assignments</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    {selectedRoute.stops?.sort((a,b) => a.order - b.order).map(stop => (
+                    <div key={stop.id} className="p-4 border rounded-md">
+                        <h4 className="font-semibold">{stop.order}. {stop.name}</h4>
+                        <p className="text-sm text-muted-foreground">{stop.address}</p>
+                        <div className="mt-2 pl-4">
+                            {stop.assignedStudentIds?.length > 0 ? (
+                                stop.assignedStudentIds.map(studentId => {
+                                    const student = students?.find(s => s.uid === studentId);
+                                    return <div key={studentId} className="flex items-center gap-2 text-sm"><User className="h-4 w-4"/>{student ? `${student.firstName} ${student.lastName}` : 'Unknown Student'}</div>
+                                })
+                            ) : <p className="text-xs text-muted-foreground italic">No students assigned to this stop.</p>}
+                        </div>
                     </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
+                    ))}
+                </CardContent>
+                </Card>
+            </div>
+        )}
+        
+        <Card className="md:col-span-1">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Users/> Subscribed Students</CardTitle>
+                <CardDescription>List of all students subscribed to the bus service.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? (
+                     <div className="text-center p-8"><Loader2 className="h-8 w-8 animate-spin mx-auto"/></div>
+                ) : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Class</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {subscribedStudents.map(student => (
+                                <TableRow key={student.uid}>
+                                    <TableCell>{student.firstName} {student.lastName}</TableCell>
+                                    <TableCell>{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</TableCell>
+                                </TableRow>
+                            ))}
+                            {subscribedStudents.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-center text-muted-foreground">No students are currently subscribed to the bus service.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                )}
+            </CardContent>
+        </Card>
+      </div>
       
       {selectedRoute && (
         <StudentAssignmentDialog 
@@ -432,5 +469,3 @@ export default function TransportPage() {
     </div>
   );
 }
-
-    
