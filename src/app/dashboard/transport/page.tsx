@@ -314,7 +314,7 @@ export default function TransportPage() {
   const { data: buses, forceRefetch: refetchBuses, isLoading: isLoadingBuses } = useCollection<Bus>(useMemoFirebase(() => collection(firestore, 'buses'), [firestore]));
   const { data: students, forceRefetch: refetchStudents, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => collection(firestore, 'students'), [firestore]));
   const { data: drivers } = useCollection<Student>(useMemoFirebase(() => query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')), [firestore]));
-  const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
 
   const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents || isLoadingClasses;
