@@ -412,7 +412,7 @@ export default function TransportPage() {
         <Card className="md:col-span-1">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Users/> Subscribed Students</CardTitle>
-                <CardDescription>List of all students subscribed to the bus service.</CardDescription>
+                <CardDescription>A total of {subscribedStudents.length} students are subscribed to the bus service.</CardDescription>
             </CardHeader>
             <CardContent>
                 {isLoading ? (
