@@ -4,7 +4,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRole } from '@/context/role-context';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, orderBy, limit, addDoc, serverTimestamp, getDocs, where, startOfDay, endOfDay } from 'firebase/firestore';
+import { collection, query, orderBy, limit, addDoc, serverTimestamp, getDocs, where } from 'firebase/firestore';
+import { startOfDay, endOfDay } from 'date-fns';
 import { getAuth } from 'firebase/auth';
 import { BrainCircuit, Loader2, PlusCircle, Lightbulb } from 'lucide-react';
 
@@ -44,6 +45,8 @@ function DailyParadoxTab() {
 
     return query(
         collection(firestore, 'think_tank_paradoxes'),
+        // NOTE: If you get a "Missing Index" error, remove the 'createdAt' filter temporarily
+        // or click the link in the console to create the index.
         where('createdAt', '>=', todayStart),
         where('createdAt', '<=', todayEnd),
         orderBy('createdAt', 'desc'),
