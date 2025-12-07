@@ -1,96 +1,61 @@
+
 'use server';
 
-/**
- * @fileOverview AI logic for "The Think Tank" module, providing critical thinking challenges.
- *
- * - generateDailyParadox: Creates a daily logic puzzle or paradox.
- * - runDebateTurn: Powers an AI debate partner.
- */
-
-import { ai } from '@/ai/genkit';
+import { generate } from '@genkit-ai/ai';
+import { gemini15Flash } from '@genkit-ai/googleai';
 import { z } from 'zod';
 
-// --- 1. Daily Paradox Generation ---
-
-const GenerateParadoxInputSchema = z.object({
-  grade: z.string().describe("The target grade level for the puzzle (e.g., 'Grade 9')."),
-});
-export type GenerateParadoxInput = z.infer<typeof GenerateParadoxInputSchema>;
-
-const GenerateParadoxOutputSchema = z.object({
-  question: z.string().describe('The logic puzzle or riddle question.'),
-  answer: z.string().describe('The solution to the puzzle.'),
-  explanation: z.string().describe('A brief explanation of the logic behind the solution.'),
-  difficulty: z.string().describe('The assessed difficulty (e.g., "Easy", "Medium", "Hard").'),
-});
-export type GenerateParadoxOutput = z.infer<typeof GenerateParadoxOutputSchema>;
-
-
-const paradoxPrompt = ai.definePrompt({
-    name: 'generateDailyParadoxPrompt',
-    input: { schema: GenerateParadoxInputSchema },
-    output: { schema: GenerateParadoxOutputSchema },
-    prompt: `Generate a logic puzzle or lateral thinking riddle suitable for a {{{grade}}} student. It should challenge their critical thinking. Provide the solution and a brief explanation of the logic.`
+// Define the schema
+const ParadoxSchema = z.object({
+  question: z.string(),
+  answer: z.string(),
+  explanation: z.string(),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+  targetGroup: z.string(), // Added field to store who this is for
 });
 
-const generateParadoxFlow = ai.defineFlow(
-  {
-    name: 'generateDailyParadoxFlow',
-    inputSchema: GenerateParadoxInputSchema,
-    outputSchema: GenerateParadoxOutputSchema,
-  },
-  async (input) => {
-    const { output } = await paradoxPrompt(input);
-    return output!;
-  }
-);
-
-export async function generateDailyParadox(input: GenerateParadoxInput): Promise<GenerateParadoxOutput> {
-  return generateParadoxFlow(input);
-}
-
-
-// --- 2. AI Debate Partner ---
-
-const DebateTurnInputSchema = z.object({
-    topic: z.string().describe("The central topic of the debate."),
-    history: z.array(z.object({
-        role: z.string(),
-        content: z.string(),
-    })).describe("The history of the conversation."),
-    userArgument: z.string().describe("The user's most recent argument."),
-});
-export type DebateTurnInput = z.infer<typeof DebateTurnInputSchema>;
-
-const DebateTurnOutputSchema = z.object({
-    rebuttal: z.string().describe("The AI's counter-argument or rebuttal."),
-    critique: z.string().describe("A constructive critique of the user's argument, pointing out fallacies or areas for improvement."),
-});
-export type DebateTurnOutput = z.infer<typeof DebateTurnOutputSchema>;
-
-const debatePrompt = ai.definePrompt({
-    name: 'runDebateTurnPrompt',
-    input: { schema: DebateTurnInputSchema },
-    output: { schema: DebateTurnOutputSchema },
-    prompt: `You are a polite but skilled debater. The topic is '{{{topic}}}'. The user has just argued: '{{{userArgument}}}'.
-  1. Acknowledge their point.
-  2. Provide a counter-argument or point out a logical fallacy to make them think deeper.
-  3. Keep it encouraging but challenging.
-  4. Context from previous history: {{{json history}}}`
-});
-
-const runDebateTurnFlow = ai.defineFlow(
-    {
-        name: 'runDebateTurnFlow',
-        inputSchema: DebateTurnInputSchema,
-        outputSchema: DebateTurnOutputSchema,
-    },
-    async (input) => {
-        const { output } = await debatePrompt(input);
-        return output!;
+export async function generateDailyParadox(input: { targetGroup: string }) {
+  try {
+    // 1. Define instructions based on the target group
+    let complexityInstruction = "";
+    
+    switch (input.targetGroup) {
+        case 'Novice (Basic 1-3)':
+            complexityInstruction = "Target audience: Children aged 6-8. Use very simple English. Focus on animals, colors, shapes, or simple counting logic. Keep it fun and playful.";
+            break;
+        case 'Apprentice (Basic 4-6)':
+            complexityInstruction = "Target audience: Children aged 9-11. Use moderate vocabulary. Focus on wordplay, basic math logic, or everyday situations.";
+            break;
+        case 'Scholar (JHS)':
+            complexityInstruction = "Target audience: Teens aged 12-15. Focus on lateral thinking, detective mysteries, or algebra logic. Challenge their assumptions.";
+            break;
+        case 'Master (SHS)':
+            complexityInstruction = "Target audience: Young Adults aged 16-19. Focus on complex paradoxes, philosophy, or advanced logic puzzles (like Einstein's riddle).";
+            break;
+        default:
+            complexityInstruction = "Target audience: General student body.";
     }
-);
 
-export async function runDebateTurn(input: DebateTurnInput): Promise<DebateTurnOutput> {
-    return runDebateTurnFlow(input);
+    const prompt = `
+      Generate a unique "Daily Paradox" or Logic Puzzle.
+      ${complexityInstruction}
+      Output strictly JSON.
+    `;
+
+    const response = await generate({
+      model: gemini15Flash,
+      prompt: prompt,
+      output: { schema: ParadoxSchema },
+    });
+
+    const data = response.output();
+    if (!data) throw new Error("No data returned");
+    
+    // Ensure the returned data has the target group tag
+    return { ...data, targetGroup: input.targetGroup };
+    
+  } catch (error: any) {
+    console.error("AI Error:", error);
+    throw new Error(error.message);
+  }
 }
