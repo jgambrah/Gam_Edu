@@ -942,4 +942,26 @@ export type TillTransaction = {
     timestamp: any;
     description: string; // For POS, "Sale of: Book"
 };
+
+// --- THINK TANK MODULE ---
+export interface Paradox {
+  id: string;
+  question: string;
+  answer: string;
+  explanation: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  createdAt: any;
+}
+
+export interface DebateTopic {
+  id: string;
+  topic: string;
+  context: string; // Background info
+  createdAt: any;
+}
+
+export interface DebateMessage {
+  role: 'user' | 'ai';
+  content: string;
+}
     
