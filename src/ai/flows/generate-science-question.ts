@@ -2,7 +2,6 @@
 'use server';
 
 import { generate } from '@genkit-ai/ai';
-import { gemini15Flash } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 
 // 1. Define Schema for ONE question
@@ -36,7 +35,6 @@ export async function generateScienceQuestionAction(input: {
     `;
 
     const response = await generate({
-      model: gemini15Flash,
       prompt: prompt,
       output: { schema: OutputSchema },
     });
