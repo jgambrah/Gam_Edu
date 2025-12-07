@@ -21,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
 
 // Types and AI Functions
-import type { Paradox, DebateTopic } from '@/lib/types';
+import type { Paradox, DebateTopic, DebateMessage } from '@/lib/types';
 import { generateDailyParadox } from '@/ai/flows/think-tank';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
@@ -33,45 +33,27 @@ function DailyParadoxTab() {
   const { toast } = useToast();
   
   const [isGenerating, setIsGenerating] = useState(false);
-  const [paradox, setParadox] = useState<Paradox | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   const canManage = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-  useEffect(() => {
-    const fetchParadox = async () => {
-      if (!firestore) return;
-      setIsLoading(true);
+  const paradoxQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    const todayStart = startOfDay(new Date());
+    const todayEnd = endOfDay(new Date());
 
-      const todayStart = startOfDay(new Date());
-      const todayEnd = endOfDay(new Date());
-
-      const paradoxQuery = query(
+    return query(
         collection(firestore, 'think_tank_paradoxes'),
         where('createdAt', '>=', todayStart),
         where('createdAt', '<=', todayEnd),
         orderBy('createdAt', 'desc'),
         limit(1)
-      );
-
-      try {
-        const snapshot = await getDocs(paradoxQuery);
-        if (!snapshot.empty) {
-          const fetchedParadox = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Paradox;
-          setParadox(fetchedParadox);
-        } else {
-          setParadox(null);
-        }
-      } catch (error) {
-        console.error("Error fetching today's paradox:", error);
-        setParadox(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchParadox();
+    );
   }, [firestore]);
+
+  const { data: paradoxes, isLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
+  
+  const paradox = useMemo(() => paradoxes?.[0], [paradoxes]);
+
 
   const handleGenerateParadox = async () => {
     if (!user || !firestore) return;
@@ -84,17 +66,11 @@ function DailyParadoxTab() {
             ...result,
             createdAt: serverTimestamp(),
         };
-        const docRef = await addDoc(collection(firestore, 'think_tank_paradoxes'), newParadoxData);
+        await addDoc(collection(firestore, 'think_tank_paradoxes'), newParadoxData);
         
-        // Construct the paradox object to update state, ensuring createdAt is handled for display
-        const displayParadox = { 
-            id: docRef.id, 
-            ...result, 
-            createdAt: new Date() // Use current date for immediate display
-        };
-        setParadox(displayParadox as Paradox);
-
         toast({ title: "Success!", description: "Today's paradox has been created." });
+        forceRefetch();
+
     } catch(e) {
         console.error(e);
         toast({ variant: 'destructive', title: "AI Error", description: "Could not generate paradox." });
@@ -110,7 +86,7 @@ function DailyParadoxTab() {
   return (
     <div>
       {paradox ? (
-        <ParadoxCard paradox={paradox} onComplete={() => setParadox(null)} />
+        <ParadoxCard paradox={paradox} onComplete={() => forceRefetch()} />
       ) : (
         <Card className="text-center py-10">
           <CardHeader>
