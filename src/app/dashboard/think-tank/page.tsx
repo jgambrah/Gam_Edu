@@ -3,9 +3,9 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRole } from '@/context/role-context';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, limit, addDoc, serverTimestamp, getDocs, where } from 'firebase/firestore';
-import { startOfDay, endOfDay } from 'date-fns';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { collection, query, orderBy, limit, addDoc, serverTimestamp, getDocs, where, startOfDay, endOfDay } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { BrainCircuit, Loader2, PlusCircle, Lightbulb } from 'lucide-react';
 
 // UI Components
@@ -27,7 +27,8 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 // --- SUB-COMPONENT: Daily Paradox Tab ---
 function DailyParadoxTab() {
-  const { user } = useAuth();
+  // We use useUser here for the loading state
+  const { user: hookUser, isUserLoading } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -43,8 +44,6 @@ function DailyParadoxTab() {
 
     return query(
         collection(firestore, 'think_tank_paradoxes'),
-        // NOTE: If you get a "Missing Index" error, remove the 'createdAt' filter temporarily
-        // or click the link in the console to create the index.
         where('createdAt', '>=', todayStart),
         where('createdAt', '<=', todayEnd),
         orderBy('createdAt', 'desc'),
@@ -52,14 +51,16 @@ function DailyParadoxTab() {
     );
   }, [firestore]);
 
-  const { data: paradoxes, isLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
+  const { data: paradoxes, isLoading: isQueryLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
   const paradox = useMemo(() => paradoxes?.[0], [paradoxes]);
 
   const handleGenerateParadox = async () => {
-    console.log("Generate Paradox Clicked"); // Debug Log
+    // --- FIX: GET USER DIRECTLY FROM SDK ---
+    const auth = getAuth();
+    const currentUser = auth.currentUser || hookUser;
 
-    if (!user) {
-        toast({ variant: 'destructive', title: "Error", description: "You must be logged in." });
+    if (!currentUser) {
+        toast({ variant: 'destructive', title: "Auth Error", description: "Browser session not found. Please refresh." });
         return;
     }
     
@@ -67,32 +68,28 @@ function DailyParadoxTab() {
     toast({ title: "Thinking...", description: "Generating a new paradox for today." });
     
     try {
-        // Call the AI Server Action
         const result = await generateDailyParadox({ grade: 'Grade 9' });
         
-        console.log("AI Result:", result); // Debug Log
+        if (!result) throw new Error("AI returned no data");
 
-        if (!result) throw new Error("No data returned from AI");
-
-        // Save to Firestore
         await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
             ...result,
             createdAt: serverTimestamp(),
-            createdBy: user.uid
+            createdBy: currentUser.uid // Use the direct UID
         });
         
         toast({ title: "Success!", description: "Today's paradox has been created." });
         forceRefetch();
 
     } catch(e: any) {
-        console.error("Generation Error:", e);
-        toast({ variant: 'destructive', title: "AI Error", description: e.message || "Could not generate paradox." });
+        console.error(e);
+        toast({ variant: 'destructive', title: "AI Error", description: e.message });
     } finally {
         setIsGenerating(false);
     }
   };
 
-  if (isLoading) {
+  if (isQueryLoading || isUserLoading) {
     return <Skeleton className="h-48 w-full" />;
   }
 
