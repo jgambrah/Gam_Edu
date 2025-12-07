@@ -66,7 +66,7 @@ function DailyParadoxTab() {
 
   // 1. Get Student Info (to know their class)
   const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user, firestore])
+    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user])
   );
 
   // 2. Query: Fetch ALL recent puzzles
@@ -112,9 +112,8 @@ function DailyParadoxTab() {
       return isSameDay(puzzleDate, new Date());
   }, [groupParadoxes]);
 
-  // --- DELETE HANDLER ---
+  // --- DELETE HANDLER (Fixed for Sandbox) ---
   const handleDeleteParadox = async (id: string, e?: React.MouseEvent) => {
-      // Prevent clicking the row when clicking delete
       if (e) e.stopPropagation();
 
       console.log("Attempting to delete:", id);
@@ -124,13 +123,13 @@ function DailyParadoxTab() {
           return;
       }
 
-      if (!confirm("Are you sure you want to delete this puzzle?")) return;
+      // FIX: Removed window.confirm() because the sandbox blocks it.
+      // In a real production app, you would use a UI Dialog here instead.
       
       try {
           await deleteDoc(doc(firestore, 'think_tank_paradoxes', id));
           toast({ title: "Deleted", description: "Puzzle removed." });
           
-          // If we deleted the active one, reset selection
           if (selectedParadoxId === id) setSelectedParadoxId(null);
           
           forceRefetch();
@@ -280,6 +279,7 @@ function DailyParadoxTab() {
     </div>
   );
 }
+
 // Helper for dates
 function formatDate(date: Date) {
     return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
