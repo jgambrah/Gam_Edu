@@ -74,18 +74,26 @@ function DailyParadoxTab() {
   }, [firestore]);
 
   const handleGenerateParadox = async () => {
-    if (!user) return;
+    if (!user || !firestore) return;
     setIsGenerating(true);
     toast({ title: "Thinking...", description: "Generating a new paradox for today." });
     
     try {
-        const result = await generateDailyParadox({ grade: 'Grade 9' }); // Example grade
-        const newParadox = {
+        const result = await generateDailyParadox({ grade: 'Grade 9' });
+        const newParadoxData = {
             ...result,
             createdAt: serverTimestamp(),
         };
-        const docRef = await addDoc(collection(firestore, 'think_tank_paradoxes'), newParadox);
-        setParadox({ id: docRef.id, ...newParadox });
+        const docRef = await addDoc(collection(firestore, 'think_tank_paradoxes'), newParadoxData);
+        
+        // Construct the paradox object to update state, ensuring createdAt is handled for display
+        const displayParadox = { 
+            id: docRef.id, 
+            ...result, 
+            createdAt: new Date() // Use current date for immediate display
+        };
+        setParadox(displayParadox as Paradox);
+
         toast({ title: "Success!", description: "Today's paradox has been created." });
     } catch(e) {
         console.error(e);
