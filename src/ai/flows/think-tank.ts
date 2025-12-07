@@ -4,7 +4,7 @@
 import { generate } from '@genkit-ai/ai';
 import { z } from 'zod';
 
-// Define the schema
+// Define the schema for Paradox
 const ParadoxSchema = z.object({
   question: z.string(),
   answer: z.string(),
@@ -56,4 +56,59 @@ export async function generateDailyParadox(input: { targetGroup: string }) {
     console.error("AI Error:", error);
     throw new Error(error.message);
   }
+}
+
+
+// --- DEBATE ARENA LOGIC ---
+
+const DebateHistorySchema = z.array(z.object({
+    role: z.enum(['user', 'ai']),
+    content: z.string(),
+}));
+
+const DebateTurnInputSchema = z.object({
+    topic: z.string(),
+    history: DebateHistorySchema,
+    userArgument: z.string(),
+});
+
+const DebateTurnOutputSchema = z.object({
+    rebuttal: z.string().describe("The AI's counter-argument. It should be polite, challenging, and directly address the user's point."),
+    critique: z.string().optional().describe("A brief, constructive critique of the user's argument, pointing out logical fallacies or suggesting improvements. Keep it encouraging."),
+});
+
+
+export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>): Promise<z.infer<typeof DebateTurnOutputSchema>> {
+    const prompt = `
+        You are a polite but skilled debater. 
+        The topic is: "${input.topic}".
+        
+        The user has just argued: "${input.userArgument}"
+
+        Your task:
+        1. Acknowledge their point briefly.
+        2. Provide a thoughtful counter-argument or point out a potential logical fallacy in their reasoning to make them think deeper.
+        3. Keep your tone encouraging and educational, not confrontational.
+        4. Provide a short, constructive critique of their argument.
+        
+        PREVIOUS HISTORY (for context):
+        ${input.history.map(m => `${m.role}: ${m.content}`).join('\n')}
+
+        Output strictly JSON.
+    `;
+
+    try {
+        const response = await generate({
+            prompt,
+            output: { schema: DebateTurnOutputSchema },
+        });
+
+        const data = response.output();
+        if (!data) throw new Error("Debate AI returned no data.");
+        return data;
+
+    } catch (error: any) {
+        console.error("Debate AI Error:", error);
+        throw new Error(error.message);
+    }
 }
