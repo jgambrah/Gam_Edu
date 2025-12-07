@@ -17,4 +17,5 @@ import '@/ai/flows/generate-announcement-flow.ts';
 import '@/ai/flows/generate-event-flow.ts';
 import '@/ai/flows/think-tank.ts';
 import '@/ai/flows/generate-science-lesson.ts';
+import '@/ai/flows/generate-math-lesson.ts';
     

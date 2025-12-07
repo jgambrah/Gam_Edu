@@ -1,131 +1,443 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, limit } from 'firebase/firestore';
 import { 
-  Sigma, Trophy, PencilRuler, PlusCircle, Loader2, 
-  Trash2, BookOpen, CheckCircle2, Wand2, Lightbulb 
+  Sigma, Trophy, PencilRuler, Plus, Loader2, 
+  Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database
 } from 'lucide-react';
+import { format } from 'date-fns';
+import { generateMathLessonAction } from '@/ai/flows/generate-math-lesson';
 
 // UI Components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, MathProblem } from '@/lib/types';
+import { Class, Student, MathProblem, GlobalLeaderboardEntry } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { format } from 'date-fns';
-import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
 
-
-// --- SUB-COMPONENT: Leaderboard ---
-function LeaderboardV2() {
-  const firestore = useFirestore();
-  // Simple query to avoid index issues initially
-  const leaderboardQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'global_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
-    [firestore]
-  );
-  const { data: leaderboard, isLoading } = useCollection<any>(leaderboardQuery);
-
-  if (isLoading) return <div className="space-y-2"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>;
-
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Rank</TableHead>
-          <TableHead>Student</TableHead>
-          <TableHead className="text-right">Score</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {leaderboard?.map((entry, index) => (
-          <TableRow key={entry.id}>
-            <TableCell className="font-bold">#{index + 1}</TableCell>
-            <TableCell>{entry.userName || "Unknown Student"}</TableCell>
-            <TableCell className="text-right">{entry.total_correct_answers}</TableCell>
-          </TableRow>
-        ))}
-        {(!leaderboard || leaderboard.length === 0) && (
-            <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No records yet.</TableCell></TableRow>
-        )}
-      </TableBody>
-    </Table>
-  );
+interface LessonCard {
+    id?: string;
+    title: string;
+    explanation: string;
+    example: string;
+    keyTerms: string[];
+    quizQuestion: string;
+    quizAnswer: string;
+    timestamp?: any;
 }
 
-// --- SUB-COMPONENT: Add Problem Form ---
-function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
+// --- SUB-COMPONENT: MATH EXPLORER ---
+function MathExplorerTab() {
+    const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Form State
     const [topic, setTopic] = useState('');
-    const [difficulty, setDifficulty] = useState('Easy');
-    const [classId, setClassId] = useState('');
-    const [questionText, setQuestionText] = useState('');
-    const [options, setOptions] = useState(['', '', '', '']);
-    const [correctAnswer, setCorrectAnswer] = useState('');
+    const [isLearning, setIsLearning] = useState(false);
+    const [currentLesson, setCurrentLesson] = useState<LessonCard | null>(null);
+    const [showAnswer, setShowAnswer] = useState(false);
 
-    const handleOptionChange = (idx: number, val: string) => {
-        const newOpts = [...options];
-        newOpts[idx] = val;
-        setOptions(newOpts);
-    };
+    // Fetch History
+    const historyQuery = useMemoFirebase(() => 
+        (user && firestore) ? query(collection(firestore, 'math_learning_history'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'), limit(10)) : null,
+    [user, firestore]);
+    const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if(!topic || !questionText || !correctAnswer) {
-            toast({ variant: 'destructive', title: 'Missing Fields', description: 'Please fill in all fields.' });
-            return;
-        }
-        setIsSubmitting(true);
+    const handleLearn = async () => {
+        if (!topic.trim()) return;
+        setIsLearning(true);
+        setShowAnswer(false);
+        setCurrentLesson(null);
+
         try {
-            await addDoc(collection(firestore, 'math_problems'), {
-                topic, difficulty, classId, question_text: questionText, options, correct_answer: correctAnswer,
-                createdAt: serverTimestamp()
-            });
-            toast({ title: 'Success', description: 'Problem added.' });
-            setOpen(false);
-            // Reset form
-            setQuestionText(''); setOptions(['','','','']); setCorrectAnswer('');
+            const result = await generateMathLessonAction({ topic, grade: 'JHS 1' });
+            
+            if (result.success && result.data) {
+                setCurrentLesson(result.data);
+                if(user && firestore) {
+                    await addDoc(collection(firestore, 'math_learning_history'), {
+                        ...result.data,
+                        userId: user.uid,
+                        timestamp: serverTimestamp()
+                    });
+                }
+            } else {
+                toast({ variant: 'destructive', title: "AI Error", description: "Could not generate lesson." });
+            }
         } catch (e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to save.' });
+             toast({ variant: 'destructive', title: "Error", description: "Something went wrong." });
         } finally {
-            setIsSubmitting(false);
+            setIsLearning(false);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle>Add Math Problem</DialogTitle></DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Topic</Label>
-                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Algebra" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left: Input & Active Lesson */}
+            <div className="lg:col-span-2 space-y-6">
+                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+                    <CardHeader>
+                        <CardTitle className="text-blue-800 flex items-center gap-2"><Microscope className="h-5 w-5"/> What do you want to learn today?</CardTitle>
+                        <CardDescription>Type any math topic (e.g. "Pythagorean Theorem", "Fractions", "Algebra")</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex gap-2">
+                            <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Enter a topic..." className="bg-white" onKeyDown={(e) => e.key === 'Enter' && handleLearn()}/>
+                            <Button onClick={handleLearn} disabled={isLearning || !topic} className="bg-blue-600 hover:bg-blue-700 w-32">
+                                {isLearning ? <Loader2 className="h-4 w-4 animate-spin"/> : <><Sparkles className="h-4 w-4 mr-2"/> Learn</>}
+                            </Button>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Difficulty</Label>
-                            <Select value={difficulty} onValueChange={setDifficulty}>
-                                <SelectTrigger><SelectValue/></SelectTrigger>
+                    </CardContent>
+                </Card>
+
+                {currentLesson && (
+                    <Card className="border-t-4 border-t-blue-500 shadow-md animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">{currentLesson.title}</CardTitle>
+                            <CardDescription>Micro-Lesson</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div>
+                                <h4 className="font-semibold text-blue-700 mb-1">The Concept</h4>
+                                <p className="text-slate-700 leading-relaxed">{currentLesson.explanation}</p>
+                            </div>
+                            <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                                <h4 className="font-semibold text-amber-800 mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4"/> Example</h4>
+                                <p className="text-slate-700 italic">"{currentLesson.example}"</p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-slate-700 mb-2">Key Terms / Formulas</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {currentLesson.keyTerms.map((term, i) => (
+                                        <Badge key={i} variant="secondary" className="bg-slate-100">{term}</Badge>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="pt-4 border-t">
+                                <h4 className="font-semibold text-slate-700 mb-2">Quick Check</h4>
+                                <p className="mb-3">{currentLesson.quizQuestion}</p>
+                                {showAnswer ? (
+                                    <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200">
+                                        <strong>Answer:</strong> {currentLesson.quizAnswer}
+                                    </div>
+                                ) : (
+                                    <Button variant="outline" onClick={() => setShowAnswer(true)}>Reveal Answer</Button>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
+            {/* Right: History */}
+            <div>
+                 <Card className="h-full max-h-[600px] flex flex-col">
+                    <CardHeader className="pb-3"><CardTitle className="text-md">Your Learning History</CardTitle></CardHeader>
+                    <CardContent className="p-0 flex-1 min-h-0 overflow-hidden">
+                        <div className="h-full overflow-y-auto p-4 space-y-3">
+                            {historyLoading && <Skeleton className="h-20 w-full"/>}
+                            {!historyLoading && history?.length === 0 && <p className="text-sm text-muted-foreground text-center">No lessons yet.</p>}
+                            {history?.map((item) => (
+                                <div key={item.id} onClick={() => { setCurrentLesson(item); setShowAnswer(false); }} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition-colors text-sm">
+                                    <p className="font-semibold text-slate-800">{item.title}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{item.example}</p>
+                                    <p className="text-[10px] text-slate-400 mt-1 text-right">
+                                        {item.timestamp?.toDate ? format(item.timestamp.toDate(), 'MMM d, h:mm a') : 'Just now'}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                 </Card>
+            </div>
+        </div>
+    );
+}
+
+// --- SUB-COMPONENT: Leaderboard ---
+function Leaderboard() {
+    const firestore = useFirestore();
+    const leaderboardQuery = useMemoFirebase(
+      () => firestore ? query(collection(firestore, 'global_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+      [firestore]
+    );
+    const { data: leaderboard, isLoading } = useCollection<GlobalLeaderboardEntry>(leaderboardQuery);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-2">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+            </div>
+        )
+    }
+
+    return (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Rank</TableHead>
+                    <TableHead>Student</TableHead>
+                    <TableHead className="text-right">Correct Answers</TableHead>
+                    <TableHead className="text-right">Quizzes Completed</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {leaderboard?.map((entry, index) => (
+                    <TableRow key={entry.userId}>
+                        <TableCell className="font-bold">{index + 1}</TableCell>
+                        <TableCell>
+                            <div className="flex items-center gap-3">
+                                {/* <Avatar>
+                                    <AvatarImage src={entry.profilePictureUrl} />
+                                    <AvatarFallback>{entry.userName.charAt(0)}</AvatarFallback>
+                                </Avatar> */}
+                                <span>{entry.userName}</span>
+                            </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">{entry.total_correct_answers}</TableCell>
+                        <TableCell className="text-right">{entry.total_quizzes_completed}</TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    )
+}
+
+// --- SUB-COMPONENT: Problem Creation ---
+function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+
+    const form = useForm<z.infer<typeof mathProblemSchema>>({
+        resolver: zodResolver(mathProblemSchema),
+        defaultValues: {
+            difficulty: 'Easy',
+            options: ['', '', '', ''],
+            classId: '',
+        }
+    });
+
+    async function onSubmit(values: z.infer<typeof mathProblemSchema>) {
+        setIsSubmitting(true);
+        try {
+            await addDocumentNonBlocking(collection(firestore, 'math_problems'), values);
+            toast({ title: 'Success', description: 'New math problem has been added.' });
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error('Error adding problem:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not add the problem.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                 <FormField control={form.control} name="classId" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Assign to Class</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
+                        <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select><FormMessage/>
+                    </FormItem>
+                )}/>
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField control={form.control} name="topic" render={({ field }) => (
+                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Algebra" {...field}/></FormControl><FormMessage/></FormItem>
+                    )}/>
+                    <FormField control={form.control} name="difficulty" render={({ field }) => (
+                        <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
+                    )}/>
+                </div>
+                <FormField control={form.control} name="question_text" render={({ field }) => (
+                    <FormItem><FormLabel>Question Text</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
+                )}/>
+                <div className="grid grid-cols-2 gap-4">
+                    {form.getValues('options').map((_, index) => (
+                        <FormField key={index} control={form.control} name={`options.${index}`} render={({ field }) => (
+                            <FormItem><FormLabel>Option {index + 1}</FormLabel><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
+                        )}/>
+                    ))}
+                </div>
+                 <FormField control={form.control} name="correct_answer" render={({ field }) => (
+                    <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Problem</Button>
+            </form>
+        </Form>
+    );
+}
+
+// --- SUB-COMPONENT: Problem Management ---
+function ManageProblems() {
+    const firestore = useFirestore();
+    const { data: problems, isLoading } = useCollection<MathProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'math_problems')) : null, [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Problem Bank</CardTitle>
+                    <CardDescription>Manage the collection of math problems for student practice sessions.</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Math" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Problem</Button></DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>Create New Math Problem</DialogTitle><DialogDescription>Add a new question to the problem bank.</DialogDescription></DialogHeader>
+                            <ProblemCreationForm setOpen={setIsFormOpen}/>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                <Table>
+                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Difficulty</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {problems?.map(p => (
+                            <TableRow key={p.id}>
+                                <TableCell>{p.topic}</TableCell>
+                                <TableCell>{p.difficulty}</TableCell>
+                                <TableCell className="max-w-md truncate">{p.question_text}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
+// --- MAIN PAGE ---
+export default function MathsClubPage() {
+  const [selectedTopic, setSelectedTopic] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
+  const router = useRouter();
+  const { role } = useRole();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+  const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+
+  const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
+    useMemoFirebase(() => {
+      if (!user || !firestore || role !== 'Student') return null;
+      return query(collection(firestore, 'students'), where('uid', '==', user.uid));
+    }, [firestore, user, role])
+  );
+  
+  const studentInfo = studentData?.[0]; 
+  const studentClassId = studentInfo?.classId;
+  
+  const problemsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    if (isTeacherOrAdmin) {
+      return query(collection(firestore, 'math_problems'));
+    }
+    if (role === 'Student') {
+        if (studentClassId) {
+             return query(collection(firestore, 'math_problems'), where('classId', '==', studentClassId));
+        }
+        return null;
+    }
+    return null;
+  }, [firestore, isTeacherOrAdmin, role, studentClassId]);
+
+  const { data: problems, isLoading: isLoadingProblems } = useCollection<MathProblem>(problemsQuery);
+  
+  const uniqueTopics = useMemo(() => {
+    if (!problems) return [];
+    const topics = new Set(problems.map(p => p.topic));
+    return Array.from(topics);
+  }, [problems]);
+
+  const handleStartPractice = () => {
+    if (selectedTopic && selectedDifficulty) {
+      router.push(`/dashboard/maths-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
+    }
+  };
+  
+  const isLoading = isUserLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sigma />
+            Maths Club
+          </CardTitle>
+          <CardDescription>
+            Welcome to the Maths Club! Practice problems, track your progress,
+            and climb the leaderboard.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+      <Tabs defaultValue="practice">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
+          <TabsTrigger value="learn">Math Explorer</TabsTrigger>
+          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
+          {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
+        </TabsList>
+        <TabsContent value="practice">
+          <Card>
+            <CardHeader>
+                <CardTitle>Start a New Practice Session</CardTitle>
+                <CardDescription>Select a topic and difficulty to begin.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {isLoading ? (
+                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
+                ) : 
+                (role === 'Student' && !studentClassId) ? (
+                    <div className="text-center space-y-2">
+                        <p className="text-muted-foreground">We could not find your class assignment.</p>
+                        <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
+                    </div>
+                ) : 
+                (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Select onValueChange={setSelectedTopic}>
+                                <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
+                                <SelectContent>
+                                    {uniqueTopics.map(topic => (
+                                        <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Select onValueChange={setSelectedDifficulty}>
+                                <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Easy">Easy</SelectItem>
                                     <SelectItem value="Medium">Medium</SelectItem>
@@ -133,284 +445,34 @@ function AddMathProblemForm({ open, setOpen, classes }: { open: boolean, setOpen
                                 </SelectContent>
                             </Select>
                         </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Assign to Class (Optional)</Label>
-                        <Select value={classId} onValueChange={setClassId}>
-                            <SelectTrigger><SelectValue placeholder="All Classes" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Classes</SelectItem>
-                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Question</Label>
-                        <Textarea value={questionText} onChange={e => setQuestionText(e.target.value)} placeholder="What is 2 + 2?" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                        {options.map((opt, i) => (
-                            <Input key={i} value={opt} onChange={e => handleOptionChange(i, e.target.value)} placeholder={`Option ${i+1}`} />
-                        ))}
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Correct Answer (Must match one option exactly)</Label>
-                        <Input value={correctAnswer} onChange={e => setCorrectAnswer(e.target.value)} placeholder="e.g. 4" />
-                    </div>
-                    <Button type="submit" disabled={isSubmitting} className="w-full">
-                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Problem
-                    </Button>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-// --- MAIN PAGE COMPONENT ---
-export default function MathClubPage() {
-  const router = useRouter();
-  const firestore = useFirestore();
-  const { role, isRoleLoading } = useRole();
-  const { user, isUserLoading } = useUser();
-  const { toast } = useToast();
-
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-  
-  // Filters
-  const [selectedTopic, setSelectedTopic] = useState<string>('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
-
-  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
-
-  // 1. Get Student Data (Safely)
-  const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
-    useMemoFirebase(() => {
-        // Only run if user is logged in AND is a Student
-        if (!user || !firestore || role !== 'Student') return null;
-        return query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    }, [user, role, firestore])
-  );
-  
-  const studentClassId = studentData?.[0]?.classId;
-
-  // 2. Get Classes (For Admin Dropdown)
-  const { data: classes } = useCollection<Class>(
-    useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
-  );
-
-  // 3. Get Problems
-  const problemsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-
-    // Staff: See EVERYTHING
-    if (isStaff) {
-        return query(collection(firestore, 'math_problems'));
-    }
-
-    // Student: See CLASS-SPECIFIC or GLOBAL (missing classId)
-    // We intentionally grab ALL problems first, then filter in memory to avoid "Missing Permissions" crashes
-    // caused by the specific 'where' clause not matching the Rule perfectly.
-    // This assumes your Rule is: allow read: if isSignedIn();
-    if (role === 'Student') {
-        return query(collection(firestore, 'math_problems')); 
-    }
-
-    return null;
-  }, [firestore, isStaff, role]);
-
-  const { data: rawProblems, isLoading: isProblemsLoading } = useCollection<MathProblem>(problemsQuery);
-
-  // 4. Process Data (Client-Side Filtering for stability)
-  const filteredProblems = useMemo(() => {
-    if (!rawProblems) return [];
-    
-    let list = rawProblems;
-    if (role === 'Student') {
-        list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
-    }
-
-    if (selectedTopic) list = list.filter(p => p.topic === selectedTopic);
-    if (selectedDifficulty) list = list.filter(p => p.difficulty === selectedDifficulty);
-
-    return list;
-  }, [rawProblems, role, studentClassId, selectedTopic, selectedDifficulty]);
-
-  const uniqueTopics = useMemo(() => {
-      if(!rawProblems) return [];
-      return Array.from(new Set(rawProblems.map(p => p.topic))).sort();
-  }, [rawProblems]);
-
-  // Loading State Calculation
-  const isLoading = isUserLoading || isRoleLoading || isProblemsLoading || (role === 'Student' && isStudentLoading);
-
-  const handleStart = () => {
-      if (!selectedTopic || !selectedDifficulty) return;
-      router.push(`/dashboard/maths-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
-  };
-
-  const handleDelete = async (id: string) => {
-      if(!confirm("Delete this problem?")) return;
-      try {
-          await deleteDoc(doc(firestore, 'math_problems', id));
-          toast({ title: "Deleted" });
-      } catch(e) {
-          toast({ variant: 'destructive', title: "Error", description: "Delete failed" });
-      }
-  }
-
-  return (
-    <div className="space-y-6">
-      <Card className="border-t-4 border-t-indigo-500 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sigma className="h-6 w-6 text-indigo-600"/> 
-            Math Club
-          </CardTitle>
-          <CardDescription>
-            Master mathematics through practice and competition.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      <Tabs defaultValue="practice" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/> Practice Hub</TabsTrigger>
-          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/> Leaderboard</TabsTrigger>
-        </TabsList>
-
-        {/* PRACTICE TAB */}
-        <TabsContent value="practice">
-            <Card>
-                <CardHeader className="flex flex-row justify-between items-center">
-                    <div>
-                        <CardTitle>Problem Library</CardTitle>
-                        <CardDescription>Select filters to find problems.</CardDescription>
-                    </div>
-                    {isStaff && (
-                        <div className="flex gap-2">
-                            <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                                <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                                <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Math" setOpen={setIsAiFormOpen} /></DialogContent>
-                            </Dialog>
-                            <Button onClick={() => setIsFormOpen(true)} size="sm">
-                                <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
-                            </Button>
-                        </div>
-                    )}
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {/* Loading State */}
-                    {isLoading && (
-                        <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
-                            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-                            <p>Loading Math Lab...</p>
-                        </div>
-                    )}
-
-                    {/* Student No Class State */}
-                    {!isLoading && role === 'Student' && !studentClassId && (
-                        <div className="p-4 bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-md text-center">
-                            <p className="font-semibold">Notice</p>
-                            <p>You are not currently assigned to a class. You can only see global practice questions.</p>
-                        </div>
-                    )}
-
-                    {/* Filters */}
-                    {!isLoading && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border">
-                            <div className="space-y-2">
-                                <Label>Topic</Label>
-                                <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                                    <SelectTrigger><SelectValue placeholder="All Topics" /></SelectTrigger>
-                                    <SelectContent>
-                                        {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Difficulty</Label>
-                                <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-                                    <SelectTrigger><SelectValue placeholder="All Difficulties" /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Easy">Easy</SelectItem>
-                                        <SelectItem value="Medium">Medium</SelectItem>
-                                        <SelectItem value="Hard">Hard</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Results / Action */}
-                    {!isLoading && (
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <p className="text-sm font-medium text-slate-500">
-                                    Found {filteredProblems.length} available problems.
-                                </p>
-                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-indigo-600 hover:bg-indigo-700">
-                                    Start Practice Session
-                                </Button>
-                            </div>
-
-                            {/* Staff View: Show Table of Problems to Manage */}
-                            {isStaff && filteredProblems.length > 0 && (
-                                <div className="border rounded-md">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Topic</TableHead>
-                                                <TableHead>Question</TableHead>
-                                                <TableHead>Class</TableHead>
-                                                <TableHead className="text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredProblems.map(p => (
-                                                <TableRow key={p.id}>
-                                                    <TableCell><Badge variant="outline">{p.topic}</Badge></TableCell>
-                                                    <TableCell className="max-w-[300px] truncate">{p.question_text}</TableCell>
-                                                    <TableCell>{classes?.find(c => c.id === p.classId)?.name || 'All'}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)}>
-                                                            <Trash2 className="h-4 w-4 text-red-500"/>
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                        <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
+                            Start Practice
+                        </Button>
+                    </>
+                )}
+            </CardContent>
+          </Card>
         </TabsContent>
-
-        {/* LEADERBOARD TAB */}
+        <TabsContent value="learn">
+            <MathExplorerTab />
+        </TabsContent>
         <TabsContent value="leaderboard">
             <Card>
                 <CardHeader>
-                    <CardTitle>Top Mathematicians</CardTitle>
-                    <CardDescription>Global ranking based on correct answers.</CardDescription>
+                    <CardTitle>Global Leaderboard</CardTitle>
+                    <CardDescription>See how you rank against other students.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <LeaderboardV2 />
+                    <Leaderboard />
                 </CardContent>
             </Card>
         </TabsContent>
+         {isTeacherOrAdmin && (
+            <TabsContent value="manage">
+                <ManageProblems />
+            </TabsContent>
+        )}
       </Tabs>
-
-      {/* Add Problem Modal */}
-      {isFormOpen && (
-          <AddMathProblemForm 
-            open={isFormOpen} 
-            setOpen={setIsFormOpen} 
-            classes={classes} 
-          />
-      )}
     </div>
   );
 }

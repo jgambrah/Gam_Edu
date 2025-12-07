@@ -223,6 +223,15 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == userId;
     }
     
+    // Allow students to save their own learning history
+    match /science_learning_history/{historyId} {
+      allow read, create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /math_learning_history/{historyId} {
+      allow read, create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+    
     // Catch-all for remaining collections (adjust as needed)
     match /{document=**} {
       allow read, write: if isAdmin();
