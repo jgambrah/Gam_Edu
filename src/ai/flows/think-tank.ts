@@ -1,10 +1,9 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// --- EXISTING PARADOX CODE ---
+// --- EXISTING PARADOX CODE (Keep this) ---
 const ParadoxSchema = z.object({
   question: z.string(),
   answer: z.string(),
@@ -33,7 +32,7 @@ export async function generateDailyParadox(input: { targetGroup: string }) {
   } catch (e: any) { throw new Error(e.message); }
 }
 
-// --- NEW DEBATE ACTION ---
+// --- DEBATE ACTION ---
 const DebateSchema = z.object({
     topic: z.string(),
     context: z.string(),
@@ -131,4 +130,55 @@ export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>
         console.error("Debate AI Error:", error);
         throw new Error(error.message);
     }
+}
+
+// --- NEW: THE DETECTIVE DESK ACTION ---
+const DetectiveSchema = z.object({
+  scenario: z.string().describe("The text, headline, or statement to analyze."),
+  question: z.string().describe("The specific question to ask the student."),
+  caseType: z.enum(['Fact/Opinion', 'Bias Hunter', 'Fallacy Spotter', 'Fake News']),
+  options: z.array(z.string()).describe("Options for the student to choose from."),
+  correctAnswer: z.string(),
+  explanation: z.string().describe("Why is this the correct answer?"),
+});
+
+export async function generateDetectiveCase(input: { targetGroup: string }) {
+  try {
+    let instruction = "";
+    switch (input.targetGroup) {
+        case 'Novice (Basic 1-3)':
+            instruction = "Target: Ages 6-8. Activity: 'Fact vs Opinion'. Generate a simple statement about animals, food, or school. Options: ['Fact', 'Opinion'].";
+            break;
+        case 'Apprentice (Basic 4-6)':
+            instruction = "Target: Ages 9-11. Activity: 'Bias Hunter'. Generate a sentence with emotional/loaded language. Ask which word shows bias. Options: [Word A, Word B, Word C].";
+            break;
+        case 'Scholar (JHS)':
+            instruction = "Target: Ages 12-15. Activity: 'Fake News Spotter'. Generate a sensationalized headline. Ask if it is Reliable or Suspicious. Options: ['Reliable', 'Suspicious'].";
+            break;
+        case 'Master (SHS)':
+            instruction = "Target: Ages 16-19. Activity: 'Fallacy Spotter'. Generate a short argument containing a logical fallacy (Ad Hominem, Strawman, Slippery Slope). Ask to identify the fallacy.";
+            break;
+        default:
+            instruction = "General critical thinking exercise.";
+    }
+
+    const prompt = `
+      Generate a Critical Thinking 'Detective Case'.
+      ${instruction}
+      Output strictly JSON.
+    `;
+
+    const { output } = await ai.generate({
+      prompt: prompt,
+      output: { schema: DetectiveSchema },
+    });
+
+    if (!output) throw new Error("No data returned");
+    
+    return { ...output, targetGroup: input.targetGroup };
+    
+  } catch (error: any) {
+    console.error("AI Error:", error);
+    throw new Error(error.message);
+  }
 }
