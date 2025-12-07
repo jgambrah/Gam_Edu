@@ -6,7 +6,7 @@ import { useRole } from '@/context/role-context';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { collection, query, orderBy, limit, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { startOfDay, isSameDay } from 'date-fns';
-import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, Activity, Users } from 'lucide-react';
+import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, Activity, Users, Trash2 } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 
 // UI Components
@@ -25,11 +25,16 @@ import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-comp
 
 // Types & AI
 import type { Paradox, DebateTopic, Student } from '@/lib/types';
-import { generateDailyParadox } from '@/ai/flows/think-tank';
+import { generateDailyParadox, generateDebateTopic } from '@/ai/flows/think-tank';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { format } from 'date-fns';
+import { formatDate } from 'date-fns';
 
-const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
+const TARGET_GROUPS = [
+    'Novice (Basic 1-3)',
+    'Apprentice (Basic 4-6)',
+    'Scholar (JHS)',
+    'Master (SHS)'
+];
 
 // Helper to map student class
 const getStudentGroup = (className: string = '') => {
@@ -78,7 +83,7 @@ function TeacherMonitorTab() {
     );
 }
 
-// --- SUB-COMPONENT: Daily Paradox Tab ---
+// --- COMPONENT: Daily Paradox Tab ---
 function DailyParadoxTab() {
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
@@ -129,8 +134,8 @@ function DailyParadoxTab() {
 
   // SAVE ATTEMPT
   const handleAttempt = async (answer: string) => {
-      if (!user || canManage || !firestore) return; // Teachers don't save progress
-      await addDocumentNonBlocking(collection(firestore, 'think_tank_submissions'), {
+      if (!user || canManage) return; // Teachers don't save progress
+      await addDocumentNonBlocking(collection(firestore!, 'think_tank_submissions'), {
           studentId: user.uid,
           studentName: user.displayName || user.email,
           type: 'Paradox',
@@ -141,28 +146,37 @@ function DailyParadoxTab() {
   };
 
   const handleDeleteParadox = async (id: string, e?: React.MouseEvent) => {
-      if (e) e.stopPropagation();
-      if (!firestore) {
-          toast({ variant: 'destructive', title: "Error", description: "Database connection not ready." });
-          return;
-      }
-      try {
-          await deleteDoc(doc(firestore, 'think_tank_paradoxes', id));
-          toast({ title: "Deleted" });
-          if (selectedParadoxId === id) setSelectedParadoxId(null);
-          forceRefetch();
-      } catch (e) { toast({ variant: 'destructive', title: "Error deleting" }); }
-  };
+    if (e) e.stopPropagation();
+
+    console.log("Attempting to delete:", id);
+    
+    if (!firestore) {
+        toast({ variant: 'destructive', title: "Error", description: "Database connection not ready." });
+        return;
+    }
+    
+    try {
+        await deleteDoc(doc(firestore, 'think_tank_paradoxes', id));
+        toast({ title: "Deleted", description: "Puzzle removed." });
+        
+        if (selectedParadoxId === id) setSelectedParadoxId(null);
+        
+        forceRefetch();
+    } catch (e: any) {
+        console.error("Delete failed:", e);
+        toast({ variant: 'destructive', title: "Error", description: "Could not delete. Check console permissions." });
+    }
+};
 
   const handleGenerateParadox = async () => {
     const auth = getAuth();
     const currentUser = auth.currentUser || user;
-    if (!currentUser || !firestore) return;
+    if (!currentUser) return;
     setIsGenerating(true);
     try {
         const result = await generateDailyParadox({ targetGroup: activeGroup });
         if (!result) throw new Error("AI returned no data");
-        const docRef = await addDoc(collection(firestore, 'think_tank_paradoxes'), {
+        const docRef = await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
             ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid
         });
         toast({ title: "Success!" });
@@ -191,7 +205,7 @@ function DailyParadoxTab() {
                     key={activeParadox.id} 
                     paradox={activeParadox} 
                     onComplete={() => {}} 
-                    onAttempt={handleAttempt}
+                    onAttempt={handleAttempt} // <--- Sends data to DB
                     onDelete={() => handleDeleteParadox(activeParadox.id)} 
                     isStaff={canManage}
                 />
@@ -201,15 +215,9 @@ function DailyParadoxTab() {
         </div>
         <div className="space-y-4">
             {canManage && !hasPuzzleForToday && (
-                 <Card className="bg-indigo-50 border-indigo-200 shadow-sm">
-                    <CardContent className="p-4">
-                        <h3 className="font-bold text-indigo-700 mb-2 flex items-center gap-2"><PlusCircle className="h-4 w-4"/> Daily Task</h3>
-                        <p className="text-xs text-indigo-600 mb-3">Generate today's puzzle for <strong>{activeGroup}</strong>.</p>
-                        <Button onClick={handleGenerateParadox} disabled={isGenerating} className="w-full bg-indigo-600 hover:bg-indigo-700">
-                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate Now"}
-                        </Button>
-                    </CardContent>
-                </Card>
+                <Button onClick={handleGenerateParadox} disabled={isGenerating} className="w-full bg-indigo-600">
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate Today's Puzzle"}
+                </Button>
             )}
             <Card className="max-h-[500px] flex flex-col">
                 <CardHeader className="py-3 px-4 bg-slate-50 border-b"><CardTitle className="text-md">Archive</CardTitle></CardHeader>
@@ -231,9 +239,11 @@ function DailyParadoxTab() {
   );
 }
 
-// --- SUB-COMPONENT: Debate Arena Tab (Placeholder) ---
+// --- SUB-COMPONENT: Debate Arena Tab (Unchanged) ---
+// Note: You can add the same tracking logic here later
 function DebateArenaTab() {
     return <Card className="p-10 text-center"><p>Debate Arena Active</p></Card> 
+    // (Placeholder to keep file short, use your existing DebateArenaTab code here)
 }
 
 
@@ -259,6 +269,7 @@ export default function ThinkTankPage() {
       <Tabs defaultValue="paradox" className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="paradox">Daily Paradox</TabsTrigger>
+            {/* Show Teacher Monitor if staff */}
             {canManage && <TabsTrigger value="monitor"><Activity className="mr-2 h-4 w-4"/> Activity Log</TabsTrigger>}
         </TabsList>
         <TabsContent value="paradox" className="mt-6">
@@ -273,5 +284,3 @@ export default function ThinkTankPage() {
     </div>
   );
 }
-
-    
