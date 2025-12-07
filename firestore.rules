@@ -229,7 +229,9 @@ service cloud.firestore {
     }
 
     match /math_learning_history/{historyId} {
-      allow read, create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && request.query.where.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
     
     // Catch-all for remaining collections (adjust as needed)
