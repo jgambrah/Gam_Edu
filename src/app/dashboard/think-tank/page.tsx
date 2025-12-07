@@ -1,12 +1,13 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
-import { collection, query, orderBy, limit, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
-import { isSameDay } from 'date-fns';
-import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, Activity, Users, Wand2, Trash2, MessageSquare } from 'lucide-react';
+import { collection, query, orderBy, limit, addDoc, serverTimestamp, deleteDoc, doc, where, getDocs, increment } from 'firebase/firestore';
+import { startOfDay, isSameDay, endOfDay, formatDate } from 'date-fns';
+import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, MessageSquare, Wand2, Trash2, Activity, Users } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 
 // UI Components
@@ -20,16 +21,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
 
-// Types & AI
+// Types and AI Functions
 import type { Paradox, DebateTopic, Student } from '@/lib/types';
-import { generateDailyParadox, generateDebateTopic } from '@/ai/flows/think-tank';
-import { formatDate } from 'date-fns';
+import { generateDailyParadox, generateDebateTopic, runDebateTurn } from '@/ai/flows/think-tank'; 
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 
+// --- CONSTANTS ---
 const TARGET_GROUPS = [
     'Novice (Basic 1-3)',
     'Apprentice (Basic 4-6)',
@@ -37,19 +40,20 @@ const TARGET_GROUPS = [
     'Master (SHS)'
 ];
 
-// Helper to map student class
+// Helper to map a student's class name to a group
 const getStudentGroup = (className: string = '') => {
     const name = className.toLowerCase();
-    if (name.includes('bs1') || name.includes('bs2') || name.includes('bs3')) return 'Novice (Basic 1-3)';
-    if (name.includes('bs4') || name.includes('bs5') || name.includes('bs6')) return 'Apprentice (Basic 4-6)';
+    if (name.includes('bs1') || name.includes('bs2') || name.includes('bs3') || name.includes('class 1')) return 'Novice (Basic 1-3)';
+    if (name.includes('bs4') || name.includes('bs5') || name.includes('bs6') || name.includes('class 4')) return 'Apprentice (Basic 4-6)';
     if (name.includes('jhs') || name.includes('bs7') || name.includes('bs8') || name.includes('bs9')) return 'Scholar (JHS)';
     if (name.includes('shs') || name.includes('grade 10')) return 'Master (SHS)';
-    return 'Scholar (JHS)'; // Default fallback
+    return 'Scholar (JHS)'; 
 };
 
-// --- COMPONENT: Teacher Monitor ---
+// --- SUB-COMPONENT: Teacher Monitor ---
 function TeacherMonitorTab() {
     const firestore = useFirestore();
+    // Query last 50 submissions
     const submissionsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'think_tank_submissions'), orderBy('timestamp', 'desc'), limit(50)) : null,
     [firestore]);
@@ -91,7 +95,7 @@ function DailyParadoxTab() {
   const { toast } = useToast();
   
   const [isGenerating, setIsGenerating] = useState(false);
-  const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
+  const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); 
   const [selectedParadoxId, setSelectedParadoxId] = useState<string | null>(null);
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
@@ -120,15 +124,12 @@ function DailyParadoxTab() {
   }, [allParadoxes, activeGroup]);
   
   const activeParadox = useMemo(() => {
-      if (!groupParadoxes || groupParadoxes.length === 0) return null;
-      if (selectedParadoxId) {
-          return groupParadoxes.find(p => p.id === selectedParadoxId) || groupParadoxes[0];
-      }
-      return groupParadoxes[0];
+      if (!groupParadoxes.length) return null;
+      return selectedParadoxId ? groupParadoxes.find(p => p.id === selectedParadoxId) || groupParadoxes[0] : groupParadoxes[0];
   }, [groupParadoxes, selectedParadoxId]);
 
   const hasPuzzleForToday = useMemo(() => {
-      if (!groupParadoxes || groupParadoxes.length === 0) return false;
+      if (!groupParadoxes.length) return false;
       const newest = groupParadoxes[0];
       if (!newest.createdAt) return false; 
       const puzzleDate = newest.createdAt.toDate ? newest.createdAt.toDate() : new Date(newest.createdAt.seconds * 1000);
@@ -136,8 +137,8 @@ function DailyParadoxTab() {
   }, [groupParadoxes]);
 
   const handleAttempt = async (answer: string) => {
-      if (!user || canManage) return;
-      await addDoc(collection(firestore!, 'think_tank_submissions'), {
+      if (!user || canManage) return; 
+      await addDocumentNonBlocking(collection(firestore!, 'think_tank_submissions'), {
           studentId: user.uid,
           studentName: user.displayName || user.email,
           type: 'Paradox',
@@ -149,6 +150,7 @@ function DailyParadoxTab() {
 
   const handleDeleteParadox = async (id: string, e?: React.MouseEvent) => {
       if (e) e.stopPropagation();
+      console.log("Attempting to delete:", id);
       if (!firestore) {
           toast({ variant: 'destructive', title: "Error", description: "Database connection not ready." });
           return;
@@ -197,14 +199,7 @@ function DailyParadoxTab() {
                 )}
             </div>
             {activeParadox ? (
-                <ParadoxCard 
-                    key={activeParadox.id} 
-                    paradox={activeParadox} 
-                    onComplete={() => {}} 
-                    onAttempt={handleAttempt}
-                    onDelete={() => handleDeleteParadox(activeParadox.id)} 
-                    isStaff={canManage}
-                />
+                <ParadoxCard key={activeParadox.id} paradox={activeParadox} onComplete={() => {}} onAttempt={handleAttempt} onDelete={() => handleDeleteParadox(activeParadox.id)} isStaff={canManage}/>
             ) : (
                 <Card className="text-center py-10 border-2 border-dashed h-full flex flex-col justify-center items-center">
                     <Lightbulb className="h-12 w-12 text-slate-300 mb-2" />
@@ -215,37 +210,26 @@ function DailyParadoxTab() {
         </div>
         <div className="space-y-4">
             {canManage && !hasPuzzleForToday && (
-                 <Card className="bg-indigo-50 border-indigo-200 shadow-sm">
-                    <CardContent className="p-4">
-                        <h3 className="font-bold text-indigo-700 mb-2 flex items-center gap-2"><PlusCircle className="h-4 w-4"/> Daily Task</h3>
-                        <p className="text-xs text-indigo-600 mb-3">Generate today's puzzle for <strong>{activeGroup}</strong>.</p>
-                        <Button onClick={handleGenerateParadox} disabled={isGenerating} className="w-full bg-indigo-600 hover:bg-indigo-700">
-                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate Now"}
-                        </Button>
-                    </CardContent>
-                </Card>
+                <Button onClick={handleGenerateParadox} disabled={isGenerating} className="w-full bg-indigo-600">
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate Today's Puzzle"}
+                </Button>
             )}
             <Card className="max-h-[500px] flex flex-col">
-                <CardHeader className="py-3 px-4 bg-slate-50 border-b"><CardTitle className="text-md flex items-center gap-2"><Clock className="h-4 w-4"/> {activeGroup} Archive</CardTitle></CardHeader>
+                <CardHeader className="py-3 px-4 bg-slate-50 border-b"><CardTitle className="text-md">Archive</CardTitle></CardHeader>
                 <CardContent className="p-0 flex-1 min-h-0">
                     <ScrollArea className="h-[300px] lg:h-[400px]">
                         <div className="flex flex-col p-2 gap-1">
-                            {groupParadoxes.length === 0 && <p className="text-xs text-center text-muted-foreground p-4">No history.</p>}
                             {groupParadoxes.map((p) => {
                                 const isSelected = p.id === activeParadox?.id;
                                 return (
-                                    <button 
+                                    <div 
                                         key={p.id}
                                         onClick={() => setSelectedParadoxId(p.id)}
-                                        className={`text-left p-3 rounded-md text-sm transition-colors border flex justify-between items-center group ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium' : 'bg-white border-transparent hover:bg-slate-50 hover:border-slate-200'}`}
+                                        className={`p-3 rounded-md text-sm transition-colors border flex justify-between items-center group cursor-pointer ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium' : 'bg-white border-transparent hover:bg-slate-50 hover:border-slate-200'}`}
                                     >
-                                        <div className="truncate flex-1 pr-2">
-                                            <span className="block truncate">{p.question}</span>
-                                            <span className="text-xs opacity-70">{p.createdAt?.toDate ? formatDate(p.createdAt.toDate(), 'PPP') : "Just now"}</span>
-                                        </div>
+                                        <span className="truncate flex-1 pr-2">{p.question}</span>
                                         {canManage && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400 hover:text-red-600 hover:bg-red-50 z-10" onClick={(e) => handleDeleteParadox(p.id, e)}><Trash2 className="h-3 w-3"/></Button>}
-                                        {!canManage && isSelected && <CheckCircle2 className="h-4 w-4 text-indigo-500"/>}
-                                    </button>
+                                    </div>
                                 );
                             })}
                         </div>
@@ -268,9 +252,7 @@ function DebateArenaTab() {
   const [newContext, setNewContext] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
-
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   const { data: studentData } = useCollection<Student>(
@@ -294,7 +276,6 @@ function DebateArenaTab() {
       const groupTopics = allTopics
         .filter(t => t.targetGroup === activeGroup)
         .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      
       return groupTopics[0];
   }, [allTopics, activeGroup]);
 
@@ -303,15 +284,10 @@ function DebateArenaTab() {
       const auth = getAuth();
       const currentUser = auth.currentUser || user;
       if (!currentUser) return;
-
       setIsSubmitting(true);
       try {
           await addDoc(collection(firestore!, 'think_tank_debates'), {
-              topic: newTopic,
-              context: newContext,
-              targetGroup: activeGroup,
-              createdAt: serverTimestamp(),
-              createdBy: currentUser.uid
+              topic: newTopic, context: newContext, targetGroup: activeGroup, createdAt: serverTimestamp(), createdBy: currentUser.uid
           });
           toast({ title: 'New Debate Topic Set!' });
           setNewTopic(''); setNewContext('');
@@ -324,28 +300,20 @@ function DebateArenaTab() {
       const auth = getAuth();
       const currentUser = auth.currentUser || user;
       if (!currentUser) return;
-
       setIsGenerating(true);
       try {
           const result = await generateDebateTopic({ targetGroup: activeGroup });
-          
           await addDoc(collection(firestore!, 'think_tank_debates'), {
-              ...result,
-              createdAt: serverTimestamp(),
-              createdBy: currentUser.uid
+              ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid
           });
           toast({ title: "AI Generated Debate!" });
           forceRefetch();
-      } catch(e: any) {
-          toast({ variant: 'destructive', title: "AI Error", description: e.message });
-      } finally {
-          setIsGenerating(false);
-      }
+      } catch(e: any) { toast({ variant: 'destructive', title: "AI Error", description: e.message }); } 
+      finally { setIsGenerating(false); }
   };
   
   return (
     <div className="space-y-6">
-        
         <div className="flex justify-between items-center">
             <Badge variant="outline" className="text-sm px-3 py-1">Current Arena: {activeGroup}</Badge>
             {canManage && (
@@ -355,7 +323,6 @@ function DebateArenaTab() {
                 </Select>
             )}
         </div>
-
         {canManage && (
             <Card className="bg-slate-50 border-slate-200">
                 <CardHeader className="pb-2"><CardTitle className="text-sm">Set New Topic for {activeGroup}</CardTitle></CardHeader>
@@ -374,7 +341,6 @@ function DebateArenaTab() {
                 </CardContent>
             </Card>
         )}
-
         {isLoading ? (
             <Skeleton className="h-96 w-full" />
         ) : latestTopic ? (
@@ -391,7 +357,6 @@ function DebateArenaTab() {
     </div>
   );
 }
-
 
 // --- MAIN PAGE ---
 export default function ThinkTankPage() {
@@ -416,6 +381,7 @@ export default function ThinkTankPage() {
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="paradox">Daily Paradox</TabsTrigger>
             <TabsTrigger value="debate">Debate Arena</TabsTrigger>
+            {canManage && <TabsTrigger value="monitor"><Activity className="mr-2 h-4 w-4"/> Activity Log</TabsTrigger>}
         </TabsList>
         <TabsContent value="paradox" className="mt-6">
           <DailyParadoxTab />
@@ -423,6 +389,11 @@ export default function ThinkTankPage() {
         <TabsContent value="debate" className="mt-6">
           <DebateArenaTab />
         </TabsContent>
+        {canManage && (
+            <TabsContent value="monitor" className="mt-6">
+                <TeacherMonitorTab />
+            </TabsContent>
+        )}
       </Tabs>
     </div>
   );
