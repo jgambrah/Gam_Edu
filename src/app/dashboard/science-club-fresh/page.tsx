@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateScienceQuestionAction } from '@/ai/flows/generate-science-question';
-import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
+import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson'; 
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -949,3 +949,4 @@ export default function ScienceLabPageFresh() {
     </div>
   );
 }
+
