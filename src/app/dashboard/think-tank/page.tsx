@@ -3,11 +3,11 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRole } from '@/context/role-context';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, orderBy, limit, addDoc, serverTimestamp, getDocs, where } from 'firebase/firestore';
-import { startOfDay, endOfDay } from 'date-fns';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Use useUser
+import { collection, query, orderBy, limit, addDoc, serverTimestamp, where } from 'firebase/firestore';
+import { startOfDay, isSameDay } from 'date-fns';
+import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
-import { BrainCircuit, Loader2, PlusCircle, Lightbulb } from 'lucide-react';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,71 +17,86 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
 
 // Types and AI Functions
-import type { Paradox, DebateTopic, DebateMessage } from '@/lib/types';
+import type { Paradox, DebateTopic } from '@/lib/types';
 import { generateDailyParadox } from '@/ai/flows/think-tank';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
-// --- SUB-COMPONENT: Daily Paradox Tab ---
+// --- SUB-COMPONENT: Daily Paradox Tab (Updated for Navigation) ---
 function DailyParadoxTab() {
-  // We use useUser here for the loading state
-  const { user: hookUser, isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
   
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedParadoxId, setSelectedParadoxId] = useState<string | null>(null);
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
+  // 1. Fetch History (Last 20 puzzles) instead of just today
   const paradoxQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    const todayStart = startOfDay(new Date());
-    const todayEnd = endOfDay(new Date());
-
+    // Simple OrderBy query to avoid complex index requirements initially
     return query(
         collection(firestore, 'think_tank_paradoxes'),
-        // NOTE: If you get a "Missing Index" error, remove the 'createdAt' filter temporarily
-        // or click the link in the console to create the index.
-        where('createdAt', '>=', todayStart),
-        where('createdAt', '<=', todayEnd),
         orderBy('createdAt', 'desc'),
-        limit(1)
+        limit(20)
     );
   }, [firestore]);
 
-  const { data: paradoxes, isLoading: isQueryLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
-  const paradox = useMemo(() => paradoxes?.[0], [paradoxes]);
+  const { data: paradoxes, isLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
+  
+  // 2. Determine Active Puzzle
+  // If user clicked one, show that. Otherwise show the newest one.
+  const activeParadox = useMemo(() => {
+      if (!paradoxes || paradoxes.length === 0) return null;
+      if (selectedParadoxId) {
+          return paradoxes.find(p => p.id === selectedParadoxId) || paradoxes[0];
+      }
+      return paradoxes[0];
+  }, [paradoxes, selectedParadoxId]);
+
+  // 3. Check if Today's puzzle exists (to show/hide Generate button)
+  const hasPuzzleForToday = useMemo(() => {
+      if (!paradoxes || paradoxes.length === 0) return false;
+      const newest = paradoxes[0];
+      if (!newest.createdAt) return false; // Handle pending writes
+      const puzzleDate = newest.createdAt.toDate ? newest.createdAt.toDate() : new Date(); // Handle timestamp
+      return isSameDay(puzzleDate, new Date());
+  }, [paradoxes]);
 
   const handleGenerateParadox = async () => {
-    // --- FIX: GET USER DIRECTLY FROM SDK ---
     const auth = getAuth();
-    const currentUser = auth.currentUser || hookUser;
+    const currentUser = auth.currentUser || user;
 
     if (!currentUser) {
-        toast({ variant: 'destructive', title: "Auth Error", description: "Browser session not found. Please refresh." });
+        toast({ variant: 'destructive', title: "Error", description: "You must be logged in." });
         return;
     }
     
     setIsGenerating(true);
-    toast({ title: "Thinking...", description: "Generating a new paradox for today." });
+    toast({ title: "Thinking...", description: "Consulting the logic engines..." });
     
     try {
-        const result = await generateDailyParadox({ grade: 'Grade 9' });
+        const result = await generateDailyParadox({ grade: 'Grade 9' }); // Default grade
         
-        if (!result) throw new Error("AI returned no data");
+        if (!result) throw new Error("No data returned from AI");
 
-        await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
+        const docRef = await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
             ...result,
             createdAt: serverTimestamp(),
-            createdBy: currentUser.uid // Use the direct UID
+            createdBy: currentUser.uid
         });
         
-        toast({ title: "Success!", description: "Today's paradox has been created." });
+        toast({ title: "Success!", description: "New paradox created." });
+        setSelectedParadoxId(docRef.id); // Auto-select the new one
         forceRefetch();
 
     } catch(e: any) {
@@ -92,37 +107,113 @@ function DailyParadoxTab() {
     }
   };
 
-  if (isQueryLoading || isUserLoading) {
-    return <Skeleton className="h-48 w-full" />;
+  if (isLoading || isUserLoading) {
+    return <Skeleton className="h-64 w-full" />;
   }
 
   return (
-    <div>
-      {paradox ? (
-        <ParadoxCard paradox={paradox} onComplete={() => forceRefetch()} />
-      ) : (
-        <Card className="text-center py-10 border-2 border-dashed">
-          <CardHeader>
-            <Lightbulb className="mx-auto h-12 w-12 text-yellow-400 mb-2" />
-            <CardTitle>No Paradox for Today</CardTitle>
-            <CardDescription>A new logic puzzle has not been generated yet.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {canManage ? (
-              <Button onClick={handleGenerateParadox} disabled={isGenerating} className="bg-indigo-600 hover:bg-indigo-700">
-                {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Thinking...</> : <><PlusCircle className="mr-2 h-4 w-4"/> Generate Daily Paradox</>}
-              </Button>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* LEFT: THE ACTIVE PUZZLE */}
+        <div className="lg:col-span-2">
+            {activeParadox ? (
+                // KEY is crucial here. Changing key forces React to reset the card state (clearing the old answer)
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                         <Badge variant="outline" className="mb-2">
+                            {activeParadox.createdAt?.toDate ? formatDate(activeParadox.createdAt.toDate()) : "New"}
+                         </Badge>
+                         {activeParadox.difficulty && <Badge className={getDifficultyColor(activeParadox.difficulty)}>{activeParadox.difficulty}</Badge>}
+                    </div>
+                    
+                    <ParadoxCard 
+                        key={activeParadox.id} 
+                        paradox={activeParadox} 
+                        onComplete={() => {}} 
+                    />
+                </div>
             ) : (
-                <p className="text-sm text-muted-foreground">Please ask a teacher to generate today's puzzle.</p>
+                <Card className="text-center py-10 border-2 border-dashed h-full flex flex-col justify-center items-center">
+                    <Lightbulb className="h-12 w-12 text-slate-300 mb-2" />
+                    <CardTitle>No Puzzles Found</CardTitle>
+                    <CardDescription>The archives are empty.</CardDescription>
+                </Card>
             )}
-          </CardContent>
-        </Card>
-      )}
+        </div>
+
+        {/* RIGHT: PUZZLE LIST / GENERATOR */}
+        <div className="space-y-4">
+            
+            {/* Generate Button (Only if today is missing) */}
+            {canManage && !hasPuzzleForToday && (
+                <Card className="bg-indigo-50 border-indigo-200">
+                    <CardContent className="p-4">
+                        <h3 className="font-bold text-indigo-700 mb-2 flex items-center gap-2">
+                            <PlusCircle className="h-4 w-4"/> Daily Task
+                        </h3>
+                        <p className="text-xs text-indigo-600 mb-3">Today's paradox hasn't been generated yet.</p>
+                        <Button onClick={handleGenerateParadox} disabled={isGenerating} className="w-full bg-indigo-600 hover:bg-indigo-700">
+                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate Now"}
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Archive List */}
+            <Card className="max-h-[500px] flex flex-col">
+                <CardHeader className="py-3 px-4 bg-slate-50 border-b">
+                    <CardTitle className="text-md flex items-center gap-2">
+                        <Clock className="h-4 w-4"/> Puzzle Archive
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 flex-1 min-h-0">
+                    <ScrollArea className="h-[300px] lg:h-[400px]">
+                        <div className="flex flex-col p-2 gap-1">
+                            {paradoxes?.map((p) => {
+                                const isSelected = p.id === activeParadox?.id;
+                                return (
+                                    <button 
+                                        key={p.id}
+                                        onClick={() => setSelectedParadoxId(p.id)}
+                                        className={`text-left p-3 rounded-md text-sm transition-colors border flex justify-between items-center group ${
+                                            isSelected 
+                                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium' 
+                                            : 'bg-white border-transparent hover:bg-slate-50 hover:border-slate-200'
+                                        }`}
+                                    >
+                                        <div className="truncate flex-1 pr-2">
+                                            <span className="block truncate">{p.question}</span>
+                                            <span className="text-xs opacity-70">
+                                                {p.createdAt?.toDate ? formatDate(p.createdAt.toDate()) : "Just now"}
+                                            </span>
+                                        </div>
+                                        {isSelected && <CheckCircle2 className="h-4 w-4 text-indigo-500"/>}
+                                        {!isSelected && <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-400"/>}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+            </Card>
+        </div>
     </div>
   );
 }
 
-// --- SUB-COMPONENT: Debate Arena Tab ---
+// Helper for dates
+function formatDate(date: Date) {
+    return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+// Helper for colors
+function getDifficultyColor(diff: string) {
+    if(diff === 'Easy') return 'bg-green-100 text-green-700 hover:bg-green-100';
+    if(diff === 'Medium') return 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100';
+    return 'bg-red-100 text-red-700 hover:bg-red-100';
+}
+
+// --- SUB-COMPONENT: Debate Arena Tab (Unchanged but included for completeness) ---
 function DebateArenaTab() {
   const { role } = useRole();
   const firestore = useFirestore();
@@ -132,7 +223,7 @@ function DebateArenaTab() {
   const [newContext, setNewContext] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const canManage = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   const topicsQuery = useMemoFirebase(() => 
     firestore ? query(collection(firestore, 'think_tank_debates'), orderBy('createdAt', 'desc'), limit(1)) : null,
@@ -156,7 +247,7 @@ function DebateArenaTab() {
           toast({ title: 'New Debate Topic Set!' });
           setNewTopic('');
           setNewContext('');
-          forceRefetch(); // Force a refetch to show the new topic
+          forceRefetch();
       } catch (e) {
           console.error(e);
           toast({ variant: 'destructive', title: 'Error setting topic' });
@@ -212,10 +303,10 @@ function DebateArenaTab() {
 export default function ThinkTankPage() {
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="border-l-4 border-l-indigo-500 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BrainCircuit className="h-6 w-6 text-primary" />
+            <BrainCircuit className="h-6 w-6 text-indigo-600" />
             The Think Tank
           </CardTitle>
           <CardDescription>
@@ -225,14 +316,14 @@ export default function ThinkTankPage() {
       </Card>
 
       <Tabs defaultValue="paradox" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="paradox">Daily Paradox</TabsTrigger>
-          <TabsTrigger value="debate">Debate Arena</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+            <TabsTrigger value="paradox">Daily Paradox</TabsTrigger>
+            <TabsTrigger value="debate">Debate Arena</TabsTrigger>
         </TabsList>
-        <TabsContent value="paradox">
+        <TabsContent value="paradox" className="mt-6">
           <DailyParadoxTab />
         </TabsContent>
-        <TabsContent value="debate">
+        <TabsContent value="debate" className="mt-6">
           <DebateArenaTab />
         </TabsContent>
       </Tabs>
