@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Use useUser
 import { collection, query, orderBy, limit, addDoc, serverTimestamp, where, deleteDoc, doc } from 'firebase/firestore';
 import { startOfDay, isSameDay } from 'date-fns';
-import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight } from 'lucide-react';
+import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, Trash2 } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 
 // UI Components
@@ -51,7 +51,7 @@ const getStudentGroup = (className: string = '') => {
 };
 
 
-// --- SUB-COMPONENT: Daily Paradox Tab ---
+// --- SUB-COMPONENT: Daily Paradox Tab (Updated with List Delete) ---
 function DailyParadoxTab() {
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
@@ -113,27 +113,40 @@ function DailyParadoxTab() {
   }, [groupParadoxes]);
 
   // --- DELETE HANDLER ---
-  const handleDeleteParadox = async (id: string) => {
+  const handleDeleteParadox = async (id: string, e?: React.MouseEvent) => {
+      // Prevent clicking the row when clicking delete
+      if (e) e.stopPropagation();
+
+      console.log("Attempting to delete:", id);
+      
+      if (!firestore) {
+          toast({ variant: 'destructive', title: "Error", description: "Database connection not ready." });
+          return;
+      }
+
       if (!confirm("Are you sure you want to delete this puzzle?")) return;
+      
       try {
-          await deleteDoc(doc(firestore!, 'think_tank_paradoxes', id));
+          await deleteDoc(doc(firestore, 'think_tank_paradoxes', id));
           toast({ title: "Deleted", description: "Puzzle removed." });
+          
           // If we deleted the active one, reset selection
           if (selectedParadoxId === id) setSelectedParadoxId(null);
+          
           forceRefetch();
       } catch (e: any) {
-          toast({ variant: 'destructive', title: "Error", description: "Could not delete." });
+          console.error("Delete failed:", e);
+          toast({ variant: 'destructive', title: "Error", description: "Could not delete. Check console permissions." });
       }
   };
 
   const handleGenerateParadox = async () => {
+    // ... (Your existing generate logic here) ...
+    // COPY THE SAME LOGIC FROM THE PREVIOUS STEP
     const auth = getAuth();
     const currentUser = auth.currentUser || user;
 
-    if (!currentUser) {
-        toast({ variant: 'destructive', title: "Error", description: "You must be logged in." });
-        return;
-    }
+    if (!currentUser) return;
     
     setIsGenerating(true);
     toast({ title: "Thinking...", description: `Generating logic for ${activeGroup}...` });
@@ -186,7 +199,6 @@ function DailyParadoxTab() {
                          <Badge variant="outline" className="mb-2">
                             {activeParadox.createdAt?.toDate ? formatDate(activeParadox.createdAt.toDate()) : "New"}
                          </Badge>
-                         {activeParadox.difficulty && <Badge className={getDifficultyColor(activeParadox.difficulty)}>{activeParadox.difficulty}</Badge>}
                     </div>
                     
                     <ParadoxCard 
@@ -209,7 +221,7 @@ function DailyParadoxTab() {
         {/* RIGHT: PUZZLE LIST / GENERATOR */}
         <div className="space-y-4">
             
-            {/* Generate Button (Show if TODAY'S puzzle for THIS GROUP is missing) */}
+            {/* Generate Button */}
             {canManage && !hasPuzzleForToday && (
                 <Card className="bg-indigo-50 border-indigo-200 shadow-sm">
                     <CardContent className="p-4">
@@ -234,17 +246,30 @@ function DailyParadoxTab() {
                             {groupParadoxes.map((p) => {
                                 const isSelected = p.id === activeParadox?.id;
                                 return (
-                                    <button 
+                                    <div 
                                         key={p.id}
                                         onClick={() => setSelectedParadoxId(p.id)}
-                                        className={`text-left p-3 rounded-md text-sm transition-colors border flex justify-between items-center group ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium' : 'bg-white border-transparent hover:bg-slate-50 hover:border-slate-200'}`}
+                                        className={`p-3 rounded-md text-sm transition-colors border flex justify-between items-center group cursor-pointer ${isSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-medium' : 'bg-white border-transparent hover:bg-slate-50 hover:border-slate-200'}`}
                                     >
                                         <div className="truncate flex-1 pr-2">
                                             <span className="block truncate">{p.question}</span>
                                             <span className="text-xs opacity-70">{p.createdAt?.toDate ? formatDate(p.createdAt.toDate()) : "Just now"}</span>
                                         </div>
-                                        {isSelected && <CheckCircle2 className="h-4 w-4 text-indigo-500"/>}
-                                    </button>
+                                        
+                                        {/* DIRECT DELETE BUTTON IN LIST */}
+                                        {canManage && (
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="h-6 w-6 text-red-400 hover:text-red-600 hover:bg-red-50 z-10"
+                                                onClick={(e) => handleDeleteParadox(p.id, e)}
+                                            >
+                                                <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                        )}
+                                        
+                                        {!canManage && isSelected && <CheckCircle2 className="h-4 w-4 text-indigo-500"/>}
+                                    </div>
                                 );
                             })}
                         </div>
@@ -255,7 +280,6 @@ function DailyParadoxTab() {
     </div>
   );
 }
-
 // Helper for dates
 function formatDate(date: Date) {
     return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
