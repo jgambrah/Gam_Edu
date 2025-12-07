@@ -19,141 +19,161 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
 
 // Types and AI Functions
-import type { Paradox, DebateTopic } from '@/lib/types';
+import type { Paradox, DebateTopic, Student, Class } from '@/lib/types';
 import { generateDailyParadox } from '@/ai/flows/think-tank';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { cn } from '@/lib/utils';
 
-// --- SUB-COMPONENT: Daily Paradox Tab (Updated for Navigation) ---
+
+const TARGET_GROUPS = [
+    'Novice (Basic 1-3)',
+    'Apprentice (Basic 4-6)',
+    'Scholar (JHS)',
+    'Master (SHS)'
+];
+
+// Helper to map a student's class name to a group
+const getStudentGroup = (classes: Class[], classId: string | undefined) => {
+    if (!classId) return 'Scholar (JHS)';
+    const studentClass = classes.find(c => c.id === classId);
+    const name = studentClass?.name.toLowerCase() || '';
+
+    if (name.includes('bs1') || name.includes('bs2') || name.includes('bs3') || name.includes('class 1') || name.includes('class 2') || name.includes('class 3')) return 'Novice (Basic 1-3)';
+    if (name.includes('bs4') || name.includes('bs5') || name.includes('bs6') || name.includes('class 4')) return 'Apprentice (Basic 4-6)';
+    if (name.includes('jhs') || name.includes('bs7') || name.includes('bs8') || name.includes('bs9')) return 'Scholar (JHS)';
+    if (name.includes('shs') || name.includes('grade 10')) return 'Master (SHS)';
+    return 'Scholar (JHS)'; // Default fallback
+};
+
+
+// --- SUB-COMPONENT: Daily Paradox Tab ---
 function DailyParadoxTab() {
-  const { user, isUserLoading } = useUser();
+  const { user } = useAuth();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
   
   const [isGenerating, setIsGenerating] = useState(false);
+  const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); // Default to JHS
   const [selectedParadoxId, setSelectedParadoxId] = useState<string | null>(null);
 
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. Fetch History (Last 20 puzzles) instead of just today
+  // 1. Get Student Info (to know their class)
+  const { data: studentData } = useCollection<Student>(
+    useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user, firestore])
+  );
+  
+  const { data: classes } = useCollection<Class>(
+    useMemoFirebase(() => collection(firestore!, 'classes'), [firestore])
+  );
+
+  // 2. Determine Filter Group
+  const activeGroup = useMemo(() => {
+      if (canManage) return adminSelectedGroup; // Admins see what they select
+      if (studentData && studentData[0] && classes) return getStudentGroup(classes, studentData[0].classId); // Students see their level
+      return 'Scholar (JHS)'; // Fallback
+  }, [canManage, adminSelectedGroup, studentData, classes]);
+
+  // 3. Query based on Group
   const paradoxQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    // Simple OrderBy query to avoid complex index requirements initially
     return query(
         collection(firestore, 'think_tank_paradoxes'),
+        where('targetGroup', '==', activeGroup), // <--- FILTER BY LEVEL
         orderBy('createdAt', 'desc'),
         limit(20)
     );
-  }, [firestore]);
+  }, [firestore, activeGroup]);
 
   const { data: paradoxes, isLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
   
-  // 2. Determine Active Puzzle
-  // If user clicked one, show that. Otherwise show the newest one.
+  // Active Paradox logic
   const activeParadox = useMemo(() => {
       if (!paradoxes || paradoxes.length === 0) return null;
-      if (selectedParadoxId) {
-          return paradoxes.find(p => p.id === selectedParadoxId) || paradoxes[0];
-      }
+      if (selectedParadoxId) return paradoxes.find(p => p.id === selectedParadoxId) || paradoxes[0];
       return paradoxes[0];
   }, [paradoxes, selectedParadoxId]);
 
-  // 3. Check if Today's puzzle exists (to show/hide Generate button)
-  const hasPuzzleForToday = useMemo(() => {
-      if (!paradoxes || paradoxes.length === 0) return false;
-      const newest = paradoxes[0];
-      if (!newest.createdAt) return false; // Handle pending writes
-      const puzzleDate = newest.createdAt.toDate ? newest.createdAt.toDate() : new Date(); // Handle timestamp
-      return isSameDay(puzzleDate, new Date());
-  }, [paradoxes]);
 
   const handleGenerateParadox = async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser || user;
-
-    if (!currentUser) {
+    if (!user) {
         toast({ variant: 'destructive', title: "Error", description: "You must be logged in." });
         return;
     }
-    
     setIsGenerating(true);
-    toast({ title: "Thinking...", description: "Consulting the logic engines..." });
-    
     try {
-        const result = await generateDailyParadox({ grade: 'Grade 9' }); // Default grade
+        const result = await generateDailyParadox({ targetGroup: adminSelectedGroup });
         
-        if (!result) throw new Error("No data returned from AI");
-
-        const docRef = await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
+        await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
             ...result,
             createdAt: serverTimestamp(),
-            createdBy: currentUser.uid
+            createdBy: user!.uid
         });
         
-        toast({ title: "Success!", description: "New paradox created." });
-        setSelectedParadoxId(docRef.id); // Auto-select the new one
+        toast({ title: "Generated!", description: `New puzzle for ${adminSelectedGroup}.` });
         forceRefetch();
-
     } catch(e: any) {
-        console.error(e);
-        toast({ variant: 'destructive', title: "AI Error", description: e.message });
+        toast({ variant: 'destructive', title: "Error", description: e.message });
     } finally {
         setIsGenerating(false);
     }
   };
-
-  if (isLoading || isUserLoading) {
-    return <Skeleton className="h-64 w-full" />;
-  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* LEFT: THE ACTIVE PUZZLE */}
         <div className="lg:col-span-2">
-            {activeParadox ? (
-                // KEY is crucial here. Changing key forces React to reset the card state (clearing the old answer)
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                         <Badge variant="outline" className="mb-2">
-                            {activeParadox.createdAt?.toDate ? formatDate(activeParadox.createdAt.toDate()) : "New"}
-                         </Badge>
-                         {activeParadox.difficulty && <Badge className={getDifficultyColor(activeParadox.difficulty)}>{activeParadox.difficulty}</Badge>}
-                    </div>
-                    
-                    <ParadoxCard 
-                        key={activeParadox.id} 
-                        paradox={activeParadox} 
-                        onComplete={() => {}} 
-                    />
-                </div>
+            {/* Show which level we are viewing */}
+            <div className="mb-4 flex items-center justify-between">
+                <Badge variant="secondary" className="text-sm px-3 py-1">
+                    Level: {activeGroup}
+                </Badge>
+                {/* Admin Selector */}
+                {canManage && (
+                    <Select value={adminSelectedGroup} onValueChange={setAdminSelectedGroup}>
+                        <SelectTrigger className="w-[200px] h-8 text-xs">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {TARGET_GROUPS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                )}
+            </div>
+            
+            {isLoading ? <Skeleton className="h-64 w-full"/> : activeParadox ? (
+                <ParadoxCard key={activeParadox.id} paradox={activeParadox} onComplete={() => {}} />
             ) : (
                 <Card className="text-center py-10 border-2 border-dashed h-full flex flex-col justify-center items-center">
-                    <Lightbulb className="h-12 w-12 text-slate-300 mb-2" />
-                    <CardTitle>No Puzzles Found</CardTitle>
-                    <CardDescription>The archives are empty.</CardDescription>
+                    <p className="text-muted-foreground">No puzzles found for {activeGroup}.</p>
+                    {canManage && <p className="text-xs text-indigo-500 mt-2">Use the button on the right to generate one.</p>}
                 </Card>
             )}
         </div>
 
-        {/* RIGHT: PUZZLE LIST / GENERATOR */}
+        {/* RIGHT: GENERATOR & ARCHIVE */}
         <div className="space-y-4">
             
-            {/* Generate Button (Only if today is missing) */}
-            {canManage && !hasPuzzleForToday && (
+            {/* Generator (Admin Only) */}
+            {canManage && (
                 <Card className="bg-indigo-50 border-indigo-200">
                     <CardContent className="p-4">
                         <h3 className="font-bold text-indigo-700 mb-2 flex items-center gap-2">
-                            <PlusCircle className="h-4 w-4"/> Daily Task
+                            <PlusCircle className="h-4 w-4"/> Create Content
                         </h3>
-                        <p className="text-xs text-indigo-600 mb-3">Today's paradox hasn't been generated yet.</p>
+                        <p className="text-xs text-indigo-600 mb-3">
+                            Generate a new puzzle specifically for <strong>{adminSelectedGroup}</strong>.
+                        </p>
                         <Button onClick={handleGenerateParadox} disabled={isGenerating} className="w-full bg-indigo-600 hover:bg-indigo-700">
-                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate Now"}
+                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Generate"}
                         </Button>
                     </CardContent>
                 </Card>
@@ -161,7 +181,7 @@ function DailyParadoxTab() {
 
             {/* Archive List */}
             <Card className="max-h-[500px] flex flex-col">
-                <CardHeader className="py-3 px-4 bg-slate-50 border-b">
+                 <CardHeader className="py-3 px-4 bg-slate-50 border-b">
                     <CardTitle className="text-md flex items-center gap-2">
                         <Clock className="h-4 w-4"/> Puzzle Archive
                     </CardTitle>
@@ -200,6 +220,7 @@ function DailyParadoxTab() {
     </div>
   );
 }
+
 
 // Helper for dates
 function formatDate(date: Date) {
@@ -302,7 +323,7 @@ function DebateArenaTab() {
 // --- MAIN PAGE ---
 export default function ThinkTankPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <Card className="border-l-4 border-l-indigo-500 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
