@@ -4,51 +4,74 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Define the schema
+// --- EXISTING PARADOX CODE ---
 const ParadoxSchema = z.object({
   question: z.string(),
   answer: z.string(),
   explanation: z.string(),
   difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-  targetGroup: z.string(), // Added field to store who this is for
+  targetGroup: z.string().optional(),
 });
 
 export async function generateDailyParadox(input: { targetGroup: string }) {
   try {
-    // 1. Define instructions based on the target group
     let complexityInstruction = "";
-    
+    switch (input.targetGroup) {
+        case 'Novice (Basic 1-3)': complexityInstruction = "Target audience: Kids 6-8. Simple, fun logic. E.g. Patterns, animals."; break;
+        case 'Apprentice (Basic 4-6)': complexityInstruction = "Target audience: Kids 9-11. Wordplay, math logic."; break;
+        case 'Scholar (JHS)': complexityInstruction = "Target audience: Teens 12-15. Lateral thinking, detective riddles."; break;
+        case 'Master (SHS)': complexityInstruction = "Target audience: Young Adults 16+. Complex paradoxes, philosophy."; break;
+        default: complexityInstruction = "General audience.";
+    }
+
+    const { output } = await ai.generate({
+      prompt: `Generate a logic puzzle/riddle. ${complexityInstruction} Output JSON.`,
+      output: { schema: ParadoxSchema },
+    });
+    if (!output) throw new Error("AI returned no data.");
+    return { ...output, targetGroup: input.targetGroup };
+  } catch (e: any) { throw new Error(e.message); }
+}
+
+// --- NEW DEBATE ACTION ---
+const DebateSchema = z.object({
+    topic: z.string(),
+    context: z.string(),
+});
+
+export async function generateDebateTopic(input: { targetGroup: string }) {
+  try {
+    let instruction = "";
     switch (input.targetGroup) {
         case 'Novice (Basic 1-3)':
-            complexityInstruction = "Target audience: Children aged 6-8. Use very simple English. Focus on animals, colors, shapes, or simple counting logic. Keep it fun and playful.";
+            instruction = "Target: Ages 6-8. Topics: Fun preferences (e.g., 'Is Summer better than Winter?', 'Cats vs Dogs'). Simple explanations.";
             break;
         case 'Apprentice (Basic 4-6)':
-            complexityInstruction = "Target audience: Children aged 9-11. Use moderate vocabulary. Focus on wordplay, basic math logic, or everyday situations.";
+            instruction = "Target: Ages 9-11. Topics: School/Home rules (e.g., 'Should homework be banned?', 'Uniforms').";
             break;
         case 'Scholar (JHS)':
-            complexityInstruction = "Target audience: Teens aged 12-15. Focus on lateral thinking, detective mysteries, or algebra logic. Challenge their assumptions.";
+            instruction = "Target: Ages 12-15. Topics: Social issues, Technology (e.g., 'Social Media age limits', 'AI in schools').";
             break;
         case 'Master (SHS)':
-            complexityInstruction = "Target audience: Young Adults aged 16-19. Focus on complex paradoxes, philosophy, or advanced logic puzzles (like Einstein's riddle).";
+            instruction = "Target: Ages 16-19. Topics: Global policy, Ethics, Philosophy (e.g., 'Universal Basic Income', 'Genetic Engineering').";
             break;
         default:
-            complexityInstruction = "Target audience: General student body.";
+            instruction = "General topics.";
     }
 
     const prompt = `
-      Generate a unique "Daily Paradox" or Logic Puzzle.
-      ${complexityInstruction}
-      Output strictly JSON.
+      Generate a debate topic.
+      ${instruction}
+      Output strictly JSON with 'topic' (the question) and 'context' (a 1-sentence background).
     `;
 
     const { output } = await ai.generate({
       prompt: prompt,
-      output: { schema: ParadoxSchema },
+      output: { schema: DebateSchema },
     });
 
     if (!output) throw new Error("No data returned");
     
-    // Ensure the returned data has the target group tag
     return { ...output, targetGroup: input.targetGroup };
     
   } catch (error: any) {
@@ -56,7 +79,6 @@ export async function generateDailyParadox(input: { targetGroup: string }) {
     throw new Error(error.message);
   }
 }
-
 
 // --- DEBATE ARENA LOGIC ---
 
