@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -34,6 +35,7 @@ import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
 // --- SUB-COMPONENT: Leaderboard ---
 function LeaderboardV2() {
   const firestore = useFirestore();
+  // Simple query to avoid index issues initially
   const leaderboardQuery = useMemoFirebase(
     () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
     [firestore]
@@ -166,70 +168,128 @@ function AddScienceProblemForm({ open, setOpen, classes }: { open: boolean, setO
 }
 
 // --- Fact of the Day Component ---
-function FactOfTheDay() {
+function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
+    const [factText, setFactText] = useState('');
+    const [isPosting, setIsPosting] = useState(false);
 
-    // Query for the latest fact
-    const factsQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc'), limit(1)) : null,
-    [firestore]);
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc'), limit(1)) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
-
     const latestFact = facts?.[0];
     
-    // Check if the latest fact is older than 12 hours
-    const isFactStale = useMemo(() => {
-        if (!latestFact?.createdAt) return true; // No fact exists, so it's stale
-        const twelveHoursInMs = 12 * 60 * 60 * 1000;
-        const factTime = latestFact.createdAt.toDate().getTime();
-        const currentTime = new Date().getTime();
-        return (currentTime - factTime) > twelveHoursInMs;
-    }, [latestFact]);
-
-
     useEffect(() => {
         const generateNewFactIfNeeded = async () => {
-            // Only run on client, if not loading, if user exists, and if the fact is stale
-            if (typeof window !== 'undefined' && !isLoading && user && isFactStale) {
-                console.log("Fact is stale. Generating a new one...");
-                try {
-                    const result = await generateDailyFact();
-                    await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
-                        factText: result.fact,
-                        createdAt: serverTimestamp(),
-                        postedBy: user.uid,
-                    });
-                    toast({ title: "New Fact of the Day Generated!" });
-                } catch (error) {
-                    console.error("Failed to generate new fact:", error);
-                }
-            }
-        };
+          // FIX: Stop students from trying to write to the database
+          if (!isStaff) return; 
 
-        generateNewFactIfNeeded();
-    }, [isLoading, isFactStale, user, firestore, toast]);
+          // ... existing generation logic ...
+          console.log("Fact is stale or missing. Generating a new one...");
+          try {
+              const result = await generateDailyFact();
+              await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
+                  factText: result.fact,
+                  createdAt: serverTimestamp(),
+                  postedBy: user?.uid,
+              });
+              toast({ title: "New Fact of the Day Generated!" });
+          } catch (error) {
+              console.error("Failed to generate new fact:", error);
+          }
+        };
+        
+        if (!isLoading && !latestFact) {
+            generateNewFactIfNeeded();
+        }
+      }, [latestFact, isLoading, isStaff, firestore, toast, user]); // Add isStaff to dependency array
+
+    const handlePostFact = async () => {
+        if (!factText.trim() || !user) return;
+        setIsPosting(true);
+        try {
+            await addDoc(collection(firestore, 'daily_facts'), {
+                factText,
+                createdAt: serverTimestamp(),
+                postedBy: user.uid,
+            });
+            toast({ title: 'Success!', description: 'The new science fact has been posted.' });
+            setFactText('');
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not post the fact.' });
+        } finally {
+            setIsPosting(false);
+        }
+    };
 
     return (
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Lightbulb/> Science Fact of the Day</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
                 {isLoading ? <Skeleton className="h-16 w-full" /> : latestFact ? (
                     <blockquote className="border-l-4 pl-4 italic">
                         {latestFact.factText}
-                        <footer className="text-xs text-muted-foreground mt-2">Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP p') : 'Today'}</footer>
+                        <footer className="text-xs text-muted-foreground mt-2">Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}</footer>
                     </blockquote>
-                ) : (
-                    <p className="text-muted-foreground text-sm">Generating today's fact...</p>
+                ) : <p className="text-muted-foreground text-sm">Generating today's fact...</p>}
+
+                {isStaff && (
+                    <div className="space-y-2 pt-4 border-t">
+                        <Label>Post a New Fact</Label>
+                        <Textarea value={factText} onChange={e => setFactText(e.target.value)} placeholder="Enter a new interesting science fact..."/>
+                        <Button onClick={handlePostFact} disabled={isPosting || !factText.trim()}>
+                            {isPosting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Post Fact
+                        </Button>
+                    </div>
                 )}
             </CardContent>
         </Card>
     );
 }
 
+function ManageProblems() {
+    const firestore = useFirestore();
+    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Problem Bank</CardTitle>
+                    <CardDescription>Manage the collection of science problems for student practice sessions.</CardDescription>
+                </div>
+                 <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    <Button onClick={() => setIsFormOpen(true)}><PlusCircle className="mr-2 h-4"/>New Problem</Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                <Table>
+                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Difficulty</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {problems?.map(p => (
+                            <TableRow key={p.id}>
+                                <TableCell>{p.topic}</TableCell>
+                                <TableCell>{p.difficulty}</TableCell>
+                                <TableCell className="max-w-md truncate">{p.question_text}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
 
 // --- MAIN PAGE COMPONENT ---
 export default function ScienceClubPage() {
@@ -240,236 +300,135 @@ export default function ScienceClubPage() {
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isAiFormOpen, setIsAiFormOpen] = useState(false);
   
   // Filters
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
-
-  // 1. Get Student Data (Safely)
-  const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
+  
+  const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => {
         if (!user || !firestore || role !== 'Student') return null;
         return query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    }, [user, role, firestore])
+    }, [firestore, user, role])
   );
   
   const studentClassId = studentData?.[0]?.classId;
-
-  // 2. Get Classes (For Admin Dropdown)
-  const { data: classes } = useCollection<Class>(
-    useMemoFirebase(() => (isStaff && firestore) ? query(collection(firestore, 'classes')) : null, [isStaff, firestore])
-  );
-
-  // 3. Get Problems
+  
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     if (isStaff) {
-        return query(collection(firestore, 'science_problems'));
+      return query(collection(firestore, 'science_problems'));
     }
     if (role === 'Student') {
-        return query(collection(firestore, 'science_problems')); 
+        if (studentClassId) {
+             return query(collection(firestore, 'science_problems'), where('classId', '==', studentClassId));
+        }
+        return null;
     }
     return null;
-  }, [firestore, isStaff, role]);
+  }, [firestore, isStaff, role, studentClassId]);
 
-  const { data: rawProblems, isLoading: isProblemsLoading } = useCollection<ScienceProblem>(problemsQuery);
-
-  // 4. Process Data (Client-Side Filtering for stability)
-  const filteredProblems = useMemo(() => {
-    if (!rawProblems) return [];
-    
-    let list = rawProblems;
-    if (role === 'Student') {
-        list = rawProblems.filter(p => !p.classId || p.classId === 'all' || p.classId === studentClassId);
-    }
-
-    if (selectedTopic) list = list.filter(p => p.topic === selectedTopic);
-    if (selectedDifficulty) list = list.filter(p => p.difficulty === selectedDifficulty);
-
-    return list;
-  }, [rawProblems, role, studentClassId, selectedTopic, selectedDifficulty]);
+  const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(problemsQuery);
 
   const uniqueTopics = useMemo(() => {
-      if(!rawProblems) return [];
-      return Array.from(new Set(rawProblems.map(p => p.topic))).sort();
-  }, [rawProblems]);
+    if (!problems) return [];
+    const topics = new Set(problems.map(p => p.topic));
+    return Array.from(topics);
+  }, [problems]);
 
-  // Loading State Calculation
-  const isLoading = isUserLoading || isRoleLoading || isProblemsLoading || (role === 'Student' && isStudentLoading);
-
-  const handleStart = () => {
-      if (!selectedTopic || !selectedDifficulty) return;
-      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
+  const handleStartPractice = () => {
+    if (topic && difficulty) {
+      router.push(`/dashboard/science-club/practice?topic=${topic}&difficulty=${difficulty}`);
+    }
   };
 
-  const handleDelete = async (id: string) => {
-      if(!confirm("Delete this problem?")) return;
-      try {
-          await deleteDoc(doc(firestore, 'science_problems', id));
-          toast({ title: "Deleted" });
-      } catch(e) {
-          toast({ variant: 'destructive', title: "Error", description: "Delete failed" });
-      }
-  }
+  const isLoading = isUserLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
     <div className="space-y-6">
-      <Card className="border-t-4 border-t-teal-500 shadow-sm">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FlaskConical className="h-6 w-6 text-teal-600"/> 
+            <FlaskConical />
             Science Club
           </CardTitle>
           <CardDescription>
-            Explore the world of science through practice and competition.
+            Welcome to the Science Club! Explore topics, practice problems, and climb the leaderboard.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-            <FactOfTheDay />
+         <CardContent>
+            <FactOfTheDay isStaff={isStaff} />
         </CardContent>
       </Card>
-
-      <Tabs defaultValue="practice" className="w-full">
+      <Tabs defaultValue="practice">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/> Practice Hub</TabsTrigger>
-          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/> Leaderboard</TabsTrigger>
+          <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
+          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
+          {isStaff && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
         </TabsList>
-
-        {/* PRACTICE TAB */}
         <TabsContent value="practice">
-            <Card>
-                <CardHeader className="flex flex-row justify-between items-center">
-                    <div>
-                        <CardTitle>Problem Library</CardTitle>
-                        <CardDescription>Select filters to find problems.</CardDescription>
+          <Card>
+            <CardHeader>
+                <CardTitle>Start a New Practice Session</CardTitle>
+                <CardDescription>Select a topic and difficulty to begin.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {(isLoading) ? (
+                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
+                ) : 
+                (role === 'Student' && !studentClassId) ? (
+                    <div className="text-center space-y-2">
+                        <p className="text-muted-foreground">We could not find your class assignment.</p>
+                        <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
                     </div>
-                    {isStaff && (
-                        <div className="flex gap-2">
-                            <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                                <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                                <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice science questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} /></DialogContent>
-                            </Dialog>
-                            <Button onClick={() => setIsFormOpen(true)} size="sm">
-                                <PlusCircle className="mr-2 h-4 w-4"/> Add Problem
-                            </Button>
+                ) : 
+                (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Select onValueChange={setSelectedTopic}>
+                                <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
+                                <SelectContent>
+                                    {uniqueTopics.map(topic => (
+                                        <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Select onValueChange={setSelectedDifficulty}>
+                                <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Easy">Easy</SelectItem>
+                                    <SelectItem value="Medium">Medium</SelectItem>
+                                    <SelectItem value="Hard">Hard</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
-                    )}
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {/* Loading State */}
-                    {isLoading && (
-                        <div className="flex flex-col items-center py-8 text-muted-foreground gap-2">
-                            <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
-                            <p>Loading Science Lab...</p>
-                        </div>
-                    )}
-
-                    {/* Student No Class State */}
-                    {!isLoading && role === 'Student' && !studentClassId && (
-                        <div className="p-4 bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-md text-center">
-                            <p className="font-semibold">Notice</p>
-                            <p>You are not currently assigned to a class. You can only see global practice questions.</p>
-                        </div>
-                    )}
-
-                    {/* Filters */}
-                    {!isLoading && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg border">
-                            <div className="space-y-2">
-                                <Label>Topic</Label>
-                                <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                                    <SelectTrigger><SelectValue placeholder="All Topics" /></SelectTrigger>
-                                    <SelectContent>
-                                        {uniqueTopics.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Difficulty</Label>
-                                <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-                                    <SelectTrigger><SelectValue placeholder="All Difficulties" /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Easy">Easy</SelectItem>
-                                        <SelectItem value="Medium">Medium</SelectItem>
-                                        <SelectItem value="Hard">Hard</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Results / Action */}
-                    {!isLoading && (
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <p className="text-sm font-medium text-slate-500">
-                                    Found {filteredProblems.length} available problems.
-                                </p>
-                                <Button onClick={handleStart} disabled={filteredProblems.length === 0} className="bg-teal-600 hover:bg-teal-700">
-                                    Start Practice Session
-                                </Button>
-                            </div>
-
-                            {/* Staff View: Show Table of Problems to Manage */}
-                            {isStaff && filteredProblems.length > 0 && (
-                                <div className="border rounded-md">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Topic</TableHead>
-                                                <TableHead>Question</TableHead>
-                                                <TableHead>Class</TableHead>
-                                                <TableHead className="text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredProblems.map(p => (
-                                                <TableRow key={p.id}>
-                                                    <TableCell><Badge variant="outline">{p.topic}</Badge></TableCell>
-                                                    <TableCell className="max-w-[300px] truncate">{p.question_text}</TableCell>
-                                                    <TableCell>{classes?.find(c => c.id === p.classId)?.name || 'All'}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)}>
-                                                            <Trash2 className="h-4 w-4 text-red-500"/>
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                        <Button onClick={handleStartPractice} disabled={!topic || !difficulty} className="w-full">
+                            Start Practice
+                        </Button>
+                    </>
+                )}
+            </CardContent>
+          </Card>
         </TabsContent>
-
-        {/* LEADERBOARD TAB */}
         <TabsContent value="leaderboard">
             <Card>
                 <CardHeader>
-                    <CardTitle>Top Scientists</CardTitle>
-                    <CardDescription>Global ranking based on correct answers in science.</CardDescription>
+                    <CardTitle>Science Leaderboard</CardTitle>
+                    <CardDescription>See how you rank against other students in science.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <LeaderboardV2 />
                 </CardContent>
             </Card>
         </TabsContent>
+         {isStaff && (
+            <TabsContent value="manage">
+                <ManageProblems />
+            </TabsContent>
+        )}
       </Tabs>
-
-      {/* Add Problem Modal */}
-      {isFormOpen && (
-          <AddScienceProblemForm 
-            open={isFormOpen} 
-            setOpen={setIsFormOpen} 
-            classes={classes} 
-          />
-      )}
     </div>
   );
 }
