@@ -6,7 +6,7 @@ import { useRole } from '@/context/role-context';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { collection, query, orderBy, limit, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { isSameDay } from 'date-fns';
-import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, MessageSquare, Search, AlertTriangle, ShieldCheck, Wand2, Trash2, Activity } from 'lucide-react';
+import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, MessageSquare, Search, AlertTriangle, ShieldCheck, Wand2, Trash2, Activity, Users } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 
 // UI Components
@@ -306,7 +306,6 @@ function DetectiveDeskTab() {
   );
 }
 
-
 // --- SUB-COMPONENT: Daily Paradox Tab ---
 function DailyParadoxTab() {
   const { user, isUserLoading } = useUser();
@@ -355,9 +354,9 @@ function DailyParadoxTab() {
       const puzzleDate = newest.createdAt.toDate ? newest.createdAt.toDate() : new Date(newest.createdAt.seconds * 1000);
       return isSameDay(puzzleDate, new Date());
   }, [groupParadoxes]);
-
-  const handleAttempt = async (answer: string) => {
-      if (!user || canManage) return;
+  
+    const handleAttempt = async (answer: string) => {
+      if (!user || canManage) return; 
       await addDocumentNonBlocking(collection(firestore!, 'think_tank_submissions'), {
           studentId: user.uid,
           studentName: user.displayName || user.email,
@@ -370,13 +369,19 @@ function DailyParadoxTab() {
 
   const handleDeleteParadox = async (id: string, e?: React.MouseEvent) => {
       if (e) e.stopPropagation();
-      if (!firestore) return;
+      if (!firestore) {
+          toast({ variant: 'destructive', title: "Error", description: "Database connection not ready." });
+          return;
+      }
       try {
           await deleteDoc(doc(firestore, 'think_tank_paradoxes', id));
-          toast({ title: "Deleted" });
+          toast({ title: "Deleted", description: "Puzzle removed." });
           if (selectedParadoxId === id) setSelectedParadoxId(null);
           forceRefetch();
-      } catch (e) { toast({ variant: 'destructive', title: "Error deleting" }); }
+      } catch (e: any) {
+          console.error("Delete failed:", e);
+          toast({ variant: 'destructive', title: "Error", description: "Could not delete. Check console permissions." });
+      }
   };
 
   const handleGenerateParadox = async () => {
@@ -424,10 +429,10 @@ function DailyParadoxTab() {
                     <ScrollArea className="h-[300px] lg:h-[400px]">
                         <div className="flex flex-col p-2 gap-1">
                             {groupParadoxes.map((p) => (
-                                <button key={p.id} onClick={() => setSelectedParadoxId(p.id)} className={`text-left p-3 rounded-md text-sm border flex justify-between items-center cursor-pointer ${p.id === activeParadox?.id ? 'bg-indigo-50 border-indigo-200' : 'bg-white'}`}>
+                                <div key={p.id} onClick={() => setSelectedParadoxId(p.id)} className={`p-3 rounded-md text-sm border flex justify-between items-center group cursor-pointer ${p.id === activeParadox?.id ? 'bg-indigo-50 border-indigo-200' : 'bg-white'}`}>
                                     <span className="truncate flex-1">{p.question}</span>
-                                    {canManage && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={(e) => handleDeleteParadox(p.id, e)}><Trash2 className="h-3 w-3"/></Button>}
-                                </button>
+                                    {canManage && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400 z-10" onClick={(e) => handleDeleteParadox(p.id, e)}><Trash2 className="h-3 w-3"/></Button>}
+                                </div>
                             ))}
                         </div>
                     </ScrollArea>
@@ -468,6 +473,7 @@ function DebateArenaTab() {
       const groupTopics = allTopics
         .filter(t => t.targetGroup === activeGroup)
         .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      
       return groupTopics[0];
   }, [allTopics, activeGroup]);
 
@@ -491,7 +497,7 @@ function DebateArenaTab() {
   return (
     <div className="space-y-6">
         <div className="flex justify-between items-center">
-            <Badge variant="outline">Current Arena: {activeGroup}</Badge>
+            <Badge variant="outline" className="text-sm px-3 py-1">Current Arena: {activeGroup}</Badge>
             {canManage && <Select value={adminSelectedGroup} onValueChange={setAdminSelectedGroup}><SelectTrigger className="w-[200px] h-8 text-xs"><SelectValue /></SelectTrigger><SelectContent>{TARGET_GROUPS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent></Select>}
         </div>
         {canManage && (
@@ -548,3 +554,5 @@ export default function ThinkTankPage() {
     </div>
   );
 }
+
+    
