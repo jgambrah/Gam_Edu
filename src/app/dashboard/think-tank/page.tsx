@@ -4,7 +4,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRole } from '@/context/role-context';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, limit, addDoc, serverTimestamp, getDocs, where, startOfDay, endOfDay } from 'firebase/firestore';
+import { collection, query, orderBy, limit, addDoc, serverTimestamp, getDocs, where } from 'firebase/firestore';
+import { startOfDay, endOfDay } from 'date-fns';
 import { BrainCircuit, Loader2, PlusCircle, Lightbulb } from 'lucide-react';
 
 // UI Components
