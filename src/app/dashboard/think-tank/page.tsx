@@ -13,13 +13,15 @@ import { getAuth } from 'firebase/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
@@ -29,7 +31,7 @@ import type { Paradox, DebateTopic, Student } from '@/lib/types';
 import { generateDailyParadox, generateDebateTopic, generateDetectiveCase } from '@/ai/flows/think-tank'; 
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { formatDate } from 'date-fns';
-
+import { cn } from '@/lib/utils';
 
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
 
@@ -79,6 +81,7 @@ function TeacherMonitorTab() {
         </Card>
     );
 }
+
 
 // --- COMPONENT: Detective Card ---
 function DetectiveCard({ caseData, onDelete, isStaff }: { caseData: any, onDelete?: () => void, isStaff: boolean }) {
@@ -303,6 +306,7 @@ function DetectiveDeskTab() {
   );
 }
 
+
 // --- SUB-COMPONENT: Daily Paradox Tab ---
 function DailyParadoxTab() {
   const { user, isUserLoading } = useUser();
@@ -420,10 +424,10 @@ function DailyParadoxTab() {
                     <ScrollArea className="h-[300px] lg:h-[400px]">
                         <div className="flex flex-col p-2 gap-1">
                             {groupParadoxes.map((p) => (
-                                <div key={p.id} onClick={() => setSelectedParadoxId(p.id)} className={`p-3 rounded-md text-sm border flex justify-between items-center cursor-pointer ${p.id === activeParadox?.id ? 'bg-indigo-50 border-indigo-200' : 'bg-white'}`}>
+                                <button key={p.id} onClick={() => setSelectedParadoxId(p.id)} className={`text-left p-3 rounded-md text-sm border flex justify-between items-center cursor-pointer ${p.id === activeParadox?.id ? 'bg-indigo-50 border-indigo-200' : 'bg-white'}`}>
                                     <span className="truncate flex-1">{p.question}</span>
                                     {canManage && <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400" onClick={(e) => handleDeleteParadox(p.id, e)}><Trash2 className="h-3 w-3"/></Button>}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </ScrollArea>
@@ -477,8 +481,11 @@ function DebateArenaTab() {
           await addDoc(collection(firestore!, 'think_tank_debates'), { ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid });
           toast({ title: "AI Generated Debate!" });
           forceRefetch();
-      } catch(e: any) { toast({ variant: 'destructive', title: "AI Error", description: e.message }); }
-      finally { setIsGenerating(false); }
+      } catch(e: any) {
+          toast({ variant: 'destructive', title: "AI Error", description: e.message });
+      } finally {
+          setIsGenerating(false);
+      }
   };
   
   return (
@@ -498,11 +505,10 @@ function DebateArenaTab() {
                 </CardContent>
             </Card>
         )}
-        {isLoading ? <Skeleton className="h-96 w-full" /> : latestTopic ? <DebateArena topic={latestTopic} /> : <Card className="text-center py-10"><CardHeader><MessageSquare className="mx-auto h-12 w-12 text-slate-300 mb-2"/><CardTitle>No Active Debate</CardTitle><CardDescription>For {activeGroup}</CardDescription></CardHeader></Card>}
+        {isLoading ? <Skeleton className="h-96 w-full" /> : latestTopic ? <DebateArena topic={latestTopic} /> : <Card className="text-center py-10"><CardHeader><MessageSquare className="mx-auto h-12 w-12 text-slate-300 mb-2"/><CardTitle>No Active Debate</CardTitle><CardDescription>There is no debate topic set for {activeGroup} yet.</CardDescription></CardHeader></Card>}
     </div>
   );
 }
-
 
 // --- MAIN PAGE ---
 export default function ThinkTankPage() {
@@ -524,16 +530,21 @@ export default function ThinkTankPage() {
       </Card>
 
       <Tabs defaultValue="paradox" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
+        <TabsList className={cn("grid w-full", canManage ? "grid-cols-4" : "grid-cols-3")}>
             <TabsTrigger value="paradox">Daily Paradox</TabsTrigger>
             <TabsTrigger value="detective">Detective Desk</TabsTrigger>
             <TabsTrigger value="debate">Debate Arena</TabsTrigger>
+            {canManage && <TabsTrigger value="monitor"><Activity className="mr-2 h-4 w-4"/> Activity Log</TabsTrigger>}
         </TabsList>
         <TabsContent value="paradox" className="mt-6"><DailyParadoxTab /></TabsContent>
         <TabsContent value="detective" className="mt-6"><DetectiveDeskTab /></TabsContent>
         <TabsContent value="debate" className="mt-6"><DebateArenaTab /></TabsContent>
+        {canManage && (
+            <TabsContent value="monitor" className="mt-6">
+                <TeacherMonitorTab />
+            </TabsContent>
+        )}
       </Tabs>
     </div>
   );
 }
-
