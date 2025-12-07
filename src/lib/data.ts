@@ -41,6 +41,7 @@ import {
   Wallet,
   Settings,
   Megaphone,
+  BrainCircuit,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -208,6 +209,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/coding-club',
             title: 'Coding Club',
             icon: Code,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+         {
+            path: '/dashboard/think-tank',
+            title: 'The Think Tank',
+            icon: BrainCircuit,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
     ]
