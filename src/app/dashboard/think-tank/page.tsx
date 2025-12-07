@@ -34,7 +34,7 @@ function DailyParadoxTab() {
   
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const canManage = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   const paradoxQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -43,6 +43,8 @@ function DailyParadoxTab() {
 
     return query(
         collection(firestore, 'think_tank_paradoxes'),
+        // NOTE: If you get a "Missing Index" error, remove the 'createdAt' filter temporarily
+        // or click the link in the console to create the index.
         where('createdAt', '>=', todayStart),
         where('createdAt', '<=', todayEnd),
         orderBy('createdAt', 'desc'),
@@ -51,29 +53,40 @@ function DailyParadoxTab() {
   }, [firestore]);
 
   const { data: paradoxes, isLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
-  
   const paradox = useMemo(() => paradoxes?.[0], [paradoxes]);
 
-
   const handleGenerateParadox = async () => {
-    if (!user || !firestore) return;
+    console.log("Generate Paradox Clicked"); // Debug Log
+
+    if (!user) {
+        toast({ variant: 'destructive', title: "Error", description: "You must be logged in." });
+        return;
+    }
+    
     setIsGenerating(true);
     toast({ title: "Thinking...", description: "Generating a new paradox for today." });
     
     try {
+        // Call the AI Server Action
         const result = await generateDailyParadox({ grade: 'Grade 9' });
-        const newParadoxData = {
+        
+        console.log("AI Result:", result); // Debug Log
+
+        if (!result) throw new Error("No data returned from AI");
+
+        // Save to Firestore
+        await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
             ...result,
             createdAt: serverTimestamp(),
-        };
-        await addDoc(collection(firestore, 'think_tank_paradoxes'), newParadoxData);
+            createdBy: user.uid
+        });
         
         toast({ title: "Success!", description: "Today's paradox has been created." });
         forceRefetch();
 
-    } catch(e) {
-        console.error(e);
-        toast({ variant: 'destructive', title: "AI Error", description: "Could not generate paradox." });
+    } catch(e: any) {
+        console.error("Generation Error:", e);
+        toast({ variant: 'destructive', title: "AI Error", description: e.message || "Could not generate paradox." });
     } finally {
         setIsGenerating(false);
     }
@@ -88,18 +101,19 @@ function DailyParadoxTab() {
       {paradox ? (
         <ParadoxCard paradox={paradox} onComplete={() => forceRefetch()} />
       ) : (
-        <Card className="text-center py-10">
+        <Card className="text-center py-10 border-2 border-dashed">
           <CardHeader>
-            <Lightbulb className="mx-auto h-12 w-12 text-yellow-400" />
+            <Lightbulb className="mx-auto h-12 w-12 text-yellow-400 mb-2" />
             <CardTitle>No Paradox for Today</CardTitle>
             <CardDescription>A new logic puzzle has not been generated yet.</CardDescription>
           </CardHeader>
           <CardContent>
-            {canManage && (
-              <Button onClick={handleGenerateParadox} disabled={isGenerating}>
-                {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                Generate Daily Paradox
+            {canManage ? (
+              <Button onClick={handleGenerateParadox} disabled={isGenerating} className="bg-indigo-600 hover:bg-indigo-700">
+                {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Thinking...</> : <><PlusCircle className="mr-2 h-4 w-4"/> Generate Daily Paradox</>}
               </Button>
+            ) : (
+                <p className="text-sm text-muted-foreground">Please ask a teacher to generate today's puzzle.</p>
             )}
           </CardContent>
         </Card>
