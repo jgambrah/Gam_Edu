@@ -1,10 +1,10 @@
 
 'use server';
 
-import { generate } from '@genkit-ai/ai';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Define the schema for Paradox
+// Define the schema
 const ParadoxSchema = z.object({
   question: z.string(),
   answer: z.string(),
@@ -41,16 +41,15 @@ export async function generateDailyParadox(input: { targetGroup: string }) {
       Output strictly JSON.
     `;
 
-    const response = await generate({
+    const { output } = await ai.generate({
       prompt: prompt,
       output: { schema: ParadoxSchema },
     });
 
-    const data = response.output();
-    if (!data) throw new Error("No data returned");
+    if (!output) throw new Error("No data returned");
     
     // Ensure the returned data has the target group tag
-    return { ...data, targetGroup: input.targetGroup };
+    return { ...output, targetGroup: input.targetGroup };
     
   } catch (error: any) {
     console.error("AI Error:", error);
@@ -98,14 +97,13 @@ export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>
     `;
 
     try {
-        const response = await generate({
+        const { output } = await ai.generate({
             prompt,
             output: { schema: DebateTurnOutputSchema },
         });
 
-        const data = response.output();
-        if (!data) throw new Error("Debate AI returned no data.");
-        return data;
+        if (!output) throw new Error("Debate AI returned no data.");
+        return output;
 
     } catch (error: any) {
         console.error("Debate AI Error:", error);
