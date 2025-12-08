@@ -32,6 +32,7 @@ export default function PayrollReportsPage() {
 
     const handleFetchRecords = async () => {
         setIsFetching(true);
+        setFetchedRecords([]); // Clear previous results
         try {
             const recordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', period));
             const querySnapshot = await getDocs(recordsQuery);
@@ -51,10 +52,13 @@ export default function PayrollReportsPage() {
     };
     
     const summary = useMemo(() => {
+        if (!fetchedRecords || fetchedRecords.length === 0) {
+            return { gross: 0, deductions: 0, net: 0 };
+        }
         return fetchedRecords.reduce((acc, rec) => {
-            acc.gross += rec.grossSalary;
-            acc.deductions += rec.totalDeductions;
-            acc.net += rec.netSalary;
+            acc.gross += rec.grossSalary || 0;
+            acc.deductions += rec.totalDeductions || 0;
+            acc.net += rec.netSalary || 0;
             return acc;
         }, { gross: 0, deductions: 0, net: 0 });
     }, [fetchedRecords]);
@@ -99,7 +103,9 @@ export default function PayrollReportsPage() {
                 </CardContent>
             </Card>
             
-            {fetchedRecords.length > 0 ? (
+            {isFetching ? (
+                <div className="text-center py-20 bg-muted rounded-lg"><Loader2 className="h-8 w-8 animate-spin mx-auto"/></div>
+            ) : fetchedRecords.length > 0 ? (
                 <>
                     <div className="grid gap-4 md:grid-cols-3">
                         <Card><CardHeader><CardTitle>Total Gross Salary</CardTitle></CardHeader><CardContent><p className="text-2xl font-bold">GH₵{summary.gross.toFixed(2)}</p></CardContent></Card>
@@ -115,9 +121,9 @@ export default function PayrollReportsPage() {
                                     {fetchedRecords.map(rec => (
                                         <TableRow key={rec.id}>
                                             <TableCell className="font-medium">{rec.staffName}</TableCell>
-                                            <TableCell>GH₵{rec.grossSalary.toFixed(2)}</TableCell>
-                                            <TableCell>GH₵{rec.totalDeductions.toFixed(2)}</TableCell>
-                                            <TableCell className="font-bold">GH₵{rec.netSalary.toFixed(2)}</TableCell>
+                                            <TableCell>GH₵{(rec.grossSalary || 0).toFixed(2)}</TableCell>
+                                            <TableCell>GH₵{(rec.totalDeductions || 0).toFixed(2)}</TableCell>
+                                            <TableCell className="font-bold">GH₵{(rec.netSalary || 0).toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
                                                 <Dialog>
                                                     <DialogTrigger asChild>
