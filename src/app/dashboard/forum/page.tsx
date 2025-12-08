@@ -25,8 +25,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
-// --- Create Thread Form ---
+// --- Create Thread Form (Fixed) ---
 function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
     const { user } = useAuth();
@@ -39,17 +40,38 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user || !title || !content) return;
+        
+        if (!user) {
+            toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in.' });
+            return;
+        }
+        
+        if (!title.trim() || !content.trim()) {
+             toast({ variant: 'destructive', title: 'Missing Fields', description: 'Please fill in title and content.' });
+             return;
+        }
 
         setIsSubmitting(true);
+        
         try {
-            const { isSafe, reason } = await validateContentSafety({ content: `${title} ${content}` });
-            if (!isSafe) {
-                toast({ variant: 'destructive', title: 'Inappropriate Content Detected', description: reason });
-                setIsSubmitting(false);
-                return;
+            // 1. Safety Check (Wrapped in try/catch to prevent freezing)
+            if (aiModerator) {
+                try {
+                    const { isSafe, reason } = await validateContentSafety({ content: `${title} ${content}` });
+                    if (!isSafe) {
+                        toast({ variant: 'destructive', title: 'Content Flagged', description: reason || 'Inappropriate content detected.' });
+                        setIsSubmitting(false);
+                        return;
+                    }
+                } catch (aiError) {
+                    console.error("AI Check Failed (Skipping):", aiError);
+                    // Decide: Should we block or allow if AI fails? 
+                    // Usually safer to allow and moderate later, or block. 
+                    // For now, we continue to allow posting if AI is down.
+                }
             }
 
+            // 2. Save to Firestore
             await addDoc(collection(firestore, 'forumThreads'), {
                 title,
                 content,
@@ -59,10 +81,13 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
                 replyCount: 0,
                 lastReplyAt: serverTimestamp(),
             });
-            toast({ title: 'Thread Created', description: 'Your discussion topic is now live.' });
-            setOpen(false);
+            
+            toast({ title: 'Success', description: 'Thread posted successfully.' });
+            setOpen(false); // Close modal
+            
         } catch (e: any) {
-            toast({ variant: 'destructive', title: 'Error', description: e.message });
+            console.error("Firestore Error:", e);
+            toast({ variant: 'destructive', title: 'Database Error', description: e.message });
         } finally {
             setIsSubmitting(false);
         }
@@ -72,25 +97,28 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
                 <Label htmlFor="title">Thread Title</Label>
-                <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="e.g. Help with Science Homework"/>
             </div>
             <div className="space-y-2">
                 <Label htmlFor="content">Content</Label>
-                <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required />
+                <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required placeholder="Write your question or discussion topic here..."/>
             </div>
-             <div className="flex items-center space-x-2">
+             <div className="flex items-center space-x-2 border p-3 rounded-md bg-muted/50">
                 <Switch id="ai-moderator" checked={aiModerator} onCheckedChange={setAiModerator} />
-                <Label htmlFor="ai-moderator">Enable AI Moderator</Label>
+                <div className="flex flex-col">
+                    <Label htmlFor="ai-moderator">AI Moderator</Label>
+                    <span className="text-xs text-muted-foreground">Automatically flag inappropriate replies.</span>
+                </div>
             </div>
             <DialogFooter>
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Post Thread
+                    {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Posting...</> : "Post Thread"}
                 </Button>
             </DialogFooter>
         </form>
     );
 }
+
 
 // --- Thread View ---
 function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => void }) {
