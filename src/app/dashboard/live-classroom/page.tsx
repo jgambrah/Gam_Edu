@@ -1,39 +1,50 @@
+
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getApp } from 'firebase/app';
 import { 
   Video, Mic, MicOff, VideoOff, MessageSquare, Send, 
-  Users, Sparkles, Hand, LayoutGrid, MonitorPlay, Bot 
+  Users, Sparkles, Hand, LayoutGrid, MonitorPlay, Bot, 
+  Calendar as CalendarIcon, Clock, Upload, ChevronLeft, ChevronRight, Presentation, ScreenShare
 } from 'lucide-react';
 import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
+import { format } from 'date-fns';
 
 // UI
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 // --- TYPES ---
 type Lecture = {
     id: string;
     title: string;
+    description?: string;
+    targetGroup?: string; // e.g. "JHS 1"
+    scheduledFor?: any; // Timestamp
     teacherName: string;
     teacherId: string;
-    status: 'live' | 'ended';
+    status: 'scheduled' | 'live' | 'ended';
     createdAt: any;
+    
+    // Slide Features
+    slides?: string[]; // Array of Image URLs
+    currentSlide?: number; // Index of active slide
+    isPresentationMode?: boolean; 
 };
 
 type ChatMessage = {
@@ -41,34 +52,103 @@ type ChatMessage = {
     senderName: string;
     senderId: string;
     text: string;
-    isPoll?: boolean; // If it's a teacher's poll
+    isPoll?: boolean;
     pollData?: any;
     createdAt: any;
 };
 
-// --- SUB-COMPONENT: ACTIVE CLASSROOM ---
+// --- COMPONENT: Schedule Class Dialog ---
+function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-function PollMessage({ pollData }: { pollData: any }) {
-    const [selectedOption, setSelectedOption] = useState('');
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [targetGroup, setTargetGroup] = useState('');
+    const [scheduledDate, setScheduledDate] = useState('');
+    const [scheduledTime, setScheduledTime] = useState('');
+
+    const handleSchedule = async () => {
+        if (!user || !title || !scheduledDate || !scheduledTime) {
+            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // Combine Date and Time
+            const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+
+            await addDoc(collection(firestore!, 'lectures'), {
+                title,
+                description,
+                targetGroup: targetGroup || 'General',
+                scheduledFor: scheduledDateTime,
+                teacherName: user.displayName || user.email?.split('@')[0],
+                teacherId: user.uid,
+                status: 'scheduled',
+                createdAt: serverTimestamp(),
+                slides: [],
+                currentSlide: 0,
+                isPresentationMode: false
+            });
+
+            toast({ title: "Class Scheduled", description: "Your lecture has been added to the calendar." });
+            setOpen(false);
+            // Reset
+            setTitle(''); setDescription(''); setTargetGroup('');
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
-        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <h4 className="font-bold mb-2">📊 Live Poll: {pollData.question}</h4>
-            <RadioGroup value={selectedOption} onValueChange={setSelectedOption} disabled={isSubmitted}>
-                {pollData.options.map((opt: string, i: number) => (
-                    <div key={i} className={cn("flex items-center space-x-2 p-2 rounded-md", isSubmitted && opt === pollData.correctOption && "bg-green-100")}>
-                        <RadioGroupItem value={opt} id={`poll-opt-${i}`} />
-                        <Label htmlFor={`poll-opt-${i}`} className="font-normal">{opt}</Label>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Schedule a Class</DialogTitle>
+                    <DialogDescription>Set up a future live session for your students.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                        <Label>Topic / Title *</Label>
+                        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Intro to Algebra" />
                     </div>
-                ))}
-            </RadioGroup>
-            <Button onClick={() => setIsSubmitted(true)} disabled={!selectedOption || isSubmitted} size="sm" className="mt-4">
-                Submit Vote
-            </Button>
-        </div>
+                    <div className="space-y-2">
+                        <Label>Description</Label>
+                        <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What will be covered?" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Target Audience</Label>
+                            <Input value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="e.g. JHS 2" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Date *</Label>
+                            <Input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Time *</Label>
+                        <Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleSchedule} disabled={isSubmitting} className="w-full">
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <CalendarIcon className="mr-2 h-4 w-4"/>}
+                        Schedule Class
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
 
+// --- COMPONENT: ACTIVE CLASSROOM ---
 function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () => void }) {
     const { user } = useUser();
     const { role } = useRole();
@@ -83,7 +163,12 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const [aiResponse, setAiResponse] = useState<any>(null);
     const [isProcessingAi, setIsProcessingAi] = useState(false);
 
-    const isTeacher = role === 'Teacher' || role === 'Administrator';
+    // Slide State
+    const [isUploadingSlides, setIsUploadingSlides] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+    const isPresenter = user?.uid === lecture.teacherId; // Only the specific teacher can control slides
 
     // 1. Fetch Chat
     const chatQuery = useMemoFirebase(() => 
@@ -108,6 +193,57 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         setMsgText('');
     };
 
+    // --- SLIDE CONTROLS (Teacher Only) ---
+    
+    const handleUploadSlides = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+        setIsUploadingSlides(true);
+
+        try {
+            const app = getApp();
+            const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
+            const uploadedUrls: string[] = [];
+
+            // Upload each file
+            for (let i = 0; i < e.target.files.length; i++) {
+                const file = e.target.files[i];
+                const storageRef = ref(storage, `lectures/${lecture.id}/slides/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                uploadedUrls.push(url);
+            }
+
+            // Update Firestore with new slides
+            const lectureRef = doc(firestore!, 'lectures', lecture.id);
+            await updateDoc(lectureRef, {
+                slides: uploadedUrls,
+                currentSlide: 0,
+                isPresentationMode: true
+            });
+            
+            toast({ title: "Slides Uploaded", description: `${uploadedUrls.length} slides ready for presentation.` });
+
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: "Upload Failed", description: error.message });
+        } finally {
+            setIsUploadingSlides(false);
+        }
+    };
+
+    const changeSlide = async (direction: 'next' | 'prev') => {
+        if (!lecture.slides) return;
+        const total = lecture.slides.length;
+        const current = lecture.currentSlide || 0;
+        let nextIndex = current;
+
+        if (direction === 'next' && current < total - 1) nextIndex++;
+        if (direction === 'prev' && current > 0) nextIndex--;
+
+        if (nextIndex !== current) {
+            await updateDoc(doc(firestore!, 'lectures', lecture.id), { currentSlide: nextIndex });
+        }
+    };
+
     // --- TEACHER AI TOOL: Generate Poll ---
     const handleGeneratePoll = async () => {
         if(!aiInput.trim()) return;
@@ -115,7 +251,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         try {
             const res = await generateLivePollAction(aiInput);
             if(res.success) {
-                // Post Poll to Chat
                 await addDoc(collection(firestore!, 'lectures', lecture.id, 'messages'), {
                     text: "Quick Poll: " + res.data.question,
                     senderName: "AI Co-Pilot",
@@ -124,7 +259,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     pollData: res.data,
                     createdAt: serverTimestamp()
                 });
-                toast({ title: "Poll Posted", description: "Students can now see the question." });
+                toast({ title: "Poll Posted" });
                 setIsAiOpen(false);
                 setAiInput('');
             }
@@ -147,20 +282,63 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-100px)]">
-            {/* LEFT: VIDEO STAGE */}
+            {/* LEFT: STAGE (Video + Slides) */}
             <div className="lg:col-span-2 flex flex-col gap-4">
-                <Card className="flex-1 bg-black relative overflow-hidden flex items-center justify-center">
-                    {/* Placeholder Video Feed */}
-                    <div className="text-center text-slate-500">
-                        <MonitorPlay className="h-16 w-16 mx-auto mb-4 opacity-50"/>
-                        <h3 className="text-xl font-semibold text-white">Live Stream Active</h3>
-                        <p>Camera and Screen Share would appear here.</p>
-                    </div>
+                <Card className="flex-1 bg-black relative overflow-hidden flex flex-col items-center justify-center p-0 border-0">
                     
-                    {/* Controls Overlay */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 bg-slate-900/80 p-2 rounded-full backdrop-blur-sm">
+                    {/* MAIN CONTENT AREA */}
+                    {lecture.isPresentationMode && lecture.slides && lecture.slides.length > 0 ? (
+                        // SLIDE PROJECTION VIEW
+                        <div className="relative w-full h-full bg-black flex items-center justify-center">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img 
+                                src={lecture.slides[lecture.currentSlide || 0]} 
+                                alt="Presentation Slide" 
+                                className="max-w-full max-h-full object-contain"
+                            />
+                            {/* TEACHER SLIDE CONTROLS OVERLAY */}
+                            {isPresenter && (
+                                <div className="absolute bottom-20 flex gap-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
+                                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => changeSlide('prev')} disabled={(lecture.currentSlide || 0) <= 0}>
+                                        <ChevronLeft className="h-6 w-6"/>
+                                    </Button>
+                                    <span className="text-white font-mono flex items-center px-2">
+                                        {(lecture.currentSlide || 0) + 1} / {lecture.slides.length}
+                                    </span>
+                                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => changeSlide('next')} disabled={(lecture.currentSlide || 0) >= lecture.slides.length - 1}>
+                                        <ChevronRight className="h-6 w-6"/>
+                                    </Button>
+                                    <Button variant="destructive" size="sm" onClick={() => updateDoc(doc(firestore!, 'lectures', lecture.id), { isPresentationMode: false })}>
+                                        Stop Sharing
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        // DEFAULT VIDEO PLACEHOLDER
+                        <div className="text-center text-slate-500">
+                            <MonitorPlay className="h-16 w-16 mx-auto mb-4 opacity-50"/>
+                            <h3 className="text-xl font-semibold text-white">Live Stream Active</h3>
+                            <p>Waiting for camera feed...</p>
+                            {isPresenter && (
+                                <Button variant="outline" className="mt-4 bg-slate-800 border-slate-700 text-slate-300 hover:text-white" onClick={() => fileInputRef.current?.click()}>
+                                    {isUploadingSlides ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Presentation className="mr-2 h-4 w-4"/>}
+                                    Share Slides
+                                </Button>
+                            )}
+                            <input type="file" hidden multiple accept="image/*" ref={fileInputRef} onChange={handleUploadSlides} />
+                        </div>
+                    )}
+                    
+                    {/* GLOBAL CONTROLS OVERLAY */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 bg-slate-900/80 p-2 rounded-full backdrop-blur-sm z-20">
                         <Button variant="ghost" size="icon" className="text-white hover:bg-white/20"><Mic className="h-5 w-5"/></Button>
                         <Button variant="ghost" size="icon" className="text-white hover:bg-white/20"><Video className="h-5 w-5"/></Button>
+                        {isPresenter && (
+                             <Button variant="ghost" size="icon" className={`text-white hover:bg-white/20 ${lecture.isPresentationMode ? 'bg-indigo-600' : ''}`} onClick={() => !lecture.isPresentationMode && fileInputRef.current?.click()}>
+                                <ScreenShare className="h-5 w-5"/>
+                             </Button>
+                        )}
                         <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-500/20" onClick={onLeave}>Leave</Button>
                     </div>
                 </Card>
@@ -189,7 +367,14 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                                     <p className="text-xs opacity-70 mb-1 font-bold">{msg.senderName}</p>
                                     
                                     {msg.isPoll ? (
-                                        <PollMessage pollData={msg.pollData} />
+                                        <div className="space-y-2">
+                                            <p className="font-bold text-indigo-900">{msg.text}</p>
+                                            <div className="grid grid-cols-1 gap-1">
+                                                {msg.pollData.options.map((opt:string, i:number) => (
+                                                    <Button key={i} variant="outline" size="sm" className="justify-start h-auto py-1 text-left text-xs bg-white">{opt}</Button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     ) : (
                                         <p>{msg.text}</p>
                                     )}
@@ -207,10 +392,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             {/* AI MODAL */}
             <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); setAiInput(''); }}>
                 <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{isTeacher ? "Classroom Co-Pilot" : "Personal Tutor"}</DialogTitle>
-                    </DialogHeader>
-                    
+                    <DialogHeader><DialogTitle>{isTeacher ? "Classroom Co-Pilot" : "Personal Tutor"}</DialogTitle></DialogHeader>
                     {!aiResponse ? (
                         <div className="space-y-4">
                             <Label>{isTeacher ? "What topic are you teaching right now?" : "What concept is confusing you?"}</Label>
@@ -220,7 +402,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                             </Button>
                         </div>
                     ) : (
-                        // STUDENT EXPLANATION VIEW
                         <div className="space-y-4">
                             <div className="bg-emerald-50 p-4 rounded-md border border-emerald-100">
                                 <h4 className="font-bold text-emerald-800 text-sm uppercase mb-2">Definition</h4>
@@ -247,26 +428,23 @@ export default function LiveClassroomPage() {
     const { toast } = useToast();
     
     const [activeLectureId, setActiveLectureId] = useState<string | null>(null);
-    const [newTitle, setNewTitle] = useState('');
+    const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('live');
 
     const isTeacher = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-    // Fetch Live Lectures
-    const lecturesQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live'), orderBy('createdAt', 'desc')) : null
-    , [firestore]);
-    const { data: lectures, isLoading } = useCollection<Lecture>(lecturesQuery);
+    // Queries
+    const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]);
+    const { data: liveLectures } = useCollection<Lecture>(liveQuery);
 
-    const handleStartLecture = async () => {
-        if(!newTitle.trim() || !user) return;
-        const docRef = await addDoc(collection(firestore!, 'lectures'), {
-            title: newTitle,
-            teacherName: user.displayName || user.email?.split('@')[0],
-            teacherId: user.uid,
-            status: 'live',
-            createdAt: serverTimestamp()
-        });
-        setActiveLectureId(docRef.id);
+    const upcomingQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled'), orderBy('scheduledFor', 'asc')) : null, [firestore]);
+    const { data: upcomingLectures } = useCollection<Lecture>(upcomingQuery);
+
+    // Actions
+    const handleStartScheduled = async (id: string) => {
+        if(!firestore) return;
+        await updateDoc(doc(firestore, 'lectures', id), { status: 'live' });
+        setActiveLectureId(id);
     };
 
     const handleEndLecture = async () => {
@@ -277,55 +455,90 @@ export default function LiveClassroomPage() {
     };
 
     // If joined, show classroom
-    if (activeLectureId && lectures) {
-        const currentLecture = lectures.find(l => l.id === activeLectureId);
+    if (activeLectureId) {
+        // Try to find in live first, then upcoming (in case it just switched)
+        const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
         if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
     }
 
     return (
         <div className="space-y-6 p-6">
             <Card className="bg-slate-900 text-white">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom</CardTitle>
-                    <p className="text-slate-400">Join virtual sessions or start your own.</p>
+                <CardHeader className="flex flex-row justify-between items-center">
+                    <div>
+                        <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom</CardTitle>
+                        <p className="text-slate-400">Interactive virtual learning environment.</p>
+                    </div>
+                    {isTeacher && (
+                        <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                            <CalendarIcon className="mr-2 h-4 w-4"/> Schedule Class
+                        </Button>
+                    )}
                 </CardHeader>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* LECTURE LIST */}
-                <Card>
-                    <CardHeader><CardTitle>Active Sessions</CardTitle></CardHeader>
-                    <CardContent className="space-y-2">
-                        {isLoading && <Loader2 className="animate-spin"/>}
-                        {lectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No live classes right now.</p>}
-                        {lectures?.map(l => (
-                            <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
-                                <div>
-                                    <h4 className="font-bold text-slate-800">{l.title}</h4>
-                                    <p className="text-sm text-slate-500">Host: {l.teacherName}</p>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                    <TabsTrigger value="live">Live Now ({liveLectures?.length || 0})</TabsTrigger>
+                    <TabsTrigger value="upcoming">Upcoming ({upcomingLectures?.length || 0})</TabsTrigger>
+                </TabsList>
+
+                {/* LIVE TAB */}
+                <TabsContent value="live" className="mt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
+                        {liveLectures?.map(l => (
+                            <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <Badge className="bg-red-100 text-red-700 hover:bg-red-200">LIVE</Badge>
+                                        <Badge variant="outline">{l.targetGroup}</Badge>
+                                    </div>
+                                    <CardTitle className="mt-2">{l.title}</CardTitle>
+                                    <CardDescription>Host: {l.teacherName}</CardDescription>
+                                </CardHeader>
+                                <CardFooter>
+                                    <Button onClick={() => setActiveLectureId(l.id)} className="w-full bg-red-600 hover:bg-red-700">Join Class</Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                </TabsContent>
+
+                {/* UPCOMING TAB */}
+                <TabsContent value="upcoming" className="mt-6">
+                     <div className="space-y-4">
+                        {upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
+                        {upcomingLectures?.map(l => (
+                            <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
+                                <div className="flex gap-4 items-center">
+                                    <div className="bg-indigo-50 p-3 rounded-lg text-center min-w-[70px]">
+                                        <p className="text-xs font-bold text-indigo-600 uppercase">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'MMM') : 'DATE'}</p>
+                                        <p className="text-xl font-bold text-slate-800">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'd') : '00'}</p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg text-slate-800">{l.title}</h4>
+                                        <div className="flex gap-2 text-sm text-muted-foreground">
+                                            <span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span>
+                                            <span>•</span>
+                                            <span>{l.targetGroup}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <Button onClick={() => setActiveLectureId(l.id)} className="bg-red-600 hover:bg-red-700">Join Live</Button>
+                                {isTeacher ? (
+                                    <Button onClick={() => handleStartScheduled(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
+                                        Start Now
+                                    </Button>
+                                ) : (
+                                    <Button disabled variant="secondary" size="sm">Not Started</Button>
+                                )}
                             </div>
                         ))}
-                    </CardContent>
-                </Card>
+                     </div>
+                </TabsContent>
+            </Tabs>
 
-                {/* TEACHER CONTROLS */}
-                {isTeacher && (
-                    <Card>
-                        <CardHeader><CardTitle>Start a Class</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label>Topic / Title</Label>
-                                <Input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="e.g. Biology 101: Cells"/>
-                            </div>
-                            <Button onClick={handleStartLecture} disabled={!newTitle} className="w-full">
-                                <Video className="mr-2 h-4 w-4"/> Go Live
-                            </Button>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
+            <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
         </div>
     );
 }
