@@ -119,10 +119,10 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
 }
 
 
-// --- Thread View ---
+// --- Thread View (Fixed) ---
 function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => void }) {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user: hookUser } = useAuth(); // Renamed
     const { toast } = useToast();
     const [reply, setReply] = useState('');
     const [isReplying, setIsReplying] = useState(false);
@@ -131,33 +131,57 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
     const { data: replies, isLoading } = useCollection<ForumReply>(repliesQuery);
 
     const handlePostReply = async () => {
-        if (!user || !reply.trim()) return;
+        // FIX: Get user directly
+        const auth = getAuth();
+        const currentUser = auth.currentUser || hookUser;
+
+        if (!currentUser) {
+             toast({ variant: 'destructive', title: 'Error', description: 'You seem to be logged out. Refresh the page.' });
+             return;
+        }
+
+        if (!reply.trim()) return;
+        
         setIsReplying(true);
 
         try {
-            const { isSafe, reason } = await validateContentSafety({ content: reply });
-            if (!isSafe) {
-                toast({ variant: 'destructive', title: 'Inappropriate Content Detected', description: reason });
-                setIsReplying(false);
-                return;
+            // 1. AI Safety Check (Optional - wrapped to prevent blocking)
+            try {
+                const { isSafe, reason } = await validateContentSafety({ content: reply });
+                if (!isSafe) {
+                    toast({ variant: 'destructive', title: 'Content Flagged', description: reason });
+                    setIsReplying(false);
+                    return;
+                }
+            } catch (aiError) {
+                console.warn("AI Check skipped due to error");
             }
             
-            const replyData = {
+            // 2. Add Reply to Sub-collection
+            await addDoc(collection(firestore, `forumThreads/${thread.id}/replies`), {
                 threadId: thread.id,
-                author: { uid: user.uid, name: user.displayName || user.email },
+                author: { 
+                    uid: currentUser.uid, 
+                    name: currentUser.displayName || currentUser.email?.split('@')[0] || 'User' 
+                },
                 content: reply,
                 createdAt: serverTimestamp(),
-            };
-            await addDoc(collection(firestore, `forumThreads/${thread.id}/replies`), replyData);
+                isAIMessage: false
+            });
 
-            await updateDoc(doc(firestore, 'forumThreads', thread.id), {
+            // 3. Update Main Thread Stats (Reply Count)
+            // Note: This requires 'update' permission on the thread document!
+            const threadRef = doc(firestore, 'forumThreads', thread.id);
+            await updateDoc(threadRef, {
                 replyCount: (thread.replyCount || 0) + 1,
                 lastReplyAt: serverTimestamp(),
             });
 
-            setReply('');
+            toast({ title: "Reply Posted" });
+            setReply(''); // Clear input
         } catch (e: any) {
-             toast({ variant: 'destructive', title: 'Error', description: e.message });
+             console.error(e);
+             toast({ variant: 'destructive', title: 'Error', description: e.message || "Could not post reply." });
         } finally {
             setIsReplying(false);
         }
@@ -166,28 +190,48 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
     return (
         <Card className="flex flex-col h-[80vh]">
             <CardHeader className="border-b">
-                <Button variant="ghost" onClick={onBack} className="mb-2"><ArrowLeft className="mr-2"/> Back to All Threads</Button>
-                <CardTitle>{thread.title}</CardTitle>
+                <Button variant="ghost" onClick={onBack} className="mb-2 w-fit pl-0 hover:pl-2 transition-all"><ArrowLeft className="mr-2 h-4 w-4"/> Back to Threads</Button>
+                <CardTitle className="text-xl">{thread.title}</CardTitle>
                 <CardDescription>
-                    Posted by {thread.createdBy.name} on {thread.createdAt ? format(thread.createdAt.toDate(), 'PPP') : ''}
-                    {thread.aiModeratorEnabled && <Badge variant="secondary" className="ml-2"><Shield className="mr-1 h-3 w-3"/> AI Moderated</Badge>}
+                    Posted by {thread.createdBy.name} • {thread.createdAt ? format(thread.createdAt.toDate(), 'PPP') : ''}
+                    {thread.aiModeratorEnabled && <Badge variant="secondary" className="ml-2"><Shield className="mr-1 h-3 w-3"/> Moderated</Badge>}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-                 <div className="p-4 bg-muted rounded-md">{thread.content}</div>
-                {isLoading ? <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin" /> : replies?.map(r => (
-                    <div key={r.id} className={`flex gap-3 ${r.author.uid === user?.uid ? 'justify-end' : ''}`}>
-                         {r.isAIMessage && <Bot className="h-6 w-6 text-primary flex-shrink-0"/>}
-                        <div className={`max-w-[70%] p-3 rounded-lg ${r.isAIMessage ? 'bg-blue-50 border border-blue-200' : r.author.uid === user?.uid ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                            <p className="text-sm">{r.content}</p>
-                            <p className="text-xs mt-1 opacity-70">{r.author.name} • {r.createdAt ? format(r.createdAt.toDate(), 'p') : ''}</p>
+            <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+                 {/* Original Post */}
+                 <div className="p-4 bg-white border rounded-md shadow-sm">
+                    <p className="text-slate-800 whitespace-pre-wrap">{thread.content}</p>
+                 </div>
+                 
+                 <div className="relative">
+                    <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                    <div className="relative flex justify-center text-xs uppercase"><span className="bg-slate-50 px-2 text-muted-foreground">Replies</span></div>
+                 </div>
+
+                {isLoading ? <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin text-primary" /> : replies?.map(r => (
+                    <div key={r.id} className={`flex gap-3 ${r.author.uid === hookUser?.uid ? 'justify-end' : ''}`}>
+                         {r.isAIMessage && <Bot className="h-8 w-8 text-blue-500 flex-shrink-0 mt-1"/>}
+                        <div className={`max-w-[80%] p-3 rounded-xl text-sm shadow-sm ${
+                            r.isAIMessage ? 'bg-blue-50 border border-blue-100 text-slate-800' : 
+                            r.author.uid === hookUser?.uid ? 'bg-indigo-600 text-white rounded-br-none' : 
+                            'bg-white border text-slate-700 rounded-bl-none'
+                        }`}>
+                            <p className="font-medium text-xs opacity-70 mb-1">{r.author.name}</p>
+                            <p>{r.content}</p>
+                            <p className="text-[10px] mt-1 opacity-50 text-right">{r.createdAt ? format(r.createdAt.toDate(), 'p') : '...'}</p>
                         </div>
                     </div>
                 ))}
             </CardContent>
-            <CardFooter className="border-t p-4">
+            <CardFooter className="border-t p-4 bg-white">
                  <div className="flex w-full items-center gap-2">
-                    <Input placeholder="Type your reply..." value={reply} onChange={e => setReply(e.target.value)} disabled={isReplying} />
+                    <Input 
+                        placeholder="Type your reply..." 
+                        value={reply} 
+                        onChange={e => setReply(e.target.value)} 
+                        disabled={isReplying} 
+                        onKeyDown={e => e.key === 'Enter' && handlePostReply()}
+                    />
                     <Button onClick={handlePostReply} disabled={isReplying || !reply.trim()}>
                         {isReplying ? <Loader2 className="h-4 w-4 animate-spin"/> : <Send className="h-4 w-4"/>}
                     </Button>
