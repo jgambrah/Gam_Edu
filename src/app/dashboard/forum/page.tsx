@@ -184,7 +184,7 @@ export default function ForumPage() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="flex flex-row justify-between items-center">
+        <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="flex items-center gap-2"><MessageSquare/> Discussion Forum</CardTitle>
                 <CardDescription>Ask questions, share ideas, and collaborate with others.</CardDescription>
