@@ -182,7 +182,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     const { user } = useUser();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const balance = record.billedAmount - record.amountPaid - (record.waiverAmount || 0);
+    const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
     const form = useForm<z.infer<typeof recordPaymentSchema>>({
         resolver: zodResolver(recordPaymentSchema),
@@ -199,7 +199,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
         try {
             const batch = writeBatch(firestore);
             const recordRef = doc(firestore, 'financialRecords', record.id);
-            const newAmountPaid = record.amountPaid + values.amount;
+            const newAmountPaid = (record.amountPaid || 0) + values.amount;
             const newStatus = newAmountPaid >= record.billedAmount ? 'Paid' : record.status;
             
             batch.update(recordRef, {
@@ -264,7 +264,7 @@ function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRec
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const balance = record.billedAmount - record.amountPaid - (record.waiverAmount || 0);
+    const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
     const form = useForm<z.infer<typeof applyWaiverSchema>>({ resolver: zodResolver(applyWaiverSchema) });
 
@@ -278,7 +278,7 @@ function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRec
         try {
             const recordRef = doc(firestore, 'financialRecords', record.id);
             const newWaiverAmount = (record.waiverAmount || 0) + values.amount;
-            const newStatus = (record.amountPaid + newWaiverAmount) >= record.billedAmount ? 'Paid' : record.status;
+            const newStatus = ((record.amountPaid || 0) + newWaiverAmount) >= record.billedAmount ? 'Paid' : record.status;
 
             await updateDoc(recordRef, {
                 waiverAmount: newWaiverAmount,
@@ -422,9 +422,9 @@ export default function AccountsPage() {
     let outstandingTransport = 0;
 
     for (const record of records) {
-        const balance = record.billedAmount - record.amountPaid - (record.waiverAmount || 0);
+        const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
         totalBilled += record.billedAmount;
-        totalPaid += record.amountPaid + (record.waiverAmount || 0);
+        totalPaid += (record.amountPaid || 0) + (record.waiverAmount || 0);
 
         if (balance > 0) {
             if (record.type === 'Tuition Fee') outstandingTuition += balance;
@@ -450,7 +450,7 @@ export default function AccountsPage() {
     const financialsByStudent = students.map(student => {
       const studentRecords = records.filter(r => r.studentId === student.uid);
       const totalBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-      const totalPaid = studentRecords.reduce((acc, r) => acc + r.amountPaid, 0);
+      const totalPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
       const totalWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
       const balance = totalBilled - totalPaid - totalWaivers;
 
@@ -586,13 +586,13 @@ export default function AccountsPage() {
                                     <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Type</TableHead><TableHead>Billed</TableHead><TableHead>Paid</TableHead><TableHead>Balance</TableHead><TableHead>Due</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
                                     <TableBody>
                                         {records.map(rec => {
-                                            const recordBalance = rec.billedAmount - rec.amountPaid - (rec.waiverAmount || 0);
+                                            const recordBalance = rec.billedAmount - (rec.amountPaid || 0) - (rec.waiverAmount || 0);
                                             return (
                                             <TableRow key={rec.id}>
                                                 <TableCell className="font-medium">{rec.description}</TableCell>
                                                 <TableCell>{rec.type}</TableCell>
                                                 <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                                                <TableCell>GH₵{rec.amountPaid.toFixed(2)}</TableCell>
+                                                <TableCell>GH₵{(rec.amountPaid || 0).toFixed(2)}</TableCell>
                                                 <TableCell className="font-semibold">GH₵{recordBalance.toFixed(2)}</TableCell>
                                                 <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
                                                 <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
@@ -634,3 +634,5 @@ export default function AccountsPage() {
     </div>
   );
 }
+
+    
