@@ -62,7 +62,7 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
                         return;
                     }
                 } catch (aiError) {
-                    console.error("AI Check Warning:", aiError);
+                    console.error("AI Check Failed (Skipping):", aiError);
                     // Continue anyway if AI service is down
                 }
             }
@@ -145,19 +145,21 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
         setIsReplying(true);
 
         try {
-            // 1. AI Safety Check (Optional - wrapped to prevent blocking)
-            try {
-                const { isSafe, reason } = await validateContentSafety({ content: reply });
-                if (!isSafe) {
-                    toast({ variant: 'destructive', title: 'Content Flagged', description: reason });
-                    setIsReplying(false);
-                    return;
+            // 1. AI Safety Check
+            if (thread.aiModeratorEnabled) {
+                try {
+                    const { isSafe, reason } = await validateContentSafety({ content: reply });
+                    if (!isSafe) {
+                        toast({ variant: 'destructive', title: 'Content Flagged', description: reason });
+                        setIsReplying(false);
+                        return;
+                    }
+                } catch (aiError) {
+                    console.warn("AI Safety Check skipped due to error:", aiError);
                 }
-            } catch (aiError) {
-                console.warn("AI Check skipped due to error");
             }
             
-            // 2. Add Reply to Sub-collection
+            // 2. Add User Reply to Sub-collection
             await addDoc(collection(firestore, `forumThreads/${thread.id}/replies`), {
                 threadId: thread.id,
                 author: { 
@@ -170,7 +172,6 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
             });
 
             // 3. Update Main Thread Stats (Reply Count)
-            // Note: This requires 'update' permission on the thread document!
             const threadRef = doc(firestore, 'forumThreads', thread.id);
             await updateDoc(threadRef, {
                 replyCount: (thread.replyCount || 0) + 1,
@@ -178,12 +179,55 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
             });
 
             toast({ title: "Reply Posted" });
-            setReply(''); // Clear input
+            const postedReply = reply; // Save the reply content before clearing
+            setReply(''); // Clear input immediately for better UX
+            
+            // 4. Trigger AI Moderator Comment (if enabled)
+            if (thread.aiModeratorEnabled) {
+                // Don't block UI for this
+                generateAndPostAIComment(postedReply);
+            }
+
         } catch (e: any) {
              console.error(e);
              toast({ variant: 'destructive', title: 'Error', description: e.message || "Could not post reply." });
         } finally {
             setIsReplying(false);
+        }
+    };
+    
+    // Function to handle AI comment generation in the background
+    const generateAndPostAIComment = async (lastUserReply: string) => {
+        if (!firestore) return;
+        
+        const previousRepliesText = (replies || [])
+            .map(r => `${r.author.name}: ${r.content}`)
+            .join('\n');
+            
+        try {
+            const result = await generateAIModeratorComment({
+                threadTitle: thread.title,
+                threadContent: thread.content,
+                previousReplies: `${previousRepliesText}\n${hookUser?.displayName || 'User'}: ${lastUserReply}`,
+            });
+
+            // Post the AI's comment
+            await addDoc(collection(firestore, `forumThreads/${thread.id}/replies`), {
+                threadId: thread.id,
+                author: { uid: 'ai-moderator', name: 'AI Moderator' },
+                content: result.comment,
+                createdAt: serverTimestamp(),
+                isAIMessage: true
+            });
+            
+            // Update reply count again for AI's message
+            await updateDoc(doc(firestore, 'forumThreads', thread.id), {
+                replyCount: (thread.replyCount || 0) + 2, // User reply + AI reply
+                lastReplyAt: serverTimestamp(),
+            });
+
+        } catch(aiError) {
+            console.error("Failed to generate or post AI moderator comment:", aiError);
         }
     };
 
