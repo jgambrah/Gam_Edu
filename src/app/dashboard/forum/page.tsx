@@ -6,9 +6,9 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebas
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { ForumThread, ForumReply } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -82,10 +82,12 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
                 <Switch id="ai-moderator" checked={aiModerator} onCheckedChange={setAiModerator} />
                 <Label htmlFor="ai-moderator">Enable AI Moderator</Label>
             </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Post Thread
-            </Button>
+            <DialogFooter>
+                <Button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Post Thread
+                </Button>
+            </DialogFooter>
         </form>
     );
 }
