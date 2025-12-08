@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -191,16 +190,16 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
 
     async function onSubmit(values: z.infer<typeof recordPaymentSchema>) {
         if (!firestore || !user) return;
-        if(values.amount > balance) {
-            form.setError('amount', { message: 'Payment cannot exceed balance.' });
-            return;
-        }
+        
         setIsSubmitting(true);
         try {
             const batch = writeBatch(firestore);
             const recordRef = doc(firestore, 'financialRecords', record.id);
             const newAmountPaid = (record.amountPaid || 0) + values.amount;
-            const newStatus = newAmountPaid >= record.billedAmount ? 'Paid' : record.status;
+            const newBalance = record.billedAmount - newAmountPaid - (record.waiverAmount || 0);
+            
+            // Allow overpayment. If the new balance is <= 0, the specific bill is 'Paid'.
+            const newStatus = newBalance <= 0 ? 'Paid' : 'Unpaid';
             
             batch.update(recordRef, {
                 amountPaid: newAmountPaid,
@@ -241,7 +240,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     }
     return (
         <DialogContent>
-            <DialogHeader><DialogTitle>Record Payment for {record.studentName}</DialogTitle><DialogDescription>Balance due: GH₵{balance.toFixed(2)}</DialogDescription></DialogHeader>
+            <DialogHeader><DialogTitle>Record Payment for {record.studentName}</DialogTitle><DialogDescription>Balance due for this item: GH₵{balance.toFixed(2)}</DialogDescription></DialogHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField control={form.control} name="amount" render={({ field }) => (
@@ -576,7 +575,9 @@ export default function AccountsPage() {
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
                                         <p className="text-sm text-muted-foreground">Balance</p>
-                                        <p className={cn("font-bold text-lg", balance > 0 && "text-destructive")}>GH₵{balance.toFixed(2)}</p>
+                                        <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>
+                                            GH₵{balance.toFixed(2)}
+                                        </p>
                                     </div>
                                     <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                 </div>
@@ -634,5 +635,6 @@ export default function AccountsPage() {
     </div>
   );
 }
+    
 
     
