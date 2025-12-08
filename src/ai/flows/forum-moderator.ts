@@ -2,7 +2,7 @@
 'use server';
 
 import { generate } from '@genkit-ai/ai';
-import { gemini15Flash } from '@genkit-ai/google-genai';
+import { googleAI } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 
 // --- SCHEMA 1: SAFETY CHECK ---
@@ -22,7 +22,7 @@ export async function validateContentSafety(input: { content: string }) {
     `;
 
     const response = await generate({
-      model: gemini15Flash,
+      model: googleAI.model('gemini-1.5-flash-latest'),
       prompt: prompt,
       output: { schema: SafetySchema },
     });
@@ -68,7 +68,7 @@ export async function generateAIModeratorComment(input: {
     `;
 
     const response = await generate({
-      model: gemini15Flash,
+      model: googleAI.model('gemini-1.5-flash-latest'),
       prompt: prompt,
       output: { schema: ModeratorSchema },
     });
