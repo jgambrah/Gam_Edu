@@ -48,7 +48,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { generateElaLessonAction, GeneratedElaLesson } from '@/ai/flows/generate-ela-lesson';
 
 
-// --- ELA EXPLORER ---
 interface LessonCard extends GeneratedElaLesson {
     id?: string;
     timestamp?: any;

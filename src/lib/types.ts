@@ -1010,3 +1010,15 @@ export type ElaLesson = {
     quizAnswer: string;
 }
     
+// --- Science Explorer ---
+export type ScienceLesson = {
+    id?: string;
+    userId: string;
+    timestamp: any;
+    title: string;
+    explanation: string;
+    analogy: string;
+    keyTerms: string[];
+    quizQuestion: string;
+    quizAnswer: string;
+}

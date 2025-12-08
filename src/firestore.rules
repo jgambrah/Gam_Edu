@@ -1,0 +1,260 @@
+
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions to check user roles
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserData(userId) {
+      return get(/databases/$(database)/documents/staff/$(userId)).data;
+    }
+    
+    function getUserRole(userId) {
+      // Check staff collection first
+      let staffRole = get(/databases/$(database)/documents/staff/$(userId)).data.role;
+      if (staffRole != null) {
+        return staffRole;
+      }
+      // Check if user is in students collection
+      if (exists(/databases/$(database)/documents/students/$(userId))) {
+        return 'Student';
+      }
+      // Check if user is in parents collection
+      if (exists(/databases/$(database)/documents/parents/$(userId))) {
+        return 'Parent';
+      }
+      return ''; // Default to no role
+    }
+
+    function isOneOfRoles(userId, roles) {
+      let userRole = getUserRole(userId);
+      return isSignedIn() && userRole in roles;
+    }
+
+    function isAdmin() {
+      return isOneOfRoles(request.auth.uid, ['Administrator', 'Director']);
+    }
+
+    function isTeacher() {
+      return isOneOfRoles(request.auth.uid, ['Teacher']);
+    }
+
+    function isStudent() {
+       return isOneOfRoles(request.auth.uid, ['Student']);
+    }
+    
+    function isParent() {
+       return isOneOfRoles(request.auth.uid, ['Parent']);
+    }
+    
+    // --- Collection Rules ---
+
+    // Admins can manage staff, roles, classes, subjects, rooms, etc.
+    match /staff/{staffId} {
+      allow read, write: if isAdmin();
+    }
+    match /roles/{roleId} {
+      allow read, write: if isAdmin();
+    }
+    match /classes/{classId} {
+       allow read: if isSignedIn();
+       allow write: if isAdmin() || isTeacher();
+    }
+    match /subjects/{subjectId} {
+       allow read: if isSignedIn();
+       allow write: if isAdmin();
+    }
+    match /rooms/{roomId} {
+        allow read, write: if isAdmin();
+    }
+    match /timeSlots/{timeSlotId} {
+        allow read, write: if isAdmin();
+    }
+    match /timetables/{entry} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+    }
+
+    // Students and Parents can be managed by admins, but can read their own profiles
+    match /students/{studentId} {
+      allow get: if isSignedIn(); 
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+      allow update: if request.auth.uid == studentId;
+    }
+    match /parents/{parentId} {
+      allow get: if request.auth.uid == parentId || isAdmin(); 
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+      allow update: if request.auth.uid == parentId;
+    }
+    
+    // Announcements are readable by their audience, writable by admins
+    match /announcements/{announcementId} {
+      allow read: if isSignedIn() && ('Everybody' in resource.data.audience || getUserRole(request.auth.uid) in resource.data.audience);
+      allow write: if isAdmin();
+    }
+    
+    match /learning_materials/{materialId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    // Assignments & Quizzes
+    match /assignments/{assignmentId} {
+        allow read: if isSignedIn();
+        allow write: if isTeacher() || isAdmin();
+        match /submissions/{submissionId} {
+            allow read: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId;
+            allow create: if isStudent();
+            allow update: if isTeacher() || isAdmin();
+        }
+    }
+    
+    match /quizzes/{quizId} {
+        allow read: if isSignedIn();
+        allow write: if isTeacher() || isAdmin();
+        match /attempts/{attemptId} {
+            allow read: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId;
+            allow create: if isStudent();
+        }
+    }
+
+    // Clubs
+    match /math_problems/{problemId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /user_results/{resultId} {
+        allow read, write: if request.auth != null && request.resource.data.userId == request.auth.uid;
+    }
+    
+    match /science_problems/{problemId} {
+      allow read: if true;
+      allow write: if isTeacher() || isAdmin();
+    }
+    
+    match /science_results/{resultId} {
+      allow read, write: if request.auth != null && request.resource.data.userId == request.auth.uid;
+    }
+    
+    match /science_leaderboard/{userId} {
+        allow read, write: if isSignedIn();
+    }
+
+    match /science_problems_v4/{problemId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /science_leaderboard_v4/{userId} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == userId;
+    }
+
+    // New Rule for Question Sets (Grouped Questions)
+    match /science_question_sets/{id} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /daily_facts/{factId} {
+      allow read: if isSignedIn();
+      // Allow any signed-in user to create a fact (since it's triggered client-side)
+      allow create: if isSignedIn();
+      // Only admins/teachers can update/delete
+      allow update, delete: if isTeacher() || isAdmin();
+    }
+    
+    match /science_lab_questions/{id} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /science_lab_facts/{id} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    // --- SCIENCE LAB LEADERBOARD ---
+    // Allow students to update their own stats
+    match /science_lab_leaderboard/{userId} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == userId;
+    }
+    
+    match /science_lab_results/{id} {
+        allow read, write: if request.auth != null;
+    }
+
+    match /ela_grammar_drills/{drillId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+    
+    match /ela_reading_passages/{passageId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+
+    match /ela_writing_challenges/{challengeId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher() || isAdmin();
+    }
+    
+    match /ela_user_submissions/{submissionId} {
+        allow read: if isTeacher() || isAdmin() || request.auth.uid == resource.data.userId;
+        allow create: if isStudent();
+        allow update: if isTeacher() || isAdmin();
+    }
+    
+    match /ela_leaderboard/{userId} {
+        allow list: if isSignedIn(); 
+        allow get, write: if request.auth.uid == userId || isAdmin();
+    }
+
+     match /coding-club-projects/{userId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+    
+    // Allow students to save their own learning history
+    match /science_learning_history/{historyId} {
+      allow list: if isSignedIn() && request.query.where.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /math_learning_history/{historyId} {
+      allow list: if isSignedIn() && request.query.where.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Forum Rules
+    match /forumThreads/{threadId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn(); // Any signed-in user can create a thread
+      allow update: if isAdmin() || request.auth.uid == resource.data.createdBy.uid;
+      allow delete: if isAdmin() || request.auth.uid == resource.data.createdBy.uid;
+
+      match /replies/{replyId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn();
+        allow update, delete: if isAdmin() || request.auth.uid == resource.data.author.uid;
+      }
+    }
+    
+    // Catch-all for remaining collections (adjust as needed)
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
+

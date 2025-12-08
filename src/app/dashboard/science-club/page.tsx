@@ -1,46 +1,166 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { FlaskConical, Trophy, PencilRuler, PlusCircle, Lightbulb, Wand2 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, orderBy, query, addDoc, serverTimestamp, where } from 'firebase/firestore';
-import { ScienceLeaderboardEntry, ScienceProblem, scienceProblemSchema, DailyFact, Class, Student } from '@/lib/types';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, limit } from 'firebase/firestore';
+import { 
+  FlaskConical, Trophy, PencilRuler, PlusCircle, Lightbulb, Wand2, Loader2, Trash2, Microscope, Sparkles
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
+
+// UI Components
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry, ScienceLesson } from '@/lib/types';
+import { AiProblemGenerator } from '../ai-problem-generator';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
+import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { format } from 'date-fns';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import { AiProblemGenerator } from '../ai-problem-generator';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
+
+
+function ScienceExplorerTab() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [topic, setTopic] = useState('');
+    const [isLearning, setIsLearning] = useState(false);
+    const [currentLesson, setCurrentLesson] = useState<ScienceLesson | null>(null);
+    const [showAnswer, setShowAnswer] = useState(false);
+
+    // Fetch History
+    const historyQuery = useMemoFirebase(() => 
+        (user && firestore) ? query(collection(firestore, 'science_learning_history'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'), limit(10)) : null,
+    [user, firestore]);
+    const { data: history, isLoading: historyLoading } = useCollection<ScienceLesson>(historyQuery);
+
+    const handleLearn = async () => {
+        if (!topic.trim()) return;
+        setIsLearning(true);
+        setShowAnswer(false);
+        setCurrentLesson(null);
+
+        try {
+            const result = await generateScienceLessonAction({ topic, grade: 'JHS 1' });
+            
+            if (result.success && result.data) {
+                setCurrentLesson(result.data);
+                if(user && firestore) {
+                    await addDoc(collection(firestore, 'science_learning_history'), {
+                        ...result.data,
+                        userId: user.uid,
+                        timestamp: serverTimestamp()
+                    });
+                }
+            } else {
+                toast({ variant: 'destructive', title: "AI Error", description: "Could not generate lesson." });
+            }
+        } catch (e) {
+             toast({ variant: 'destructive', title: "Error", description: "Something went wrong." });
+        } finally {
+            setIsLearning(false);
+        }
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+                    <CardHeader>
+                        <CardTitle className="text-blue-800 flex items-center gap-2"><Microscope className="h-5 w-5"/> What do you want to learn today?</CardTitle>
+                        <CardDescription>Type any science topic (e.g. "Volcanoes", "Atoms", "The Heart")</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex gap-2">
+                            <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Enter a topic..." className="bg-white" onKeyDown={(e) => e.key === 'Enter' && handleLearn()}/>
+                            <Button onClick={handleLearn} disabled={isLearning || !topic} className="bg-blue-600 hover:bg-blue-700 w-32">
+                                {isLearning ? <Loader2 className="h-4 w-4 animate-spin"/> : <><Sparkles className="h-4 w-4 mr-2"/> Learn</>}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {currentLesson && (
+                    <Card className="border-t-4 border-t-blue-500 shadow-md animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">{currentLesson.title}</CardTitle>
+                            <CardDescription>Micro-Lesson</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div>
+                                <h4 className="font-semibold text-blue-700 mb-1">The Concept</h4>
+                                <p className="text-slate-700 leading-relaxed">{currentLesson.explanation}</p>
+                            </div>
+                            
+                            <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                                <h4 className="font-semibold text-amber-800 mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4"/> Think of it like...</h4>
+                                <p className="text-slate-700 italic">"{currentLesson.analogy}"</p>
+                            </div>
+
+                            <div>
+                                <h4 className="font-semibold text-slate-700 mb-2">Key Terms</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {currentLesson.keyTerms.map((term, i) => (
+                                        <Badge key={i} variant="secondary" className="bg-slate-100">{term}</Badge>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-4 border-t">
+                                <h4 className="font-semibold text-slate-700 mb-2">Quick Check</h4>
+                                <p className="mb-3">{currentLesson.quizQuestion}</p>
+                                {showAnswer ? (
+                                    <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200">
+                                        <strong>Answer:</strong> {currentLesson.quizAnswer}
+                                    </div>
+                                ) : (
+                                    <Button variant="outline" onClick={() => setShowAnswer(true)}>Reveal Answer</Button>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
+            <div>
+                 <Card className="h-full max-h-[600px] flex flex-col">
+                    <CardHeader className="pb-3"><CardTitle className="text-md">Your Learning History</CardTitle></CardHeader>
+                    <CardContent className="p-0 flex-1 min-h-0 overflow-hidden">
+                        <div className="h-full overflow-y-auto p-4 space-y-3">
+                            {historyLoading && <Skeleton className="h-20 w-full"/>}
+                            {!historyLoading && history?.length === 0 && <p className="text-sm text-muted-foreground text-center">No lessons yet.</p>}
+                            {history?.map((item) => (
+                                <div key={item.id} onClick={() => { setCurrentLesson(item); setShowAnswer(false); }} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition-colors text-sm">
+                                    <p className="font-semibold text-slate-800">{item.title}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{item.analogy}</p>
+                                    <p className="text-[10px] text-slate-400 mt-1 text-right">
+                                        {item.timestamp?.toDate ? format(item.timestamp.toDate(), 'MMM d, h:mm a') : 'Just now'}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                 </Card>
+            </div>
+        </div>
+    );
+}
 
 function Leaderboard() {
     const firestore = useFirestore();
@@ -76,10 +196,10 @@ function Leaderboard() {
                         <TableCell className="font-bold">{index + 1}</TableCell>
                         <TableCell>
                             <div className="flex items-center gap-3">
-                                <Avatar>
+                                {/* <Avatar>
                                     <AvatarImage src={entry.profilePictureUrl} />
                                     <AvatarFallback>{entry.userName.charAt(0)}</AvatarFallback>
-                                </Avatar>
+                                </Avatar> */}
                                 <span>{entry.userName}</span>
                             </div>
                         </TableCell>
@@ -209,17 +329,39 @@ function ManageProblems() {
     )
 }
 
-function FactOfTheDay() {
+function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
     const firestore = useFirestore();
-    const { role, user } = useRole();
+    const { user } = useUser();
     const { toast } = useToast();
     const [factText, setFactText] = useState('');
     const [isPosting, setIsPosting] = useState(false);
-    const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const factsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc'), limit(1)) : null, [firestore]);
     const { data: facts, isLoading } = useCollection<DailyFact>(factsQuery);
     const latestFact = facts?.[0];
+    
+    useEffect(() => {
+        const generateNewFactIfNeeded = async () => {
+          if (!isStaff) return;
+
+          console.log("Fact is stale or missing. Generating a new one...");
+          try {
+              const result = await generateDailyFact();
+              await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
+                  factText: result.fact,
+                  createdAt: serverTimestamp(),
+                  postedBy: user?.uid,
+              });
+              toast({ title: "New Fact of the Day Generated!" });
+          } catch (error) {
+              console.error("Failed to generate new fact:", error);
+          }
+        };
+        
+        if (!isLoading && !latestFact) {
+            generateNewFactIfNeeded();
+        }
+      }, [latestFact, isLoading, isStaff, firestore, toast, user]);
 
     const handlePostFact = async () => {
         if (!factText.trim() || !user) return;
@@ -251,9 +393,9 @@ function FactOfTheDay() {
                         {latestFact.factText}
                         <footer className="text-xs text-muted-foreground mt-2">Posted on {latestFact.createdAt ? format(latestFact.createdAt.toDate(), 'PPP') : 'Today'}</footer>
                     </blockquote>
-                ) : <p className="text-muted-foreground text-sm">No fact has been posted for today yet.</p>}
+                ) : <p className="text-muted-foreground text-sm">Generating today's fact...</p>}
 
-                {isTeacherOrAdmin && (
+                {isStaff && (
                     <div className="space-y-2 pt-4 border-t">
                         <Label>Post a New Fact</Label>
                         <Textarea value={factText} onChange={e => setFactText(e.target.value)} placeholder="Enter a new interesting science fact..."/>
@@ -264,16 +406,17 @@ function FactOfTheDay() {
                 )}
             </CardContent>
         </Card>
-    )
+    );
 }
 
 export default function ScienceClubPage() {
-  const [topic, setTopic] = useState('');
-  const [difficulty, setDifficulty] = useState('');
   const router = useRouter();
-  const { role } = useRole();
-  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const { role, isRoleLoading } = useRole();
+  const { user, isUserLoading } = useUser();
+
+  const [selectedTopic, setSelectedTopic] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
   
@@ -309,10 +452,12 @@ export default function ScienceClubPage() {
   }, [problems]);
 
   const handleStartPractice = () => {
-    if (topic && difficulty) {
-      router.push(`/dashboard/science-club/practice?topic=${topic}&difficulty=${difficulty}`);
+    if (selectedTopic && selectedDifficulty) {
+      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
     }
   };
+
+  const isLoading = isUserLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
     <div className="space-y-6">
@@ -327,12 +472,13 @@ export default function ScienceClubPage() {
           </CardDescription>
         </CardHeader>
          <CardContent>
-            <FactOfTheDay />
+            <FactOfTheDay isStaff={isTeacherOrAdmin} />
         </CardContent>
       </Card>
       <Tabs defaultValue="practice">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-3" : "grid-cols-2")}>
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
           <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
+          <TabsTrigger value="learn">Science Explorer</TabsTrigger>
           <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
           {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
         </TabsList>
@@ -343,7 +489,7 @@ export default function ScienceClubPage() {
                 <CardDescription>Select a topic and difficulty to begin.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {(isLoadingProblems || (role === 'Student' && isLoadingStudent) || isUserLoading) ? (
+                {(isLoading) ? (
                     <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
                 ) : 
                 (role === 'Student' && !studentClassId) ? (
@@ -355,7 +501,7 @@ export default function ScienceClubPage() {
                 (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Select onValueChange={setTopic}>
+                            <Select onValueChange={setSelectedTopic}>
                                 <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
                                 <SelectContent>
                                     {uniqueTopics.map(topic => (
@@ -363,7 +509,7 @@ export default function ScienceClubPage() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Select onValueChange={setDifficulty}>
+                            <Select onValueChange={setSelectedDifficulty}>
                                 <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Easy">Easy</SelectItem>
@@ -372,13 +518,16 @@ export default function ScienceClubPage() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={handleStartPractice} disabled={!topic || !difficulty} className="w-full">
+                        <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
                             Start Practice
                         </Button>
                     </>
                 )}
             </CardContent>
           </Card>
+        </TabsContent>
+         <TabsContent value="learn" className="mt-6">
+          <ScienceExplorerTab />
         </TabsContent>
         <TabsContent value="leaderboard">
             <Card>
