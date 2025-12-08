@@ -425,60 +425,57 @@ export default function GradebookManager() {
     <div className="space-y-6 p-6">
         <Tabs defaultValue="gradebook" onValueChange={setActiveTab}>
             <div className="flex justify-between items-center">
-                <TabsList>
-                    <TabsTrigger value="gradebook">Gradebook</TabsTrigger>
-                    {isDirector && <TabsTrigger value="promote">Promote Students</TabsTrigger>}
-                </TabsList>
-
-                {activeTab === 'gradebook' && (
-                    <div className="flex gap-2">
-                        <Button 
-                            variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
-                            onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
-                            disabled={!selectedClassId}
-                        >
-                            <PlusCircle className="mr-2 h-4 w-4" /> Enter Grades
-                        </Button>
-                    </div>
-                )}
-            </div>
-
-            <TabsContent value="gradebook">
-                <Card className="border-t-4 border-t-indigo-600 shadow-sm">
+                 <Card className="border-t-4 border-t-indigo-600 shadow-sm w-full">
                     <CardHeader>
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
                                 <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                                 <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                             </div>
+                            <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                                <TabsTrigger value="gradebook">Report Cards</TabsTrigger>
+                                {isDirector && <TabsTrigger value="promote">Promote Class</TabsTrigger>}
+                            </TabsList>
                         </div>
                     </CardHeader>
                     
                     <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
-                        <div className="space-y-1">
-                            <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
-                            <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
-                                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-1">
-                            <span className="text-xs font-semibold text-slate-500 uppercase">Term</span>
-                            <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
-                                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                                <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-1">
-                            <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
-                            <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
-                                <SelectTrigger className="bg-white"><SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} /></SelectTrigger>
-                                <SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
+                      <div className="space-y-1">
+                         <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
+                         <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
+                            <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                            <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+                         </Select>
+                      </div>
+                      <div className="space-y-1">
+                         <span className="text-xs font-semibold text-slate-500 uppercase">Term</span>
+                         <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
+                            <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                            <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                         </Select>
+                      </div>
+                      <div className="space-y-1">
+                         <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
+                         <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} /></SelectTrigger>
+                            <SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                         </Select>
+                      </div>
                     </CardContent>
                 </Card>
+            </div>
 
+            <TabsContent value="gradebook">
+                <div className="flex justify-end my-4">
+                    <Button 
+                        variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
+                        onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
+                        disabled={!selectedClassId}
+                    >
+                        <PlusCircle className="mr-2 h-4 w-4" /> Enter Grades
+                    </Button>
+                </div>
+                
                 {activeForm === 'grade' && selectedClassId && (
                     <div className="animate-in slide-in-from-top-4 fade-in duration-300 mt-6">
                         <AssessmentFeedbackForm classId={selectedClassId} classes={classes || []} />
