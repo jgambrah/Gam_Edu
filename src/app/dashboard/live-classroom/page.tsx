@@ -10,7 +10,7 @@ import { getApp } from 'firebase/app';
 import { 
   Video, Mic, MicOff, VideoOff, MessageSquare, Send, 
   Users, Sparkles, Hand, LayoutGrid, MonitorPlay, Bot, 
-  Calendar as CalendarIcon, Clock, Upload, ChevronLeft, ChevronRight, Presentation, ScreenShare
+  Calendar as CalendarIcon, Clock, Upload, ChevronLeft, ChevronRight, Presentation, ScreenShare 
 } from 'lucide-react';
 import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
 import { format } from 'date-fns';
@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { Class, Student } from '@/lib/types';
 
 // --- TYPES ---
@@ -568,3 +569,5 @@ export default function LiveClassroomPage() {
         </div>
     );
 }
+
+    
