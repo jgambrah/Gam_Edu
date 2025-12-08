@@ -777,16 +777,20 @@ export type ScienceResult = {
 };
 
 export type ScienceLeaderboardEntry = {
+    id?: string;
     userId: string;
     userName: string;
     profilePictureUrl?: string;
     total_correct_answers: number;
     total_quizzes_completed: number;
+    points?: number;
+    quizzesPlayed?: number;
 };
 
 export type DailyFact = {
     id: string;
     factText: string;
+    text?: string;
     createdAt: any;
     postedBy: string;
 };
@@ -964,4 +968,32 @@ export interface DebateMessage {
   role: 'user' | 'ai';
   content: string;
 }
+
+// --- FORUM ---
+export interface ForumThread {
+    id: string;
+    title: string;
+    content: string;
+    createdBy: {
+        uid: string;
+        name: string;
+    };
+    createdAt: any;
+    aiModeratorEnabled: boolean;
+    lastReplyAt?: any;
+    replyCount?: number;
+}
+
+export interface ForumReply {
+    id: string;
+    threadId: string;
+    author: {
+        uid: string;
+        name: string;
+    };
+    content: string;
+    createdAt: any;
+    isAIMessage?: boolean; // True if the reply is from the AI moderator
+}
     
+
