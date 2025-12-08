@@ -6,6 +6,7 @@ import {
   Users,
   BookOpen,
   MessageSquare,
+  MessageCircle,
   GraduationCap,
   Library,
   Banknote,
