@@ -114,6 +114,7 @@ function SubjectForm({
                     render={({ field }) => {
                       return (
                         <FormItem
+                          key={teacher.uid}
                           className="flex flex-row items-center space-x-3 space-y-0 py-2 hover:bg-slate-50 rounded px-2"
                         >
                           <FormControl>
