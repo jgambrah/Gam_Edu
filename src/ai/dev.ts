@@ -20,4 +20,5 @@ import '@/ai/flows/generate-science-lesson.ts';
 import '@/ai/flows/generate-math-lesson.ts';
 import '@/ai/flows/forum-moderator.ts';
 import '@/ai/flows/generate-ela-lesson.ts';
+import '@/ai/flows/live-classroom.ts';
     
