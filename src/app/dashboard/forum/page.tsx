@@ -17,20 +17,14 @@ import { Loader2, Plus, MessageSquare, ArrowLeft, Bot, Shield, Send } from 'luci
 import { format } from 'date-fns';
 import { Switch } from '@/components/ui/switch';
 import { validateContentSafety, generateAIModeratorComment } from '@/ai/flows/forum-moderator';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { getAuth } from 'firebase/auth';
 
-// --- Create Thread Form (Fixed) ---
+// --- Create Thread Form (Fixed Auth) ---
 function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user: hookUser } = useAuth(); // Renamed to avoid confusion
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
@@ -40,9 +34,13 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // FIX: Get user directly from Firebase SDK (Bypasses React State lag)
+        const auth = getAuth();
+        const currentUser = auth.currentUser || hookUser;
         
-        if (!user) {
-            toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in.' });
+        if (!currentUser) {
+            toast({ variant: 'destructive', title: 'Auth Error', description: 'Browser session not found. Please refresh.' });
             return;
         }
         
@@ -54,7 +52,7 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         setIsSubmitting(true);
         
         try {
-            // 1. Safety Check (Wrapped in try/catch to prevent freezing)
+            // 1. Safety Check (Wrapped to prevent blocking)
             if (aiModerator) {
                 try {
                     const { isSafe, reason } = await validateContentSafety({ content: `${title} ${content}` });
@@ -64,18 +62,19 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
                         return;
                     }
                 } catch (aiError) {
-                    console.error("AI Check Failed (Skipping):", aiError);
-                    // Decide: Should we block or allow if AI fails? 
-                    // Usually safer to allow and moderate later, or block. 
-                    // For now, we continue to allow posting if AI is down.
+                    console.error("AI Check Warning:", aiError);
+                    // Continue anyway if AI service is down
                 }
             }
 
-            // 2. Save to Firestore
+            // 2. Save to Firestore using currentUser
             await addDoc(collection(firestore, 'forumThreads'), {
                 title,
                 content,
-                createdBy: { uid: user.uid, name: user.displayName || user.email },
+                createdBy: { 
+                    uid: currentUser.uid, 
+                    name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous' 
+                },
                 createdAt: serverTimestamp(),
                 aiModeratorEnabled: aiModerator,
                 replyCount: 0,
@@ -83,7 +82,7 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
             });
             
             toast({ title: 'Success', description: 'Thread posted successfully.' });
-            setOpen(false); // Close modal
+            setOpen(false); 
             
         } catch (e: any) {
             console.error("Firestore Error:", e);
