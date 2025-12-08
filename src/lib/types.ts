@@ -127,6 +127,7 @@ export const assessmentFeedbackSchema = z.object({
 export type Assessment = z.infer<typeof assessmentFeedbackSchema> & {
     id: string;
     createdAt: any;
+    subject: string; // DEPRECATED but might exist on old data
 };
 
 export const behavioralRecordSchema = z.object({

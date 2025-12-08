@@ -1,258 +1,366 @@
-
 'use client';
 
 import { Suspense, useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { 
+  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText 
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+
+// UI Components
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, TrendingUp, User, PlusCircle, Printer } from 'lucide-react';
-import { Assessment, FinancialRecord, ReportCard, Subject } from '@/lib/types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
-import { MOCK_ACADEMIC_YEARS, MOCK_TERMS, MOCK_SUBJECTS } from '@/lib/data';
-import { StudentReportCardPDF } from './student-report-card-pdf';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { Textarea } from '@/components/ui/textarea';
+import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+// import { GenerateReportCard } from './report-card-pdf'; // (We will build this next)
 
-type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
+// Types
+import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
 
-const getGradeForScore = (score: number) => {
-    if (score >= 80) return 'A';
-    if (score >= 70) return 'B';
-    if (score >= 60) return 'C';
-    if (score >= 50) return 'D';
-    if (score > 0) return 'E';
-    return 'F';
-};
+// --- HELPER: Grading Logic ---
+function getGrade(percentage: number) {
+    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' }; // A (80-100)
+    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' }; // B (70-79)
+    if (percentage >= 60) return { grade: 'C', remark: 'Good' };      // C (60-69)
+    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };      // D (50-59)
+    return { grade: 'F', remark: 'Fail' };                            // F (0-49)
+}
 
-function StudentGradesDetail({ student, assessments }: { student: Student; assessments: Assessment[] }) {
-    const firestore = useFirestore();
-    const { data: subjects } = useCollection<Subject>(useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]));
-
+// --- SUB-COMPONENT: Student Academics Detail ---
+function StudentGradesDetail({ 
+    student, 
+    assessments, 
+    rank, 
+    totalStudents 
+}: { 
+    student: Student; 
+    assessments: Assessment[];
+    rank: number;
+    totalStudents: number;
+}) {
+    // 1. Group by Subject
     const subjectGrades = useMemo(() => {
-        if (!subjects) return [];
-        return subjects.map(subject => {
-            const subjectAssessments = assessments.filter(a => a.studentId === student.uid && a.subjectId === subject.id && a.score != null && a.maxScore != null && a.maxScore > 0);
-            if (subjectAssessments.length === 0) return { subjectName: subject.name, average: null, grade: 'N/A' };
-            const totalScore = subjectAssessments.reduce((acc, a) => acc + a.score!, 0);
-            const totalMaxScore = subjectAssessments.reduce((acc, a) => acc + a.maxScore!, 0);
-            const average = totalMaxScore > 0 ? (totalScore / totalMaxScore) * 100 : 0;
-            return {
-                subjectName: subject.name,
-                average: parseFloat(average.toFixed(1)),
-                grade: getGradeForScore(average),
-            };
+        const subjects: Record<string, { total: number, max: number, count: number }> = {};
+        
+        assessments.forEach(a => {
+            if (a.studentId !== student.uid) return;
+            const sub = a.subjectId || 'General';
+            if (!subjects[sub]) subjects[sub] = { total: 0, max: 0, count: 0 };
+            subjects[sub].total += a.score || 0;
+            subjects[sub].max += a.maxScore || 0;
+            subjects[sub].count++;
         });
-    }, [subjects, assessments, student.uid]);
+
+        return Object.entries(subjects).map(([name, data]) => {
+            const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
+            return { name, percentage, ...getGrade(percentage) };
+        });
+    }, [assessments, student.uid]);
+
+    const overallAverage = subjectGrades.length > 0 
+        ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
+        : 0;
 
     return (
-        <div className="space-y-4 p-4 bg-muted/50 rounded-md">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Subject</TableHead>
-                        <TableHead className="text-right">Average Score</TableHead>
-                        <TableHead className="text-right">Grade</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {subjectGrades.map(s => (
-                        <TableRow key={s.subjectName}>
-                            <TableCell>{s.subjectName}</TableCell>
-                            <TableCell className="text-right">{s.average?.toFixed(1) ?? 'N/A'}%</TableCell>
-                            <TableCell className="text-right font-bold">{s.grade}</TableCell>
+        <div className="space-y-6 p-4">
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="bg-indigo-50 border-indigo-100">
+                    <CardContent className="p-4 flex items-center gap-3">
+                        <Trophy className="h-8 w-8 text-indigo-600"/>
+                        <div>
+                            <p className="text-xs font-semibold text-indigo-600 uppercase">Class Position</p>
+                            <p className="text-2xl font-bold text-slate-800">{rank} <span className="text-sm text-slate-400 font-normal">/ {totalStudents}</span></p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-emerald-50 border-emerald-100">
+                    <CardContent className="p-4 flex items-center gap-3">
+                        <TrendingUp className="h-8 w-8 text-emerald-600"/>
+                        <div>
+                            <p className="text-xs font-semibold text-emerald-600 uppercase">Overall Average</p>
+                            <p className="text-2xl font-bold text-slate-800">{overallAverage.toFixed(1)}%</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-white border-slate-200">
+                     <CardContent className="p-4 flex flex-col justify-center h-full">
+                        <Button variant="outline" className="w-full gap-2">
+                            <Printer className="h-4 w-4"/> Print Report Card
+                        </Button>
+                     </CardContent>
+                </Card>
+            </div>
+
+            {/* Subject Breakdown Table */}
+            <div className="border rounded-md">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Subject</TableHead>
+                            <TableHead className="text-right">Score (%)</TableHead>
+                            <TableHead className="text-center">Grade</TableHead>
+                            <TableHead>Remark</TableHead>
                         </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {subjectGrades.map((sub) => (
+                            <TableRow key={sub.name}>
+                                <TableCell className="font-medium">{sub.name}</TableCell>
+                                <TableCell className="text-right">{sub.percentage.toFixed(1)}%</TableCell>
+                                <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
+                                <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
+                            </TableRow>
+                        ))}
+                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
+                    </TableBody>
+                </Table>
+            </div>
+            
+            {/* Raw Assessments List (Collapsible or Bottom) */}
+            <div className="pt-4 border-t">
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
+                <div className="space-y-1">
+                    {assessments.filter(a => a.studentId === student.uid).map(a => (
+                        <div key={a.id} className="flex justify-between text-sm py-1 px-2 hover:bg-slate-50 rounded">
+                            <span>{a.assessmentName} <span className="text-xs text-slate-400">({a.assessmentType})</span></span>
+                            <span className="font-mono">{a.score}/{a.maxScore}</span>
+                        </div>
                     ))}
-                </TableBody>
-            </Table>
+                </div>
+            </div>
         </div>
     );
 }
 
-export default function Gradebook2Manager() {
+// --- MAIN PAGE ---
+export default function GradebookManager() {
   const { user } = useAuth();
   const { role } = useRole();
   const firestore = useFirestore();
+  const { toast } = useToast();
+
+  // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
-  const { toast } = useToast();
-  const [remarks, setRemarks] = useState<Record<string, string>>({});
-  
-  const teacherClassesQuery = useMemoFirebase(() => user && (role === 'Administrator' || role === 'Director') ? collection(firestore, 'classes') : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')), [firestore, user, role]);
-  const { data: teacherClasses } = useCollection(teacherClassesQuery);
 
-  const studentsQuery = useMemoFirebase(() => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId]);
+  // 1. Fetch Classes (Teachers only see theirs)
+  const teacherClassesQuery = useMemoFirebase(() => {
+      if (!firestore || !user) return null;
+      if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
+      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+  }, [firestore, user, role]);
+  
+  const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(teacherClassesQuery);
+
+  // 2. Fetch Students
+  const studentsQuery = useMemoFirebase(() => 
+    selectedClassId ? query(collection(firestore!, 'students'), where('classId', '==', selectedClassId)) : null,
+  [firestore, selectedClassId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
-  const assessmentsQuery = useMemoFirebase(() => selectedClassId ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('academicYear', '==', selectedYear), where('term', '==', selectedTerm)) : null, [firestore, selectedClassId, selectedYear, selectedTerm]);
+  // 3. Fetch Assessments
+  const assessmentsQuery = useMemoFirebase(() => {
+    if (!selectedClassId) return null;
+    return query(
+        collection(firestore!, 'assessments'),
+        where('classId', '==', selectedClassId),
+        where('academicYear', '==', selectedYear),
+        where('term', '==', selectedTerm)
+    );
+  }, [firestore, selectedClassId, selectedYear, selectedTerm]);
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-  const { data: reportCards, isLoading: isLoadingReportCards } = useCollection<ReportCard>(useMemoFirebase(() => selectedClassId ? query(collection(firestore, 'report-cards'), where('classId', '==', selectedClassId), where('academicYear', '==', selectedYear), where('term', '==', selectedTerm)) : null, [firestore, selectedClassId, selectedYear, selectedTerm]));
+  // 4. Fetch Financials (For Balance Checking)
+  const financialRecordsQuery = useMemoFirebase(() => 
+    selectedClassId ? query(collection(firestore!, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
+  [firestore, selectedClassId]);
+  const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  const isLoading = isLoadingStudents || isLoadingAssessments || isLoadingReportCards;
+  // --- DERIVED DATA ---
+  
+  // A. Calculate Ranks
+  const rankedStudents = useMemo(() => {
+      if (!students || !assessments) return [];
+      
+      const studentsWithScore = students.map(s => {
+          const myAssessments = assessments.filter(a => a.studentId === s.uid);
+          const total = myAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
+          const max = myAssessments.reduce((acc, curr) => acc + (curr.maxScore || 0), 0);
+          const average = max > 0 ? (total / max) * 100 : 0;
+          return { ...s, average };
+      });
 
-  const handleSaveRemarks = async (studentId: string) => {
-    const reportCardId = `${studentId}-${selectedYear}-${selectedTerm}`;
-    const reportCardRef = doc(firestore, 'report-cards', reportCardId);
-    try {
-        await setDoc(reportCardRef, { generalComment: remarks[studentId] }, { merge: true });
-        toast({ title: "Success", description: "Remarks saved." });
-    } catch(e) {
-        toast({ variant: 'destructive', title: "Error", description: "Could not save remarks." });
-    }
-  };
-
-  const studentDataForRanking = useMemo(() => {
-    if (!students || !assessments) return [];
-    return students.map(student => {
-      const studentAssessments = assessments.filter(a => a.studentId === student.uid && a.score != null && a.maxScore != null && a.maxScore > 0);
-      if (studentAssessments.length === 0) return { student, average: 0 };
-      const totalScore = studentAssessments.reduce((acc, a) => acc + a.score!, 0);
-      const totalMaxScore = studentAssessments.reduce((acc, a) => acc + a.maxScore!, 0);
-      const average = totalMaxScore > 0 ? (totalScore / totalMaxScore) * 100 : 0;
-      return { student, average };
-    });
+      // Sort by Average Descending
+      return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
-  const rankedStudents = useMemo(() => {
-    const sorted = [...studentDataForRanking].sort((a, b) => b.average - a.average);
-    let rank = 1;
-    return sorted.map((s, index) => {
-        if (index > 0 && s.average < sorted[index - 1].average) {
-            rank = index + 1;
-        }
-        return { ...s, rank };
-    });
-  }, [studentDataForRanking]);
+  // B. Financials Map
+  const studentFinancials = useMemo(() => {
+    if (!students || !financialRecords) return {};
+    const financials: Record<string, { balance: number }> = {};
 
-  const getRankOrdinal = (rank: number) => {
-    if (rank % 100 >= 11 && rank % 100 <= 13) return `${rank}th`;
-    switch (rank % 10) {
-      case 1: return `${rank}st`;
-      case 2: return `${rank}nd`;
-      case 3: return `${rank}rd`;
-      default: return `${rank}th`;
-    }
-  };
-
-  const toggleForm = (formName: string) => {
-    setActiveForm(activeForm === formName ? null : formName);
-  };
-  
-  const handlePromoteClass = async () => {
-    if (!selectedClassId || !students || students.length === 0) return;
-    
-    // Simple logic: "JHS 1" -> "JHS 2" etc.
-    const currentClassName = teacherClasses?.find(c => c.id === selectedClassId)?.name || '';
-    const currentGrade = parseInt(currentClassName.match(/\d+/)?.[0] || '0');
-    const nextGradeName = currentClassName.replace(String(currentGrade), String(currentGrade + 1));
-    
-    // Find or create the next class
-    let nextClass = classes?.find(c => c.name === nextGradeName);
-    if (!nextClass) {
-        // Create it if it doesn't exist (basic version)
-        const newClassRef = await addDoc(collection(firestore, 'classes'), { name: nextGradeName });
-        nextClass = { id: newClassRef.id, name: nextGradeName };
-    }
-    
-    const batch = writeBatch(firestore);
     students.forEach(student => {
-        const studentRef = doc(firestore, 'students', student.uid);
-        batch.update(studentRef, { classId: nextClass!.id });
+        const myRecords = financialRecords.filter(r => r.studentId === student.uid);
+        const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+        const paid = myRecords.reduce((acc, r) => acc + r.amountPaid, 0);
+        financials[student.uid] = { balance: billed - paid };
     });
+    return financials;
+  }, [students, financialRecords]);
 
-    await batch.commit();
-    toast({ title: 'Success', description: `${students.length} students promoted to ${nextGradeName}.` });
-  };
+  const isLoading = isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
 
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="space-y-6 p-6">
+      <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle className="flex items-center gap-2"><TrendingUp /> Gradebook</CardTitle>
-              <CardDescription>Select a class and term to view student performance and financial status.</CardDescription>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
+                    <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
+                </div>
+                {/* ACTION BUTTONS */}
+                <div className="flex gap-2">
+                    <Button variant={activeForm === 'grade' ? 'secondary' : 'outline'} onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} disabled={!selectedClassId}>
+                        <PlusCircle className="mr-2 h-4 w-4" /> Enter Grades
+                    </Button>
+                </div>
             </div>
-            <div className="flex gap-2">
-                <Button variant="destructive" onClick={handlePromoteClass} disabled={!selectedClassId || !students || students.length === 0}>Promote Class</Button>
-                <Button variant={activeForm === 'grade' ? 'default' : 'outline'} onClick={() => toggleForm('grade')} disabled={!selectedClassId}>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Grade Entry
-                </Button>
-            </div>
-          </div>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Select onValueChange={setSelectedYear} defaultValue={selectedYear}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent></Select>
-          <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select>
-          <Select onValueChange={setSelectedClassId}><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger><SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select>
+        
+        {/* FILTERS */}
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
+          <div className="space-y-1">
+             <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
+             <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
+                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+             </Select>
+          </div>
+          <div className="space-y-1">
+             <span className="text-xs font-semibold text-slate-500 uppercase">Term</span>
+             <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
+                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+             </Select>
+          </div>
+          <div className="space-y-1">
+             <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
+             <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
+                <SelectTrigger className="bg-white"><SelectValue placeholder="Select Class..." /></SelectTrigger>
+                <SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+             </Select>
+          </div>
         </CardContent>
       </Card>
 
-      {activeForm === 'grade' && selectedClassId && <AssessmentFeedbackForm classId={selectedClassId} />}
+      {/* GRADE ENTRY FORM (Conditional) */}
+      {activeForm === 'grade' && selectedClassId && (
+          <div className="animate-in slide-in-from-top-4 fade-in duration-300">
+              <AssessmentFeedbackForm classId={selectedClassId} />
+          </div>
+      )}
       
+      {/* STUDENT LIST */}
       {selectedClassId && (
         <Card>
-          <CardHeader><CardTitle>Student Overview for {selectedYear} - {selectedTerm}</CardTitle></CardHeader>
-          <CardContent>
-            {isLoading ? <div className="flex justify-center py-8"><Loader2 className="h-8 w-8 animate-spin" /></div> :
-            rankedStudents && rankedStudents.length > 0 && assessments ? (
-            <Accordion type="single" collapsible>
-                {rankedStudents.map(({ student, average, rank }) => (
-                    <AccordionItem value={student.uid} key={student.uid}>
-                        <AccordionTrigger>
-                            <div className='flex justify-between items-center w-full pr-4'>
-                                <span className="flex items-center gap-2"><User className="h-4 w-4"/>{student.firstName} {student.lastName}</span>
-                                <div className="flex items-center gap-4">
-                                    <Badge variant={average > 0 ? "default" : "secondary"}>
-                                        Overall: {average.toFixed(1)}% ({getGradeForScore(average)})
-                                    </Badge>
-                                     <Badge variant="outline">
-                                        Position: {getRankOrdinal(rank)}
-                                    </Badge>
-                                </div>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="p-2 space-y-4">
-                            <Tabs defaultValue="academics">
-                                <TabsList><TabsTrigger value="academics">Academics</TabsTrigger><TabsTrigger value="remarks">Teacher's Remarks</TabsTrigger></TabsList>
-                                <TabsContent value="academics">
-                                    <StudentGradesDetail student={student} assessments={assessments}/>
-                                </TabsContent>
-                                <TabsContent value="remarks">
-                                    <div className="p-4 bg-muted/50 rounded-md space-y-2">
-                                        <Textarea placeholder="Enter general remarks for this student..." defaultValue={reportCards?.find(rc => rc.studentId === student.uid)?.generalComment || ''} onChange={(e) => setRemarks(prev => ({...prev, [student.uid]: e.target.value}))}/>
-                                        <Button size="sm" onClick={() => handleSaveRemarks(student.uid)}>Save Remarks</Button>
+            <CardHeader className="py-4 px-6 border-b bg-white">
+                <CardTitle className="text-lg">Class Performance Report</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                {isLoading ? (
+                    <div className="flex flex-col items-center py-12 gap-2 text-muted-foreground">
+                        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                        <p>Compiling results...</p>
+                    </div>
+                ) :
+                rankedStudents.length > 0 ? (
+                <Accordion type="single" collapsible className="w-full">
+                    {rankedStudents.map((student, index) => {
+                        const financials = studentFinancials[student.uid] || { balance: 0 };
+                        const rank = index + 1; // Since array is sorted by score
+                        
+                        return (
+                            <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
+                                <AccordionTrigger className="hover:no-underline py-4">
+                                    <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
+                                        
+                                        {/* Left: Name & Rank */}
+                                        <div className="flex items-center gap-3">
+                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                {rank}
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
+                                                <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Right: Badges */}
+                                        <div className="flex items-center gap-3">
+                                            <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
+                                                {financials.balance > 0 ? `Owes: GH₵${financials.balance}` : 'Fees Paid'}
+                                            </Badge>
+                                            <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>
+                                                Avg: {student.average.toFixed(1)}%
+                                            </Badge>
+                                        </div>
                                     </div>
-                                </TabsContent>
-                            </Tabs>
-                             <CardFooter>
-                                <PDFDownloadLink
-                                document={<StudentReportCardPDF student={student} term={selectedTerm} year={selectedYear} assessments={assessments} rank={getRankOrdinal(rank)} />}
-                                fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
-                                >
-                                {({ blob, url, loading, error }) =>
-                                    loading ? <Button disabled><Loader2 className="mr-2 h-4 w-4 animate-spin"/>Generating...</Button> : <Button><Printer className="mr-2 h-4 w-4"/>Generate PDF Report</Button>
-                                }
-                                </PDFDownloadLink>
-                            </CardFooter>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
-            ) : (
-                <p className="text-muted-foreground text-center py-8">No students or records found.</p>
-            )}
-          </CardContent>
+                                </AccordionTrigger>
+                                <AccordionContent className="p-0 border-t bg-slate-50/50">
+                                    <Tabs defaultValue="academics" className="w-full">
+                                        <div className="px-4 pt-2 border-b bg-white">
+                                            <TabsList className="bg-transparent h-10 p-0">
+                                                <TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Report Card</TabsTrigger>
+                                                <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Fee History</TabsTrigger>
+                                            </TabsList>
+                                        </div>
+
+                                        <TabsContent value="academics" className="mt-0">
+                                            <StudentGradesDetail 
+                                                student={student} 
+                                                assessments={assessments || []} 
+                                                rank={rank}
+                                                totalStudents={rankedStudents.length}
+                                            />
+                                        </TabsContent>
+
+                                        <TabsContent value="financials" className="mt-0 p-6">
+                                            <div className="flex items-center gap-4 p-4 bg-white border rounded-lg shadow-sm max-w-md">
+                                                <div className="bg-slate-100 p-3 rounded-full"><AlertCircle className="h-6 w-6 text-slate-500"/></div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-slate-500">Current Balance</p>
+                                                    <p className="text-2xl font-bold text-slate-800">GH₵{financials.balance.toFixed(2)}</p>
+                                                </div>
+                                                <Button variant="outline" size="sm" className="ml-auto">View Ledger</Button>
+                                            </div>
+                                        </TabsContent>
+                                    </Tabs>
+                                </AccordionContent>
+                            </AccordionItem>
+                        )
+                    })}
+                </Accordion>
+                ) : (
+                    <div className="text-center py-16">
+                        <FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/>
+                        <p className="text-muted-foreground">No students or records found.</p>
+                        <p className="text-xs text-slate-400">Try selecting a different term or class.</p>
+                    </div>
+                )}
+            </CardContent>
         </Card>
       )}
     </div>
