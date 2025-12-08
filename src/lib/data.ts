@@ -43,6 +43,7 @@ import {
   Settings,
   Megaphone,
   BrainCircuit,
+  Clapperboard,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -196,6 +197,12 @@ export const navItems: NavItem[] = [
     icon: Activity,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
+        {
+            path: '/dashboard/live-classroom',
+            title: 'Live Classroom',
+            icon: Clapperboard,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
         {
             path: '/dashboard/game-zone',
             title: 'Game Zone',
