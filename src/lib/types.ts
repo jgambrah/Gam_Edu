@@ -162,8 +162,17 @@ export type ReportCardComment = {
 
 export type ReportCardStatus = 'Draft' | 'AwaitingFinalApproval' | 'Published';
 
+export type SubjectGradeSummary = {
+    subjectId: string;
+    subjectName: string;
+    assessments: Assessment[];
+    finalGrade: string;
+    percentage: number;
+    teacherComment: string;
+};
+
 export type ReportCard = {
-    id: string; // Typically studentId-academicYear-term
+    id: string; 
     studentId: string;
     classId: string;
     academicYear: string;
@@ -173,6 +182,8 @@ export type ReportCard = {
     publishedAt?: any;
     finalGrade?: string;
     finalPercentage?: number;
+    classPosition?: string; // e.g. "1st", "2nd"
+    subjectSummaries?: SubjectGradeSummary[]; // New structured field
 }
 
 // Timetable Schemas
