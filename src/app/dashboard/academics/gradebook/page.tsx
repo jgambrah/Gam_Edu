@@ -4,10 +4,10 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Added useUser
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore'; // Add writeBatch, doc
 import { 
   TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, CheckSquare, Square, GraduationCap 
-} from 'lucide-react';
+} from 'lucide-react'; // Icons
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 
@@ -19,10 +19,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
+import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from '@/components/ui/checkbox'; // Ensure you have this or use standard input
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 
@@ -347,16 +347,13 @@ export default function GradebookManager() {
   // 1. Fetch Classes (Correctly handled for both Admin and Teacher)
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
-      return query(collection(firestore, 'classes'));
-  }, [firestore, user, isStaff]);
+      if (isDirector) {
+          return query(collection(firestore, 'classes'));
+      }
+      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+  }, [firestore, user, role, isStaff, isDirector]);
   
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
-
-  const teacherClasses = useMemo(() => {
-    if (!classes || !user) return [];
-    if (isDirector) return classes;
-    return classes.filter(c => c.teacherId === user.uid);
-  }, [classes, user, isDirector]);
 
   // 2. Fetch Students
   const studentsQuery = useMemoFirebase(() => 
@@ -458,7 +455,7 @@ export default function GradebookManager() {
                          <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
                          <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
                             <SelectTrigger className="bg-white"><SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} /></SelectTrigger>
-                            <SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                          </Select>
                       </div>
                     </CardContent>
