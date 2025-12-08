@@ -37,14 +37,13 @@ import { useRole } from '@/context/role-context';
 import type { Class, Student } from '@/lib/types';
 
 
-export function AssessmentFeedbackForm({ classId }: { classId?: string }) {
+export function AssessmentFeedbackForm({ classId, classes: propClasses }: { classId?: string; classes: Class[] }) {
     const { user } = useAuth();
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const [classes, setClasses] = useState<Class[]>([]);
     const [students, setStudents] = useState<Student[]>([]);
   
     const form = useForm<z.infer<typeof assessmentFeedbackSchema>>({
@@ -66,25 +65,6 @@ export function AssessmentFeedbackForm({ classId }: { classId?: string }) {
             form.setValue('classId', classId);
         }
     }, [classId, form]);
-
-    useEffect(() => {
-        if (!user || !firestore) return;
-        
-        let classesQuery;
-        if (role === 'Administrator' || role === 'Director') {
-            classesQuery = collection(firestore, 'classes');
-        } else if (role === 'Teacher') {
-            classesQuery = query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-        } else {
-            return;
-        }
-
-        const unsubscribe = onSnapshot(classesQuery, (snapshot) => {
-            setClasses(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Class)));
-        });
-
-        return () => unsubscribe();
-    }, [firestore, user, role]);
 
     useEffect(() => {
         if (!selectedClassId || !firestore) {
@@ -173,7 +153,7 @@ export function AssessmentFeedbackForm({ classId }: { classId?: string }) {
                             <FormLabel>Class</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
-                                <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                                <SelectContent>{propClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                             </Select>
                             <FormMessage />
                         </FormItem>

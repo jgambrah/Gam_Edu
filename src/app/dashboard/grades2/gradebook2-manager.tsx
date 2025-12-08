@@ -269,7 +269,7 @@ export default function GradebookManager() {
       {/* GRADE ENTRY FORM (Conditional) */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
-              <AssessmentFeedbackForm classId={selectedClassId} />
+              <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
           </div>
       )}
       
