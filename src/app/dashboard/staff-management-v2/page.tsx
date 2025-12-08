@@ -3,11 +3,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'; // Removing 'query' to be safe
+// FIX: Using getDocs instead of useCollection hooks
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
-// UI
+// UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +35,6 @@ type StaffMember = {
 
 export default function StaffManagementPage() {
   const firestore = useFirestore();
-  const { user } = useAuth();
   const { toast } = useToast();
 
   const [staff, setStaff] = useState<StaffMember[]>([]);
@@ -44,7 +44,10 @@ export default function StaffManagementPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Filters
   const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
 
   // Reset loading state when modals open/close
   useEffect(() => {
@@ -53,15 +56,17 @@ export default function StaffManagementPage() {
     }
   }, [isAddOpen, editingStaff]);
 
-  // --- 1. FETCH LOGIC (Simplified) ---
+  // --- 1. FETCH LOGIC (Simplified & Stabilized) ---
   const fetchStaff = useCallback(async () => {
-    if (!firestore) return; // Don't wait for user, just firestore
-
+    if (!firestore) {
+        console.log("Firestore not ready, skipping fetch.");
+        return;
+    }
+    
     setIsLoading(true);
     console.log("🔄 Fetching Staff List...");
 
     try {
-        // Basic collection reference (No queries, No sorts)
         const staffCollection = collection(firestore, 'staff');
         const snapshot = await getDocs(staffCollection);
         
@@ -78,14 +83,12 @@ export default function StaffManagementPage() {
     } finally {
         setIsLoading(false);
     }
-  }, [firestore]); // Only depend on firestore instance
+  }, [firestore, toast]);
 
-  // Run fetch immediately when firestore is ready
+  // Run fetch on mount
   useEffect(() => {
-      if (firestore) {
-          fetchStaff();
-      }
-  }, [firestore, fetchStaff]);
+      fetchStaff();
+  }, [fetchStaff]);
 
   // --- 2. ADD STAFF LOGIC ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -123,7 +126,7 @@ export default function StaffManagementPage() {
 
           toast({ title: "Success", description: `${firstName} added.` });
           setIsAddOpen(false);
-          await fetchStaff(); 
+          fetchStaff(); // Manually refetch data
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -160,7 +163,7 @@ export default function StaffManagementPage() {
 
           toast({ title: "Updated", description: "Staff details saved successfully." });
           setEditingStaff(null); 
-          await fetchStaff(); 
+          fetchStaff();
 
       } catch (error: any) {
           console.error("Update Error:", error);
@@ -184,8 +187,9 @@ export default function StaffManagementPage() {
 
   // Client-side filtering
   const filteredStaff = staff.filter(s => 
-    (s.firstName + ' ' + s.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.email.toLowerCase().includes(searchTerm.toLowerCase())
+    ((s.firstName || '') + ' ' + (s.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (roleFilter === 'all' || s.role === roleFilter)
   );
 
   return (
@@ -196,10 +200,12 @@ export default function StaffManagementPage() {
                 <CardTitle className="text-2xl flex items-center gap-2">
                     <Users className="h-6 w-6 text-blue-600"/> Staff Management
                 </CardTitle>
-                <CardDescription>Manage teachers and administrators.</CardDescription>
+                <CardDescription>
+                    Found: {staff.length} | Showing: {filteredStaff.length}
+                </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={fetchStaff}>
+                <Button variant="outline" onClick={fetchStaff} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700">
@@ -209,22 +215,29 @@ export default function StaffManagementPage() {
         </CardHeader>
         
         <CardContent className="space-y-4">
-            <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                    placeholder="Search staff..." 
-                    className="pl-8 max-w-sm" 
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                />
+            <div className="flex gap-4">
+                <div className="relative flex-grow">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        placeholder="Search staff..." 
+                        className="pl-8 max-w-sm" 
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                    <SelectTrigger className="w-[180px]"><SelectValue placeholder="Filter by Role" /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Roles</SelectItem>
+                        {ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                    </SelectContent>
+                </Select>
             </div>
 
             {isLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-blue-500"/></div>
             ) : filteredStaff.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                    No staff found in database.
-                </div>
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No staff found matching your criteria.</div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
@@ -246,12 +259,8 @@ export default function StaffManagementPage() {
                                     <TableCell><Badge variant="outline">{s.role}</Badge></TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingStaff(s)}>
-                                                <Edit className="h-4 w-4 text-blue-600"/>
-                                            </Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}>
-                                                <Trash2 className="h-4 w-4 text-red-500"/>
-                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingStaff(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
