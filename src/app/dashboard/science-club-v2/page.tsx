@@ -47,6 +47,7 @@ interface LessonCard {
     timestamp?: any;
 }
 
+// --- SUB-COMPONENT: SCIENCE EXPLORER ---
 function ScienceExplorerTab() {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -173,10 +174,11 @@ function ScienceExplorerTab() {
     );
 }
 
+// --- SUB-COMPONENT: Leaderboard ---
 function Leaderboard() {
     const firestore = useFirestore();
     const leaderboardQuery = useMemoFirebase(
-      () => firestore ? query(collection(firestore, 'global_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
+      () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
       [firestore]
     );
     const { data: leaderboard, isLoading } = useCollection<GlobalLeaderboardEntry>(leaderboardQuery);
@@ -219,6 +221,16 @@ function Leaderboard() {
     )
 }
 
+const scienceProblemSchema = z.object({
+    topic: z.string().min(1, "Topic is required."),
+    difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+    question_text: z.string().min(1, "Question text is required."),
+    correct_answer: z.string().min(1, "Correct answer is required."),
+    options: z.array(z.string().min(1, "Option cannot be empty.")).length(4, "You must provide 4 options."),
+    classId: z.string().min(1, "Please select a class."),
+});
+
+// --- SUB-COMPONENT: Problem Creation ---
 function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -226,20 +238,21 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
-    const form = useForm<z.infer<typeof mathProblemSchema>>({
-        resolver: zodResolver(mathProblemSchema),
+    const form = useForm<z.infer<typeof scienceProblemSchema>>({
+        resolver: zodResolver(scienceProblemSchema),
         defaultValues: {
             difficulty: 'Easy',
+            topic: 'Biology',
             options: ['', '', '', ''],
             classId: '',
         }
     });
 
-    async function onSubmit(values: z.infer<typeof mathProblemSchema>) {
+    async function onSubmit(values: z.infer<typeof scienceProblemSchema>) {
         setIsSubmitting(true);
         try {
-            await addDocumentNonBlocking(collection(firestore, 'math_problems'), values);
-            toast({ title: 'Success', description: 'New math problem has been added.' });
+            await addDocumentNonBlocking(collection(firestore, 'science_problems'), values);
+            toast({ title: 'Success', description: 'New science problem has been added.' });
             form.reset();
             setOpen(false);
         } catch (error) {
@@ -263,7 +276,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                 )}/>
                 <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
-                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Algebra" {...field}/></FormControl><FormMessage/></FormItem>
+                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Photosynthesis" {...field}/></FormControl><FormMessage/></FormItem>
                     )}/>
                     <FormField control={form.control} name="difficulty" render={({ field }) => (
                         <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
@@ -288,9 +301,10 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     );
 }
 
+// --- SUB-COMPONENT: Problem Management ---
 function ManageProblems() {
     const firestore = useFirestore();
-    const { data: problems, isLoading } = useCollection<MathProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'math_problems')) : null, [firestore]));
+    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
@@ -299,17 +313,17 @@ function ManageProblems() {
             <CardHeader className="flex flex-row justify-between items-center">
                 <div>
                     <CardTitle>Problem Bank</CardTitle>
-                    <CardDescription>Manage the collection of math problems for student practice sessions.</CardDescription>
+                    <CardDescription>Manage the collection of science problems for student practice sessions.</CardDescription>
                 </div>
                 <div className="flex gap-2">
                     <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
                         <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Math" setOpen={setIsAiFormOpen} /></DialogContent>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="Science" setOpen={setIsAiFormOpen} /></DialogContent>
                     </Dialog>
                     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
                         <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4"/>New Problem</Button></DialogTrigger>
                         <DialogContent>
-                            <DialogHeader><DialogTitle>Create New Math Problem</DialogTitle><DialogDescription>Add a new question to the problem bank.</DialogDescription></DialogHeader>
+                            <DialogHeader><DialogTitle>Create New Science Problem</DialogTitle><DialogDescription>Add a new question to the problem bank.</DialogDescription></DialogHeader>
                             <ProblemCreationForm setOpen={setIsFormOpen}/>
                         </DialogContent>
                     </Dialog>
@@ -335,7 +349,8 @@ function ManageProblems() {
     )
 }
 
-export default function MathsClubPage() {
+// --- MAIN PAGE ---
+export default function ScienceClubPageV2() {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const router = useRouter();
@@ -359,18 +374,18 @@ export default function MathsClubPage() {
   const problemsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     if (isTeacherOrAdmin) {
-      return query(collection(firestore, 'math_problems'));
+      return query(collection(firestore, 'science_problems'));
     }
     if (role === 'Student') {
         if (studentClassId) {
-             return query(collection(firestore, 'math_problems'), where('classId', '==', studentClassId));
+             return query(collection(firestore, 'science_problems'), where('classId', '==', studentClassId));
         }
         return null;
     }
     return null;
   }, [firestore, isTeacherOrAdmin, role, studentClassId]);
 
-  const { data: problems, isLoading: isLoadingProblems } = useCollection<MathProblem>(problemsQuery);
+  const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(problemsQuery);
   
   const uniqueTopics = useMemo(() => {
     if (!problems) return [];
@@ -380,7 +395,7 @@ export default function MathsClubPage() {
 
   const handleStartPractice = () => {
     if (selectedTopic && selectedDifficulty) {
-      router.push(`/dashboard/maths-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
+      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
     }
   };
 
@@ -391,11 +406,11 @@ export default function MathsClubPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sigma />
-            Maths Club
+            <FlaskConical />
+            Science Club
           </CardTitle>
           <CardDescription>
-            Welcome to the Maths Club! Practice problems, track your progress,
+            Welcome to the Science Club! Practice problems, track your progress,
             and climb the leaderboard.
           </CardDescription>
         </CardHeader>
@@ -403,7 +418,7 @@ export default function MathsClubPage() {
       <Tabs defaultValue="practice">
         <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
           <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
-          <TabsTrigger value="learn">Math Explorer</TabsTrigger>
+          <TabsTrigger value="learn">Science Explorer</TabsTrigger>
           <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
           {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
         </TabsList>
@@ -452,7 +467,7 @@ export default function MathsClubPage() {
           </Card>
         </TabsContent>
         <TabsContent value="learn" className="mt-6">
-            <MathExplorerTab />
+            <ScienceExplorerTab />
         </TabsContent>
         <TabsContent value="leaderboard">
             <Card>
@@ -474,3 +489,5 @@ export default function MathsClubPage() {
     </div>
   );
 }
+
+    
