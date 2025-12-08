@@ -23,12 +23,12 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useMemo, useEffect } from 'react';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc, onSnapshot } from 'firebase/firestore';
 import { assessmentFeedbackSchema } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +36,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { MOCK_ACADEMIC_YEARS, MOCK_SUBJECTS, MOCK_TERMS } from '@/lib/data';
 import { useRole } from '@/context/role-context';
 import type { Class, Student } from '@/lib/types';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 
 
 export function AssessmentFeedbackForm({ classId, classes: propClasses }: { classId?: string; classes: Class[] }) {
