@@ -12,7 +12,7 @@ import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 
 // UI Components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Label } from '@/components/ui/label';
 
 
 // Types
@@ -38,122 +39,184 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };                            // F (0-49)
 }
 
-// --- NEW COMPONENT: Student Promotion Tab ---
-function PromoteStudentsTab({ allClasses }: { allClasses: Class[] }) {
+// --- SUB-COMPONENT: Student Promotion Tool ---
+function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefined }) {
     const firestore = useFirestore();
     const { toast } = useToast();
+    
+    const [fromClassId, setFromClassId] = useState('');
+    const [toClassId, setToClassId] = useState('');
+    const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set());
+    const [isPromoting, setIsPromoting] = useState(false);
 
-    const [sourceClassId, setSourceClassId] = useState('');
-    const [destinationClassId, setDestinationClassId] = useState('');
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [selectedStudents, setSelectedStudents] = useState<Record<string, boolean>>({});
+    // Fetch students from the "Source" class
+    const studentsQuery = useMemoFirebase(() => 
+        (firestore && fromClassId) ? query(collection(firestore, 'students'), where('classId', '==', fromClassId)) : null,
+    [firestore, fromClassId]);
+    
+    const { data: students, isLoading } = useCollection<Student>(studentsQuery);
 
-    const { data: studentsInSourceClass, isLoading: isLoadingStudents } = useCollection<Student>(
-        useMemoFirebase(() => sourceClassId ? query(collection(firestore, 'students'), where('classId', '==', sourceClassId)) : null, [firestore, sourceClassId])
-    );
+    // Handle Checkbox Toggles
+    const toggleStudent = (id: string) => {
+        const newSet = new Set(selectedStudentIds);
+        if (newSet.has(id)) newSet.delete(id);
+        else newSet.add(id);
+        setSelectedStudentIds(newSet);
+    };
 
-    const handleSelectAll = (checked: boolean) => {
-        const newSelection: Record<string, boolean> = {};
-        if (checked && studentsInSourceClass) {
-            studentsInSourceClass.forEach(s => newSelection[s.id] = true);
+    const toggleAll = () => {
+        if (!students) return;
+        if (selectedStudentIds.size === students.length) {
+            setSelectedStudentIds(new Set()); // Uncheck all
+        } else {
+            setSelectedStudentIds(new Set(students.map(s => s.uid))); // Check all
         }
-        setSelectedStudents(newSelection);
     };
 
-    const handleStudentSelect = (studentId: string, checked: boolean) => {
-        setSelectedStudents(prev => ({ ...prev, [studentId]: checked }));
-    };
-
-    const studentsToPromote = Object.entries(selectedStudents).filter(([, isSelected]) => isSelected).map(([id]) => id);
-
-    const handlePromotion = async () => {
-        if (studentsToPromote.length === 0) {
-            toast({ variant: 'destructive', title: 'No students selected' });
+    // EXECUTE PROMOTION
+    const handlePromote = async () => {
+        if (!firestore || selectedStudentIds.size === 0) return;
+        if (!toClassId) {
+            toast({ variant: 'destructive', title: "Select Destination", description: "Please select which class to move them to." });
             return;
         }
-        setIsProcessing(true);
-        const batch = writeBatch(firestore);
-        
-        studentsToPromote.forEach(studentId => {
-            const studentRef = doc(firestore, 'students', studentId);
-            if (destinationClassId === 'graduated') {
-                batch.update(studentRef, { 
-                    enrollmentStatus: 'Graduated',
-                    classId: '' // Unassign from any class
-                });
-            } else {
-                batch.update(studentRef, { classId: destinationClassId });
-            }
-        });
 
+        if (!confirm(`Are you sure you want to move ${selectedStudentIds.size} students? This cannot be easily undone.`)) return;
+
+        setIsPromoting(true);
         try {
+            const batch = writeBatch(firestore);
+            
+            selectedStudentIds.forEach(studentId => {
+                const studentRef = doc(firestore, 'students', studentId);
+                
+                if (toClassId === 'GRADUATED') {
+                    // Mark as graduated (remove from active classes)
+                    batch.update(studentRef, { 
+                        classId: 'GRADUATED',
+                        enrollmentStatus: 'Graduated',
+                        graduatedAt: serverTimestamp()
+                    });
+                } else {
+                    // Move to next class
+                    batch.update(studentRef, { 
+                        classId: toClassId 
+                    });
+                }
+            });
+
             await batch.commit();
-            toast({ title: 'Success!', description: `${studentsToPromote.length} students have been moved.` });
-            setSelectedStudents({});
-            setSourceClassId('');
-            setDestinationClassId('');
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Error', description: error.message });
+            
+            toast({ title: "Promotion Successful", description: `Moved ${selectedStudentIds.size} students.` });
+            setSelectedStudentIds(new Set());
+            setFromClassId(''); // Reset
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Error", description: e.message });
         } finally {
-            setIsProcessing(false);
+            setIsPromoting(false);
         }
     };
 
     return (
-        <Card className="mt-6">
-            <CardHeader><CardTitle>End-of-Year Student Promotion</CardTitle><CardDescription>Move students from a source class to a destination class or mark them as graduated.</CardDescription></CardHeader>
+        <Card className="border-t-4 border-t-emerald-600 mt-6">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <GraduationCap className="h-6 w-6 text-emerald-600"/> Student Promotion
+                </CardTitle>
+                <CardDescription>Move students to the next class at the end of the academic year.</CardDescription>
+            </CardHeader>
             <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
-                    <Select onValueChange={setSourceClassId} value={sourceClassId}>
-                        <SelectTrigger><SelectValue placeholder="Select Source Class"/></SelectTrigger>
-                        <SelectContent>{allClasses.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                    </Select>
-                    
-                    <ArrowRight className="h-6 w-6 text-muted-foreground mx-auto hidden md:block" />
+                
+                {/* 1. SELECTION CONTROLS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end bg-slate-50 p-4 rounded-lg border">
+                    <div className="space-y-2">
+                        <Label>From Class (Current)</Label>
+                        <Select value={fromClassId} onValueChange={setFromClassId}>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Source Class" /></SelectTrigger>
+                            <SelectContent>
+                                {allClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-                    <Select onValueChange={setDestinationClassId} value={destinationClassId} disabled={!sourceClassId}>
-                        <SelectTrigger><SelectValue placeholder="Select Destination"/></SelectTrigger>
-                        <SelectContent>
-                             <SelectItem value="graduated"><span className="flex items-center gap-2"><GraduationCap/> Mark as Graduated</span></SelectItem>
-                            {allClasses.filter(c => c.id !== sourceClassId).map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
+                    <div className="flex justify-center pb-2">
+                        <ArrowRight className="h-6 w-6 text-slate-400" />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>To Class (Next Level)</Label>
+                        <Select value={toClassId} onValueChange={setToClassId}>
+                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Destination" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="GRADUATED" className="text-red-600 font-bold">🎓 Mark as Graduated</SelectItem>
+                                {allClasses?.filter(c => c.id !== fromClassId).map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
-                
-                {isLoadingStudents && <div className="py-8 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></div>}
-                
-                {studentsInSourceClass && studentsInSourceClass.length > 0 && (
-                    <div className="border rounded-md p-4 space-y-4">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox id="select-all" onCheckedChange={handleSelectAll} checked={studentsInSourceClass.length > 0 && studentsToPromote.length === studentsInSourceClass.length} />
-                            <Label htmlFor="select-all">Select All ({studentsToPromote.length} / {studentsInSourceClass.length})</Label>
+
+                {/* 2. STUDENT LIST */}
+                {fromClassId && (
+                    <div className="border rounded-md">
+                        <div className="p-2 border-b bg-slate-100 flex justify-between items-center">
+                            <h4 className="font-semibold text-sm pl-2">
+                                Select Students ({selectedStudentIds.size}/{students?.length || 0})
+                            </h4>
+                            <Button variant="ghost" size="sm" onClick={toggleAll}>
+                                {students && selectedStudentIds.size === students.length ? "Unselect All" : "Select All"}
+                            </Button>
                         </div>
-                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-64 overflow-y-auto">
-                            {studentsInSourceClass.map(student => (
-                                <div key={student.id} className="flex items-center space-x-2 p-2 border rounded-md bg-background">
-                                    <Checkbox id={student.id} checked={!!selectedStudents[student.id]} onCheckedChange={(checked) => handleStudentSelect(student.id, !!checked)} />
-                                    <Label htmlFor={student.id}>{student.firstName} {student.lastName}</Label>
-                                </div>
-                            ))}
+                        
+                        <div className="max-h-[400px] overflow-y-auto">
+                            {isLoading ? (
+                                <div className="p-8 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></div>
+                            ) : !students || students.length === 0 ? (
+                                <div className="p-8 text-center text-muted-foreground">No students in this class.</div>
+                            ) : (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[50px]">Select</TableHead>
+                                            <TableHead>Student Name</TableHead>
+                                            <TableHead>Student ID</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {students.map(student => (
+                                            <TableRow key={student.uid} className={selectedStudentIds.has(student.uid) ? "bg-emerald-50" : ""}>
+                                                <TableCell>
+                                                    <Checkbox
+                                                        checked={selectedStudentIds.has(student.uid)}
+                                                        onCheckedChange={() => toggleStudent(student.uid)}
+                                                        id={`select-${student.uid}`}
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="font-medium">{student.firstName} {student.lastName}</TableCell>
+                                                <TableCell className="text-muted-foreground">{student.id.slice(0,8)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
                         </div>
                     </div>
                 )}
+
+                {/* 3. ACTION BUTTON */}
+                <div className="flex justify-end pt-4 border-t">
+                    <Button 
+                        onClick={handlePromote} 
+                        disabled={isPromoting || selectedStudentIds.size === 0 || !toClassId}
+                        className="bg-emerald-600 hover:bg-emerald-700 w-full md:w-auto"
+                    >
+                        {isPromoting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GraduationCap className="mr-2 h-4 w-4"/>}
+                        Promote {selectedStudentIds.size} Students
+                    </Button>
+                </div>
             </CardContent>
-            <CardFooter>
-                 <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                         <Button disabled={isProcessing || studentsToPromote.length === 0 || !destinationClassId}>
-                            Promote {studentsToPromote.length} Student(s)
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader><AlertDialogTitle>Confirm Promotion</AlertDialogTitle><AlertDialogDescription>
-                            You are about to move {studentsToPromote.length} student(s) from '{allClasses.find(c => c.id === sourceClassId)?.name}' to '{destinationClassId === 'graduated' ? 'Graduated' : allClasses.find(c => c.id === destinationClassId)?.name}'. This action cannot be easily undone.
-                        </AlertDialogDescription></AlertDialogHeader>
-                        <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={handlePromotion}>Yes, Promote Students</AlertDialogAction></AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </CardFooter>
         </Card>
     );
 }
@@ -491,7 +554,7 @@ export default function GradebookManager() {
             </TabsContent>
 
             <TabsContent value="promote">
-                {isDirector && <PromoteStudentsTab allClasses={classes || []} />}
+                {isDirector && <PromoteStudentsTab classes={classes || []} />}
             </TabsContent>
         </Tabs>
     </div>
