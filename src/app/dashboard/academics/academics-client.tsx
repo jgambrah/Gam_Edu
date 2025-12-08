@@ -305,8 +305,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                 </CardHeader>
                                 <CardContent>
                                     <Form {...form}>
-                                        <React.Fragment key={classData.id}>
-                                        <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
+                                        <form key={classData.id} onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
                                             <FormField control={form.control} name="teacherId" render={({ field }) => (
                                                 <FormItem><FormLabel>Class Teacher</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canManage}><FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl><SelectContent>{teachers.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}</SelectContent></Select></FormItem>
                                             )}/>
@@ -318,7 +317,6 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                             )}/>
                                             {canManage && <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Save Changes</Button>}
                                         </form>
-                                        </React.Fragment>
                                     </Form>
                                 </CardContent>
                                 {canManage && (
@@ -520,5 +518,3 @@ export default function AcademicsPageContent() {
     </div>
   );
 }
-
-    
