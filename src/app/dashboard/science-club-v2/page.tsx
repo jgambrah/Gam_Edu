@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -26,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceProblem, GlobalLeaderboardEntry } from '@/lib/types';
+import { Class, Student, ScienceProblem, GlobalLeaderboardEntry, ScienceLesson } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from '@/lib/utils';
@@ -36,17 +37,6 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 
 
-interface LessonCard {
-    id?: string;
-    title: string;
-    explanation: string;
-    analogy: string;
-    keyTerms: string[];
-    quizQuestion: string;
-    quizAnswer: string;
-    timestamp?: any;
-}
-
 // --- SUB-COMPONENT: SCIENCE EXPLORER ---
 function ScienceExplorerTab() {
     const { user } = useUser();
@@ -54,14 +44,14 @@ function ScienceExplorerTab() {
     const { toast } = useToast();
     const [topic, setTopic] = useState('');
     const [isLearning, setIsLearning] = useState(false);
-    const [currentLesson, setCurrentLesson] = useState<LessonCard | null>(null);
+    const [currentLesson, setCurrentLesson] = useState<ScienceLesson | null>(null);
     const [showAnswer, setShowAnswer] = useState(false);
 
     // Fetch History
     const historyQuery = useMemoFirebase(() => 
         (user && firestore) ? query(collection(firestore, 'science_learning_history'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'), limit(10)) : null,
     [user, firestore]);
-    const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
+    const { data: history, isLoading: historyLoading } = useCollection<ScienceLesson>(historyQuery);
 
     const handleLearn = async () => {
         if (!topic.trim()) return;
@@ -181,7 +171,7 @@ function Leaderboard() {
       () => firestore ? query(collection(firestore, 'science_leaderboard'), orderBy('total_correct_answers', 'desc')) : null,
       [firestore]
     );
-    const { data: leaderboard, isLoading } = useCollection<GlobalLeaderboardEntry>(leaderboardQuery);
+    const { data: leaderboard, isLoading } = useCollection<ScienceLeaderboardEntry>(leaderboardQuery);
 
     if (isLoading) {
         return (
