@@ -437,7 +437,10 @@ export default function LiveClassroomPage() {
     const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]);
     const { data: liveLectures } = useCollection<Lecture>(liveQuery);
 
-    const upcomingQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled'), orderBy('scheduledFor', 'asc')) : null, [firestore]);
+    const upcomingQuery = useMemoFirebase(() => 
+        // FIX: Removed orderBy temporarily to stop the Index Crash
+        firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, 
+    [firestore]);
     const { data: upcomingLectures } = useCollection<Lecture>(upcomingQuery);
 
     // Actions
