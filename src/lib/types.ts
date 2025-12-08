@@ -1,5 +1,4 @@
 
-
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -955,6 +954,7 @@ export interface Paradox {
   explanation: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   createdAt: any;
+  targetGroup: string;
 }
 
 export interface DebateTopic {
@@ -962,6 +962,7 @@ export interface DebateTopic {
   topic: string;
   context: string; // Background info
   createdAt: any;
+  targetGroup: string;
 }
 
 export interface DebateMessage {
@@ -995,5 +996,17 @@ export interface ForumReply {
     createdAt: any;
     isAIMessage?: boolean; // True if the reply is from the AI moderator
 }
-    
 
+// --- ELA Explorer ---
+export type ElaLesson = {
+    id?: string;
+    userId: string;
+    timestamp: any;
+    title: string;
+    explanation: string;
+    example: string;
+    keyTerms: string[];
+    quizQuestion: string;
+    quizAnswer: string;
+}
+    

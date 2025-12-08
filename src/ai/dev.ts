@@ -1,5 +1,4 @@
 
-
 'use server';
 import { config } from 'dotenv';
 config();
@@ -20,4 +19,5 @@ import '@/ai/flows/think-tank.ts';
 import '@/ai/flows/generate-science-lesson.ts';
 import '@/ai/flows/generate-math-lesson.ts';
 import '@/ai/flows/forum-moderator.ts';
+import '@/ai/flows/generate-ela-lesson.ts';
     

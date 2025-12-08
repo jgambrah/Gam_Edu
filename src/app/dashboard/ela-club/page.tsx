@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -9,14 +8,15 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy, Microscope, Sparkles } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
 import { cn } from '@/lib/utils';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, query, addDoc, where, serverTimestamp, getDocs, doc, updateDoc, increment, setDoc, orderBy } from 'firebase/firestore';
+import { collection, query, addDoc, where, serverTimestamp, getDocs, doc, updateDoc, increment, setDoc, orderBy, limit } from 'firebase/firestore';
 import { ElaGrammarDrill, elaGrammarDrillSchema, ElaReadingPassage, elaReadingPassageSchema, ElaWritingChallenge, elaWritingChallengeSchema, ElaUserSubmission, Class, Student, ElaLeaderboardEntry } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -45,7 +45,137 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { getAuth } from 'firebase/auth';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { generateElaLessonAction, GeneratedElaLesson } from '@/ai/flows/generate-ela-lesson';
 
+
+// --- ELA EXPLORER ---
+interface LessonCard extends GeneratedElaLesson {
+    id?: string;
+    timestamp?: any;
+}
+
+function ElaExplorerTab() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [topic, setTopic] = useState('');
+    const [isLearning, setIsLearning] = useState(false);
+    const [currentLesson, setCurrentLesson] = useState<LessonCard | null>(null);
+    const [showAnswer, setShowAnswer] = useState(false);
+
+    // Fetch History
+    const historyQuery = useMemoFirebase(() => 
+        (user && firestore) ? query(collection(firestore, 'ela_learning_history'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'), limit(10)) : null,
+    [user, firestore]);
+    const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
+
+    const handleLearn = async () => {
+        if (!topic.trim()) return;
+        setIsLearning(true);
+        setShowAnswer(false);
+        setCurrentLesson(null);
+
+        try {
+            const result = await generateElaLessonAction({ topic, grade: 'JHS 1' });
+            
+            if (result.success && result.data) {
+                setCurrentLesson(result.data);
+                if(user && firestore) {
+                    await addDoc(collection(firestore, 'ela_learning_history'), {
+                        ...result.data,
+                        userId: user.uid,
+                        timestamp: serverTimestamp()
+                    });
+                }
+            } else {
+                toast({ variant: 'destructive', title: "AI Error", description: "Could not generate lesson." });
+            }
+        } catch (e) {
+             toast({ variant: 'destructive', title: "Error", description: "Something went wrong." });
+        } finally {
+            setIsLearning(false);
+        }
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100">
+                    <CardHeader>
+                        <CardTitle className="text-purple-800 flex items-center gap-2"><Microscope className="h-5 w-5"/> What do you want to learn today?</CardTitle>
+                        <CardDescription>Type any ELA topic (e.g. "Simile vs Metaphor", "Subject-Verb Agreement")</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex gap-2">
+                            <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Enter a topic..." className="bg-white" onKeyDown={(e) => e.key === 'Enter' && handleLearn()}/>
+                            <Button onClick={handleLearn} disabled={isLearning || !topic} className="bg-purple-600 hover:bg-purple-700 w-32">
+                                {isLearning ? <Loader2 className="h-4 w-4 animate-spin"/> : <><Sparkles className="h-4 w-4 mr-2"/> Learn</>}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {currentLesson && (
+                    <Card className="border-t-4 border-t-purple-500 shadow-md animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">{currentLesson.title}</CardTitle>
+                            <CardDescription>Micro-Lesson</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div>
+                                <h4 className="font-semibold text-purple-700 mb-1">The Concept</h4>
+                                <p className="text-slate-700 leading-relaxed">{currentLesson.explanation}</p>
+                            </div>
+                            <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                                <h4 className="font-semibold text-amber-800 mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4"/> Example</h4>
+                                <p className="text-slate-700 italic">"{currentLesson.example}"</p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-slate-700 mb-2">Key Terms</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {currentLesson.keyTerms.map((term, i) => (
+                                        <Badge key={i} variant="secondary" className="bg-slate-100">{term}</Badge>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="pt-4 border-t">
+                                <h4 className="font-semibold text-slate-700 mb-2">Quick Check</h4>
+                                <p className="mb-3">{currentLesson.quizQuestion}</p>
+                                {showAnswer ? (
+                                    <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200">
+                                        <strong>Answer:</strong> {currentLesson.quizAnswer}
+                                    </div>
+                                ) : (
+                                    <Button variant="outline" onClick={() => setShowAnswer(true)}>Reveal Answer</Button>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
+            <div>
+                 <Card className="h-full max-h-[600px] flex flex-col">
+                    <CardHeader className="pb-3"><CardTitle className="text-md">Your Learning History</CardTitle></CardHeader>
+                    <CardContent className="p-0 flex-1 min-h-0 overflow-hidden">
+                        <div className="h-full overflow-y-auto p-4 space-y-3">
+                            {historyLoading && <Skeleton className="h-20 w-full"/>}
+                            {!historyLoading && history?.length === 0 && <p className="text-sm text-muted-foreground text-center">No lessons yet.</p>}
+                            {history?.map((item) => (
+                                <div key={item.id} onClick={() => { setCurrentLesson(item); setShowAnswer(false); }} className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition-colors text-sm">
+                                    <p className="font-semibold text-slate-800">{item.title}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{item.example}</p>
+                                    <p className="text-[10px] text-slate-400 mt-1 text-right">
+                                        {item.timestamp?.toDate ? format(item.timestamp.toDate(), 'MMM d, h:mm a') : 'Just now'}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                 </Card>
+            </div>
+        </div>
+    );
+}
 
 // --- LEADERBOARD ---
 function ElaLeaderboard() {
@@ -612,7 +742,7 @@ export default function ElaClubPage() {
       </Card>
 
       <Tabs defaultValue="grammar" className="w-full">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-7" : "grid-cols-4")}>
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-8" : "grid-cols-4")}>
           <TabsTrigger value="grammar">
             <Edit className="mr-2 h-4 w-4" />
             Grammar Practice
@@ -629,6 +759,7 @@ export default function ElaClubPage() {
             <Trophy className="mr-2 h-4 w-4" />
             Leaderboard
           </TabsTrigger>
+           <TabsTrigger value="learn">ELA Explorer</TabsTrigger>
           {isTeacherOrAdmin && <TabsTrigger value="manage-drills">Manage Drills</TabsTrigger>}
           {isTeacherOrAdmin && <TabsTrigger value="manage-passages">Manage Passages</TabsTrigger>}
           {isTeacherOrAdmin && <TabsTrigger value="manage-writing">Manage Writing</TabsTrigger>}
@@ -652,6 +783,9 @@ export default function ElaClubPage() {
                     <ElaLeaderboard />
                 </CardContent>
             </Card>
+        </TabsContent>
+        <TabsContent value="learn" className="mt-6">
+            <ElaExplorerTab />
         </TabsContent>
         {isTeacherOrAdmin && (
             <TabsContent value="manage-drills">
