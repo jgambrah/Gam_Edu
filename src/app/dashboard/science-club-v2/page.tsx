@@ -9,7 +9,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, limit } from 'firebase/firestore';
 import { 
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database
+  Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
@@ -27,7 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceProblem, GlobalLeaderboardEntry, ScienceLesson } from '@/lib/types';
+import { Class, Student, ScienceProblem, ScienceLeaderboardEntry, ScienceLesson } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { cn } from '@/lib/utils';
@@ -400,8 +400,7 @@ export default function ScienceClubPageV2() {
             Science Club
           </CardTitle>
           <CardDescription>
-            Welcome to the Science Club! Practice problems, track your progress,
-            and climb the leaderboard.
+            Welcome to the Science Club! Explore topics, practice problems, and climb the leaderboard.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -479,5 +478,3 @@ export default function ScienceClubPageV2() {
     </div>
   );
 }
-
-    
