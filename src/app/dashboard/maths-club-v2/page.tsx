@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -30,6 +29,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Class, Student, MathProblem, GlobalLeaderboardEntry } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { cn } from '@/lib/utils';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
+
 
 interface LessonCard {
     id?: string;
@@ -203,10 +208,6 @@ function Leaderboard() {
                         <TableCell className="font-bold">{index + 1}</TableCell>
                         <TableCell>
                             <div className="flex items-center gap-3">
-                                {/* <Avatar>
-                                    <AvatarImage src={entry.profilePictureUrl} />
-                                    <AvatarFallback>{entry.userName.charAt(0)}</AvatarFallback>
-                                </Avatar> */}
                                 <span>{entry.userName}</span>
                             </div>
                         </TableCell>
@@ -350,7 +351,8 @@ export default function MathsClubPage() {
 
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => {
-      if (!user || !firestore || role !== 'Student') return null;
+      if (!user || !firestore) return null;
+      if (role !== 'Student') return null;
       return query(collection(firestore, 'students'), where('uid', '==', user.uid));
     }, [firestore, user, role])
   );
@@ -385,7 +387,7 @@ export default function MathsClubPage() {
       router.push(`/dashboard/maths-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
     }
   };
-  
+
   const isLoading = isUserLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
@@ -403,7 +405,7 @@ export default function MathsClubPage() {
         </CardHeader>
       </Card>
       <Tabs defaultValue="practice">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
           <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
           <TabsTrigger value="learn">Math Explorer</TabsTrigger>
           <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
@@ -428,7 +430,7 @@ export default function MathsClubPage() {
                 (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Select onValueChange={setSelectedTopic}>
+                            <Select onValueChange={setSelectedTopic} value={selectedTopic}>
                                 <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
                                 <SelectContent>
                                     {uniqueTopics.map(topic => (
@@ -436,7 +438,7 @@ export default function MathsClubPage() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Select onValueChange={setSelectedDifficulty}>
+                            <Select onValueChange={setSelectedDifficulty} value={selectedDifficulty}>
                                 <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Easy">Easy</SelectItem>
@@ -453,7 +455,7 @@ export default function MathsClubPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="learn">
+        <TabsContent value="learn" className="mt-6">
             <MathExplorerTab />
         </TabsContent>
         <TabsContent value="leaderboard">
@@ -476,3 +478,5 @@ export default function MathsClubPage() {
     </div>
   );
 }
+
+    
