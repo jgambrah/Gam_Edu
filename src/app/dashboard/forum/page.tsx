@@ -288,10 +288,15 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
 // --- Main Page ---
 export default function ForumPage() {
     const firestore = useFirestore();
+    const { user } = useAuth();
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
   
-    const threadsQuery = useMemoFirebase(() => query(collection(firestore, 'forumThreads'), orderBy('lastReplyAt', 'desc')), [firestore]);
+    const threadsQuery = useMemoFirebase(() => {
+        if (!user || !firestore) return null; // Wait for user
+        return query(collection(firestore, 'forumThreads'), orderBy('lastReplyAt', 'desc'));
+    }, [firestore, user]);
+
     const { data: threads, isLoading } = useCollection<ForumThread>(threadsQuery);
 
     if (selectedThread) {
