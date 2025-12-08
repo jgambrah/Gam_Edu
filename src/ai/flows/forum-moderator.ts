@@ -1,77 +1,84 @@
 
 'use server';
-/**
- * @fileOverview AI flows for forum moderation.
- */
 
-import { ai } from '@/ai/genkit';
+import { generate } from '@genkit-ai/ai';
+import { gemini15Flash } from '@genkit-ai/googleai';
 import { z } from 'zod';
 
-// --- 1. Content Safety Validation ---
-const ValidateContentInputSchema = z.object({
-  content: z.string().describe('The user-submitted text to be validated.'),
+// --- SCHEMA 1: SAFETY CHECK ---
+const SafetySchema = z.object({
+  isSafe: z.boolean(),
+  reason: z.string().optional(),
 });
 
-const ValidateContentOutputSchema = z.object({
-  isSafe: z.boolean().describe('Whether the content is considered safe and appropriate for a school forum.'),
-  reason: z.string().optional().describe('A brief explanation if the content is not safe.'),
-});
+export async function validateContentSafety(input: { content: string }) {
+  try {
+    const prompt = `
+      Analyze the following text for a school forum.
+      Text: "${input.content}"
+      
+      Is this content safe, appropriate, and free of bullying/hate speech?
+      Return strictly JSON.
+    `;
 
-export async function validateContentSafety(input: z.infer<typeof ValidateContentInputSchema>): Promise<z.infer<typeof ValidateContentOutputSchema>> {
-  const safetyPrompt = ai.definePrompt({
-    name: 'forumSafetyPrompt',
-    input: { schema: ValidateContentInputSchema },
-    output: { schema: ValidateContentOutputSchema },
-    prompt: `You are a content moderator for a school forum. Analyze the following text for any of the following: profanity, bullying, harassment, hate speech, or other inappropriate content.
+    const response = await generate({
+      model: gemini15Flash,
+      prompt: prompt,
+      output: { schema: SafetySchema },
+    });
 
-You must determine if the content is safe for the forum.
+    const data = response.output();
+    if (!data) return { isSafe: true, reason: '' }; // Default to safe if AI fails
 
-Content:
-"{{{content}}}"
-
-Respond with only a JSON object.`,
-  });
-
-  const { output } = await safetyPrompt(input);
-  return output!;
+    return data;
+  } catch (error) {
+    console.error("AI Safety Check Error:", error);
+    return { isSafe: true, reason: '' }; // Fail open to avoid blocking users
+  }
 }
 
-
-// --- 2. AI Moderator Comment Generation ---
-const GenerateModeratorCommentInputSchema = z.object({
-  threadTitle: z.string(),
-  threadContent: z.string(),
-  previousReplies: z.string().describe('A summary or list of previous replies in the thread.'),
+// --- SCHEMA 2: MODERATOR COMMENT ---
+const ModeratorSchema = z.object({
+  comment: z.string(),
 });
 
-const GenerateModeratorCommentOutputSchema = z.object({
-  comment: z.string().describe('A helpful, guiding comment from the AI moderator to encourage discussion, clarify a point, or ask a follow-up question.'),
-});
+export async function generateAIModeratorComment(input: { 
+  threadTitle: string; 
+  threadContent: string; 
+  previousReplies: string; 
+}) {
+  try {
+    const prompt = `
+      You are an AI Moderator in a school discussion forum. Your goal is to facilitate healthy discussion.
+      
+      Thread Title: "${input.threadTitle}"
+      Original Post: "${input.threadContent}"
+      
+      Recent Replies:
+      ${input.previousReplies}
+      
+      Task:
+      Based on the last reply, generate a short, encouraging, and constructive comment.
+      - If the student is correct, praise them.
+      - If the discussion is stalling, ask a follow-up question.
+      - If there is a disagreement, mediate gently.
+      - Keep it under 2 sentences.
+      
+      Output strictly JSON.
+    `;
 
-export async function generateAIModeratorComment(input: z.infer<typeof GenerateModeratorCommentInputSchema>): Promise<z.infer<typeof GenerateModeratorCommentOutputSchema>> {
-  const moderatorPrompt = ai.definePrompt({
-    name: 'forumModeratorCommentPrompt',
-    input: { schema: GenerateModeratorCommentInputSchema },
-    output: { schema: GenerateModeratorCommentOutputSchema },
-    prompt: `You are an AI Discussion Moderator in a school forum. Your goal is to keep conversations productive, on-topic, and engaging.
+    const response = await generate({
+      model: gemini15Flash,
+      prompt: prompt,
+      output: { schema: ModeratorSchema },
+    });
 
-A user has created a thread:
-Title: {{{threadTitle}}}
-Content: {{{threadContent}}}
+    const data = response.output();
+    if (!data) throw new Error("No comment generated");
 
-The conversation so far:
-{{{previousReplies}}}
-
-Based on this, generate a helpful and encouraging comment. You could:
-- Ask a thought-provoking follow-up question.
-- Gently steer the conversation back on topic if it's drifting.
-- Provide a neutral, factual point to consider.
-- Encourage students to explore different perspectives.
-
-Your comment should be brief, friendly, and add value to the discussion.`,
-  });
-
-  const { output } = await moderatorPrompt(input);
-  return output!;
+    return data;
+  } catch (error) {
+    console.error("AI Moderator Error:", error);
+    throw error;
+  }
 }
-
