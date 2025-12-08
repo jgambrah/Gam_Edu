@@ -550,7 +550,7 @@ export default function GradebookManager() {
                 )}
             </TabsContent>
 
-            <TabsContent value="promote">
+            <TabsContent value="promotion">
                 {isDirector && <PromoteStudentsTab classes={classes || []} />}
             </TabsContent>
         </Tabs>
