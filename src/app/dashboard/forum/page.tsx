@@ -17,6 +17,14 @@ import { Loader2, Plus, MessageSquare, ArrowLeft, Bot, Shield, Send } from 'luci
 import { format } from 'date-fns';
 import { Switch } from '@/components/ui/switch';
 import { validateContentSafety, generateAIModeratorComment } from '@/ai/flows/forum-moderator';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 // --- Create Thread Form ---
 function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
@@ -49,6 +57,7 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
                 createdAt: serverTimestamp(),
                 aiModeratorEnabled: aiModerator,
                 replyCount: 0,
+                lastReplyAt: serverTimestamp(),
             });
             toast({ title: 'Thread Created', description: 'Your discussion topic is now live.' });
             setOpen(false);
@@ -203,7 +212,7 @@ export default function ForumPage() {
                             <TableCell className="font-medium">{thread.title}</TableCell>
                             <TableCell>{thread.createdBy.name}</TableCell>
                             <TableCell>{thread.replyCount || 0}</TableCell>
-                            <TableCell className="text-xs text-muted-foreground">{thread.lastReplyAt ? format(thread.lastReplyAt.toDate(), 'PPP p') : format(thread.createdAt.toDate(), 'PPP p')}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{thread.lastReplyAt ? format(thread.lastReplyAt.toDate(), 'PPP p') : (thread.createdAt ? format(thread.createdAt.toDate(), 'PPP p') : 'N/A')}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
