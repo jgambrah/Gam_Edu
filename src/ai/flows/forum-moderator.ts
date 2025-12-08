@@ -1,8 +1,7 @@
 
 'use server';
 
-import { generate } from '@genkit-ai/ai';
-import { googleAI } from '@genkit-ai/google-genai';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 // --- SCHEMA 1: SAFETY CHECK ---
@@ -21,16 +20,14 @@ export async function validateContentSafety(input: { content: string }) {
       Return strictly JSON.
     `;
 
-    const response = await generate({
-      model: googleAI.model('gemini-1.5-flash-latest'),
+    const { output } = await ai.generate({
       prompt: prompt,
       output: { schema: SafetySchema },
     });
 
-    const data = response.output();
-    if (!data) return { isSafe: true, reason: '' }; // Default to safe if AI fails
+    if (!output) return { isSafe: true, reason: '' }; // Default to safe if AI fails
 
-    return data;
+    return output;
   } catch (error) {
     console.error("AI Safety Check Error:", error);
     return { isSafe: true, reason: '' }; // Fail open to avoid blocking users
@@ -67,16 +64,14 @@ export async function generateAIModeratorComment(input: {
       Output strictly JSON.
     `;
 
-    const response = await generate({
-      model: googleAI.model('gemini-1.5-flash-latest'),
+    const { output } = await ai.generate({
       prompt: prompt,
       output: { schema: ModeratorSchema },
     });
 
-    const data = response.output();
-    if (!data) throw new Error("No comment generated");
+    if (!output) throw new Error("No comment generated");
 
-    return data;
+    return output;
   } catch (error) {
     console.error("AI Moderator Error:", error);
     throw error;
