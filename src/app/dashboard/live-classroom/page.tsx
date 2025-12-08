@@ -28,14 +28,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
+import type { Class, Student } from '@/lib/types';
 
 // --- TYPES ---
 type Lecture = {
     id: string;
     title: string;
     description?: string;
-    targetGroup?: string; // e.g. "JHS 1"
-    scheduledFor?: any; // Timestamp
+    classId?: string; 
+    className?: string; 
+    scheduledFor?: any; 
     teacherName: string;
     teacherId: string;
     status: 'scheduled' | 'live' | 'ended';
@@ -58,7 +60,7 @@ type ChatMessage = {
 };
 
 // --- COMPONENT: Schedule Class Dialog ---
-function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+function ScheduleClassDialog({ open, setOpen, classes }: { open: boolean, setOpen: (v: boolean) => void, classes: Class[] }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -66,25 +68,26 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [targetGroup, setTargetGroup] = useState('');
+    const [targetClassId, setTargetClassId] = useState('');
     const [scheduledDate, setScheduledDate] = useState('');
     const [scheduledTime, setScheduledTime] = useState('');
 
     const handleSchedule = async () => {
-        if (!user || !title || !scheduledDate || !scheduledTime) {
+        if (!user || !title || !scheduledDate || !scheduledTime || !targetClassId) {
             toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
             return;
         }
 
         setIsSubmitting(true);
         try {
-            // Combine Date and Time
             const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+            const selectedClass = classes.find(c => c.id === targetClassId);
 
             await addDoc(collection(firestore!, 'lectures'), {
                 title,
                 description,
-                targetGroup: targetGroup || 'General',
+                classId: targetClassId,
+                className: selectedClass?.name || 'Unknown Class',
                 scheduledFor: scheduledDateTime,
                 teacherName: user.displayName || user.email?.split('@')[0],
                 teacherId: user.uid,
@@ -97,8 +100,7 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
 
             toast({ title: "Class Scheduled", description: "Your lecture has been added to the calendar." });
             setOpen(false);
-            // Reset
-            setTitle(''); setDescription(''); setTargetGroup('');
+            setTitle(''); setDescription(''); setTargetClassId('');
         } catch (e: any) {
             toast({ variant: 'destructive', title: "Error", description: e.message });
         } finally {
@@ -122,19 +124,26 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
                         <Label>Description</Label>
                         <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="What will be covered?" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         <div className="space-y-2">
-                            <Label>Target Audience</Label>
-                            <Input value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="e.g. JHS 2" />
+                            <Label>Target Class *</Label>
+                            <Select onValueChange={setTargetClassId}>
+                                <SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger>
+                                <SelectContent>
+                                    {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
                         </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>Date *</Label>
                             <Input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
                         </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Time *</Label>
-                        <Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
+                        <div className="space-y-2">
+                            <Label>Time *</Label>
+                            <Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
+                        </div>
                     </div>
                 </div>
                 <DialogFooter>
@@ -422,7 +431,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 
 // --- MAIN PAGE: LOBBY ---
 export default function LiveClassroomPage() {
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -432,16 +441,28 @@ export default function LiveClassroomPage() {
     const [activeTab, setActiveTab] = useState('live');
 
     const isTeacher = ['Teacher', 'Administrator', 'Director'].includes(role);
+    
+    // Data Fetching
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore, role]));
+    const studentClassId = studentData?.[0]?.classId;
+    
+    const baseLecturesQuery = useMemoFirebase(() => {
+        if (!user || !firestore) return null;
+        if (isTeacher) { // Teachers and admins see all
+            return collection(firestore, 'lectures');
+        }
+        if (role === 'Student' && studentClassId) { // Students see only their class
+            return query(collection(firestore, 'lectures'), where('classId', '==', studentClassId));
+        }
+        return null; // Don't query if a student has no classId
+    }, [user, firestore, role, isTeacher, studentClassId]);
 
-    // Queries
-    const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]);
-    const { data: liveLectures } = useCollection<Lecture>(liveQuery);
+    const { data: lectures, isLoading: isLoadingLectures } = useCollection<Lecture>(baseLecturesQuery);
 
-    const upcomingQuery = useMemoFirebase(() => 
-        // FIX: Removed orderBy temporarily to stop the Index Crash
-        firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, 
-    [firestore]);
-    const { data: upcomingLectures } = useCollection<Lecture>(upcomingQuery);
+    const liveLectures = useMemo(() => lectures?.filter(l => l.status === 'live'), [lectures]);
+    const upcomingLectures = useMemo(() => lectures?.filter(l => l.status === 'scheduled').sort((a,b) => a.scheduledFor.toDate() - b.scheduledFor.toDate()), [lectures]);
+
 
     // Actions
     const handleStartScheduled = async (id: string) => {
@@ -457,10 +478,13 @@ export default function LiveClassroomPage() {
         }
     };
 
+    if (isUserLoading || isLoadingClasses || isLoadingStudent) {
+        return <div className="flex h-full w-full items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>
+    }
+
     // If joined, show classroom
     if (activeLectureId) {
-        // Try to find in live first, then upcoming (in case it just switched)
-        const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
+        const currentLecture = lectures?.find(l => l.id === activeLectureId);
         if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
     }
 
@@ -473,7 +497,7 @@ export default function LiveClassroomPage() {
                         <p className="text-slate-400">Interactive virtual learning environment.</p>
                     </div>
                     {isTeacher && (
-                        <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                        <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white" disabled={!classes || classes.length === 0}>
                             <CalendarIcon className="mr-2 h-4 w-4"/> Schedule Class
                         </Button>
                     )}
@@ -489,13 +513,13 @@ export default function LiveClassroomPage() {
                 {/* LIVE TAB */}
                 <TabsContent value="live" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
+                        {isLoadingLectures ? <Skeleton className="h-40 w-full"/> : liveLectures?.length === 0 ? <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p> : null}
                         {liveLectures?.map(l => (
                             <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
                                 <CardHeader>
                                     <div className="flex justify-between items-start">
                                         <Badge className="bg-red-100 text-red-700 hover:bg-red-200">LIVE</Badge>
-                                        <Badge variant="outline">{l.targetGroup}</Badge>
+                                        <Badge variant="outline">{l.className || l.classId}</Badge>
                                     </div>
                                     <CardTitle className="mt-2">{l.title}</CardTitle>
                                     <CardDescription>Host: {l.teacherName}</CardDescription>
@@ -511,7 +535,7 @@ export default function LiveClassroomPage() {
                 {/* UPCOMING TAB */}
                 <TabsContent value="upcoming" className="mt-6">
                      <div className="space-y-4">
-                        {upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
+                        {isLoadingLectures ? <Skeleton className="h-40 w-full"/> : upcomingLectures?.length === 0 ? <p className="text-muted-foreground text-center py-8">No classes scheduled.</p> : null}
                         {upcomingLectures?.map(l => (
                             <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
                                 <div className="flex gap-4 items-center">
@@ -524,24 +548,23 @@ export default function LiveClassroomPage() {
                                         <div className="flex gap-2 text-sm text-muted-foreground">
                                             <span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span>
                                             <span>•</span>
-                                            <span>{l.targetGroup}</span>
+                                            <span>{l.className || l.classId}</span>
                                         </div>
                                     </div>
                                 </div>
-                                {isTeacher ? (
+                                {isTeacher && user?.uid === l.teacherId && l.status === 'scheduled' && (
                                     <Button onClick={() => handleStartScheduled(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
                                         Start Now
                                     </Button>
-                                ) : (
-                                    <Button disabled variant="secondary" size="sm">Not Started</Button>
                                 )}
+                                {role === 'Student' && <Button disabled variant="secondary" size="sm">Not Started</Button>}
                             </div>
                         ))}
                      </div>
                 </TabsContent>
             </Tabs>
 
-            <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
+            {classes && <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} classes={classes} />}
         </div>
     );
 }
