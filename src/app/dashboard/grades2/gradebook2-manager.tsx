@@ -1,11 +1,12 @@
+
 'use client';
 
-import { Suspense, useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Added useUser
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { 
-  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText 
+  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -19,20 +20,19 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
-import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-// import { GenerateReportCard } from './report-card-pdf'; // (We will build this next)
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
-    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' }; // A (80-100)
-    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' }; // B (70-79)
-    if (percentage >= 60) return { grade: 'C', remark: 'Good' };      // C (60-69)
-    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };      // D (50-59)
-    return { grade: 'F', remark: 'Fail' };                            // F (0-49)
+    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
+    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
+    if (percentage >= 60) return { grade: 'C', remark: 'Good' };
+    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
+    return { grade: 'F', remark: 'Fail' };
 }
 
 // --- SUB-COMPONENT: Student Academics Detail ---
@@ -47,7 +47,7 @@ function StudentGradesDetail({
     rank: number;
     totalStudents: number;
 }) {
-    // 1. Group by Subject
+    // Group by Subject
     const subjectGrades = useMemo(() => {
         const subjects: Record<string, { total: number, max: number, count: number }> = {};
         
@@ -74,7 +74,7 @@ function StudentGradesDetail({
         <div className="space-y-6 p-4">
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-indigo-50 border-indigo-100">
+                <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
                     <CardContent className="p-4 flex items-center gap-3">
                         <Trophy className="h-8 w-8 text-indigo-600"/>
                         <div>
@@ -83,7 +83,7 @@ function StudentGradesDetail({
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-emerald-50 border-emerald-100">
+                <Card className="bg-emerald-50 border-emerald-100 shadow-sm">
                     <CardContent className="p-4 flex items-center gap-3">
                         <TrendingUp className="h-8 w-8 text-emerald-600"/>
                         <div>
@@ -92,9 +92,9 @@ function StudentGradesDetail({
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-slate-200">
+                <Card className="bg-white border-slate-200 shadow-sm">
                      <CardContent className="p-4 flex flex-col justify-center h-full">
-                        <Button variant="outline" className="w-full gap-2">
+                        <Button variant="outline" className="w-full gap-2 hover:bg-slate-50">
                             <Printer className="h-4 w-4"/> Print Report Card
                         </Button>
                      </CardContent>
@@ -126,14 +126,14 @@ function StudentGradesDetail({
                 </Table>
             </div>
             
-            {/* Raw Assessments List (Collapsible or Bottom) */}
+            {/* Raw Assessments List */}
             <div className="pt-4 border-t">
-                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => (
-                        <div key={a.id} className="flex justify-between text-sm py-1 px-2 hover:bg-slate-50 rounded">
+                        <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
                             <span>{a.assessmentName} <span className="text-xs text-slate-400">({a.assessmentType})</span></span>
-                            <span className="font-mono">{a.score}/{a.maxScore}</span>
+                            <span className="font-mono font-medium">{a.score}/{a.maxScore}</span>
                         </div>
                     ))}
                 </div>
@@ -144,10 +144,9 @@ function StudentGradesDetail({
 
 // --- MAIN PAGE ---
 export default function GradebookManager() {
-  const { user } = useAuth();
-  const { role } = useRole();
+  const { user, isUserLoading } = useUser(); // Used for loading state
+  const { role, isRoleLoading } = useRole();
   const firestore = useFirestore();
-  const { toast } = useToast();
 
   // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
@@ -155,26 +154,37 @@ export default function GradebookManager() {
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
 
-  // 1. Fetch Classes (Teachers only see theirs)
-  const teacherClassesQuery = useMemoFirebase(() => {
-      if (!firestore || !user) return null;
-      if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-  }, [firestore, user, role]);
+  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+
+  // 1. Fetch Classes (Correctly handled for both Admin and Teacher)
+  const classesQuery = useMemoFirebase(() => {
+      if (!firestore || !user || !isStaff) return null;
+      
+      // Admin sees ALL classes
+      if (role === 'Administrator' || role === 'Director') {
+          return query(collection(firestore, 'classes'));
+      }
+      
+      // Teachers only see classes assigned to them
+      if (role === 'Teacher') {
+          return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+      }
+      return null;
+  }, [firestore, user, role, isStaff]);
   
-  const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(teacherClassesQuery);
+  const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
   // 2. Fetch Students
   const studentsQuery = useMemoFirebase(() => 
-    selectedClassId ? query(collection(firestore!, 'students'), where('classId', '==', selectedClassId)) : null,
+    (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
   // 3. Fetch Assessments
   const assessmentsQuery = useMemoFirebase(() => {
-    if (!selectedClassId) return null;
+    if (!selectedClassId || !firestore) return null;
     return query(
-        collection(firestore!, 'assessments'),
+        collection(firestore, 'assessments'),
         where('classId', '==', selectedClassId),
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
@@ -182,9 +192,9 @@ export default function GradebookManager() {
   }, [firestore, selectedClassId, selectedYear, selectedTerm]);
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-  // 4. Fetch Financials (For Balance Checking)
+  // 4. Fetch Financials
   const financialRecordsQuery = useMemoFirebase(() => 
-    selectedClassId ? query(collection(firestore!, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
+    (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
@@ -214,13 +224,18 @@ export default function GradebookManager() {
     students.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const paid = myRecords.reduce((acc, r) => acc + r.amountPaid, 0);
+        const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
         financials[student.uid] = { balance: billed - paid };
     });
     return financials;
   }, [students, financialRecords]);
 
-  const isLoading = isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
+  // Global Loading State
+  const isLoading = isUserLoading || isRoleLoading || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
+
+  if (!isStaff && !isLoading) {
+      return <div className="p-8 text-center text-red-500">Access Denied. Staff only.</div>;
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -233,7 +248,11 @@ export default function GradebookManager() {
                 </div>
                 {/* ACTION BUTTONS */}
                 <div className="flex gap-2">
-                    <Button variant={activeForm === 'grade' ? 'secondary' : 'outline'} onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} disabled={!selectedClassId}>
+                    <Button 
+                        variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
+                        onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
+                        disabled={!selectedClassId}
+                    >
                         <PlusCircle className="mr-2 h-4 w-4" /> Enter Grades
                     </Button>
                 </div>
@@ -259,8 +278,12 @@ export default function GradebookManager() {
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
              <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
-                <SelectTrigger className="bg-white"><SelectValue placeholder="Select Class..." /></SelectTrigger>
-                <SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                <SelectTrigger className="bg-white">
+                    <SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} />
+                </SelectTrigger>
+                <SelectContent>
+                    {teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
              </Select>
           </div>
         </CardContent>
@@ -356,8 +379,8 @@ export default function GradebookManager() {
                 ) : (
                     <div className="text-center py-16">
                         <FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/>
-                        <p className="text-muted-foreground">No students or records found.</p>
-                        <p className="text-xs text-slate-400">Try selecting a different term or class.</p>
+                        <p className="text-muted-foreground">No students found.</p>
+                        <p className="text-xs text-slate-400">Select a different class or add students.</p>
                     </div>
                 )}
             </CardContent>
