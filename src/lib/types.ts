@@ -1,4 +1,5 @@
 
+
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -1021,4 +1022,21 @@ export type ScienceLesson = {
     keyTerms: string[];
     quizQuestion: string;
     quizAnswer: string;
+}
+
+// --- Direct Messages ---
+export interface ChatMetadata {
+    id: string;
+    participants: string[];
+    participantDetails: Record<string, { name: string; role: string }>;
+    lastMessage: string;
+    lastMessageTime: any;
+    unreadCount: Record<string, number>;
+}
+
+export interface Message {
+    id: string;
+    senderId: string;
+    text: string;
+    createdAt: any;
 }

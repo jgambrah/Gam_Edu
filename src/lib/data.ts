@@ -189,6 +189,12 @@ export const navItems: NavItem[] = [
             icon: MessageSquare,
             roles: 'all',
         },
+        {
+            path: '/dashboard/messages',
+            title: 'Direct Messages',
+            icon: MessageCircle,
+            roles: 'all',
+        },
     ]
   },
   {
