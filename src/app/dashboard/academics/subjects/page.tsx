@@ -20,6 +20,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 // --- TYPES ---
 type Staff = {
     uid: string;
+    id: string; // Add id to the type, as it's provided by useCollection
     firstName: string;
     lastName: string;
 };
@@ -108,13 +109,13 @@ function SubjectForm({
                 {allTeachers.length === 0 && <p className="text-sm text-muted-foreground text-center">No teachers found.</p>}
                 {allTeachers.map((teacher) => (
                   <FormField
-                    key={teacher.uid}
+                    key={teacher.id || teacher.uid}
                     control={form.control}
                     name="teacherIds"
                     render={({ field }) => {
                       return (
                         <FormItem
-                          key={teacher.uid}
+                          key={teacher.id || teacher.uid}
                           className="flex flex-row items-center space-x-3 space-y-0 py-2 hover:bg-slate-50 rounded px-2"
                         >
                           <FormControl>
