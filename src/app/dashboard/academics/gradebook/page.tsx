@@ -25,6 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox'; // Ensure you have this or use standard input
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
+import { GenerateReportCard } from './report-card-pdf';
 
 
 // Types
@@ -226,12 +227,16 @@ function StudentGradesDetail({
     student, 
     assessments, 
     rank, 
-    totalStudents 
+    totalStudents,
+    term,
+    year 
 }: { 
     student: Student; 
     assessments: Assessment[];
     rank: number;
     totalStudents: number;
+    term: string;
+    year: string;
 }) {
     // 1. Group by Subject
     const subjectGrades = useMemo(() => {
@@ -280,9 +285,14 @@ function StudentGradesDetail({
                 </Card>
                 <Card className="bg-white border-slate-200 shadow-sm">
                      <CardContent className="p-4 flex flex-col justify-center h-full">
-                        <Button variant="outline" className="w-full gap-2 hover:bg-slate-50">
-                            <Printer className="h-4 w-4"/> Print Report Card
-                        </Button>
+                        <GenerateReportCard
+                            student={student}
+                            assessments={assessments || []}
+                            year={year}
+                            term={term}
+                            rank={rank}
+                            totalStudents={totalStudents}
+                        />
                      </CardContent>
                 </Card>
             </div>
@@ -521,7 +531,14 @@ export default function GradebookManager() {
                                                         </TabsList>
                                                     </div>
                                                     <TabsContent value="academics" className="mt-0">
-                                                        <StudentGradesDetail student={student} assessments={assessments || []} rank={rank} totalStudents={rankedStudents.length}/>
+                                                        <StudentGradesDetail 
+                                                            student={student} 
+                                                            assessments={assessments || []} 
+                                                            rank={rank} 
+                                                            totalStudents={rankedStudents.length}
+                                                            term={selectedTerm}
+                                                            year={selectedYear}
+                                                        />
                                                     </TabsContent>
                                                     <TabsContent value="financials" className="mt-0 p-6">
                                                         <div className="flex items-center gap-4 p-4 bg-white border rounded-lg shadow-sm max-w-md">
