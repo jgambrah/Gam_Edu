@@ -4,7 +4,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore'; 
+import { initializeFirestore, getFirestore, Firestore, persistentLocalCache } from 'firebase/firestore'; 
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Global variables to hold instances (Prevents re-initialization crashes in Next.js)
@@ -25,17 +25,26 @@ export function initializeFirebase() {
         storageBucket: "studio-525105839-159e4.firebasestorage.app",
     });
 
-    // 2. CRITICAL FIX: Force Long Polling
+    // 2. CRITICAL FIX: Force Long Polling & enable persistent cache
     // This fixes "Internal Assertion Failed" and random disconnects
     try {
       firestore = initializeFirestore(firebaseApp, {
-        experimentalForceLongPolling: true, 
+        experimentalForceLongPolling: true,
+        localCache: persistentLocalCache(/*settings*/{}),
       });
       console.log("🔥 Firestore initialized with Long Polling (Stable Mode)");
     } catch (e) {
-      console.warn("Firestore init warning:", e);
-      // Fallback if special init fails
-      firestore = getFirestore(firebaseApp);
+      console.warn("Firestore initialization with persistence failed, falling back:", e);
+      try {
+        // Fallback without persistence if the first attempt fails
+        firestore = initializeFirestore(firebaseApp, {
+          experimentalForceLongPolling: true,
+        });
+      } catch (fallbackError) {
+          console.error("Critical Firestore initialization failed:", fallbackError);
+          // If even the basic init fails, get the standard instance
+          firestore = getFirestore(firebaseApp);
+      }
     }
 
   } else {
