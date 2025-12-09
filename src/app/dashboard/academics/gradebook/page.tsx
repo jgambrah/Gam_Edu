@@ -6,7 +6,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { 
-  TrendingUp, User, PlusCircle, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare 
+  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -196,37 +196,47 @@ function StudentGradesDetail({
     term: string;
     subjectsList: Subject[] | undefined;
 }) {
-    // Group by Subject
+    // 1. Create a Lookup Map for Subjects (ID -> Name)
+    // This ensures we can instantly find the name "Mathematics" if we have the ID "8hAh..."
+    const subjectMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        if (subjectsList) {
+            subjectsList.forEach(s => {
+                map[s.id] = s.name; // Map ID to Name
+                // Handle case where name might be stored as ID by accident in legacy data
+                if (s.code) map[s.code] = s.name; 
+            });
+        }
+        return map;
+    }, [subjectsList]);
+
+    // 2. Group by Subject
     const subjectGrades = useMemo(() => {
         const subjects: Record<string, { total: number, max: number, count: number }> = {};
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
-            // --- FIX: Name Resolution Logic ---
+            // --- FIX: AGGRESSIVE NAME RESOLUTION ---
+            // Priority 1: Check if assessment has a dedicated subjectId and look it up in the map
+            // Priority 2: Check if the 'subject' field contains an ID that exists in our map
+            // Priority 3: Use the 'subject' field as text (Legacy data like "Mathematics")
+            // Fallback: "Unknown Subject"
+            
             let displaySub = 'General';
 
-            // Strategy 1: Try finding by the specific subjectId field
-            const foundByCode = subjectsList?.find(s => s.id === a.subjectId);
-
-            if (foundByCode) {
-                displaySub = foundByCode.name;
+            if (a.subjectId && subjectMap[a.subjectId]) {
+                displaySub = subjectMap[a.subjectId];
+            } else if (a.subject && subjectMap[a.subject]) {
+                // This catches cases where the ID was saved into the 'subject' string field
+                displaySub = subjectMap[a.subject];
             } else if (a.subject) {
-                // Strategy 2: Check if the 'subject' text field is actually an ID in our list
-                // (This fixes the issue where IDs like 'zO7lg...' were saved as names)
-                const foundByNameID = subjectsList?.find(s => s.id === a.subject);
-                
-                if (foundByNameID) {
-                    displaySub = foundByNameID.name;
-                } else {
-                    // Strategy 3: It's just a text string (legacy data), use it as is
-                    displaySub = a.subject;
-                }
+                // If it's not an ID in our map, assume it's a raw name
+                displaySub = a.subject;
             }
-            // ----------------------------------
-            
+
+            // Grouping logic
             if (!subjects[displaySub]) subjects[displaySub] = { total: 0, max: 0, count: 0 };
-            
             subjects[displaySub].total += a.score || 0;
             subjects[displaySub].max += a.maxScore || 0;
             subjects[displaySub].count++;
@@ -236,7 +246,7 @@ function StudentGradesDetail({
             const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
             return { name, percentage, ...getGrade(percentage) };
         });
-    }, [assessments, student.uid, subjectsList]);
+    }, [assessments, student.uid, subjectMap]);
 
     const overallAverage = subjectGrades.length > 0 
         ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
@@ -310,12 +320,11 @@ function StudentGradesDetail({
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => {
-                        // FIX: Logic for displaying name in the detailed list
-                        let displaySub = a.subject || 'General';
-                        
-                        // Check if ID matches a known subject
-                        const foundSub = subjectsList?.find(s => s.id === a.subjectId || s.id === a.subject);
-                        if (foundSub) displaySub = foundSub.name;
+                        // FIX: Same resolution logic for the detailed list
+                        let displaySub = 'General';
+                        if (a.subjectId && subjectMap[a.subjectId]) displaySub = subjectMap[a.subjectId];
+                        else if (a.subject && subjectMap[a.subject]) displaySub = subjectMap[a.subject];
+                        else if (a.subject) displaySub = a.subject;
 
                         return (
                             <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
