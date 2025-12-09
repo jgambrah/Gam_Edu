@@ -126,7 +126,7 @@ const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
                 const g = 250 * (i / bufferLength);
                 const b = 50;
                 
-                canvasCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                canvasCtx.fillStyle = `rgb(${'${r}'}, ${'${g}'}, ${'${b}'})`;
                 canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
                 
                 x += barWidth + 2;
@@ -320,57 +320,6 @@ function BreakoutSetupDialog({ open, setOpen, onStart }: { open: boolean, setOpe
     );
 }
 
-// --- COMPONENT: Schedule Class Dialog ---
-function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [targetGroup, setTargetGroup] = useState('');
-    const [scheduledDate, setScheduledDate] = useState('');
-    const [scheduledTime, setScheduledTime] = useState('');
-
-    const handleSchedule = async () => {
-        if (!user || !title || !scheduledDate || !scheduledTime) {
-            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
-            return;
-        }
-        setIsSubmitting(true);
-        try {
-            const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
-            await addDoc(collection(firestore!, 'lectures'), {
-                title, description, targetGroup: targetGroup || 'General',
-                scheduledFor: scheduledDateTime, teacherName: user.displayName || user.email?.split('@')[0],
-                teacherId: user.uid, status: 'scheduled', createdAt: serverTimestamp(),
-                slides: [], currentSlide: 0, isPresentationMode: false
-            });
-            toast({ title: "Class Scheduled" });
-            setOpen(false); setTitle(''); setDescription(''); setTargetGroup('');
-        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); } 
-        finally { setIsSubmitting(false); }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader><DialogTitle>Schedule a Class</DialogTitle><DialogDescription>Set up a future live session.</DialogDescription></DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="space-y-2"><Label>Topic *</Label><Input value={title} onChange={e => setTitle(e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Description</Label><Textarea value={description} onChange={e => setDescription(e.target.value)} /></div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Target Audience</Label><Input value={targetGroup} onChange={e => setTargetGroup(e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Date *</Label><Input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} /></div>
-                    </div>
-                    <div className="space-y-2"><Label>Time *</Label><Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} /></div>
-                </div>
-                <DialogFooter><Button onClick={handleSchedule} disabled={isSubmitting} className="w-full">{isSubmitting ? <Loader2 className="mr-2 animate-spin"/> : "Schedule"}</Button></DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
 // --- COMPONENT: ACTIVE CLASSROOM ---
 function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () => void }) {
     const { user } = useUser();
@@ -464,7 +413,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             // @ts-ignore - for cross-browser compatibility
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                toast({ variant: 'destructive', title: "Not Supported", description: "Live captions require a Chromium-based browser like Chrome or Edge." });
+                toast({ variant: "destructive", title: "Not Supported", description: "Live captions require a Chromium-based browser like Chrome or Edge." });
                 return;
             }
             
@@ -557,7 +506,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 } else {
                     const m = Math.floor(diff / 60000);
                     const s = Math.floor((diff % 60000) / 1000);
-                    setBreakoutTimeLeft(`${m}:${s < 10 ? '0' : ''}${s}`);
+                    setBreakoutTimeLeft(`${'${m}'}:${'${s}' < 10 ? '0' : ''}${'${s}'}`);
                 }
             }, 1000);
             return () => clearInterval(interval);
@@ -621,7 +570,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 console.error("Screen Share Error Name:", err.name);
                 console.error("Screen Share Error Message:", err.message);
                 
-                const userDenied = err.message.includes('Permission denied by user');
+                const userDenied = err.message.includes('Permission denied');
 
                 if (err.name === 'NotAllowedError') {
                     toast({ 
@@ -683,8 +632,27 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     };
     const handleUploadSlides = async (e: React.ChangeEvent<HTMLInputElement>) => { /* ... */ };
     const changeSlide = async (direction: 'next' | 'prev') => { /* ... */ };
-    const handleGeneratePoll = async () => { /* ... */ };
-    const handleExplainConcept = async () => { /* ... */ };
+    const handleGeneratePoll = async () => {
+        if(!aiInput.trim()) return;
+        setIsProcessingAi(true);
+        try {
+            const res = await generateLivePollAction(aiInput);
+            if(res.success) {
+                await addDoc(collection(firestore!, 'lectures', lecture.id, 'messages'), {
+                    text: "Quick Poll: " + res.data.question, senderName: "AI Co-Pilot", senderId: "ai", isPoll: true, pollData: res.data, createdAt: serverTimestamp()
+                });
+                toast({ title: "Poll Posted" }); setIsAiOpen(false); setAiInput('');
+            }
+        } catch(e) { toast({ variant: 'destructive', title: "Error" }); } finally { setIsProcessingAi(false); }
+    };
+    const handleExplainConcept = async () => {
+        if(!aiInput.trim()) return;
+        setIsProcessingAi(true);
+        try {
+            const res = await explainConceptAction(aiInput);
+            if(res.success) { setAiResponse(res.data); }
+        } catch(e) { toast({ variant: 'destructive', title: "Error" }); } finally { setIsProcessingAi(false); }
+    };
 
     return (
         <div className="flex flex-col h-[calc(100vh-100px)] bg-black rounded-xl overflow-hidden relative">
@@ -709,7 +677,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 <div className={`flex-1 relative bg-slate-900 flex items-center justify-center transition-all duration-300 ${showChat || showParticipants ? 'mr-[350px]' : ''}`}>
                     {/* Reactions & Captions */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
-                        {activeReactions.map(r => <div key={r.id} className="absolute bottom-20 text-5xl animate-float-up opacity-0" style={{ left: `${r.left}%` }}>{r.emoji}</div>)}
+                        {activeReactions.map(r => <div key={r.id} className="absolute bottom-20 text-5xl animate-float-up opacity-0" style={{ left: `${'${r.left}'}%` }}>{r.emoji}</div>)}
                         {captionText && <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-black/60 text-white px-6 py-3 rounded-lg text-lg font-medium backdrop-blur-sm z-40 text-center max-w-[80%]">{captionText}</div>}
                     </div>
 
@@ -934,4 +902,3 @@ export default function LiveClassroomPage() {
         </div>
     );
 }
-
