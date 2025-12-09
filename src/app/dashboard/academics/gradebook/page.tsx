@@ -6,7 +6,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { 
-  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare 
+  TrendingUp, User, PlusCircle, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -28,6 +28,9 @@ import { GenerateReportCard } from './report-card-pdf';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
+
+// Define Subject Type locally if needed
+type Subject = { id: string; name: string; code?: string };
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
@@ -182,7 +185,8 @@ function StudentGradesDetail({
     rank, 
     totalStudents,
     year, 
-    term 
+    term,
+    subjectsList // NEW PROP: List of subjects to lookup names
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -190,6 +194,7 @@ function StudentGradesDetail({
     totalStudents: number;
     year: string;
     term: string;
+    subjectsList: Subject[] | undefined;
 }) {
     // Group by Subject
     const subjectGrades = useMemo(() => {
@@ -198,8 +203,13 @@ function StudentGradesDetail({
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
-            // FIX: Use 'subject' (Name) if it exists, otherwise fall back to 'subjectId' or 'General'
-            const subName = (a as any).subject || a.subjectId || 'General'; 
+            // FIX: LOOKUP THE NAME
+            // 1. Try finding by ID in the subject list
+            // 2. Fallback to a.subject (saved name)
+            // 3. Fallback to a.subjectId (the ID itself)
+            // 4. Default to 'General'
+            const foundSubject = subjectsList?.find(s => s.id === a.subjectId);
+            const subName = foundSubject?.name || a.subject || a.subjectId || 'General';
             
             if (!subjects[subName]) subjects[subName] = { total: 0, max: 0, count: 0 };
             
@@ -212,7 +222,7 @@ function StudentGradesDetail({
             const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
             return { name, percentage, ...getGrade(percentage) };
         });
-    }, [assessments, student.uid]);
+    }, [assessments, student.uid, subjectsList]);
 
     const overallAverage = subjectGrades.length > 0 
         ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
@@ -285,13 +295,21 @@ function StudentGradesDetail({
             <div className="pt-4 border-t">
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
                 <div className="space-y-1">
-                    {assessments.filter(a => a.studentId === student.uid).map(a => (
-                        <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
-                            {/* FIX: Display Subject Name here too if possible, otherwise assessment title */}
-                            <span>{a.assessmentName} <span className="text-xs text-slate-400">({(a as any).subject || a.assessmentType})</span></span>
-                            <span className="font-mono font-medium">{a.score}/{a.maxScore}</span>
-                        </div>
-                    ))}
+                    {assessments.filter(a => a.studentId === student.uid).map(a => {
+                        // Resolve Name for detailed list too
+                        const foundSub = subjectsList?.find(s => s.id === a.subjectId);
+                        const displaySub = foundSub?.name || a.subject || a.subjectId;
+                        
+                        return (
+                            <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
+                                <div className="flex flex-col">
+                                    <span className="font-medium">{a.assessmentName}</span>
+                                    <span className="text-xs text-slate-400">{displaySub} • {a.assessmentType}</span>
+                                </div>
+                                <span className="font-mono font-medium">{a.score}/{a.maxScore}</span>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>
@@ -349,6 +367,12 @@ export default function GradebookManager() {
     (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
+
+  // 5. FETCH SUBJECTS (NEW - Needed for mapping IDs to Names)
+  const subjectsQuery = useMemoFirebase(() => 
+    firestore ? query(collection(firestore, 'subjects')) : null, 
+  [firestore]);
+  const { data: allSubjects } = useCollection<Subject>(subjectsQuery);
 
   // --- DERIVED DATA ---
   
@@ -514,6 +538,7 @@ export default function GradebookManager() {
                                                         totalStudents={rankedStudents.length}
                                                         year={selectedYear}
                                                         term={selectedTerm}
+                                                        subjectsList={allSubjects} // <--- PASSING THE SUBJECTS HERE
                                                     />
                                                 </TabsContent>
 
