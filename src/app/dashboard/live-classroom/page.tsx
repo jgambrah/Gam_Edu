@@ -173,14 +173,65 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const [aiResponse, setAiResponse] = useState<any>(null);
     const [isProcessingAi, setIsProcessingAi] = useState(false);
 
-    // Slide State
+    // Media & Slide State
     const [isUploadingSlides, setIsUploadingSlides] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    
+    // --- REAL WEBCAM STATE ---
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [stream, setStream] = useState<MediaStream | null>(null);
+    const [isCameraOn, setIsCameraOn] = useState(false);
+    const [isMicOn, setIsMicOn] = useState(false);
+    const [permissionError, setPermissionError] = useState(false);
 
     const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
-    const isPresenter = user?.uid === lecture.teacherId; // Only the specific teacher can control slides
+    const isPresenter = user?.uid === lecture.teacherId; 
 
-    // 1. Fetch Chat
+    // 1. Initialize Camera (If Presenter)
+    useEffect(() => {
+        let localStream: MediaStream | null = null;
+
+        const startStream = async () => {
+            // Only start automatically if it's the teacher presenting
+            if (isPresenter) {
+                try {
+                    // Request permissions
+                    localStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: true, 
+                        audio: true 
+                    });
+                    
+                    setStream(localStream);
+                    setIsCameraOn(true);
+                    setIsMicOn(true);
+
+                    // Attach to video element
+                    if (videoRef.current) {
+                        videoRef.current.srcObject = localStream;
+                    }
+                } catch (err) {
+                    console.error("Error accessing media devices:", err);
+                    setPermissionError(true);
+                    toast({ 
+                        variant: "destructive", 
+                        title: "Camera Access Denied", 
+                        description: "Please allow camera and microphone access to stream." 
+                    });
+                }
+            }
+        };
+
+        startStream();
+
+        // Cleanup function
+        return () => {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, [isPresenter, toast]);
+
+    // 2. Fetch Chat
     const chatQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'lectures', lecture.id, 'messages'), orderBy('createdAt', 'asc')) : null, 
     [firestore, lecture.id]);
@@ -191,7 +242,8 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         if(scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }, [messages]);
 
-    // Send Message
+    // --- HANDLERS ---
+
     const handleSend = async () => {
         if(!msgText.trim()) return;
         await addDoc(collection(firestore!, 'lectures', lecture.id, 'messages'), {
@@ -203,8 +255,26 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         setMsgText('');
     };
 
-    // --- SLIDE CONTROLS (Teacher Only) ---
-    
+    const toggleCamera = () => {
+        if (stream) {
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                setIsCameraOn(videoTrack.enabled);
+            }
+        }
+    };
+
+    const toggleMic = () => {
+        if (stream) {
+            const audioTrack = stream.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                setIsMicOn(audioTrack.enabled);
+            }
+        }
+    };
+
     const handleUploadSlides = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
         setIsUploadingSlides(true);
@@ -214,7 +284,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
             const uploadedUrls: string[] = [];
 
-            // Upload each file
             for (let i = 0; i < e.target.files.length; i++) {
                 const file = e.target.files[i];
                 const storageRef = ref(storage, `lectures/${lecture.id}/slides/${Date.now()}_${file.name}`);
@@ -223,7 +292,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 uploadedUrls.push(url);
             }
 
-            // Update Firestore with new slides
             const lectureRef = doc(firestore!, 'lectures', lecture.id);
             await updateDoc(lectureRef, {
                 slides: uploadedUrls,
@@ -231,7 +299,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 isPresentationMode: true
             });
             
-            toast({ title: "Slides Uploaded", description: `${uploadedUrls.length} slides ready for presentation.` });
+            toast({ title: "Slides Uploaded", description: `${uploadedUrls.length} slides ready.` });
 
         } catch (error: any) {
             toast({ variant: 'destructive', title: "Upload Failed", description: error.message });
@@ -254,7 +322,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         }
     };
 
-    // --- TEACHER AI TOOL: Generate Poll ---
     const handleGeneratePoll = async () => {
         if(!aiInput.trim()) return;
         setIsProcessingAi(true);
@@ -277,7 +344,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         finally { setIsProcessingAi(false); }
     };
 
-    // --- STUDENT AI TOOL: Explain Concept ---
     const handleExplainConcept = async () => {
         if(!aiInput.trim()) return;
         setIsProcessingAi(true);
@@ -296,19 +362,25 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             <div className="lg:col-span-2 flex flex-col gap-4">
                 <Card className="flex-1 bg-black relative overflow-hidden flex flex-col items-center justify-center p-0 border-0">
                     
-                    {/* MAIN CONTENT AREA */}
+                    {/* 1. SLIDES MODE */}
                     {lecture.isPresentationMode && lecture.slides && lecture.slides.length > 0 ? (
-                        // SLIDE PROJECTION VIEW
                         <div className="relative w-full h-full bg-black flex items-center justify-center">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img 
                                 src={lecture.slides[lecture.currentSlide || 0]} 
                                 alt="Presentation Slide" 
                                 className="max-w-full max-h-full object-contain"
                             />
-                            {/* TEACHER SLIDE CONTROLS OVERLAY */}
+                            {/* TEACHER OVERLAY - SMALL CAM */}
+                            {isPresenter && stream && isCameraOn && (
+                                <div className="absolute top-4 right-4 w-40 h-28 bg-black border border-slate-700 rounded-lg overflow-hidden shadow-lg z-30">
+                                    <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover transform -scale-x-100" />
+                                </div>
+                            )}
+
+                            {/* SLIDE CONTROLS */}
                             {isPresenter && (
-                                <div className="absolute bottom-20 flex gap-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
+                                <div className="absolute bottom-20 flex gap-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700 z-20">
                                     <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => changeSlide('prev')} disabled={(lecture.currentSlide || 0) <= 0}>
                                         <ChevronLeft className="h-6 w-6"/>
                                     </Button>
@@ -325,30 +397,81 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                             )}
                         </div>
                     ) : (
-                        // DEFAULT VIDEO PLACEHOLDER
-                        <div className="text-center text-slate-500">
-                            <MonitorPlay className="h-16 w-16 mx-auto mb-4 opacity-50"/>
-                            <h3 className="text-xl font-semibold text-white">Live Stream Active</h3>
-                            <p>Waiting for camera feed...</p>
-                            {isPresenter && (
-                                <Button variant="outline" className="mt-4 bg-slate-800 border-slate-700 text-slate-300 hover:text-white" onClick={() => fileInputRef.current?.click()}>
-                                    {isUploadingSlides ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Presentation className="mr-2 h-4 w-4"/>}
-                                    Share Slides
-                                </Button>
+                        // 2. VIDEO MODE
+                        <div className="w-full h-full relative">
+                            {isPresenter ? (
+                                permissionError ? (
+                                    <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                                        <VideoOff className="h-16 w-16 mb-4"/>
+                                        <p>Camera access denied.</p>
+                                    </div>
+                                ) : (
+                                    <video 
+                                        ref={videoRef} 
+                                        autoPlay 
+                                        playsInline 
+                                        muted 
+                                        className={`w-full h-full object-cover transform -scale-x-100 ${!isCameraOn ? 'hidden' : ''}`} 
+                                    />
+                                )
+                            ) : (
+                                // STUDENTS SEE THIS IF NO SLIDES (In real app, this would receive WebRTC stream)
+                                <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                                    <MonitorPlay className="h-16 w-16 mb-4 opacity-50"/>
+                                    <h3 className="text-xl font-semibold text-white">Live Stream Active</h3>
+                                    <p className="text-sm">Instructor: {lecture.teacherName}</p>
+                                </div>
                             )}
-                            <input type="file" hidden multiple accept="image/*" ref={fileInputRef} onChange={handleUploadSlides} />
+
+                            {/* Camera Off Placeholder for Presenter */}
+                            {isPresenter && !isCameraOn && !permissionError && (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-slate-500">
+                                    <VideoOff className="h-16 w-16 mb-4"/>
+                                    <p>Camera is off</p>
+                                </div>
+                            )}
+
+                            {/* UPLOAD BUTTON (Only if not presenting) */}
+                            {isPresenter && !lecture.isPresentationMode && (
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                     <Button variant="outline" className="bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white backdrop-blur-sm" onClick={() => fileInputRef.current?.click()}>
+                                        {isUploadingSlides ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Presentation className="mr-2 h-4 w-4"/>}
+                                        Share Slides
+                                    </Button>
+                                    <input type="file" hidden multiple accept="image/*" ref={fileInputRef} onChange={handleUploadSlides} />
+                                </div>
+                            )}
                         </div>
                     )}
                     
                     {/* GLOBAL CONTROLS OVERLAY */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 bg-slate-900/80 p-2 rounded-full backdrop-blur-sm z-20">
-                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/20"><Mic className="h-5 w-5"/></Button>
-                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/20"><Video className="h-5 w-5"/></Button>
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 bg-slate-900/80 p-2 rounded-full backdrop-blur-sm z-40">
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={`${isMicOn ? 'text-white' : 'text-red-500'} hover:bg-white/20`}
+                            onClick={toggleMic}
+                            disabled={!stream}
+                        >
+                            {isMicOn ? <Mic className="h-5 w-5"/> : <MicOff className="h-5 w-5"/>}
+                        </Button>
+                        
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={`${isCameraOn ? 'text-white' : 'text-red-500'} hover:bg-white/20`}
+                            onClick={toggleCamera}
+                            disabled={!stream}
+                        >
+                            {isCameraOn ? <Video className="h-5 w-5"/> : <VideoOff className="h-5 w-5"/>}
+                        </Button>
+
                         {isPresenter && (
                              <Button variant="ghost" size="icon" className={`text-white hover:bg-white/20 ${lecture.isPresentationMode ? 'bg-indigo-600' : ''}`} onClick={() => !lecture.isPresentationMode && fileInputRef.current?.click()}>
                                 <ScreenShare className="h-5 w-5"/>
                              </Button>
                         )}
+                        
                         <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-500/20" onClick={onLeave}>Leave</Button>
                     </div>
                 </Card>
@@ -375,7 +498,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                             <div key={msg.id} className={`flex flex-col ${msg.senderId === user?.uid ? 'items-end' : 'items-start'}`}>
                                 <div className={`max-w-[85%] p-3 rounded-lg text-sm ${msg.isPoll ? 'bg-indigo-50 border-indigo-200 w-full' : msg.senderId === user?.uid ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-800'}`}>
                                     <p className="text-xs opacity-70 mb-1 font-bold">{msg.senderName}</p>
-                                    
                                     {msg.isPoll ? (
                                         <div className="space-y-2">
                                             <p className="font-bold text-indigo-900">{msg.text}</p>
@@ -403,6 +525,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); setAiInput(''); }}>
                 <DialogContent>
                     <DialogHeader><DialogTitle>{isTeacher ? "Classroom Co-Pilot" : "Personal Tutor"}</DialogTitle></DialogHeader>
+                    
                     {!aiResponse ? (
                         <div className="space-y-4">
                             <Label>{isTeacher ? "What topic are you teaching right now?" : "What concept is confusing you?"}</Label>
@@ -432,7 +555,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 
 // --- MAIN PAGE: LOBBY ---
 export default function LiveClassroomPage() {
-    const { user, isUserLoading } = useUser();
+    const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -443,20 +566,19 @@ export default function LiveClassroomPage() {
 
     const isTeacher = ['Teacher', 'Administrator', 'Director'].includes(role);
     
-    // Data Fetching
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
     const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore, role]));
     const studentClassId = studentData?.[0]?.classId;
     
     const baseLecturesQuery = useMemoFirebase(() => {
         if (!user || !firestore) return null;
-        if (isTeacher) { // Teachers and admins see all
+        if (isTeacher) { 
             return collection(firestore, 'lectures');
         }
-        if (role === 'Student' && studentClassId) { // Students see only their class
+        if (role === 'Student' && studentClassId) { 
             return query(collection(firestore, 'lectures'), where('classId', '==', studentClassId));
         }
-        return null; // Don't query if a student has no classId
+        return null; 
     }, [user, firestore, role, isTeacher, studentClassId]);
 
     const { data: lectures, isLoading: isLoadingLectures } = useCollection<Lecture>(baseLecturesQuery);
@@ -479,11 +601,10 @@ export default function LiveClassroomPage() {
         }
     };
 
-    if (isUserLoading || isLoadingClasses || isLoadingStudent) {
+    if (isLoadingLectures || isLoadingClasses || isLoadingStudent) {
         return <div className="flex h-full w-full items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>
     }
 
-    // If joined, show classroom
     if (activeLectureId) {
         const currentLecture = lectures?.find(l => l.id === activeLectureId);
         if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
@@ -514,7 +635,7 @@ export default function LiveClassroomPage() {
                 {/* LIVE TAB */}
                 <TabsContent value="live" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {isLoadingLectures ? <Skeleton className="h-40 w-full"/> : liveLectures?.length === 0 ? <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p> : null}
+                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
                         {liveLectures?.map(l => (
                             <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
                                 <CardHeader>
@@ -536,7 +657,7 @@ export default function LiveClassroomPage() {
                 {/* UPCOMING TAB */}
                 <TabsContent value="upcoming" className="mt-6">
                      <div className="space-y-4">
-                        {isLoadingLectures ? <Skeleton className="h-40 w-full"/> : upcomingLectures?.length === 0 ? <p className="text-muted-foreground text-center py-8">No classes scheduled.</p> : null}
+                        {upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
                         {upcomingLectures?.map(l => (
                             <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
                                 <div className="flex gap-4 items-center">
@@ -570,4 +691,3 @@ export default function LiveClassroomPage() {
     );
 }
 
-    
