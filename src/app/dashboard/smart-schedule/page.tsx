@@ -11,7 +11,7 @@ import {
   eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths 
 } from 'date-fns';
 
-// UI
+// UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -59,19 +59,25 @@ export default function SmartSchedulePage() {
 
   // --- DATA TRANSFORMATION ---
   const allEvents = useMemo(() => {
-    const assignmentEvents: CalendarEvent[] = (assignments || []).map(a => ({
-        id: `assign-${a.id}`,
-        title: a.title,
-        date: a.dueDate.toDate(),
-        type: 'Assignment'
-    }));
+    // FIX: Filter out assignments that don't have a valid dueDate before mapping.
+    const assignmentEvents: CalendarEvent[] = (assignments || [])
+      .filter(a => a.dueDate && typeof a.dueDate.toDate === 'function')
+      .map(a => ({
+          id: `assign-${a.id}`,
+          title: a.title,
+          date: a.dueDate.toDate(),
+          type: 'Assignment'
+      }));
 
-    const lectureEvents: CalendarEvent[] = (lectures || []).map(l => ({
-        id: `lecture-${l.id}`,
-        title: l.title,
-        date: l.scheduledFor.toDate(),
-        type: 'Live Lecture'
-    }));
+    // FIX: Filter out lectures that don't have a valid scheduledFor date before mapping.
+    const lectureEvents: CalendarEvent[] = (lectures || [])
+      .filter(l => l.scheduledFor && typeof l.scheduledFor.toDate === 'function')
+      .map(l => ({
+          id: `lecture-${l.id}`,
+          title: l.title,
+          date: l.scheduledFor.toDate(),
+          type: 'Live Lecture'
+      }));
     
     return [...assignmentEvents, ...lectureEvents, ...aiEvents];
   }, [assignments, lectures, aiEvents]);
