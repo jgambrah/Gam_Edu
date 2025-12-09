@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -261,30 +260,42 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     // --- HANDLERS ---
 
     const toggleScreenShare = async () => {
+        if (!stream) return;
+
         if (isScreenSharing) {
-            // Stop Sharing
-            const tracks = (videoRef.current?.srcObject as MediaStream)?.getTracks();
-            tracks?.forEach(t => t.stop());
-            setIsScreenSharing(false);
-            // Revert to Camera
-            if (stream && videoRef.current) {
-                videoRef.current.srcObject = stream;
+            // Stop screen share and revert to camera
+            const screenTrack = (videoRef.current?.srcObject as MediaStream)?.getVideoTracks()[0];
+            screenTrack?.stop(); // Stop the screen sharing track
+
+            const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            if (videoRef.current) {
+                videoRef.current.srcObject = cameraStream;
             }
+            setStream(cameraStream);
+            setIsScreenSharing(false);
+            
         } else {
-            // Start Sharing
+            // Start screen share
             try {
                 const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
                 if (videoRef.current) {
                     videoRef.current.srcObject = displayStream;
                 }
                 setIsScreenSharing(true);
-                // Handle user clicking "Stop Sharing" in browser UI
                 displayStream.getVideoTracks()[0].onended = () => {
-                    setIsScreenSharing(false);
-                    if (stream && videoRef.current) videoRef.current.srcObject = stream;
+                    toggleScreenShare(); // Revert back when user clicks the native "Stop sharing" button
                 };
-            } catch (err) {
-                console.error("Screen Share cancelled");
+            } catch (err: any) {
+                console.error("Screen Share Error Name:", err.name);
+                console.error("Screen Share Error Message:", err.message);
+
+                if (err.name === 'NotAllowedError') {
+                    toast({ variant: "destructive", title: "Permission Denied", description: "You denied screen access or your browser blocked it." });
+                } else if (err.name === 'NotFoundError') {
+                    toast({ variant: "destructive", title: "No Source", description: "No screen video source found." });
+                } else {
+                    toast({ variant: "destructive", title: "Screen Share Failed", description: "Try opening the app in a separate browser tab." });
+                }
             }
         }
     };
@@ -546,7 +557,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                         <CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader>
                         <CardFooter className="flex justify-between gap-2">
                             <Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button>
-                            <Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin mr-2"/> : "Save to Library"}</Button>
+                            <Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : "Save to Library"}</Button>
                         </CardFooter>
                     </Card>
                 </div>
@@ -558,7 +569,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     {!aiResponse ? (
                         <div className="space-y-4">
                             <Input value={aiInput} onChange={e => setAiInput(e.target.value)} placeholder={isTeacher ? "Topic for poll..." : "Explain concept..."} />
-                            <Button className="w-full" onClick={isTeacher ? handleGeneratePoll : handleExplain} disabled={isProcessingAi}>
+                            <Button className="w-full" onClick={isTeacher ? handleGeneratePoll : handleExplainConcept} disabled={isProcessingAi}>
                                 {isProcessingAi ? <Loader2 className="animate-spin"/> : "Submit"}
                             </Button>
                         </div>
@@ -604,11 +615,13 @@ export default function LiveClassroomPage() {
     const { data: liveLectures } = useCollection<Lecture>(liveQuery);
 
     const upcomingQuery = useMemoFirebase(() => 
+        // FIX: Removed 'orderBy' temporarily to avoid Missing Index error during first run
         firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, 
     [firestore]);
     
     const { data: upcomingLecturesRaw } = useCollection<Lecture>(upcomingQuery);
     
+    // Client-side Sort
     const upcomingLectures = useMemo(() => {
         if (!upcomingLecturesRaw) return [];
         return upcomingLecturesRaw.sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
@@ -630,6 +643,7 @@ export default function LiveClassroomPage() {
 
     // If joined, show classroom
     if (activeLectureId) {
+        // Try to find in live first, then upcoming (in case it just switched)
         const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
         if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
     }
@@ -655,9 +669,11 @@ export default function LiveClassroomPage() {
                     <TabsTrigger value="live">Live Now ({liveLectures?.length || 0})</TabsTrigger>
                     <TabsTrigger value="upcoming">Upcoming ({upcomingLectures?.length || 0})</TabsTrigger>
                 </TabsList>
+
+                {/* LIVE TAB */}
                 <TabsContent value="live" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes.</p>}
+                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
                         {liveLectures?.map(l => (
                             <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
                                 <CardHeader>
@@ -675,6 +691,8 @@ export default function LiveClassroomPage() {
                         ))}
                     </div>
                 </TabsContent>
+
+                {/* UPCOMING TAB */}
                 <TabsContent value="upcoming" className="mt-6">
                      <div className="space-y-4">
                         {upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
@@ -706,6 +724,7 @@ export default function LiveClassroomPage() {
                      </div>
                 </TabsContent>
             </Tabs>
+
             <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
         </div>
     );
