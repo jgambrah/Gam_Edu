@@ -11,8 +11,8 @@ import {
   Video, Mic, MicOff, VideoOff, MessageSquare, Send, 
   Sparkles, MonitorPlay, Bot, Calendar as CalendarIcon, 
   Clock, ChevronLeft, ChevronRight, Presentation, ScreenShare, 
-  LayoutGrid, Maximize, Circle, Square, Save, Users, PenTool, Eraser, Palette, Trash2, Download,
-  Subtitles, PictureInPicture, Users2, Timer, Smile
+  LayoutGrid, Maximize, Circle, Square, Save, Users, Mic2, Hand, Smile, X, MoreHorizontal, PhoneOff,
+  Subtitles, PictureInPicture, Users2, Timer, PenTool, Eraser, Download
 } from 'lucide-react';
 import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
 import { format } from 'date-fns';
@@ -32,6 +32,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // --- TYPES ---
 type Lecture = {
@@ -70,32 +71,47 @@ type Reaction = {
     createdAt: any;
 };
 
-// --- SUB-COMPONENT: Audio Visualizer (The "Vibrating" Mic) ---
+// --- SUB-COMPONENT: Audio Visualizer (Fixed) ---
 const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
+    const audioContextRef = useRef<AudioContext | null>(null);
 
     useEffect(() => {
-        if (!stream || !canvasRef.current || stream.getAudioTracks().length === 0) return;
+        if (!stream || !canvasRef.current) return;
+        
+        // 1. Validate Audio Track
+        if (stream.getAudioTracks().length === 0) {
+            console.warn("Visualizer: No audio tracks in stream");
+            return;
+        }
 
-        // Initialize Web Audio API
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const analyser = audioContext.createAnalyser();
-        const microphone = audioContext.createMediaStreamSource(stream);
-        microphone.connect(analyser);
+        // 2. Initialize Audio Context (Handle browser prefixes)
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContextClass();
+        audioContextRef.current = ctx;
 
-        analyser.fftSize = 256; 
+        // 3. Force Resume (Fixes "flat line" issue in Chrome/Edge)
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 64; // Keep small for chunky bars
+        const source = ctx.createMediaStreamSource(stream);
+        source.connect(analyser);
+
         const bufferLength = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
-
         const canvas = canvasRef.current;
         const canvasCtx = canvas.getContext("2d");
 
         const draw = () => {
-            if(!canvasCtx) return;
+            if (!canvasCtx) return;
             animationRef.current = requestAnimationFrame(draw);
             analyser.getByteFrequencyData(dataArray);
 
+            // Clear canvas
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
             const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -103,64 +119,36 @@ const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
             let x = 0;
 
             for (let i = 0; i < bufferLength; i++) {
-                barHeight = dataArray[i] / 2; // Scale down height
+                barHeight = dataArray[i] / 1.5; // Sensitivity adj
+
+                // Dynamic Color: Green (Quiet) -> Yellow -> Red (Loud)
+                const r = barHeight + (25 * (i / bufferLength));
+                const g = 250 * (i / bufferLength);
+                const b = 50;
                 
-                canvasCtx.fillStyle = `rgb(74, 222, 128)`;
-                
+                canvasCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
                 canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                x += barWidth + 1;
+                
+                x += barWidth + 2;
             }
         };
 
         draw();
 
         return () => {
-            if(animationRef.current) cancelAnimationFrame(animationRef.current);
-            if(audioContext.state !== 'closed') audioContext.close();
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+                audioContextRef.current.close();
+            }
         };
     }, [stream]);
 
-    return <canvas ref={canvasRef} width="60" height="20" />;
-};
-
-
-// --- COMPONENT: Breakout Room Setup ---
-function BreakoutSetupDialog({ open, setOpen, onStart }: { open: boolean, setOpen: (v: boolean) => void, onStart: (rooms: number, duration: number) => void }) {
-    const [rooms, setRooms] = useState('2');
-    const [duration, setDuration] = useState('10');
-
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[400px]">
-                <DialogHeader>
-                    <DialogTitle>Start Breakout Rooms</DialogTitle>
-                    <DialogDescription>Split students into smaller groups for discussion.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="space-y-2">
-                        <Label>Number of Rooms</Label>
-                        <Select value={rooms} onValueChange={setRooms}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="2">2 Rooms</SelectItem>
-                                <SelectItem value="3">3 Rooms</SelectItem>
-                                <SelectItem value="4">4 Rooms</SelectItem>
-                                <SelectItem value="5">5 Rooms</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Duration (Minutes)</Label>
-                        <Input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={() => { onStart(Number(rooms), Number(duration)); setOpen(false); }}>Start Session</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <div className="bg-black/30 p-1 rounded border border-white/10">
+            <canvas ref={canvasRef} width="60" height="30" className="block" />
+        </div>
     );
-}
+};
 
 // --- SUB-COMPONENT: Interactive Whiteboard ---
 const Whiteboard = () => {
@@ -293,6 +281,44 @@ const Whiteboard = () => {
         </div>
     );
 };
+
+// --- COMPONENT: Breakout Room Setup ---
+function BreakoutSetupDialog({ open, setOpen, onStart }: { open: boolean, setOpen: (v: boolean) => void, onStart: (rooms: number, duration: number) => void }) {
+    const [rooms, setRooms] = useState('2');
+    const [duration, setDuration] = useState('10');
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                    <DialogTitle>Start Breakout Rooms</DialogTitle>
+                    <DialogDescription>Split students into smaller groups for discussion.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                        <Label>Number of Rooms</Label>
+                        <Select value={rooms} onValueChange={setRooms}>
+                            <SelectTrigger><SelectValue/></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="2">2 Rooms</SelectItem>
+                                <SelectItem value="3">3 Rooms</SelectItem>
+                                <SelectItem value="4">4 Rooms</SelectItem>
+                                <SelectItem value="5">5 Rooms</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Duration (Minutes)</Label>
+                        <Input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button onClick={() => { onStart(Number(rooms), Number(duration)); setOpen(false); }}>Start Session</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 // --- COMPONENT: Schedule Class Dialog ---
 function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
@@ -568,7 +594,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             }
         } else {
             try {
-                // @ts-ignore - getDisplayMedia exists
+                // @ts-ignore
                 const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
                 displayStream.getVideoTracks()[0].onended = () => { toggleScreenShare(); };
                 setStream(displayStream);
@@ -578,8 +604,11 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             } catch (err: any) {
                 console.error("Screen Share Error Name:", err.name);
                 console.error("Screen Share Error Message:", err.message);
-                if (err.name === 'NotAllowedError' || err.message.includes('Permission denied')) {
-                     toast({ variant: "destructive", title: "Permission Denied", description: "You denied screen access or your OS blocked it." });
+                if (err.name === 'NotAllowedError') {
+                    const message = err.message === "Permission denied by user"
+                        ? "You cancelled the screen share request."
+                        : "You denied screen access or your OS blocked it.";
+                     toast({ variant: "destructive", title: "Permission Denied", description: message });
                 } else if (err.name === 'NotFoundError') {
                     toast({ variant: "destructive", title: "No Source", description: "No screen video source found." });
                 } else {
@@ -699,10 +728,10 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isCameraOn ? 'text-white' : 'text-red-500'}`} onClick={toggleCamera}><Video className="h-5 w-5"/><span className="text-[10px]">Cam</span></Button>
                 </div>
                 <div className="flex items-center gap-1">
-                    <Popover><PopoverTrigger asChild><Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white"><Smile className="h-5 w-5"/> <span className="text-[10px]">React</span></Button></PopoverTrigger><PopoverContent className="w-auto p-2 bg-[#2C2C2E] border-none flex gap-2">{['👍','❤️','😂','😮','👋','🎉'].map(e => (<button key={e} onClick={() => sendReaction(e)} className="text-2xl hover:scale-125 p-1">{e}</button>))}</PopoverContent></Popover>
+                    <Popover><PopoverTrigger asChild><Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10"><Smile className="h-5 w-5"/> <span className="text-[10px]">React</span></Button></PopoverTrigger><PopoverContent className="w-auto p-2 bg-[#2C2C2E] border-none flex gap-2">{['👍','❤️','😂','😮','👋','🎉'].map(e => (<button key={e} onClick={() => sendReaction(e)} className="text-2xl hover:scale-125 p-1">{e}</button>))}</PopoverContent></Popover>
                     <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${captionsOn ? 'text-green-400' : 'text-white'}`} onClick={toggleCaptions}><Subtitles className="h-5 w-5"/><span className="text-[10px]">CC</span></Button>
-                    <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white" onClick={togglePiP}><PictureInPicture className="h-5 w-5"/><span className="text-[10px]">PiP</span></Button>
-                    {isTeacher && <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white" onClick={() => setIsBreakoutSetupOpen(true)}><Users2 className="h-5 w-5"/><span className="text-[10px]">Breakout</span></Button>}
+                    <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10" onClick={togglePiP}><PictureInPicture className="h-5 w-5"/><span className="text-[10px]">PiP</span></Button>
+                    {isTeacher && <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10" onClick={() => setIsBreakoutSetupOpen(true)}><Users2 className="h-5 w-5"/><span className="text-[10px]">Breakout</span></Button>}
                     {isPresenter && (
                         <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isScreenSharing ? 'text-green-500' : 'text-white'} hover:bg-white/10`} onClick={toggleScreenShare}>
                             <ScreenShare className="h-5 w-5"/> <span className="text-[10px]">{isScreenSharing ? 'Stop' : 'Share'}</span>
@@ -723,7 +752,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             </div>
 
             {recordedBlob && (
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50"><Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl"><CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader><CardFooter className="flex gap-2"><Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button><Button onClick={saveRecording} disabled={isSavingRecord} className="flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : "Save"}</Button></CardFooter></Card></div>
+                <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50"><Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl"><CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader><CardFooter className="flex justify-between gap-2"><Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button><Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : "Save"}</Button></CardFooter></Card></div>
             )}
             <BreakoutSetupDialog open={isBreakoutSetupOpen} setOpen={setIsBreakoutSetupOpen} onStart={handleStartBreakout} />
             <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); }}>
