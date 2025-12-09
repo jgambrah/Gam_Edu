@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -36,12 +36,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { useRole } from '@/context/role-context';
 import type { Class, Student } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+
 
 // Define Subject Type locally if not in types
 type Subject = { id: string; name: string; code?: string };
 
 export function AssessmentFeedbackForm({ classId, classes: propClasses }: { classId?: string; classes: Class[] }) {
-    const { user } = useAuth();
+    // FIX 1: Get isUserLoading to know when to enable the button
+    const { user, isUserLoading } = useAuth();
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -49,7 +52,16 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
     
     const [students, setStudents] = useState<Student[]>([]);
   
-    // 1. FETCH REAL SUBJECTS FROM FIRESTORE
+    // 2. DEBUG: Log status to console so you can see if connection exists
+    useEffect(() => {
+        console.log("Connection Status:", { 
+            user: user?.uid || "Missing", 
+            firestore: firestore ? "Connected" : "Missing",
+            isLoading: isUserLoading
+        });
+    }, [user, firestore, isUserLoading]);
+
+    // 3. FETCH REAL SUBJECTS
     const subjectsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'subjects'), orderBy('name')) : null, 
     [firestore]);
@@ -57,7 +69,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
 
     const form = useForm<z.infer<typeof assessmentFeedbackSchema>>({
       resolver: zodResolver(assessmentFeedbackSchema),
-      // FIX: Provide explicit default values for ALL fields to prevent "uncontrolled to controlled" error
       defaultValues: {
         academicYear: MOCK_ACADEMIC_YEARS[0],
         term: MOCK_TERMS[0],
@@ -70,7 +81,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         score: 0,
         maxScore: 100,
         feedback: '',
-        // assessmentDate is optional/undefined initially, handled by Popover
       },
     });
 
@@ -99,73 +109,68 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
   
   
     async function onSubmit(values: z.infer<typeof assessmentFeedbackSchema>) {
-        // 1. Check connections BEFORE starting the loader
         if (!user || !firestore) {
-            toast({ variant: 'destructive', title: 'System Error', description: 'Database connection not ready. Please refresh.' });
+            toast({ variant: 'destructive', title: 'Connection Issue', description: 'Waiting for database connection...' });
             return;
         }
 
         setIsSubmitting(true);
     
         try {
-            // 2. Check for existing grade (Requires Index)
-            const q = query(
+            const querySnapshot = await getDocs(query(
                 collection(firestore, 'assessments'),
                 where('studentId', '==', values.studentId),
                 where('assessmentName', '==', values.assessmentName)
-            );
-            
-            const querySnapshot = await getDocs(q);
+            ));
 
-            // Find Subject Name safely
             const subjectName = subjects?.find(s => s.id === values.subjectId)?.name || 'General';
 
             const dataToSave = {
                 ...values,
-                subject: subjectName, 
+                subject: subjectName,
                 teacherId: values.teacherId || user.uid,
                 createdAt: serverTimestamp(),
             };
 
             if (!querySnapshot.empty) {
-                // Update existing
                 const docToUpdate = querySnapshot.docs[0];
                 await updateDoc(docToUpdate.ref, dataToSave);
-                toast({ title: 'Success', description: 'Grade updated successfully.' });
+                toast({ title: 'Success', description: 'Assessment feedback updated.' });
             } else {
-                // Add new
                 await addDoc(collection(firestore, 'assessments'), dataToSave);
-                toast({ title: 'Success', description: 'Grade saved successfully.' });
+                toast({ title: 'Success', description: 'Assessment feedback saved.' });
             }
     
-            // Reset form but keep context (Class/Subject) so you can add the next student easily
-            form.reset({
-                ...values,
-                score: 0,
-                feedback: '',
-                // Don't reset studentId so they can pick the next one, or reset it if you prefer
-                studentId: '', 
-            });
+          // Reset relevant fields
+          form.reset({
+              ...values, 
+              score: 0,
+              feedback: '',
+              assessmentName: '' // Clear name to prevent accidental overwrites
+          });
 
         } catch (error: any) {
           console.error("Error saving assessment feedback:", error);
-          
-          // Check for Missing Index Error specifically
           if (error.message.includes('requires an index')) {
-              toast({ variant: 'destructive', title: 'System Setup Required', description: 'An Admin needs to create the database index. Check console.' });
+              toast({ variant: 'destructive', title: 'Database Index Missing', description: 'Check console for the link to create the index.' });
           } else {
               toast({ variant: 'destructive', title: 'Error', description: error.message });
           }
         } finally {
-          // 3. ALWAYS stop the loader
           setIsSubmitting(false);
         }
     }
+
+    // --- CHECK READINESS ---
+    const isReady = user && firestore && !isUserLoading;
   
     return (
       <Card>
         <CardHeader>
-            <CardTitle>Continuous Assessment Entry</CardTitle>
+            <CardTitle className="flex items-center justify-between">
+                <span>Continuous Assessment Entry</span>
+                {!isReady && <Badge variant="outline" className="text-yellow-600 bg-yellow-50"><Loader2 className="h-3 w-3 mr-1 animate-spin"/> Connecting...</Badge>}
+            </CardTitle>
         </CardHeader>
         <CardContent>
             <Form {...form}>
@@ -178,7 +183,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                         <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                         <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
                     </Select>
-                    <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="term" render={({ field }) => (
@@ -188,7 +192,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                         <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                         <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
                     </Select>
-                    <FormMessage />
                   </FormItem>
                 )} />
                 {!classId && (
@@ -199,7 +202,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                                 <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
                                 <SelectContent>{propClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                             </Select>
-                            <FormMessage />
                         </FormItem>
                     )}/>
                 )}
@@ -212,14 +214,15 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                         <Select onValueChange={field.onChange} value={field.value} disabled={!selectedClassId}>
                             <FormControl><SelectTrigger><SelectValue placeholder={students.length > 0 ? "Select Student" : "No students found"} /></SelectTrigger></FormControl>
                             <SelectContent>
-                                {students?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                                {students?.map(s => (
+                                    <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <FormMessage />
                     </FormItem>
                 )}/>
                 
-                 {/* UPDATED SUBJECT FIELD */}
                  <FormField control={form.control} name="subjectId" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Subject</FormLabel>
@@ -233,7 +236,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                                 {subjects?.map(s => (
                                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                                 ))}
-                                {subjects?.length === 0 && <SelectItem value="none" disabled>No subjects created yet</SelectItem>}
+                                {subjects?.length === 0 && <SelectItem value="none" disabled>No subjects found</SelectItem>}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -287,14 +290,14 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="score" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Score (Optional)</FormLabel>
+                        <FormLabel>Score</FormLabel>
                         <FormControl><Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value))} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )}/>
                  <FormField control={form.control} name="maxScore" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Max Score (Optional)</FormLabel>
+                        <FormLabel>Max Possible Score</FormLabel>
                         <FormControl><Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value))} /></FormControl>
                         <FormMessage />
                     </FormItem>
@@ -308,10 +311,10 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                     <FormMessage />
                 </FormItem>
                 )} />
-
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Entry
+              
+              {/* FIX: Disable button if connection is not ready */}
+              <Button type="submit" disabled={isSubmitting || !isReady} className="w-full">
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : !isReady ? "Waiting for Connection..." : "Save Entry"}
               </Button>
             </form>
           </Form>
@@ -319,3 +322,8 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
       </Card>
     );
 }
+
+// Helper badge component need to be imported or defined
+import { Badge } from '@/components/ui/badge';
+
+    
