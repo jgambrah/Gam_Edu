@@ -196,13 +196,13 @@ function StudentGradesDetail({
     term: string;
     subjectsList: Subject[] | undefined;
 }) {
-    // 1. Create Lookup Map
+    // 1. Create a Lookup Map for Subjects (ID -> Name)
     const subjectMap = useMemo(() => {
         const map: Record<string, string> = {};
         if (subjectsList) {
             subjectsList.forEach(s => {
                 map[s.id] = s.name; // Map ID to Name
-                map[s.id.trim()] = s.name; // Trimmed ID -> Name (Safety)
+                map[s.id.trim()] = s.name; // Handle potential whitespace
                 if (s.name) map[s.name] = s.name; // Map Name to Name (self-reference)
             });
         }
@@ -228,7 +228,7 @@ function StudentGradesDetail({
                 // If we can't find it in the map, use the raw string, 
                 // but if it looks like an ID (long alphanumeric), label it "Unknown" to alert user
                 const isLikelyID = rawSubject.length > 15 && !rawSubject.includes(' ');
-                displaySub = isLikelyID ? `Unknown (${rawSubject.slice(0,6)}...)` : rawSubject;
+                displaySub = isLikelyID ? `Unknown Subject (${rawSubject.slice(0,4)}...)` : rawSubject;
             }
 
             if (!subjects[displaySub]) subjects[displaySub] = { total: 0, max: 0, count: 0 };
@@ -281,7 +281,7 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
-                            subjectsList={subjectsList} // <-- PASS LIST FOR PDF MAPPING
+                            subjectsList={subjectsList} // <-- PASS LIST
                         />
                      </CardContent>
                 </Card>
@@ -317,12 +317,12 @@ function StudentGradesDetail({
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => {
-                        // RESOLVE NAME FOR DETAIL LIST
+                        // Resolve Name for detailed list
                         let displaySub = 'General';
                         const rawSubject = a.subjectId || a.subject || '';
                         if (rawSubject && subjectMap[rawSubject]) displaySub = subjectMap[rawSubject];
                         else if (rawSubject) displaySub = rawSubject;
-                        
+
                         return (
                             <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
                                 <div className="flex flex-col">
@@ -391,7 +391,7 @@ export default function GradebookManager() {
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. FETCH SUBJECTS LIST (DEBUGGING ADDED)
+  // 5. FETCH SUBJECTS LIST 
   const subjectsQuery = useMemoFirebase(() => 
     firestore ? query(collection(firestore, 'subjects')) : null, 
   [firestore]);
@@ -436,6 +436,19 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
+      {/* --- DEBUG SECTION --- */}
+      {isStaff && (
+          <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800 flex flex-wrap gap-2 items-center">
+              <Info className="h-4 w-4"/>
+              <strong>Subjects Loaded: {allSubjects?.length || 0}.</strong>
+              {allSubjects && allSubjects.length > 0 && 
+                <span className="opacity-0 hover:opacity-100 transition-opacity">Sample: {allSubjects[0].name} ({allSubjects[0].id})</span>
+              }
+              {isLoadingSubjects && <Loader2 className="h-3 w-3 animate-spin"/>}
+              {!allSubjects && !isLoadingSubjects && <span className="text-red-500">Subject list is empty!</span>}
+          </div>
+      )}
+      
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -443,7 +456,6 @@ export default function GradebookManager() {
                     <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
-                {/* ACTION BUTTONS */}
                 <div className="flex gap-2">
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
@@ -456,7 +468,6 @@ export default function GradebookManager() {
             </div>
         </CardHeader>
         
-        {/* FILTERS */}
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
@@ -486,14 +497,12 @@ export default function GradebookManager() {
         </CardContent>
       </Card>
 
-      {/* GRADE ENTRY FORM (Conditional) */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
               <AssessmentFeedbackForm classId={selectedClassId} classes={classes || []} />
           </div>
       )}
       
-      {/* STUDENT LIST */}
       <Tabs defaultValue="academics" className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="academics">Report Cards</TabsTrigger>
