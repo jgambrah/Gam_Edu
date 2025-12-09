@@ -50,6 +50,7 @@ export function initializeFirebase() {
   } else {
     // --- ALREADY INITIALIZED (Hot Reload) ---
     firebaseApp = getApp();
+    // Re-get firestore instance to ensure it's linked to the correct app instance
     firestore = getFirestore(firebaseApp);
   }
 
@@ -79,3 +80,4 @@ export * from './non-blocking-updates';
 export * from './non-blocking-login';
 export * from './errors';
 export * from './error-emitter';
+
