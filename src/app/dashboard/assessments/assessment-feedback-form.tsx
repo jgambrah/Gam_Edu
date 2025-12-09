@@ -63,6 +63,9 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         assessmentType: 'Quiz',
         teacherId: user?.uid,
         classId: classId || '',
+        score: undefined,
+        maxScore: undefined,
+        feedback: '',
       },
     });
 
@@ -125,6 +128,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
           form.reset({
               ...values, // Keep context (Class, Term, Subject)
               score: 0,
+              maxScore: 0,
               feedback: '' 
           });
         } catch (error) {
