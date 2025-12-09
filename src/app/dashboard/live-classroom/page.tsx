@@ -12,7 +12,7 @@ import {
   Sparkles, MonitorPlay, Bot, Calendar as CalendarIcon, 
   Clock, ChevronLeft, ChevronRight, Presentation, ScreenShare, 
   LayoutGrid, Maximize, Circle, Square, Save, Users, Mic2, Hand, Smile, X, MoreHorizontal, PhoneOff,
-  Subtitles, PictureInPicture, Users2, Timer, PenTool, Eraser, Download, Trash2
+  Subtitles, PictureInPicture, Users2, Timer, PenTool, Eraser, Download
 } from 'lucide-react';
 import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
 import { format } from 'date-fns';
@@ -587,29 +587,54 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 // Stop the previous screen tracks before setting the new stream
                 stream?.getTracks().forEach(t => t.stop());
                 setStream(camStream);
+                setStreamVersion(v => v + 1);
                 setIsScreenSharing(false);
+                
+                // Re-sync video element
+                if (videoRef.current) videoRef.current.srcObject = camStream;
+
             } catch (e) {
                 console.error("Error reverting to camera:", e);
                 toast({ variant: 'destructive', title: "Camera Error", description: "Could not revert to webcam." });
             }
         } else {
-            // Start Sharing
+            // START SHARING
             try {
-                // @ts-ignore
+                // Request Screen Stream
+                // @ts-ignore - getDisplayMedia exists in modern browsers
                 const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                
+                // Handle user clicking "Stop Sharing" floating browser button
                 displayStream.getVideoTracks()[0].onended = () => {
-                    toggleScreenShare(); // Revert back when browser "Stop" is clicked
+                    // When native stop button is clicked, revert logic
+                    toggleScreenShare(); 
                 };
-                // Stop old camera tracks before starting new ones
-                stream?.getTracks().forEach(t => t.stop());
+
                 setStream(displayStream);
+                setStreamVersion(v => v + 1);
                 setIsScreenSharing(true);
+                
+                if (videoRef.current) videoRef.current.srcObject = displayStream;
+
             } catch (err: any) {
+                // --- IMPROVED ERROR LOGGING ---
+                console.error("Screen Share Error Name:", err.name);
+                console.error("Screen Share Error Message:", err.message);
+                
+                const userDenied = err.message.includes('Permission denied by user');
+
                 if (err.name === 'NotAllowedError') {
-                    const message = err.message.includes("by user") ? "You cancelled the screen share request." : "Permission to share screen was denied by your browser or OS.";
-                    toast({ variant: "destructive", title: "Permission Denied", description: message });
+                    toast({ 
+                        variant: "destructive", 
+                        title: "Permission Denied", 
+                        description: userDenied 
+                            ? "You cancelled the screen share request."
+                            : "Screen sharing permission was denied by your browser or OS."
+                    });
+                } else if (err.name === 'NotFoundError') {
+                    toast({ variant: "destructive", title: "No Source", description: "No screen video source found." });
                 } else {
-                    toast({ variant: "destructive", title: "Screen Share Failed", description: "Could not start screen sharing." });
+                    toast({ variant: "destructive", title: "Screen Share Failed", description: "Try opening the app in a separate browser tab." });
                 }
             }
         }
@@ -781,17 +806,10 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 }
 
 // --- MAIN PAGE: LOBBY (UNCHANGED) ---
-function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
-    const firestore = useFirestore(); const { user } = useUser(); const { toast } = useToast(); const [isSubmitting, setIsSubmitting] = useState(false);
-    const [title, setTitle] = useState(''); const [description, setDescription] = useState(''); const [targetGroup, setTargetGroup] = useState(''); const [scheduledDate, setScheduledDate] = useState(''); const [scheduledTime, setScheduledTime] = useState('');
-    const handleSchedule = async () => { if (!user || !title) return; setIsSubmitting(true); try { const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`); await addDoc(collection(firestore!, 'lectures'), { title, description, targetGroup: targetGroup || 'General', scheduledFor: scheduledDateTime, teacherName: user.displayName, teacherId: user.uid, status: 'scheduled', createdAt: serverTimestamp(), slides: [], currentSlide: 0, isPresentationMode: false }); toast({ title: "Class Scheduled" }); setOpen(false); } catch (e) {} finally { setIsSubmitting(false); } };
-    return (<Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>Schedule Class</DialogTitle></DialogHeader><div className="grid gap-4 py-4"><Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Topic"/><Input value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="Target Group"/><div className="grid grid-cols-2 gap-4"><Input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)}/><Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)}/></div></div><DialogFooter><Button onClick={handleSchedule} disabled={isSubmitting}>Schedule</Button></DialogFooter></DialogContent></Dialog>);
-}
 export default function LiveClassroomPage() {
     const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
-    const { toast } = useToast();
     
     const [activeLectureId, setActiveLectureId] = useState<string | null>(null);
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -831,7 +849,6 @@ export default function LiveClassroomPage() {
 
     // If joined, show classroom
     if (activeLectureId) {
-        // Try to find in live first, then upcoming (in case it just switched)
         const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
         if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
     }
@@ -918,5 +935,3 @@ export default function LiveClassroomPage() {
     );
 }
 
-
-    
