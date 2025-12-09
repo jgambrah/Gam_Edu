@@ -40,6 +40,10 @@ service cloud.firestore {
       return isOneOfRoles(request.auth.uid, ['Administrator', 'Director']);
     }
 
+    function isAccountant() {
+      return isOneOfRoles(request.auth.uid, ['Accountant']);
+    }
+
     function isTeacher() {
       return isOneOfRoles(request.auth.uid, ['Teacher']);
     }
@@ -237,6 +241,11 @@ service cloud.firestore {
       allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
     
+    match /ela_learning_history/{historyId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow list, get: if isSignedIn() && request.query.where.userId == request.auth.uid || resource.data.userId == request.auth.uid;
+    }
+    
     // Forum Rules
     match /forumThreads/{threadId} {
       allow read: if isSignedIn();
@@ -251,10 +260,39 @@ service cloud.firestore {
       }
     }
     
+    // --- DIRECT MESSAGING RULES ---
+    match /direct_messages/{chatId} {
+        allow read, update: if request.auth.uid in resource.data.participants;
+        allow create: if request.auth.uid in request.resource.data.participants;
+        
+        match /messages/{messageId} {
+            allow read, create: if get(/databases/$(database)/documents/direct_messages/$(chatId)).data.participants.hasAny([request.auth.uid]);
+        }
+    }
+
+    // --- TILL MANAGEMENT ---
+    match /tills/{tillId} {
+      allow read: if isAccountant() || isAdmin();
+      
+      // Accountants can create their own till
+      allow create: if isAccountant() && request.resource.data.accountantId == request.auth.uid;
+      
+      // Accountants can submit their own open tills for approval
+      allow update: if isAccountant() && resource.data.accountantId == request.auth.uid && resource.data.status == 'Open'
+        || isAdmin(); // Admins can approve/reject
+
+      match /transactions/{transactionId} {
+        // Accountants can record transactions in their own open tills
+        allow create: if isAccountant() && get(/databases/$(database)/documents/tills/$(tillId)).data.status == 'Open' 
+                       && get(/databases/$(database)/documents/tills/$(tillId)).data.accountantId == request.auth.uid;
+        // Admins and the till's accountant can read transactions
+        allow read: if isAdmin() || (isAccountant() && get(/databases/$(database)/documents/tills/$(tillId)).data.accountantId == request.auth.uid);
+      }
+    }
+
     // Catch-all for remaining collections (adjust as needed)
     match /{document=**} {
       allow read, write: if isAdmin();
     }
   }
 }
-
