@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, Timestamp } from 'firebase/firestore';
-import { Calendar as CalendarIcon, Wand2, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Wand2, Loader2, CalendarCheck } from 'lucide-react';
 import { 
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, 
   eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths 
