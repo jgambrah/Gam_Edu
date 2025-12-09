@@ -70,20 +70,24 @@ type Reaction = {
     createdAt: any;
 };
 
-// --- SUB-COMPONENT: Audio Visualizer ---
+// --- SUB-COMPONENT: Audio Visualizer (The "Vibrating" Mic) ---
 const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
 
     useEffect(() => {
-        if (!stream || !canvasRef.current) return;
+        if (!stream || !canvasRef.current || stream.getAudioTracks().length === 0) return;
+
+        // Initialize Web Audio API
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         const analyser = audioContext.createAnalyser();
         const microphone = audioContext.createMediaStreamSource(stream);
         microphone.connect(analyser);
-        analyser.fftSize = 64;
+
+        analyser.fftSize = 256; 
         const bufferLength = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
+
         const canvas = canvasRef.current;
         const canvasCtx = canvas.getContext("2d");
 
@@ -91,26 +95,34 @@ const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
             if(!canvasCtx) return;
             animationRef.current = requestAnimationFrame(draw);
             analyser.getByteFrequencyData(dataArray);
+
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
             const barWidth = (canvas.width / bufferLength) * 2.5;
             let barHeight;
             let x = 0;
+
             for (let i = 0; i < bufferLength; i++) {
-                barHeight = dataArray[i] / 2;
-                canvasCtx.fillStyle = `rgb(74, 222, 128)`; // Green-400
+                barHeight = dataArray[i] / 2; // Scale down height
+                
+                canvasCtx.fillStyle = `rgb(74, 222, 128)`;
+                
                 canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                x += barWidth + 2;
+                x += barWidth + 1;
             }
         };
+
         draw();
+
         return () => {
             if(animationRef.current) cancelAnimationFrame(animationRef.current);
             if(audioContext.state !== 'closed') audioContext.close();
         };
     }, [stream]);
 
-    return <canvas ref={canvasRef} width="40" height="20" />;
+    return <canvas ref={canvasRef} width="60" height="20" />;
 };
+
 
 // --- COMPONENT: Breakout Room Setup ---
 function BreakoutSetupDialog({ open, setOpen, onStart }: { open: boolean, setOpen: (v: boolean) => void, onStart: (rooms: number, duration: number) => void }) {
@@ -540,23 +552,36 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     }, [messages, lecture.teacherName, user]);
 
 
-    // All other handlers remain the same as previous version...
+    // Other handlers
     const toggleScreenShare = async () => {
         if (isScreenSharing) {
-            const tracks = (videoRef.current?.srcObject as MediaStream)?.getTracks();
-            tracks?.forEach(t => t.stop());
-            setIsScreenSharing(false);
-            if (stream && videoRef.current) videoRef.current.srcObject = stream;
+            try {
+                stream?.getTracks().forEach(t => t.stop());
+                const camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                setStream(camStream);
+                setStreamVersion(v => v + 1);
+                setIsScreenSharing(false);
+                if (videoRef.current) videoRef.current.srcObject = camStream;
+            } catch (e) {
+                console.error("Error reverting to camera:", e);
+                toast({ variant: 'destructive', title: "Camera Error", description: "Could not revert to webcam." });
+            }
         } else {
             try {
-                // @ts-ignore
-                const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                if (videoRef.current) videoRef.current.srcObject = displayStream;
+                // @ts-ignore - getDisplayMedia exists
+                const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                displayStream.getVideoTracks()[0].onended = () => { toggleScreenShare(); };
+                setStream(displayStream);
+                setStreamVersion(v => v + 1);
                 setIsScreenSharing(true);
-                displayStream.getVideoTracks()[0].onended = () => { setIsScreenSharing(false); if (stream && videoRef.current) videoRef.current.srcObject = stream; };
+                if (videoRef.current) videoRef.current.srcObject = displayStream;
             } catch (err: any) {
-                if (err.name === 'NotAllowedError' || err.message === 'Permission denied by user') {
-                    toast({ variant: "destructive", title: "Permission Denied", description: "You denied screen access or your browser blocked it." });
+                console.error("Screen Share Error Name:", err.name);
+                console.error("Screen Share Error Message:", err.message);
+                if (err.name === 'NotAllowedError' || err.message.includes('Permission denied')) {
+                     toast({ variant: "destructive", title: "Permission Denied", description: "You denied screen access or your OS blocked it." });
+                } else if (err.name === 'NotFoundError') {
+                    toast({ variant: "destructive", title: "No Source", description: "No screen video source found." });
                 } else {
                     toast({ variant: "destructive", title: "Screen Share Failed", description: "Try opening the app in a separate browser tab." });
                 }
@@ -572,12 +597,39 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             emoji, senderId: user?.uid, createdAt: serverTimestamp()
         });
     };
-    const handleSend = async () => { /* ... */ };
-    const toggleCamera = () => { /* ... */ };
-    const toggleMic = () => { /* ... */ };
-    const startRecording = () => { /* ... */ };
-    const stopRecording = () => { /* ... */ };
-    const saveRecording = async () => { /* ... */ };
+    const handleSend = async () => {
+        if(!msgText.trim() || !user) return;
+        await addDoc(collection(firestore!, 'lectures', lecture.id, 'messages'), { text: msgText, senderName: user.displayName, senderId: user.uid, createdAt: serverTimestamp() });
+        setMsgText('');
+    };
+    const toggleCamera = () => { if (stream) { const track = stream.getVideoTracks()[0]; if(track) { track.enabled = !track.enabled; setIsCameraOn(track.enabled); } } };
+    const toggleMic = () => { if (stream) { const track = stream.getAudioTracks()[0]; if(track) { track.enabled = !track.enabled; setIsMicOn(track.enabled); } } };
+    const startRecording = () => {
+        if (!stream) return;
+        chunksRef.current = [];
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+        recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+        recorder.onstop = () => { setRecordedBlob(new Blob(chunksRef.current, { type: 'video/webm' })); };
+        recorder.start(); setIsRecording(true); mediaRecorderRef.current = recorder;
+    };
+    const stopRecording = () => { if (mediaRecorderRef.current && isRecording) { mediaRecorderRef.current.stop(); setIsRecording(false); } };
+    const saveRecording = async () => {
+        if (!recordedBlob || !firestore || !user) return;
+        setIsSavingRecord(true);
+        try {
+            const app = getApp();
+            const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
+            const storageRef = ref(storage, `recordings/${lecture.id}_${Date.now()}.webm`);
+            await uploadBytes(storageRef, recordedBlob);
+            const downloadUrl = await getDownloadURL(storageRef);
+            await addDoc(collection(firestore, 'learning_materials'), {
+                topicTitle: `Recording: ${lecture.title}`, description: `Live session recording`, classId: 'global', subject: 'Live Recordings',
+                uploadedBy: user.uid, createdAt: serverTimestamp(), type: 'Video', resources: [{ id: Date.now().toString(), title: 'Watch Session', type: 'Video', url: downloadUrl }]
+            });
+            toast({ title: "Saved to Library!" }); setRecordedBlob(null);
+        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
+        finally { setIsSavingRecord(false); }
+    };
     const handleUploadSlides = async (e: React.ChangeEvent<HTMLInputElement>) => { /* ... */ };
     const changeSlide = async (direction: 'next' | 'prev') => { /* ... */ };
     const handleGeneratePoll = async () => { /* ... */ };
@@ -703,7 +755,12 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 
 // --- MAIN PAGE: LOBBY (UNCHANGED) ---
 export default function LiveClassroomPage() {
-    const { user } = useUser(); const { role } = useRole(); const firestore = useFirestore(); const [activeLectureId, setActiveLectureId] = useState<string | null>(null); const [isScheduleOpen, setIsScheduleOpen] = useState(false); const [activeTab, setActiveTab] = useState('live');
+    const { user } = useUser();
+    const { role } = useRole();
+    const firestore = useFirestore();
+    const [activeLectureId, setActiveLectureId] = useState<string | null>(null);
+    const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('live');
     const isTeacher = ['Teacher', 'Administrator', 'Director'].includes(role);
     const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]); const { data: liveLectures } = useCollection<Lecture>(liveQuery);
     const upcomingQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, [firestore]); const { data: upcomingLecturesRaw } = useCollection<Lecture>(upcomingQuery);
