@@ -8,7 +8,8 @@ import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, limit } from 'firebase/firestore';
 import { 
-  FlaskConical, Trophy, PencilRuler, PlusCircle, Lightbulb, Wand2, Loader2, Trash2, Microscope, Sparkles
+  FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
+  Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
@@ -36,6 +37,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 
+
 const scienceProblemSchema = z.object({
     topic: z.string().min(1, "Topic is required."),
     difficulty: z.enum(['Easy', 'Medium', 'Hard']),
@@ -44,6 +46,17 @@ const scienceProblemSchema = z.object({
     options: z.array(z.string().min(1, "Option cannot be empty.")).length(4, "You must provide 4 options."),
     classId: z.string().min(1, "Please select a class."),
 });
+
+interface LessonCard {
+    id?: string;
+    title: string;
+    explanation: string;
+    analogy: string;
+    keyTerms: string[];
+    quizQuestion: string;
+    quizAnswer: string;
+    timestamp?: any;
+}
 
 // --- SUB-COMPONENT: SCIENCE EXPLORER ---
 function ScienceExplorerTab() {
@@ -91,7 +104,6 @@ function ScienceExplorerTab() {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left: Input & Active Lesson */}
             <div className="lg:col-span-2 space-y-6">
                 <Card className="bg-gradient-to-r from-teal-50 to-cyan-50 border-teal-100">
                     <CardHeader>
@@ -119,10 +131,12 @@ function ScienceExplorerTab() {
                                 <h4 className="font-semibold text-teal-700 mb-1">The Concept</h4>
                                 <p className="text-slate-700 leading-relaxed">{currentLesson.explanation}</p>
                             </div>
+                            
                             <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
                                 <h4 className="font-semibold text-amber-800 mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4"/> Think of it like...</h4>
                                 <p className="text-slate-700 italic">"{currentLesson.analogy}"</p>
                             </div>
+
                             <div>
                                 <h4 className="font-semibold text-slate-700 mb-2">Key Terms</h4>
                                 <div className="flex flex-wrap gap-2">
@@ -131,6 +145,7 @@ function ScienceExplorerTab() {
                                     ))}
                                 </div>
                             </div>
+
                             <div className="pt-4 border-t">
                                 <h4 className="font-semibold text-slate-700 mb-2">Quick Check</h4>
                                 <p className="mb-3">{currentLesson.quizQuestion}</p>
@@ -146,7 +161,6 @@ function ScienceExplorerTab() {
                     </Card>
                 )}
             </div>
-            {/* Right: History */}
             <div>
                  <Card className="h-full max-h-[600px] flex flex-col">
                     <CardHeader className="pb-3"><CardTitle className="text-md">Your Learning History</CardTitle></CardHeader>
@@ -206,6 +220,10 @@ function Leaderboard() {
                         <TableCell className="font-bold">{index + 1}</TableCell>
                         <TableCell>
                             <div className="flex items-center gap-3">
+                                {/* <Avatar>
+                                    <AvatarImage src={entry.profilePictureUrl} />
+                                    <AvatarFallback>{entry.userName.charAt(0)}</AvatarFallback>
+                                </Avatar> */}
                                 <span>{entry.userName}</span>
                             </div>
                         </TableCell>
@@ -352,21 +370,33 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
         const generateNewFactIfNeeded = async () => {
           if (!isStaff) return;
 
-          console.log("Fact is stale or missing. Generating a new one...");
-          try {
-              const result = await generateDailyFact();
-              await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
-                  factText: result.fact,
-                  createdAt: serverTimestamp(),
-                  postedBy: user?.uid,
-              });
-              toast({ title: "New Fact of the Day Generated!" });
-          } catch (error) {
-              console.error("Failed to generate new fact:", error);
+          // Check if fact is stale (older than 12 hours)
+          let isStale = true;
+          if (latestFact?.createdAt?.toDate) {
+            const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
+            if (latestFact.createdAt.toDate() > twelveHoursAgo) {
+              isStale = false;
+            }
+          }
+
+          if (isStale) {
+              console.log("Fact is stale or missing. Generating a new one...");
+              try {
+                  const result = await generateDailyFact();
+                  await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
+                      factText: result.fact,
+                      createdAt: serverTimestamp(),
+                      postedBy: user?.uid,
+                  });
+                  toast({ title: "New Fact of the Day Generated!" });
+              } catch (error) {
+                  console.error("Failed to generate new fact:", error);
+              }
           }
         };
         
-        if (!isLoading && !latestFact) {
+        // Trigger the check only when the data has loaded
+        if (!isLoading) {
             generateNewFactIfNeeded();
         }
       }, [latestFact, isLoading, isStaff, firestore, toast, user]);
@@ -558,4 +588,3 @@ export default function ScienceClubPage() {
     </div>
   );
 }
-
