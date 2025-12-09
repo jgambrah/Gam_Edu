@@ -17,7 +17,7 @@ const FocusBlockSchema = z.object({
     title: z.string().describe("The suggested study topic, e.g., 'Review algebra for Math test'."),
     startTime: z.string().describe("The suggested start time in ISO format."),
     endTime: z.string().describe("The suggested end time in ISO format."),
-    type: z.literal('Focus Block').default('Focus Block'),
+    type: z.string().default('Focus Block').describe("The type of event, which should be 'Focus Block'."),
 });
 
 const GenerateStudyPlanInputSchema = z.object({

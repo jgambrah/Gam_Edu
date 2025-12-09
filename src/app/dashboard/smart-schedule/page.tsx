@@ -5,10 +5,12 @@ import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, Timestamp } from 'firebase/firestore';
-import { Calendar as CalendarIcon, Wand2, Loader2, CalendarCheck } from 'lucide-react';
+import { 
+  Calendar as CalendarIcon, Wand2, Loader2, CalendarCheck, ChevronLeft, ChevronRight 
+} from 'lucide-react';
 import { 
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, 
-  eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths 
+  eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, parseISO 
 } from 'date-fns';
 
 // UI Components
@@ -21,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { generateStudyPlan } from '@/ai/flows/generate-study-plan-flow';
 
 // Types
-import { Assignment, Lecture } from '@/lib/types'; // Assuming Lecture is defined in types
+import { Assignment, Lecture } from '@/lib/types';
 
 // --- TYPES ---
 type CalendarEvent = {
@@ -100,7 +102,7 @@ export default function SmartSchedulePage() {
       try {
         const inputEvents = (allEvents || []).filter(e => e.type !== 'Focus Block').map(e => ({
             title: e.title,
-            type: e.type as 'Assignment' | 'Live Lecture' | 'Event',
+            type: e.type as 'Assignment' | 'Live Lecture' | 'Event', // Add 'Event' to the type
             date: e.date.toISOString(),
         }));
         
