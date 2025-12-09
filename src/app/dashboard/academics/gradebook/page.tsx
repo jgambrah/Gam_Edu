@@ -196,46 +196,39 @@ function StudentGradesDetail({
     term: string;
     subjectsList: Subject[] | undefined;
 }) {
-    // 1. Create a Lookup Map for Subjects (ID -> Name)
-    // This ensures we can instantly find the name "Mathematics" if we have the ID "8hAh..."
+    // 1. Create Lookup Map (ID -> Name)
     const subjectMap = useMemo(() => {
         const map: Record<string, string> = {};
         if (subjectsList) {
             subjectsList.forEach(s => {
-                map[s.id] = s.name; // Map ID to Name
-                map[s.id.trim()] = s.name; // Handle potential whitespace
-                if (s.name) map[s.name] = s.name; // Map Name to Name (self-reference)
+                map[s.id] = s.name;
             });
         }
         return map;
     }, [subjectsList]);
 
-    // 2. Group by Subject
+    // 2. Group by Subject (For Report Card Summary)
     const subjectGrades = useMemo(() => {
         const subjects: Record<string, { total: number, max: number, count: number }> = {};
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
-            // --- FIX: AGGRESSIVE NAME RESOLUTION ---
+            // --- NAME RESOLUTION LOGIC ---
             let displaySub = 'General';
 
-            // Priority 1: Check if assessment has a dedicated subjectId and look it up in the map
-            // Priority 2: Check if the 'subject' field contains an ID that exists in our map
-            // Priority 3: Use the 'subject' field as text (Legacy data like "Mathematics")
-            // Fallback: "Unknown Subject"
-            const rawSubject = a.subjectId || a.subject || '';
-            
-            if (rawSubject && subjectMap[rawSubject]) {
-                displaySub = subjectMap[rawSubject];
-            } else if (rawSubject) {
-                // If we can't find it in the map, use the raw string, 
-                // but if it looks like an ID, label it "Unknown" to alert user
-                const isLikelyID = rawSubject.length > 15 && !rawSubject.includes(' ');
-                displaySub = isLikelyID ? `Unknown Subject (${rawSubject.slice(0,4)}...)` : rawSubject;
+            if (a.subjectId && subjectMap[a.subjectId]) {
+                // Best case: We have a linked ID
+                displaySub = subjectMap[a.subjectId];
+            } else if (a.subject && subjectMap[a.subject]) {
+                // Legacy case: The 'subject' field contains the ID string
+                displaySub = subjectMap[a.subject];
+            } else if (a.subject) {
+                // Legacy case: The 'subject' field contains the Name directly
+                displaySub = a.subject;
             }
-
-            // Grouping logic
+            // -----------------------------
+            
             if (!subjects[displaySub]) subjects[displaySub] = { total: 0, max: 0, count: 0 };
             
             subjects[displaySub].total += a.score || 0;
@@ -255,7 +248,7 @@ function StudentGradesDetail({
 
     return (
         <div className="space-y-6 p-4">
-            {/* Summary Cards */}
+            {/* Top Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
                     <CardContent className="p-4 flex items-center gap-3">
@@ -276,6 +269,7 @@ function StudentGradesDetail({
                     </CardContent>
                 </Card>
                 
+                {/* PDF REPORT CARD BUTTON */}
                 <Card className="bg-white border-slate-200 shadow-sm">
                      <CardContent className="p-4 flex flex-col justify-center h-full">
                         <GenerateReportCard 
@@ -285,13 +279,13 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
-                            subjectsList={subjectsList}
+                            subjectsList={subjectsList} // <-- PASS LIST TO PDF TOO
                         />
                      </CardContent>
                 </Card>
             </div>
 
-            {/* Subject Breakdown Table */}
+            {/* Aggregated Grades Table */}
             <div className="border rounded-md">
                 <Table>
                     <TableHeader>
@@ -311,27 +305,33 @@ function StudentGradesDetail({
                                 <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
                             </TableRow>
                         ))}
-                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
+                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades recorded.</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </div>
             
+            {/* RAW LIST: Shows ALL individual entries */}
             <div className="pt-4 border-t">
-                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
-                <div className="space-y-1">
+                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Log (All Entries)</h4>
+                <div className="space-y-1 bg-slate-50 p-2 rounded">
+                    {assessments.filter(a => a.studentId === student.uid).length === 0 && <p className="text-xs text-muted-foreground">No raw data.</p>}
+                    
                     {assessments.filter(a => a.studentId === student.uid).map(a => {
                         let displaySub = 'General';
-                        const rawSubject = a.subjectId || a.subject || '';
-                        if (rawSubject && subjectMap[rawSubject]) displaySub = subjectMap[rawSubject];
-                        else if (rawSubject) displaySub = rawSubject;
+                        if (a.subjectId && subjectMap[a.subjectId]) displaySub = subjectMap[a.subjectId];
+                        else if (a.subject && subjectMap[a.subject]) displaySub = subjectMap[a.subject];
+                        else if (a.subject) displaySub = a.subject;
 
                         return (
-                            <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
+                            <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-white rounded border border-transparent hover:border-slate-200 transition-colors">
                                 <div className="flex flex-col">
-                                    <span className="font-medium">{a.assessmentName}</span>
+                                    <span className="font-medium text-slate-700">{a.assessmentName}</span>
                                     <span className="text-xs text-slate-400">{displaySub} • {a.assessmentType}</span>
                                 </div>
-                                <span className="font-mono font-medium">{a.score}/{a.maxScore}</span>
+                                <div className="text-right">
+                                    <span className="font-mono font-bold">{a.score}</span>
+                                    <span className="text-xs text-slate-400">/{a.maxScore}</span>
+                                </div>
                             </div>
                         );
                     })}
@@ -347,6 +347,7 @@ export default function GradebookManager() {
   const { role, isRoleLoading } = useRole();
   const firestore = useFirestore();
 
+  // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
@@ -354,6 +355,7 @@ export default function GradebookManager() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
+  // 1. Fetch Classes 
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
       if (role === 'Administrator' || role === 'Director') {
@@ -367,11 +369,13 @@ export default function GradebookManager() {
   
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
+  // 2. Fetch Students
   const studentsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
+  // 3. Fetch Assessments
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
     return query(
@@ -383,16 +387,21 @@ export default function GradebookManager() {
   }, [firestore, selectedClassId, selectedYear, selectedTerm]);
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
+  // 4. Fetch Financials
   const financialRecordsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
+  // 5. FETCH SUBJECTS LIST (Essential for resolving IDs)
   const subjectsQuery = useMemoFirebase(() => 
     firestore ? query(collection(firestore, 'subjects')) : null, 
   [firestore]);
   const { data: allSubjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
+  // --- DERIVED DATA ---
+  
+  // A. Calculate Ranks
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
       
@@ -407,6 +416,7 @@ export default function GradebookManager() {
       return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
+  // B. Financials Map
   const studentFinancials = useMemo(() => {
     if (!students || !financialRecords) return {};
     const financials: Record<string, { balance: number }> = {};
@@ -428,26 +438,6 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
-       {isStaff && allSubjects && (
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="debug-subjects" className="border-yellow-200 bg-yellow-50 rounded-lg">
-              <AccordionTrigger className="px-4 text-xs text-yellow-800 hover:no-underline">
-                <span className="flex items-center gap-2"><Info className="h-4 w-4"/> Debug Info: Loaded Subjects</span>
-              </AccordionTrigger>
-              <AccordionContent className="p-4 bg-white">
-                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono">
-                    {allSubjects.map(s => (
-                        <div key={s.id} className="p-1 rounded border">
-                            <strong>{s.name}</strong> <br/> <span className="text-muted-foreground">{s.id}</span>
-                        </div>
-                    ))}
-                </div>
-                 {allSubjects.length === 0 && <span className="text-red-500">No subjects found in database!</span>}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-      )}
-      
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
