@@ -126,7 +126,7 @@ const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
                 const g = 250 * (i / bufferLength);
                 const b = 50;
                 
-                canvasCtx.fillStyle = `rgb(${'${r}'}, ${'${g}'}, ${'${b}'})`;
+                canvasCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
                 canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
                 
                 x += barWidth + 2;
@@ -506,7 +506,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 } else {
                     const m = Math.floor(diff / 60000);
                     const s = Math.floor((diff % 60000) / 1000);
-                    setBreakoutTimeLeft(`${'${m}'}:${'${s}' < 10 ? '0' : ''}${'${s}'}`);
+                    setBreakoutTimeLeft(`${m}:${s < 10 ? '0' : ''}${s}`);
                 }
             }, 1000);
             return () => clearInterval(interval);
@@ -570,7 +570,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 console.error("Screen Share Error Name:", err.name);
                 console.error("Screen Share Error Message:", err.message);
                 
-                const userDenied = err.message.includes('Permission denied');
+                const userDenied = err.message.includes('Permission denied by user') || err.message.includes('Permission denied');
 
                 if (err.name === 'NotAllowedError') {
                     toast({ 
@@ -677,7 +677,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 <div className={`flex-1 relative bg-slate-900 flex items-center justify-center transition-all duration-300 ${showChat || showParticipants ? 'mr-[350px]' : ''}`}>
                     {/* Reactions & Captions */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
-                        {activeReactions.map(r => <div key={r.id} className="absolute bottom-20 text-5xl animate-float-up opacity-0" style={{ left: `${'${r.left}'}%` }}>{r.emoji}</div>)}
+                        {activeReactions.map(r => <div key={r.id} className="absolute bottom-20 text-5xl animate-float-up opacity-0" style={{ left: `${r.left}%` }}>{r.emoji}</div>)}
                         {captionText && <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-black/60 text-white px-6 py-3 rounded-lg text-lg font-medium backdrop-blur-sm z-40 text-center max-w-[80%]">{captionText}</div>}
                     </div>
 
@@ -733,6 +733,15 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                         </Button>
                     )}
                     {isPresenter && <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isRecording ? 'text-red-500' : 'text-white'} hover:bg-white/10`} onClick={isRecording ? stopRecording : startRecording}>{isRecording ? <Square className="h-5 w-5 fill-current"/> : <Circle className="h-5 w-5 fill-red-500 text-red-500"/>} <span className="text-[10px]">{isRecording ? 'Stop' : 'Record'}</span></Button>}
+                    {/* AI Tool Button */}
+                    <Button 
+                        variant="ghost" 
+                        className="flex-col h-14 gap-1 px-3 text-indigo-400 hover:bg-white/10" 
+                        onClick={() => setIsAiOpen(true)}
+                    >
+                        <Sparkles className="h-5 w-5"/> 
+                        <span className="text-[10px]">{isTeacher ? 'Co-Pilot' : 'AI Help'}</span>
+                    </Button>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${showParticipants ? 'text-blue-400 bg-black/40' : 'text-white'} hover:bg-white/10`} onClick={() => {setShowParticipants(!showParticipants); setShowChat(false);}}><Users className="h-5 w-5"/> <span className="text-[10px]">People</span></Button>
@@ -742,24 +751,48 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             </div>
 
             {recordedBlob && (
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50"><Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl"><CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader><CardFooter className="flex justify-between gap-2"><Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button><Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : "Save"}</Button></CardFooter></Card></div>
+                <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
+                    <Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl">
+                        <CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader>
+                        <CardFooter className="flex justify-between gap-2">
+                            <Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button>
+                            <Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save</Button>
+                        </CardFooter>
+                    </Card>
+                </div>
             )}
             <BreakoutSetupDialog open={isBreakoutSetupOpen} setOpen={setIsBreakoutSetupOpen} onStart={handleStartBreakout} />
-            <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); }}>
+            
+            {/* AI Assistant / Co-Pilot Modal */}
+            <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); setAiInput(''); }}>
                 <DialogContent>
-                    <DialogHeader><DialogTitle>{isTeacher ? "Teacher Co-Pilot" : "AI Assistant"}</DialogTitle></DialogHeader>
+                    <DialogHeader>
+                        <DialogTitle>{isTeacher ? "Teacher Co-Pilot" : "Personal Tutor"}</DialogTitle>
+                    </DialogHeader>
+                    
                     {!aiResponse ? (
                         <div className="space-y-4">
-                            <Input value={aiInput} onChange={e => setAiInput(e.target.value)} placeholder="Topic..."/>
+                            <Label>{isTeacher ? "What topic are you teaching?" : "What concept is confusing you?"}</Label>
+                            <Input 
+                                value={aiInput} 
+                                onChange={e => setAiInput(e.target.value)} 
+                                placeholder={isTeacher ? "e.g. Gravity" : "e.g. Inertia"} 
+                            />
                             <Button className="w-full" onClick={isTeacher ? handleGeneratePoll : handleExplainConcept} disabled={isProcessingAi}>
-                                {isProcessingAi ? <Loader2 className="animate-spin"/> : "Submit"}
+                                {isProcessingAi ? <Loader2 className="animate-spin"/> : (isTeacher ? "Generate Quiz" : "Explain to Me")}
                             </Button>
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <p className="text-slate-800">{aiResponse.definition}</p>
-                            <p className="text-slate-600 italic">"{aiResponse.analogy}"</p>
-                            <Button variant="outline" onClick={() => setAiResponse(null)}>Close</Button>
+                            <div className="bg-emerald-50 p-4 rounded-md border border-emerald-100">
+                                <h4 className="font-bold text-emerald-800 text-sm uppercase mb-2">Definition</h4>
+                                <p className="text-slate-800">{aiResponse.definition}</p>
+                            </div>
+                            <div className="bg-amber-50 p-4 rounded-md border border-amber-100">
+                                <h4 className="font-bold text-amber-800 text-sm uppercase mb-2">Analogy</h4>
+                                <p className="text-slate-800 italic">"{aiResponse.analogy}"</p>
+                            </div>
+                            <Button variant="outline" onClick={() => setAiResponse(null)} className="w-full">Ask Another</Button>
                         </div>
                     )}
                 </DialogContent>
@@ -801,7 +834,6 @@ export default function LiveClassroomPage() {
         return upcomingLecturesRaw.sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
     }, [upcomingLecturesRaw]);
 
-    // Actions
     const handleStartScheduled = async (id: string) => {
         if(!firestore) return;
         await updateDoc(doc(firestore, 'lectures', id), { status: 'live' });
@@ -901,4 +933,11 @@ export default function LiveClassroomPage() {
             <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
         </div>
     );
+}
+
+function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+    const firestore = useFirestore(); const { user } = useUser(); const { toast } = useToast(); const [isSubmitting, setIsSubmitting] = useState(false);
+    const [title, setTitle] = useState(''); const [description, setDescription] = useState(''); const [targetGroup, setTargetGroup] = useState(''); const [scheduledDate, setScheduledDate] = useState(''); const [scheduledTime, setScheduledTime] = useState('');
+    const handleSchedule = async () => { if (!user || !title) return; setIsSubmitting(true); try { const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`); await addDoc(collection(firestore!, 'lectures'), { title, description, targetGroup: targetGroup || 'General', scheduledFor: scheduledDateTime, teacherName: user.displayName, teacherId: user.uid, status: 'scheduled', createdAt: serverTimestamp(), slides: [], currentSlide: 0, isPresentationMode: false }); toast({ title: "Class Scheduled" }); setOpen(false); } catch (e) {} finally { setIsSubmitting(false); } };
+    return (<Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>Schedule Class</DialogTitle></DialogHeader><div className="grid gap-4 py-4"><Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Topic"/><Input value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="Target Group"/><div className="grid grid-cols-2 gap-4"><Input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)}/><Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)}/></div></div><DialogFooter><Button onClick={handleSchedule} disabled={isSubmitting}>Schedule</Button></DialogFooter></DialogContent></Dialog>);
 }
