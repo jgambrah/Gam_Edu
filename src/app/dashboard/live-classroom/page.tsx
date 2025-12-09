@@ -614,34 +614,32 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 
     // Other handlers
     const toggleScreenShare = async () => {
+        if (!stream) return;
+
         if (isScreenSharing) {
-            // Stop Sharing -> Revert to Webcam
+            // STOP SHARING -> Revert to Webcam
             try {
+                stream.getVideoTracks().forEach(t => t.stop());
+                
                 const camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                // Stop the previous screen tracks before setting the new stream
-                stream?.getTracks().forEach(t => t.stop());
                 setStream(camStream);
                 setStreamVersion(v => v + 1);
                 setIsScreenSharing(false);
                 
-                // Re-sync video element
                 if (videoRef.current) videoRef.current.srcObject = camStream;
 
             } catch (e) {
-                console.error("Error reverting to camera:", e);
-                toast({ variant: 'destructive', title: "Camera Error", description: "Could not revert to webcam." });
+                console.error("Error reverting to camera", e);
             }
         } else {
             // START SHARING
             try {
-                // Request Screen Stream
-                // @ts-ignore - getDisplayMedia exists in modern browsers
-                const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                // @ts-ignore
+                const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
                 
-                // Handle user clicking "Stop Sharing" floating browser button
+                // Handle user clicking "Stop Sharing" in browser UI (floating bar)
                 displayStream.getVideoTracks()[0].onended = () => {
-                    // When native stop button is clicked, revert logic
-                    toggleScreenShare(); 
+                    toggleScreenShare(); // Revert logic
                 };
 
                 setStream(displayStream);
@@ -651,25 +649,16 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 if (videoRef.current) videoRef.current.srcObject = displayStream;
 
             } catch (err: any) {
-                // --- IMPROVED ERROR LOGGING ---
-                console.error("Screen Share Error Name:", err.name);
-                console.error("Screen Share Error Message:", err.message);
-
-                const userDenied = err.message.includes('Permission denied by user') || err.message.includes('Permission denied');
-
+                // FIX: Check if user simply clicked "Cancel"
                 if (err.name === 'NotAllowedError') {
-                    toast({ 
-                        variant: "destructive", 
-                        title: "Permission Denied", 
-                        description: userDenied 
-                            ? "You cancelled the screen share request."
-                            : "Screen sharing permission was denied by your browser or OS."
-                    });
-                } else if (err.name === 'NotFoundError') {
-                    toast({ variant: "destructive", title: "No Source", description: "No screen video source found." });
-                } else {
-                    toast({ variant: "destructive", title: "Screen Share Failed", description: "Try opening the app in a separate browser tab." });
+                    // Do nothing or show a gentle info toast
+                    // console.log("User cancelled screen share");
+                    return; 
                 }
+
+                // Only log real errors (like hardware failure)
+                console.error("Screen Share Failed:", err);
+                toast({ variant: "destructive", title: "Error", description: "Screen share failed." });
             }
         }
     };
@@ -893,7 +882,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     );
 }
 
-// --- MAIN PAGE: LOBBY (UNCHANGED) ---
+// --- MAIN PAGE: LOBBY ---
 export default function LiveClassroomPage() {
     const { user } = useUser();
     const { role } = useRole();
@@ -1016,8 +1005,9 @@ export default function LiveClassroomPage() {
                      </div>
                 </TabsContent>
             </Tabs>
-
             <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
         </div>
     );
 }
+
+    
