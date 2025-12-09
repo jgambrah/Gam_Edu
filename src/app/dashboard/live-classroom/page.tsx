@@ -437,16 +437,19 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     
                     {/* LAYOUT MODE: GRID (Seeing Students) */}
                     {layoutMode === 'grid' && (
-                        <div className="absolute inset-0 bg-slate-900 grid grid-cols-3 gap-2 p-4 z-10 overflow-y-auto">
+                        <div className="absolute inset-0 bg-slate-900 grid grid-cols-3 md:grid-cols-4 gap-2 p-4 z-10 overflow-y-auto">
                             {/* Teacher (Self) */}
-                            <div className="bg-slate-800 rounded border border-slate-700 aspect-video flex items-center justify-center relative">
+                            <div className="bg-slate-800 rounded border border-indigo-500/50 aspect-video flex items-center justify-center relative overflow-hidden">
                                 <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover transform -scale-x-100" />
-                                <span className="absolute bottom-1 left-2 text-xs text-white bg-black/50 px-1 rounded">You (Teacher)</span>
+                                <div className="absolute bottom-1 left-2 flex items-center gap-1">
+                                    {isMicOn ? <Mic className="h-3 w-3 text-green-400"/> : <MicOff className="h-3 w-3 text-red-400"/>}
+                                    <span className="text-xs text-white bg-black/50 px-1 rounded">You</span>
+                                </div>
                             </div>
-                            {/* Placeholder for Students (Since we don't have WebRTC Peer connections yet) */}
-                            {[1,2,3,4,5].map(i => (
+                            {/* Simulating Students in Grid */}
+                            {[1,2,3,4,5,6].map(i => (
                                 <div key={i} className="bg-slate-800 rounded border border-slate-700 aspect-video flex items-center justify-center relative">
-                                    <Users className="h-8 w-8 text-slate-600"/>
+                                    <div className="w-12 h-12 rounded-full bg-slate-600 flex items-center justify-center text-white font-bold">{String.fromCharCode(64+i)}</div>
                                     <span className="absolute bottom-1 left-2 text-xs text-white bg-black/50 px-1 rounded">Student {i}</span>
                                 </div>
                             ))}
@@ -459,17 +462,20 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                             <div className="relative w-full h-full bg-black flex items-center justify-center">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={lecture.slides[lecture.currentSlide || 0]} alt="Slide" className="max-w-full max-h-full object-contain" />
+                                
+                                {/* Picture-in-Picture of Teacher */}
                                 {isPresenter && stream && isCameraOn && (
-                                    <div className="absolute top-4 right-4 w-40 h-28 bg-black border border-slate-700 rounded-lg overflow-hidden shadow-lg z-30">
+                                    <div className="absolute top-4 right-4 w-48 h-32 bg-black border border-slate-600 rounded-lg overflow-hidden shadow-2xl z-30">
                                         <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover transform -scale-x-100" />
                                     </div>
                                 )}
+
                                 {isPresenter && (
                                     <div className="absolute bottom-20 flex gap-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700 z-20">
                                         <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => changeSlide('prev')} disabled={(lecture.currentSlide || 0) <= 0}><ChevronLeft/></Button>
-                                        <span className="text-white font-mono flex items-center px-2">{(lecture.currentSlide || 0) + 1} / {lecture.slides.length}</span>
+                                        <span className="text-white font-mono flex items-center px-2">Slide {(lecture.currentSlide || 0) + 1}</span>
                                         <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => changeSlide('next')} disabled={(lecture.currentSlide || 0) >= lecture.slides.length - 1}><ChevronRight/></Button>
-                                        <Button variant="destructive" size="sm" onClick={() => updateDoc(doc(firestore!, 'lectures', lecture.id), { isPresentationMode: false })}>Stop Sharing</Button>
+                                        <Button variant="destructive" size="sm" onClick={() => updateDoc(doc(firestore!, 'lectures', lecture.id), { isPresentationMode: false })}>Exit Slides</Button>
                                     </div>
                                 )}
                             </div>
@@ -481,7 +487,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                                 ) : (
                                     <div className="flex flex-col items-center justify-center h-full text-slate-500">
                                         <MonitorPlay className="h-16 w-16 mb-4 opacity-50"/>
-                                        <h3 className="text-xl font-semibold text-white">Live Stream Active</h3>
+                                        <h3 className="text-xl font-semibold text-white">Live Stream</h3>
                                         <p className="text-sm">Instructor: {lecture.teacherName}</p>
                                     </div>
                                 )}
@@ -498,46 +504,72 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                         )
                     )}
                     
-                    {/* CONTROLS OVERLAY */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-slate-900/90 p-2 rounded-full backdrop-blur-sm z-40 border border-slate-700">
-                        {/* MIC & VISUALIZER */}
-                        <div className="flex items-center gap-2 border-r border-slate-700 pr-2">
-                            <Button variant="ghost" size="icon" className={`${isMicOn ? 'text-white' : 'text-red-500'} hover:bg-white/10`} onClick={toggleMic} disabled={!stream}>
+                    {/* GLOBAL CONTROLS OVERLAY */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 bg-slate-900/90 p-2 px-4 rounded-full backdrop-blur-sm z-40 border border-slate-700 shadow-2xl">
+                        
+                        {/* Audio Controls */}
+                        <div className="flex items-center gap-2 border-r border-slate-700 pr-3">
+                            <Button 
+                                variant="ghost" size="icon" 
+                                className={`rounded-full ${isMicOn ? 'bg-slate-700 text-white' : 'bg-red-600/20 text-red-500 hover:bg-red-600/30'}`} 
+                                onClick={toggleMic} disabled={!stream}
+                            >
                                 {isMicOn ? <Mic className="h-5 w-5"/> : <MicOff className="h-5 w-5"/>}
                             </Button>
-                            <MicVisualizer stream={stream} isMicOn={isMicOn} />
+                            {/* NEW: VISUALIZER */}
+                            {isMicOn && stream && <MicVisualizer stream={stream} />}
                         </div>
                         
-                        {/* CAMERA */}
-                        <Button variant="ghost" size="icon" className={`${isCameraOn ? 'text-white' : 'text-red-500'} hover:bg-white/10`} onClick={toggleCamera} disabled={!stream}>
+                        {/* Camera */}
+                        <Button 
+                            variant="ghost" size="icon" 
+                            className={`rounded-full ${isCameraOn ? 'bg-slate-700 text-white' : 'bg-red-600/20 text-red-500 hover:bg-red-600/30'}`} 
+                            onClick={toggleCamera} disabled={!stream}
+                        >
                             {isCameraOn ? <Video className="h-5 w-5"/> : <VideoOff className="h-5 w-5"/>}
                         </Button>
 
-                        {/* RECORDING (Teacher) */}
+                        {/* Screen Share (Teacher) */}
                         {isPresenter && (
-                             <Button variant="ghost" size="icon" className={`${isRecording ? 'text-red-500 animate-pulse' : 'text-white'} hover:bg-white/10`} onClick={isRecording ? stopRecording : startRecording}>
-                                {isRecording ? <Square className="h-5 w-5 fill-current"/> : <Circle className="h-5 w-5 fill-red-500 text-red-500"/>}
+                             <Button variant="ghost" size="icon" className={`rounded-full hover:bg-slate-700 ${lecture.isPresentationMode ? 'bg-indigo-600 text-white' : 'text-slate-300'}`} onClick={() => !lecture.isPresentationMode && fileInputRef.current?.click()}>
+                                <ScreenShare className="h-5 w-5"/>
+                             </Button>
+                        )}
+                        
+                        {/* Recording (Teacher) */}
+                        {isPresenter && (
+                             <Button 
+                                variant="ghost" 
+                                className={`gap-2 rounded-full px-4 ${isRecording ? 'bg-red-600/20 text-red-500 hover:bg-red-600/30' : 'hover:bg-slate-700 text-white'}`} 
+                                onClick={isRecording ? stopRecording : startRecording}
+                             >
+                                <div className={`h-3 w-3 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'border-2 border-white'}`} />
+                                {isRecording ? "Stop Rec" : "Record"}
                              </Button>
                         )}
 
-                        {/* GRID TOGGLE */}
-                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={() => setLayoutMode(layoutMode === 'focus' ? 'grid' : 'focus')}>
+                        {/* Grid Toggle */}
+                        <Button variant="ghost" size="icon" className="rounded-full text-slate-300 hover:bg-slate-700" onClick={() => setLayoutMode(layoutMode === 'focus' ? 'grid' : 'focus')}>
                              {layoutMode === 'focus' ? <LayoutGrid className="h-5 w-5"/> : <Maximize className="h-5 w-5"/>}
                         </Button>
 
-                        {/* LEAVE */}
-                        <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-900/20" onClick={onLeave}>Leave</Button>
+                        {/* Leave */}
+                        <Button variant="destructive" className="rounded-full px-4 ml-2" onClick={onLeave}>Leave</Button>
                     </div>
 
                     {/* RECORDING SAVE DIALOG (Overlay) */}
                     {recordedBlob && (
                         <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
-                            <Card className="w-[300px] border-slate-700 bg-slate-900 text-white">
-                                <CardHeader><CardTitle>Recording Stopped</CardTitle><CardDescription className="text-slate-400">Save this session?</CardDescription></CardHeader>
-                                <CardFooter className="flex justify-between">
-                                    <Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button>
-                                    <Button onClick={saveRecordingToLibrary} disabled={isSavingRecord} className="bg-green-600 hover:bg-green-700">
-                                        {isSavingRecord ? <Loader2 className="animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save
+                            <Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl">
+                                <CardHeader>
+                                    <CardTitle className="text-lg">Recording Finished</CardTitle>
+                                    <CardDescription className="text-slate-400">Would you like to save this to the library?</CardDescription>
+                                </CardHeader>
+                                <CardFooter className="flex justify-between gap-2">
+                                    <Button variant="ghost" onClick={() => setRecordedBlob(null)} className="hover:text-red-400">Discard</Button>
+                                    <Button onClick={saveRecordingToLibrary} disabled={isSavingRecord} className="bg-emerald-600 hover:bg-emerald-700 flex-1">
+                                        {isSavingRecord ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>} 
+                                        Save to Learning Materials
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -556,7 +588,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 </div>
             </div>
 
-            {/* RIGHT: CHAT (Same as before) */}
+            {/* RIGHT: CHAT */}
             <Card className="flex flex-col h-full">
                 <CardHeader className="py-3 px-4 border-b">
                     <CardTitle className="text-md flex items-center gap-2"><MessageSquare className="h-4 w-4"/> Class Chat</CardTitle>
@@ -572,7 +604,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                                             <p className="font-bold text-indigo-900">{msg.text}</p>
                                             <div className="grid grid-cols-1 gap-1">
                                                 {msg.pollData.options.map((opt:string, i:number) => (
-                                                    <Button key={i} variant="outline" size="sm" className="justify-start h-auto py-1 text-left text-xs bg-white">{opt}</Button>
+                                                    <Button key={i} variant="outline" size="sm" className="justify-start h-auto py-1 text-left text-xs bg-white hover:bg-indigo-50">{opt}</Button>
                                                 ))}
                                             </div>
                                         </div>
@@ -585,12 +617,12 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     </div>
                 </CardContent>
                 <div className="p-3 border-t bg-slate-50 flex gap-2">
-                    <Input value={msgText} onChange={e => setMsgText(e.target.value)} placeholder="Type a message..." onKeyDown={e => e.key === 'Enter' && handleSend()}/>
+                    <Input value={msgText} onChange={e => setMsgText(e.target.value)} placeholder="Type a message..." onKeyDown={e => e.key === 'Enter' && handleSend()} className="bg-white"/>
                     <Button size="icon" onClick={handleSend}><Send className="h-4 w-4"/></Button>
                 </div>
             </Card>
 
-            {/* AI MODAL (Same as before) */}
+            {/* AI MODAL */}
             <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); setAiInput(''); }}>
                 <DialogContent>
                     <DialogHeader>
@@ -636,26 +668,24 @@ export default function LiveClassroomPage() {
 
     const isTeacher = ['Teacher', 'Administrator', 'Director'].includes(role);
     
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
-    const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(useMemoFirebase(() => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore, role]));
-    const studentClassId = studentData?.[0]?.classId;
+    const { data: classes, isLoading: isLoadingClasses } = useCollection(useMemoFirebase(() => isTeacher ? collection(firestore, 'classes') : null, [isTeacher, firestore]));
+
+    // Queries
+    const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]);
+    const { data: liveLectures } = useCollection<Lecture>(liveQuery);
+
+    const upcomingQuery = useMemoFirebase(() => 
+        // FIX: Removed 'orderBy' temporarily to avoid Missing Index error during first run
+        firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, 
+    [firestore]);
     
-    const baseLecturesQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
-        if (isTeacher) { 
-            return collection(firestore, 'lectures');
-        }
-        if (role === 'Student' && studentClassId) { 
-            return query(collection(firestore, 'lectures'), where('classId', '==', studentClassId));
-        }
-        return null; 
-    }, [user, firestore, role, isTeacher, studentClassId]);
-
-    const { data: lectures, isLoading: isLoadingLectures } = useCollection<Lecture>(baseLecturesQuery);
-
-    const liveLectures = useMemo(() => lectures?.filter(l => l.status === 'live'), [lectures]);
-    const upcomingLectures = useMemo(() => lectures?.filter(l => l.status === 'scheduled').sort((a,b) => a.scheduledFor.toDate() - b.scheduledFor.toDate()), [lectures]);
-
+    const { data: upcomingLecturesRaw } = useCollection<Lecture>(upcomingQuery);
+    
+    // Client-side Sort
+    const upcomingLectures = useMemo(() => {
+        if (!upcomingLecturesRaw) return [];
+        return upcomingLecturesRaw.sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
+    }, [upcomingLecturesRaw]);
 
     // Actions
     const handleStartScheduled = async (id: string) => {
@@ -671,12 +701,10 @@ export default function LiveClassroomPage() {
         }
     };
 
-    if (isLoadingLectures || isLoadingClasses || isLoadingStudent) {
-        return <div className="flex h-full w-full items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>
-    }
-
+    // If joined, show classroom
     if (activeLectureId) {
-        const currentLecture = lectures?.find(l => l.id === activeLectureId);
+        // Try to find in live first, then upcoming (in case it just switched)
+        const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
         if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
     }
 
@@ -711,7 +739,7 @@ export default function LiveClassroomPage() {
                                 <CardHeader>
                                     <div className="flex justify-between items-start">
                                         <Badge className="bg-red-100 text-red-700 hover:bg-red-200">LIVE</Badge>
-                                        <Badge variant="outline">{l.className || l.classId}</Badge>
+                                        <Badge variant="outline">{l.targetGroup}</Badge>
                                     </div>
                                     <CardTitle className="mt-2">{l.title}</CardTitle>
                                     <CardDescription>Host: {l.teacherName}</CardDescription>
@@ -740,23 +768,24 @@ export default function LiveClassroomPage() {
                                         <div className="flex gap-2 text-sm text-muted-foreground">
                                             <span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span>
                                             <span>•</span>
-                                            <span>{l.className || l.classId}</span>
+                                            <span>{l.targetGroup}</span>
                                         </div>
                                     </div>
                                 </div>
-                                {isTeacher && user?.uid === l.teacherId && l.status === 'scheduled' && (
+                                {isTeacher ? (
                                     <Button onClick={() => handleStartScheduled(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
                                         Start Now
                                     </Button>
+                                ) : (
+                                    <Button disabled variant="secondary" size="sm">Not Started</Button>
                                 )}
-                                {role === 'Student' && <Button disabled variant="secondary" size="sm">Not Started</Button>}
                             </div>
                         ))}
                      </div>
                 </TabsContent>
             </Tabs>
 
-            {classes && <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} classes={classes} />}
+            {classes && <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} classes={classes}/>}
         </div>
     );
 }
