@@ -282,6 +282,56 @@ const Whiteboard = () => {
     );
 };
 
+// --- COMPONENT: Schedule Class Dialog ---
+function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [targetGroup, setTargetGroup] = useState('');
+    const [scheduledDate, setScheduledDate] = useState('');
+    const [scheduledTime, setScheduledTime] = useState('');
+
+    const handleSchedule = async () => {
+        if (!user || !title || !scheduledDate || !scheduledTime) {
+            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+            await addDoc(collection(firestore!, 'lectures'), {
+                title, description, targetGroup: targetGroup || 'General',
+                scheduledFor: scheduledDateTime, teacherName: user.displayName || user.email?.split('@')[0],
+                teacherId: user.uid, status: 'scheduled', createdAt: serverTimestamp(),
+                slides: [], currentSlide: 0, isPresentationMode: false
+            });
+            toast({ title: "Class Scheduled" });
+            setOpen(false); setTitle(''); setDescription(''); setTargetGroup('');
+        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); } 
+        finally { setIsSubmitting(false); }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader><DialogTitle>Schedule a Class</DialogTitle><DialogDescription>Set up a future live session.</DialogDescription></DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2"><Label>Topic *</Label><Input value={title} onChange={e => setTitle(e.target.value)} /></div>
+                    <div className="space-y-2"><Label>Description</Label><Textarea value={description} onChange={e => setDescription(e.target.value)} /></div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><Label>Target Audience</Label><Input value={targetGroup} onChange={e => setTargetGroup(e.target.value)} /></div>
+                        <div className="space-y-2"><Label>Date *</Label><Input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} /></div>
+                    </div>
+                    <div className="space-y-2"><Label>Time *</Label><Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} /></div>
+                </div>
+                <DialogFooter><Button onClick={handleSchedule} disabled={isSubmitting} className="w-full">{isSubmitting ? <Loader2 className="mr-2 animate-spin"/> : "Schedule"}</Button></DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 // --- COMPONENT: ACTIVE CLASSROOM ---
 function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () => void }) {
@@ -292,7 +342,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const [msgText, setMsgText] = useState('');
     const scrollRef = useRef<HTMLDivElement>(null);
     
-    // AI & Tools
+    // AI Tools
     const [isAiOpen, setIsAiOpen] = useState(false);
     const [aiInput, setAiInput] = useState('');
     const [aiResponse, setAiResponse] = useState<any>(null);
@@ -311,6 +361,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const [isCameraOn, setIsCameraOn] = useState(false);
     const [isMicOn, setIsMicOn] = useState(false);
     const [isScreenSharing, setIsScreenSharing] = useState(false);
+    const [permissionError, setPermissionError] = useState(false);
     
     // Feature States
     const [captionsOn, setCaptionsOn] = useState(false);
@@ -648,8 +699,8 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     {isPresenter && <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isRecording ? 'text-red-500' : 'text-white'}`} onClick={isRecording ? stopRecording : startRecording}>{isRecording ? <Square className="h-5 w-5 fill-current"/> : <Circle className="h-5 w-5 fill-red-500 text-red-500"/>} <span className="text-[10px]">{isRecording ? 'Stop' : 'Record'}</span></Button>}
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${showParticipants ? 'text-blue-400' : 'text-white'}`} onClick={() => {setShowParticipants(!showParticipants); setShowChat(false);}}><Users className="h-5 w-5"/> <span className="text-[10px]">People</span></Button>
-                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${showChat ? 'text-blue-400' : 'text-white'}`} onClick={() => {setShowChat(!showChat); setShowParticipants(false);}}><MessageSquare className="h-5 w-5"/> <span className="text-[10px]">Chat</span></Button>
+                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${showParticipants ? 'text-blue-400 bg-black/40' : 'text-white'}`} onClick={() => {setShowParticipants(!showParticipants); setShowChat(false);}}><Users className="h-5 w-5"/> <span className="text-[10px]">People</span></Button>
+                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${showChat ? 'text-blue-400 bg-black/40' : 'text-white'}`} onClick={() => {setShowChat(!showChat); setShowParticipants(false);}}><MessageSquare className="h-5 w-5"/> <span className="text-[10px]">Chat</span></Button>
                     <Button className="bg-red-600 hover:bg-red-700 text-white rounded-full h-10 px-6 ml-2" onClick={onLeave}>End</Button>
                 </div>
             </div>
