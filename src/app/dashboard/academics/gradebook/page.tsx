@@ -186,7 +186,7 @@ function StudentGradesDetail({
     totalStudents,
     year, 
     term,
-    subjectsList // This list comes from the database
+    subjectsList 
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -196,15 +196,12 @@ function StudentGradesDetail({
     term: string;
     subjectsList: Subject[] | undefined;
 }) {
-    // 1. Create a Lookup Map for Subjects (ID -> Name)
-    // This ensures we can instantly find the name "Mathematics" if we have the ID "8hAh..."
+    // 1. Create a Fast Lookup Map (ID -> Name)
     const subjectMap = useMemo(() => {
         const map: Record<string, string> = {};
         if (subjectsList) {
             subjectsList.forEach(s => {
-                map[s.id] = s.name; // Map ID to Name
-                // Handle case where name might be stored as ID by accident in legacy data
-                if (s.code) map[s.code] = s.name; 
+                map[s.id] = s.name;
             });
         }
         return map;
@@ -217,26 +214,23 @@ function StudentGradesDetail({
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
-            // --- FIX: AGGRESSIVE NAME RESOLUTION ---
-            // Priority 1: Check if assessment has a dedicated subjectId and look it up in the map
-            // Priority 2: Check if the 'subject' field contains an ID that exists in our map
-            // Priority 3: Use the 'subject' field as text (Legacy data like "Mathematics")
-            // Fallback: "Unknown Subject"
-            
+            // --- NAME RESOLUTION LOGIC ---
             let displaySub = 'General';
 
             if (a.subjectId && subjectMap[a.subjectId]) {
+                // Best case: We have a linked ID
                 displaySub = subjectMap[a.subjectId];
             } else if (a.subject && subjectMap[a.subject]) {
-                // This catches cases where the ID was saved into the 'subject' string field
+                // Legacy case: The 'subject' field contains the ID string
                 displaySub = subjectMap[a.subject];
             } else if (a.subject) {
-                // If it's not an ID in our map, assume it's a raw name
+                // Legacy case: The 'subject' field contains the Name directly
                 displaySub = a.subject;
             }
-
-            // Grouping logic
+            // -----------------------------
+            
             if (!subjects[displaySub]) subjects[displaySub] = { total: 0, max: 0, count: 0 };
+            
             subjects[displaySub].total += a.score || 0;
             subjects[displaySub].max += a.maxScore || 0;
             subjects[displaySub].count++;
@@ -285,6 +279,7 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
+                            subjectsList={subjectsList} // <-- PASS LIST TO PDF TOO
                         />
                      </CardContent>
                 </Card>
@@ -320,17 +315,19 @@ function StudentGradesDetail({
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => {
-                        // FIX: Same resolution logic for the detailed list
-                        let displaySub = 'General';
-                        if (a.subjectId && subjectMap[a.subjectId]) displaySub = subjectMap[a.subjectId];
-                        else if (a.subject && subjectMap[a.subject]) displaySub = subjectMap[a.subject];
-                        else if (a.subject) displaySub = a.subject;
+                        // RESOLVE NAME FOR DETAIL LIST
+                        let displaySub = a.assessmentName;
+                        let subContext = 'General';
+
+                        if (a.subjectId && subjectMap[a.subjectId]) subContext = subjectMap[a.subjectId];
+                        else if (a.subject && subjectMap[a.subject]) subContext = subjectMap[a.subject];
+                        else if (a.subject) subContext = a.subject;
 
                         return (
                             <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
                                 <div className="flex flex-col">
                                     <span className="font-medium">{a.assessmentName}</span>
-                                    <span className="text-xs text-slate-400">{displaySub} • {a.assessmentType}</span>
+                                    <span className="text-xs text-slate-400">{subContext} • {a.assessmentType}</span>
                                 </div>
                                 <span className="font-mono font-medium">{a.score}/{a.maxScore}</span>
                             </div>
@@ -356,7 +353,7 @@ export default function GradebookManager() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
-  // 1. Fetch Classes (Correctly handled for both Admin and Teacher)
+  // 1. Fetch Classes 
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
       if (role === 'Administrator' || role === 'Director') {
@@ -394,7 +391,7 @@ export default function GradebookManager() {
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. FETCH SUBJECTS (NEW - Needed for mapping IDs to Names)
+  // 5. FETCH SUBJECTS LIST (Essential for resolving IDs)
   const subjectsQuery = useMemoFirebase(() => 
     firestore ? query(collection(firestore, 'subjects')) : null, 
   [firestore]);
@@ -425,7 +422,7 @@ export default function GradebookManager() {
     students.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const paid = myRecords.reduce((acc, r) => acc + r.amountPaid, 0);
+        const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
         financials[student.uid] = { balance: billed - paid };
     });
     return financials;
