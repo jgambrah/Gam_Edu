@@ -11,8 +11,7 @@ import {
   Video, Mic, MicOff, VideoOff, MessageSquare, Send, 
   Sparkles, MonitorPlay, Bot, Calendar as CalendarIcon, 
   Clock, ChevronLeft, ChevronRight, Presentation, ScreenShare, 
-  LayoutGrid, Maximize, Circle, Square, Save, Users, Mic2, Hand, Smile, X, MoreHorizontal, PhoneOff,
-  Subtitles, PictureInPicture, Users2, Timer, PenTool, Eraser, Download
+  LayoutGrid, Maximize, Circle, Square, Save, Users, PenTool, Eraser, Trash2, Download, Smile, X, Subtitles, PictureInPicture, Users2, Timer
 } from 'lucide-react';
 import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
 import { format } from 'date-fns';
@@ -281,6 +280,92 @@ const Whiteboard = () => {
         </div>
     );
 };
+
+// --- COMPONENT: Schedule Class Dialog ---
+function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [targetGroup, setTargetGroup] = useState('');
+    const [scheduledDate, setScheduledDate] = useState('');
+    const [scheduledTime, setScheduledTime] = useState('');
+
+    const handleSchedule = async () => {
+        if (!user || !title || !scheduledDate || !scheduledTime) {
+            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+            await addDoc(collection(firestore!, 'lectures'), {
+                title,
+                description,
+                targetGroup: targetGroup || 'General',
+                scheduledFor: scheduledDateTime,
+                teacherName: user.displayName || user.email?.split('@')[0],
+                teacherId: user.uid,
+                status: 'scheduled',
+                createdAt: serverTimestamp(),
+                slides: [],
+                currentSlide: 0,
+                isPresentationMode: false
+            });
+            toast({ title: "Class Scheduled" });
+            setOpen(false);
+            // Reset state
+            setTitle(''); setDescription(''); setTargetGroup(''); setScheduledDate(''); setScheduledTime('');
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Schedule a New Live Class</DialogTitle>
+                    <DialogDescription>Set up a future live session for your students.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="title">Topic / Title *</Label>
+                        <Input id="title" value={title} onChange={e => setTitle(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="target">Target Audience</Label>
+                            <Input id="target" value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="e.g., JHS 1" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="date">Date *</Label>
+                            <Input id="date" type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
+                        </div>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="time">Time *</Label>
+                        <Input id="time" type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleSchedule} disabled={isSubmitting} className="w-full">
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Schedule Class"}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 // --- COMPONENT: Breakout Room Setup ---
 function BreakoutSetupDialog({ open, setOpen, onStart }: { open: boolean, setOpen: (v: boolean) => void, onStart: (rooms: number, duration: number) => void }) {
@@ -714,8 +799,10 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             {/* BOTTOM TOOLBAR */}
             <div className="h-16 bg-[#1C1C1E] flex items-center justify-between px-4 shrink-0 z-30">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isMicOn ? 'text-white' : 'text-red-500'}`} onClick={toggleMic}><Mic className="h-5 w-5"/><span className="text-[10px]">Mic</span></Button>
-                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isCameraOn ? 'text-white' : 'text-red-500'}`} onClick={toggleCamera}><Video className="h-5 w-5"/><span className="text-[10px]">Cam</span></Button>
+                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isMicOn ? 'text-white' : 'text-red-500'}`} onClick={toggleMic} disabled={!stream}><Mic className="h-5 w-5"/><span className="text-[10px]">Mic</span></Button>
+                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isCameraOn ? 'text-white' : 'text-red-500'}`} onClick={toggleCamera} disabled={!stream}><Video className="h-5 w-5"/><span className="text-[10px]">Cam</span></Button>
+                    <div className="w-px h-8 bg-white/10 mx-2"/>
+                    {isMicOn && stream && <MicVisualizer stream={stream} />}
                 </div>
                 <div className="flex items-center gap-1">
                     <Popover><PopoverTrigger asChild><Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10"><Smile className="h-5 w-5"/> <span className="text-[10px]">React</span></Button></PopoverTrigger><PopoverContent className="w-auto p-2 bg-[#2C2C2E] border-none flex gap-2">{['👍','❤️','😂','😮','👋','🎉'].map(e => (<button key={e} onClick={() => sendReaction(e)} className="text-2xl hover:scale-125 p-1">{e}</button>))}</PopoverContent></Popover>
@@ -807,91 +894,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 }
 
 // --- MAIN PAGE: LOBBY (UNCHANGED) ---
-function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [targetGroup, setTargetGroup] = useState('');
-    const [scheduledDate, setScheduledDate] = useState('');
-    const [scheduledTime, setScheduledTime] = useState('');
-
-    const handleSchedule = async () => {
-        if (!user || !title || !scheduledDate || !scheduledTime) {
-            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
-            return;
-        }
-        setIsSubmitting(true);
-        try {
-            const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
-            await addDoc(collection(firestore!, 'lectures'), {
-                title,
-                description,
-                targetGroup: targetGroup || 'General',
-                scheduledFor: scheduledDateTime,
-                teacherName: user.displayName || user.email?.split('@')[0],
-                teacherId: user.uid,
-                status: 'scheduled',
-                createdAt: serverTimestamp(),
-                slides: [],
-                currentSlide: 0,
-                isPresentationMode: false
-            });
-            toast({ title: "Class Scheduled" });
-            setOpen(false);
-            // Reset state
-            setTitle(''); setDescription(''); setTargetGroup(''); setScheduledDate(''); setScheduledTime('');
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                    <DialogTitle>Schedule a New Live Class</DialogTitle>
-                    <DialogDescription>Set up a future live session for your students.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="title">Topic / Title *</Label>
-                        <Input id="title" value={title} onChange={e => setTitle(e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="target">Target Audience</Label>
-                            <Input id="target" value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="e.g., JHS 1" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="date">Date *</Label>
-                            <Input id="date" type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
-                        </div>
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="time">Time *</Label>
-                        <Input id="time" type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={handleSchedule} disabled={isSubmitting} className="w-full">
-                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Schedule Class"}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
 export default function LiveClassroomPage() {
     const { user } = useUser();
     const { role } = useRole();
