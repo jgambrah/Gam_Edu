@@ -12,7 +12,7 @@ import {
   Sparkles, MonitorPlay, Bot, Calendar as CalendarIcon, 
   Clock, ChevronLeft, ChevronRight, Presentation, ScreenShare, 
   LayoutGrid, Maximize, Circle, Square, Save, Users, Mic2, Hand, Smile, X, MoreHorizontal, PhoneOff,
-  Subtitles, PictureInPicture, Users2, Timer, PenTool, Eraser, Download
+  Subtitles, PictureInPicture, Users2, Timer, PenTool, Eraser, Download, Trash2
 } from 'lucide-react';
 import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
 import { format } from 'date-fns';
@@ -581,38 +581,35 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     // Other handlers
     const toggleScreenShare = async () => {
         if (isScreenSharing) {
+            // Stop Sharing -> Revert to Webcam
             try {
-                stream?.getTracks().forEach(t => t.stop());
                 const camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                // Stop the previous screen tracks before setting the new stream
+                stream?.getTracks().forEach(t => t.stop());
                 setStream(camStream);
-                setStreamVersion(v => v + 1);
                 setIsScreenSharing(false);
-                if (videoRef.current) videoRef.current.srcObject = camStream;
             } catch (e) {
                 console.error("Error reverting to camera:", e);
                 toast({ variant: 'destructive', title: "Camera Error", description: "Could not revert to webcam." });
             }
         } else {
+            // Start Sharing
             try {
                 // @ts-ignore
                 const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-                displayStream.getVideoTracks()[0].onended = () => { toggleScreenShare(); };
+                displayStream.getVideoTracks()[0].onended = () => {
+                    toggleScreenShare(); // Revert back when browser "Stop" is clicked
+                };
+                // Stop old camera tracks before starting new ones
+                stream?.getTracks().forEach(t => t.stop());
                 setStream(displayStream);
-                setStreamVersion(v => v + 1);
                 setIsScreenSharing(true);
-                if (videoRef.current) videoRef.current.srcObject = displayStream;
             } catch (err: any) {
-                console.error("Screen Share Error Name:", err.name);
-                console.error("Screen Share Error Message:", err.message);
                 if (err.name === 'NotAllowedError') {
-                    const message = err.message.includes("by user")
-                        ? "You cancelled the screen share request."
-                        : "Permission to share screen was denied by the OS or browser settings.";
-                     toast({ variant: "destructive", title: "Permission Denied", description: message });
-                } else if (err.name === 'NotFoundError') {
-                    toast({ variant: "destructive", title: "No Source", description: "No screen video source found." });
+                    const message = err.message.includes("by user") ? "You cancelled the screen share request." : "Permission to share screen was denied by your browser or OS.";
+                    toast({ variant: "destructive", title: "Permission Denied", description: message });
                 } else {
-                    toast({ variant: "destructive", title: "Screen Share Failed", description: "Try opening the app in a separate browser tab." });
+                    toast({ variant: "destructive", title: "Screen Share Failed", description: "Could not start screen sharing." });
                 }
             }
         }
@@ -752,7 +749,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             </div>
 
             {recordedBlob && (
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50"><Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl"><CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader><CardFooter className="flex justify-between gap-2"><Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button><Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : "Save"}</Button></CardFooter></Card>
+                <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50"><Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl"><CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader><CardFooter className="flex justify-between gap-2"><Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button><Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : "Save"}</Button></CardFooter></Card></div>
             )}
             <BreakoutSetupDialog open={isBreakoutSetupOpen} setOpen={setIsBreakoutSetupOpen} onStart={handleStartBreakout} />
             <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); }}>
@@ -794,11 +791,132 @@ export default function LiveClassroomPage() {
     const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
+    const { toast } = useToast();
+    
     const [activeLectureId, setActiveLectureId] = useState<string | null>(null);
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('live');
+
     const isTeacher = ['Teacher', 'Administrator', 'Director'].includes(role);
-    const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]); const { data: liveLectures } = useCollection<Lecture>(liveQuery);
-    const upcomingQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, [firestore]); const { data: upcoming } = useCollection<Lecture>(upcomingQuery);
-    if (activeLectureId) { const current = liveLectures?.find(l => l.id === activeLectureId) || upcoming?.find(l => l.id === activeLectureId); if(current) return <ActiveClassroom lecture={current} onLeave={() => setActiveLectureId(null)} />; }
-    return (<div className="space-y-6 p-6"><Card className="bg-slate-900 text-white"><CardHeader className="flex justify-between flex-row"><div><CardTitle className="flex gap-2"><Video className="text-red-500"/> Live Classroom</CardTitle><p className="text-slate-400">Virtual Learning</p></div>{isTeacher && <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600">Schedule</Button>}</CardHeader></Card><div className="grid grid-cols-1 md:grid-cols-3 gap-4">{liveLectures?.map(l => (<Card key={l.id} className="border-l-4 border-l-red-500"><CardHeader><CardTitle>{l.title}</CardTitle><CardDescription>Host: {l.teacherName}</CardDescription></CardHeader><CardFooter><Button onClick={() => setActiveLectureId(l.id)} className="w-full bg-red-600">Join Live</Button></CardFooter></Card>))}</div><ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen}/></div>);
+
+    // Queries
+    const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]);
+    const { data: liveLectures } = useCollection<Lecture>(liveQuery);
+
+    const upcomingQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, 
+    [firestore]);
+    
+    const { data: upcomingLecturesRaw } = useCollection<Lecture>(upcomingQuery);
+    
+    // Client-side Sort
+    const upcomingLectures = useMemo(() => {
+        if (!upcomingLecturesRaw) return [];
+        return upcomingLecturesRaw.sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
+    }, [upcomingLecturesRaw]);
+
+    // Actions
+    const handleStartScheduled = async (id: string) => {
+        if(!firestore) return;
+        await updateDoc(doc(firestore, 'lectures', id), { status: 'live' });
+        setActiveLectureId(id);
+    };
+
+    const handleEndLecture = async () => {
+        if(activeLectureId) {
+            await updateDoc(doc(firestore!, 'lectures', activeLectureId), { status: 'ended' });
+            setActiveLectureId(null);
+        }
+    };
+
+    // If joined, show classroom
+    if (activeLectureId) {
+        // Try to find in live first, then upcoming (in case it just switched)
+        const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
+        if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
+    }
+
+    return (
+        <div className="space-y-6 p-6">
+            <Card className="bg-slate-900 text-white">
+                <CardHeader className="flex flex-row justify-between items-center">
+                    <div>
+                        <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom</CardTitle>
+                        <p className="text-slate-400">Interactive virtual learning environment.</p>
+                    </div>
+                    {isTeacher && (
+                        <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                            <CalendarIcon className="mr-2 h-4 w-4"/> Schedule Class
+                        </Button>
+                    )}
+                </CardHeader>
+            </Card>
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                    <TabsTrigger value="live">Live Now ({liveLectures?.length || 0})</TabsTrigger>
+                    <TabsTrigger value="upcoming">Upcoming ({upcomingLectures?.length || 0})</TabsTrigger>
+                </TabsList>
+
+                {/* LIVE TAB */}
+                <TabsContent value="live" className="mt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
+                        {liveLectures?.map(l => (
+                            <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <Badge className="bg-red-100 text-red-700 hover:bg-red-200">LIVE</Badge>
+                                        <Badge variant="outline">{l.targetGroup}</Badge>
+                                    </div>
+                                    <CardTitle className="mt-2">{l.title}</CardTitle>
+                                    <CardDescription>Host: {l.teacherName}</CardDescription>
+                                </CardHeader>
+                                <CardFooter>
+                                    <Button onClick={() => setActiveLectureId(l.id)} className="w-full bg-red-600 hover:bg-red-700">Join Class</Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                </TabsContent>
+
+                {/* UPCOMING TAB */}
+                <TabsContent value="upcoming" className="mt-6">
+                     <div className="space-y-4">
+                        {upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
+                        {upcomingLectures?.map(l => (
+                            <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
+                                <div className="flex gap-4 items-center">
+                                    <div className="bg-indigo-50 p-3 rounded-lg text-center min-w-[70px]">
+                                        <p className="text-xs font-bold text-indigo-600 uppercase">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'MMM') : 'DATE'}</p>
+                                        <p className="text-xl font-bold text-slate-800">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'd') : '00'}</p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-lg text-slate-800">{l.title}</h4>
+                                        <div className="flex gap-2 text-sm text-muted-foreground">
+                                            <span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span>
+                                            <span>•</span>
+                                            <span>{l.targetGroup}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {isTeacher ? (
+                                    <Button onClick={() => handleStartScheduled(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
+                                        Start Now
+                                    </Button>
+                                ) : (
+                                    <Button disabled variant="secondary" size="sm">Not Started</Button>
+                                )}
+                            </div>
+                        ))}
+                     </div>
+                </TabsContent>
+            </Tabs>
+
+            <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
+        </div>
+    );
 }
+
+
+    
