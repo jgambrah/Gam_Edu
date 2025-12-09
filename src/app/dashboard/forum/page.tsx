@@ -24,7 +24,7 @@ import { getAuth } from 'firebase/auth';
 // --- Create Thread Form (Fixed Auth & Refetch) ---
 function CreateThreadForm({ setOpen, onThreadCreated }: { setOpen: (open: boolean) => void; onThreadCreated: () => void; }) {
     const firestore = useFirestore();
-    const { user: hookUser } = useAuth(); // Renamed to avoid confusion
+    const { user: hookUser } = useAuth(); // Use the hook which is more reliable
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
@@ -34,12 +34,10 @@ function CreateThreadForm({ setOpen, onThreadCreated }: { setOpen: (open: boolea
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        const auth = getAuth();
-        const currentUser = auth.currentUser || hookUser;
         
-        if (!currentUser) {
-            toast({ variant: 'destructive', title: 'Auth Error', description: 'Browser session not found. Please refresh.' });
+        // Simplified user check
+        if (!hookUser) {
+            toast({ variant: 'destructive', title: 'Auth Error', description: 'User not found. Please refresh.' });
             return;
         }
         
@@ -68,8 +66,8 @@ function CreateThreadForm({ setOpen, onThreadCreated }: { setOpen: (open: boolea
                 title,
                 content,
                 createdBy: { 
-                    uid: currentUser.uid, 
-                    name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous' 
+                    uid: hookUser.uid, 
+                    name: hookUser.displayName || hookUser.email?.split('@')[0] || 'Anonymous' 
                 },
                 createdAt: serverTimestamp(),
                 aiModeratorEnabled: aiModerator,
@@ -78,7 +76,7 @@ function CreateThreadForm({ setOpen, onThreadCreated }: { setOpen: (open: boolea
             });
             
             toast({ title: 'Success', description: 'Thread posted successfully.' });
-            onThreadCreated(); // <<< THIS IS THE FIX
+            onThreadCreated(); // This will now be called reliably
             setOpen(false); 
             
         } catch (e: any) {
