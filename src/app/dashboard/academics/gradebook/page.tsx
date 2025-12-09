@@ -2,46 +2,44 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Added useUser
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore'; // Add writeBatch, doc
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { 
-  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, CheckSquare, Square, GraduationCap 
-} from 'lucide-react'; // Icons
+  TrendingUp, User, PlusCircle, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare 
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 
 // UI Components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
-import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Checkbox } from '@/components/ui/checkbox'; // Ensure you have this or use standard input
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
-import { GenerateReportCard } from './report-card-pdf';
+import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
+import { useToast } from '@/hooks/use-toast';
 
+// NEW IMPORT
+import { GenerateReportCard } from './report-card-pdf';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
-    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' }; // A (80-100)
-    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' }; // B (70-79)
-    if (percentage >= 60) return { grade: 'C', remark: 'Good' };      // C (60-69)
-    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };      // D (50-59)
-    return { grade: 'F', remark: 'Fail' };                            // F (0-49)
+    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
+    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
+    if (percentage >= 60) return { grade: 'C', remark: 'Good' };
+    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
+    return { grade: 'F', remark: 'Fail' };
 }
 
 // --- SUB-COMPONENT: Student Promotion Tool ---
-function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefined }) {
+function PromoteStudentsTab({ classes }: { classes: Class[] | undefined }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     
@@ -57,7 +55,6 @@ function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefi
     
     const { data: students, isLoading } = useCollection<Student>(studentsQuery);
 
-    // Handle Checkbox Toggles
     const toggleStudent = (id: string) => {
         const newSet = new Set(selectedStudentIds);
         if (newSet.has(id)) newSet.delete(id);
@@ -68,13 +65,12 @@ function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefi
     const toggleAll = () => {
         if (!students) return;
         if (selectedStudentIds.size === students.length) {
-            setSelectedStudentIds(new Set()); // Uncheck all
+            setSelectedStudentIds(new Set());
         } else {
-            setSelectedStudentIds(new Set(students.map(s => s.uid))); // Check all
+            setSelectedStudentIds(new Set(students.map(s => s.uid)));
         }
     };
 
-    // EXECUTE PROMOTION
     const handlePromote = async () => {
         if (!firestore || selectedStudentIds.size === 0) return;
         if (!toClassId) {
@@ -82,35 +78,28 @@ function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefi
             return;
         }
 
-        if (!confirm(`Are you sure you want to move ${selectedStudentIds.size} students? This cannot be easily undone.`)) return;
+        if (!confirm(`Are you sure you want to move ${selectedStudentIds.size} students?`)) return;
 
         setIsPromoting(true);
         try {
             const batch = writeBatch(firestore);
             
             selectedStudentIds.forEach(studentId => {
+                // Students collection uses UID as Doc ID usually, but verify your data structure.
+                // Assuming doc ID is the student UID based on previous rules.
                 const studentRef = doc(firestore, 'students', studentId);
                 
                 if (toClassId === 'GRADUATED') {
-                    // Mark as graduated (remove from active classes)
-                    batch.update(studentRef, { 
-                        classId: 'GRADUATED',
-                        enrollmentStatus: 'Graduated',
-                        graduatedAt: serverTimestamp()
-                    });
+                    batch.update(studentRef, { classId: 'GRADUATED', status: 'Alumni', graduatedAt: serverTimestamp() });
                 } else {
-                    // Move to next class
-                    batch.update(studentRef, { 
-                        classId: toClassId 
-                    });
+                    batch.update(studentRef, { classId: toClassId });
                 }
             });
 
             await batch.commit();
-            
             toast({ title: "Promotion Successful", description: `Moved ${selectedStudentIds.size} students.` });
             setSelectedStudentIds(new Set());
-            setFromClassId(''); // Reset
+            setFromClassId('');
         } catch (e: any) {
             console.error(e);
             toast({ variant: 'destructive', title: "Error", description: e.message });
@@ -120,7 +109,7 @@ function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefi
     };
 
     return (
-        <Card className="border-t-4 border-t-emerald-600 mt-6">
+        <Card className="border-t-4 border-t-emerald-600">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <GraduationCap className="h-6 w-6 text-emerald-600"/> Student Promotion
@@ -128,72 +117,45 @@ function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefi
                 <CardDescription>Move students to the next class at the end of the academic year.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                
-                {/* 1. SELECTION CONTROLS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end bg-slate-50 p-4 rounded-lg border">
                     <div className="space-y-2">
                         <Label>From Class (Current)</Label>
                         <Select value={fromClassId} onValueChange={setFromClassId}>
                             <SelectTrigger className="bg-white"><SelectValue placeholder="Select Source Class" /></SelectTrigger>
-                            <SelectContent>
-                                {allClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
+                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select>
                     </div>
-
-                    <div className="flex justify-center pb-2">
-                        <ArrowRight className="h-6 w-6 text-slate-400" />
-                    </div>
-
+                    <div className="flex justify-center pb-2"><ArrowRight className="h-6 w-6 text-slate-400" /></div>
                     <div className="space-y-2">
                         <Label>To Class (Next Level)</Label>
                         <Select value={toClassId} onValueChange={setToClassId}>
                             <SelectTrigger className="bg-white"><SelectValue placeholder="Select Destination" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="GRADUATED" className="text-red-600 font-bold">🎓 Mark as Graduated</SelectItem>
-                                {allClasses?.filter(c => c.id !== fromClassId).map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
+                                {classes?.filter(c => c.id !== fromClassId).map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                 </div>
 
-                {/* 2. STUDENT LIST */}
                 {fromClassId && (
                     <div className="border rounded-md">
                         <div className="p-2 border-b bg-slate-100 flex justify-between items-center">
-                            <h4 className="font-semibold text-sm pl-2">
-                                Select Students ({selectedStudentIds.size}/{students?.length || 0})
-                            </h4>
-                            <Button variant="ghost" size="sm" onClick={toggleAll}>
-                                {students && selectedStudentIds.size === students.length ? "Unselect All" : "Select All"}
-                            </Button>
+                            <h4 className="font-semibold text-sm pl-2">Select Students ({selectedStudentIds.size}/{students?.length || 0})</h4>
+                            <Button variant="ghost" size="sm" onClick={toggleAll}>{students && selectedStudentIds.size === students.length ? "Unselect All" : "Select All"}</Button>
                         </div>
-                        
                         <div className="max-h-[400px] overflow-y-auto">
-                            {isLoading ? (
-                                <div className="p-8 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></div>
-                            ) : !students || students.length === 0 ? (
-                                <div className="p-8 text-center text-muted-foreground">No students in this class.</div>
-                            ) : (
+                            {isLoading ? <div className="p-8 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></div> : 
+                            !students || students.length === 0 ? <div className="p-8 text-center text-muted-foreground">No students in this class.</div> : (
                                 <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[50px]">Select</TableHead>
-                                            <TableHead>Student Name</TableHead>
-                                            <TableHead>Student ID</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
+                                    <TableHeader><TableRow><TableHead className="w-[50px]">Select</TableHead><TableHead>Student Name</TableHead><TableHead>Student ID</TableHead></TableRow></TableHeader>
                                     <TableBody>
                                         {students.map(student => (
                                             <TableRow key={student.uid} className={selectedStudentIds.has(student.uid) ? "bg-emerald-50" : ""}>
                                                 <TableCell>
-                                                    <Checkbox
-                                                        checked={selectedStudentIds.has(student.uid)}
-                                                        onCheckedChange={() => toggleStudent(student.uid)}
-                                                        id={`select-${student.uid}`}
-                                                    />
+                                                    <div className={`h-5 w-5 border rounded cursor-pointer flex items-center justify-center ${selectedStudentIds.has(student.uid) ? 'bg-emerald-600 border-emerald-600' : 'border-slate-300'}`} onClick={() => toggleStudent(student.uid)}>
+                                                        {selectedStudentIds.has(student.uid) && <CheckSquare className="h-3 w-3 text-white" />}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell className="font-medium">{student.firstName} {student.lastName}</TableCell>
                                                 <TableCell className="text-muted-foreground">{student.id.slice(0,8)}</TableCell>
@@ -205,16 +167,9 @@ function PromoteStudentsTab({ classes: allClasses }: { classes: Class[] | undefi
                         </div>
                     </div>
                 )}
-
-                {/* 3. ACTION BUTTON */}
                 <div className="flex justify-end pt-4 border-t">
-                    <Button 
-                        onClick={handlePromote} 
-                        disabled={isPromoting || selectedStudentIds.size === 0 || !toClassId}
-                        className="bg-emerald-600 hover:bg-emerald-700 w-full md:w-auto"
-                    >
-                        {isPromoting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GraduationCap className="mr-2 h-4 w-4"/>}
-                        Promote {selectedStudentIds.size} Students
+                    <Button onClick={handlePromote} disabled={isPromoting || selectedStudentIds.size === 0 || !toClassId} className="bg-emerald-600 hover:bg-emerald-700 w-full md:w-auto">
+                        {isPromoting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GraduationCap className="mr-2 h-4 w-4"/>} Promote {selectedStudentIds.size} Students
                     </Button>
                 </div>
             </CardContent>
@@ -228,17 +183,17 @@ function StudentGradesDetail({
     assessments, 
     rank, 
     totalStudents,
-    term,
-    year 
+    year, // Passed down from parent
+    term  // Passed down from parent
 }: { 
     student: Student; 
     assessments: Assessment[];
     rank: number;
     totalStudents: number;
-    term: string;
     year: string;
+    term: string;
 }) {
-    // 1. Group by Subject
+    // Group by Subject
     const subjectGrades = useMemo(() => {
         const subjects: Record<string, { total: number, max: number, count: number }> = {};
         
@@ -283,17 +238,19 @@ function StudentGradesDetail({
                         </div>
                     </CardContent>
                 </Card>
+                
+                {/* PDF REPORT CARD BUTTON */}
                 <Card className="bg-white border-slate-200 shadow-sm">
-                    <CardContent className="p-4 flex flex-col justify-center h-full">
+                     <CardContent className="p-4 flex flex-col justify-center h-full">
                         <GenerateReportCard 
-                            student={student} 
+                            student={student}
                             assessments={assessments.filter(a => a.studentId === student.uid)}
                             year={year}
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
                         />
-                    </CardContent>
+                     </CardContent>
                 </Card>
             </div>
 
@@ -340,34 +297,35 @@ function StudentGradesDetail({
 
 // --- MAIN PAGE ---
 export default function GradebookManager() {
-  const { user, isUserLoading } = useUser(); // Used for loading state
+  const { user, isUserLoading } = useUser(); 
   const { role, isRoleLoading } = useRole();
   const firestore = useFirestore();
 
   // State
-  const [activeTab, setActiveTab] = useState('gradebook');
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
 
-  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
-  const isDirector = role === 'Administrator' || role === 'Director';
+  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   // 1. Fetch Classes (Correctly handled for both Admin and Teacher)
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
-      if (isDirector) {
+      if (role === 'Administrator' || role === 'Director') {
           return query(collection(firestore, 'classes'));
       }
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-  }, [firestore, user, role, isStaff, isDirector]);
+      if (role === 'Teacher') {
+          return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+      }
+      return null;
+  }, [firestore, user, role, isStaff]);
   
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
   // 2. Fetch Students
   const studentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore!, 'students'), where('classId', '==', selectedClassId)) : null,
+    (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
@@ -375,7 +333,7 @@ export default function GradebookManager() {
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
     return query(
-        collection(firestore!, 'assessments'),
+        collection(firestore, 'assessments'),
         where('classId', '==', selectedClassId),
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
@@ -385,7 +343,7 @@ export default function GradebookManager() {
 
   // 4. Fetch Financials
   const financialRecordsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore!, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
+    (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
@@ -403,7 +361,6 @@ export default function GradebookManager() {
           return { ...s, average };
       });
 
-      // Sort by Average Descending
       return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
@@ -415,13 +372,12 @@ export default function GradebookManager() {
     students.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
+        const paid = myRecords.reduce((acc, r) => acc + r.amountPaid, 0);
         financials[student.uid] = { balance: billed - paid };
     });
     return financials;
   }, [students, financialRecords]);
 
-  // Global Loading State
   const isLoading = isUserLoading || isRoleLoading || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
 
   if (!isStaff && !isLoading) {
@@ -430,50 +386,14 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
-        <Tabs defaultValue="gradebook" onValueChange={setActiveTab}>
-            <div className="flex justify-between items-center">
-                 <Card className="border-t-4 border-t-indigo-600 shadow-sm w-full">
-                    <CardHeader>
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
-                                <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
-                            </div>
-                            <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-                                <TabsTrigger value="gradebook">Report Cards</TabsTrigger>
-                                {isDirector && <TabsTrigger value="promote">Promote Class</TabsTrigger>}
-                            </TabsList>
-                        </div>
-                    </CardHeader>
-                    
-                    <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
-                      <div className="space-y-1">
-                         <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
-                         <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
-                            <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                            <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-                         </Select>
-                      </div>
-                      <div className="space-y-1">
-                         <span className="text-xs font-semibold text-slate-500 uppercase">Term</span>
-                         <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
-                            <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                            <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-                         </Select>
-                      </div>
-                      <div className="space-y-1">
-                         <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
-                         <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} /></SelectTrigger>
-                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                         </Select>
-                      </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <TabsContent value="gradebook">
-                <div className="flex justify-end my-4">
+      <Card className="border-t-4 border-t-indigo-600 shadow-sm">
+        <CardHeader>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
+                    <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
+                </div>
+                <div className="flex gap-2">
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
@@ -482,94 +402,149 @@ export default function GradebookManager() {
                         <PlusCircle className="mr-2 h-4 w-4" /> Enter Grades
                     </Button>
                 </div>
-                
-                {activeForm === 'grade' && selectedClassId && (
-                    <div className="animate-in slide-in-from-top-4 fade-in duration-300 mt-6">
-                        <AssessmentFeedbackForm classId={selectedClassId} classes={classes || []} />
-                    </div>
-                )}
-                
-                {selectedClassId && (
-                    <Card className="mt-6">
-                        <CardHeader className="py-4 px-6 border-b bg-white"><CardTitle className="text-lg">Class Performance Report</CardTitle></CardHeader>
-                        <CardContent className="p-0">
-                            {isLoading ? (
-                                <div className="flex flex-col items-center py-12 gap-2 text-muted-foreground">
-                                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" /><p>Compiling results...</p>
-                                </div>
-                            ) : rankedStudents.length > 0 ? (
-                            <Accordion type="single" collapsible className="w-full">
-                                {rankedStudents.map((student, index) => {
-                                    const financials = studentFinancials[student.uid] || { balance: 0 };
-                                    const rank = index + 1;
-                                    
-                                    return (
-                                        <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
-                                            <AccordionTrigger className="hover:no-underline py-4">
-                                                <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>{rank}</div>
-                                                        <div className="text-left">
-                                                            <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
-                                                            <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
-                                                        </div>
+            </div>
+        </CardHeader>
+        
+        {/* FILTERS */}
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
+          <div className="space-y-1">
+             <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
+             <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
+                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+             </Select>
+          </div>
+          <div className="space-y-1">
+             <span className="text-xs font-semibold text-slate-500 uppercase">Term</span>
+             <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
+                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
+                <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+             </Select>
+          </div>
+          <div className="space-y-1">
+             <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
+             <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
+                <SelectTrigger className="bg-white">
+                    <SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} />
+                </SelectTrigger>
+                <SelectContent>
+                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+             </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {activeForm === 'grade' && selectedClassId && (
+          <div className="animate-in slide-in-from-top-4 fade-in duration-300">
+              <AssessmentFeedbackForm classId={selectedClassId} classes={classes || []} />
+          </div>
+      )}
+      
+      <Tabs defaultValue="academics" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+            <TabsTrigger value="academics">Report Cards</TabsTrigger>
+            {(role === 'Administrator' || role === 'Director') && (
+                <TabsTrigger value="promotion">Promote Class</TabsTrigger>
+            )}
+        </TabsList>
+
+        <TabsContent value="academics" className="mt-6">
+            {selectedClassId && (
+                <Card>
+                    <CardHeader className="py-4 px-6 border-b bg-white">
+                        <CardTitle className="text-lg">Class Performance Report</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center py-12 gap-2 text-muted-foreground">
+                                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                                <p>Compiling results...</p>
+                            </div>
+                        ) :
+                        rankedStudents.length > 0 ? (
+                        <Accordion type="single" collapsible className="w-full">
+                            {rankedStudents.map((student, index) => {
+                                const financials = studentFinancials[student.uid] || { balance: 0 };
+                                const rank = index + 1; 
+                                
+                                return (
+                                    <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
+                                        <AccordionTrigger className="hover:no-underline py-4">
+                                            <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                        {rank}
                                                     </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
-                                                            {financials.balance > 0 ? `Owes: GH₵${financials.balance}` : 'Fees Paid'}
-                                                        </Badge>
-                                                        <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>Avg: {student.average.toFixed(1)}%</Badge>
+                                                    <div className="text-left">
+                                                        <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
+                                                        <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
                                                     </div>
                                                 </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent className="p-0 border-t bg-slate-50/50">
-                                                <Tabs defaultValue="academics" className="w-full">
-                                                    <div className="px-4 pt-2 border-b bg-white">
-                                                        <TabsList className="bg-transparent h-10 p-0">
-                                                            <TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Report Card</TabsTrigger>
-                                                            <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Fee History</TabsTrigger>
-                                                        </TabsList>
-                                                    </div>
-                                                    <TabsContent value="academics" className="mt-0">
-                                                        <StudentGradesDetail 
-                                                            student={student} 
-                                                            assessments={assessments || []} 
-                                                            rank={rank} 
-                                                            totalStudents={rankedStudents.length}
-                                                            term={selectedTerm}
-                                                            year={selectedYear}
-                                                        />
-                                                    </TabsContent>
-                                                    <TabsContent value="financials" className="mt-0 p-6">
-                                                        <div className="flex items-center gap-4 p-4 bg-white border rounded-lg shadow-sm max-w-md">
-                                                            <div className="bg-slate-100 p-3 rounded-full"><AlertCircle className="h-6 w-6 text-slate-500"/></div>
-                                                            <div>
-                                                                <p className="text-sm font-medium text-slate-500">Current Balance</p>
-                                                                <p className="text-2xl font-bold text-slate-800">GH₵{financials.balance.toFixed(2)}</p>
-                                                            </div>
-                                                            <Button variant="outline" size="sm" className="ml-auto">View Ledger</Button>
-                                                        </div>
-                                                    </TabsContent>
-                                                </Tabs>
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    )
-                                })}
-                            </Accordion>
-                            ) : (
-                                <div className="text-center py-16"><FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/><p className="text-muted-foreground">No students found.</p><p className="text-xs text-slate-400">Select a different class or add students.</p></div>
-                            )}
-                        </CardContent>
-                    </Card>
-                )}
-            </TabsContent>
+                                                <div className="flex items-center gap-3">
+                                                    <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
+                                                        {financials.balance > 0 ? `Owes: GH₵${financials.balance}` : 'Fees Paid'}
+                                                    </Badge>
+                                                    <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>
+                                                        Avg: {student.average.toFixed(1)}%
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="p-0 border-t bg-slate-50/50">
+                                            <Tabs defaultValue="academics" className="w-full">
+                                                <div className="px-4 pt-2 border-b bg-white">
+                                                    <TabsList className="bg-transparent h-10 p-0">
+                                                        <TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Report Card</TabsTrigger>
+                                                        <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Fee History</TabsTrigger>
+                                                    </TabsList>
+                                                </div>
 
-            <TabsContent value="promotion">
-                {isDirector && <PromoteStudentsTab classes={classes || []} />}
-            </TabsContent>
-        </Tabs>
+                                                <TabsContent value="academics" className="mt-0">
+                                                    <StudentGradesDetail 
+                                                        student={student} 
+                                                        assessments={assessments || []} 
+                                                        rank={rank}
+                                                        totalStudents={rankedStudents.length}
+                                                        year={selectedYear}
+                                                        term={selectedTerm}
+                                                    />
+                                                </TabsContent>
+
+                                                <TabsContent value="financials" className="mt-0 p-6">
+                                                    <div className="flex items-center gap-4 p-4 bg-white border rounded-lg shadow-sm max-w-md">
+                                                        <div className="bg-slate-100 p-3 rounded-full"><AlertCircle className="h-6 w-6 text-slate-500"/></div>
+                                                        <div>
+                                                            <p className="text-sm font-medium text-slate-500">Current Balance</p>
+                                                            <p className="text-2xl font-bold text-slate-800">GH₵{financials.balance.toFixed(2)}</p>
+                                                        </div>
+                                                        <Button variant="outline" size="sm" className="ml-auto">View Ledger</Button>
+                                                    </div>
+                                                </TabsContent>
+                                            </Tabs>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                )
+                            })}
+                        </Accordion>
+                        ) : (
+                            <div className="text-center py-16">
+                                <FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/>
+                                <p className="text-muted-foreground">No students found.</p>
+                                <p className="text-xs text-slate-400">Select a different class or add students.</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+             )}
+             {!selectedClassId && <div className="text-center py-10 text-muted-foreground">Select a class above to view grades.</div>}
+        </TabsContent>
+
+        <TabsContent value="promotion" className="mt-6">
+            <PromoteStudentsTab classes={classes} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
 
-    
