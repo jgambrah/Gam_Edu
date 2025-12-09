@@ -28,7 +28,6 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-// FIX 1: Import useUser and getAuth
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { getAuth } from 'firebase/auth'; 
 import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc, onSnapshot, orderBy } from 'firebase/firestore';
@@ -40,11 +39,9 @@ import { useRole } from '@/context/role-context';
 import type { Class, Student } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 
-// Define Subject Type locally if not in types
 type Subject = { id: string; name: string; code?: string };
 
 export function AssessmentFeedbackForm({ classId, classes: propClasses }: { classId?: string; classes: Class[] }) {
-    // FIX 2: Use useUser instead of useAuth
     const { user, isUserLoading } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
@@ -53,15 +50,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
     
     const [students, setStudents] = useState<Student[]>([]);
   
-    useEffect(() => {
-        console.log("Connection Status:", { 
-            user: user?.uid || "Missing", 
-            firestore: firestore ? "Connected" : "Missing",
-            isLoading: isUserLoading
-        });
-    }, [user, firestore, isUserLoading]);
-
-    // FETCH REAL SUBJECTS FROM FIRESTORE
+    // FETCH REAL SUBJECTS
     const subjectsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'subjects'), orderBy('name')) : null, 
     [firestore]);
@@ -81,7 +70,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         score: 0,
         maxScore: 100,
         feedback: '',
-        // assessmentDate is optional/undefined initially, handled by Popover
       },
     });
 
@@ -110,7 +98,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
   
   
     async function onSubmit(values: z.infer<typeof assessmentFeedbackSchema>) {
-        // FIX 3: Robust Auth Check using SDK directly
         const auth = getAuth();
         const currentUser = auth.currentUser || user;
 
@@ -122,11 +109,15 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         setIsSubmitting(true);
     
         try {
-            const querySnapshot = await getDocs(query(
+            // FIX: Check for duplicates using SUBJECT ID as well
+            const q = query(
                 collection(firestore, 'assessments'),
                 where('studentId', '==', values.studentId),
-                where('assessmentName', '==', values.assessmentName)
-            ));
+                where('assessmentName', '==', values.assessmentName),
+                where('subjectId', '==', values.subjectId) // <--- CRITICAL ADDITION
+            );
+            
+            const querySnapshot = await getDocs(q);
 
             const subjectName = subjects?.find(s => s.id === values.subjectId)?.name || 'General';
 
@@ -138,26 +129,27 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
             };
 
             if (!querySnapshot.empty) {
+                // Update existing ONLY if name AND subject match
                 const docToUpdate = querySnapshot.docs[0];
                 await updateDoc(docToUpdate.ref, dataToSave);
-                toast({ title: 'Success', description: 'Assessment feedback updated.' });
+                toast({ title: 'Success', description: 'Assessment updated successfully.' });
             } else {
+                // Create new
                 await addDoc(collection(firestore, 'assessments'), dataToSave);
-                toast({ title: 'Success', description: 'Assessment feedback saved.' });
+                toast({ title: 'Success', description: 'Assessment saved successfully.' });
             }
     
-          // Reset relevant fields
           form.reset({
               ...values, 
               score: 0,
               feedback: '',
-              studentId: '', // Clear student to force selection of next one
+              assessmentName: '', // Clear name so you don't accidentally save same name again immediately
           });
 
         } catch (error: any) {
           console.error("Error saving assessment feedback:", error);
           if (error.message && error.message.includes('requires an index')) {
-              toast({ variant: 'destructive', title: 'Database Index Missing', description: 'Check console for the link to create the index.' });
+              toast({ variant: 'destructive', title: 'System Setup Required', description: 'An Admin needs to create the database index. Check console.' });
           } else {
               toast({ variant: 'destructive', title: 'Error', description: error.message });
           }
@@ -240,7 +232,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                                 {subjects?.map(s => (
                                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                                 ))}
-                                {subjects?.length === 0 && <SelectItem value="none" disabled>No subjects found</SelectItem>}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -252,7 +243,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                 <FormField control={form.control} name="assessmentName" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Assessment Name</FormLabel>
-                        <FormControl><Input placeholder="e.g., Mid-Term Exam" {...field} /></FormControl>
+                        <FormControl><Input placeholder="e.g., Class Test 1" {...field} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )}/>
