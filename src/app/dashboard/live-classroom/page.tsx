@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -62,7 +63,7 @@ type ChatMessage = {
 };
 
 // --- SUB-COMPONENT: Audio Visualizer (The "Vibrating" Mic) ---
-const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
+const MicVisualizer = ({ stream, isMicOn }: { stream: MediaStream | null, isMicOn: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
 
@@ -84,7 +85,12 @@ const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
         const draw = () => {
             if(!canvasCtx) return;
             animationRef.current = requestAnimationFrame(draw);
-            analyser.getByteFrequencyData(dataArray);
+            
+            if (isMicOn) {
+                analyser.getByteFrequencyData(dataArray);
+            } else {
+                dataArray.fill(0); // If mic is off, show a flat line
+            }
 
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -111,7 +117,7 @@ const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
             if(animationRef.current) cancelAnimationFrame(animationRef.current);
             audioContext.close();
         };
-    }, [stream]);
+    }, [stream, isMicOn]);
 
     return <canvas ref={canvasRef} width="60" height="30" className="opacity-80" />;
 };
@@ -499,8 +505,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                             <Button variant="ghost" size="icon" className={`${isMicOn ? 'text-white' : 'text-red-500'} hover:bg-white/10`} onClick={toggleMic} disabled={!stream}>
                                 {isMicOn ? <Mic className="h-5 w-5"/> : <MicOff className="h-5 w-5"/>}
                             </Button>
-                            {/* NEW: Audio Visualizer */}
-                            <MicVisualizer stream={isMicOn ? stream : null} />
+                            <MicVisualizer stream={stream} isMicOn={isMicOn} />
                         </div>
                         
                         {/* CAMERA */}
