@@ -73,7 +73,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         academicYear: MOCK_ACADEMIC_YEARS[0],
         term: MOCK_TERMS[0],
         assessmentType: 'Quiz',
-        teacherId: user?.uid || '',
+        teacherId: user?.uid,
         classId: classId || '',
         assessmentName: '',
         studentId: '',
@@ -322,8 +322,5 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
       </Card>
     );
 }
-
-// Helper badge component need to be imported or defined
-import { Badge } from '@/components/ui/badge';
 
     
