@@ -23,12 +23,14 @@ import {
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Loader2, AlertCircle } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+// FIX 1: Import useUser and getAuth
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { getAuth } from 'firebase/auth'; 
 import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc, onSnapshot, orderBy } from 'firebase/firestore';
 import { assessmentFeedbackSchema } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,13 +40,12 @@ import { useRole } from '@/context/role-context';
 import type { Class, Student } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 
-
 // Define Subject Type locally if not in types
 type Subject = { id: string; name: string; code?: string };
 
 export function AssessmentFeedbackForm({ classId, classes: propClasses }: { classId?: string; classes: Class[] }) {
-    // FIX 1: Get isUserLoading to know when to enable the button
-    const { user, isUserLoading } = useAuth();
+    // FIX 2: Use useUser instead of useAuth
+    const { user, isUserLoading } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -52,7 +53,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
     
     const [students, setStudents] = useState<Student[]>([]);
   
-    // 2. DEBUG: Log status to console so you can see if connection exists
     useEffect(() => {
         console.log("Connection Status:", { 
             user: user?.uid || "Missing", 
@@ -61,7 +61,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         });
     }, [user, firestore, isUserLoading]);
 
-    // 3. FETCH REAL SUBJECTS
+    // FETCH REAL SUBJECTS FROM FIRESTORE
     const subjectsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'subjects'), orderBy('name')) : null, 
     [firestore]);
@@ -73,7 +73,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         academicYear: MOCK_ACADEMIC_YEARS[0],
         term: MOCK_TERMS[0],
         assessmentType: 'Quiz',
-        teacherId: user?.uid,
+        teacherId: user?.uid || '',
         classId: classId || '',
         assessmentName: '',
         studentId: '',
@@ -81,6 +81,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         score: 0,
         maxScore: 100,
         feedback: '',
+        // assessmentDate is optional/undefined initially, handled by Popover
       },
     });
 
@@ -109,8 +110,12 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
   
   
     async function onSubmit(values: z.infer<typeof assessmentFeedbackSchema>) {
-        if (!user || !firestore) {
-            toast({ variant: 'destructive', title: 'Connection Issue', description: 'Waiting for database connection...' });
+        // FIX 3: Robust Auth Check using SDK directly
+        const auth = getAuth();
+        const currentUser = auth.currentUser || user;
+
+        if (!currentUser || !firestore) {
+            toast({ variant: 'destructive', title: 'Connection Issue', description: 'Please refresh the page and log in again.' });
             return;
         }
 
@@ -128,7 +133,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
             const dataToSave = {
                 ...values,
                 subject: subjectName,
-                teacherId: values.teacherId || user.uid,
+                teacherId: values.teacherId || currentUser.uid,
                 createdAt: serverTimestamp(),
             };
 
@@ -146,12 +151,12 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
               ...values, 
               score: 0,
               feedback: '',
-              assessmentName: '' // Clear name to prevent accidental overwrites
+              studentId: '', // Clear student to force selection of next one
           });
 
         } catch (error: any) {
           console.error("Error saving assessment feedback:", error);
-          if (error.message.includes('requires an index')) {
+          if (error.message && error.message.includes('requires an index')) {
               toast({ variant: 'destructive', title: 'Database Index Missing', description: 'Check console for the link to create the index.' });
           } else {
               toast({ variant: 'destructive', title: 'Error', description: error.message });
@@ -161,8 +166,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         }
     }
 
-    // --- CHECK READINESS ---
-    const isReady = user && firestore && !isUserLoading;
+    const isReady = !!user || !isUserLoading;
   
     return (
       <Card>
@@ -312,7 +316,6 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                 </FormItem>
                 )} />
               
-              {/* FIX: Disable button if connection is not ready */}
               <Button type="submit" disabled={isSubmitting || !isReady} className="w-full">
                 {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : !isReady ? "Waiting for Connection..." : "Save Entry"}
               </Button>
@@ -323,4 +326,3 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
     );
 }
 
-    
