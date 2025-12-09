@@ -99,48 +99,65 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
   
   
     async function onSubmit(values: z.infer<typeof assessmentFeedbackSchema>) {
+        // 1. Check connections BEFORE starting the loader
+        if (!user || !firestore) {
+            toast({ variant: 'destructive', title: 'System Error', description: 'Database connection not ready. Please refresh.' });
+            return;
+        }
+
         setIsSubmitting(true);
-        if (!user || !firestore) return;
     
         try {
-            const querySnapshot = await getDocs(query(
+            // 2. Check for existing grade (Requires Index)
+            const q = query(
                 collection(firestore, 'assessments'),
                 where('studentId', '==', values.studentId),
                 where('assessmentName', '==', values.assessmentName)
-            ));
+            );
+            
+            const querySnapshot = await getDocs(q);
 
-            // Find the Subject Name to save it with the record (Better for Report Cards)
+            // Find Subject Name safely
             const subjectName = subjects?.find(s => s.id === values.subjectId)?.name || 'General';
 
             const dataToSave = {
                 ...values,
-                subject: subjectName, // Save the name too
+                subject: subjectName, 
                 teacherId: values.teacherId || user.uid,
                 createdAt: serverTimestamp(),
             };
 
             if (!querySnapshot.empty) {
-                // Update existing document
+                // Update existing
                 const docToUpdate = querySnapshot.docs[0];
                 await updateDoc(docToUpdate.ref, dataToSave);
-                toast({ title: 'Success', description: 'Assessment feedback updated.' });
+                toast({ title: 'Success', description: 'Grade updated successfully.' });
             } else {
-                // Add new document
+                // Add new
                 await addDoc(collection(firestore, 'assessments'), dataToSave);
-                toast({ title: 'Success', description: 'Assessment feedback saved.' });
+                toast({ title: 'Success', description: 'Grade saved successfully.' });
             }
     
-          form.reset({
-              ...values, // Keep context (Class, Term, Subject)
-              score: 0,
-              maxScore: 100, // Reset max score to a default
-              feedback: '', 
-              assessmentName: '' // Clear name to prevent accidental overwrites
-          });
-        } catch (error) {
+            // Reset form but keep context (Class/Subject) so you can add the next student easily
+            form.reset({
+                ...values,
+                score: 0,
+                feedback: '',
+                // Don't reset studentId so they can pick the next one, or reset it if you prefer
+                studentId: '', 
+            });
+
+        } catch (error: any) {
           console.error("Error saving assessment feedback:", error);
-          toast({ variant: 'destructive', title: 'Error', description: 'Could not save feedback.' });
+          
+          // Check for Missing Index Error specifically
+          if (error.message.includes('requires an index')) {
+              toast({ variant: 'destructive', title: 'System Setup Required', description: 'An Admin needs to create the database index. Check console.' });
+          } else {
+              toast({ variant: 'destructive', title: 'Error', description: error.message });
+          }
         } finally {
+          // 3. ALWAYS stop the loader
           setIsSubmitting(false);
         }
     }
@@ -292,7 +309,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                 </FormItem>
                 )} />
 
-              <Button type="submit" disabled={isSubmitting} className="w-full">
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Entry
               </Button>
