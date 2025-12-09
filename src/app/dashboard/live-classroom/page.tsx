@@ -474,6 +474,23 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             }
         }
     };
+    
+    const togglePiP = async () => {
+        if (!videoRef.current) return;
+        if (document.pictureInPictureElement) {
+            try {
+                await document.exitPictureInPicture();
+            } catch (error) {
+                console.error("Error exiting PiP mode:", error);
+            }
+        } else {
+            try {
+                await videoRef.current.requestPictureInPicture();
+            } catch (error) {
+                console.error("Error entering PiP mode:", error);
+            }
+        }
+    };
 
     const sendReaction = async (emoji: string) => {
         if (!firestore) return;
@@ -755,3 +772,5 @@ export default function LiveClassroomPage() {
         </div>
     );
 }
+
+    
