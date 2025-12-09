@@ -1,16 +1,17 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, onSnapshot, limit } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, updateDoc, limit, onSnapshot } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getApp } from 'firebase/app';
 import { 
   Video, Mic, MicOff, VideoOff, MessageSquare, Send, 
   Sparkles, MonitorPlay, Bot, Calendar as CalendarIcon, 
   Clock, ChevronLeft, ChevronRight, Presentation, ScreenShare, 
-  LayoutGrid, Maximize, Circle, Square, Save, Users, Mic2, Hand, Smile, X, MoreHorizontal, PhoneOff
+  LayoutGrid, Maximize, Circle, Square, Save, Users, PenTool, Eraser, Palette, Trash2, Download
 } from 'lucide-react';
 import { generateLivePollAction, explainConceptAction } from '@/ai/flows/live-classroom';
 import { format } from 'date-fns';
@@ -27,9 +28,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- TYPES ---
 type Lecture = {
@@ -54,13 +54,6 @@ type ChatMessage = {
     text: string;
     isPoll?: boolean;
     pollData?: any;
-    createdAt: any;
-};
-
-type Reaction = {
-    id: string;
-    emoji: string;
-    senderId: string;
     createdAt: any;
 };
 
@@ -104,6 +97,138 @@ const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
     }, [stream]);
 
     return <canvas ref={canvasRef} width="40" height="20" />;
+};
+
+// --- SUB-COMPONENT: Interactive Whiteboard ---
+const Whiteboard = () => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [color, setColor] = useState('#000000');
+    const [lineWidth, setLineWidth] = useState(3);
+    const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
+    const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        // Set canvas size to match parent
+        canvas.width = canvas.parentElement?.clientWidth || 800;
+        canvas.height = canvas.parentElement?.clientHeight || 600;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctxRef.current = ctx;
+            // Set white background initially
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Handle resize
+        const handleResize = () => {
+            if (canvas.parentElement) {
+                const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+                if (ctx && imageData) ctx.putImageData(imageData, 0, 0);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const startDrawing = (e: React.MouseEvent) => {
+        if (!ctxRef.current) return;
+        ctxRef.current.beginPath();
+        ctxRef.current.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+        setIsDrawing(true);
+    };
+
+    const draw = (e: React.MouseEvent) => {
+        if (!isDrawing || !ctxRef.current) return;
+        ctxRef.current.strokeStyle = tool === 'eraser' ? '#ffffff' : color;
+        ctxRef.current.lineWidth = tool === 'eraser' ? 20 : lineWidth;
+        ctxRef.current.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+        ctxRef.current.stroke();
+    };
+
+    const stopDrawing = () => {
+        if (!ctxRef.current) return;
+        ctxRef.current.closePath();
+        setIsDrawing(false);
+    };
+
+    const clearBoard = () => {
+        if (!canvasRef.current || !ctxRef.current) return;
+        ctxRef.current.fillStyle = "white";
+        ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    };
+
+    const downloadBoard = () => {
+        if (!canvasRef.current) return;
+        const link = document.createElement('a');
+        link.download = `whiteboard-${Date.now()}.png`;
+        link.href = canvasRef.current.toDataURL();
+        link.click();
+    };
+
+    return (
+        <div className="relative w-full h-full bg-white group">
+            <canvas
+                ref={canvasRef}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                className="cursor-crosshair w-full h-full block"
+            />
+            
+            {/* FLOATING TOOLBOX */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 shadow-xl border p-2 rounded-full flex items-center gap-3 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Button 
+                    variant={tool === 'pen' ? "default" : "ghost"} 
+                    size="icon" 
+                    className="rounded-full w-8 h-8"
+                    onClick={() => setTool('pen')}
+                >
+                    <PenTool className="h-4 w-4"/>
+                </Button>
+                
+                {/* Color Pickers */}
+                <div className="flex gap-1 border-l border-r px-2">
+                    {['#000000', '#EF4444', '#3B82F6', '#10B981'].map((c) => (
+                        <button
+                            key={c}
+                            className={`w-6 h-6 rounded-full border-2 ${color === c && tool === 'pen' ? 'border-indigo-600 scale-110' : 'border-transparent'}`}
+                            style={{ backgroundColor: c }}
+                            onClick={() => { setColor(c); setTool('pen'); }}
+                        />
+                    ))}
+                </div>
+
+                <Button 
+                    variant={tool === 'eraser' ? "default" : "ghost"} 
+                    size="icon" 
+                    className="rounded-full w-8 h-8"
+                    onClick={() => setTool('eraser')}
+                >
+                    <Eraser className="h-4 w-4"/>
+                </Button>
+
+                <div className="w-px h-4 bg-slate-200"></div>
+
+                <Button variant="ghost" size="icon" className="rounded-full w-8 h-8 text-red-500 hover:bg-red-50" onClick={clearBoard}>
+                    <Trash2 className="h-4 w-4"/>
+                </Button>
+                
+                <Button variant="ghost" size="icon" className="rounded-full w-8 h-8 text-slate-600" onClick={downloadBoard}>
+                    <Download className="h-4 w-4"/>
+                </Button>
+            </div>
+        </div>
+    );
 };
 
 // --- COMPONENT: Schedule Class Dialog ---
@@ -157,7 +282,7 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
     );
 }
 
-// --- COMPONENT: ACTIVE CLASSROOM (THE ZOOM ROOM) ---
+// --- COMPONENT: ACTIVE CLASSROOM ---
 function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () => void }) {
     const { user } = useUser();
     const { role } = useRole();
@@ -166,61 +291,81 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const [msgText, setMsgText] = useState('');
     const scrollRef = useRef<HTMLDivElement>(null);
     
-    // AI & Tools
+    // AI Tools State
     const [isAiOpen, setIsAiOpen] = useState(false);
     const [aiInput, setAiInput] = useState('');
     const [aiResponse, setAiResponse] = useState<any>(null);
     const [isProcessingAi, setIsProcessingAi] = useState(false);
 
-    // Media State
+    // Media & Slide State
+    const [isUploadingSlides, setIsUploadingSlides] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    
     const videoRef = useRef<HTMLVideoElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
+    const [streamVersion, setStreamVersion] = useState(0); 
     const [isCameraOn, setIsCameraOn] = useState(false);
     const [isMicOn, setIsMicOn] = useState(false);
     const [isScreenSharing, setIsScreenSharing] = useState(false);
-    
-    // UI State
-    const [showParticipants, setShowParticipants] = useState(false);
-    const [showChat, setShowChat] = useState(true);
-    const [activeReactions, setActiveReactions] = useState<{id: string, emoji: string, left: number}[]>([]);
+    const [permissionError, setPermissionError] = useState(false);
 
-    // Recording
+    // Layout & Tools
+    const [layoutMode, setLayoutMode] = useState<'focus' | 'grid'>('focus');
+    const [isWhiteboardActive, setIsWhiteboardActive] = useState(false); // NEW STATE
+
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [isSavingRecord, setIsSavingRecord] = useState(false);
 
+    const [showParticipants, setShowParticipants] = useState(false);
+    const [showChat, setShowChat] = useState(true);
+    const [activeReactions, setActiveReactions] = useState<{id: string, emoji: string, left: number}[]>([]);
+
     const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
     const isPresenter = user?.uid === lecture.teacherId; 
 
-    // --- 1. INITIALIZE MEDIA ---
+    // 1. Initialize Camera
     useEffect(() => {
         let localStream: MediaStream | null = null;
         const startStream = async () => {
-            if (isPresenter) {
+            if (isPresenter && !stream) {
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                     setStream(localStream);
+                    setStreamVersion(v => v + 1);
                     setIsCameraOn(true);
                     setIsMicOn(true);
-                    if (videoRef.current) videoRef.current.srcObject = localStream;
-                } catch (err) { console.error("Media Error:", err); }
+                } catch (err) {
+                    console.error("Error accessing media:", err);
+                    setPermissionError(true);
+                }
             }
         };
         startStream();
-        return () => { if (localStream) localStream.getTracks().forEach(track => track.stop()); };
+        return () => {};
     }, [isPresenter]);
 
-    // --- 2. DATA STREAMS ---
-    
-    // Chat
+    // Sync Video Element
+    useEffect(() => {
+        if (videoRef.current && stream) {
+            videoRef.current.srcObject = stream;
+        }
+    }, [stream, streamVersion, layoutMode, isScreenSharing, isWhiteboardActive]);
+
+    // Cleanup
+    useEffect(() => {
+        return () => { if (stream) stream.getTracks().forEach(track => track.stop()); };
+    }, []);
+
+    // Chat Query
     const chatQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'lectures', lecture.id, 'messages'), orderBy('createdAt', 'asc')) : null, 
     [firestore, lecture.id]);
     const { data: messages } = useCollection<ChatMessage>(chatQuery);
 
-    // Reactions Listener (Real-time)
+    // Reactions Listener
     useEffect(() => {
         if (!firestore) return;
         const q = query(collection(firestore, 'lectures', lecture.id, 'reactions'), orderBy('createdAt', 'desc'), limit(1));
@@ -228,26 +373,18 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     const data = change.doc.data();
-                    // Add visual reaction
                     const id = Math.random().toString();
-                    const left = Math.floor(Math.random() * 80) + 10; // Random position 10-90%
+                    const left = Math.floor(Math.random() * 80) + 10; 
                     setActiveReactions(prev => [...prev, { id, emoji: data.emoji, left }]);
-                    // Remove after animation
-                    setTimeout(() => {
-                        setActiveReactions(prev => prev.filter(r => r.id !== id));
-                    }, 3000);
+                    setTimeout(() => setActiveReactions(prev => prev.filter(r => r.id !== id)), 3000);
                 }
             });
         });
         return () => unsubscribe();
     }, [firestore, lecture.id]);
 
-    // Auto-scroll chat
-    useEffect(() => {
-        if(scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }, [messages]);
+    useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [messages]);
 
-    // Derived Participants (Mocked from Chat + Teacher)
     const participants = useMemo(() => {
         const unique = new Set<string>();
         unique.add(lecture.teacherName);
@@ -257,57 +394,38 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     }, [messages, lecture.teacherName, user]);
 
 
-    // --- HANDLERS ---
-
+    // HANDLERS
     const toggleScreenShare = async () => {
         if (!stream) return;
-
         if (isScreenSharing) {
-            // Stop screen share and revert to camera
-            const screenTrack = (videoRef.current?.srcObject as MediaStream)?.getVideoTracks()[0];
-            screenTrack?.stop(); // Stop the screen sharing track
-
-            const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            if (videoRef.current) {
-                videoRef.current.srcObject = cameraStream;
-            }
-            setStream(cameraStream);
-            setIsScreenSharing(false);
-            
-        } else {
-            // Start screen share
             try {
-                const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                if (videoRef.current) {
-                    videoRef.current.srcObject = displayStream;
-                }
+                stream.getVideoTracks().forEach(t => t.stop());
+                const camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                setStream(camStream);
+                setStreamVersion(v => v + 1);
+                setIsScreenSharing(false);
+                if (videoRef.current) videoRef.current.srcObject = camStream;
+            } catch (e) { console.error("Revert error", e); }
+        } else {
+            try {
+                // @ts-ignore
+                const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                displayStream.getVideoTracks()[0].onended = () => toggleScreenShare();
+                setStream(displayStream);
+                setStreamVersion(v => v + 1);
                 setIsScreenSharing(true);
-                displayStream.getVideoTracks()[0].onended = () => {
-                    toggleScreenShare(); // Revert back when user clicks the native "Stop sharing" button
-                };
+                if (videoRef.current) videoRef.current.srcObject = displayStream;
             } catch (err: any) {
-                console.error("Screen Share Error Name:", err.name);
-                console.error("Screen Share Error Message:", err.message);
-
-                if (err.name === 'NotAllowedError') {
-                    toast({ variant: "destructive", title: "Permission Denied", description: "You denied screen access or your browser blocked it." });
-                } else if (err.name === 'NotFoundError') {
-                    toast({ variant: "destructive", title: "No Source", description: "No screen video source found." });
-                } else {
-                    toast({ variant: "destructive", title: "Screen Share Failed", description: "Try opening the app in a separate browser tab." });
-                }
+                toast({ variant: "destructive", title: "Screen Share Failed", description: err.message });
             }
         }
     };
 
     const sendReaction = async (emoji: string) => {
         if (!firestore) return;
-        // Optimistic UI
         const id = Math.random().toString();
         setActiveReactions(prev => [...prev, { id, emoji, left: 50 }]);
         setTimeout(() => setActiveReactions(prev => prev.filter(r => r.id !== id)), 3000);
-
-        // Send to DB
         await addDoc(collection(firestore, 'lectures', lecture.id, 'reactions'), {
             emoji, senderId: user?.uid, createdAt: serverTimestamp()
         });
@@ -337,7 +455,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         }
     };
 
-    // Recording Logic (Same as before)
+    // Recording
     const startRecording = () => {
         if (!stream) return;
         chunksRef.current = [];
@@ -371,7 +489,37 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         finally { setIsSavingRecord(false); }
     };
 
-    // AI Handlers
+    const handleUploadSlides = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+        setIsUploadingSlides(true);
+        try {
+            const app = getApp();
+            const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
+            const uploadedUrls: string[] = [];
+            for (let i = 0; i < e.target.files.length; i++) {
+                const file = e.target.files[i];
+                const storageRef = ref(storage, `lectures/${lecture.id}/slides/${Date.now()}_${file.name}`);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                uploadedUrls.push(url);
+            }
+            const lectureRef = doc(firestore!, 'lectures', lecture.id);
+            await updateDoc(lectureRef, { slides: uploadedUrls, currentSlide: 0, isPresentationMode: true });
+            toast({ title: "Slides Uploaded" });
+        } catch (error: any) { toast({ variant: 'destructive', title: "Upload Failed", description: error.message }); } 
+        finally { setIsUploadingSlides(false); }
+    };
+
+    const changeSlide = async (direction: 'next' | 'prev') => {
+        if (!lecture.slides) return;
+        const total = lecture.slides.length;
+        const current = lecture.currentSlide || 0;
+        let nextIndex = current;
+        if (direction === 'next' && current < total - 1) nextIndex++;
+        if (direction === 'prev' && current > 0) nextIndex--;
+        if (nextIndex !== current) { await updateDoc(doc(firestore!, 'lectures', lecture.id), { currentSlide: nextIndex }); }
+    };
+
     const handleGeneratePoll = async () => {
         if(!aiInput.trim()) return;
         setIsProcessingAi(true);
@@ -385,7 +533,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             }
         } catch(e) {} finally { setIsProcessingAi(false); }
     };
-    const handleExplain = async () => {
+    const handleExplainConcept = async () => {
         if(!aiInput.trim()) return;
         setIsProcessingAi(true);
         try {
@@ -394,14 +542,13 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
         } catch(e) {} finally { setIsProcessingAi(false); }
     };
 
-
     return (
         <div className="flex flex-col h-[calc(100vh-100px)] bg-black rounded-xl overflow-hidden relative">
             
             {/* MAIN STAGE AREA */}
             <div className="flex-1 flex overflow-hidden relative">
                 
-                {/* VIDEO FEED */}
+                {/* VIDEO FEED / STAGE */}
                 <div className={`flex-1 relative bg-slate-900 flex items-center justify-center transition-all duration-300 ${showChat || showParticipants ? 'mr-[350px]' : ''}`}>
                     {/* Floating Reactions */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden z-50">
@@ -412,8 +559,21 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                         ))}
                     </div>
 
+                    {/* WHITEBOARD OVERLAY */}
+                    {isWhiteboardActive && (
+                        <div className="absolute inset-0 z-20">
+                            <Whiteboard />
+                        </div>
+                    )}
+
                     {isPresenter ? (
-                        <video ref={videoRef} autoPlay playsInline muted className={`w-full h-full object-contain ${!isScreenSharing ? 'transform -scale-x-100' : ''}`} />
+                        <video 
+                            ref={videoRef} 
+                            autoPlay 
+                            playsInline 
+                            muted 
+                            className={`w-full h-full object-contain ${(!isScreenSharing && !lecture.isPresentationMode && !isWhiteboardActive) ? 'transform -scale-x-100' : ''}`} 
+                        />
                     ) : (
                         <div className="text-center text-slate-500">
                             <MonitorPlay className="h-20 w-20 mx-auto mb-4 opacity-50"/>
@@ -421,9 +581,25 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                             <p>{lecture.title} • {lecture.teacherName}</p>
                         </div>
                     )}
+
+                     {/* SLIDE OVERLAY */}
+                     {lecture.isPresentationMode && lecture.slides && !isWhiteboardActive && (
+                        <div className="absolute inset-0 bg-black flex items-center justify-center z-10">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={lecture.slides[lecture.currentSlide || 0]} alt="Slide" className="max-w-full max-h-full object-contain" />
+                            {isPresenter && (
+                                <div className="absolute bottom-20 flex gap-4 bg-slate-900/80 p-2 rounded-lg backdrop-blur-sm border border-slate-700">
+                                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => changeSlide('prev')}><ChevronLeft/></Button>
+                                    <span className="text-white font-mono flex items-center px-2">{(lecture.currentSlide || 0) + 1} / {lecture.slides.length}</span>
+                                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => changeSlide('next')}><ChevronRight/></Button>
+                                    <Button variant="destructive" size="sm" onClick={() => updateDoc(doc(firestore!, 'lectures', lecture.id), { isPresentationMode: false })}>Stop</Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                     
                     {/* STATUS INDICATORS */}
-                    <div className="absolute top-4 left-4 flex gap-2">
+                    <div className="absolute top-4 left-4 flex gap-2 z-50">
                         <Badge className="bg-red-600 animate-pulse text-white border-0">LIVE</Badge>
                         {isRecording && <Badge className="bg-slate-800 text-white border-red-500 border flex gap-1"><div className="h-2 w-2 rounded-full bg-red-500 animate-pulse"/> REC</Badge>}
                     </div>
@@ -432,24 +608,21 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 {/* SIDEBAR (Right) */}
                 {(showChat || showParticipants) && (
                     <div className="w-[350px] bg-white border-l border-slate-200 flex flex-col absolute right-0 top-0 bottom-0 z-20 shadow-xl">
-                        {/* Sidebar Tabs */}
                         <div className="flex border-b">
                             <button onClick={() => {setShowChat(true); setShowParticipants(false);}} className={`flex-1 py-3 text-sm font-medium ${showChat ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'}`}>Chat</button>
                             <button onClick={() => {setShowChat(false); setShowParticipants(true);}} className={`flex-1 py-3 text-sm font-medium ${showParticipants ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500'}`}>People ({participants.length})</button>
                         </div>
-
-                        {/* CHAT CONTENT */}
                         {showChat && (
                             <>
                                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50" ref={scrollRef}>
                                     {messages?.map(msg => (
                                         <div key={msg.id} className={`flex flex-col ${msg.senderId === user?.uid ? 'items-end' : 'items-start'}`}>
-                                            <div className={`max-w-[90%] p-3 rounded-lg text-sm shadow-sm ${msg.isPoll ? 'bg-indigo-50 border-indigo-200 w-full' : msg.senderId === user?.uid ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-800'}`}>
+                                            <div className={`max-w-[90%] p-3 rounded-lg text-sm shadow-sm ${msg.isPoll ? 'bg-indigo-50 border border-indigo-200 w-full' : msg.senderId === user?.uid ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-800'}`}>
                                                 <p className="text-xs opacity-70 mb-1 font-bold">{msg.senderName}</p>
                                                 {msg.isPoll ? (
                                                     <div className="space-y-2">
                                                         <p className="font-bold text-indigo-900">{msg.text}</p>
-                                                        <div className="grid grid-cols-1 gap-1">{msg.pollData.options.map((o:string,i:number)=><Button key={i} variant="outline" size="sm" className="justify-start h-auto py-1 text-xs bg-white text-black">{o}</Button>)}</div>
+                                                        <div className="grid grid-cols-1 gap-1">{msg.pollData.options.map((o:string,i:number)=><Button key={i} variant="outline" size="sm" className="justify-start h-auto py-1 text-left text-xs bg-white text-black">{o}</Button>)}</div>
                                                     </div>
                                                 ) : <p>{msg.text}</p>}
                                             </div>
@@ -464,8 +637,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                                 </div>
                             </>
                         )}
-
-                        {/* PARTICIPANTS CONTENT */}
                         {showParticipants && (
                              <div className="flex-1 overflow-y-auto p-2">
                                 {participants.map((p, i) => (
@@ -475,68 +646,54 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                                         {i === 0 && <Badge variant="secondary" className="ml-auto text-xs">Host</Badge>}
                                     </div>
                                 ))}
-                                {isPresenter && <Button variant="outline" className="w-full mt-4 text-red-600 border-red-200 hover:bg-red-50">Mute All</Button>}
                              </div>
                         )}
                     </div>
                 )}
             </div>
 
-            {/* BOTTOM TOOLBAR (ZOOM STYLE) */}
+            {/* BOTTOM TOOLBAR */}
             <div className="h-16 bg-[#1C1C1E] flex items-center justify-between px-4 shrink-0 z-30">
-                
-                {/* 1. Audio/Video */}
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isMicOn ? 'text-white' : 'text-red-500'}`} onClick={toggleMic}>
-                         {isMicOn ? <Mic className="h-5 w-5"/> : <MicOff className="h-5 w-5"/>}
-                         <span className="text-[10px]">Mute</span>
+                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isMicOn ? 'text-white' : 'text-red-500'}`} onClick={toggleMic} disabled={!stream}>
+                         {isMicOn ? <Mic className="h-5 w-5"/> : <MicOff className="h-5 w-5"/>} <span className="text-[10px]">Mute</span>
                     </Button>
-                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isCameraOn ? 'text-white' : 'text-red-500'}`} onClick={toggleCamera}>
-                         {isCameraOn ? <Video className="h-5 w-5"/> : <VideoOff className="h-5 w-5"/>}
-                         <span className="text-[10px]">Video</span>
+                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isCameraOn ? 'text-white' : 'text-red-500'}`} onClick={toggleCamera} disabled={!stream}>
+                         {isCameraOn ? <Video className="h-5 w-5"/> : <VideoOff className="h-5 w-5"/>} <span className="text-[10px]">Video</span>
                     </Button>
                     <div className="w-px h-8 bg-white/10 mx-2"/>
                     {isMicOn && stream && <MicVisualizer stream={stream} />}
                 </div>
 
-                {/* 2. Center Controls */}
                 <div className="flex items-center gap-1">
-                    {/* Reactions */}
                     <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10">
-                                <Smile className="h-5 w-5"/> <span className="text-[10px]">Reactions</span>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-2 bg-[#2C2C2E] border-[#3C3C3E] flex gap-2">
-                             {['👍','❤️','😂','😮','👋','🎉'].map(emoji => (
-                                 <button key={emoji} onClick={() => sendReaction(emoji)} className="text-2xl hover:scale-125 transition-transform p-1">{emoji}</button>
-                             ))}
-                        </PopoverContent>
+                        <PopoverTrigger asChild><Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10"><Smile className="h-5 w-5"/> <span className="text-[10px]">Reactions</span></Button></PopoverTrigger>
+                        <PopoverContent className="w-auto p-2 bg-[#2C2C2E] border-[#3C3C3E] flex gap-2">{['👍','❤️','😂','😮','👋','🎉'].map(emoji => (<button key={emoji} onClick={() => sendReaction(emoji)} className="text-2xl hover:scale-125 transition-transform p-1">{emoji}</button>))}</PopoverContent>
                     </Popover>
 
-                    {/* Screen Share (Presenter) */}
                     {isPresenter && (
                         <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isScreenSharing ? 'text-green-500' : 'text-white'} hover:bg-white/10`} onClick={toggleScreenShare}>
                             <ScreenShare className="h-5 w-5"/> <span className="text-[10px]">{isScreenSharing ? 'Stop Share' : 'Share Screen'}</span>
                         </Button>
                     )}
 
-                    {/* Recording (Presenter) */}
                     {isPresenter && (
-                        <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isRecording ? 'text-red-500' : 'text-white'} hover:bg-white/10`} onClick={isRecording ? stopRecording : startRecording}>
-                            {isRecording ? <Square className="h-5 w-5 fill-current"/> : <Circle className="h-5 w-5 fill-red-500 text-red-500"/>}
-                            <span className="text-[10px]">{isRecording ? 'Stop Rec' : 'Record'}</span>
+                        <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isWhiteboardActive ? 'text-green-500' : 'text-white'} hover:bg-white/10`} onClick={() => setIsWhiteboardActive(!isWhiteboardActive)}>
+                            <PenTool className="h-5 w-5"/> <span className="text-[10px]">Whiteboard</span>
                         </Button>
                     )}
 
-                    {/* AI Tool */}
+                    {isPresenter && (
+                        <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isRecording ? 'text-red-500' : 'text-white'} hover:bg-white/10`} onClick={isRecording ? stopRecording : startRecording}>
+                            {isRecording ? <Square className="h-5 w-5 fill-current"/> : <Circle className="h-5 w-5 fill-red-500 text-red-500"/>} <span className="text-[10px]">{isRecording ? 'Stop Rec' : 'Record'}</span>
+                        </Button>
+                    )}
+
                     <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-indigo-400 hover:bg-white/10" onClick={() => setIsAiOpen(true)}>
                          <Sparkles className="h-5 w-5"/> <span className="text-[10px]">{isTeacher ? 'Co-Pilot' : 'AI Help'}</span>
                     </Button>
                 </div>
 
-                {/* 3. Right Controls */}
                 <div className="flex items-center gap-2">
                     <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${showParticipants ? 'text-blue-400 bg-black/40' : 'text-white'} hover:bg-white/10`} onClick={() => {setShowParticipants(!showParticipants); setShowChat(false);}}>
                         <Users className="h-5 w-5"/> <span className="text-[10px]">People</span>
@@ -544,20 +701,17 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${showChat ? 'text-blue-400 bg-black/40' : 'text-white'} hover:bg-white/10`} onClick={() => {setShowChat(!showChat); setShowParticipants(false);}}>
                         <MessageSquare className="h-5 w-5"/> <span className="text-[10px]">Chat</span>
                     </Button>
-                    <Button className="bg-red-600 hover:bg-red-700 text-white px-6 ml-2" onClick={onLeave}>
-                        End
-                    </Button>
+                    <Button className="bg-red-600 hover:bg-red-700 text-white px-6 ml-2" onClick={onLeave}>End</Button>
                 </div>
             </div>
 
-            {/* MODALS */}
             {recordedBlob && (
                 <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
                     <Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl">
                         <CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader>
                         <CardFooter className="flex justify-between gap-2">
                             <Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button>
-                            <Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : "Save to Library"}</Button>
+                            <Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save</Button>
                         </CardFooter>
                     </Card>
                 </div>
@@ -583,16 +737,13 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 </DialogContent>
             </Dialog>
 
-             {/* CSS Animation for Floating Emojis */}
              <style jsx global>{`
                 @keyframes float-up {
                     0% { transform: translateY(0) scale(0.5); opacity: 0; }
                     10% { opacity: 1; transform: translateY(-20px) scale(1.2); }
                     100% { transform: translateY(-200px) scale(1); opacity: 0; }
                 }
-                .animate-float-up {
-                    animation: float-up 3s ease-out forwards;
-                }
+                .animate-float-up { animation: float-up 3s ease-out forwards; }
             `}</style>
         </div>
     );
@@ -615,19 +766,16 @@ export default function LiveClassroomPage() {
     const { data: liveLectures } = useCollection<Lecture>(liveQuery);
 
     const upcomingQuery = useMemoFirebase(() => 
-        // FIX: Removed 'orderBy' temporarily to avoid Missing Index error during first run
         firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, 
     [firestore]);
     
     const { data: upcomingLecturesRaw } = useCollection<Lecture>(upcomingQuery);
     
-    // Client-side Sort
     const upcomingLectures = useMemo(() => {
         if (!upcomingLecturesRaw) return [];
         return upcomingLecturesRaw.sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
     }, [upcomingLecturesRaw]);
 
-    // Actions
     const handleStartScheduled = async (id: string) => {
         if(!firestore) return;
         await updateDoc(doc(firestore, 'lectures', id), { status: 'live' });
@@ -641,9 +789,7 @@ export default function LiveClassroomPage() {
         }
     };
 
-    // If joined, show classroom
     if (activeLectureId) {
-        // Try to find in live first, then upcoming (in case it just switched)
         const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
         if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
     }
@@ -652,79 +798,15 @@ export default function LiveClassroomPage() {
         <div className="space-y-6 p-6">
             <Card className="bg-slate-900 text-white">
                 <CardHeader className="flex flex-row justify-between items-center">
-                    <div>
-                        <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom</CardTitle>
-                        <p className="text-slate-400">Interactive virtual learning environment.</p>
-                    </div>
-                    {isTeacher && (
-                        <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                            <CalendarIcon className="mr-2 h-4 w-4"/> Schedule Class
-                        </Button>
-                    )}
+                    <div><CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom</CardTitle><p className="text-slate-400">Virtual Learning Environment</p></div>
+                    {isTeacher && <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white"><CalendarIcon className="mr-2 h-4 w-4"/> Schedule Class</Button>}
                 </CardHeader>
             </Card>
-
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-                    <TabsTrigger value="live">Live Now ({liveLectures?.length || 0})</TabsTrigger>
-                    <TabsTrigger value="upcoming">Upcoming ({upcomingLectures?.length || 0})</TabsTrigger>
-                </TabsList>
-
-                {/* LIVE TAB */}
-                <TabsContent value="live" className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
-                        {liveLectures?.map(l => (
-                            <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
-                                <CardHeader>
-                                    <div className="flex justify-between items-start">
-                                        <Badge className="bg-red-100 text-red-700 hover:bg-red-200">LIVE</Badge>
-                                        <Badge variant="outline">{l.targetGroup}</Badge>
-                                    </div>
-                                    <CardTitle className="mt-2">{l.title}</CardTitle>
-                                    <CardDescription>Host: {l.teacherName}</CardDescription>
-                                </CardHeader>
-                                <CardFooter>
-                                    <Button onClick={() => setActiveLectureId(l.id)} className="w-full bg-red-600 hover:bg-red-700">Join Class</Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                </TabsContent>
-
-                {/* UPCOMING TAB */}
-                <TabsContent value="upcoming" className="mt-6">
-                     <div className="space-y-4">
-                        {upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
-                        {upcomingLectures?.map(l => (
-                            <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
-                                <div className="flex gap-4 items-center">
-                                    <div className="bg-indigo-50 p-3 rounded-lg text-center min-w-[70px]">
-                                        <p className="text-xs font-bold text-indigo-600 uppercase">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'MMM') : 'DATE'}</p>
-                                        <p className="text-xl font-bold text-slate-800">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'd') : '00'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-lg text-slate-800">{l.title}</h4>
-                                        <div className="flex gap-2 text-sm text-muted-foreground">
-                                            <span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span>
-                                            <span>•</span>
-                                            <span>{l.targetGroup}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {isTeacher ? (
-                                    <Button onClick={() => handleStartScheduled(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
-                                        Start Now
-                                    </Button>
-                                ) : (
-                                    <Button disabled variant="secondary" size="sm">Not Started</Button>
-                                )}
-                            </div>
-                        ))}
-                     </div>
-                </TabsContent>
+                <TabsList className="grid w-full grid-cols-2 lg:w-[400px]"><TabsTrigger value="live">Live Now ({liveLectures?.length || 0})</TabsTrigger><TabsTrigger value="upcoming">Upcoming ({upcomingLectures?.length || 0})</TabsTrigger></TabsList>
+                <TabsContent value="live" className="mt-6"><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes.</p>}{liveLectures?.map(l => (<Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse"><CardHeader><div className="flex justify-between items-start"><Badge className="bg-red-100 text-red-700">LIVE</Badge><Badge variant="outline">{l.targetGroup}</Badge></div><CardTitle className="mt-2">{l.title}</CardTitle><CardDescription>Host: {l.teacherName}</CardDescription></CardHeader><CardFooter><Button onClick={() => setActiveLectureId(l.id)} className="w-full bg-red-600 hover:bg-red-700">Join Class</Button></CardFooter></Card>))}</div></TabsContent>
+                <TabsContent value="upcoming" className="mt-6"><div className="space-y-4">{upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}{upcomingLectures?.map(l => (<div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm"><div className="flex gap-4 items-center"><div className="bg-indigo-50 p-3 rounded-lg text-center min-w-[70px]"><p className="text-xs font-bold text-indigo-600 uppercase">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'MMM') : 'DATE'}</p><p className="text-xl font-bold text-slate-800">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'd') : '00'}</p></div><div><h4 className="font-bold text-lg text-slate-800">{l.title}</h4><div className="flex gap-2 text-sm text-muted-foreground"><span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span><span>•</span><span>{l.targetGroup}</span></div></div></div>{isTeacher ? <Button onClick={() => handleStartScheduled(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">Start Now</Button> : <Button disabled variant="secondary" size="sm">Not Started</Button>}</div>))}</div></TabsContent>
             </Tabs>
-
             <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
         </div>
     );
