@@ -284,16 +284,16 @@ function StudentGradesDetail({
                     </CardContent>
                 </Card>
                 <Card className="bg-white border-slate-200 shadow-sm">
-                     <CardContent className="p-4 flex flex-col justify-center h-full">
-                        <GenerateReportCard
-                            student={student}
-                            assessments={assessments || []}
+                    <CardContent className="p-4 flex flex-col justify-center h-full">
+                        <GenerateReportCard 
+                            student={student} 
+                            assessments={assessments.filter(a => a.studentId === student.uid)}
                             year={year}
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
                         />
-                     </CardContent>
+                    </CardContent>
                 </Card>
             </div>
 
@@ -571,3 +571,5 @@ export default function GradebookManager() {
     </div>
   );
 }
+
+    
