@@ -2,11 +2,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { 
-  TrendingUp, User, PlusCircle, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare 
+  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -23,7 +23,7 @@ import { Label } from '@/components/ui/label';
 import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
 import { useToast } from '@/hooks/use-toast';
 
-// NEW IMPORT
+// Imports
 import { GenerateReportCard } from './report-card-pdf';
 
 // Types
@@ -85,8 +85,6 @@ function PromoteStudentsTab({ classes }: { classes: Class[] | undefined }) {
             const batch = writeBatch(firestore);
             
             selectedStudentIds.forEach(studentId => {
-                // Students collection uses UID as Doc ID usually, but verify your data structure.
-                // Assuming doc ID is the student UID based on previous rules.
                 const studentRef = doc(firestore, 'students', studentId);
                 
                 if (toClassId === 'GRADUATED') {
@@ -183,8 +181,8 @@ function StudentGradesDetail({
     assessments, 
     rank, 
     totalStudents,
-    year, // Passed down from parent
-    term  // Passed down from parent
+    year, 
+    term 
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -199,11 +197,15 @@ function StudentGradesDetail({
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
-            const sub = a.subjectId || 'General';
-            if (!subjects[sub]) subjects[sub] = { total: 0, max: 0, count: 0 };
-            subjects[sub].total += a.score || 0;
-            subjects[sub].max += a.maxScore || 0;
-            subjects[sub].count++;
+            
+            // FIX: Use 'subject' (Name) if it exists, otherwise fall back to 'subjectId' or 'General'
+            const subName = (a as any).subject || a.subjectId || 'General'; 
+            
+            if (!subjects[subName]) subjects[subName] = { total: 0, max: 0, count: 0 };
+            
+            subjects[subName].total += a.score || 0;
+            subjects[subName].max += a.maxScore || 0;
+            subjects[subName].count++;
         });
 
         return Object.entries(subjects).map(([name, data]) => {
@@ -285,7 +287,8 @@ function StudentGradesDetail({
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => (
                         <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
-                            <span>{a.assessmentName} <span className="text-xs text-slate-400">({a.assessmentType})</span></span>
+                            {/* FIX: Display Subject Name here too if possible, otherwise assessment title */}
+                            <span>{a.assessmentName} <span className="text-xs text-slate-400">({(a as any).subject || a.assessmentType})</span></span>
                             <span className="font-mono font-medium">{a.score}/{a.maxScore}</span>
                         </div>
                     ))}
@@ -393,6 +396,7 @@ export default function GradebookManager() {
                     <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
+                {/* ACTION BUTTONS */}
                 <div className="flex gap-2">
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
@@ -435,12 +439,14 @@ export default function GradebookManager() {
         </CardContent>
       </Card>
 
+      {/* GRADE ENTRY FORM (Conditional) */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
               <AssessmentFeedbackForm classId={selectedClassId} classes={classes || []} />
           </div>
       )}
       
+      {/* STUDENT LIST */}
       <Tabs defaultValue="academics" className="w-full">
         <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
             <TabsTrigger value="academics">Report Cards</TabsTrigger>
@@ -547,4 +553,3 @@ export default function GradebookManager() {
     </div>
   );
 }
-
