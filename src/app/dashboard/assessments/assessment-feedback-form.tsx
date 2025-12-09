@@ -33,7 +33,7 @@ import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc, 
 import { assessmentFeedbackSchema } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data'; // Removed MOCK_SUBJECTS
+import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { useRole } from '@/context/role-context';
 import type { Class, Student } from '@/lib/types';
 
@@ -57,15 +57,20 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
 
     const form = useForm<z.infer<typeof assessmentFeedbackSchema>>({
       resolver: zodResolver(assessmentFeedbackSchema),
+      // FIX: Provide explicit default values for ALL fields to prevent "uncontrolled to controlled" error
       defaultValues: {
         academicYear: MOCK_ACADEMIC_YEARS[0],
         term: MOCK_TERMS[0],
         assessmentType: 'Quiz',
-        teacherId: user?.uid,
+        teacherId: user?.uid || '',
         classId: classId || '',
+        assessmentName: '',
+        studentId: '',
+        subjectId: '',
         score: 0,
-        maxScore: 0,
+        maxScore: 100,
         feedback: '',
+        // assessmentDate is optional/undefined initially, handled by Popover
       },
     });
 
@@ -128,8 +133,9 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
           form.reset({
               ...values, // Keep context (Class, Term, Subject)
               score: 0,
-              maxScore: 0,
-              feedback: '' 
+              maxScore: 100, // Reset max score to a default
+              feedback: '', 
+              assessmentName: '' // Clear name to prevent accidental overwrites
           });
         } catch (error) {
           console.error("Error saving assessment feedback:", error);
@@ -186,9 +192,11 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                 <FormField control={form.control} name="studentId" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Student</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!selectedClassId}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={!selectedClassId}>
                             <FormControl><SelectTrigger><SelectValue placeholder={students.length > 0 ? "Select Student" : "No students found"} /></SelectTrigger></FormControl>
-                            <SelectContent>{students?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+                            <SelectContent>
+                                {students?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                            </SelectContent>
                         </Select>
                         <FormMessage />
                     </FormItem>
@@ -198,7 +206,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                  <FormField control={form.control} name="subjectId" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Subject</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoadingSubjects}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={isLoadingSubjects}>
                             <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a subject" />
@@ -284,7 +292,7 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
                 </FormItem>
                 )} />
 
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} className="w-full">
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Entry
               </Button>
