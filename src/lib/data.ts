@@ -171,6 +171,12 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
+            path: '/dashboard/smart-schedule',
+            title: 'Smart Schedule',
+            icon: CalendarCheck,
+            roles: ['Student', 'Teacher'],
+        },
+        {
             path: '/dashboard/calendar',
             title: 'School Calendar',
             icon: CalendarDays,
