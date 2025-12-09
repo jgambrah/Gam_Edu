@@ -21,8 +21,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { getAuth } from 'firebase/auth';
 
-// --- Create Thread Form (Fixed Auth) ---
-function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+// --- Create Thread Form (Fixed Auth & Refetch) ---
+function CreateThreadForm({ setOpen, onThreadCreated }: { setOpen: (open: boolean) => void; onThreadCreated: () => void; }) {
     const firestore = useFirestore();
     const { user: hookUser } = useAuth(); // Renamed to avoid confusion
     const { toast } = useToast();
@@ -35,7 +35,6 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // FIX: Get user directly from Firebase SDK (Bypasses React State lag)
         const auth = getAuth();
         const currentUser = auth.currentUser || hookUser;
         
@@ -52,7 +51,6 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         setIsSubmitting(true);
         
         try {
-            // 1. Safety Check (Wrapped to prevent blocking)
             if (aiModerator) {
                 try {
                     const { isSafe, reason } = await validateContentSafety({ content: `${title} ${content}` });
@@ -63,11 +61,9 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
                     }
                 } catch (aiError) {
                     console.error("AI Check Failed (Skipping):", aiError);
-                    // Continue anyway if AI service is down
                 }
             }
 
-            // 2. Save to Firestore using currentUser
             await addDoc(collection(firestore, 'forumThreads'), {
                 title,
                 content,
@@ -82,6 +78,7 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void }) {
             });
             
             toast({ title: 'Success', description: 'Thread posted successfully.' });
+            onThreadCreated(); // <<< THIS IS THE FIX
             setOpen(false); 
             
         } catch (e: any) {
@@ -293,11 +290,12 @@ export default function ForumPage() {
     const [isCreateOpen, setCreateOpen] = useState(false);
   
     const threadsQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null; // Wait for user
+        if (!user || !firestore) return null;
         return query(collection(firestore, 'forumThreads'), orderBy('lastReplyAt', 'desc'));
     }, [firestore, user]);
 
-    const { data: threads, isLoading } = useCollection<ForumThread>(threadsQuery);
+    // Pass forceRefetch to the creation form
+    const { data: threads, isLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
 
     if (selectedThread) {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
@@ -320,7 +318,7 @@ export default function ForumPage() {
                         <DialogTitle>Start a New Discussion</DialogTitle>
                         <DialogDescription>What's on your mind?</DialogDescription>
                     </DialogHeader>
-                    <CreateThreadForm setOpen={setCreateOpen} />
+                    <CreateThreadForm setOpen={setCreateOpen} onThreadCreated={forceRefetch} />
                 </DialogContent>
             </Dialog>
         </CardHeader>
