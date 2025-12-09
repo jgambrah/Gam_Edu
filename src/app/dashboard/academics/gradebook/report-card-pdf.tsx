@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, PDFDownloadLink } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
 import { Student, Assessment } from '@/lib/types';
 import { format } from 'date-fns';
 import { Printer, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-// --- STYLES ---
+// --- PDF STYLES ---
 const styles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica', fontSize: 10, color: '#333' },
   header: { marginBottom: 20, borderBottom: 1, borderBottomColor: '#ccc', paddingBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -62,20 +62,29 @@ const ReportCardDocument = ({
     totalStudents: number
 }) => {
     
-    // Process Data
-    const subjectGrades = Object.values(assessments.reduce((acc, curr) => {
-        const sub = curr.subjectId || 'General'; // Use Subject Name if available, usually mapped before passing here
-        if (!acc[sub]) acc[sub] = { name: sub, total: 0, max: 0 };
-        acc[sub].total += curr.score || 0;
-        acc[sub].max += curr.maxScore || 0;
-        return acc;
-    }, {} as Record<string, { name: string, total: number, max: number }>))
-    .map(s => {
+    // Process Data: Group assessments by Subject
+    const subjectMap: Record<string, { name: string, total: number, max: number }> = {};
+    
+    assessments.forEach(curr => {
+        // Use subjectId as key, but if you have a subjectName field, use that for display
+        // Fallback to 'General' if missing
+        const subName = curr.subjectId || 'General'; 
+        
+        if (!subjectMap[subName]) {
+            subjectMap[subName] = { name: subName, total: 0, max: 0 };
+        }
+        subjectMap[subName].total += curr.score || 0;
+        subjectMap[subName].max += curr.maxScore || 0;
+    });
+
+    const subjectGrades = Object.values(subjectMap).map(s => {
         const pct = s.max > 0 ? (s.total / s.max) * 100 : 0;
         return { ...s, percentage: pct, ...getGrade(pct) };
     });
 
-    const overallAvg = subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / (subjectGrades.length || 1);
+    const overallAvg = subjectGrades.length > 0 
+        ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
+        : 0;
 
     return (
         <Document>
@@ -86,10 +95,8 @@ const ReportCardDocument = ({
                     <View>
                         <Text style={styles.schoolName}>SunnySide Academy</Text>
                         <Text style={styles.schoolInfo}>123 Education Lane, Accra, Ghana</Text>
-                        <Text style={styles.schoolInfo}>contact@sunnyside.com | +233 55 123 4567</Text>
+                        <Text style={styles.schoolInfo}>contact@sunnyside.com</Text>
                     </View>
-                    {/* Placeholder for Logo */}
-                    <View style={{ width: 50, height: 50, backgroundColor: '#eee' }}></View>
                 </View>
 
                 <Text style={styles.title}>Student Report Card</Text>
@@ -98,7 +105,7 @@ const ReportCardDocument = ({
                 <View style={styles.infoContainer}>
                     <View style={styles.infoCol}>
                         <View style={styles.infoRow}><Text style={styles.label}>Name:</Text><Text style={styles.value}>{student.firstName} {student.lastName}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>ID:</Text><Text style={styles.value}>{student.id?.slice(0,8).toUpperCase()}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>ID:</Text><Text style={styles.value}>{student.id ? student.id.slice(0,8).toUpperCase() : 'N/A'}</Text></View>
                         <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{student.classId}</Text></View>
                     </View>
                     <View style={styles.infoCol}>
@@ -125,18 +132,12 @@ const ReportCardDocument = ({
                         </View>
                     ))}
                     {/* Total Row */}
-                    <View style={[styles.tableRow, { borderTopWidth: 2 }]}>
+                    <View style={[styles.tableRow, { borderTopWidth: 2, backgroundColor: '#f8fafc' }]}>
                         <Text style={[styles.colSubject, { fontWeight: 'bold' }]}>Overall Average</Text>
                         <Text style={[styles.colMetric, { fontWeight: 'bold' }]}>{overallAvg.toFixed(1)}%</Text>
                         <Text style={styles.colMetric}></Text>
                         <Text style={styles.colRemark}></Text>
                     </View>
-                </View>
-
-                {/* ATTENDANCE & CONDUCT (Placeholders for now) */}
-                <View style={{ marginTop: 20 }}>
-                    <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>Teacher's Remarks:</Text>
-                    <View style={{ height: 40, borderBottomWidth: 1, borderBottomColor: '#ccc' }}></View>
                 </View>
 
                 {/* SIGNATURES */}
@@ -155,7 +156,7 @@ const ReportCardDocument = ({
     );
 };
 
-// --- BUTTON COMPONENT ---
+// --- BUTTON COMPONENT (This is what appears on the page) ---
 export const GenerateReportCard = ({ 
     student, assessments, year, term, rank, totalStudents 
 }: any) => (
@@ -170,13 +171,13 @@ export const GenerateReportCard = ({
                 totalStudents={totalStudents}
             />
         }
-        fileName={`${student.firstName}_${student.lastName}_Report_${term}.pdf`}
+        fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
     >
         {/* @ts-ignore */}
         {({ blob, url, loading, error }) => (
-            <Button variant="outline" className="w-full gap-2" disabled={loading}>
+            <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Printer className="h-4 w-4"/>}
-                {loading ? 'Generating PDF...' : 'Download Report Card'}
+                {loading ? 'Generating...' : 'Download Report Card'}
             </Button>
         )}
     </PDFDownloadLink>
