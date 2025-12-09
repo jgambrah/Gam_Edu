@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
-import { AssessmentFeedbackForm } from '../assessments/assessment-feedback-form';
+import { AssessmentFeedbackForm } from '@/app/dashboard/assessments/assessment-feedback-form';
 import { useToast } from '@/hooks/use-toast';
 
 // Imports
@@ -218,7 +218,7 @@ function StudentGradesDetail({
             
             let displaySub = 'General';
 
-            const rawSubject = a.subjectId || a.subject || '';
+            const rawSubject = a.subjectId || (a as any).subject || '';
             
             if (rawSubject && subjectMap[rawSubject]) {
                 displaySub = subjectMap[rawSubject];
@@ -314,7 +314,7 @@ function StudentGradesDetail({
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => {
                         let displaySub = 'General';
-                        const rawSubject = a.subjectId || a.subject || '';
+                        const rawSubject = a.subjectId || (a as any).subject || '';
                         if (rawSubject && subjectMap[rawSubject]) displaySub = subjectMap[rawSubject];
                         else if (rawSubject) displaySub = rawSubject;
 
@@ -417,7 +417,7 @@ export default function GradebookManager() {
     students.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const paid = myRecords.reduce((acc, r) => acc + r.amountPaid, 0);
+        const paid = myRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
         financials[student.uid] = { balance: billed - paid };
     });
     return financials;
@@ -592,5 +592,7 @@ export default function GradebookManager() {
     </div>
   );
 }
+
+    
 
     
