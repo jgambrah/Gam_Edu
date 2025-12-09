@@ -186,7 +186,7 @@ function StudentGradesDetail({
     totalStudents,
     year, 
     term,
-    subjectsList // NEW PROP: List of subjects to lookup names
+    subjectsList // This list comes from the database
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -203,19 +203,33 @@ function StudentGradesDetail({
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
-            // FIX: LOOKUP THE NAME
-            // 1. Try finding by ID in the subject list
-            // 2. Fallback to a.subject (saved name)
-            // 3. Fallback to a.subjectId (the ID itself)
-            // 4. Default to 'General'
-            const foundSubject = subjectsList?.find(s => s.id === a.subjectId);
-            const subName = foundSubject?.name || a.subject || a.subjectId || 'General';
+            // --- FIX: Name Resolution Logic ---
+            let displaySub = 'General';
+
+            // Strategy 1: Try finding by the specific subjectId field
+            const foundByCode = subjectsList?.find(s => s.id === a.subjectId);
+
+            if (foundByCode) {
+                displaySub = foundByCode.name;
+            } else if (a.subject) {
+                // Strategy 2: Check if the 'subject' text field is actually an ID in our list
+                // (This fixes the issue where IDs like 'zO7lg...' were saved as names)
+                const foundByNameID = subjectsList?.find(s => s.id === a.subject);
+                
+                if (foundByNameID) {
+                    displaySub = foundByNameID.name;
+                } else {
+                    // Strategy 3: It's just a text string (legacy data), use it as is
+                    displaySub = a.subject;
+                }
+            }
+            // ----------------------------------
             
-            if (!subjects[subName]) subjects[subName] = { total: 0, max: 0, count: 0 };
+            if (!subjects[displaySub]) subjects[displaySub] = { total: 0, max: 0, count: 0 };
             
-            subjects[subName].total += a.score || 0;
-            subjects[subName].max += a.maxScore || 0;
-            subjects[subName].count++;
+            subjects[displaySub].total += a.score || 0;
+            subjects[displaySub].max += a.maxScore || 0;
+            subjects[displaySub].count++;
         });
 
         return Object.entries(subjects).map(([name, data]) => {
@@ -296,10 +310,13 @@ function StudentGradesDetail({
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => {
-                        // Resolve Name for detailed list too
-                        const foundSub = subjectsList?.find(s => s.id === a.subjectId);
-                        const displaySub = foundSub?.name || a.subject || a.subjectId;
+                        // FIX: Logic for displaying name in the detailed list
+                        let displaySub = a.subject || 'General';
                         
+                        // Check if ID matches a known subject
+                        const foundSub = subjectsList?.find(s => s.id === a.subjectId || s.id === a.subject);
+                        if (foundSub) displaySub = foundSub.name;
+
                         return (
                             <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
                                 <div className="flex flex-col">
