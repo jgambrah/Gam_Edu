@@ -216,17 +216,13 @@ function StudentGradesDetail({
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
-            // --- FIX: AGGRESSIVE NAME RESOLUTION ---
             let displaySub = 'General';
 
-            // Check field priority
             const rawSubject = a.subjectId || a.subject || '';
             
             if (rawSubject && subjectMap[rawSubject]) {
                 displaySub = subjectMap[rawSubject];
             } else if (rawSubject) {
-                // If we can't find it in the map, use the raw string, 
-                // but if it looks like an ID (long alphanumeric), label it "Unknown" to alert user
                 const isLikelyID = rawSubject.length > 15 && !rawSubject.includes(' ');
                 displaySub = isLikelyID ? `Unknown Subject (${rawSubject.slice(0,4)}...)` : rawSubject;
             }
@@ -281,7 +277,7 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
-                            subjectsList={subjectsList} // <-- PASS LIST
+                            subjectsList={subjectsList}
                         />
                      </CardContent>
                 </Card>
@@ -317,7 +313,6 @@ function StudentGradesDetail({
                 <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
                 <div className="space-y-1">
                     {assessments.filter(a => a.studentId === student.uid).map(a => {
-                        // Resolve Name for detailed list
                         let displaySub = 'General';
                         const rawSubject = a.subjectId || a.subject || '';
                         if (rawSubject && subjectMap[rawSubject]) displaySub = subjectMap[rawSubject];
@@ -391,7 +386,7 @@ export default function GradebookManager() {
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. FETCH SUBJECTS LIST (FIX - REMOVED ORDERBY TO PREVENT CRASH)
+  // 5. FETCH SUBJECTS LIST
   const subjectsQuery = useMemoFirebase(() => 
     firestore ? query(collection(firestore, 'subjects')) : null, 
   [firestore]);
@@ -436,24 +431,11 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* --- DEBUG SECTION --- */}
-      {isStaff && (
-          <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800 flex flex-wrap gap-2 items-center">
-              <Info className="h-4 w-4"/>
-              <strong>Subjects Loaded: {allSubjects?.length || 0}.</strong>
-              {allSubjects && allSubjects.length > 0 && 
-                <span className="opacity-0 hover:opacity-100 transition-opacity">Sample: {allSubjects[0].name} ({allSubjects[0].id})</span>
-              }
-              {isLoadingSubjects && <Loader2 className="h-3 w-3 animate-spin"/>}
-              {!allSubjects && !isLoadingSubjects && <span className="text-red-500">Subject list is empty!</span>}
-          </div>
-      )}
-      
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
                 <div className="flex gap-2">
@@ -611,198 +593,4 @@ export default function GradebookManager() {
   );
 }
 
-2. Fix the PDF Report Card (src/app/dashboard/academics/gradebook/report-card-pdf.tsx)
-I will update the PDF component to receive and use the same subjectsList. This ensures the PDF also shows the correct names.
-
-'use client';
-
-import React, { useMemo } from 'react';
-import { Page, Text, View, Document, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
-import { Student, Assessment, Subject } from '@/lib/types'; // Import Subject
-import { format } from 'date-fns';
-import { Printer, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-
-// --- STYLES (Keep as is) ---
-const styles = StyleSheet.create({
-  page: { padding: 40, fontFamily: 'Helvetica', fontSize: 10, color: '#333' },
-  header: { marginBottom: 20, borderBottom: 1, borderBottomColor: '#ccc', paddingBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  schoolName: { fontSize: 24, fontWeight: 'bold', color: '#1a365d', textTransform: 'uppercase' },
-  schoolInfo: { fontSize: 9, color: '#666' },
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginVertical: 15, textTransform: 'uppercase', letterSpacing: 1 },
-  infoContainer: { flexDirection: 'row', marginBottom: 20, backgroundColor: '#f8fafc', padding: 10, borderRadius: 4 },
-  infoCol: { flex: 1 },
-  infoRow: { flexDirection: 'row', marginBottom: 4 },
-  label: { width: 80, fontWeight: 'bold', color: '#64748b' },
-  value: { flex: 1, fontWeight: 'bold' },
-  table: { width: 'auto', borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 20 },
-  tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', minHeight: 25, alignItems: 'center' },
-  tableHeader: { backgroundColor: '#f1f5f9', fontWeight: 'bold' },
-  colSubject: { width: '40%', padding: 5, borderRightWidth: 1, borderRightColor: '#e2e8f0' },
-  colMetric: { width: '15%', padding: 5, borderRightWidth: 1, borderRightColor: '#e2e8f0', textAlign: 'center' },
-  colRemark: { width: '30%', padding: 5, textAlign: 'left' },
-  footer: { marginTop: 30, flexDirection: 'row', justifyContent: 'space-between' },
-  signatureBox: { width: 200, borderTopWidth: 1, borderTopColor: '#000', paddingTop: 5, marginTop: 40, textAlign: 'center' },
-  disclaimer: { position: 'absolute', bottom: 30, left: 40, right: 40, fontSize: 8, textAlign: 'center', color: '#999' }
-});
-
-// Grading Helper
-function getGrade(percentage: number) {
-    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
-    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
-    if (percentage >= 60) return { grade: 'C', remark: 'Good' };
-    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
-    return { grade: 'F', remark: 'Fail' };
-}
-
-// --- PDF DOCUMENT COMPONENT ---
-const ReportCardDocument = ({ 
-    student, 
-    assessments, 
-    year, 
-    term,
-    rank,
-    totalStudents,
-    subjectsList // FIX: Receive the subjects list
-}: { 
-    student: Student, 
-    assessments: Assessment[], 
-    year: string, 
-    term: string,
-    rank: number,
-    totalStudents: number,
-    subjectsList: Subject[] | undefined // FIX: Type for the new prop
-}) => {
     
-    // Create the same lookup map here
-    const subjectMap = useMemo(() => {
-        const map: Record<string, string> = {};
-        if (subjectsList) {
-            subjectsList.forEach(s => { map[s.id] = s.name; });
-        }
-        return map;
-    }, [subjectsList]);
-
-    // Process Data: Group assessments by Subject Name
-    const subjectGrades = useMemo(() => {
-        const subjects: Record<string, { total: number, max: number }> = {};
-        
-        assessments.forEach(a => {
-            // Same robust name resolution as the main page
-            let subName = 'General';
-            if (a.subjectId && subjectMap[a.subjectId]) subName = subjectMap[a.subjectId];
-            else if (a.subject && subjectMap[a.subject]) subName = subjectMap[a.subject];
-            else if (a.subject) subName = a.subject;
-
-            if (!subjects[subName]) subjects[subName] = { total: 0, max: 0 };
-            
-            subjects[subName].total += a.score || 0;
-            subjects[subName].max += a.maxScore || 0;
-        });
-
-        return Object.entries(subjects).map(([name, data]) => {
-            const pct = data.max > 0 ? (data.total / data.max) * 100 : 0;
-            return { name, percentage: pct, ...getGrade(pct) };
-        });
-    }, [assessments, subjectMap]);
-
-    const overallAvg = subjectGrades.length > 0 
-        ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
-        : 0;
-
-    return (
-        <Document>
-            <Page size="A4" style={styles.page}>
-                {/* Header, Student Info (Keep as is) */}
-                 <View style={styles.header}>
-                    <View>
-                        <Text style={styles.schoolName}>SunnySide Academy</Text>
-                        <Text style={styles.schoolInfo}>123 Education Lane, Accra, Ghana</Text>
-                        <Text style={styles.schoolInfo}>contact@sunnyside.com</Text>
-                    </View>
-                </View>
-                <Text style={styles.title}>Student Report Card</Text>
-                <View style={styles.infoContainer}>
-                    <View style={styles.infoCol}>
-                        <View style={styles.infoRow}><Text style={styles.label}>Name:</Text><Text style={styles.value}>{student.firstName} {student.lastName}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>ID:</Text><Text style={styles.value}>{student.id ? student.id.slice(0,8).toUpperCase() : 'N/A'}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{student.classId}</Text></View>
-                    </View>
-                    <View style={styles.infoCol}>
-                        <View style={styles.infoRow}><Text style={styles.label}>Year:</Text><Text style={styles.value}>{year}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Term:</Text><Text style={styles.value}>{term}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Position:</Text><Text style={styles.value}>{rank} / {totalStudents}</Text></View>
-                    </View>
-                </View>
-
-                {/* GRADES TABLE */}
-                <View style={styles.table}>
-                    <View style={[styles.tableRow, styles.tableHeader]}>
-                        <Text style={styles.colSubject}>Subject</Text>
-                        <Text style={styles.colMetric}>Percent</Text>
-                        <Text style={styles.colMetric}>Grade</Text>
-                        <Text style={styles.colRemark}>Remark</Text>
-                    </View>
-                    {subjectGrades.map((sub, i) => (
-                        <View key={i} style={styles.tableRow}>
-                            <Text style={styles.colSubject}>{sub.name}</Text>
-                            <Text style={styles.colMetric}>{sub.percentage.toFixed(1)}%</Text>
-                            <Text style={styles.colMetric}>{sub.grade}</Text>
-                            <Text style={styles.colRemark}>{sub.remark}</Text>
-                        </View>
-                    ))}
-                    {/* Total Row */}
-                    <View style={[styles.tableRow, { borderTopWidth: 2, backgroundColor: '#f8fafc' }]}>
-                        <Text style={[styles.colSubject, { fontWeight: 'bold' }]}>Overall Average</Text>
-                        <Text style={[styles.colMetric, { fontWeight: 'bold' }]}>{overallAvg.toFixed(1)}%</Text>
-                        <Text style={styles.colMetric}></Text>
-                        <Text style={styles.colRemark}></Text>
-                    </View>
-                </View>
-
-                {/* Footer, Disclaimer (Keep as is) */}
-                 <View style={styles.footer}>
-                    <View style={styles.signatureBox}><Text>Class Teacher Signature</Text></View>
-                    <View style={styles.signatureBox}><Text>Headmaster Signature</Text></View>
-                </View>
-                <Text style={styles.disclaimer}>Generated via CampusConnect System on {format(new Date(), 'PPP')}</Text>
-            </Page>
-        </Document>
-    );
-};
-
-// --- BUTTON COMPONENT (This is what appears on the page) ---
-export const GenerateReportCard = ({ 
-    student, assessments, year, term, rank, totalStudents, subjectsList
-}: {
-    student: Student,
-    assessments: Assessment[],
-    year: string,
-    term: string,
-    rank: number,
-    totalStudents: number,
-    subjectsList: Subject[] | undefined
-}) => (
-    <PDFDownloadLink
-        document={
-            <ReportCardDocument 
-                student={student} 
-                assessments={assessments} 
-                year={year} 
-                term={term}
-                rank={rank}
-                totalStudents={totalStudents}
-                subjectsList={subjectsList} // <-- Pass down
-            />
-        }
-        fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
-    >
-        {/* @ts-ignore */}
-        {({ loading }) => (
-            <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Printer className="h-4 w-4"/>}
-                {loading ? 'Generating...' : 'Download Report Card'}
-            </Button>
-        )}
-    </PDFDownloadLink>
-);
