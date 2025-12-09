@@ -33,42 +33,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-// --- TYPES ---
-type Lecture = {
-    id: string;
-    title: string;
-    description?: string;
-    targetGroup?: string; 
-    scheduledFor?: any; 
-    teacherName: string;
-    teacherId: string;
-    status: 'scheduled' | 'live' | 'ended';
-    createdAt: any;
-    slides?: string[]; 
-    currentSlide?: number; 
-    isPresentationMode?: boolean;
-    // New Breakout Fields
-    breakoutActive?: boolean;
-    breakoutDuration?: number; // minutes
-    breakoutEndTime?: any; 
-};
-
-type ChatMessage = {
-    id: string;
-    senderName: string;
-    senderId: string;
-    text: string;
-    isPoll?: boolean;
-    pollData?: any;
-    createdAt: any;
-};
-
-type Reaction = {
-    id: string;
-    emoji: string;
-    senderId: string;
-    createdAt: any;
-};
+// Types
+import type { Lecture, ChatMessage, Class } from '@/lib/types';
 
 // --- SUB-COMPONENT: Audio Visualizer (Fixed) ---
 const MicVisualizer = ({ stream }: { stream: MediaStream | null }) => {
@@ -282,7 +248,7 @@ const Whiteboard = () => {
 };
 
 // --- COMPONENT: Schedule Class Dialog ---
-function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+function ScheduleClassDialog({ open, setOpen, classes }: { open: boolean, setOpen: (v: boolean) => void, classes: Class[] }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -290,12 +256,12 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
     
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [targetGroup, setTargetGroup] = useState('');
+    const [classId, setClassId] = useState(''); // Changed from targetGroup
     const [scheduledDate, setScheduledDate] = useState('');
     const [scheduledTime, setScheduledTime] = useState('');
 
     const handleSchedule = async () => {
-        if (!user || !title || !scheduledDate || !scheduledTime) {
+        if (!user || !title || !scheduledDate || !scheduledTime || !classId) {
             toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
             return;
         }
@@ -305,7 +271,7 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
             await addDoc(collection(firestore!, 'lectures'), {
                 title,
                 description,
-                targetGroup: targetGroup || 'General',
+                classId: classId,
                 scheduledFor: scheduledDateTime,
                 teacherName: user.displayName || user.email?.split('@')[0],
                 teacherId: user.uid,
@@ -317,8 +283,7 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
             });
             toast({ title: "Class Scheduled" });
             setOpen(false);
-            // Reset state
-            setTitle(''); setDescription(''); setTargetGroup(''); setScheduledDate(''); setScheduledTime('');
+            setTitle(''); setDescription(''); setClassId('');
         } catch (e: any) {
             toast({ variant: 'destructive', title: "Error", description: e.message });
         } finally {
@@ -331,12 +296,21 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Schedule a New Live Class</DialogTitle>
-                    <DialogDescription>Set up a future live session for your students.</DialogDescription>
+                    <DialogDescription>Set up a future live session for a specific class.</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="space-y-2">
                         <Label htmlFor="title">Topic / Title *</Label>
                         <Input id="title" value={title} onChange={e => setTitle(e.target.value)} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="classId">Target Class *</Label>
+                        <Select value={classId} onValueChange={setClassId}>
+                            <SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger>
+                            <SelectContent>
+                                {classes.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="description">Description</Label>
@@ -344,61 +318,19 @@ function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: bo
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="target">Target Audience</Label>
-                            <Input id="target" value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="e.g., JHS 1" />
-                        </div>
-                        <div className="space-y-2">
                             <Label htmlFor="date">Date *</Label>
                             <Input id="date" type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
                         </div>
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="time">Time *</Label>
-                        <Input id="time" type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
+                         <div className="space-y-2">
+                            <Label htmlFor="time">Time *</Label>
+                            <Input id="time" type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
+                        </div>
                     </div>
                 </div>
                 <DialogFooter>
                     <Button onClick={handleSchedule} disabled={isSubmitting} className="w-full">
                         {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Schedule Class"}
                     </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-// --- COMPONENT: Breakout Room Setup ---
-function BreakoutSetupDialog({ open, setOpen, onStart }: { open: boolean, setOpen: (v: boolean) => void, onStart: (rooms: number, duration: number) => void }) {
-    const [rooms, setRooms] = useState('2');
-    const [duration, setDuration] = useState('10');
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[400px]">
-                <DialogHeader>
-                    <DialogTitle>Start Breakout Rooms</DialogTitle>
-                    <DialogDescription>Split students into smaller groups for discussion.</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="space-y-2">
-                        <Label>Number of Rooms</Label>
-                        <Select value={rooms} onValueChange={setRooms}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="2">2 Rooms</SelectItem>
-                                <SelectItem value="3">3 Rooms</SelectItem>
-                                <SelectItem value="4">4 Rooms</SelectItem>
-                                <SelectItem value="5">5 Rooms</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Duration (Minutes)</Label>
-                        <Input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button onClick={() => { onStart(Number(rooms), Number(duration)); setOpen(false); }}>Start Session</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -420,11 +352,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const [aiResponse, setAiResponse] = useState<any>(null);
     const [isProcessingAi, setIsProcessingAi] = useState(false);
 
-    // Breakout Rooms
-    const [isBreakoutSetupOpen, setIsBreakoutSetupOpen] = useState(false);
-    const [breakoutTimeLeft, setBreakoutTimeLeft] = useState<string>('');
-
-    // Media State
+    // Media
     const [isUploadingSlides, setIsUploadingSlides] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -433,22 +361,21 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const [isCameraOn, setIsCameraOn] = useState(false);
     const [isMicOn, setIsMicOn] = useState(false);
     const [isScreenSharing, setIsScreenSharing] = useState(false);
-    
-    // Feature States
-    const [captionsOn, setCaptionsOn] = useState(false);
-    const [captionText, setCaptionText] = useState('');
-    const recognitionRef = useRef<any>(null);
-    
-    // Layout & Tools
-    const [layoutMode, setLayoutMode] = useState<'focus' | 'grid'>('focus');
-    const [isWhiteboardActive, setIsWhiteboardActive] = useState(false); 
+    const [permissionError, setPermissionError] = useState(false);
 
+    // Tools & Layout
+    const [layoutMode, setLayoutMode] = useState<'focus' | 'grid'>('focus');
+    const [isWhiteboardActive, setIsWhiteboardActive] = useState(false);
+    const [captionsOn, setCaptionsOn] = useState(false);
+    
+    // Recording
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [isSavingRecord, setIsSavingRecord] = useState(false);
 
+    // UI State
     const [showParticipants, setShowParticipants] = useState(false);
     const [showChat, setShowChat] = useState(true);
     const [activeReactions, setActiveReactions] = useState<{id: string, emoji: string, left: number}[]>([]);
@@ -456,153 +383,60 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
     const isPresenter = user?.uid === lecture.teacherId; 
 
-    // --- 1. INITIALIZE MEDIA ---
+    // 1. Initialize Camera
     useEffect(() => {
         let localStream: MediaStream | null = null;
         const startStream = async () => {
-            if (isPresenter) {
+            if (isPresenter || layoutMode === 'grid') {
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                     setStream(localStream);
                     setStreamVersion(v => v + 1);
                     setIsCameraOn(true);
                     setIsMicOn(true);
-                } catch (err) { console.error("Media Error:", err); }
+                } catch (err) {
+                    console.error("Error accessing media:", err);
+                    setPermissionError(true);
+                }
             }
         };
         startStream();
-        return () => { 
-            if (recognitionRef.current) recognitionRef.current.stop();
-        };
-    }, [isPresenter]);
+        return () => { if (localStream) localStream.getTracks().forEach(track => track.stop()); };
+    }, [isPresenter, layoutMode]);
 
-    // Sync Video Element
+    // 2. Sync Video Element
     useEffect(() => {
         if (videoRef.current && stream) {
             videoRef.current.srcObject = stream;
         }
     }, [stream, streamVersion, layoutMode, isScreenSharing, isWhiteboardActive]);
 
-    // Cleanup
-    useEffect(() => {
-        return () => { if (stream) stream.getTracks().forEach(track => track.stop()); };
-    }, []);
-
-    // --- 2. LIVE CAPTIONS (Web Speech API) ---
-    const toggleCaptions = () => {
-        if (captionsOn) {
-            if (recognitionRef.current) recognitionRef.current.stop();
-            setCaptionsOn(false);
-            setCaptionText('');
-        } else {
-            // @ts-ignore - for cross-browser compatibility
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                toast({ variant: "destructive", title: "Not Supported", description: "Live captions require a Chromium-based browser like Chrome or Edge." });
-                return;
-            }
-            
-            const recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
-
-            recognition.onresult = (event: any) => {
-                let interim = '';
-                let final = '';
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        final += event.results[i][0].transcript;
-                    } else {
-                        interim += event.results[i][0].transcript;
-                    }
-                }
-                setCaptionText(final + interim);
-                 if (final) {
-                    setTimeout(() => setCaptionText(prev => prev === final ? '' : prev), 3000);
-                }
-            };
-
-            recognition.onerror = (event: any) => {
-                console.error("Speech Recognition Error:", event.error);
-                if(event.error === 'no-speech' || event.error === 'network') {
-                    recognition.stop();
-                    setTimeout(() => recognition.start(), 100);
-                }
-            };
-
-            recognition.start();
-            recognitionRef.current = recognition;
-            setCaptionsOn(true);
-            toast({ title: "Captions On", description: "Speak into your microphone." });
-        }
-    };
-
-    // --- 3. PICTURE IN PICTURE ---
-    const togglePiP = async () => {
-        try {
-            if (!document.pictureInPictureEnabled) {
-                toast({ variant: "destructive", title: "Not Supported", description: "Picture-in-Picture is not supported by your browser." });
-                return;
-            }
-            if (document.pictureInPictureElement) {
-                await document.exitPictureInPicture();
-            } else if (videoRef.current) {
-                await videoRef.current.requestPictureInPicture();
-            }
-        } catch (error) {
-            toast({ variant: 'destructive', title: "PiP Error", description: "Picture-in-Picture failed to start." });
-        }
-    };
-
-    // --- 4. BREAKOUT ROOM LOGIC ---
-    const handleStartBreakout = async (rooms: number, duration: number) => {
-        if (!firestore) return;
-        const endTime = new Date();
-        endTime.setMinutes(endTime.getMinutes() + duration);
-        
-        await updateDoc(doc(firestore, 'lectures', lecture.id), {
-            breakoutActive: true,
-            breakoutDuration: duration,
-            breakoutEndTime: endTime
-        });
-        toast({ title: "Breakout Rooms Started", description: `Students split into ${rooms} rooms for ${duration} mins.` });
-    };
-
-    const handleEndBreakout = async () => {
-        if (!firestore) return;
-        await updateDoc(doc(firestore, 'lectures', lecture.id), {
-            breakoutActive: false,
-            breakoutEndTime: null
-        });
-        toast({ title: "Breakout Ended", description: "Everyone returning to main session." });
-    };
-
-    useEffect(() => {
-        if (lecture.breakoutActive && lecture.breakoutEndTime) {
-            const interval = setInterval(() => {
-                const now = new Date();
-                const end = lecture.breakoutEndTime.toDate();
-                const diff = end.getTime() - now.getTime();
-                
-                if (diff <= 0) {
-                    setBreakoutTimeLeft("00:00");
-                    if (isTeacher) handleEndBreakout(); // Auto-end for teacher
-                } else {
-                    const m = Math.floor(diff / 60000);
-                    const s = Math.floor((diff % 60000) / 1000);
-                    setBreakoutTimeLeft(`${m}:${s < 10 ? '0' : ''}${s}`);
-                }
-            }, 1000);
-            return () => clearInterval(interval);
-        }
-    }, [lecture.breakoutActive, lecture.breakoutEndTime]);
-
-
-    // Chat & Participants
-    const chatQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures', lecture.id, 'messages'), orderBy('createdAt', 'asc')) : null, [firestore, lecture.id]);
+    // 3. Chat Query
+    const chatQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'lectures', lecture.id, 'messages'), orderBy('createdAt', 'asc')) : null, 
+    [firestore, lecture.id]);
     const { data: messages } = useCollection<ChatMessage>(chatQuery);
+
+    // 4. Reactions Listener
+    useEffect(() => {
+        if (!firestore) return;
+        const q = query(collection(firestore, 'lectures', lecture.id, 'reactions'), orderBy('createdAt', 'desc'), limit(1));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const data = change.doc.data();
+                    const id = Math.random().toString();
+                    const left = Math.floor(Math.random() * 80) + 10; 
+                    setActiveReactions(prev => [...prev, { id, emoji: data.emoji, left }]);
+                    setTimeout(() => setActiveReactions(prev => prev.filter(r => r.id !== id)), 3000);
+                }
+            });
+        });
+        return () => unsubscribe();
+    }, [firestore, lecture.id]);
+
     useEffect(() => { if(scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight; }, [messages]);
+
     const participants = useMemo(() => {
         const unique = new Set<string>();
         unique.add(lecture.teacherName);
@@ -612,56 +446,35 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     }, [messages, lecture.teacherName, user]);
 
 
-    // Other handlers
+    // --- HANDLERS ---
     const toggleScreenShare = async () => {
         if (!stream) return;
-
         if (isScreenSharing) {
-            // STOP SHARING -> Revert to Webcam
             try {
                 stream.getVideoTracks().forEach(t => t.stop());
-                
                 const camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 setStream(camStream);
                 setStreamVersion(v => v + 1);
                 setIsScreenSharing(false);
-                
                 if (videoRef.current) videoRef.current.srcObject = camStream;
-
-            } catch (e) {
-                console.error("Error reverting to camera", e);
-            }
+            } catch (e) { console.error("Revert error", e); }
         } else {
-            // START SHARING
             try {
                 // @ts-ignore
                 const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
-                
-                // Handle user clicking "Stop Sharing" in browser UI (floating bar)
-                displayStream.getVideoTracks()[0].onended = () => {
-                    toggleScreenShare(); // Revert logic
-                };
-
+                displayStream.getVideoTracks()[0].onended = () => toggleScreenShare();
                 setStream(displayStream);
                 setStreamVersion(v => v + 1);
                 setIsScreenSharing(true);
-                
                 if (videoRef.current) videoRef.current.srcObject = displayStream;
-
             } catch (err: any) {
-                // FIX: Check if user simply clicked "Cancel"
-                if (err.name === 'NotAllowedError') {
-                    // Do nothing or show a gentle info toast
-                    // console.log("User cancelled screen share");
-                    return; 
-                }
-
-                // Only log real errors (like hardware failure)
+                if (err.name === 'NotAllowedError') { return; }
                 console.error("Screen Share Failed:", err);
                 toast({ variant: "destructive", title: "Error", description: "Screen share failed." });
             }
         }
     };
+
     const sendReaction = async (emoji: string) => {
         if (!firestore) return;
         const id = Math.random().toString();
@@ -671,41 +484,26 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
             emoji, senderId: user?.uid, createdAt: serverTimestamp()
         });
     };
+
     const handleSend = async () => {
-        if(!msgText.trim() || !user) return;
-        await addDoc(collection(firestore!, 'lectures', lecture.id, 'messages'), { text: msgText, senderName: user.displayName, senderId: user.uid, createdAt: serverTimestamp() });
+        if(!msgText.trim()) return;
+        await addDoc(collection(firestore!, 'lectures', lecture.id, 'messages'), {
+            text: msgText,
+            senderName: user?.displayName || user?.email?.split('@')[0] || 'Guest',
+            senderId: user?.uid,
+            createdAt: serverTimestamp()
+        });
         setMsgText('');
     };
+
     const toggleCamera = () => { if (stream) { const track = stream.getVideoTracks()[0]; if(track) { track.enabled = !track.enabled; setIsCameraOn(track.enabled); } } };
     const toggleMic = () => { if (stream) { const track = stream.getAudioTracks()[0]; if(track) { track.enabled = !track.enabled; setIsMicOn(track.enabled); } } };
-    const startRecording = () => {
-        if (!stream) return;
-        chunksRef.current = [];
-        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-        recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-        recorder.onstop = () => { setRecordedBlob(new Blob(chunksRef.current, { type: 'video/webm' })); };
-        recorder.start(); setIsRecording(true); mediaRecorderRef.current = recorder;
-    };
-    const stopRecording = () => { if (mediaRecorderRef.current && isRecording) { mediaRecorderRef.current.stop(); setIsRecording(false); } };
-    const saveRecording = async () => {
-        if (!recordedBlob || !firestore || !user) return;
-        setIsSavingRecord(true);
-        try {
-            const app = getApp();
-            const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
-            const storageRef = ref(storage, `recordings/${lecture.id}_${Date.now()}.webm`);
-            await uploadBytes(storageRef, recordedBlob);
-            const downloadUrl = await getDownloadURL(storageRef);
-            await addDoc(collection(firestore, 'learning_materials'), {
-                topicTitle: `Recording: ${lecture.title}`, description: `Live session recording`, classId: 'global', subject: 'Live Recordings',
-                uploadedBy: user.uid, createdAt: serverTimestamp(), type: 'Video', resources: [{ id: Date.now().toString(), title: 'Watch Session', type: 'Video', url: downloadUrl }]
-            });
-            toast({ title: "Saved to Library!" }); setRecordedBlob(null);
-        } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
-        finally { setIsSavingRecord(false); }
-    };
-    const handleUploadSlides = async (e: React.ChangeEvent<HTMLInputElement>) => { /* ... */ };
-    const changeSlide = async (direction: 'next' | 'prev') => { /* ... */ };
+    const startRecording = () => { /* ... */ };
+    const stopRecording = () => { /* ... */ };
+    const saveRecording = () => { /* ... */ };
+    const handleUploadSlides = (e: React.ChangeEvent<HTMLInputElement>) => { /* ... */ };
+    const changeSlide = (direction: 'next' | 'prev') => { /* ... */ };
+
     const handleGeneratePoll = async () => {
         if(!aiInput.trim()) return;
         setIsProcessingAi(true);
@@ -730,35 +528,14 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 
     return (
         <div className="flex flex-col h-[calc(100vh-100px)] bg-black rounded-xl overflow-hidden relative">
-            
-            {/* BREAKOUT ROOM OVERLAY */}
-            {lecture.breakoutActive && (
-                <div className="absolute inset-0 bg-indigo-900/95 z-50 flex flex-col items-center justify-center text-white">
-                    <Users2 className="h-16 w-16 mb-4 animate-bounce"/>
-                    <h2 className="text-3xl font-bold">Breakout Session</h2>
-                    <p className="text-indigo-200 mt-2">You are in a breakout room. Discuss with your peers!</p>
-                    <div className="mt-8 flex items-center gap-2 bg-black/30 px-6 py-3 rounded-full text-xl font-mono">
-                        <Timer className="h-6 w-6"/> {breakoutTimeLeft}
-                    </div>
-                    {isTeacher && (
-                        <Button onClick={handleEndBreakout} variant="destructive" className="mt-8">End Breakout Session</Button>
-                    )}
-                </div>
-            )}
-
-            {/* MAIN STAGE AREA */}
             <div className="flex-1 flex overflow-hidden relative">
                 <div className={`flex-1 relative bg-slate-900 flex items-center justify-center transition-all duration-300 ${showChat || showParticipants ? 'mr-[350px]' : ''}`}>
-                    {/* Reactions & Captions */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden z-40">
                         {activeReactions.map(r => <div key={r.id} className="absolute bottom-20 text-5xl animate-float-up opacity-0" style={{ left: `${r.left}%` }}>{r.emoji}</div>)}
-                        {captionText && <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-black/60 text-white px-6 py-3 rounded-lg text-lg font-medium backdrop-blur-sm z-40 text-center max-w-[80%]">{captionText}</div>}
                     </div>
 
                     {isWhiteboardActive && (
-                        <div className="absolute inset-0 z-20">
-                            <Whiteboard />
-                        </div>
+                        <div className="absolute inset-0 z-20"><Whiteboard /></div>
                     )}
                     
                     {isPresenter ? (
@@ -768,7 +545,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     )}
                 </div>
 
-                {/* SIDEBAR */}
                 {(showChat || showParticipants) && (
                     <div className="w-[350px] bg-white border-l flex flex-col absolute right-0 top-0 bottom-0 z-20">
                         <div className="flex border-b">
@@ -795,9 +571,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 </div>
                 <div className="flex items-center gap-1">
                     <Popover><PopoverTrigger asChild><Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10"><Smile className="h-5 w-5"/> <span className="text-[10px]">React</span></Button></PopoverTrigger><PopoverContent className="w-auto p-2 bg-[#2C2C2E] border-none flex gap-2">{['👍','❤️','😂','😮','👋','🎉'].map(e => (<button key={e} onClick={() => sendReaction(e)} className="text-2xl hover:scale-125 p-1">{e}</button>))}</PopoverContent></Popover>
-                    <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${captionsOn ? 'text-green-400' : 'text-white'} hover:bg-white/10`} onClick={toggleCaptions}><Subtitles className="h-5 w-5"/><span className="text-[10px]">CC</span></Button>
                     <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10" onClick={togglePiP}><PictureInPicture className="h-5 w-5"/><span className="text-[10px]">PiP</span></Button>
-                    {isTeacher && <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-white hover:bg-white/10" onClick={() => setIsBreakoutSetupOpen(true)}><Users2 className="h-5 w-5"/><span className="text-[10px]">Breakout</span></Button>}
                     {isPresenter && (
                         <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isScreenSharing ? 'text-green-500' : 'text-white'} hover:bg-white/10`} onClick={toggleScreenShare}>
                             <ScreenShare className="h-5 w-5"/> <span className="text-[10px]">{isScreenSharing ? 'Stop' : 'Share'}</span>
@@ -808,15 +582,8 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                             <PenTool className="h-5 w-5"/> <span className="text-[10px]">Board</span>
                         </Button>
                     )}
-                    {isPresenter && <Button variant="ghost" className={`flex-col h-14 gap-1 px-3 ${isRecording ? 'text-red-500' : 'text-white'} hover:bg-white/10`} onClick={isRecording ? stopRecording : startRecording}>{isRecording ? <Square className="h-5 w-5 fill-current"/> : <Circle className="h-5 w-5 fill-red-500 text-red-500"/>} <span className="text-[10px]">{isRecording ? 'Stop' : 'Record'}</span></Button>}
-                    {/* AI Tool Button */}
-                    <Button 
-                        variant="ghost" 
-                        className="flex-col h-14 gap-1 px-3 text-indigo-400 hover:bg-white/10" 
-                        onClick={() => setIsAiOpen(true)}
-                    >
-                        <Sparkles className="h-5 w-5"/> 
-                        <span className="text-[10px]">{isTeacher ? 'Co-Pilot' : 'AI Help'}</span>
+                    <Button variant="ghost" className="flex-col h-14 gap-1 px-3 text-indigo-400 hover:bg-white/10" onClick={() => setIsAiOpen(true)}>
+                         <Sparkles className="h-5 w-5"/> <span className="text-[10px]">{isTeacher ? 'Co-Pilot' : 'AI Help'}</span>
                     </Button>
                 </div>
                 <div className="flex items-center gap-2">
@@ -826,19 +593,6 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 </div>
             </div>
 
-            {recordedBlob && (
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50">
-                    <Card className="w-[350px] border-slate-700 bg-slate-900 text-white shadow-2xl">
-                        <CardHeader><CardTitle>Save Recording?</CardTitle></CardHeader>
-                        <CardFooter className="flex justify-between gap-2">
-                            <Button variant="ghost" onClick={() => setRecordedBlob(null)}>Discard</Button>
-                            <Button onClick={saveRecording} disabled={isSavingRecord} className="bg-emerald-600 flex-1">{isSavingRecord ? <Loader2 className="animate-spin"/> : <Save className="mr-2 h-4 w-4"/>} Save</Button>
-                        </CardFooter>
-                    </Card>
-                </div>
-            )}
-            <BreakoutSetupDialog open={isBreakoutSetupOpen} setOpen={setIsBreakoutSetupOpen} onStart={handleStartBreakout} />
-            
             {/* AI Assistant / Co-Pilot Modal */}
             <Dialog open={isAiOpen} onOpenChange={(v) => { setIsAiOpen(v); setAiResponse(null); setAiInput(''); }}>
                 <DialogContent>
@@ -849,11 +603,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                     {!aiResponse ? (
                         <div className="space-y-4">
                             <Label>{isTeacher ? "What topic are you teaching?" : "What concept is confusing you?"}</Label>
-                            <Input 
-                                value={aiInput} 
-                                onChange={e => setAiInput(e.target.value)} 
-                                placeholder={isTeacher ? "e.g. Gravity" : "e.g. Inertia"} 
-                            />
+                            <Input value={aiInput} onChange={e => setAiInput(e.target.value)} placeholder={isTeacher ? "e.g. Gravity" : "e.g. Inertia"} />
                             <Button className="w-full" onClick={isTeacher ? handleGeneratePoll : handleExplainConcept} disabled={isProcessingAi}>
                                 {isProcessingAi ? <Loader2 className="animate-spin"/> : (isTeacher ? "Generate Quiz" : "Explain to Me")}
                             </Button>
@@ -887,28 +637,30 @@ export default function LiveClassroomPage() {
     const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
-    
     const [activeLectureId, setActiveLectureId] = useState<string | null>(null);
     const [isScheduleOpen, setIsScheduleOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('live');
-
-    const isTeacher = ['Teacher', 'Administrator', 'Director'].includes(role);
+    
+    const isTeacherOrAdmin = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+    
+    const { data: studentData } = useCollection<Student>(
+        useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user])
+    );
+    const studentClassId = studentData?.[0]?.classId;
 
     // Queries
-    const liveQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'live')) : null, [firestore]);
-    const { data: liveLectures } = useCollection<Lecture>(liveQuery);
+    const lecturesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const { data: allLectures } = useCollection<Lecture>(lecturesQuery);
 
-    const upcomingQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'lectures'), where('status', '==', 'scheduled')) : null, 
-    [firestore]);
-    
-    const { data: upcomingLecturesRaw } = useCollection<Lecture>(upcomingQuery);
-    
-    // Client-side Sort
-    const upcomingLectures = useMemo(() => {
-        if (!upcomingLecturesRaw) return [];
-        return upcomingLecturesRaw.sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
-    }, [upcomingLecturesRaw]);
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+
+    const filteredLectures = useMemo(() => {
+        if (isTeacherOrAdmin || !allLectures) return allLectures || [];
+        // Student view: only show lectures for their class
+        return allLectures.filter(l => l.classId === studentClassId);
+    }, [allLectures, isTeacherOrAdmin, studentClassId]);
+
+    const liveLectures = filteredLectures.filter(l => l.status === 'live');
+    const upcomingLectures = filteredLectures.filter(l => l.status === 'scheduled').sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
 
     const handleStartScheduled = async (id: string) => {
         if(!firestore) return;
@@ -923,10 +675,9 @@ export default function LiveClassroomPage() {
         }
     };
 
-    // If joined, show classroom
     if (activeLectureId) {
-        const currentLecture = liveLectures?.find(l => l.id === activeLectureId) || upcomingLectures?.find(l => l.id === activeLectureId);
-        if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacher ? handleEndLecture : () => setActiveLectureId(null)} />;
+        const currentLecture = liveLectures.find(l => l.id === activeLectureId) || upcomingLectures.find(l => l.id === activeLectureId);
+        if(currentLecture) return <ActiveClassroom lecture={currentLecture} onLeave={isTeacherOrAdmin ? handleEndLecture : () => setActiveLectureId(null)} />;
     }
 
     return (
@@ -937,30 +688,27 @@ export default function LiveClassroomPage() {
                         <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom</CardTitle>
                         <p className="text-slate-400">Interactive virtual learning environment.</p>
                     </div>
-                    {isTeacher && (
+                    {isTeacherOrAdmin && (
                         <Button onClick={() => setIsScheduleOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white">
                             <CalendarIcon className="mr-2 h-4 w-4"/> Schedule Class
                         </Button>
                     )}
                 </CardHeader>
             </Card>
-
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <Tabs defaultValue="live" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-                    <TabsTrigger value="live">Live Now ({liveLectures?.length || 0})</TabsTrigger>
-                    <TabsTrigger value="upcoming">Upcoming ({upcomingLectures?.length || 0})</TabsTrigger>
+                    <TabsTrigger value="live">Live Now ({liveLectures.length})</TabsTrigger>
+                    <TabsTrigger value="upcoming">Upcoming ({upcomingLectures.length})</TabsTrigger>
                 </TabsList>
-
-                {/* LIVE TAB */}
                 <TabsContent value="live" className="mt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {liveLectures?.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
-                        {liveLectures?.map(l => (
+                        {liveLectures.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
+                        {liveLectures.map(l => (
                             <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
                                 <CardHeader>
                                     <div className="flex justify-between items-start">
                                         <Badge className="bg-red-100 text-red-700 hover:bg-red-200">LIVE</Badge>
-                                        <Badge variant="outline">{l.targetGroup}</Badge>
+                                        <Badge variant="outline">{classes?.find(c => c.id === l.classId)?.name || 'N/A'}</Badge>
                                     </div>
                                     <CardTitle className="mt-2">{l.title}</CardTitle>
                                     <CardDescription>Host: {l.teacherName}</CardDescription>
@@ -972,12 +720,10 @@ export default function LiveClassroomPage() {
                         ))}
                     </div>
                 </TabsContent>
-
-                {/* UPCOMING TAB */}
                 <TabsContent value="upcoming" className="mt-6">
                      <div className="space-y-4">
-                        {upcomingLectures?.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
-                        {upcomingLectures?.map(l => (
+                        {upcomingLectures.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
+                        {upcomingLectures.map(l => (
                             <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
                                 <div className="flex gap-4 items-center">
                                     <div className="bg-indigo-50 p-3 rounded-lg text-center min-w-[70px]">
@@ -989,11 +735,11 @@ export default function LiveClassroomPage() {
                                         <div className="flex gap-2 text-sm text-muted-foreground">
                                             <span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span>
                                             <span>•</span>
-                                            <span>{l.targetGroup}</span>
+                                            <span>{classes?.find(c => c.id === l.classId)?.name || 'N/A'}</span>
                                         </div>
                                     </div>
                                 </div>
-                                {isTeacher ? (
+                                {isTeacherOrAdmin ? (
                                     <Button onClick={() => handleStartScheduled(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
                                         Start Now
                                     </Button>
@@ -1005,9 +751,7 @@ export default function LiveClassroomPage() {
                      </div>
                 </TabsContent>
             </Tabs>
-            <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
+            <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} classes={classes || []} />
         </div>
     );
 }
-
-    

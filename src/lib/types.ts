@@ -1051,3 +1051,21 @@ export interface Message {
     text: string;
     createdAt: any;
 }
+
+export interface Lecture {
+  id: string;
+  title: string;
+  description?: string;
+  classId?: string; // Changed from targetGroup
+  scheduledFor?: any;
+  teacherName: string;
+  teacherId: string;
+  status: 'scheduled' | 'live' | 'ended';
+  createdAt: any;
+  slides?: string[];
+  currentSlide?: number;
+  isPresentationMode?: boolean;
+  breakoutActive?: boolean;
+  breakoutDuration?: number;
+  breakoutEndTime?: any;
+}
