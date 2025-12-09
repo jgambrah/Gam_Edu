@@ -569,7 +569,7 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 // --- IMPROVED ERROR LOGGING ---
                 console.error("Screen Share Error Name:", err.name);
                 console.error("Screen Share Error Message:", err.message);
-                
+
                 const userDenied = err.message.includes('Permission denied by user') || err.message.includes('Permission denied');
 
                 if (err.name === 'NotAllowedError') {
@@ -807,6 +807,91 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
 }
 
 // --- MAIN PAGE: LOBBY (UNCHANGED) ---
+function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [targetGroup, setTargetGroup] = useState('');
+    const [scheduledDate, setScheduledDate] = useState('');
+    const [scheduledTime, setScheduledTime] = useState('');
+
+    const handleSchedule = async () => {
+        if (!user || !title || !scheduledDate || !scheduledTime) {
+            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill in all required fields." });
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+            await addDoc(collection(firestore!, 'lectures'), {
+                title,
+                description,
+                targetGroup: targetGroup || 'General',
+                scheduledFor: scheduledDateTime,
+                teacherName: user.displayName || user.email?.split('@')[0],
+                teacherId: user.uid,
+                status: 'scheduled',
+                createdAt: serverTimestamp(),
+                slides: [],
+                currentSlide: 0,
+                isPresentationMode: false
+            });
+            toast({ title: "Class Scheduled" });
+            setOpen(false);
+            // Reset state
+            setTitle(''); setDescription(''); setTargetGroup(''); setScheduledDate(''); setScheduledTime('');
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Schedule a New Live Class</DialogTitle>
+                    <DialogDescription>Set up a future live session for your students.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="title">Topic / Title *</Label>
+                        <Input id="title" value={title} onChange={e => setTitle(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="target">Target Audience</Label>
+                            <Input id="target" value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="e.g., JHS 1" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="date">Date *</Label>
+                            <Input id="date" type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} />
+                        </div>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="time">Time *</Label>
+                        <Input id="time" type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button onClick={handleSchedule} disabled={isSubmitting} className="w-full">
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : "Schedule Class"}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function LiveClassroomPage() {
     const { user } = useUser();
     const { role } = useRole();
@@ -933,11 +1018,4 @@ export default function LiveClassroomPage() {
             <ScheduleClassDialog open={isScheduleOpen} setOpen={setIsScheduleOpen} />
         </div>
     );
-}
-
-function ScheduleClassDialog({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
-    const firestore = useFirestore(); const { user } = useUser(); const { toast } = useToast(); const [isSubmitting, setIsSubmitting] = useState(false);
-    const [title, setTitle] = useState(''); const [description, setDescription] = useState(''); const [targetGroup, setTargetGroup] = useState(''); const [scheduledDate, setScheduledDate] = useState(''); const [scheduledTime, setScheduledTime] = useState('');
-    const handleSchedule = async () => { if (!user || !title) return; setIsSubmitting(true); try { const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`); await addDoc(collection(firestore!, 'lectures'), { title, description, targetGroup: targetGroup || 'General', scheduledFor: scheduledDateTime, teacherName: user.displayName, teacherId: user.uid, status: 'scheduled', createdAt: serverTimestamp(), slides: [], currentSlide: 0, isPresentationMode: false }); toast({ title: "Class Scheduled" }); setOpen(false); } catch (e) {} finally { setIsSubmitting(false); } };
-    return (<Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>Schedule Class</DialogTitle></DialogHeader><div className="grid gap-4 py-4"><Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Topic"/><Input value={targetGroup} onChange={e => setTargetGroup(e.target.value)} placeholder="Target Group"/><div className="grid grid-cols-2 gap-4"><Input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)}/><Input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)}/></div></div><DialogFooter><Button onClick={handleSchedule} disabled={isSubmitting}>Schedule</Button></DialogFooter></DialogContent></Dialog>);
 }
