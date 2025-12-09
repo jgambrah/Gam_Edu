@@ -63,8 +63,8 @@ export function AssessmentFeedbackForm({ classId, classes: propClasses }: { clas
         assessmentType: 'Quiz',
         teacherId: user?.uid,
         classId: classId || '',
-        score: undefined,
-        maxScore: undefined,
+        score: 0,
+        maxScore: 0,
         feedback: '',
       },
     });
