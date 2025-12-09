@@ -25,7 +25,7 @@ service cloud.firestore {
         return 'Student';
       }
       // Check if user is in parents collection
-      if (exists(/databases/$(database)/documents/parents/$(userId))) {
+      if (exists(/databases/$(database)/documents/parents/$(parentId))) {
         return 'Parent';
       }
       return ''; // Default to no role
@@ -123,6 +123,19 @@ service cloud.firestore {
             allow read: if isTeacher() || isAdmin() || request.auth.uid == resource.data.studentId;
             allow create: if isStudent();
         }
+    }
+
+    // Live Classroom Rules
+    match /lectures/{lectureId} {
+      allow read: if isSignedIn();
+      allow create, update: if isTeacher() || isAdmin();
+      
+      match /messages/{messageId} {
+        allow read, create: if isSignedIn();
+      }
+      match /reactions/{reactionId} {
+        allow read, create: if isSignedIn();
+      }
     }
 
     // Clubs
