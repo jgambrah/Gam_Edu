@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { ForumThread, ForumReply } from '@/lib/types';
@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, MessageSquare, ArrowLeft, Bot, Shield, Send } from 'lucide-react';
+import { Loader2, Plus, MessageSquare, ArrowLeft, Bot, Shield, Send, RefreshCw, Activity } from 'lucide-react';
 import { format } from 'date-fns';
 import { Switch } from '@/components/ui/switch';
 import { validateContentSafety, generateAIModeratorComment } from '@/ai/flows/forum-moderator';
@@ -271,30 +271,50 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
     )
 }
 
-// --- Main Page ---
+// --- Main Page (Diagnostic Version) ---
 export default function ForumPage() {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user, isUserLoading } = useUser(); // FIX: Use useUser for better loading state
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
   
-    // FIX: Remove 'orderBy' from the query to prevent index/permission crashes
+    // 1. Fetch Threads (Simple Query)
     const threadsQuery = useMemoFirebase(() => {
         if (!user || !firestore) return null;
-        return query(collection(firestore, 'forumThreads')); // Simple query
+        return query(collection(firestore, 'forumThreads'));
     }, [firestore, user]);
 
-    const { data: rawThreads, isLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
+    const { data: rawThreads, isLoading: isDataLoading, error: queryError, forceRefetch } = useCollection<ForumThread>(threadsQuery);
 
-    // FIX: Sort the data in the browser instead
+    // 2. Sort & Safety Check
     const threads = useMemo(() => {
         if (!rawThreads) return [];
         return [...rawThreads].sort((a, b) => {
             const timeA = a.lastReplyAt?.seconds || a.createdAt?.seconds || 0;
             const timeB = b.lastReplyAt?.seconds || b.createdAt?.seconds || 0;
-            return timeB - timeA; // Descending order (Newest first)
+            return timeB - timeA;
         });
     }, [rawThreads]);
+
+    // 3. Safe Date Formatter (Prevents Crashes)
+    const safeFormatDate = (timestamp: any) => {
+        if (!timestamp) return 'N/A';
+        try {
+            // Check if it's a Firestore Timestamp (has .toDate)
+            if (typeof timestamp.toDate === 'function') {
+                return format(timestamp.toDate(), 'PPP p');
+            }
+            // Check if it's already a JS Date
+            if (timestamp instanceof Date) {
+                return format(timestamp, 'PPP p');
+            }
+            return 'Invalid Date';
+        } catch (e) {
+            return 'Date Error';
+        }
+    };
+
+    const isLoading = isUserLoading || isDataLoading;
 
     if (selectedThread) {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
@@ -302,46 +322,70 @@ export default function ForumPage() {
 
   return (
     <div className="space-y-6">
+      
+      {/* DIAGNOSTIC BAR (Remove after fixing) */}
+      <div className="bg-pink-100 border border-pink-300 p-2 rounded text-xs font-mono text-pink-900 grid grid-cols-2 md:grid-cols-4 gap-2">
+         <span><strong>User:</strong> {isUserLoading ? "Loading..." : (user ? "Logged In" : "NULL")}</span>
+         <span><strong>Firestore:</strong> {firestore ? "Connected" : "NULL"}</span>
+         <span><strong>Data Loaded:</strong> {threads ? threads.length : "0 (Null)"}</span>
+         <span><strong>Error:</strong> {queryError ? queryError.message : "None"}</span>
+      </div>
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="flex items-center gap-2"><MessageSquare/> Discussion Forum</CardTitle>
                 <CardDescription>Ask questions, share ideas, and collaborate with others.</CardDescription>
             </div>
-            <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
-                <DialogTrigger asChild>
-                    <Button><Plus className="mr-2"/> Create Thread</Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Start a New Discussion</DialogTitle>
-                        <DialogDescription>What's on your mind?</DialogDescription>
-                    </DialogHeader>
-                    <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} />
-                </DialogContent>
-            </Dialog>
+            <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={forceRefetch}>Refresh List</Button>
+                <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
+                    <DialogTrigger asChild>
+                        <Button><Plus className="mr-2 h-4 w-4"/> Create Thread</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Start a New Discussion</DialogTitle>
+                            <DialogDescription>What's on your mind?</DialogDescription>
+                        </DialogHeader>
+                        <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} />
+                    </DialogContent>
+                </Dialog>
+            </div>
         </CardHeader>
         <CardContent>
-            <Table>
-                <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Author</TableHead><TableHead>Replies</TableHead><TableHead>Last Activity</TableHead></TableRow></TableHeader>
-                <TableBody>
-                    {isLoading ? (
-                        <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
-                    ) : threads.length === 0 ? (
-                         <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">No discussions yet. Be the first!</TableCell></TableRow>
-                    ) : (
-                        threads.map(thread => (
-                        <TableRow key={thread.id} onClick={() => setSelectedThread(thread)} className="cursor-pointer hover:bg-muted/50">
-                            <TableCell className="font-medium">{thread.title}</TableCell>
-                            <TableCell>{thread.createdBy.name}</TableCell>
-                            <TableCell>{thread.replyCount || 0}</TableCell>
-                            <TableCell className="text-xs text-muted-foreground">
-                                {thread.lastReplyAt ? format(thread.lastReplyAt.toDate(), 'PPP p') : 'Just now'}
-                            </TableCell>
-                        </TableRow>
-                    )))}
-                </TableBody>
-            </Table>
+            <div className="border rounded-md">
+                <Table>
+                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Author</TableHead><TableHead>Replies</TableHead><TableHead>Last Activity</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {isLoading ? (
+                            <TableRow><TableCell colSpan={4} className="text-center py-8"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
+                        ) : threads.length === 0 ? (
+                             <TableRow>
+                                <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                                    No discussions found. 
+                                    {/* Debug Hint */}
+                                    <br/><span className="text-xs">Check 'forumThreads' collection in Firestore.</span>
+                                </TableCell>
+                             </TableRow>
+                        ) : (
+                            threads.map(thread => (
+                            <TableRow key={thread.id} onClick={() => setSelectedThread(thread)} className="cursor-pointer hover:bg-muted/50">
+                                <TableCell className="font-medium">{thread.title}</TableCell>
+                                <TableCell>
+                                    {/* Safe check for nested createdBy object */}
+                                    {thread.createdBy?.name || 'Anonymous'}
+                                </TableCell>
+                                <TableCell>{thread.replyCount || 0}</TableCell>
+                                <TableCell className="text-xs text-muted-foreground">
+                                    {/* Use safe formatter */}
+                                    {safeFormatDate(thread.lastReplyAt || thread.createdAt)}
+                                </TableCell>
+                            </TableRow>
+                        )))}
+                    </TableBody>
+                </Table>
+            </div>
         </CardContent>
       </Card>
     </div>
