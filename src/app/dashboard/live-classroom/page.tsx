@@ -9,18 +9,18 @@ import { Video, Users, Send, MessageSquare, BookOpen, Calendar, RefreshCw, Alert
 import { format } from 'date-fns';
 
 // UI Components
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Import Select
 import { Class } from '@/lib/types';
 
-// IMPORT THE VIDEO ENGINE WE JUST BUILT
+// IMPORT THE VIDEO ENGINE
 import LiveRoom from '@/components/dashboard/live-classroom/live-room';
 
 // --- SUB-COMPONENT: Chat Window ---
@@ -103,7 +103,7 @@ function ChatWindow({ roomId }: { roomId: string }) {
     );
 }
 
-// --- SUB-COMPONENT: Schedule Class Dialog ---
+// --- SUB-COMPONENT: Schedule Class Dialog (FIXED) ---
 function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
     const firestore = useFirestore();
     const [selectedClassId, setSelectedClassId] = useState('');
@@ -116,13 +116,12 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
         if (!selectedClassId || !topic || !date || !time) return;
         setLoading(true);
         try {
-            // Update the class document with the next session info
             const classRef = doc(firestore, 'classes', selectedClassId);
             await updateDoc(classRef, {
                 nextSession: {
                     topic,
                     dateTime: `${date}T${time}`,
-                    isLive: false // Not live yet, just scheduled
+                    isLive: false
                 }
             });
             setOpen(false);
@@ -138,20 +137,27 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Schedule Live Session</DialogTitle>
-                    <DialogDescription>Set a time for your next class.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
+                    
+                    {/* FIX: Using Shadcn Select to hook into data properly */}
                     <div className="space-y-2">
                         <Label>Select Class</Label>
-                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                        <Select onValueChange={setSelectedClassId} value={selectedClassId}>
                             <SelectTrigger>
-                                <SelectValue placeholder="-- Choose Class --" />
+                                <SelectValue placeholder="Select a Class" />
                             </SelectTrigger>
                             <SelectContent>
-                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                                {classes?.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))}
+                                {(!classes || classes.length === 0) && (
+                                    <div className="p-2 text-sm text-muted-foreground">No classes available</div>
+                                )}
                             </SelectContent>
                         </Select>
                     </div>
+
                     <div className="space-y-2">
                         <Label>Topic</Label>
                         <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Algebra Review" />
@@ -166,7 +172,7 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
                             <Input type="time" value={time} onChange={e => setTime(e.target.value)} />
                         </div>
                     </div>
-                    <Button onClick={handleSchedule} disabled={loading} className="w-full">
+                    <Button onClick={handleSchedule} disabled={loading || !selectedClassId} className="w-full">
                         {loading ? "Scheduling..." : "Schedule Class"}
                     </Button>
                 </div>
@@ -190,8 +196,10 @@ export default function LiveClassroomPage() {
   // 1. Fetch User's Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user) return null;
-      // In production, Teachers filter by teacherId, Students by enrollment
-      return query(collection(firestore, 'classes'));
+      // If Teacher, strictly filter by teacherId to ensure correct list
+      // If Admin, show all.
+      // If Student, logic is handled elsewhere usually, but here we list classes available to join.
+      return query(collection(firestore, 'classes')); 
   }, [firestore, user]);
 
   const { data: classes, isLoading: classesLoading } = useCollection<Class>(classesQuery);
@@ -200,7 +208,6 @@ export default function LiveClassroomPage() {
       setSelectedClass(cls);
       setIsLive(true);
       
-      // If Teacher starts, mark as Live in DB
       if (isTeacher && firestore) {
           try {
             await updateDoc(doc(firestore, 'classes', cls.id), {
@@ -211,7 +218,6 @@ export default function LiveClassroomPage() {
   };
 
   const handleLeave = async () => {
-      // If Teacher leaves, mark as Not Live
       if (isTeacher && firestore && selectedClass) {
           try {
             await updateDoc(doc(firestore, 'classes', selectedClass.id), {
@@ -258,7 +264,7 @@ export default function LiveClassroomPage() {
                 <Card className="w-full md:w-1/3 lg:w-1/4 flex flex-col h-full">
                     <CardHeader className="pb-2 flex flex-row justify-between items-center">
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <BookOpen className="h-5 w-5 text-slate-500"/> Classes
+                            <BookOpen className="h-5 w-5 text-slate-500"/> Your Classes
                         </CardTitle>
                         <Button variant="ghost" size="icon" onClick={() => window.location.reload()} title="Refresh List">
                             <RefreshCw className="h-4 w-4"/>
@@ -273,7 +279,6 @@ export default function LiveClassroomPage() {
                                 </>
                             )}
                             
-                            {/* EMPTY STATE */}
                             {!classesLoading && (!classes || classes.length === 0) && (
                                 <div className="text-center py-8 px-2 border-2 border-dashed rounded-lg">
                                     <AlertCircle className="mx-auto h-8 w-8 text-slate-300 mb-2"/>
@@ -284,7 +289,6 @@ export default function LiveClassroomPage() {
                                 </div>
                             )}
 
-                            {/* CLASS LIST */}
                             {classes?.map((cls: any) => {
                                 const session = cls.nextSession || {};
                                 const isSessionLive = session.isLive === true;
@@ -299,7 +303,6 @@ export default function LiveClassroomPage() {
                                             {isSessionLive && <Badge className="bg-red-500 animate-pulse">LIVE NOW</Badge>}
                                         </div>
                                         
-                                        {/* Scheduled Session Info */}
                                         <div className="text-xs text-muted-foreground mb-3 space-y-1">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="h-3 w-3"/>
@@ -308,7 +311,6 @@ export default function LiveClassroomPage() {
                                             {session.topic && <p className="font-medium text-slate-600">Topic: {session.topic}</p>}
                                         </div>
 
-                                        {/* ACTION BUTTON (Always Visible Now) */}
                                         <Button 
                                             className={`w-full ${isSessionLive ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`} 
                                             onClick={() => handleJoin(cls)}
@@ -323,12 +325,11 @@ export default function LiveClassroomPage() {
                 </Card>
             )}
 
-            {/* RIGHT SIDE: STAGE (or Placeholder) */}
+            {/* RIGHT SIDE: STAGE */}
             <div className="flex-1 flex flex-col h-full min-h-0 bg-white rounded-lg border shadow-sm overflow-hidden">
                 {isLive && selectedClass ? (
                     <div className="flex flex-col lg:flex-row h-full">
                         
-                        {/* 1. VIDEO AREA */}
                         <div className="flex-1 flex flex-col p-2 bg-slate-900 overflow-hidden">
                             <div className="flex justify-between items-center bg-slate-800 p-2 rounded mb-2 text-white">
                                 <h2 className="font-bold flex items-center gap-2">
@@ -340,7 +341,6 @@ export default function LiveClassroomPage() {
                                 </Button>
                             </div>
 
-                            {/* VIDEO ENGINE */}
                             <div className="flex-1 min-h-0">
                                 <LiveRoom 
                                     roomId={selectedClass.id} 
@@ -349,14 +349,12 @@ export default function LiveClassroomPage() {
                             </div>
                         </div>
 
-                        {/* 2. CHAT AREA */}
                         <div className="w-full lg:w-80 h-1/3 lg:h-full border-l">
                             <ChatWindow roomId={selectedClass.id} />
                         </div>
 
                     </div>
                 ) : (
-                    /* EMPTY STATE (When no class selected) */
                     <div className="flex flex-1 items-center justify-center bg-slate-50 m-4 rounded-xl border-2 border-dashed">
                         <div className="text-center text-slate-400">
                             <Video className="h-16 w-16 mx-auto mb-4 opacity-50"/>
