@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { getAuth } from 'firebase/auth';
 
 // --- Create Thread Form ---
-function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void; }) {
+function CreateThreadForm({ setOpen, forceRefetch }: { setOpen: (open: boolean) => void; forceRefetch: () => void; }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,7 +63,6 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void; }) {
                 }
             }
 
-            // FIX: Set both createdAt and lastReplyAt on creation for correct sorting
             await addDoc(collection(firestore, 'forumThreads'), {
                 title,
                 content,
@@ -74,11 +73,12 @@ function CreateThreadForm({ setOpen }: { setOpen: (open: boolean) => void; }) {
                 createdAt: serverTimestamp(),
                 aiModeratorEnabled: aiModerator,
                 replyCount: 0,
-                lastReplyAt: serverTimestamp(), // Ensure this is set on creation
+                lastReplyAt: serverTimestamp(),
             });
             
             toast({ title: 'Success', description: 'Thread posted successfully.' });
-            setOpen(false); // Close the dialog, which triggers parent re-render and lets useCollection update
+            forceRefetch(); // Trigger a data refresh on the main page
+            setOpen(false); 
             
         } catch (e: any) {
             console.error("Firestore Error:", e);
@@ -283,7 +283,7 @@ export default function ForumPage() {
         return query(collection(firestore, 'forumThreads'), orderBy('lastReplyAt', 'desc'));
     }, [firestore, user]);
 
-    const { data: threads, isLoading } = useCollection<ForumThread>(threadsQuery);
+    const { data: threads, isLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
 
     if (selectedThread) {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
@@ -306,8 +306,7 @@ export default function ForumPage() {
                         <DialogTitle>Start a New Discussion</DialogTitle>
                         <DialogDescription>What's on your mind?</DialogDescription>
                     </DialogHeader>
-                    {/* FIX: Removed forceRefetch prop as it's no longer needed */}
-                    <CreateThreadForm setOpen={setCreateOpen} />
+                    <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} />
                 </DialogContent>
             </Dialog>
         </CardHeader>
