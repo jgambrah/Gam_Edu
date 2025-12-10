@@ -22,4 +22,5 @@ import '@/ai/flows/forum-moderator.ts';
 import '@/ai/flows/generate-ela-lesson.ts';
 import '@/ai/flows/live-classroom.ts';
 import '@/ai/flows/generate-study-plan-flow.ts';
+import '@/ai/flows/ai-tutor-flow.ts';
     

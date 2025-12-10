@@ -45,6 +45,7 @@ import {
   Megaphone,
   BrainCircuit,
   Clapperboard,
+  Book,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -210,6 +211,12 @@ export const navItems: NavItem[] = [
     icon: Activity,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
+        {
+            path: '/dashboard/study-club',
+            title: 'Study Club',
+            icon: Book,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
         {
             path: '/dashboard/live-classroom',
             title: 'Live Classroom',
