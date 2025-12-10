@@ -172,12 +172,11 @@ export function BlocklyEditor() {
   const firestore = useFirestore();
 
   const blocklyDivRef = useRef<HTMLDivElement>(null);
-  const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
   
   const { workspace } = useBlocklyWorkspace({
     ref: blocklyDivRef,
     toolboxConfiguration: toolboxCategories,
-    initialXml: xml,
+    // FIX: Remove initialXml from here to prevent race conditions on hot-reload
     workspaceConfiguration: {
         grid: {
           spacing: 20,
@@ -190,10 +189,11 @@ export function BlocklyEditor() {
   });
 
   useEffect(() => {
-    workspaceRef.current = workspace;
-    Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
-        callback("my_variable"); 
-    });
+    if (workspace) {
+        Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
+            callback("my_variable"); 
+        });
+    }
   }, [workspace]);
 
   const handleSave = async () => {
@@ -229,12 +229,12 @@ export function BlocklyEditor() {
         const data = docSnap.data();
         const dom = Blockly.Xml.textToDom(data.xml);
         Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, workspace);
-        setXml(data.xml);
+        // setXml is handled by onXmlChange, no need to call it here.
         toast({ title: 'Project Loaded', description: 'Your saved project has been loaded.' });
       } else {
         toast({ title: 'No Saved Project', description: 'We could not find a saved project for your account.' });
         workspace.clear();
-        setXml('');
+        // setXml(''); handled by onXmlChange
       }
     } catch (error) {
       console.error('Error loading project:', error);
@@ -244,22 +244,23 @@ export function BlocklyEditor() {
     }
   }, [user, firestore, toast, workspace]);
 
+  // FIX: Load content into the editor only once after it's fully initialized.
   useEffect(() => {
-    if(user && workspace) {
-        setIsLoading(true);
+    if(user && workspace && isLoading) {
         handleLoad().finally(() => setIsLoading(false));
-    } else {
+    } else if (!user && !isLoading) {
+        // If not logged in, stop loading.
         setIsLoading(false);
     }
-  }, [user, workspace, handleLoad]);
+  }, [user, workspace, handleLoad, isLoading]);
 
  const runCode = () => {
-    if (!workspaceRef.current) {
+    if (!workspace) {
         setLogs(["❌ Error: Workspace not found."]);
         return;
     }
 
-    const code = javascriptGenerator.workspaceToCode(workspaceRef.current);
+    const code = javascriptGenerator.workspaceToCode(workspace);
     
     console.log("Generated JS:", code);
 
