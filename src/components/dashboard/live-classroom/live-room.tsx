@@ -169,7 +169,7 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
                 if (pc.current?.remoteDescription) {
                     pc.current.addIceCandidate(new RTCIceCandidate(data));
                 } else {
-                    candidatesQueue.current.push(data); // Queue it
+                    candidatesQueue.current.push(data);
                 }
             }
           });
@@ -219,7 +219,7 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
                 if (pc.current?.remoteDescription) {
                     pc.current.addIceCandidate(new RTCIceCandidate(data));
                 } else {
-                    candidatesQueue.current.push(data); // Queue it
+                    candidatesQueue.current.push(data);
                 }
             }
           });
