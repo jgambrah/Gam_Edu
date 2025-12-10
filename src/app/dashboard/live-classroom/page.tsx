@@ -483,14 +483,9 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
                 if (videoRef.current) videoRef.current.srcObject = displayStream;
 
             } catch (err: any) {
-                // FIX: Check if user simply clicked "Cancel"
                 if (err.name === 'NotAllowedError') {
-                    // Do nothing or show a gentle info toast
-                    // console.log("User cancelled screen share");
                     return; 
                 }
-
-                // Only log real errors (like hardware failure)
                 console.error("Screen Share Failed:", err);
                 toast({ variant: "destructive", title: "Error", description: "Screen share failed." });
             }
@@ -682,12 +677,16 @@ export default function LiveClassroomPage() {
     const isTeacherOrAdmin = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     
     const { data: studentData } = useCollection<Student>(
-        useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user])
+        useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user, firestore])
     );
     const studentClassId = studentData?.[0]?.classId;
 
     // Queries
-    const lecturesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'lectures'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const lecturesQuery = useMemoFirebase(() => {
+        if (!user || !firestore) return null; 
+        return query(collection(firestore, 'lectures'), orderBy('createdAt', 'desc'));
+    }, [firestore, user]);
+
     const { data: allLectures } = useCollection<Lecture>(lecturesQuery);
 
     const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
