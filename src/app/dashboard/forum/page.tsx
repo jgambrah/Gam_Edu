@@ -278,12 +278,23 @@ export default function ForumPage() {
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
   
+    // FIX: Remove 'orderBy' from the query to prevent index/permission crashes
     const threadsQuery = useMemoFirebase(() => {
         if (!user || !firestore) return null;
-        return query(collection(firestore, 'forumThreads'), orderBy('lastReplyAt', 'desc'));
+        return query(collection(firestore, 'forumThreads')); // Simple query
     }, [firestore, user]);
 
-    const { data: threads, isLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
+    const { data: rawThreads, isLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
+
+    // FIX: Sort the data in the browser instead
+    const threads = useMemo(() => {
+        if (!rawThreads) return [];
+        return [...rawThreads].sort((a, b) => {
+            const timeA = a.lastReplyAt?.seconds || a.createdAt?.seconds || 0;
+            const timeB = b.lastReplyAt?.seconds || b.createdAt?.seconds || 0;
+            return timeB - timeA; // Descending order (Newest first)
+        });
+    }, [rawThreads]);
 
     if (selectedThread) {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
@@ -314,15 +325,21 @@ export default function ForumPage() {
             <Table>
                 <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Author</TableHead><TableHead>Replies</TableHead><TableHead>Last Activity</TableHead></TableRow></TableHeader>
                 <TableBody>
-                    {isLoading ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
-                    : threads?.map(thread => (
+                    {isLoading ? (
+                        <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
+                    ) : threads.length === 0 ? (
+                         <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">No discussions yet. Be the first!</TableCell></TableRow>
+                    ) : (
+                        threads.map(thread => (
                         <TableRow key={thread.id} onClick={() => setSelectedThread(thread)} className="cursor-pointer hover:bg-muted/50">
                             <TableCell className="font-medium">{thread.title}</TableCell>
                             <TableCell>{thread.createdBy.name}</TableCell>
                             <TableCell>{thread.replyCount || 0}</TableCell>
-                            <TableCell className="text-xs text-muted-foreground">{thread.lastReplyAt ? format(thread.lastReplyAt.toDate(), 'PPP p') : (thread.createdAt ? format(thread.createdAt.toDate(), 'PPP p') : 'N/A')}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                                {thread.lastReplyAt ? format(thread.lastReplyAt.toDate(), 'PPP p') : 'Just now'}
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )))}
                 </TableBody>
             </Table>
         </CardContent>
