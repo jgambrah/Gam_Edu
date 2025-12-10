@@ -1,240 +1,242 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, where, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, where, onSnapshot } from 'firebase/firestore';
+import { Video, Users, Send, MessageSquare, BookOpen, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
+
+// UI Components
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Class } from '@/lib/types';
+
+// IMPORT THE VIDEO ENGINE WE JUST BUILT
 import LiveRoom from '@/components/dashboard/live-classroom/live-room';
 
-// UI
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Video, CalendarIcon, Clock, PlusCircle } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-
-
-// Types
-import type { Lecture, Class, Student } from '@/lib/types';
-
-// --- Schedule Form Component ---
-function ScheduleLectureForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | null }) {
+// --- SUB-COMPONENT: Chat Window ---
+function ChatWindow({ roomId }: { roomId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [newMessage, setNewMessage] = useState('');
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    const [title, setTitle] = useState('');
-    const [classId, setClassId] = useState('');
-    const [date, setDate] = useState<Date | undefined>(new Date());
-    const [time, setTime] = useState('09:00');
+    // 1. Listen to Messages for this specific Room
+    const messagesQuery = useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'active_classes', roomId, 'messages'), orderBy('createdAt', 'asc')) : null,
+        [firestore, roomId]
+    );
+    const { data: messages, isLoading } = useCollection<any>(messagesQuery);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!title || !classId || !date || !time || !user) {
-            toast({ variant: 'destructive', title: 'Missing fields', description: 'Please fill out all required information.' });
-            return;
+    // Auto-scroll to bottom
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollIntoView({ behavior: 'smooth' });
         }
+    }, [messages]);
 
-        setIsSubmitting(true);
+    const handleSend = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newMessage.trim() || !user) return;
+
         try {
-            const [hours, minutes] = time.split(':').map(Number);
-            const scheduledDateTime = new Date(date);
-            scheduledDateTime.setHours(hours, minutes);
-
-            await addDoc(collection(firestore, 'lectures'), {
-                title,
-                classId,
-                scheduledFor: scheduledDateTime,
-                teacherId: user.uid,
-                teacherName: user.displayName || 'Teacher',
-                status: 'scheduled',
-                createdAt: serverTimestamp(),
+            await addDoc(collection(firestore, 'active_classes', roomId, 'messages'), {
+                text: newMessage,
+                senderName: user.displayName || user.email?.split('@')[0] || 'User',
+                senderId: user.uid,
+                createdAt: serverTimestamp()
             });
-            toast({ title: 'Success', description: 'New live class has been scheduled.' });
-            setOpen(false);
+            setNewMessage('');
         } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Error', description: 'Failed to schedule class.' });
-        } finally {
-            setIsSubmitting(false);
+            console.error("Chat error:", error);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Schedule a New Live Class</DialogTitle>
-                    <DialogDescription>Set up a future live session for one of your classes.</DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="title">Lecture Title</Label>
-                        <Input id="title" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g., Chapter 5 Review" required />
-                    </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="class">Class</Label>
-                        <Select onValueChange={setClassId} value={classId}>
-                            <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
-                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Date</Label>
-                             <Popover>
-                                <PopoverTrigger asChild>
-                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}>
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                                </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus /></PopoverContent>
-                            </Popover>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="time">Time</Label>
-                            <Input id="time" type="time" value={time} onChange={e => setTime(e.target.value)} required />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="submit" disabled={isSubmitting} className="w-full">
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Schedule Class'}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <div className="flex flex-col h-full bg-white rounded-lg border shadow-sm">
+            <div className="p-3 border-b bg-slate-50 font-semibold text-slate-700 flex items-center gap-2">
+                <MessageSquare className="h-4 w-4"/> Live Chat
+            </div>
+            
+            <ScrollArea className="flex-1 p-4">
+                <div className="space-y-4">
+                    {isLoading && <p className="text-xs text-muted-foreground text-center">Loading chat...</p>}
+                    {messages?.map((msg) => {
+                        const isMe = msg.senderId === user?.uid;
+                        return (
+                            <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                <div className={`max-w-[85%] rounded-lg p-2 text-sm ${isMe ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-800'}`}>
+                                    {msg.text}
+                                </div>
+                                <span className="text-[10px] text-slate-400 mt-1 px-1">
+                                    {isMe ? 'You' : msg.senderName}
+                                </span>
+                            </div>
+                        )
+                    })}
+                    <div ref={scrollRef} />
+                </div>
+            </ScrollArea>
+
+            <form onSubmit={handleSend} className="p-3 border-t flex gap-2">
+                <Input 
+                    value={newMessage} 
+                    onChange={(e) => setNewMessage(e.target.value)} 
+                    placeholder="Type a message..." 
+                    className="flex-1"
+                />
+                <Button type="submit" size="icon" disabled={!newMessage.trim()}>
+                    <Send className="h-4 w-4" />
+                </Button>
+            </form>
+        </div>
     );
 }
 
+// --- MAIN PAGE ---
+export default function LiveClassroomPage() {
+  const { user } = useAuth();
+  const { role } = useRole();
+  const firestore = useFirestore();
+  
+  const [selectedClass, setSelectedClass] = useState<Class | null>(null);
+  const [isLive, setIsLive] = useState(false);
 
-export default function LiveClassroomLobby() {
-    const { user } = useUser();
-    const { role } = useRole();
-    const firestore = useFirestore();
-    const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
-    const [isScheduling, setIsScheduling] = useState(false);
+  const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-    const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+  // 1. Fetch User's Classes
+  const classesQuery = useMemoFirebase(() => {
+      if (!firestore || !user) return null;
+      if (isTeacher) {
+          // Teachers see all classes (or filter by teacherId if you prefer)
+          return query(collection(firestore, 'classes'));
+      } else {
+          // Students see their assigned class
+          // Note: In a real app, fetch student profile first to get classId. 
+          // For now, we fetch all classes for simplicity in this demo:
+          return query(collection(firestore, 'classes'));
+      }
+  }, [firestore, user, isTeacher]);
 
-    const { data: studentData } = useCollection<Student>(
-        useMemoFirebase(() => (role === 'Student' && user) ? query(collection(firestore!, 'students'), where('uid', '==', user.uid)) : null, [role, user, firestore])
-    );
-    const studentClassId = studentData?.[0]?.classId;
-    
-    const lecturesQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null; 
-        return query(collection(firestore, 'lectures'), orderBy('createdAt', 'desc'));
-    }, [firestore, user]);
+  const { data: classes, isLoading: classesLoading } = useCollection<any>(classesQuery);
 
-    const { data: allLectures } = useCollection<Lecture>(lecturesQuery);
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+  const handleJoin = (cls: Class) => {
+      setSelectedClass(cls);
+      // In a real app, you might check if a meeting exists in DB first
+      setIsLive(true); 
+  };
 
-    const filteredLectures = useMemo(() => {
-        if (isTeacher || !allLectures) return allLectures || [];
-        return allLectures.filter(l => l.classId === studentClassId);
-    }, [allLectures, isTeacher, studentClassId]);
+  const handleLeave = () => {
+      setIsLive(false);
+      setSelectedClass(null);
+  };
 
-    const liveLectures = filteredLectures.filter(l => l.status === 'live');
-    const upcomingLectures = filteredLectures.filter(l => l.status === 'scheduled').sort((a,b) => (a.scheduledFor?.seconds || 0) - (b.scheduledFor?.seconds || 0));
-
-    const handleStartLecture = async (id: string) => {
-        if(!firestore) return;
-        await updateDoc(doc(firestore, 'lectures', id), { status: 'live' });
-        setActiveRoomId(id);
-    };
-
-    if (activeRoomId) {
-        return <LiveRoom roomId={activeRoomId} isHost={isTeacher} />;
-    }
-
-    return (
-        <div className="space-y-6 p-6">
-            <Card className="bg-slate-900 text-white">
-                <CardHeader className="flex flex-row justify-between items-center">
-                    <div>
-                        <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom Lobby</CardTitle>
-                        <p className="text-slate-400">Join a live session or see what's scheduled.</p>
-                    </div>
-                     {isTeacher && (
-                        <Button onClick={() => setIsScheduling(true)}>
-                            <PlusCircle className="mr-2 h-4 w-4"/> Schedule New Class
-                        </Button>
-                    )}
+  return (
+    <div className="flex flex-col h-[calc(100vh-100px)] gap-4">
+        
+        {/* HEADER */}
+        {!isLive && (
+            <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-2xl">
+                        <Video className="h-8 w-8"/> Live Classroom
+                    </CardTitle>
+                    <CardDescription className="text-blue-100">
+                        {isTeacher 
+                            ? "Select a class from the list below to start a live session." 
+                            : "Join your scheduled classes for live lectures."}
+                    </CardDescription>
                 </CardHeader>
             </Card>
-            <Tabs defaultValue="live" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-                    <TabsTrigger value="live">Live Now ({liveLectures.length})</TabsTrigger>
-                    <TabsTrigger value="upcoming">Upcoming ({upcomingLectures.length})</TabsTrigger>
-                </TabsList>
-                <TabsContent value="live" className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {liveLectures.length === 0 && <p className="text-muted-foreground col-span-full text-center py-8">No live classes at the moment.</p>}
-                        {liveLectures.map(l => (
-                            <Card key={l.id} className="border-l-4 border-l-red-500 shadow-sm animate-pulse">
-                                <CardHeader>
-                                    <div className="flex justify-between items-start">
-                                        <Badge className="bg-red-100 text-red-700 hover:bg-red-200">LIVE</Badge>
-                                        <Badge variant="outline">{classes?.find(c => c.id === l.classId)?.name || 'N/A'}</Badge>
-                                    </div>
-                                    <CardTitle className="mt-2">{l.title}</CardTitle>
-                                    <CardDescription>Host: {l.teacherName}</CardDescription>
-                                </CardHeader>
-                                <CardFooter>
-                                    <Button onClick={() => setActiveRoomId(l.id)} className="w-full bg-red-600 hover:bg-red-700">Join Class</Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                </TabsContent>
-                <TabsContent value="upcoming" className="mt-6">
-                     <div className="space-y-4">
-                        {upcomingLectures.length === 0 && <p className="text-muted-foreground text-center py-8">No classes scheduled.</p>}
-                        {upcomingLectures.map(l => (
-                            <div key={l.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow">
-                                <div className="flex gap-4 items-center">
-                                    <div className="bg-indigo-50 p-3 rounded-lg text-center min-w-[70px]">
-                                        <p className="text-xs font-bold text-indigo-600 uppercase">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'MMM') : 'DATE'}</p>
-                                        <p className="text-xl font-bold text-slate-800">{l.scheduledFor ? format(l.scheduledFor.toDate(), 'd') : '00'}</p>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-lg text-slate-800">{l.title}</h4>
-                                        <div className="flex gap-2 text-sm text-muted-foreground">
-                                            <span className="flex items-center gap-1"><Clock className="h-3 w-3"/> {l.scheduledFor ? format(l.scheduledFor.toDate(), 'p') : 'Time'}</span>
-                                            <span>•</span>
-                                            <span>{classes?.find(c => c.id === l.classId)?.name || 'N/A'}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {isTeacher ? (
-                                    <Button onClick={() => handleStartLecture(l.id)} size="sm" variant="outline" className="border-green-600 text-green-600 hover:bg-green-50">
-                                        Start Now
-                                    </Button>
-                                ) : (
-                                    <Button disabled variant="secondary" size="sm">Not Started</Button>
-                                )}
-                            </div>
-                        ))}
-                     </div>
-                </TabsContent>
-            </Tabs>
+        )}
+
+        {/* MAIN CONTENT AREA */}
+        <div className="flex flex-1 gap-4 overflow-hidden">
             
-            {isTeacher && (
-                <ScheduleLectureForm open={isScheduling} setOpen={setIsScheduling} classes={classes || null} />
+            {/* LEFT SIDEBAR: CLASS LIST (Hidden if live to save space, or keep it if you want) */}
+            {!isLive && (
+                <Card className="w-full md:w-1/3 lg:w-1/4 flex flex-col h-full">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <BookOpen className="h-5 w-5 text-slate-500"/> Your Classes
+                        </CardTitle>
+                    </CardHeader>
+                    <ScrollArea className="flex-1 px-4">
+                        <div className="space-y-3 pb-4">
+                            {classesLoading && <Skeleton className="h-20 w-full"/>}
+                            {classes?.map((cls) => (
+                                <div 
+                                    key={cls.id} 
+                                    className="p-4 rounded-lg border hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
+                                    onClick={() => setSelectedClass(cls)}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="font-bold text-slate-700 group-hover:text-blue-700">{cls.name}</h3>
+                                        <Badge variant="outline" className="bg-white">{cls.subject || 'General'}</Badge>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <Calendar className="h-3 w-3"/>
+                                        <span>Next: Today, 10:00 AM</span>
+                                    </div>
+                                    {selectedClass?.id === cls.id && (
+                                        <Button className="w-full mt-3 bg-blue-600 hover:bg-blue-700" onClick={() => handleJoin(cls)}>
+                                            {isTeacher ? "Start Class" : "Join Class"}
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </Card>
             )}
+
+            {/* RIGHT SIDE: STAGE */}
+            <div className="flex-1 flex flex-col h-full min-h-0">
+                {isLive && selectedClass ? (
+                    <div className="flex flex-col lg:flex-row h-full gap-4">
+                        
+                        {/* 1. VIDEO AREA (Takes up most space) */}
+                        <div className="flex-1 flex flex-col gap-2">
+                            <div className="flex justify-between items-center bg-white p-3 rounded-lg border shadow-sm">
+                                <h2 className="font-bold text-lg text-slate-800 flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"/>
+                                    {selectedClass.name} <span className="text-slate-400 font-normal">| Live Session</span>
+                                </h2>
+                                <Button variant="outline" size="sm" onClick={handleLeave} className="text-red-600 hover:bg-red-50 border-red-200">
+                                    Leave Class
+                                </Button>
+                            </div>
+
+                            {/* THE VIDEO ENGINE */}
+                            <LiveRoom 
+                                roomId={selectedClass.id} 
+                                isHost={isTeacher} 
+                            />
+                        </div>
+
+                        {/* 2. CHAT AREA (Sidebar on large screens) */}
+                        <div className="w-full lg:w-80 h-1/3 lg:h-full">
+                            <ChatWindow roomId={selectedClass.id} />
+                        </div>
+
+                    </div>
+                ) : (
+                    /* EMPTY STATE (When no class selected) */
+                    <div className="hidden md:flex flex-1 items-center justify-center bg-slate-50 border-2 border-dashed rounded-xl m-4">
+                        <div className="text-center text-slate-400">
+                            <Users className="h-16 w-16 mx-auto mb-4 opacity-50"/>
+                            <p className="text-lg font-medium">Select a class to enter the classroom</p>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
-    );
+    </div>
+  );
 }
