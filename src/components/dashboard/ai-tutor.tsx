@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 import { useUser } from '@/firebase'; // To personalize greeting
 import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow'; // Import the Server Action
+import { useToast } from '@/hooks/use-toast';
 
 // Types
 type MessageRole = 'user' | 'model';
@@ -15,6 +16,7 @@ interface ChatMessage {
 
 export const AITutor: React.FC = () => {
   const { user } = useUser();
+  const { toast } = useToast();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -45,48 +47,55 @@ export const AITutor: React.FC = () => {
     e.preventDefault();
     if (!inputText.trim() || isLoading) return;
 
+    const userText = inputText; // Capture text
+    setInputText(''); // Clear input immediately
+    setIsLoading(true);
+
     // 1. Add User Message
     const userMsg: ChatMessage = {
       role: 'user',
-      content: inputText,
+      content: userText,
       timestamp: Date.now()
     };
     
-    const newHistory = [...messages, userMsg];
-    setMessages(newHistory);
-    setInputText('');
-    setIsLoading(true);
+    setMessages(prev => [...prev, userMsg]);
 
     try {
-      // 2. Call Server Action
-      // Convert history to simple format for API
-      const historyForApi = messages.map(m => ({ role: m.role, content: m.content }));
+      // 2. Prepare History (Prevent huge payloads by slicing last 10 messages)
+      const historyForApi = messages.slice(-10).map(m => ({ 
+          role: m.role, 
+          content: m.content
+      }));
       
+      // 3. Call Server Action
       const response = await chatWithAiTutor({
         history: historyForApi,
-        message: userMsg.content
+        message: userText
       });
 
-      // 3. Add AI Response
-      if (response.success) {
-        const aiMsg: ChatMessage = {
-          role: 'model',
-          text: response.text,
-          timestamp: Date.now()
-        };
-        setMessages(prev => [...prev, aiMsg]);
-      } else {
-        throw new Error(response.text);
+      if (!response.success) {
+        throw new Error(response.error || "Unknown error");
       }
-      
-    } catch (error) {
-      console.error("Chat error", error);
-      const errorMsg: ChatMessage = {
+
+      // 4. Add AI Response
+      const aiMsg: ChatMessage = {
         role: 'model',
-        text: 'Sorry, I ran into an issue. Please try again.',
+        content: response.text,
         timestamp: Date.now()
       };
-      setMessages(prev => [...prev.slice(0, -1), errorMsg]);
+
+      setMessages(prev => [...prev, aiMsg]);
+      
+    } catch (error: any) {
+      console.error("Chat error", error);
+      // Show error to user
+      toast({
+          variant: "destructive",
+          title: "AI Error",
+          description: "Could not get a response. Check your internet or API key."
+      });
+      // Remove the user message if it failed? Or just leave it. 
+      // Usually better to leave it but maybe show a red icon.
     } finally {
       setIsLoading(false);
     }
