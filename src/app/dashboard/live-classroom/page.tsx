@@ -5,7 +5,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
-import { Video, MessageSquare, BookOpen, Calendar, RefreshCw, AlertCircle, Plus, Send, Activity } from 'lucide-react';
+import { Video, MessageSquare, BookOpen, Calendar, RefreshCw, AlertCircle, Plus, Send } from 'lucide-react';
+import { format } from 'date-fns';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,7 +17,6 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Class } from '@/lib/types';
 
 import LiveRoom from '@/components/dashboard/live-classroom/live-room';
@@ -118,28 +118,14 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
                 <div className="space-y-4 py-4">
                     <div className="space-y-2">
                         <Label>Select Class</Label>
-                        {/* NATIVE SELECT FOR RELIABILITY */}
                         <select 
                             className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
                             value={selectedClassId}
                             onChange={(e) => setSelectedClassId(e.target.value)}
                         >
                             <option value="">-- Choose a Class --</option>
-                            {classes && classes.length > 0 ? (
-                                classes.map(c => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.name}
-                                    </option>
-                                ))
-                            ) : (
-                                <option value="" disabled>No classes found in database</option>
-                            )}
+                            {classes?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
-                        {(!classes || classes.length === 0) && (
-                            <p className="text-xs text-red-500">
-                                Debug: 0 classes loaded. Check 'classes' collection in Firestore.
-                            </p>
-                        )}
                     </div>
                     <div className="space-y-2"><Label>Topic</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Algebra Review" /></div>
                     <div className="grid grid-cols-2 gap-4">
@@ -155,7 +141,7 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
 
 // --- MAIN PAGE ---
 export default function LiveClassroomPage() {
-  const { user, isUserLoading } = useUser();
+  const { user } = useAuth();
   const { role } = useRole();
   const firestore = useFirestore();
   
@@ -165,13 +151,13 @@ export default function LiveClassroomPage() {
 
   const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-  // 1. Fetch User's Classes with ERROR CAPTURING
+  // Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user) return null;
       return query(collection(firestore, 'classes'));
   }, [firestore, user]);
 
-  const { data: classes, isLoading: classesLoading, error: classesError } = useCollection<Class>(classesQuery);
+  const { data: classes, isLoading: classesLoading } = useCollection<Class>(classesQuery);
 
   const handleJoin = async (cls: Class) => {
       setSelectedClass(cls);
@@ -193,18 +179,6 @@ export default function LiveClassroomPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] gap-4 p-4">
         
-        {/* --- SYSTEM DIAGNOSTIC BAR (Remove after fixing) --- */}
-        <div className="bg-pink-100 border border-pink-300 p-2 rounded text-xs font-mono text-pink-900 flex flex-wrap gap-4 items-center">
-            <span className="font-bold flex items-center gap-1"><Activity className="h-3 w-3"/> DIAGNOSTICS:</span>
-            <span>User: {isUserLoading ? "Loading..." : (user ? user.uid : "Logged Out")}</span>
-            <span>Firestore: {firestore ? "Ready" : "Not Ready"}</span>
-            <span>Classes Loaded: {classes ? classes.length : "0 (Null)"}</span>
-            <span>Loading State: {classesLoading ? "True" : "False"}</span>
-            <span className={classesError ? "bg-red-500 text-white px-1 rounded" : "text-green-600"}>
-                Error: {classesError ? classesError.message : "None"}
-            </span>
-        </div>
-
         {/* HEADER */}
         {!isLive && (
             <Card className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 shrink-0">
@@ -233,9 +207,7 @@ export default function LiveClassroomPage() {
             {!isLive && (
                 <Card className="w-full md:w-1/3 lg:w-1/4 flex flex-col h-full">
                     <CardHeader className="pb-2 flex flex-row justify-between items-center">
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <BookOpen className="h-5 w-5 text-slate-500"/> Classes
-                        </CardTitle>
+                        <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="h-5 w-5 text-slate-500"/> Classes</CardTitle>
                         <Button variant="ghost" size="icon" onClick={() => window.location.reload()}><RefreshCw className="h-4 w-4"/></Button>
                     </CardHeader>
                     <ScrollArea className="flex-1 px-4">
@@ -246,7 +218,9 @@ export default function LiveClassroomPage() {
                                 <div className="text-center py-8 px-2 border-2 border-dashed rounded-lg">
                                     <AlertCircle className="mx-auto h-8 w-8 text-slate-300 mb-2"/>
                                     <p className="text-sm font-medium text-slate-500">No classes found.</p>
-                                    <p className="text-xs text-slate-400 mt-1">Check the Diagnostics bar above.</p>
+                                    <p className="text-xs text-slate-400 mt-1">
+                                        {isTeacher ? "Go to Academics to create a class." : "No classes assigned."}
+                                    </p>
                                 </div>
                             )}
 
@@ -261,7 +235,7 @@ export default function LiveClassroomPage() {
                                         </div>
                                         <div className="text-xs text-muted-foreground mb-3 space-y-1">
                                             <div className="flex items-center gap-2"><Calendar className="h-3 w-3"/><span>{session.dateTime ? new Date(session.dateTime).toLocaleString() : 'No session'}</span></div>
-                                            {session.topic && <p className="font-medium text-slate-600">{session.topic}</p>}
+                                            {session.topic && <p className="font-medium text-slate-600">Topic: {session.topic}</p>}
                                         </div>
                                         <Button className={`w-full ${isSessionLive ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`} onClick={() => handleJoin(cls)}>
                                             {isSessionLive ? "Join Live Stream" : (isTeacher ? "Start Class" : "Enter Room")}
