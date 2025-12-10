@@ -12,11 +12,19 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import Whiteboard from './whiteboard';
 
-// Expanded STUN servers list for better connectivity
+// EXTENDED STUN SERVER LIST
 const servers = {
   iceServers: [
-    { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] },
-    { urls: ['stun:stun3.l.google.com:19302', 'stun:stun4.l.google.com:19302'] },
+    {
+      urls: [
+        'stun:stun.l.google.com:19302',
+        'stun:stun1.l.google.com:19302',
+        'stun:stun2.l.google.com:19302',
+        'stun:stun3.l.google.com:19302',
+        'stun:stun4.l.google.com:19302',
+        'stun:global.stun.twilio.com:3478'
+      ],
+    },
   ],
   iceCandidatePoolSize: 10,
 };
