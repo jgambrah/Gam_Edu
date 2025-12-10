@@ -129,6 +129,29 @@ service cloud.firestore {
         }
     }
 
+    // Live Classroom Rules
+    match /lectures/{lectureId} {
+      allow read: if isSignedIn();
+      allow create, update: if isTeacher() || isAdmin();
+      
+      match /messages/{messageId} {
+        allow read, create: if isSignedIn();
+      }
+      match /reactions/{reactionId} {
+        allow read, create: if isSignedIn();
+      }
+    }
+    
+    match /active_classes/{roomId} {
+        allow read, write: if isSignedIn();
+        match /callerCandidates/{candidateId} {
+            allow read, write: if isSignedIn();
+        }
+        match /calleeCandidates/{candidateId} {
+            allow read, write: if isSignedIn();
+        }
+    }
+
     // Clubs
     match /math_problems/{problemId} {
       allow get: if isSignedIn();
@@ -278,7 +301,7 @@ service cloud.firestore {
       allow create: if isAccountant() && request.resource.data.accountantId == request.auth.uid;
       
       // Accountants can submit their own open tills for approval
-      allow update: if isAccountant() && resource.data.accountantId == request.auth.uid && resource.data.status == 'Open'
+      allow update: if isAccountant() && resource.data.accountantId == request.auth.uid && resource.data.status == 'Open' 
         || isAdmin(); // Admins can approve/reject
 
       match /transactions/{transactionId} {
@@ -296,3 +319,4 @@ service cloud.firestore {
     }
   }
 }
+
