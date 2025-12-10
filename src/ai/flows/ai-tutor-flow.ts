@@ -1,9 +1,8 @@
+
 'use server';
 
-import { generate } from 'genkit/ai';
-import { gemini15Flash } from '@genkit-ai/google-genai';
-import { z } from 'zod';
 import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 
 // Define the input schema
 const ChatInputSchema = z.object({
@@ -19,9 +18,9 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
 
   try {
     // 1. Format history for the prompt
-    const history = input.history.map(m => ({
+    const historyForApi = input.history.map(m => ({
       role: m.role,
-      content: [{text: m.content}]
+      content: [{ text: m.content }]
     }));
     
     // 2. Build the Prompt
@@ -35,16 +34,16 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
       - Keep responses concise (under 3-4 sentences) unless a long explanation is requested.
     `;
 
-    // 3. Call AI
+    // 3. Call AI using the globally configured 'ai' object
     const response = await ai.generate({
-      model: gemini15Flash,
+      // No need to specify model here, it uses the default from genkit.ts
       system: systemPrompt,
-      history: history,
+      history: historyForApi,
       prompt: input.message,
       config: { temperature: 0.7 },
     });
 
-    // 4. Extract Text safely
+    // 4. Extract Text safely using modern Genkit v1.x syntax
     const text = response.text;
     console.log("🤖 AI Tutor: Generated response:", text); // DEBUG LOG
 
