@@ -316,6 +316,10 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
                 </Button>
              </div>
              
+            <Button variant="outline" size="sm" onClick={() => pc.current?.restartIce()} className="w-full mt-2 border-yellow-500 text-yellow-500">
+                <RefreshCw className="w-4 h-4 mr-2"/> Retry Connection
+            </Button>
+             
              <Button variant="destructive" className="w-full mt-2" onClick={handleHangup}>
                 <PhoneOff className="w-4 h-4 mr-2"/> End Call
              </Button>
