@@ -17,7 +17,6 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Import Select
 import { Class } from '@/lib/types';
 
 // IMPORT THE VIDEO ENGINE
@@ -30,12 +29,14 @@ function ChatWindow({ roomId }: { roomId: string }) {
     const [newMessage, setNewMessage] = useState('');
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    // 1. Listen to Messages for this specific Room
     const messagesQuery = useMemoFirebase(
         () => firestore ? query(collection(firestore, 'active_classes', roomId, 'messages'), orderBy('createdAt', 'asc')) : null,
         [firestore, roomId]
     );
     const { data: messages, isLoading } = useCollection<any>(messagesQuery);
 
+    // Auto-scroll to bottom
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -103,7 +104,7 @@ function ChatWindow({ roomId }: { roomId: string }) {
     );
 }
 
-// --- SUB-COMPONENT: Schedule Class Dialog (FIXED) ---
+// --- SUB-COMPONENT: Schedule Class Dialog (Fixed with Native Select) ---
 function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
     const firestore = useFirestore();
     const [selectedClassId, setSelectedClassId] = useState('');
@@ -111,6 +112,13 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Debugging: Check if classes are actually arriving
+    useEffect(() => {
+        if (open) {
+            console.log("ScheduleDialog Open. Classes available:", classes);
+        }
+    }, [open, classes]);
 
     const handleSchedule = async () => {
         if (!selectedClassId || !topic || !date || !time) return;
@@ -126,7 +134,7 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
             });
             setOpen(false);
         } catch (error) {
-            console.error(error);
+            console.error("Error scheduling:", error);
         } finally {
             setLoading(false);
         }
@@ -140,22 +148,30 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                     
-                    {/* FIX: Using Shadcn Select to hook into data properly */}
+                    {/* FIX: Using Native HTML Select for reliability */}
                     <div className="space-y-2">
                         <Label>Select Class</Label>
-                        <Select onValueChange={setSelectedClassId} value={selectedClassId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a Class" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {classes?.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
-                                {(!classes || classes.length === 0) && (
-                                    <div className="p-2 text-sm text-muted-foreground">No classes available</div>
-                                )}
-                            </SelectContent>
-                        </Select>
+                        <select 
+                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            value={selectedClassId}
+                            onChange={(e) => setSelectedClassId(e.target.value)}
+                        >
+                            <option value="">-- Choose a Class --</option>
+                            {classes && classes.length > 0 ? (
+                                classes.map(c => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.name}
+                                    </option>
+                                ))
+                            ) : (
+                                <option value="" disabled>No classes found in database</option>
+                            )}
+                        </select>
+                        {(!classes || classes.length === 0) && (
+                            <p className="text-xs text-red-500">
+                                Debug: 0 classes loaded. Check 'classes' collection in Firestore.
+                            </p>
+                        )}
                     </div>
 
                     <div className="space-y-2">
@@ -193,7 +209,7 @@ export default function LiveClassroomPage() {
 
   const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-  // 1. Fetch User's Classes
+  // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user) return null;
       // If Teacher, strictly filter by teacherId to ensure correct list
@@ -379,3 +395,5 @@ export default function LiveClassroomPage() {
     </div>
   );
 }
+
+    
