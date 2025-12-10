@@ -54,42 +54,32 @@ export const AITutor: React.FC = () => {
     setInputText('');
     setIsLoading(true);
 
-    // 1. Add User Message to UI immediately
     const userMsg: ChatMessage = {
       role: 'user',
       content: userText,
       timestamp: Date.now()
     };
     
-    // Create a temporary history variable to send to the API
-    // We include the existing messages + the new user message
     const currentHistory = [...messages, userMsg];
-    
     setMessages(currentHistory);
 
     try {
-      // 2. Prepare History for Server (Strip timestamps to save data)
-      // We grab the last 6 messages to keep context without overloading the token limit
       const historyForApi = currentHistory.slice(-10).map(m => ({ 
           role: m.role, 
-          content: m.content 
+          content: m.content
       }));
 
-      // NOTE: We do NOT send the very last message in 'history', 
-      // because we send it as 'message' in the next line.
-      // So we pop the last one off for the history array.
       const lastMessage = historyForApi.pop(); 
       
       const response = await chatWithAiTutor({
-        history: historyForApi, // Previous context
-        message: lastMessage?.content || userText // Current Input
+        history: historyForApi,
+        message: lastMessage?.content || userText
       });
 
       if (!response.success) {
         throw new Error(response.error);
       }
 
-      // 3. Add AI Response
       const aiMsg: ChatMessage = {
         role: 'model',
         content: response.text,

@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -25,17 +24,13 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
     
     // 2. The "Solid Tutor" System Prompt
     const systemPrompt = `
-      You are an expert Socratic AI Tutor for Junior High School students.
+      You are an expert, friendly AI Tutor for Junior High School students.
       
-      YOUR GOAL:
-      Help the student learn by asking guiding questions. DO NOT just lecture or give long explanations unless specifically asked.
-      
-      RULES:
-      1. **Subject Agnostic:** You can teach Math, Science, History, English, or any school subject.
-      2. **Socratic Method:** If a student mentions a topic (e.g., "Cells"), ask them what they already know about it first. Build on their knowledge.
-      3. **One Concept at a Time:** Do not overwhelm the student. Keep responses short (2-3 sentences max).
-      4. **Context Awareness:** Look at the PREVIOUS CONVERSATION. If the student says "Yes", refer back to what you just asked them. Do NOT introduce yourself again if you are already talking.
-      5. **Encouraging:** Be friendly, but focus on the learning.
+      ### CORE BEHAVIOR:
+      1. **Socratic Method:** Usually, ask guiding questions to help the student find the answer.
+      2. **Handling "I don't know":** If the student says "I don't know", "Tell me", or gets stuck, STOP asking questions. Instead, **explain the answer clearly and simply**, then ask a follow-up question to check understanding.
+      3. **Context Retention:** CRITICAL. You are in the middle of a conversation. Look at the HISTORY. Do NOT greet the user again ("Hello", "What subject?") if you are already discussing a topic. Continue the thread.
+      4. **Tone:** Encouraging, patient, and concise (max 3-4 sentences).
     `;
 
     // 3. Call AI using the globally configured 'ai' object
@@ -43,7 +38,7 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
       system: systemPrompt,
       history: historyForApi,
       prompt: input.message,
-      config: { temperature: 0.5 }, // Lower temperature keeps it more focused/logical
+      config: { temperature: 0.4 }, // Lower temperature to keep it focused
     });
 
     // 4. Extract Text safely using modern Genkit v1.x syntax
@@ -56,7 +51,7 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
     console.error("❌ AI Tutor Error:", error);
     return { 
       success: false, 
-      text: "I'm having a little trouble connecting. Can you say that again?",
+      text: "I lost my train of thought. Could you remind me what we were discussing?",
       error: error.message 
     };
   }
