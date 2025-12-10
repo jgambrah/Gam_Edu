@@ -449,26 +449,48 @@ function ActiveClassroom({ lecture, onLeave }: { lecture: Lecture, onLeave: () =
     // --- HANDLERS ---
     const toggleScreenShare = async () => {
         if (!stream) return;
+
         if (isScreenSharing) {
+            // STOP SHARING -> Revert to Webcam
             try {
                 stream.getVideoTracks().forEach(t => t.stop());
+                
                 const camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 setStream(camStream);
                 setStreamVersion(v => v + 1);
                 setIsScreenSharing(false);
+                
                 if (videoRef.current) videoRef.current.srcObject = camStream;
-            } catch (e) { console.error("Revert error", e); }
+
+            } catch (e) {
+                console.error("Error reverting to camera", e);
+            }
         } else {
+            // START SHARING
             try {
                 // @ts-ignore
                 const displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
-                displayStream.getVideoTracks()[0].onended = () => toggleScreenShare();
+                
+                // Handle user clicking "Stop Sharing" in browser UI (floating bar)
+                displayStream.getVideoTracks()[0].onended = () => {
+                    toggleScreenShare(); // Revert logic
+                };
+
                 setStream(displayStream);
                 setStreamVersion(v => v + 1);
                 setIsScreenSharing(true);
+                
                 if (videoRef.current) videoRef.current.srcObject = displayStream;
+
             } catch (err: any) {
-                if (err.name === 'NotAllowedError') { return; }
+                // FIX: Check if user simply clicked "Cancel"
+                if (err.name === 'NotAllowedError') {
+                    // Do nothing or show a gentle info toast
+                    // console.log("User cancelled screen share");
+                    return; 
+                }
+
+                // Only log real errors (like hardware failure)
                 console.error("Screen Share Failed:", err);
                 toast({ variant: "destructive", title: "Error", description: "Screen share failed." });
             }
@@ -772,5 +794,3 @@ export default function LiveClassroomPage() {
         </div>
     );
 }
-
-    
