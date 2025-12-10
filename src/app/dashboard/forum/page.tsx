@@ -271,10 +271,11 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
     )
 }
 
-// --- Main Page (Clean Version) ---
+// --- Main Page (Fixed Logic) ---
 export default function ForumPage() {
     const firestore = useFirestore();
-    const { user } = useAuth();
+    // RESTORED: Use useUser() like the working version
+    const { user, isUserLoading } = useUser(); 
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
   
@@ -312,6 +313,9 @@ export default function ForumPage() {
         }
     };
 
+    // RESTORED: Wait for User Auth to finish before showing "Empty" state
+    const isLoading = isUserLoading || isDataLoading;
+
     if (selectedThread) {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
     }
@@ -342,7 +346,7 @@ export default function ForumPage() {
                 <Table>
                     <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Author</TableHead><TableHead>Replies</TableHead><TableHead>Last Activity</TableHead></TableRow></TableHeader>
                     <TableBody>
-                        {isDataLoading ? (
+                        {isLoading ? (
                             <TableRow><TableCell colSpan={4} className="text-center py-8"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
                         ) : threads.length === 0 ? (
                              <TableRow>
