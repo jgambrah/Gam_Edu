@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
-import { useUser } from '@/firebase'; // To personalize greeting
-import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow'; // Import the Server Action
+import { useUser } from '@/firebase'; 
+import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow';
 import { useToast } from '@/hooks/use-toast';
 
 // Types
@@ -17,23 +17,26 @@ interface ChatMessage {
 export const AITutor: React.FC = () => {
   const { user } = useUser();
   const { toast } = useToast();
+  // Initial State: Just the greeting.
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const initialized = useRef(false);
 
-  // Initialize greeting once user loads
+  // 1. One-time Greeting
   useEffect(() => {
-    if (user && messages.length === 0) {
+    if (user && !initialized.current) {
+      initialized.current = true;
       setMessages([
         {
           role: 'model',
-          content: `Hello ${user.displayName || 'Scholar'}! 👋 I'm your AI Tutor. What subject are we tackling today?`,
+          content: `Hello ${user.displayName?.split(' ')[0] || 'Scholar'}! 👋 I'm your AI Tutor. I can help with any subject—Math, Science, English, you name it. What are we tackling today?`,
           timestamp: Date.now()
         }
       ]);
     }
-  }, [user, messages.length]);
+  }, [user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,37 +50,46 @@ export const AITutor: React.FC = () => {
     e.preventDefault();
     if (!inputText.trim() || isLoading) return;
 
-    const userText = inputText; // Capture text
-    setInputText(''); // Clear input immediately
+    const userText = inputText;
+    setInputText('');
     setIsLoading(true);
 
-    // 1. Add User Message
+    // 1. Add User Message to UI immediately
     const userMsg: ChatMessage = {
       role: 'user',
       content: userText,
       timestamp: Date.now()
     };
     
-    setMessages(prev => [...prev, userMsg]);
+    // Create a temporary history variable to send to the API
+    // We include the existing messages + the new user message
+    const currentHistory = [...messages, userMsg];
+    
+    setMessages(currentHistory);
 
     try {
-      // 2. Prepare History (Prevent huge payloads by slicing last 10 messages)
-      const historyForApi = messages.slice(-10).map(m => ({ 
+      // 2. Prepare History for Server (Strip timestamps to save data)
+      // We grab the last 6 messages to keep context without overloading the token limit
+      const historyForApi = currentHistory.slice(-10).map(m => ({ 
           role: m.role, 
-          content: m.content
+          content: m.content 
       }));
+
+      // NOTE: We do NOT send the very last message in 'history', 
+      // because we send it as 'message' in the next line.
+      // So we pop the last one off for the history array.
+      const lastMessage = historyForApi.pop(); 
       
-      // 3. Call Server Action
       const response = await chatWithAiTutor({
-        history: historyForApi,
-        message: userText
+        history: historyForApi, // Previous context
+        message: lastMessage?.content || userText // Current Input
       });
 
       if (!response.success) {
-        throw new Error(response.error || "Unknown error");
+        throw new Error(response.error);
       }
 
-      // 4. Add AI Response
+      // 3. Add AI Response
       const aiMsg: ChatMessage = {
         role: 'model',
         content: response.text,
@@ -87,15 +99,12 @@ export const AITutor: React.FC = () => {
       setMessages(prev => [...prev, aiMsg]);
       
     } catch (error: any) {
-      console.error("Chat error", error);
-      // Show error to user
-      toast({
-          variant: "destructive",
-          title: "AI Error",
-          description: "Could not get a response. Check your internet or API key."
-      });
-      // Remove the user message if it failed? Or just leave it. 
-      // Usually better to leave it but maybe show a red icon.
+        console.error("Chat error", error);
+        toast({
+            variant: "destructive",
+            title: "AI Error",
+            description: "Could not get a response. Check your internet or API key."
+        });
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +121,7 @@ export const AITutor: React.FC = () => {
           <h2 className="font-bold text-lg flex items-center gap-2">
             AI Personal Tutor <Sparkles className="h-4 w-4 text-yellow-300"/>
           </h2>
-          <p className="text-indigo-100 text-xs">Always here to help you learn</p>
+          <p className="text-indigo-100 text-xs">Math • Science • English • History</p>
         </div>
       </div>
 
@@ -128,20 +137,19 @@ export const AITutor: React.FC = () => {
             }`}>
               {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
             </div>
-            <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
+            <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${
               msg.role === 'user' 
                 ? 'bg-primary text-primary-foreground rounded-tr-none' 
-                : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'
+                : 'bg-white text-slate-700 border border-slate-200 rounded-tl-none'
             }`}>
               {msg.content}
             </div>
           </div>
         ))}
         {isLoading && (
-          <div className="flex items-center gap-2 text-slate-400 text-sm ml-12 animate-pulse">
-            <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}/>
-            <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}/>
-            <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}/>
+          <div className="flex items-center gap-2 text-slate-400 text-sm ml-12">
+            <Loader2 className="w-4 h-4 animate-spin"/>
+            <span>Thinking...</span>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -153,15 +161,15 @@ export const AITutor: React.FC = () => {
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="Ask a question or request an explanation..."
+          placeholder="What do you want to learn today?"
           className="flex-1 px-4 py-3 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
         />
         <button 
           type="submit" 
           disabled={isLoading || !inputText.trim()}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground p-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground p-3 rounded-xl disabled:opacity-50 transition-colors shadow-sm"
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin"/> : <Send className="w-5 h-5" />}
+          <Send className="w-5 h-5" />
         </button>
       </form>
     </div>
