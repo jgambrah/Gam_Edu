@@ -190,6 +190,50 @@ export const navItems: NavItem[] = [
     title: 'Clubs & Activities',
     icon: Activity,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+    subItems: [
+        {
+            path: '/dashboard/study-club',
+            title: 'Study Club (AI Tutor)',
+            icon: BrainCircuit,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/maths-club-v2',
+            title: 'Maths Club',
+            icon: Sigma,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/science-club-v2',
+            title: 'Science Club',
+            icon: FlaskConical,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/ela-club',
+            title: 'ELA Club',
+            icon: BookOpenCheck,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/coding-club',
+            title: 'Coding Club',
+            icon: Code,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/think-tank',
+            title: 'Think Tank',
+            icon: BrainCircuit,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/game-zone',
+            title: 'Game Zone',
+            icon: Gamepad2,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+    ]
   },
   {
     path: '/dashboard/communication',
@@ -496,4 +540,3 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
-
