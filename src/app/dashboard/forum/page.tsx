@@ -8,7 +8,7 @@ import { collection, query, orderBy, addDoc, doc, serverTimestamp, updateDoc } f
 import { ForumThread, ForumReply } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -271,22 +271,22 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
     )
 }
 
-// --- Main Page (Diagnostic Version) ---
+// --- Main Page (Clean Version) ---
 export default function ForumPage() {
     const firestore = useFirestore();
-    const { user, isUserLoading } = useUser(); // FIX: Use useUser for better loading state
+    const { user } = useAuth();
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
   
-    // 1. Fetch Threads (Simple Query)
+    // 1. Fetch Threads
     const threadsQuery = useMemoFirebase(() => {
         if (!user || !firestore) return null;
         return query(collection(firestore, 'forumThreads'));
     }, [firestore, user]);
 
-    const { data: rawThreads, isLoading: isDataLoading, error: queryError, forceRefetch } = useCollection<ForumThread>(threadsQuery);
+    const { data: rawThreads, isLoading: isDataLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
 
-    // 2. Sort & Safety Check
+    // 2. Sort Client-Side (Newest first)
     const threads = useMemo(() => {
         if (!rawThreads) return [];
         return [...rawThreads].sort((a, b) => {
@@ -296,25 +296,21 @@ export default function ForumPage() {
         });
     }, [rawThreads]);
 
-    // 3. Safe Date Formatter (Prevents Crashes)
+    // 3. Safe Date Formatter
     const safeFormatDate = (timestamp: any) => {
         if (!timestamp) return 'N/A';
         try {
-            // Check if it's a Firestore Timestamp (has .toDate)
             if (typeof timestamp.toDate === 'function') {
                 return format(timestamp.toDate(), 'PPP p');
             }
-            // Check if it's already a JS Date
             if (timestamp instanceof Date) {
                 return format(timestamp, 'PPP p');
             }
             return 'Invalid Date';
         } catch (e) {
-            return 'Date Error';
+            return 'N/A';
         }
     };
-
-    const isLoading = isUserLoading || isDataLoading;
 
     if (selectedThread) {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
@@ -322,50 +318,36 @@ export default function ForumPage() {
 
   return (
     <div className="space-y-6">
-      
-      {/* DIAGNOSTIC BAR (Remove after fixing) */}
-      <div className="bg-pink-100 border border-pink-300 p-2 rounded text-xs font-mono text-pink-900 grid grid-cols-2 md:grid-cols-4 gap-2">
-         <span><strong>User:</strong> {isUserLoading ? "Loading..." : (user ? "Logged In" : "NULL")}</span>
-         <span><strong>Firestore:</strong> {firestore ? "Connected" : "NULL"}</span>
-         <span><strong>Data Loaded:</strong> {threads ? threads.length : "0 (Null)"}</span>
-         <span><strong>Error:</strong> {queryError ? queryError.message : "None"}</span>
-      </div>
-
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="flex items-center gap-2"><MessageSquare/> Discussion Forum</CardTitle>
                 <CardDescription>Ask questions, share ideas, and collaborate with others.</CardDescription>
             </div>
-            <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={forceRefetch}>Refresh List</Button>
-                <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
-                    <DialogTrigger asChild>
-                        <Button><Plus className="mr-2 h-4 w-4"/> Create Thread</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Start a New Discussion</DialogTitle>
-                            <DialogDescription>What's on your mind?</DialogDescription>
-                        </DialogHeader>
-                        <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} />
-                    </DialogContent>
-                </Dialog>
-            </div>
+            <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
+                <DialogTrigger asChild>
+                    <Button><Plus className="mr-2 h-4 w-4"/> Create Thread</Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Start a New Discussion</DialogTitle>
+                        <DialogDescription>What's on your mind?</DialogDescription>
+                    </DialogHeader>
+                    <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} />
+                </DialogContent>
+            </Dialog>
         </CardHeader>
         <CardContent>
             <div className="border rounded-md">
                 <Table>
                     <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Author</TableHead><TableHead>Replies</TableHead><TableHead>Last Activity</TableHead></TableRow></TableHeader>
                     <TableBody>
-                        {isLoading ? (
+                        {isDataLoading ? (
                             <TableRow><TableCell colSpan={4} className="text-center py-8"><Loader2 className="mx-auto h-6 w-6 animate-spin"/></TableCell></TableRow> 
                         ) : threads.length === 0 ? (
                              <TableRow>
                                 <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                                    No discussions found. 
-                                    {/* Debug Hint */}
-                                    <br/><span className="text-xs">Check 'forumThreads' collection in Firestore.</span>
+                                    No discussions found. Be the first to post!
                                 </TableCell>
                              </TableRow>
                         ) : (
@@ -373,12 +355,10 @@ export default function ForumPage() {
                             <TableRow key={thread.id} onClick={() => setSelectedThread(thread)} className="cursor-pointer hover:bg-muted/50">
                                 <TableCell className="font-medium">{thread.title}</TableCell>
                                 <TableCell>
-                                    {/* Safe check for nested createdBy object */}
                                     {thread.createdBy?.name || 'Anonymous'}
                                 </TableCell>
                                 <TableCell>{thread.replyCount || 0}</TableCell>
                                 <TableCell className="text-xs text-muted-foreground">
-                                    {/* Use safe formatter */}
                                     {safeFormatDate(thread.lastReplyAt || thread.createdAt)}
                                 </TableCell>
                             </TableRow>
