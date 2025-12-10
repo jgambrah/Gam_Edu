@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, where, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, where, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 import LiveRoom from '@/components/dashboard/live-classroom/live-room';
 
@@ -12,11 +12,112 @@ import LiveRoom from '@/components/dashboard/live-classroom/live-room';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Video, CalendarIcon, Clock } from 'lucide-react';
+import { Loader2, Video, CalendarIcon, Clock, PlusCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
 
 // Types
 import type { Lecture, Class, Student } from '@/lib/types';
+
+// --- Schedule Form Component ---
+function ScheduleLectureForm({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | null }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [title, setTitle] = useState('');
+    const [classId, setClassId] = useState('');
+    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [time, setTime] = useState('09:00');
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!title || !classId || !date || !time || !user) {
+            toast({ variant: 'destructive', title: 'Missing fields', description: 'Please fill out all required information.' });
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const [hours, minutes] = time.split(':').map(Number);
+            const scheduledDateTime = new Date(date);
+            scheduledDateTime.setHours(hours, minutes);
+
+            await addDoc(collection(firestore, 'lectures'), {
+                title,
+                classId,
+                scheduledFor: scheduledDateTime,
+                teacherId: user.uid,
+                teacherName: user.displayName || 'Teacher',
+                status: 'scheduled',
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: 'Success', description: 'New live class has been scheduled.' });
+            setOpen(false);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to schedule class.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Schedule a New Live Class</DialogTitle>
+                    <DialogDescription>Set up a future live session for one of your classes.</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="title">Lecture Title</Label>
+                        <Input id="title" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g., Chapter 5 Review" required />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="class">Class</Label>
+                        <Select onValueChange={setClassId} value={classId}>
+                            <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
+                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label>Date</Label>
+                             <Popover>
+                                <PopoverTrigger asChild>
+                                <Button variant={'outline'} className={cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                                </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus /></PopoverContent>
+                            </Popover>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="time">Time</Label>
+                            <Input id="time" type="time" value={time} onChange={e => setTime(e.target.value)} required />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Schedule Class'}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 
 export default function LiveClassroomLobby() {
@@ -24,6 +125,7 @@ export default function LiveClassroomLobby() {
     const { role } = useRole();
     const firestore = useFirestore();
     const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
+    const [isScheduling, setIsScheduling] = useState(false);
 
     const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
@@ -66,6 +168,11 @@ export default function LiveClassroomLobby() {
                         <CardTitle className="flex items-center gap-2"><Video className="text-red-500"/> Live Classroom Lobby</CardTitle>
                         <p className="text-slate-400">Join a live session or see what's scheduled.</p>
                     </div>
+                     {isTeacher && (
+                        <Button onClick={() => setIsScheduling(true)}>
+                            <PlusCircle className="mr-2 h-4 w-4"/> Schedule New Class
+                        </Button>
+                    )}
                 </CardHeader>
             </Card>
             <Tabs defaultValue="live" className="w-full">
@@ -124,6 +231,10 @@ export default function LiveClassroomLobby() {
                      </div>
                 </TabsContent>
             </Tabs>
+            
+            {isTeacher && (
+                <ScheduleLectureForm open={isScheduling} setOpen={setIsScheduling} classes={classes || null} />
+            )}
         </div>
     );
 }
