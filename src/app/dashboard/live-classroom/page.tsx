@@ -2,11 +2,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+// FIX: Use useUser consistently
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
-import { Video, MessageSquare, BookOpen, Calendar, RefreshCw, AlertCircle, Plus, Send } from 'lucide-react';
-import { format } from 'date-fns';
+import { Video, MessageSquare, BookOpen, Calendar, RefreshCw, AlertCircle, Plus, Send, Clock } from 'lucide-react';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -61,8 +61,13 @@ function ChatWindow({ roomId }: { roomId: string }) {
             <div className="p-3 border-b bg-slate-50 font-semibold text-slate-700 flex items-center gap-2">
                 <MessageSquare className="h-4 w-4"/> Live Chat
             </div>
+            
             <ScrollArea className="flex-1 p-4">
                 <div className="space-y-4">
+                    {isLoading && <p className="text-xs text-muted-foreground text-center">Loading chat...</p>}
+                    {!isLoading && messages?.length === 0 && (
+                        <p className="text-xs text-slate-400 text-center italic mt-10">No messages yet. Say hello!</p>
+                    )}
                     {messages?.map((msg: any) => {
                         const isMe = msg.senderId === user?.uid;
                         return (
@@ -70,22 +75,32 @@ function ChatWindow({ roomId }: { roomId: string }) {
                                 <div className={`max-w-[85%] rounded-lg p-2 text-sm ${isMe ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-800'}`}>
                                     {msg.text}
                                 </div>
-                                <span className="text-[10px] text-slate-400 mt-1 px-1">{isMe ? 'You' : msg.senderName}</span>
+                                <span className="text-[10px] text-slate-400 mt-1 px-1">
+                                    {isMe ? 'You' : msg.senderName}
+                                </span>
                             </div>
                         )
                     })}
                     <div ref={scrollRef} />
                 </div>
             </ScrollArea>
+
             <form onSubmit={handleSend} className="p-3 border-t flex gap-2">
-                <Input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type a message..." className="flex-1"/>
-                <Button type="submit" size="icon" disabled={!newMessage.trim()}><Send className="h-4 w-4" /></Button>
+                <Input 
+                    value={newMessage} 
+                    onChange={(e) => setNewMessage(e.target.value)} 
+                    placeholder="Type a message..." 
+                    className="flex-1"
+                />
+                <Button type="submit" size="icon" disabled={!newMessage.trim()}>
+                    <Send className="h-4 w-4" />
+                </Button>
             </form>
         </div>
     );
 }
 
-// --- SUB-COMPONENT: Schedule Class Dialog ---
+// --- SUB-COMPONENT: Schedule Class Dialog (Fixed with Native Select) ---
 function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o: boolean) => void, classes: Class[] | undefined }) {
     const firestore = useFirestore();
     const [selectedClassId, setSelectedClassId] = useState('');
@@ -94,13 +109,24 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
     const [time, setTime] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Debugging: Check if classes are actually arriving
+    useEffect(() => {
+        if (open) {
+            console.log("ScheduleDialog Open. Classes available:", classes);
+        }
+    }, [open, classes]);
+
     const handleSchedule = async () => {
         if (!selectedClassId || !topic || !date || !time) return;
         setLoading(true);
         try {
             const classRef = doc(firestore, 'classes', selectedClassId);
             await updateDoc(classRef, {
-                nextSession: { topic, dateTime: `${date}T${time}`, isLive: false }
+                nextSession: {
+                    topic,
+                    dateTime: `${date}T${time}`,
+                    isLive: false
+                }
             });
             setOpen(false);
         } catch (error) {
@@ -114,25 +140,54 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
-                <DialogHeader><DialogTitle>Schedule Live Session</DialogTitle></DialogHeader>
+                <DialogHeader>
+                    <DialogTitle>Schedule Live Session</DialogTitle>
+                </DialogHeader>
                 <div className="space-y-4 py-4">
+                    
+                    {/* FIX: Using Native HTML Select for reliability */}
                     <div className="space-y-2">
                         <Label>Select Class</Label>
                         <select 
-                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             value={selectedClassId}
                             onChange={(e) => setSelectedClassId(e.target.value)}
                         >
                             <option value="">-- Choose a Class --</option>
-                            {classes?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            {classes && classes.length > 0 ? (
+                                classes.map(c => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.name}
+                                    </option>
+                                ))
+                            ) : (
+                                <option value="" disabled>No classes found in database</option>
+                            )}
                         </select>
+                        {(!classes || classes.length === 0) && (
+                            <p className="text-xs text-red-500">
+                                Debug: 0 classes loaded. Check 'classes' collection in Firestore.
+                            </p>
+                        )}
                     </div>
-                    <div className="space-y-2"><Label>Topic</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Algebra Review" /></div>
+
+                    <div className="space-y-2">
+                        <Label>Topic</Label>
+                        <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Algebra Review" />
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Date</Label><Input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
-                        <div className="space-y-2"><Label>Time</Label><Input type="time" value={time} onChange={e => setTime(e.target.value)} /></div>
+                        <div className="space-y-2">
+                            <Label>Date</Label>
+                            <Input type="date" value={date} onChange={e => setDate(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Time</Label>
+                            <Input type="time" value={time} onChange={e => setTime(e.target.value)} />
+                        </div>
                     </div>
-                    <Button onClick={handleSchedule} disabled={loading || !selectedClassId} className="w-full">{loading ? "Scheduling..." : "Schedule Class"}</Button>
+                    <Button onClick={handleSchedule} disabled={loading || !selectedClassId} className="w-full">
+                        {loading ? "Scheduling..." : "Schedule Class"}
+                    </Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -141,7 +196,7 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
 
 // --- MAIN PAGE ---
 export default function LiveClassroomPage() {
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser(); // FIX: Use useUser for better loading state
   const { role } = useRole();
   const firestore = useFirestore();
   
@@ -151,9 +206,10 @@ export default function LiveClassroomPage() {
 
   const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
-  // Fetch Classes
+  // 1. Fetch User's Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user) return null;
+      // In production, Teachers filter by teacherId, Students by enrollment
       return query(collection(firestore, 'classes'));
   }, [firestore, user]);
 
@@ -212,7 +268,12 @@ export default function LiveClassroomPage() {
                     </CardHeader>
                     <ScrollArea className="flex-1 px-4">
                         <div className="space-y-3 pb-4">
-                            {classesLoading && <Skeleton className="h-20 w-full"/>}
+                            {classesLoading && (
+                                <>
+                                    <Skeleton className="h-20 w-full"/>
+                                    <Skeleton className="h-20 w-full"/>
+                                </>
+                            )}
                             
                             {!classesLoading && (!classes || classes.length === 0) && (
                                 <div className="text-center py-8 px-2 border-2 border-dashed rounded-lg">
@@ -234,7 +295,7 @@ export default function LiveClassroomPage() {
                                             {isSessionLive && <Badge className="bg-red-500 animate-pulse">LIVE NOW</Badge>}
                                         </div>
                                         <div className="text-xs text-muted-foreground mb-3 space-y-1">
-                                            <div className="flex items-center gap-2"><Calendar className="h-3 w-3"/><span>{session.dateTime ? new Date(session.dateTime).toLocaleString() : 'No session'}</span></div>
+                                            <div className="flex items-center gap-2"><Calendar className="h-3 w-3"/><span>{session.dateTime ? new Date(session.dateTime).toLocaleString() : 'No session scheduled'}</span></div>
                                             {session.topic && <p className="font-medium text-slate-600">Topic: {session.topic}</p>}
                                         </div>
                                         <Button className={`w-full ${isSessionLive ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`} onClick={() => handleJoin(cls)}>
