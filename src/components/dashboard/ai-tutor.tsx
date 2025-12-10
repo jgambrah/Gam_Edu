@@ -64,7 +64,9 @@ export const AITutor: React.FC = () => {
     setMessages(currentHistory);
 
     try {
-      const historyForApi = currentHistory.slice(-10).map(m => ({ 
+      // FIX: Increased from -10 to -50 so it remembers the start of the lesson
+      // for summaries and quizzes at the end.
+      const historyForApi = currentHistory.slice(-50).map(m => ({ 
           role: m.role, 
           content: m.content
       }));
