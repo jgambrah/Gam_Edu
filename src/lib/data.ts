@@ -1,6 +1,6 @@
 
 
-import type { NavItem, Bus, Route, ChartOfAccount, GeneralLedgerTransaction, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
+import type { NavItem, UserRole } from '@/lib/types';
 import {
   LayoutDashboard,
   Users,
@@ -186,6 +186,12 @@ export const navItems: NavItem[] = [
     ]
   },
   {
+    path: '/dashboard/clubs',
+    title: 'Clubs & Activities',
+    icon: Activity,
+    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+  },
+  {
     path: '/dashboard/communication',
     title: 'Communication',
     icon: MessageSquare,
@@ -202,62 +208,6 @@ export const navItems: NavItem[] = [
             title: 'Direct Messages',
             icon: MessageCircle,
             roles: 'all',
-        },
-    ]
-  },
-  {
-    path: '/dashboard/clubs',
-    title: 'Clubs & Activities',
-    icon: Activity,
-    roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-    subItems: [
-        {
-            path: '/dashboard/study-club',
-            title: 'Study Club',
-            icon: Book,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/live-classroom',
-            title: 'Live Classroom',
-            icon: Clapperboard,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/game-zone',
-            title: 'Game Zone',
-            icon: Gamepad2,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/maths-club-v2',
-            title: 'Math Club',
-            icon: Sigma,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/science-club-v2',
-            title: 'Science Club',
-            icon: FlaskConical,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/ela-club',
-            title: 'ELA Club',
-            icon: BookOpenCheck,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-        {
-            path: '/dashboard/coding-club',
-            title: 'Coding Club',
-            icon: Code,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
-        },
-         {
-            path: '/dashboard/think-tank',
-            title: 'The Think Tank',
-            icon: BrainCircuit,
-            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
     ]
   },
@@ -546,3 +496,4 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
+

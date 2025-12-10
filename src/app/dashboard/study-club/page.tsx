@@ -1,11 +1,19 @@
+
 'use client';
 
-import { AITutor } from '@/components/dashboard/ai-tutor';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
+// This page is deprecated and now redirects to the central clubs page.
 export default function StudyClubPage() {
-  return (
-    <div className="flex justify-center items-start p-0">
-        <AITutor />
-    </div>
-  );
+    const router = useRouter();
+    useEffect(() => {
+        router.replace('/dashboard/clubs');
+    }, [router]);
+
+    return (
+        <div className="flex h-full w-full items-center justify-center">
+            <p>Redirecting to the new Clubs page...</p>
+        </div>
+    );
 }
