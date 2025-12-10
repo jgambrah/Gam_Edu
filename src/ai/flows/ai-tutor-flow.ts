@@ -1,9 +1,9 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Define the input schema
 const ChatInputSchema = z.object({
   history: z.array(z.object({
     role: z.enum(['user', 'model']),
@@ -13,45 +13,60 @@ const ChatInputSchema = z.object({
 });
 
 export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
-  console.log("🤖 AI Tutor: Received message:", input.message);
-
   try {
-    // 1. Format the history into a clear script format
-    const historyForApi = input.history.map(m => ({
-      role: m.role,
-      content: [{ text: m.content }]
-    }));
+    // 1. Format history clearly for the AI to read
+    const historyText = input.history
+      .map(m => `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.content}`)
+      .join('\n');
     
-    // 2. The "Solid Tutor" System Prompt
-    const systemPrompt = `
+    // 2. The "Conversation Flow" Prompt
+    const prompt = `
       You are an expert, friendly AI Tutor for Junior High School students.
       
-      ### CORE BEHAVIOR:
-      1. **Socratic Method:** Usually, ask guiding questions to help the student find the answer.
-      2. **Handling "I don't know":** If the student says "I don't know", "Tell me", or gets stuck, STOP asking questions. Instead, **explain the answer clearly and simply**, then ask a follow-up question to check understanding.
-      3. **Context Retention:** CRITICAL. You are in the middle of a conversation. Look at the HISTORY. Do NOT greet the user again ("Hello", "What subject?") if you are already discussing a topic. Continue the thread.
-      4. **Tone:** Encouraging, patient, and concise (max 3-4 sentences).
+      ### CORE INSTRUCTIONS:
+      1. **Analyze the Flow:** Before responding, look at the "PREVIOUS CONVERSATION". 
+         - If you just asked a question, assume the Student's new message is the ANSWER.
+         - Do NOT treat a one-word answer (e.g., "Cells", "Yes") as a request to start a new topic. Treat it as a continuation.
+      
+      2. **The "Loop" Breaker:** 
+         - If the Student answers your question correctly (e.g., you asked "What are they called?" and they said "Cells"), say "Exactly!" or "Spot on!" and then **MOVE TO THE NEXT CONCEPT**. 
+         - Do NOT ask the same question again.
+         - Do NOT re-introduce the topic ("Cells are fascinating..."). You are already in the middle of discussing it.
+
+      3. **Socratic Method:**
+         - Build knowledge step-by-step.
+         - If they know cells make up organisms, ask about what might be inside a cell (Nucleus, Mitochondria, etc.).
+         - If they get stuck or say "I don't know", explain the answer simply and move on.
+
+      4. **Tone:**
+         - Keep it conversational, not robotic.
+         - Short responses (2-3 sentences).
+
+      ### PREVIOUS CONVERSATION:
+      ${historyText}
+
+      ### STUDENT'S NEW MESSAGE:
+      ${input.message}
+
+      ### YOUR RESPONSE (As Tutor):
     `;
 
-    // 3. Call AI using the globally configured 'ai' object
     const response = await ai.generate({
-      system: systemPrompt,
-      history: historyForApi,
-      prompt: input.message,
-      config: { temperature: 0.4 }, // Lower temperature to keep it focused
+      prompt: prompt,
+      config: { 
+        temperature: 0.3, // Low temperature prevents it from "getting creative" and resetting the chat
+      }, 
     });
 
-    // 4. Extract Text safely using modern Genkit v1.x syntax
     const text = response.text;
-    console.log("🤖 AI Tutor: Generated response:", text);
-
+    
     return { success: true, text: text };
 
   } catch (error: any) {
-    console.error("❌ AI Tutor Error:", error);
+    console.error("AI Tutor Error:", error);
     return { 
       success: false, 
-      text: "I lost my train of thought. Could you remind me what we were discussing?",
+      text: "I lost my train of thought. Let's try that again.",
       error: error.message 
     };
   }
