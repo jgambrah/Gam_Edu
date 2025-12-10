@@ -233,6 +233,12 @@ export const navItems: NavItem[] = [
             icon: Gamepad2,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
+        {
+            path: '/dashboard/live-classroom',
+            title: 'Live Classroom',
+            icon: Clapperboard,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
     ]
   },
   {
