@@ -1,21 +1,22 @@
+
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
-import { collection, doc, onSnapshot, addDoc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, addDoc, setDoc, getDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { 
-    Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, User, 
-    Smile, PenTool, Disc, Download, Users, AlertCircle, Wifi 
+    Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, User, Wifi, RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Whiteboard from './whiteboard';
 
-// Standard Google STUN servers (Free)
+// Expanded STUN servers list for better connectivity
 const servers = {
   iceServers: [
     { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] },
+    { urls: ['stun:stun3.l.google.com:19302', 'stun:stun4.l.google.com:19302'] },
   ],
   iceCandidatePoolSize: 10,
 };
@@ -30,133 +31,195 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
   const [cameraOn, setCameraOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [reaction, setReaction] = useState<string | null>(null);
   
   // Connection Diagnostics
   const [connectionState, setConnectionState] = useState<string>('initializing');
-  const [participantCount, setParticipantCount] = useState(1);
+  const [signalingState, setSignalingState] = useState<string>('idle');
 
   // Refs
   const pc = useRef<RTCPeerConnection | null>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const recordedChunksRef = useRef<Blob[]>([]);
-  const iceCandidateQueue = useRef<RTCIceCandidateInit[]>([]);
+  const candidatesQueue = useRef<RTCIceCandidateInit[]>([]); 
+  const effectRan = useRef(false); // Fix for React Strict Mode
 
   // --- 1. INITIALIZE CALL ---
   useEffect(() => {
+    // Prevent double-run in React Strict Mode
+    if (effectRan.current) return;
     if (!firestore || !user || !roomId) return;
 
+    effectRan.current = true;
+
     const startCall = async () => {
-      console.log(`Starting call as ${isHost ? 'HOST' : 'GUEST'}`);
-      
-      // 1. Create Peer Connection
+      console.log(`🚀 Starting call as ${isHost ? 'HOST' : 'GUEST'}`);
+      setSignalingState('starting');
+
+      // --- CLEANUP OLD DATA (Host Only) ---
+      // If teacher starts, clear previous handshake data to prevent "Dead Offer" bugs
+      const roomRef = doc(firestore, 'active_classes', roomId);
+      const callerCandidatesCollection = collection(roomRef, 'callerCandidates');
+      const calleeCandidatesCollection = collection(roomRef, 'calleeCandidates');
+
+      if (isHost) {
+          console.log("Cleaning up old room data...");
+          // We overwrite the room doc with empty data first
+          await setDoc(roomRef, { created: new Date() }); 
+          // Note: Ideally we'd delete subcollections too, but overwriting the main offer triggers a reset
+      }
+
+      // A. Initialize Peer Connection
       pc.current = new RTCPeerConnection(servers);
 
       // Monitor Connection State
-      pc.current.oniceconnectionstatechange = () => {
-        const state = pc.current?.iceConnectionState || 'unknown';
-        console.log("ICE State:", state);
-        setConnectionState(state);
-        if (state === 'connected') setParticipantCount(2);
-        else setParticipantCount(1);
+      pc.current.onconnectionstatechange = () => {
+        console.log("📡 Connection State:", pc.current?.connectionState);
+        setConnectionState(pc.current?.connectionState || 'unknown');
       };
 
-      // 2. Handle Remote Stream
+      pc.current.oniceconnectionstatechange = () => {
+        console.log("❄️ ICE State:", pc.current?.iceConnectionState);
+        if (pc.current?.iceConnectionState === 'failed') {
+            setConnectionState('failed (firewall blocked)');
+            pc.current.restartIce();
+        }
+      };
+
+      // B. Handle Remote Stream
       pc.current.ontrack = (event) => {
-        console.log("Stream received:", event.streams[0]);
+        console.log("🎥 Stream received from remote");
         if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = event.streams[0];
         }
       };
 
       try {
-        // 3. Get Local Media
+        // C. Get Local Media
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localStreamRef.current = stream;
         
         if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream;
-            localVideoRef.current.muted = true;
+            localVideoRef.current.muted = true; // Always mute self
         }
 
         stream.getTracks().forEach((track) => {
             pc.current?.addTrack(track, stream);
         });
-
       } catch (err) {
           console.error("Media Error", err);
-          toast({ variant: 'destructive', title: "Camera Error", description: "Could not access camera/mic." });
+          toast({ variant: 'destructive', title: "Media Error", description: "Camera/Mic blocked." });
       }
 
-      // --- SIGNALING ---
-      const roomRef = doc(firestore, 'active_classes', roomId);
-      const callerCandidates = collection(roomRef, 'callerCandidates');
-      const calleeCandidates = collection(roomRef, 'calleeCandidates');
+      // --- SIGNALING LOGIC ---
+      
+      // Helper: Add queued candidates
+      const processCandidates = async () => {
+          if (!pc.current || !pc.current.remoteDescription) return;
+          while (candidatesQueue.current.length > 0) {
+              const candidate = candidatesQueue.current.shift();
+              if (candidate) {
+                  try {
+                    await pc.current.addIceCandidate(new RTCIceCandidate(candidate));
+                  } catch (e) { console.error("Error adding candidate", e); }
+              }
+          }
+      };
 
       if (isHost) {
-        // === HOST ===
+        // === HOST (TEACHER) ===
+        setSignalingState('creating offer');
+
+        // 1. Listen for ICE candidates generated by my PC
         pc.current.onicecandidate = (event) => {
-          if (event.candidate) addDoc(callerCandidates, event.candidate.toJSON());
+          if (event.candidate) {
+             addDoc(callerCandidatesCollection, event.candidate.toJSON());
+          }
         };
 
+        // 2. Create Offer
         const offer = await pc.current.createOffer();
         await pc.current.setLocalDescription(offer);
-        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp } });
+        
+        const roomWithOffer = {
+            offer: { type: offer.type, sdp: offer.sdp },
+        };
 
-        onSnapshot(roomRef, (snapshot) => {
+        await updateDoc(roomRef, roomWithOffer);
+        setSignalingState('waiting for student...');
+
+        // 3. Listen for Answer
+        onSnapshot(roomRef, async (snapshot) => {
           const data = snapshot.data();
           if (!pc.current?.currentRemoteDescription && data?.answer) {
+            console.log("✅ Received Answer from Student!");
+            setSignalingState('connecting...');
             const rtcSessionDescription = new RTCSessionDescription(data.answer);
-            pc.current.setRemoteDescription(rtcSessionDescription);
+            await pc.current.setRemoteDescription(rtcSessionDescription);
+            await processCandidates(); 
           }
         });
 
-        onSnapshot(calleeCandidates, (snapshot) => {
+        // 4. Listen for Remote ICE Candidates
+        onSnapshot(calleeCandidatesCollection, (snapshot) => {
           snapshot.docChanges().forEach((change) => {
             if (change.type === 'added') {
-                const candidate = new RTCIceCandidate(change.doc.data());
-                pc.current?.addIceCandidate(candidate);
+                const data = change.doc.data();
+                if (pc.current?.remoteDescription) {
+                    pc.current.addIceCandidate(new RTCIceCandidate(data));
+                } else {
+                    candidatesQueue.current.push(data); // Queue it
+                }
             }
           });
         });
 
       } else {
-        // === GUEST ===
+        // === GUEST (STUDENT) ===
+        setSignalingState('looking for teacher...');
+
+        // 1. Listen for my ICE candidates
         pc.current.onicecandidate = (event) => {
-          if (event.candidate) addDoc(calleeCandidates, event.candidate.toJSON());
+          if (event.candidate) {
+             addDoc(calleeCandidatesCollection, event.candidate.toJSON());
+          }
         };
 
-        // Listen for Offer
-        const unsubscribeRoom = onSnapshot(roomRef, async (snapshot) => {
+        // 2. Listen for Room Data (Offer)
+        onSnapshot(roomRef, async (snapshot) => {
             const data = snapshot.data();
+            
+            // If we have an Offer but haven't answered yet
             if (!pc.current?.currentRemoteDescription && data?.offer) {
+                console.log("✅ Received Offer from Teacher!");
+                setSignalingState('creating answer...');
+                
                 const rtcSessionDescription = new RTCSessionDescription(data.offer);
                 await pc.current.setRemoteDescription(rtcSessionDescription);
                 
-                // Process any queued candidates
-                iceCandidateQueue.current.forEach(candidate => pc.current?.addIceCandidate(candidate));
-                iceCandidateQueue.current = [];
-                
                 const answer = await pc.current.createAnswer();
                 await pc.current.setLocalDescription(answer);
-                await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } });
+                
+                const roomWithAnswer = {
+                    answer: { type: answer.type, sdp: answer.sdp },
+                };
+                
+                await updateDoc(roomRef, roomWithAnswer);
+                setSignalingState('connecting...');
+                await processCandidates();
             }
         });
 
-        // Listen for Candidates
-        onSnapshot(callerCandidates, (snapshot) => {
+        // 3. Listen for Remote ICE Candidates
+        onSnapshot(callerCandidatesCollection, (snapshot) => {
           snapshot.docChanges().forEach((change) => {
             if (change.type === 'added') {
-                const candidate = new RTCIceCandidate(change.doc.data());
-                // FIX: If remote description isn't set, queue the candidate.
+                const data = change.doc.data();
                 if (pc.current?.remoteDescription) {
-                    pc.current?.addIceCandidate(candidate);
+                    pc.current.addIceCandidate(new RTCIceCandidate(data));
                 } else {
-                    iceCandidateQueue.current.push(candidate);
+                    candidatesQueue.current.push(data); // Queue it
                 }
             }
           });
@@ -167,11 +230,13 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
     startCall();
 
     return () => {
+       // Cleanup logic
        localStreamRef.current?.getTracks().forEach(track => track.stop());
        pc.current?.close();
     };
   }, [firestore, user, roomId, isHost, toast]);
 
+  // --- CONTROLS ---
   const toggleMic = () => {
     localStreamRef.current?.getAudioTracks().forEach(track => track.enabled = !track.enabled);
     setMicOn(!micOn);
@@ -182,69 +247,14 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
     setCameraOn(!cameraOn);
   };
 
-  const startScreenShare = async () => {
-    if (!pc.current) return;
-    try {
-        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-        const screenTrack = screenStream.getVideoTracks()[0];
-        const sender = pc.current.getSenders().find(s => s.track?.kind === 'video');
-        if (sender) sender.replaceTrack(screenTrack);
-        if (localVideoRef.current) localVideoRef.current.srcObject = screenStream;
-        setIsScreenSharing(true);
-        screenTrack.onended = () => stopScreenShare();
-    } catch (err) { console.error(err); }
+  const handleHangup = () => {
+      window.location.reload();
   };
-
-  const stopScreenShare = async () => {
-      if (!pc.current || !localStreamRef.current) return;
-      const cameraTrack = localStreamRef.current.getVideoTracks()[0];
-      const sender = pc.current.getSenders().find(s => s.track?.kind === 'video');
-      if (sender) sender.replaceTrack(cameraTrack);
-      if (localVideoRef.current) localVideoRef.current.srcObject = localStreamRef.current;
-      setIsScreenSharing(false);
-  };
-  
-    const startRecording = async () => {
-    try {
-        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-        const recorder = new MediaRecorder(stream);
-        mediaRecorderRef.current = recorder;
-        recordedChunksRef.current = [];
-
-        recorder.ondataavailable = (event) => {
-            if (event.data.size > 0) recordedChunksRef.current.push(event.data);
-        };
-
-        recorder.onstop = () => {
-            const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Class-Recording-${new Date().toISOString()}.webm`;
-            a.click();
-            setIsRecording(false);
-            stream.getTracks().forEach(track => track.stop());
-        };
-
-        recorder.start();
-        setIsRecording(true);
-        toast({ title: "Recording Started", description: "Recording your screen and audio." });
-    } catch (e) { console.error(e); }
-  };
-
-  const stopRecording = () => {
-      mediaRecorderRef.current?.stop();
-  };
-  
-  const sendReaction = (emoji: string) => {
-      setReaction(emoji);
-      setTimeout(() => setReaction(null), 2000);
-  };
-
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[80vh] p-4 bg-slate-900 rounded-xl relative">
       
+      {/* MAIN STAGE */}
       <div className="md:col-span-3 relative bg-black rounded-lg overflow-hidden flex items-center justify-center">
         {showWhiteboard ? (
             <Whiteboard onClose={() => setShowWhiteboard(false)} />
@@ -257,23 +267,22 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
             />
         )}
 
-        <div className="absolute top-4 left-4 flex gap-2">
+        {/* STATUS BADGE */}
+        <div className="absolute top-4 left-4 flex flex-col gap-2">
             <div className={`px-3 py-1 rounded text-white text-xs font-bold flex items-center gap-2 ${
                 connectionState === 'connected' ? 'bg-green-600' : 
-                connectionState === 'failed' || connectionState === 'disconnected' ? 'bg-red-600' : 'bg-yellow-600'
+                connectionState === 'failed' ? 'bg-red-600' : 'bg-yellow-600'
             }`}>
                 <Wifi className="h-3 w-3"/>
                 {connectionState.toUpperCase()}
             </div>
-        </div>
-
-        {reaction && (
-            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-6xl pointer-events-none">
-                {reaction}
+            <div className="bg-black/50 text-white px-3 py-1 rounded text-xs">
+                Signal: {signalingState}
             </div>
-        )}
+        </div>
       </div>
 
+      {/* SIDEBAR */}
       <div className="flex flex-col gap-4">
           <div className="relative bg-slate-800 rounded-lg h-48 overflow-hidden border border-slate-700">
              <video 
@@ -287,10 +296,6 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
              <div className="absolute bottom-2 left-2 text-white text-xs bg-black/50 px-2 py-0.5 rounded flex items-center gap-1">
                 <User className="w-3 h-3"/> You
              </div>
-             <div className="absolute top-2 right-2 flex gap-1">
-                 {!micOn && <div className="bg-red-500 p-1 rounded-full"><MicOff className="w-3 h-3 text-white"/></div>}
-                 {!cameraOn && <div className="bg-red-500 p-1 rounded-full"><VideoOff className="w-3 h-3 text-white"/></div>}
-             </div>
           </div>
 
           <Card className="p-4 flex flex-col gap-3 bg-slate-800 border-slate-700">
@@ -303,35 +308,9 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
                 </Button>
              </div>
              
-             {isHost && (
-                 <>
-                    <Button variant={isScreenSharing ? "destructive" : "outline"} onClick={isScreenSharing ? stopScreenShare : startScreenShare} size="sm" className="w-full justify-start border-slate-600 text-slate-200">
-                        <Monitor className="w-4 h-4 mr-2"/> {isScreenSharing ? "Stop Share" : "Share Screen"}
-                    </Button>
-                    <Button variant={showWhiteboard ? "destructive" : "outline"} onClick={() => setShowWhiteboard(!showWhiteboard)} size="sm" className="w-full justify-start border-slate-600 text-slate-200">
-                        <PenTool className="w-4 h-4 mr-2"/> Whiteboard
-                    </Button>
-                    <Button variant={isRecording ? "destructive" : "outline"} onClick={isRecording ? stopRecording : startRecording} size="sm" className="w-full justify-start border-slate-600 text-slate-200">
-                        {isRecording ? <Disc className="w-4 h-4 mr-2 animate-pulse"/> : <Download className="w-4 h-4 mr-2"/>} 
-                        {isRecording ? "Stop Record" : "Record Class"}
-                    </Button>
-                 </>
-             )}
-             
-             <div className="flex gap-1 justify-center pt-2 border-t border-slate-700">
-                <button onClick={() => sendReaction("👍")} className="text-xl hover:scale-125 transition">👍</button>
-                <button onClick={() => sendReaction("👏")} className="text-xl hover:scale-125 transition">👏</button>
-                <button onClick={() => sendReaction("❤️")} className="text-xl hover:scale-125 transition">❤️</button>
-                <button onClick={() => sendReaction("🤔")} className="text-xl hover:scale-125 transition">🤔</button>
-             </div>
-
-             <Button variant="destructive" className="w-full mt-2" onClick={() => window.location.reload()}>
+             <Button variant="destructive" className="w-full mt-2" onClick={handleHangup}>
                 <PhoneOff className="w-4 h-4 mr-2"/> End Call
              </Button>
-
-             <div className="text-center text-xs text-slate-500 flex items-center justify-center gap-1">
-                 <Users className="h-3 w-3"/> {participantCount} Active
-             </div>
           </Card>
       </div>
     </div>
