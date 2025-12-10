@@ -12,19 +12,18 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import Whiteboard from './whiteboard';
 
-// EXTENDED STUN SERVER LIST
 const servers = {
   iceServers: [
-    {
-      urls: [
-        'stun:stun.l.google.com:19302',
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-        'stun:stun3.l.google.com:19302',
-        'stun:stun4.l.google.com:19302',
-        'stun:global.stun.twilio.com:3478'
-      ],
-    },
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun4.l.google.com:19302' },
+    { urls: 'stun:stun.ekiga.net' },
+    { urls: 'stun:stun.ideasip.com' },
+    { urls: 'stun:stun.schlund.de' },
+    { urls: 'stun:stun.voiparound.com' },
+    { urls: 'stun:stun.voipstunt.com' },
   ],
   iceCandidatePoolSize: 10,
 };
@@ -317,7 +316,7 @@ export default function LiveRoom({ roomId, isHost }: { roomId: string, isHost: b
              </div>
              
             <Button variant="outline" size="sm" onClick={() => pc.current?.restartIce()} className="w-full mt-2 border-yellow-500 text-yellow-500">
-                <RefreshCw className="w-4 h-4 mr-2"/> Retry Connection
+               <RefreshCw className="w-4 h-4 mr-2"/> Retry Connection
             </Button>
              
              <Button variant="destructive" className="w-full mt-2" onClick={handleHangup}>
