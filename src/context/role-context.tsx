@@ -11,13 +11,14 @@ import {
   useEffect
 } from 'react';
 import type { UserRole } from '@/lib/types';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { Loader2, AlertCircle, LogOut } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getAuth, signOut } from 'firebase/auth';
+import { useCollection } from '@/firebase/firestore/use-collection';
 
 type RoleContextType = {
   role: UserRole | null; 
@@ -33,79 +34,47 @@ function RoleProviderContent({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
   const [isRoleLoading, setIsRoleLoading] = useState(true);
 
+  // FIX: Make queries conditional on user object
+  const staffQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'staff'), where('uid', '==', user.uid)) : null, [firestore, user]);
+  const studentQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user]);
+  const parentQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'parents'), where('uid', '==', user.uid)) : null, [firestore, user]);
+
+  const { data: staffData, isLoading: isStaffLoading } = useCollection(staffQuery);
+  const { data: studentData, isLoading: isStudentLoading } = useCollection(studentQuery);
+  const { data: parentData, isLoading: isParentLoading } = useCollection(parentQuery);
+
   useEffect(() => {
-    let isMounted = true;
+    // We are now loading if auth is loading OR any of our conditional queries are loading
+    const isDataLoading = isStaffLoading || isStudentLoading || isParentLoading;
+    setIsRoleLoading(isAuthLoading || isDataLoading);
 
-    const determineRole = async () => {
-      // 1. Wait for Auth and Firestore to be ready
-      if (isAuthLoading || !firestore) return;
-
-      // 2. If no user, stop loading
-      if (!user) {
-        if(isMounted) {
-            setRole(null);
-            setIsRoleLoading(false);
-        }
+    if (isAuthLoading) return; // Wait for auth to resolve first
+    if (!user) { // No user, not loading, no role
+        setRole(null);
+        setIsRoleLoading(false);
         return;
-      }
+    }
 
-      if(isMounted) setIsRoleLoading(true);
-      console.log("🔍 Checking role for user:", user.uid);
-      
-      // 3. Check Collections Sequentially
-      const collectionsToTest: { name: string; roleField?: string, fixedRole?: UserRole }[] = [
-        { name: 'staff', roleField: 'role' },
-        { name: 'students', fixedRole: 'Student' },
-        { name: 'parents', fixedRole: 'Parent' },
-      ];
-
-      for (const collectionInfo of collectionsToTest) {
-        try {
-            const docRef = doc(firestore, collectionInfo.name, user.uid);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                let userRole: UserRole | null = null;
-                
-                if (collectionInfo.fixedRole) {
-                    userRole = collectionInfo.fixedRole;
-                } else if (collectionInfo.roleField) {
-                    const data = docSnap.data();
-                    // Handle case sensitivity (e.g. "Teacher" vs "teacher")
-                    const rawRole = data[collectionInfo.roleField];
-                    if (rawRole) {
-                        // Capitalize first letter to match UserRole type
-                        userRole = (rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase()) as UserRole;
-                    }
-                }
-                
-                if (userRole) {
-                    console.log(`✅ Found user in '${collectionInfo.name}' with role: ${userRole}`);
-                    if(isMounted) {
-                        setRole(userRole);
-                        setIsRoleLoading(false);
-                    }
-                    return; 
-                }
+    if (!isDataLoading && user) { // Auth and data queries are complete
+        if (staffData && staffData.length > 0) {
+            const rawRole = (staffData[0] as any).role;
+            if (rawRole) {
+                const normalizedRole = (rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase()) as UserRole;
+                setRole(normalizedRole);
+            } else {
+                 setRole(null);
             }
-        } catch (e) {
-            console.warn(`Could not check collection '${collectionInfo.name}':`, e);
+        } else if (studentData && studentData.length > 0) {
+            setRole('Student');
+        } else if (parentData && parentData.length > 0) {
+            setRole('Parent');
+        } else {
+            console.warn("User authenticated but no profile found in staff, students, or parents.");
+            setRole(null);
         }
-      }
-
-      // 4. No Role Found
-      console.warn("❌ User authenticated but has no profile.");
-      if(isMounted) {
-          setRole(null); 
-          setIsRoleLoading(false);
-      }
-    };
-
-    determineRole();
-
-    return () => { isMounted = false; };
+    }
     
-  }, [user, firestore, isAuthLoading]);
+  }, [user, isAuthLoading, staffData, studentData, parentData, isStaffLoading, isStudentLoading, isParentLoading]);
 
   return (
     <RoleContext.Provider value={{ role, setRole, isRoleLoading }}>
