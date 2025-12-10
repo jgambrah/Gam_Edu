@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Class } from '@/lib/types';
 
 // IMPORT THE VIDEO ENGINE WE JUST BUILT
@@ -142,14 +143,14 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
                 <div className="space-y-4 py-4">
                     <div className="space-y-2">
                         <Label>Select Class</Label>
-                        <select 
-                            className="w-full p-2 border rounded-md"
-                            value={selectedClassId}
-                            onChange={(e) => setSelectedClassId(e.target.value)}
-                        >
-                            <option value="">-- Choose Class --</option>
-                            {classes?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="-- Choose Class --" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="space-y-2">
                         <Label>Topic</Label>
