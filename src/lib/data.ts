@@ -1,6 +1,6 @@
 
 
-import type { NavItem, UserRole } from '@/lib/types';
+import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
   Users,
@@ -289,12 +289,6 @@ export const navItems: NavItem[] = [
             icon: Star,
             roles: ['Director', 'Administrator'],
         },
-         {
-            path: '/dashboard/payroll/my-payslips',
-            title: 'My Payslips',
-            icon: FileText,
-            roles: ['Teacher', 'Accountant', 'Librarian', 'Cook'],
-        }
     ]
   },
   {
@@ -351,6 +345,12 @@ export const navItems: NavItem[] = [
         icon: BarChart,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+       {
+        path: '/dashboard/payroll/settings',
+        title: 'Settings',
+        icon: Settings,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
     ]
   },
    {
@@ -401,6 +401,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/reports/enrollment',
         title: 'Enrollment',
         icon: Users,
+        roles: ['Director', 'Administrator'],
+      },
+      {
+        path: '/dashboard/reports/inventory',
+        title: 'Inventory',
+        icon: Boxes,
         roles: ['Director', 'Administrator'],
       },
     ]
