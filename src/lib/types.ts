@@ -1084,3 +1084,115 @@ export interface JournalEntry {
   createdBy: string;
   createdAt: any;
 }
+
+export interface PaymentVoucher {
+  id: string;
+  payee: string;
+  description: string;
+  grossAmount: number;
+  whtAmount: number;
+  netAmount: number;
+  paymentMethod: string;
+  referenceNumber?: string;
+  expenseAccountId: string;
+  paymentAccountId: string;
+  whtLiabilityAccountId?: string;
+  status: 'Paid' | 'Cancelled';
+  date: any;
+  createdBy: string;
+  linkedBillId?: string;
+}
+
+// --- PROCUREMENT & AP ---
+export interface Supplier {
+  id: string;
+  name: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  address: string;
+  balance: number; // Amount we owe them
+}
+
+export interface PurchaseOrder {
+  id: string;
+  supplierId: string;
+  supplierName: string;
+  date: any;
+  status: 'Draft' | 'Sent' | 'Received' | 'Cancelled';
+  items: { 
+    itemId: string; // From Inventory/Shop items
+    name: string; 
+    quantity: number; 
+    unitCost: number; 
+    total: number;
+  }[];
+  totalAmount: number;
+  expectedDate?: any;
+}
+
+export interface VendorBill {
+  id: string;
+  supplierId: string;
+  supplierName: string;
+  poId: string; // Link to PO
+  date: any;
+  dueDate: any;
+  totalAmount: number;
+  amountPaid: number;
+  status: 'Unpaid' | 'Partial' | 'Paid';
+  items: any[];
+}
+
+
+// --- PAYROLL ---
+
+export interface TaxBracket {
+  limit: number; 
+  rate: number;  
+}
+
+export interface PayrollConfig {
+  ssnitEmployeeRate: number; // 5.5%
+  ssnitEmployerRate: number; // 13%
+  tier3Rate: number; // Voluntary %
+  taxBrackets: TaxBracket[];
+}
+
+export interface StaffSalaryDetails {
+  uid: string;
+  name: string;
+  role: string;
+  basicSalary: number;
+  allowances: { name: string; amount: number; isTaxable: boolean }[];
+  tier3Contribution: number; // Amount or Percentage
+  bankName: string;
+  accountNumber: string;
+  tin: string;
+  ssnitNumber: string;
+}
+
+export interface Payslip {
+  id: string;
+  month: string; // "2025-05"
+  staffId: string;
+  staffName: string;
+  basicSalary: number;
+  totalAllowances: number;
+  grossSalary: number;
+  
+  // Deductions
+  ssnitDeduction: number; // 5.5%
+  tier3Deduction: number;
+  taxableIncome: number;
+  payeTax: number;
+  
+  netSalary: number;
+  
+  // Employer Cost
+  employerSSNIT: number;
+  totalCostToCompany: number;
+  
+  status: 'Draft' | 'Paid';
+  date: any;
+}
