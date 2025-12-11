@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -18,7 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet, CheckSquare, Coffee } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -35,9 +35,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // --- Types ---
-// Enhanced schema to support "Opening Balance"
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
 });
@@ -45,8 +45,6 @@ const extendedFinancialRecordSchema = financialRecordSchema.extend({
 // --- SUB-COMPONENT: Transaction Detail Modal ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
     if (!record) return null;
-
-    // Calculate balance specific to this invoice
     const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
     return (
@@ -108,7 +106,180 @@ function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRe
     );
 }
 
-// --- FORM: Financial Record (With Opening Balance support) ---
+// --- COMPONENT: Manual Daily Charge Form (NEW FEATURE) ---
+function DailyChargeForm({ setOpen, classes, students, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], onRecordsAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Local State for this form
+    const [selectedClassId, setSelectedClassId] = useState('');
+    const [chargeType, setChargeType] = useState<'Canteen' | 'Transport'>('Canteen');
+    const [date, setDate] = useState<Date>(new Date());
+    const [rate, setRate] = useState(0);
+    const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+    
+    // Filter students by class
+    const classStudents = useMemo(() => students.filter(s => s.classId === selectedClassId), [students, selectedClassId]);
+
+    // Fetch Rate when type changes
+    useEffect(() => {
+        if(!firestore) return;
+        const fetchRate = async () => {
+            const docId = chargeType === 'Canteen' ? 'canteen' : 'transport';
+            const snap = await getDoc(doc(firestore, 'schoolSettings', docId));
+            if(snap.exists()) {
+                setRate(Number(snap.data().dailyRate) || 0);
+            }
+        };
+        fetchRate();
+    }, [chargeType, firestore]);
+
+    // Toggle Selection
+    const toggleStudent = (uid: string) => {
+        if(selectedStudents.includes(uid)) setSelectedStudents(prev => prev.filter(id => id !== uid));
+        else setSelectedStudents(prev => [...prev, uid]);
+    };
+
+    const toggleAll = () => {
+        if(selectedStudents.length === classStudents.length) setSelectedStudents([]);
+        else setSelectedStudents(classStudents.map(s => s.uid));
+    };
+
+    const handleSubmit = async () => {
+        if(!firestore) return;
+        if(selectedStudents.length === 0) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Select at least one student.' });
+            return;
+        }
+        if(rate <= 0) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Rate is 0. Please set rates in settings.' });
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const batch = writeBatch(firestore);
+            const dateStr = format(date, 'yyyy-MM-dd');
+
+            selectedStudents.forEach(uid => {
+                const student = classStudents.find(s => s.uid === uid);
+                if(!student) return;
+
+                // Create the standardized ID: type-studentId-date
+                const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
+                const recordRef = doc(firestore, 'financialRecords', recordId);
+                
+                batch.set(recordRef, {
+                    studentId: uid,
+                    studentName: `${student.firstName} ${student.lastName}`,
+                    classId: selectedClassId,
+                    type: `${chargeType} Fee`,
+                    description: `${chargeType} (Manual) - ${format(date, 'PPP')}`,
+                    billedAmount: rate,
+                    amountPaid: 0,
+                    status: 'Unpaid',
+                    dueDate: date,
+                    createdAt: serverTimestamp()
+                }, { merge: true }); // Merge ensures we update existing if it exists, or create new
+            });
+
+            await batch.commit();
+            toast({ title: 'Success', description: `Billed ${selectedStudents.length} students.` });
+            onRecordsAdded();
+            setOpen(false);
+        } catch(e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: e.message });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+                <DialogTitle>Add Daily Charge (Manual)</DialogTitle>
+                <DialogDescription>Manually bill specific students for Canteen or Transport.</DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-2">
+                <div className="flex gap-4">
+                    <div className="flex-1 space-y-2">
+                        <Label>Type</Label>
+                        <Select value={chargeType} onValueChange={(v: any) => setChargeType(v)}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Canteen">Canteen</SelectItem>
+                                <SelectItem value="Transport">Transport</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                        <Label>Date</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant={'outline'} className="w-full justify-start text-left font-normal">
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date ? format(date, 'PP') : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus/></PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
+                <div className="flex gap-4 items-end">
+                    <div className="flex-1 space-y-2">
+                        <Label>Class</Label>
+                        <Select value={selectedClassId} onValueChange={setSelectedClassId}>
+                            <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="w-1/3 space-y-2">
+                        <Label>Rate</Label>
+                        <Input value={`GH₵ ${rate.toFixed(2)}`} disabled className="bg-slate-100 font-bold text-slate-700"/>
+                    </div>
+                </div>
+
+                {selectedClassId && (
+                    <div className="border rounded-md max-h-[300px] overflow-y-auto p-2">
+                        <div className="flex items-center gap-2 p-2 border-b mb-2 sticky top-0 bg-white">
+                            <Checkbox 
+                                checked={selectedStudents.length === classStudents.length && classStudents.length > 0} 
+                                onCheckedChange={toggleAll}
+                            />
+                            <Label>Select All ({classStudents.length})</Label>
+                        </div>
+                        {classStudents.map(s => (
+                            <div key={s.uid} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded">
+                                <Checkbox 
+                                    checked={selectedStudents.includes(s.uid)} 
+                                    onCheckedChange={() => toggleStudent(s.uid)}
+                                />
+                                <span className="text-sm">{s.firstName} {s.lastName}</span>
+                                {chargeType === 'Transport' && s.usesBusService && (
+                                    <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 ml-auto">Bus User</Badge>
+                                )}
+                            </div>
+                        ))}
+                        {classStudents.length === 0 && <p className="text-center text-sm text-muted-foreground p-4">No students in class.</p>}
+                    </div>
+                )}
+
+                <Button onClick={handleSubmit} disabled={isSubmitting || selectedStudents.length === 0} className="w-full">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <PlusCircle className="mr-2 h-4 w-4"/>}
+                    Generate {selectedStudents.length} Bills
+                </Button>
+            </div>
+        </DialogContent>
+    );
+}
+
+// --- FORM: Financial Record (Single) ---
 function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (open: boolean) => void; students: Student[], onRecordAdded: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -121,7 +292,6 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
 
   const isOpeningBalance = form.watch('isOpeningBalance');
 
-  // Auto-set description if Opening Balance is checked
   useEffect(() => {
       if (isOpeningBalance) {
           form.setValue('type', 'Other');
@@ -141,9 +311,8 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
         studentName: `${student.firstName} ${student.lastName}`,
         classId: student.classId,
         amountPaid: 0,
-        status: 'Unpaid', // Always unpaid initially
+        status: 'Unpaid',
         createdAt: serverTimestamp(),
-        // If it's opening balance, set date to past to ensure it appears first in ledger
         dueDate: values.dueDate || new Date(), 
       };
       
@@ -163,11 +332,9 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         
-        {/* Toggle for Opening Balance */}
         <div className="flex items-center gap-2 p-2 bg-slate-100 rounded mb-2">
             <input 
-                type="checkbox" 
-                id="openingBalance"
+                type="checkbox" id="openingBalance"
                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 {...form.register('isOpeningBalance')}
             />
@@ -285,7 +452,6 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    // Calculate remaining balance for THIS SPECIFIC bill
     const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
     const form = useForm<z.infer<typeof recordPaymentSchema>>({
@@ -308,8 +474,6 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
             const newAmountPaid = (record.amountPaid || 0) + values.amount;
             const newBalance = record.billedAmount - newAmountPaid - (record.waiverAmount || 0);
             
-            // Logic 3: Update Outstanding Balance automatically
-            // If fully paid, status changes to Paid
             const newStatus = newBalance <= 0 ? 'Paid' : 'Unpaid';
             
             batch.update(recordRef, {
@@ -317,12 +481,11 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
                 status: newStatus,
             });
 
-            // If paying cash, record in Till
             if (values.method === 'Cash') {
                 const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'));
                 const tillSnapshot = await getDocs(tillQuery);
                 if (tillSnapshot.empty) {
-                    throw new Error("You do not have an open till. Please open one before recording cash payments.");
+                    throw new Error("You do not have an open till. Please open a till before recording cash payments.");
                 }
                 const activeTill = tillSnapshot.docs[0];
                 const transactionRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
@@ -375,7 +538,6 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     );
 }
 
-// ... (ApplyWaiverDialog and EditRecordDialog remain same, just ensure they are included below)
 function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRecord, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -481,7 +643,7 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
                     )}/>
                     <div className="grid grid-cols-2 gap-4">
                         <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                            <FormItem><FormLabel>Billed Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
                         )}/>
                         <FormField control={form.control} name="dueDate" render={({ field }) => (
                             <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
@@ -500,7 +662,7 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
 export default function AccountsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | null>(null);
+  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver'; record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
@@ -517,17 +679,8 @@ export default function AccountsPage() {
   const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
   const isLoading = isLoadingRecords || isLoadingStudents;
 
-  // --- STATS LOGIC (UPDATED: Calculates Outstanding per Type) ---
   const dashboardStats = useMemo(() => {
-    if (!records) {
-        return {
-            totalRevenue: 0,
-            totalOutstanding: 0,
-            outstandingTuition: 0,
-            outstandingCanteen: 0,
-            outstandingTransport: 0,
-        };
-    }
+    if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
 
     let totalPaid = 0;
     let totalBilled = 0;
@@ -536,13 +689,10 @@ export default function AccountsPage() {
     let outstandingTransport = 0;
 
     for (const record of records) {
-        // Calculate remaining balance for this specific record
         const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
-        
         totalBilled += record.billedAmount;
         totalPaid += (record.amountPaid || 0) + (record.waiverAmount || 0);
 
-        // Logic 3: Update component-based outstanding balance
         if (balance > 0) {
             if (record.type === 'Tuition Fee') outstandingTuition += balance;
             else if (record.type === 'Canteen Fee') outstandingCanteen += balance;
@@ -559,43 +709,34 @@ export default function AccountsPage() {
     };
   }, [records]);
 
-  // --- LEDGER LOGIC (UPDATED: Correct Running Balance) ---
   const studentFinancials = useMemo(() => {
     if (!records || !students) return [];
 
     return students.map(student => {
       const studentRecords = records.filter(r => r.studentId === student.uid);
-      
-      // Calculate total balance
       const totalBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
       const totalPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
       const totalWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
       const balance = totalBilled - totalPaid - totalWaivers;
       
-      // Logic 1: Sort by Date (Oldest First) to calculate running balance correctly
       const sortedRecords = studentRecords.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
 
       let runningBalance = 0;
       const ledger = sortedRecords.map(rec => {
             const debit = rec.billedAmount;
             const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
-            runningBalance += (debit - credit); // Add Bill, Subtract Payment
-            return {
-                ...rec,
-                debit: debit,
-                credit: credit,
-                runningBalance: runningBalance,
-            }
+            runningBalance += (debit - credit); 
+            return { ...rec, debit, credit, runningBalance };
         });
 
       return {
         student,
         balance,
         hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
-        ledger: ledger.reverse(), // Reverse for display (Newest First) so user sees recent activity top
+        ledger: ledger.reverse(),
       };
     }).filter(sf => 
-        (sf.ledger.length > 0 || searchTerm) && // Show even if empty if searching
+        (sf.ledger.length > 0 || searchTerm) && 
         (sf.student.firstName + " " + sf.student.lastName).toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [records, students, searchTerm]);
@@ -607,48 +748,21 @@ export default function AccountsPage() {
     );
   }
 
-  const handleOpenDialog = (type: 'payment' | 'waiver', record: FinancialRecord) => {
-    setDialogState({ type, record });
-  };
-  
-  const handleCloseDialog = () => {
-    setDialogState({ type: 'payment', record: null });
-  };
-  
-  const handleOpenEditDialog = (record: FinancialRecord) => {
-    setEditingRecord(record);
-  };
-  
-  const handleCloseEditDialog = () => {
-    setEditingRecord(null);
-  };
-
+  const handleOpenDialog = (type: 'payment' | 'waiver', record: FinancialRecord) => setDialogState({ type, record });
+  const handleCloseDialog = () => setDialogState({ type: 'payment', record: null });
+  const handleOpenEditDialog = (record: FinancialRecord) => setEditingRecord(record);
+  const handleCloseEditDialog = () => setEditingRecord(null);
 
   return (
     <div className="space-y-6">
         <Card>
             <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle><DollarSign className="h-4 w-4 text-muted-foreground" /></CardHeader>
-                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Revenue (Paid)</CardTitle><HandCoins className="h-4 w-4 text-muted-foreground" /></CardHeader>
-                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle><Receipt className="h-4 w-4 text-muted-foreground" /></CardHeader>
-                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle><Utensils className="h-4 w-4 text-muted-foreground" /></CardHeader>
-                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle><Bus className="h-4 w-4 text-muted-foreground" /></CardHeader>
-                    <CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent>
-                </Card>
+                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle><DollarSign className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
+                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Revenue</CardTitle><HandCoins className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
+                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle><Receipt className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
+                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle><Utensils className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
+                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle><Bus className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
             </CardContent>
         </Card>
 
@@ -656,22 +770,22 @@ export default function AccountsPage() {
         <Card>
             <CardHeader>
             <div className="flex justify-between items-center">
-                <div>
-                <CardTitle>Student Billing</CardTitle>
-                <CardDescription>Create, manage, and track all student financial records.</CardDescription>
-                </div>
+                <div><CardTitle>Student Billing</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
                 <div className="flex gap-2">
-                <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Bill/Balance
-                </Button>
-                <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
-                    <FileCog className="mr-2 h-4 w-4" /> Add Bulk Bill
-                </Button>
+                    <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                        <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
+                    </Button>
+                    <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
+                        <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
+                    </Button>
+                    <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
+                        <FileCog className="mr-2 h-4 w-4" /> Bulk Bill
+                    </Button>
                 </div>
             </div>
             </CardHeader>
             <CardContent>
-                {/* Logic 2: Render the updated form with Opening Balance checkbox */}
+                {activeForm === 'daily' && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
                 {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
                 {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
             </CardContent>
@@ -679,11 +793,7 @@ export default function AccountsPage() {
       </div>
 
       <Card>
-        <CardHeader>
-            <div className="flex justify-between">
-                <Input placeholder="Search by student name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="max-w-sm"/>
-            </div>
-        </CardHeader>
+        <CardHeader><Input placeholder="Search by student name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="max-w-sm"/></CardHeader>
         <CardContent>
             {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                 <div className="space-y-4">
@@ -691,20 +801,13 @@ export default function AccountsPage() {
                          <Collapsible key={student.uid} className="border rounded-lg">
                             <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
                                 <div className="flex items-center gap-3">
-                                    <Avatar>
-                                        <AvatarFallback>{student.firstName.charAt(0)}{student.lastName.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="text-left">
-                                        <p className="font-semibold">{student.firstName} {student.lastName}</p>
-                                        <p className="text-sm text-muted-foreground">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</p>
-                                    </div>
+                                    <Avatar><AvatarFallback>{student.firstName.charAt(0)}{student.lastName.charAt(0)}</AvatarFallback></Avatar>
+                                    <div className="text-left"><p className="font-semibold">{student.firstName} {student.lastName}</p><p className="text-sm text-muted-foreground">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</p></div>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
                                         <p className="text-sm text-muted-foreground">Balance</p>
-                                        <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>
-                                            GH₵{balance.toFixed(2)}
-                                        </p>
+                                        <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
                                     </div>
                                     <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                 </div>
@@ -712,46 +815,24 @@ export default function AccountsPage() {
                              <CollapsibleContent className="p-4 bg-slate-50 border-t">
                                 <div className="border rounded-md overflow-hidden bg-white">
                                  <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Date</TableHead>
-                                            <TableHead>Description</TableHead>
-                                            <TableHead className="text-right">Debit</TableHead>
-                                            <TableHead className="text-right">Credit</TableHead>
-                                            <TableHead className="text-right">Run. Bal</TableHead>
-                                            <TableHead className="w-[120px] text-right">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
+                                    <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead><TableHead className="text-right">Run. Bal</TableHead><TableHead className="w-[120px] text-right">Actions</TableHead></TableRow></TableHeader>
                                     <TableBody>
                                         {ledger.map(rec => (
                                             <TableRow key={rec.id}>
-                                                <TableCell className="text-xs text-muted-foreground">
-                                                    {rec.createdAt ? format(rec.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}
-                                                </TableCell>
-                                                <TableCell className="max-w-[200px]">
-                                                    <div className="flex flex-col">
-                                                        <span className="font-medium truncate">{rec.description}</span>
-                                                        <span className="text-[10px] text-slate-400 uppercase tracking-wide">{rec.type}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="text-right font-mono text-red-600">
-                                                    {rec.debit > 0 ? `GH₵${rec.debit.toFixed(2)}` : '-'}
-                                                </TableCell>
-                                                <TableCell className="text-right font-mono text-green-600">
-                                                    {rec.credit > 0 ? `GH₵${rec.credit.toFixed(2)}` : '-'}
-                                                </TableCell>
+                                                <TableCell className="text-xs text-muted-foreground">{rec.createdAt ? format(rec.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}</TableCell>
+                                                <TableCell className="font-medium max-w-[200px] truncate">{rec.description}</TableCell>
+                                                <TableCell className="text-right font-mono text-red-600">{rec.debit > 0 ? `GH₵${rec.debit.toFixed(2)}` : '-'}</TableCell>
+                                                <TableCell className="text-right font-mono text-green-600">{rec.credit > 0 ? `GH₵${rec.credit.toFixed(2)}` : '-'}</TableCell>
                                                 <TableCell className="text-right font-bold text-slate-700">GH₵{rec.runningBalance.toFixed(2)}</TableCell>
                                                 <TableCell>
                                                     <div className="flex gap-1 justify-end">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" onClick={() => setTransactionDetail(rec)}>
-                                                            <Eye className="h-4 w-4"/>
-                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" onClick={() => setTransactionDetail(rec)}><Eye className="h-4 w-4"/></Button>
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400"><MoreVertical /></Button></DropdownMenuTrigger>
                                                             <DropdownMenuContent>
                                                                 <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
-                                                                <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}><Wallet className="mr-2 h-4 w-4"/> Record Payment</DropdownMenuItem>
-                                                                <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}><HandCoins className="mr-2 h-4 w-4"/> Apply Waiver</DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver</DropdownMenuItem>
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
                                                     </div>
@@ -769,26 +850,14 @@ export default function AccountsPage() {
         </CardContent>
       </Card>
       
+      <Dialog open={activeForm === 'daily'} onOpenChange={(open) => !open && setActiveForm(null)}>
+        {activeForm === 'daily' && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
+      </Dialog>
       <Dialog open={!!dialogState.record} onOpenChange={(open) => !open && handleCloseDialog()}>
-          {dialogState.record && (
-            dialogState.type === 'payment' 
-            ? <RecordPaymentDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />
-            : <ApplyWaiverDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />
-          )}
+          {dialogState.record && (dialogState.type === 'payment' ? <RecordPaymentDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} /> : <ApplyWaiverDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />)}
       </Dialog>
-      
-      <Dialog open={!!editingRecord} onOpenChange={(open) => !open && handleCloseEditDialog()}>
-          {editingRecord && (
-            <EditRecordDialog record={editingRecord} setOpen={handleCloseEditDialog} onUpdate={forceRefetch} />
-          )}
-      </Dialog>
-      
-      <TransactionDetailModal 
-        record={transactionDetail} 
-        open={!!transactionDetail} 
-        setOpen={(open) => !open && setTransactionDetail(null)}
-      />
-
+      <Dialog open={!!editingRecord} onOpenChange={(open) => !open && handleCloseEditDialog()}>{editingRecord && <EditRecordDialog record={editingRecord} setOpen={handleCloseEditDialog} onUpdate={forceRefetch} />}</Dialog>
+      <TransactionDetailModal record={transactionDetail} open={!!transactionDetail} setOpen={(open) => !open && setTransactionDetail(null)}/>
     </div>
   );
 }
