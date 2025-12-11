@@ -503,7 +503,7 @@ export default function AccountsPage() {
   const studentFinancials = useMemo(() => {
     if (!records || !students) return [];
 
-    const financialsByStudent = students.map(student => {
+    return students.map(student => {
       const studentRecords = records.filter(r => r.studentId === student.uid);
       const totalBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
       const totalPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
@@ -514,16 +514,14 @@ export default function AccountsPage() {
       const ledger = studentRecords
         .sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0))
         .map(rec => {
-            const isDebit = rec.billedAmount > (rec.amountPaid || 0);
-            if(isDebit) {
-                runningBalance += rec.billedAmount;
-            } else {
-                runningBalance -= rec.amountPaid;
-            }
+            const debit = rec.billedAmount;
+            const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
+            runningBalance += (debit - credit);
             return {
                 ...rec,
-                isDebit,
-                runningBalance,
+                debit: debit,
+                credit: credit,
+                runningBalance: runningBalance,
             }
         });
 
@@ -533,9 +531,7 @@ export default function AccountsPage() {
         hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
         ledger,
       };
-    });
-
-    return financialsByStudent.filter(sf => 
+    }).filter(sf => 
         sf.ledger.length > 0 &&
         (sf.student.firstName + " " + sf.student.lastName).toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -668,10 +664,10 @@ export default function AccountsPage() {
                                                 </TableCell>
                                                 <TableCell className="font-medium max-w-[200px] truncate">{rec.description}</TableCell>
                                                 <TableCell className="text-right font-mono text-red-600">
-                                                    {rec.isDebit ? `GH₵${rec.billedAmount.toFixed(2)}` : '-'}
+                                                    {rec.debit > 0 ? `GH₵${rec.debit.toFixed(2)}` : '-'}
                                                 </TableCell>
                                                 <TableCell className="text-right font-mono text-green-600">
-                                                    {!rec.isDebit ? `GH₵${rec.amountPaid.toFixed(2)}` : '-'}
+                                                    {rec.credit > 0 ? `GH₵${rec.credit.toFixed(2)}` : '-'}
                                                 </TableCell>
                                                 <TableCell className="text-right font-bold">GH₵{rec.runningBalance.toFixed(2)}</TableCell>
                                                 <TableCell>
