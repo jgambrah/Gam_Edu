@@ -295,6 +295,12 @@ export const navItems: NavItem[] = [
         icon: Banknote,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+      {
+        path: '/dashboard/finance/accounting',
+        title: 'Accounting / GL',
+        icon: Book,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
        {
         path: '/dashboard/finance/fix-billing',
         title: 'Fix Billing Errors',
