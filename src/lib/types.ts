@@ -371,6 +371,7 @@ export type Student = {
     alumniDetails?: AlumniDetails;
     transportStopId?: string;
     usesBusService?: boolean;
+    usesCanteen?: boolean;
 };
 
 export type Class = {
@@ -1068,4 +1069,47 @@ export interface Lecture {
   breakoutActive?: boolean;
   breakoutDuration?: number;
   breakoutEndTime?: any;
+}
+
+// --- ACCOUNTING TYPES ---
+
+export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+
+export interface Account {
+  id: string;
+  code: string; // e.g., "1001"
+  name: string; // e.g., "Cash on Hand"
+  type: AccountType;
+  description?: string;
+  balance: number; // Current running balance
+}
+
+export interface JournalLine {
+  accountId: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+}
+
+export interface JournalEntry {
+  id: string;
+  date: any; // Timestamp
+  reference: string; // e.g., "INV-001" or "PV-502"
+  description: string;
+  lines: JournalLine[];
+  totalAmount: number;
+  createdBy: string;
+  createdAt: any;
+}
+
+export interface PaymentVoucher {
+  id: string;
+  voucherNumber: string;
+  payee: string; // Vendor or Staff Name
+  date: any;
+  description: string;
+  expenseAccountId: string; // Debit this
+  paymentAccountId: string; // Credit this (Bank/Cash)
+  amount: number;
+  status: 'Draft' | 'Approved' | 'Paid';
 }
