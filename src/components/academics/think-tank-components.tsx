@@ -5,10 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Eye, CheckCircle, Trash2, MessageSquare, Send } from 'lucide-react';
+import { Eye, CheckCircle, Trash2, MessageSquare, Send, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Paradox, DebateTopic } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { generateDebateResponse } from '@/ai/flows/debate-flow';
+import { useToast } from '@/hooks/use-toast';
 
 // --- PARADOX CARD ---
 interface ParadoxCardProps {
@@ -76,21 +78,46 @@ export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff 
 }
 
 // --- DEBATE ARENA (Now Interactive) ---
-export function DebateArena({ topic, onSend }: { topic: DebateTopic, onSend?: (msg: string) => void }) {
+export function DebateArena({ topic }: { topic: DebateTopic }) {
     const [input, setInput] = useState('');
-    const [messages, setMessages] = useState<{role: 'user'|'ai', content: string}[]>([]);
+    const [messages, setMessages] = useState<{role: 'user'|'model', content: string}[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if(!input.trim()) return;
-        const newMsg = { role: 'user' as const, content: input };
-        setMessages([...messages, newMsg]);
-        if(onSend) onSend(input); // Save to DB
-        setInput('');
         
-        // Simulate AI response (Placeholder until backend connected)
-        setTimeout(() => {
-            setMessages(prev => [...prev, { role: 'ai', content: "That's an interesting point! Consider this perspective..." }]);
-        }, 1000);
+        const userMessage = { role: 'user' as const, content: input };
+        const newMessages = [...messages, userMessage];
+        setMessages(newMessages);
+        setInput('');
+        setIsLoading(true);
+
+        try {
+            const historyForApi = newMessages.map(m => ({ role: m.role, text: m.content }));
+            const lastMessage = historyForApi.pop();
+
+            const response = await generateDebateResponse({
+                topic: topic.topic,
+                history: historyForApi,
+                lastMessage: lastMessage?.text || '',
+            });
+
+            if (response.success && response.text) {
+                const aiMessage = { role: 'model' as const, content: response.text };
+                setMessages(prev => [...prev, aiMessage]);
+            } else {
+                throw new Error(response.error || "The AI failed to generate a response.");
+            }
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'AI Opponent Error',
+                description: error.message
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -110,13 +137,26 @@ export function DebateArena({ topic, onSend }: { topic: DebateTopic, onSend?: (m
                                 </div>
                             </div>
                         ))}
+                         {isLoading && (
+                            <div className="flex justify-start">
+                                <div className="max-w-[80%] p-3 rounded-lg text-sm bg-slate-100 text-slate-800 rounded-bl-none">
+                                    <Loader2 className="h-4 w-4 animate-spin"/>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </ScrollArea>
             </CardContent>
             <CardFooter className="p-4 border-t">
                 <div className="flex w-full gap-2">
-                    <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Type your argument..." />
-                    <Button onClick={handleSend}><Send className="h-4 w-4"/></Button>
+                    <Input 
+                        value={input} 
+                        onChange={e => setInput(e.target.value)} 
+                        placeholder="Type your argument..." 
+                        disabled={isLoading}
+                        onKeyDown={e => e.key === 'Enter' && !isLoading && handleSend()}
+                    />
+                    <Button onClick={handleSend} disabled={isLoading || !input.trim()}><Send className="h-4 w-4"/></Button>
                 </div>
             </CardFooter>
         </Card>
