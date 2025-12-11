@@ -2,7 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore, useRole } from '@/firebase'; // Adjust imports based on your project structure
+import { useFirestore } from '@/firebase'; 
+import { useRole } from '@/context/role-context';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { format, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
