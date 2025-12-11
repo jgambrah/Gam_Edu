@@ -48,6 +48,7 @@ import {
   Book,
   ShoppingBag,
   Wrench,
+  Truck,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -299,6 +300,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/finance/accounting',
         title: 'Accounting / GL',
         icon: Book,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/finance/procurement',
+        title: 'Procurement',
+        icon: Truck,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
        {
