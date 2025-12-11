@@ -374,6 +374,7 @@ export default function FinancialReportsPage() {
     const { data: accounts, isLoading: accLoading } = useCollection<Account>(accountsQuery);
 
     // 2. Fetch ALL Journals (Then filter client side for specific dates)
+    // NOTE: For very large apps, you would filter by date in the query. For school scale, client filter is fine and allows flexible reporting.
     const journalsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'journal_entries'), orderBy('date', 'asc')) : null, [firestore]);
     const { data: allJournals, isLoading: jLoading } = useCollection<JournalEntry>(journalsQuery);
 
@@ -400,6 +401,8 @@ export default function FinancialReportsPage() {
                 }
             });
 
+            // Net Calculation based on Accounting Equation
+            // For Trial Balance: Assets/Expenses are Positive (Debit), Liabilities/Revenue/Equity are Negative (Credit)
             let net = 0;
             if (['Asset', 'Expense'].includes(acc.type)) {
                 net = debit - credit;
@@ -410,6 +413,7 @@ export default function FinancialReportsPage() {
             return { ...acc, debit, credit, net };
         });
 
+        // Calculate Net Income for Balance Sheet
         const revenue = Math.abs(balances.filter(a => a.type === 'Revenue').reduce((sum, a) => sum + (a.net < 0 ? a.net : 0), 0));
         const expense = balances.filter(a => a.type === 'Expense').reduce((sum, a) => sum + (a.net > 0 ? a.net : 0), 0);
 
@@ -444,13 +448,21 @@ export default function FinancialReportsPage() {
             </div>
 
             {isLoading ? <Loader2 className="mx-auto mt-20 animate-spin"/> : (
-                <Tabs defaultValue="pl">
+                <Tabs defaultValue="ledger">
                     <TabsList className="print:hidden">
-                        <TabsTrigger value="pl"><TrendingUp className="h-4 w-4 mr-2"/> Income Statement</TabsTrigger>
-                        <TabsTrigger value="bs"><Scale className="h-4 w-4 mr-2"/> Balance Sheet</TabsTrigger>
-                        <TabsTrigger value="tb"><Landmark className="h-4 w-4 mr-2"/> Trial Balance</TabsTrigger>
                         <TabsTrigger value="ledger"><BookOpen className="h-4 w-4 mr-2"/> General Ledger</TabsTrigger>
+                        <TabsTrigger value="tb"><Scale className="h-4 w-4 mr-2"/> Trial Balance</TabsTrigger>
+                        <TabsTrigger value="pl"><TrendingUp className="h-4 w-4 mr-2"/> Income Statement</TabsTrigger>
+                        <TabsTrigger value="bs"><Landmark className="h-4 w-4 mr-2"/> Balance Sheet</TabsTrigger>
                     </TabsList>
+
+                    <TabsContent value="ledger" className="mt-4">
+                        <GeneralLedger accounts={accounts || []} journals={allJournals || []} />
+                    </TabsContent>
+
+                    <TabsContent value="tb" className="mt-4">
+                        <TrialBalance data={calculatedBalances} />
+                    </TabsContent>
 
                     <TabsContent value="pl" className="mt-4">
                         <IncomeStatement data={calculatedBalances} />
@@ -458,14 +470,6 @@ export default function FinancialReportsPage() {
 
                     <TabsContent value="bs" className="mt-4">
                         <BalanceSheet data={calculatedBalances} netIncome={netIncome} />
-                    </TabsContent>
-
-                    <TabsContent value="tb" className="mt-4">
-                        <TrialBalance data={calculatedBalances} />
-                    </TabsContent>
-
-                    <TabsContent value="ledger" className="mt-4">
-                        <GeneralLedger accounts={accounts || []} journals={allJournals || []} />
                     </TabsContent>
                 </Tabs>
             )}
@@ -481,5 +485,3 @@ export default function FinancialReportsPage() {
         </div>
     );
 }
-
-```
