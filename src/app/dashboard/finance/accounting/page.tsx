@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment, runTransaction } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment, runTransaction, where, getDocs } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
   Save, Loader2, CornerDownRight, Trash2, Receipt
@@ -24,36 +23,8 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Account, JournalEntry } from '@/lib/types';
 
-// --- TYPES ---
-export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
-
-export interface Account {
-  id: string;
-  code: string; 
-  name: string; 
-  type: AccountType;
-  description?: string;
-  balance: number;
-  parentId?: string | null;
-}
-
-export interface JournalLine {
-  accountId: string;
-  accountName: string;
-  debit: number;
-  credit: number;
-}
-
-export interface JournalEntry {
-  id: string;
-  date: any;
-  description: string;
-  lines: JournalLine[];
-  totalAmount: number;
-  createdBy: string;
-  createdAt: any;
-}
 
 // --- COMPONENT: Chart of Accounts Manager ---
 function ChartOfAccounts({ accounts }: { accounts: Account[] | undefined }) {
@@ -165,47 +136,55 @@ function ChartOfAccounts({ accounts }: { accounts: Account[] | undefined }) {
     );
 }
 
-// --- COMPONENT: Payment Voucher (Ghana Tax Compliance) ---
+// --- COMPONENT: Payment Voucher (With Bill Integration) ---
 function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     
-    // Form State
+    // States
     const [payee, setPayee] = useState('');
     const [desc, setDesc] = useState('');
-    const [grossAmount, setGrossAmount] = useState(''); // Total Invoice Amount
-    
-    // Accounts
+    const [grossAmount, setGrossAmount] = useState('');
     const [expenseAcc, setExpenseAcc] = useState('');
     const [paymentAcc, setPaymentAcc] = useState('');
     const [whtLiabilityAcc, setWhtLiabilityAcc] = useState('');
-
-    // Payment Details
     const [method, setMethod] = useState('Bank Transfer');
     const [refNumber, setRefNumber] = useState('');
-
-    // Tax Configuration
     const [whtRate, setWhtRate] = useState('0'); 
-    const [vatScheme, setVatScheme] = useState('Exempt'); // Default to None/Exempt
+    const [vatScheme, setVatScheme] = useState('Exempt');
+    
+    // --- NEW: Bill Selection ---
+    const [selectedBillId, setSelectedBillId] = useState('');
+    // Fetch Unpaid Bills
+    const billsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'vendor_bills'), where('status', '==', 'Unpaid')) : null, [firestore]);
+    const { data: bills } = useCollection<any>(billsQuery);
 
+    // Auto-fill when bill selected
+    useEffect(() => {
+        if(selectedBillId && bills) {
+            const bill = bills.find(b => b.id === selectedBillId);
+            if(bill) {
+                setPayee(bill.supplierName);
+                setGrossAmount(bill.totalAmount.toString());
+                setDesc(`Payment for Bill: ${bill.description}`);
+            }
+        }
+    }, [selectedBillId, bills]);
+    
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // --- GHANA TAX CALCULATOR ---
+    // Calculation Logic
     const { baseAmount, whtAmount, netPayable, vatAmount } = useMemo(() => {
         const gross = parseFloat(grossAmount) || 0;
         const whtPercent = parseFloat(whtRate) / 100;
-        
         let taxableBase = gross;
         let taxes = 0;
 
-        // 1. Strip VAT to find Taxable Base for WHT
-        // Standard: 2.5(NHIL)+2.5(GET)+1(COVID) + 15(VAT on subtotal) ~= 21.925% effective
         if (vatScheme === 'Standard Rated') {
             taxableBase = gross / 1.21925; 
             taxes = gross - taxableBase;
         } 
-        // Flat Rate (Retailers): 3% or 4%. Using 3% as common flat rate (VFRS)
         else if (vatScheme === 'Flat Rate (3%)') {
             taxableBase = gross / 1.03;
             taxes = gross - taxableBase;
@@ -214,82 +193,49 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
             taxableBase = gross / 1.04;
             taxes = gross - taxableBase;
         }
-        // Zero Rated / Exempt: Base = Gross
 
-        // 2. Calculate WHT on the BASE amount (Not the gross)
         const calculatedWht = taxableBase * whtPercent;
-
-        // 3. Net Payable to Vendor
-        const payable = gross - calculatedWht;
 
         return {
             baseAmount: taxableBase,
-            vatAmount: taxes,
+            vatAmount: gross - taxableBase,
             whtAmount: calculatedWht,
-            netPayable: payable
+            netPayable: gross - calculatedWht
         };
     }, [grossAmount, whtRate, vatScheme]);
 
-    // Filter accounts
+    // Account filters
     const expenseAccounts = accounts?.filter(a => a.type === 'Expense' || a.type === 'Asset' || a.type === 'Liability').sort((a,b) => a.code.localeCompare(b.code));
     const paymentAccounts = accounts?.filter(a => a.type === 'Asset').sort((a,b) => a.code.localeCompare(b.code));
     const liabilityAccounts = accounts?.filter(a => a.type === 'Liability').sort((a,b) => a.code.localeCompare(b.code));
 
     const handleCreatePV = async () => {
         if (!firestore || !user) return;
-        
-        if (!payee || !grossAmount || !expenseAcc || !paymentAcc) {
-            toast({ variant: 'destructive', title: "Missing Fields", description: "Please fill all required fields." });
-            return;
-        }
-        if (whtAmount > 0 && !whtLiabilityAcc) {
-            toast({ variant: 'destructive', title: "Missing Account", description: "Select a WHT Liability account to record the tax." });
-            return;
-        }
-
         setIsSubmitting(true);
         try {
             await runTransaction(firestore, async (transaction) => {
                 // 1. Create PV Record
                 const pvRef = doc(collection(firestore, 'payment_vouchers'));
                 transaction.set(pvRef, {
-                    payee, 
-                    description: desc, 
-                    grossAmount: parseFloat(grossAmount),
-                    vatScheme,
-                    whtRate: parseFloat(whtRate),
-                    whtAmount,
-                    netAmount: netPayable,
-                    paymentMethod: method,
-                    referenceNumber: refNumber,
-                    expenseAccountId: expenseAcc, 
-                    paymentAccountId: paymentAcc,
-                    whtLiabilityAccountId: whtLiabilityAcc || null,
-                    status: 'Paid', 
-                    date: serverTimestamp(), 
-                    createdBy: user.uid
+                    payee, description: desc, grossAmount: parseFloat(grossAmount),
+                    whtAmount, netAmount: netPayable, paymentMethod: method, referenceNumber: refNumber,
+                    expenseAccountId: expenseAcc, paymentAccountId: paymentAcc, whtLiabilityAccountId: whtLiabilityAcc || null,
+                    status: 'Paid', date: serverTimestamp(), createdBy: user.uid, linkedBillId: selectedBillId || null
                 });
-
-                // 2. Create Journal Entry
+                
+                // 2. Journal Entry Logic
                 const journalRef = doc(collection(firestore, 'journal_entries'));
                 const expName = accounts?.find(a => a.id === expenseAcc)?.name || '';
                 const bankName = accounts?.find(a => a.id === paymentAcc)?.name || '';
                 const whtName = accounts?.find(a => a.id === whtLiabilityAcc)?.name || '';
 
-                // Logic: 
-                // Dr Expense (Gross Amount - Assuming VAT is a cost to the school)
-                // Cr Bank (Net Payable)
-                // Cr WHT Payable (Tax withheld)
-                
                 const lines = [
                     { accountId: expenseAcc, accountName: expName, debit: parseFloat(grossAmount), credit: 0 },
                     { accountId: paymentAcc, accountName: bankName, debit: 0, credit: netPayable }
                 ];
-
                 if (whtAmount > 0) {
                     lines.push({ accountId: whtLiabilityAcc, accountName: whtName, debit: 0, credit: whtAmount });
                 }
-
                 transaction.set(journalRef, {
                     date: new Date(),
                     description: `PV: ${desc} - ${payee}`,
@@ -299,18 +245,30 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                     lines: lines
                 });
 
-                // 3. Update Balances
+                // 3. Account Balance Update
                 transaction.update(doc(firestore, 'accounts', expenseAcc), { balance: increment(parseFloat(grossAmount)) });
                 transaction.update(doc(firestore, 'accounts', paymentAcc), { balance: increment(-netPayable) });
                 if (whtAmount > 0) {
                     transaction.update(doc(firestore, 'accounts', whtLiabilityAcc), { balance: increment(whtAmount) });
                 }
+
+                // 4. Update Bill Status & Supplier Balance
+                if (selectedBillId) {
+                    const billRef = doc(firestore, 'vendor_bills', selectedBillId);
+                    transaction.update(billRef, { status: 'Paid', amountPaid: parseFloat(grossAmount) });
+                    
+                    const billDoc = await transaction.get(billRef);
+                    if (billDoc.exists()) {
+                         const supplierId = billDoc.data().supplierId;
+                         const suppRef = doc(firestore, 'suppliers', supplierId);
+                         transaction.update(suppRef, { balance: increment(-parseFloat(grossAmount)) });
+                    }
+                }
             });
 
-            toast({ title: "Voucher Processed", description: `Paid GH₵${netPayable.toFixed(2)}` });
-            setPayee(''); setGrossAmount(''); setDesc(''); setRefNumber('');
+            toast({ title: "Paid", description: `Paid GH₵${netPayable.toFixed(2)}` });
+            setPayee(''); setGrossAmount(''); setSelectedBillId('');
         } catch (e: any) {
-            console.error(e);
             toast({ variant: 'destructive', title: "Error", description: e.message });
         } finally {
             setIsSubmitting(false);
@@ -319,14 +277,23 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
 
     return (
         <Card className="border-t-4 border-t-indigo-500">
-            <CardHeader>
-                <CardTitle>Payment Voucher</CardTitle>
-                <CardDescription>Expenditure with WHT & VAT computation.</CardDescription>
-            </CardHeader>
+            <CardHeader><CardTitle>Payment Voucher</CardTitle></CardHeader>
             <CardContent className="space-y-6">
-                
-                {/* 1. PAYEE & METHOD */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-slate-50 p-4 rounded border border-slate-200">
+                    <Label className="text-xs uppercase text-slate-500">Pay Outstanding Bill (Optional)</Label>
+                    <Select value={selectedBillId} onValueChange={setSelectedBillId}>
+                        <SelectTrigger className="bg-white"><SelectValue placeholder="Select Bill to Pay..."/></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="">-- None (Direct Expense) --</SelectItem>
+                            {bills?.map(b => (
+                                <SelectItem key={b.id} value={b.id}>
+                                    {b.supplierName} - GH₵{b.totalAmount} (Due: {format(b.dueDate.toDate(), 'PP')})
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Payee / Vendor</Label><Input value={payee} onChange={e => setPayee(e.target.value)} placeholder="e.g. Service Provider Ltd" /></div>
                     <div className="space-y-2">
                         <Label>Payment Method</Label>
@@ -347,7 +314,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
 
                 <div className="space-y-2"><Label>Description</Label><Input value={desc} onChange={e => setDesc(e.target.value)} placeholder="e.g. Repair of School Bus" /></div>
 
-                {/* 2. TAX CONFIGURATION */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded border">
                     <div className="space-y-2">
                         <Label>Invoice Total (Gross)</Label>
@@ -387,7 +353,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                     </div>
                 </div>
 
-                {/* 3. CALCULATION PREVIEW */}
                 {parseFloat(grossAmount) > 0 && (
                     <div className="bg-slate-100 p-4 rounded-lg text-sm space-y-2 border border-slate-200">
                         <div className="flex justify-between">
@@ -413,7 +378,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                     </div>
                 )}
 
-                {/* 4. ACCOUNTS MAPPING */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Expense Account (Debit)</Label>
@@ -449,7 +413,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
         </Card>
     );
 }
-
 // --- JOURNAL ENTRY COMPONENT (Unchanged but included for completeness) ---
 function JournalEntryForm({ accounts }: { accounts: Account[] | undefined }) {
     const firestore = useFirestore();
@@ -599,4 +562,4 @@ export default function AccountingPage() {
         </div>
     );
 }
-
+    
