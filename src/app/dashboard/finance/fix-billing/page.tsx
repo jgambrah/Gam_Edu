@@ -2,8 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore } from '@/firebase'; 
-import { useRole } from '@/context/role-context';
+import { useFirestore, useRole } from '@/firebase'; 
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { format, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -52,7 +51,6 @@ export default function FixBillingPage() {
             // A. Fetch Rates
             const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
             const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
-            // Default rates if not set
             const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
             const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
 
@@ -70,7 +68,7 @@ export default function FixBillingPage() {
             const attendanceSnap = await getDocs(attendanceQ);
             
             if (attendanceSnap.empty) {
-                toast({ title: "No Attendance Found", description: "No students were marked Present today." });
+                toast({ title: "No Attendance Found", description: "No students were marked Present/Late on this date." });
                 setIsLoading(false);
                 return;
             }
@@ -91,7 +89,6 @@ export default function FixBillingPage() {
                 const studentName = att.studentName || "Unknown Student";
                 
                 // 1. Check Canteen Gap
-                // Note: We ignore if usesCanteen is explicitly false, otherwise we assume true
                 if (canteenRate > 0 && att.usesCanteen !== "false") {
                     const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
                     
@@ -109,8 +106,6 @@ export default function FixBillingPage() {
                 }
 
                 // 2. Check Transport Gap
-                // We check the 'usesBusService' flag stored on the attendance record
-                // (Note: Your new attendance code saves this as a string "true")
                 const usesBus = att.usesBusService === "true" || att.usesBusService === true;
                 
                 if (transportRate > 0 && usesBus) {
@@ -135,7 +130,7 @@ export default function FixBillingPage() {
             if (detectedMissing.length === 0) {
                 toast({ title: "All Clean ✅", description: "No missing bills found for this date." });
             } else {
-                toast({ title: "Issues Found", description: `Found ${detectedMissing.length} students who were not billed.` });
+                toast({ title: "Issues Found", description: `Found ${detectedMissing.length} students missing bills.` });
             }
 
         } catch (error: any) {
@@ -294,3 +289,6 @@ export default function FixBillingPage() {
         </div>
     );
 }
+
+
+    
