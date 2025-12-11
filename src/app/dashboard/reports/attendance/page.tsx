@@ -59,8 +59,6 @@ export default function AttendanceReportsPage() {
         const start = startOfDay(dateRange.from);
         const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
-        // **FIX**: Removed the `where('status', ...)` clause to prevent indexing error.
-        // Filtering by status will now happen on the client-side.
         return query(
             collection(firestore, 'attendance'),
             where('date', '>=', Timestamp.fromDate(start)),
@@ -75,8 +73,15 @@ export default function AttendanceReportsPage() {
 
     // --- DATA PROCESSING & FILTERING ---
     const filteredData = useMemo(() => {
-        if (!attendanceRecords) return [];
-        let data = attendanceRecords;
+        if (!attendanceRecords || !students) return [];
+
+        let data = attendanceRecords.map(record => {
+            const student = students.find(s => s.uid === record.studentId);
+            return {
+                ...record,
+                studentName: student ? `${student.firstName} ${student.lastName}` : 'Unknown Student',
+            }
+        });
 
         if (selectedClassId !== 'all') {
             data = data.filter(record => record.classId === selectedClassId);
@@ -85,13 +90,7 @@ export default function AttendanceReportsPage() {
             data = data.filter(record => record.status === selectedStatus);
         }
         
-        return data.map(record => {
-            const student = students?.find(s => s.uid === record.studentId);
-            return {
-                ...record,
-                studentName: student ? `${student.firstName} ${student.lastName}` : 'Unknown Student',
-            }
-        });
+        return data;
 
     }, [attendanceRecords, selectedClassId, selectedStatus, students]);
 
