@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -103,6 +104,9 @@ export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>
         You are a polite but skilled debater. 
         The topic is: "${input.topic}".
         
+        This is the conversation so far:
+        ${input.history.map(m => `${m.role}: ${m.content}`).join('\n')}
+        
         The user has just argued: "${input.userArgument}"
 
         Your task:
@@ -111,8 +115,7 @@ export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>
         3. Keep your tone encouraging and educational, not confrontational.
         4. Provide a short, constructive critique of their argument.
         
-        PREVIOUS HISTORY (for context):
-        ${input.history.map(m => `${m.role}: ${m.content}`).join('\n')}
+        IMPORTANT: Your response MUST be a direct rebuttal or counter-point to the user's last argument. Do not get stuck on one point. Move the conversation forward.
 
         Output strictly JSON.
     `;
