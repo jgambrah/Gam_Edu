@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment, runTransaction, where, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment, getDocs, where, runTransaction } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
   Save, Loader2, CornerDownRight, Trash2, Receipt
@@ -23,8 +24,36 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Account, JournalEntry } from '@/lib/types';
 
+// --- TYPES ---
+export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+
+export interface Account {
+  id: string;
+  code: string; 
+  name: string; 
+  type: AccountType;
+  description?: string;
+  balance: number;
+  parentId?: string | null;
+}
+
+export interface JournalLine {
+  accountId: string;
+  accountName: string;
+  debit: number;
+  credit: number;
+}
+
+export interface JournalEntry {
+  id: string;
+  date: any;
+  description: string;
+  lines: JournalLine[];
+  totalAmount: number;
+  createdBy: string;
+  createdAt: any;
+}
 
 // --- COMPONENT: Chart of Accounts Manager ---
 function ChartOfAccounts({ accounts }: { accounts: Account[] | undefined }) {
@@ -174,10 +203,11 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
     
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Calculation Logic
+    // --- GHANA TAX CALCULATOR ---
     const { baseAmount, whtAmount, netPayable, vatAmount } = useMemo(() => {
         const gross = parseFloat(grossAmount) || 0;
         const whtPercent = parseFloat(whtRate) / 100;
+        
         let taxableBase = gross;
         let taxes = 0;
 
@@ -195,12 +225,13 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
         }
 
         const calculatedWht = taxableBase * whtPercent;
+        const payable = gross - calculatedWht;
 
         return {
             baseAmount: taxableBase,
-            vatAmount: gross - taxableBase,
+            vatAmount: taxes,
             whtAmount: calculatedWht,
-            netPayable: gross - calculatedWht
+            netPayable: payable
         };
     }, [grossAmount, whtRate, vatScheme]);
 
@@ -279,21 +310,23 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
         <Card className="border-t-4 border-t-indigo-500">
             <CardHeader><CardTitle>Payment Voucher</CardTitle></CardHeader>
             <CardContent className="space-y-6">
+                
                 <div className="bg-slate-50 p-4 rounded border border-slate-200">
                     <Label className="text-xs uppercase text-slate-500">Pay Outstanding Bill (Optional)</Label>
-                    <Select value={selectedBillId} onValueChange={setSelectedBillId}>
+                    <Select value={selectedBillId} onValueChange={(v) => setSelectedBillId(v === 'none' ? '' : v)}>
                         <SelectTrigger className="bg-white"><SelectValue placeholder="Select Bill to Pay..."/></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">-- None (Direct Expense) --</SelectItem>
-                            {bills?.map(b => (
+                            <SelectItem value="none">-- None (Direct Expense) --</SelectItem>
+                            {bills?.map((b: any) => (
                                 <SelectItem key={b.id} value={b.id}>
-                                    {b.supplierName} - GH₵{b.totalAmount} (Due: {format(b.dueDate.toDate(), 'PP')})
+                                    {b.supplierName} - GH₵{b.totalAmount} (Due: {b.dueDate?.toDate ? format(b.dueDate.toDate(), 'PP') : 'N/A'})
                                 </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
                 </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Payee / Vendor</Label><Input value={payee} onChange={e => setPayee(e.target.value)} placeholder="e.g. Service Provider Ltd" /></div>
                     <div className="space-y-2">
                         <Label>Payment Method</Label>
@@ -322,7 +355,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                             <Input type="number" value={grossAmount} onChange={e => setGrossAmount(e.target.value)} className="pl-12 font-bold" placeholder="0.00"/>
                         </div>
                     </div>
-
                     <div className="space-y-2">
                         <Label>Vendor VAT Type</Label>
                         <Select value={vatScheme} onValueChange={setVatScheme}>
@@ -337,7 +369,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                         </Select>
                         <p className="text-[10px] text-slate-500">Used to calculate Taxable Base for WHT.</p>
                     </div>
-                    
                     <div className="space-y-2">
                         <Label>WHT Rate (%)</Label>
                         <Select value={whtRate} onValueChange={setWhtRate}>
@@ -352,7 +383,7 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                         </Select>
                     </div>
                 </div>
-
+                
                 {parseFloat(grossAmount) > 0 && (
                     <div className="bg-slate-100 p-4 rounded-lg text-sm space-y-2 border border-slate-200">
                         <div className="flex justify-between">
@@ -377,7 +408,7 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                         </div>
                     </div>
                 )}
-
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label>Expense Account (Debit)</Label>
@@ -404,7 +435,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                         </Select>
                     </div>
                 )}
-
                 <Button onClick={handleCreatePV} disabled={isSubmitting} className="w-full h-12 text-lg bg-indigo-600 hover:bg-indigo-700">
                     {isSubmitting ? <Loader2 className="animate-spin"/> : <FileText className="mr-2 h-5 w-5"/>} 
                     Process Payment
@@ -413,6 +443,7 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
         </Card>
     );
 }
+
 // --- JOURNAL ENTRY COMPONENT (Unchanged but included for completeness) ---
 function JournalEntryForm({ accounts }: { accounts: Account[] | undefined }) {
     const firestore = useFirestore();
@@ -562,4 +593,4 @@ export default function AccountingPage() {
         </div>
     );
 }
-    
+
