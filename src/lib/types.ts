@@ -1058,42 +1058,29 @@ export interface Lecture {
 
 // --- ACCOUNTING TYPES ---
 
-export interface Supplier {
+export interface Account {
   id: string;
-  name: string;
-  contactPerson: string;
-  phone: string;
-  email: string;
-  address: string;
-  balance: number; // Amount we owe them
+  code: string; // e.g., "1001"
+  name: string; // e.g., "Cash on Hand"
+  type: 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
+  balance: number; // Current running balance
+  parentId?: string | null;
 }
 
-export interface PurchaseOrder {
-  id: string;
-  supplierId: string;
-  supplierName: string;
-  date: any;
-  status: 'Draft' | 'Sent' | 'Received' | 'Cancelled';
-  items: { 
-    itemId: string; // From Inventory/Shop items
-    name: string; 
-    quantity: number; 
-    unitCost: number; 
-    total: number;
-  }[];
-  totalAmount: number;
-  expectedDate?: any;
+export interface JournalLine {
+  accountId: string;
+  accountName: string;
+  debit: number;
+  credit: number;
 }
 
-export interface VendorBill {
+export interface JournalEntry {
   id: string;
-  supplierId: string;
-  supplierName: string;
-  poId: string; // Link to PO
-  date: any;
-  dueDate: any;
+  date: any; // Timestamp
+  reference?: string; // e.g., "INV-001" or "PV-502"
+  description: string;
+  lines: JournalLine[];
   totalAmount: number;
-  amountPaid: number;
-  status: 'Unpaid' | 'Partial' | 'Paid';
-  items: any[];
+  createdBy: string;
+  createdAt: any;
 }
