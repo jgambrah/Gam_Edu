@@ -2,7 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore, useRole } from '@/context/role-context';
+import { useFirestore } from '@/firebase'; 
+import { useRole } from '@/context/role-context';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -85,7 +86,7 @@ export default function FixBillingPage() {
             const detectedMissing: MissingBillItem[] = [];
 
             // D. Compare
-            let missingCounter = 0; // To ensure unique IDs
+            let missingCounter = 0; // To ensure unique keys
             for (const attDoc of attendanceSnap.docs) {
                 const att = attDoc.data();
                 const studentName = att.studentName || "Unknown Student";
