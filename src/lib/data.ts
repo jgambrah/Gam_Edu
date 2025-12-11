@@ -339,12 +339,6 @@ export const navItems: NavItem[] = [
         icon: Wallet,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
-      {
-        path: '/dashboard/my-payslips',
-        title: 'My Payslips',
-        icon: FileText,
-        roles: ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Director', 'Administrator'],
-      },
     ]
   },
    {
