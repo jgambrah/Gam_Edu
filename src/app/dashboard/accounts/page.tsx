@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -453,6 +453,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
+    // Calculate current balance for display
     const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
     const form = useForm<z.infer<typeof recordPaymentSchema>>({
@@ -463,18 +464,20 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     async function onSubmit(values: z.infer<typeof recordPaymentSchema>) {
         if (!firestore || !user) return;
         
-        if (values.amount > balance) {
-            form.setError('amount', { message: `Payment cannot exceed outstanding balance of GH₵${balance}` });
-            return;
-        }
-        
+        // --- CHANGE: Removed the validation check that blocked overpayment ---
+        // Parents can now pay GH₵500 even if the bill is GH₵100.
+        // The ledger will simply show a negative balance (Credit) for the student.
+
         setIsSubmitting(true);
         try {
             const batch = writeBatch(firestore);
             const recordRef = doc(firestore, 'financialRecords', record.id);
             const newAmountPaid = (record.amountPaid || 0) + values.amount;
+            
+            // Calculate new balance status
             const newBalance = record.billedAmount - newAmountPaid - (record.waiverAmount || 0);
             
+            // If balance is 0 or negative (Credit), mark as Paid
             const newStatus = newBalance <= 0 ? 'Paid' : 'Unpaid';
             
             batch.update(recordRef, {
@@ -482,6 +485,7 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
                 status: newStatus,
             });
 
+            // If paying cash, record in Till
             if (values.method === 'Cash') {
                 const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'));
                 const tillSnapshot = await getDocs(tillQuery);
@@ -499,11 +503,22 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
                     timestamp: serverTimestamp(),
                     description: `Payment for: ${record.description} (${record.type})`
                 });
+                
+                // Update Till Balance
+                batch.update(doc(firestore, 'tills', activeTill.id), {
+                    currentBalance: increment(values.amount)
+                });
             }
 
             await batch.commit();
 
-            toast({ title: 'Success', description: 'Payment recorded and balance updated.' });
+            toast({ 
+                title: 'Payment Recorded', 
+                description: newBalance < 0 
+                    ? `Overpayment accepted. Account is now in credit by GH₵${Math.abs(newBalance).toFixed(2)}`
+                    : 'Payment recorded successfully.' 
+            });
+            
             onUpdate();
             setOpen(false);
         } catch(e: any) {
@@ -518,13 +533,24 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
             <DialogHeader><DialogTitle>Record Payment</DialogTitle><DialogDescription>Paying for: {record.description}</DialogDescription></DialogHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-lg text-center mb-4">
-                         <p className="text-xs text-indigo-600 uppercase font-semibold">Outstanding Balance</p>
-                         <p className="text-3xl font-bold text-indigo-900">GH₵{balance.toFixed(2)}</p>
+                    <div className={`p-4 border rounded-lg text-center mb-4 ${balance <= 0 ? "bg-green-50 border-green-200" : "bg-indigo-50 border-indigo-100"}`}>
+                         <p className="text-xs uppercase font-semibold text-slate-500">
+                             {balance <= 0 ? "Current Credit" : "Outstanding Balance"}
+                         </p>
+                         <p className={`text-3xl font-bold ${balance <= 0 ? "text-green-700" : "text-indigo-900"}`}>
+                             GH₵{Math.abs(balance).toFixed(2)}
+                         </p>
                     </div>
                     
                     <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem><FormLabel>Payment Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        <FormItem>
+                            <FormLabel>Payment Amount (GH₵)</FormLabel>
+                            <FormControl>
+                                <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                            </FormControl>
+                            <FormMessage />
+                            <p className="text-[10px] text-muted-foreground">You can enter an amount higher than the balance to create a credit.</p>
+                        </FormItem>
                     )}/>
                     <FormField control={form.control} name="method" render={({ field }) => (
                         <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
@@ -789,6 +815,7 @@ export default function AccountsPage() {
             </div>
             </CardHeader>
             <CardContent>
+                {activeForm === 'daily' && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
                 {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
                 {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
             </CardContent>
@@ -861,3 +888,5 @@ export default function AccountsPage() {
     </div>
   );
 }
+
+    
