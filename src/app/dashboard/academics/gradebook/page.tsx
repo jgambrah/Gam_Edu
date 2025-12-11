@@ -6,7 +6,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { 
-  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, CheckCircle, XCircle
+  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, CheckCircle, XCircle, AlertCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -38,10 +38,10 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };
 }
 
-// --- SUB-COMPONENT: Transaction Detail Modal ---
+// --- SUB-COMPONENT: Transaction Detail Modal (Fixed) ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
-    if (!record) return null;
-
+    // FIX: Do not return null. Always render Dialog, but handle empty record inside.
+    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -49,49 +49,56 @@ function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRe
                     <DialogTitle className="flex items-center gap-2">
                         <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Details
                     </DialogTitle>
-                    <DialogDescription>Transaction ID: {record.id.slice(0, 8)}...</DialogDescription>
+                    <DialogDescription>
+                        Transaction ID: <span className="font-mono text-xs">{record?.id ? record.id.slice(0, 8) : '...'}...</span>
+                    </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">Type</p>
-                            <Badge variant="outline">{record.type}</Badge>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">Status</p>
-                            <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                         <p className="text-xs font-medium text-muted-foreground">Description</p>
-                         <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
-                    </div>
 
-                    <div className="grid grid-cols-2 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <div>
-                            <p className="text-xs text-slate-500 mb-1">Billed Amount</p>
-                            <p className="text-lg font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
+                {record ? (
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <p className="text-xs font-medium text-muted-foreground">Type</p>
+                                <Badge variant="outline">{record.type}</Badge>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xs font-medium text-muted-foreground">Status</p>
+                                <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
+                            </div>
                         </div>
-                        <div className="text-right">
-                            <p className="text-xs text-slate-500 mb-1">Amount Paid</p>
-                            <p className="text-lg font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
+                        
+                        <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">Description</p>
+                            <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
                         </div>
-                    </div>
 
-                    <Separator />
-                    
-                    <div className="space-y-2 text-xs text-slate-500">
-                        <div className="flex justify-between">
-                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> Created At:</span>
-                            <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
+                        <div className="grid grid-cols-2 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div>
+                                <p className="text-xs text-slate-500 mb-1">Billed Amount</p>
+                                <p className="text-lg font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs text-slate-500 mb-1">Amount Paid</p>
+                                <p className="text-lg font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
-                            <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
+
+                        <Separator />
+                        
+                        <div className="space-y-2 text-xs text-slate-500">
+                            <div className="flex justify-between">
+                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> Created At:</span>
+                                <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
+                                <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="py-10 text-center text-muted-foreground">Loading details...</div>
+                )}
             </DialogContent>
         </Dialog>
     );
@@ -100,12 +107,20 @@ function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRe
 // --- SUB-COMPONENT: Fee History (Updated Table) ---
 function FeeHistoryDetail({ student, financialRecords }: { student: Student; financialRecords: FinancialRecord[] }) {
     const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const studentRecords = useMemo(() => {
         return (financialRecords || [])
             .filter(r => r.studentId === student.uid)
             .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)); // Descending order
     }, [financialRecords, student.uid]);
+
+    // Handler to safely open modal
+    const handleViewDetails = (record: FinancialRecord) => {
+        console.log("Viewing record:", record.id); // Debug log
+        setSelectedRecord(record);
+        setIsModalOpen(true);
+    };
 
     if (studentRecords.length === 0) {
         return (
@@ -126,7 +141,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
                             <TableHead className="text-right">Billed</TableHead>
                             <TableHead className="text-right">Paid</TableHead>
                             <TableHead className="text-center">Status</TableHead>
-                            <TableHead className="w-[50px]"></TableHead>
+                            <TableHead className="w-[100px]">Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -151,8 +166,16 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
                                     )}
                                 </TableCell>
                                 <TableCell>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600" onClick={() => setSelectedRecord(record)}>
-                                        <Eye className="h-4 w-4"/>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 text-xs"
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Prevents row clicks or accordion collapse
+                                            handleViewDetails(record);
+                                        }}
+                                    >
+                                        <Eye className="h-3 w-3 mr-1"/> View
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -161,10 +184,11 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
                 </Table>
             </div>
 
+            {/* Modal is rendered always, controlled by isModalOpen */}
             <TransactionDetailModal 
                 record={selectedRecord} 
-                open={!!selectedRecord} 
-                setOpen={(val) => !val && setSelectedRecord(null)} 
+                open={isModalOpen} 
+                setOpen={setIsModalOpen} 
             />
         </div>
     );
@@ -287,7 +311,7 @@ export default function GradebookManager() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-  // 1. Fetch Classes (Correctly handled for both Admin and Teacher)
+  // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
       if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
@@ -373,7 +397,7 @@ export default function GradebookManager() {
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
                         disabled={!selectedClassId}
                     >
-                        Enter Grades
+                        <PlusCircle className="mr-2 h-4 w-4" /> Enter Grades
                     </Button>
                 </div>
             </div>
