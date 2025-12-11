@@ -120,11 +120,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
             const formRecords = studentList.map(student => {
                 const existingRecord = existingRecords.find(r => r.studentId === student.uid);
                 
-                // DEBUG: Check if bus data exists on load
-                if (student.usesBusService) {
-                    console.log(`🚌 Bus Student Found: ${student.firstName}`);
-                }
-
                 return {
                     id: existingRecord?.id,
                     studentId: student.uid,
@@ -152,30 +147,30 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         if (selectedClassId) handleLoadStudents();
     }, [selectedClassId, selectedDate, handleLoadStudents]);
     
-    // --- SUBMIT & BILLING LOGIC ---
+    // --- SUBMIT & BILLING LOGIC (REVISED) ---
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore) return;
         setIsLoading(true);
         
-        const batch = writeBatch(firestore);
+        const attendanceBatch = writeBatch(firestore);
         
         // 1. Save Attendance to Firestore
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            // Clean up data before saving to 'attendance' collection (remove billing helpers)
-            const { usesBusService, studentName, id, ...dataToSave } = record; 
+            const { usesBusService, id, ...dataToSave } = record; 
             
-            batch.set(recordRef, {
+            attendanceBatch.set(recordRef, {
                 ...dataToSave,
-                studentName, // Useful to keep name in attendance record too
                 date: startOfDay(selectedDate)
             }, { merge: true });
         });
 
         try {
-            await batch.commit();
-            
-            // 2. FETCH RATES
+            // Commit attendance first to ensure it's saved regardless of billing outcome
+            await attendanceBatch.commit();
+            toast({ title: 'Attendance Saved', description: 'Now processing associated bills...' });
+
+            // 2. FETCH BILLING RATES
             let canteenRate = 0;
             let transportRate = 0;
 
@@ -185,57 +180,61 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
 
                 const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
                 if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
-                
-                console.log(`💰 Rates: Canteen=${canteenRate}, Transport=${transportRate}`);
             } catch (e) {
-                console.warn("Settings check failed:", e);
+                console.warn("Could not fetch billing rates:", e);
             }
 
-            // 3. APPLY BILLING
+            // 3. APPLY BILLS
             const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
-            let billingBatch = writeBatch(firestore);
-            let billsCount = 0;
-            
             if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
                 
-                const year = getYear(selectedDate);
-                const month = getMonth(selectedDate) + 1;
+                const billingBatch = writeBatch(firestore);
+                let billsCount = 0;
                 const dateStr = format(selectedDate, 'yyyy-MM-dd');
+                const studentDocs = await getDocs(query(collection(firestore, 'students'), where('classId', '==', selectedClassId)));
+                const studentMap = new Map(studentDocs.docs.map(d => [d.id, d.data() as Student]));
+
 
                 for (const record of presentStudents) {
-                    const usesBus = record.usesBusService === "true"; // Check string "true"
+                    const studentInfo = studentMap.get(record.studentId);
+                    if (!studentInfo) continue;
+                    
+                    const studentName = `${studentInfo.firstName} ${studentInfo.lastName}`;
 
                     // Canteen Bill
                     if (canteenRate > 0) {
-                        const canteenRef = doc(firestore, 'financialRecords', `canteen-${record.studentId}-${dateStr}`);
-                        billingBatch.set(canteenRef, {
+                        const canteenRecordId = `canteen-${record.studentId}-${dateStr}`;
+                        const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
+                        billingBatch.set(financialRecordRef, {
                             billedAmount: canteenRate,
                             studentId: record.studentId,
-                            studentName: record.studentName,
+                            studentName: studentName,
                             classId: record.classId,
                             type: 'Canteen Fee',
                             description: `Lunch for ${format(selectedDate, 'PPP')}`,
                             status: 'Unpaid',
                             dueDate: selectedDate,
-                            createdAt: serverTimestamp()
+                            createdAt: serverTimestamp(),
+                            amountPaid: 0,
                         }, { merge: true });
                         billsCount++;
                     }
 
                     // Transport Bill
-                    if (transportRate > 0 && usesBus) {
-                        console.log(`🚌 Billing Transport for: ${record.studentName}`);
-                        const transportRef = doc(firestore, 'financialRecords', `transport-${record.studentId}-${dateStr}`);
-                        billingBatch.set(transportRef, {
+                    if (transportRate > 0 && studentInfo.usesBusService) {
+                        const transportRecordId = `transport-${record.studentId}-${dateStr}`;
+                        const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
+                        billingBatch.set(financialRecordRef, {
                             billedAmount: transportRate,
                             studentId: record.studentId,
-                            studentName: record.studentName,
+                            studentName: studentName,
                             classId: record.classId,
                             type: 'Transport Fee',
                             description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
                             status: 'Unpaid',
                             dueDate: selectedDate,
-                            createdAt: serverTimestamp()
+                            createdAt: serverTimestamp(),
+                             amountPaid: 0,
                         }, { merge: true });
                         billsCount++;
                     }
@@ -243,17 +242,15 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 
                 if (billsCount > 0) {
                     await billingBatch.commit();
-                    toast({ title: 'Complete', description: `Saved attendance & generated ${billsCount} bills.` });
-                } else {
-                    toast({ title: 'Attendance Saved', description: 'No bills generated (Check rates or bus status).' });
+                    toast({ title: 'Billing Complete', description: `${billsCount} financial records created/updated.` });
                 }
             } else {
-                 toast({ title: 'Attendance Saved', description: 'Billing skipped (Rates are 0 or no students present).' });
+                 toast({ title: 'Billing Skipped', description: 'No students present or no rates set.' });
             }
 
         } catch (error: any) {
-            console.error("Submit Error:", error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save.' });
+            console.error("Submit/Billing Error:", error);
+            toast({ variant: 'destructive', title: 'Error During Billing', description: error.message || 'Could not save financial records.' });
         } finally {
             setIsLoading(false);
         }
@@ -289,13 +286,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                             <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
                         </Popover>
                     </div>
-                    {!propClassId && (
-                        <div className="flex items-end">
-                            <Button onClick={handleLoadStudents} disabled={isLoading || !selectedClassId}>
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Load Students
-                            </Button>
-                        </div>
-                    )}
                 </div>
 
                 {isLoading && !studentsLoaded && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>}
@@ -309,16 +299,14 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                                     {fields.map((field, index) => (
                                         <Card key={field.id} className="p-4">
                                             
-                                            {/* HIDDEN INPUTS TO KEEP DATA ALIVE IN FORM SUBMIT */}
                                             <input type="hidden" {...form.register(`records.${index}.studentName`)} value={field.studentName} />
                                             <input type="hidden" {...form.register(`records.${index}.studentId`)} value={field.studentId} />
                                             <input type="hidden" {...form.register(`records.${index}.classId`)} value={field.classId} />
                                             
-                                            {/* IMPORTANT: BUS STATUS */}
                                             <input 
                                                 type="hidden" 
                                                 {...form.register(`records.${index}.usesBusService`)} 
-                                                defaultValue={field.usesBusService} // "true" or "false"
+                                                defaultValue={field.usesBusService}
                                             />
 
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
@@ -366,4 +354,3 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         </Card>
     );
 }
-
