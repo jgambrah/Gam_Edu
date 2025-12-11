@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -15,10 +16,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment, getDoc } from 'firebase/firestore';
-import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw, Search, AlertCircle } from 'lucide-react';
 import { PayrollSettings, payrollSettingsFormSchema, Student, FinancialRecord, AttendanceRecord } from '@/lib/types';
 import { useRole } from '@/context/role-context';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -315,179 +316,231 @@ function RetrospectiveBilling() {
 }
 
 // --- NEW COMPONENT: Manual Billing Reconciliation ---
-type MissingBill = {
+interface MissingBillItem {
+    id: string; // unique key for the row
     studentId: string;
     studentName: string;
     classId: string;
-    missingCanteen: boolean;
-    missingTransport: boolean;
-};
+    type: 'Canteen' | 'Transport';
+    amount: number;
+    reason: string; // "Attended but no Canteen bill"
+}
 
 function ManualBillingReconciliation() {
     const firestore = useFirestore();
     const { toast } = useToast();
+    
+    const [date, setDate] = useState<Date>(new Date());
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-    const [missingBills, setMissingBills] = useState<MissingBill[]>([]);
-    const [selectedToBill, setSelectedToBill] = useState<Set<string>>(new Set());
+    const [missingBills, setMissingBills] = useState<MissingBillItem[]>([]);
+    const [selectedItems, setSelectedItems] = useState<string[]>([]); // IDs of items to process
 
     const handleCheck = async () => {
-        if (!firestore || !selectedDate) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Please select a date.' });
-            return;
-        }
+        if (!firestore) return;
         setIsLoading(true);
         setMissingBills([]);
-        setSelectedToBill(new Set());
+        setSelectedItems([]);
 
         try {
-            const date = startOfDay(selectedDate);
-            
-            // Fetch all necessary data
-            const attendanceQuery = query(collection(firestore, 'attendance'), where('date', '==', date), where('status', 'in', ['Present', 'Late']));
-            const financialsQuery = query(collection(firestore, 'financialRecords'), where('dueDate', '==', date), where('type', 'in', ['Canteen Fee', 'Transport Fee']));
-            const studentsQuery = collection(firestore, 'students');
-
-            const [attSnap, finSnap, stuSnap] = await Promise.all([getDocs(attendanceQuery), getDocs(financialsQuery), getDocs(studentsQuery)]);
-
-            const attendedRecords = attSnap.docs.map(d => d.data() as AttendanceRecord);
-            const billedRecords = finSnap.docs.map(d => d.data() as FinancialRecord);
-            const allStudents = stuSnap.docs.reduce((map, doc) => map.set(doc.id, doc.data() as Student), new Map<string, Student>());
-
-            const billedCanteen = new Set(billedRecords.filter(r => r.type === 'Canteen Fee').map(r => r.studentId));
-            const billedTransport = new Set(billedRecords.filter(r => r.type === 'Transport Fee').map(r => r.studentId));
-
-            const missing: MissingBill[] = [];
-
-            for (const attRecord of attendedRecords) {
-                const student = allStudents.get(attRecord.studentId);
-                if (!student) continue;
-
-                const missCanteen = !billedCanteen.has(attRecord.studentId);
-                const missTransport = student.usesBusService && !billedTransport.has(attRecord.studentId);
-
-                if (missCanteen || missTransport) {
-                    missing.push({
-                        studentId: attRecord.studentId,
-                        studentName: student.firstName + ' ' + student.lastName,
-                        classId: student.classId,
-                        missingCanteen: missCanteen,
-                        missingTransport: missTransport,
-                    });
-                }
-            }
-            setMissingBills(missing);
-            setSelectedToBill(new Set(missing.map(m => m.studentId))); // Select all by default
-            toast({ title: 'Check Complete', description: `Found ${missing.length} students with missing bills.` });
-
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Error', description: error.message });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleCreateBills = async () => {
-        if (!firestore || !selectedDate || selectedToBill.size === 0) return;
-        setIsLoading(true);
-
-        try {
+            // 1. Get Rates
             const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
             const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
-            const canteenRate = canteenSnap.data()?.dailyRate || 0;
-            const transportRate = transportSnap.data()?.dailyRate || 0;
+            const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
+            const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
 
-            const batch = writeBatch(firestore);
-            const dateStr = format(selectedDate, 'yyyy-MM-dd');
-            let billCount = 0;
+            const dateStr = format(date, 'yyyy-MM-dd');
+            const searchDate = date; 
+            searchDate.setHours(0,0,0,0); // Start of day normalization
 
-            missingBills.forEach(bill => {
-                if (selectedToBill.has(bill.studentId)) {
-                    if (bill.missingCanteen && canteenRate > 0) {
-                        const billRef = doc(firestore, 'financialRecords', `canteen-${bill.studentId}-${dateStr}`);
-                        batch.set(billRef, {
-                            studentId: bill.studentId, studentName: bill.studentName, classId: bill.classId,
-                            type: 'Canteen Fee', description: `Lunch for ${dateStr}`, billedAmount: canteenRate,
-                            status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
-                        }, { merge: true });
-                        billCount++;
-                    }
-                     if (bill.missingTransport && transportRate > 0) {
-                        const billRef = doc(firestore, 'financialRecords', `transport-${bill.studentId}-${dateStr}`);
-                        batch.set(billRef, {
-                            studentId: bill.studentId, studentName: bill.studentName, classId: bill.classId,
-                            type: 'Transport Fee', description: `Bus Ride for ${dateStr}`, billedAmount: transportRate,
-                            status: 'Unpaid', dueDate: selectedDate, createdAt: serverTimestamp(), amountPaid: 0,
-                        }, { merge: true });
-                        billCount++;
+            // 2. Get Attendance (Who was present?)
+            const attendanceQ = query(
+                collection(firestore, 'attendance'),
+                where('date', '==', searchDate),
+                where('status', 'in', ['Present', 'Late'])
+            );
+            const attendanceSnap = await getDocs(attendanceQ);
+            
+            // 3. Get Existing Bills for this Date (Who already paid?)
+            const billsQ = query(
+                collection(firestore, 'financialRecords'),
+                where('dueDate', '==', searchDate) // Assuming dueDate = attendance date
+            );
+            const billsSnap = await getDocs(billsQ);
+            const existingBillIds = new Set(billsSnap.docs.map(d => d.id));
+
+            const detectedMissing: MissingBillItem[] = [];
+
+            // 4. Compare
+            for (const attDoc of attendanceSnap.docs) {
+                const att = attDoc.data();
+                
+                // Check Canteen
+                const canteenBillId = `canteen-${att.studentId}-${dateStr}`;
+                if (canteenRate > 0 && !existingBillIds.has(canteenBillId)) {
+                    detectedMissing.push({
+                        id: canteenBillId,
+                        studentId: att.studentId,
+                        studentName: att.studentName || 'Unknown',
+                        classId: att.classId,
+                        type: 'Canteen',
+                        amount: canteenRate,
+                        reason: 'Present but no Canteen Fee found'
+                    });
+                }
+
+                // Check Transport
+                let usesBus = att.usesBusService === "true" || att.usesBusService === true;
+                
+                if (transportRate > 0 && usesBus) {
+                    const transportBillId = `transport-${att.studentId}-${dateStr}`;
+                    if (!existingBillIds.has(transportBillId)) {
+                        detectedMissing.push({
+                            id: transportBillId,
+                            studentId: att.studentId,
+                            studentName: att.studentName || 'Unknown',
+                            classId: att.classId,
+                            type: 'Transport',
+                            amount: transportRate,
+                            reason: 'Bus User Present but no Transport Fee found'
+                        });
                     }
                 }
-            });
+            }
 
-            await batch.commit();
-            toast({ title: 'Success', description: `${billCount} missing bills have been created.`});
-            setMissingBills([]); // Clear list after successful billing
-            setSelectedToBill(new Set());
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Error', description: error.message });
+            setMissingBills(detectedMissing);
+            if (detectedMissing.length === 0) {
+                toast({ title: "All Clear", description: "No missing bills found for this date." });
+            }
+
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: "Error", description: "Failed to scan records." });
         } finally {
             setIsLoading(false);
         }
     };
 
-    const toggleStudentSelection = (studentId: string) => {
-        const newSet = new Set(selectedToBill);
-        if (newSet.has(studentId)) {
-            newSet.delete(studentId);
-        } else {
-            newSet.add(studentId);
+    const handleProcess = async () => {
+        if (!firestore || selectedItems.length === 0) return;
+        setIsLoading(true);
+        const batch = writeBatch(firestore);
+        
+        const itemsToProcess = missingBills.filter(item => selectedItems.includes(item.id));
+        
+        itemsToProcess.forEach(item => {
+            const ref = doc(firestore, 'financialRecords', item.id);
+            batch.set(ref, {
+                billedAmount: item.amount,
+                studentId: item.studentId,
+                studentName: item.studentName,
+                classId: item.classId,
+                type: item.type === 'Canteen' ? 'Canteen Fee' : 'Transport Fee',
+                description: `${item.type} fee for ${format(date, 'PPP')} (Manual Fix)`,
+                status: 'Unpaid',
+                dueDate: date,
+                createdAt: serverTimestamp(),
+                amountPaid: 0,
+            });
+        });
+
+        try {
+            await batch.commit();
+            toast({ title: "Success", description: `Generated ${itemsToProcess.length} missing bills.` });
+            setMissingBills(prev => prev.filter(p => !selectedItems.includes(p.id)));
+            setSelectedItems([]);
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Error", description: "Failed to create bills." });
+        } finally {
+            setIsLoading(false);
         }
-        setSelectedToBill(newSet);
-    }
-    
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedItems.length === missingBills.length) {
+            setSelectedItems([]);
+        } else {
+            setSelectedItems(missingBills.map(m => m.id));
+        }
+    };
+
     return (
-        <Card>
+        <Card className="mt-6 border-orange-200">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><FileText /> Manual Billing Reconciliation</CardTitle>
-                <CardDescription>Find and create missing daily canteen or transport bills for a specific date if the automated system fails.</CardDescription>
+                <CardTitle className="flex items-center gap-2 text-orange-700">
+                    <AlertCircle className="h-5 w-5"/> Missing Bill Detector
+                </CardTitle>
+                <CardDescription>
+                    Scan a specific date to find students who attended school but were not billed correctly.
+                </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-                 <div className="flex items-end gap-4">
-                    <div className="flex-1">
-                        <Label>Date to Check</Label>
+            <CardContent className="space-y-6">
+                
+                {/* Controls */}
+                <div className="flex gap-4 items-end">
+                    <div className="space-y-2">
+                        <Label>Select Date to Audit</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={"outline"} className={cn("w-[280px] justify-start text-left font-normal", !selectedDate && "text-muted-foreground")} >
-                                    <CalendarIcon className="mr-2 h-4 w-4" /> {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                                <Button variant={"outline"} className={cn("w-[240px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={setSelectedDate} initialFocus /></PopoverContent>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
+                            </PopoverContent>
                         </Popover>
                     </div>
-                    <Button onClick={handleCheck} disabled={isLoading || !selectedDate}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Find Missing Bills
+                    <Button onClick={handleCheck} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
+                        Scan for Errors
                     </Button>
                 </div>
-                 {missingBills.length > 0 && (
+
+                {/* Results Table */}
+                {missingBills.length > 0 && (
                     <div className="border rounded-lg p-4 space-y-4">
                          <div className="flex justify-between items-center">
-                            <h4 className="font-semibold">{missingBills.length} student(s) with missing bills found.</h4>
-                            <Button onClick={handleCreateBills} disabled={isLoading || selectedToBill.size === 0}>
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Generate {selectedToBill.size} Bill(s)
+                            <h4 className="font-semibold text-orange-800">Found {missingBills.length} Missing Bills</h4>
+                            <Button size="sm" onClick={handleProcess} disabled={isLoading || selectedItems.length === 0}>
+                                Generate {selectedItems.length} Bills
                             </Button>
                         </div>
                         <Table>
-                            <TableHeader><TableRow><TableHead className="w-12"></TableHead><TableHead>Student</TableHead><TableHead>Missing Bill(s)</TableHead></TableRow></TableHeader>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[50px]">
+                                        <Checkbox 
+                                            checked={selectedItems.length === missingBills.length && missingBills.length > 0}
+                                            onCheckedChange={toggleSelectAll}
+                                        />
+                                    </TableHead>
+                                    <TableHead>Student</TableHead>
+                                    <TableHead>Missing Fee</TableHead>
+                                    <TableHead>Amount</TableHead>
+                                    <TableHead>Reason</TableHead>
+                                </TableRow>
+                            </TableHeader>
                             <TableBody>
-                                {missingBills.map(bill => (
-                                    <TableRow key={bill.studentId}>
-                                        <TableCell><Checkbox checked={selectedToBill.has(bill.studentId)} onCheckedChange={() => toggleStudentSelection(bill.studentId)}/></TableCell>
-                                        <TableCell>{bill.studentName}</TableCell>
-                                        <TableCell className="space-x-2">
-                                            {bill.missingCanteen && <Badge>Canteen</Badge>}
-                                            {bill.missingTransport && <Badge>Transport</Badge>}
+                                {missingBills.map((bill) => (
+                                    <TableRow key={bill.id}>
+                                        <TableCell>
+                                            <Checkbox 
+                                                checked={selectedItems.includes(bill.id)}
+                                                onCheckedChange={(checked) => {
+                                                    if(checked) setSelectedItems([...selectedItems, bill.id]);
+                                                    else setSelectedItems(selectedItems.filter(id => id !== bill.id));
+                                                }}
+                                            />
                                         </TableCell>
+                                        <TableCell>{bill.studentName}</TableCell>
+                                        <TableCell>
+                                            <span className={`px-2 py-1 rounded text-xs font-bold ${bill.type === 'Canteen' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                                {bill.type}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
+                                        <TableCell className="text-muted-foreground text-xs">{bill.reason}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -498,6 +551,7 @@ function ManualBillingReconciliation() {
         </Card>
     );
 }
+
 
 export default function FinancialSettingsPage() {
   const { role } = useRole();
@@ -518,3 +572,5 @@ export default function FinancialSettingsPage() {
     </div>
   );
 }
+
+    
