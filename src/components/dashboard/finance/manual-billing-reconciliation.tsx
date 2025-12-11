@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -140,7 +139,7 @@ export function ManualBillingReconciliation() {
 
     // --- 2. FIX LOGIC ---
     const handleProcess = async () => {
-        if (!firestore || selectedItems.length === 0) return;
+        if (!firestore) return;
         setIsFixing(true);
         const batch = writeBatch(firestore);
         

@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -247,7 +245,7 @@ function RetrospectiveBilling() {
                     billingBatch.set(financialRecordRef, {
                         billedAmount: canteenRate,
                         studentId: record.studentId, studentName: studentName, classId: record.classId,
-                        type: 'Canteen Fee', description: `Lunch for ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: recordDate,
+                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: recordDate,
                         createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
                     billsCount++;
