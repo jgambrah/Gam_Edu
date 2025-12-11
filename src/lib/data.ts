@@ -333,24 +333,6 @@ export const navItems: NavItem[] = [
         roles: ['Director', 'Administrator', 'Accountant'],
       },
       {
-        path: '/dashboard/accounts/payables',
-        title: 'Accounts Payable',
-        icon: Landmark,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
-       {
-        path: '/dashboard/payroll',
-        title: 'Payroll',
-        icon: Landmark,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
-       {
-        path: '/dashboard/payroll/settings',
-        title: 'Settings',
-        icon: Settings,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
-      {
         path: '/dashboard/my-payslips',
         title: 'My Payslips',
         icon: FileText,
