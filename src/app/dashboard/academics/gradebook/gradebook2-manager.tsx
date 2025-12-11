@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -34,6 +35,49 @@ function getGrade(percentage: number) {
     if (percentage >= 60) return { grade: 'C', remark: 'Good' };
     if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
     return { grade: 'F', remark: 'Fail' };
+}
+
+// --- SUB-COMPONENT: Fee History ---
+function FeeHistoryDetail({ student, financialRecords }: { student: Student; financialRecords: FinancialRecord[] }) {
+    
+    const studentRecords = useMemo(() => {
+        return (financialRecords || [])
+            .filter(r => r.studentId === student.uid)
+            .sort((a, b) => a.createdAt.toDate() - b.createdAt.toDate());
+    }, [financialRecords, student.uid]);
+
+    if (studentRecords.length === 0) {
+        return <p className="text-center text-muted-foreground p-8">No financial records found for this student.</p>
+    }
+
+    return (
+        <div className="p-4">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-right">Billed</TableHead>
+                        <TableHead className="text-right">Paid</TableHead>
+                        <TableHead className="text-right">Status</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {studentRecords.map((record) => (
+                        <TableRow key={record.id}>
+                            <TableCell className="text-xs">{format(record.createdAt.toDate(), 'PPP')}</TableCell>
+                            <TableCell>{record.description}</TableCell>
+                            <TableCell><Badge variant="outline">{record.type}</Badge></TableCell>
+                            <TableCell className="text-right">GH₵{record.billedAmount.toFixed(2)}</TableCell>
+                            <TableCell className="text-right text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</TableCell>
+                            <TableCell className="text-right"><Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
 }
 
 // --- SUB-COMPONENT: Student Academics Detail ---
@@ -372,15 +416,11 @@ export default function GradebookManager() {
                                             />
                                         </TabsContent>
 
-                                        <TabsContent value="financials" className="mt-0 p-6">
-                                            <div className="flex items-center gap-4 p-4 bg-white border rounded-lg shadow-sm max-w-md">
-                                                <div className="bg-slate-100 p-3 rounded-full"><AlertCircle className="h-6 w-6 text-slate-500"/></div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-slate-500">Current Balance</p>
-                                                    <p className="text-2xl font-bold text-slate-800">GH₵{financials.balance.toFixed(2)}</p>
-                                                </div>
-                                                <Button variant="outline" size="sm" className="ml-auto">View Ledger</Button>
-                                            </div>
+                                        <TabsContent value="financials" className="mt-0">
+                                            <FeeHistoryDetail 
+                                                student={student} 
+                                                financialRecords={financialRecords || []}
+                                            />
                                         </TabsContent>
                                     </Tabs>
                                 </AccordionContent>
@@ -401,3 +441,4 @@ export default function GradebookManager() {
     </div>
   );
 }
+
