@@ -46,6 +46,7 @@ import {
   BrainCircuit,
   Clapperboard,
   Book,
+  ShoppingBag,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -291,6 +292,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/accounts',
         title: 'Student Billing',
         icon: Banknote,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/finance/shop',
+        title: 'School Shop',
+        icon: ShoppingBag,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
       {
