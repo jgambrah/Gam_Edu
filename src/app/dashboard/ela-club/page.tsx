@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -46,6 +47,7 @@ import { getAuth } from 'firebase/auth';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { generateElaLessonAction, GeneratedElaLesson } from '@/ai/flows/generate-ela-lesson';
+import { evaluateReadingSubmissionAction } from '@/ai/flows/evaluate-reading-submission';
 
 
 interface LessonCard extends GeneratedElaLesson {
@@ -453,53 +455,73 @@ function ReadingPracticeTab() {
   );
 }
 
-// --- SUB-COMPONENT: The Reading Reader Modal ---
+// --- UPDATED COMPONENT: Reading Reader Modal ---
 function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPassage | null, open: boolean, setOpen: (o: boolean) => void }) {
     const [answers, setAnswers] = useState<Record<number, string>>({});
-    const [showResults, setShowResults] = useState(false);
+    const [isGrading, setIsGrading] = useState(false); // Loading state for AI
+    const [gradingResult, setGradingResult] = useState<any>(null); // Store AI results
+    
     const firestore = useFirestore();
     const { user } = useUser();
-    const { toast } = useToast();
 
     if (!passage) return null;
 
-    const handleSubmit = () => {
-        let correctCount = 0;
-        passage.question_set.forEach((q, idx) => {
-            if (answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase()) {
-                correctCount++;
-            }
-        });
+    const handleSubmit = async () => {
+        setIsGrading(true);
         
-        if (correctCount > 0 && user && firestore) {
-             const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
-             const data = {
-                 userId: user.uid,
-                 userName: user.displayName || user.email,
-                 profilePictureUrl: user.photoURL || '',
-                 total_correct_answers: increment(correctCount),
-             };
-             setDoc(leaderboardRef, data, { merge: true });
-        }
+        try {
+            // 1. Call AI to Grade
+            const result = await evaluateReadingSubmissionAction({
+                passageText: passage.passage_text,
+                questions: passage.question_set,
+                studentAnswers: answers
+            });
 
-        setShowResults(true);
-        toast({ title: "Answers Checked", description: "Review your results below."})
+            if (!result.success || !result.data) {
+                throw new Error(result.error || "Grading failed");
+            }
+
+            const aiFeedback = result.data;
+            setGradingResult(aiFeedback);
+
+            // 2. Save to Firestore
+            if (user && firestore) {
+                await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
+                    userId: user.uid,
+                    challenge_id: passage.id,
+                    challenge_title: passage.title,
+                    type: 'Reading Comprehension',
+                    answers: answers,
+                    teacher_score: aiFeedback.totalScore, // Use AI Score
+                    teacher_feedback: aiFeedback.generalFeedback,
+                    detailed_results: aiFeedback.results, // Save specific feedback
+                    date_submitted: serverTimestamp(),
+                    status: 'Graded'
+                });
+            }
+        } catch (e) {
+            console.error("Error:", e);
+            // Fallback to simple local grading if AI fails? 
+            // For now, just alert.
+            alert("Could not connect to AI Grader. Please try again.");
+        } finally {
+            setIsGrading(false);
+        }
     };
 
     const handleClose = () => {
         setOpen(false);
-        setTimeout(() => {
-            setShowResults(false);
-            setAnswers({});
-        }, 300);
+        setGradingResult(null);
+        setAnswers({});
+        setIsGrading(false);
     };
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+            <DialogContent className="max-w-5xl h-[90vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle>{passage.title}</DialogTitle>
-                    <DialogDescription>Read the passage on the left and answer the questions on the right.</DialogDescription>
+                    <DialogDescription>Read the passage and answer the questions.</DialogDescription>
                 </DialogHeader>
                 
                 <div className="flex flex-1 gap-6 overflow-hidden min-h-0">
@@ -510,7 +532,7 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                             <Badge variant="outline">{passage.reading_level}</Badge>
                         </h4>
                         <ScrollArea className="flex-1 bg-muted/30 p-4 rounded-md border">
-                            <div className="prose prose-sm max-w-none whitespace-pre-wrap">
+                            <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif text-lg leading-relaxed">
                                 {passage.passage_text}
                             </div>
                         </ScrollArea>
@@ -518,26 +540,37 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
 
                     {/* RIGHT SIDE: QUESTIONS */}
                     <div className="w-1/2 flex flex-col">
-                        <h4 className="font-semibold mb-2">Comprehension Questions</h4>
+                        <h4 className="font-semibold mb-2 flex justify-between items-center">
+                            <span>Questions</span>
+                            {gradingResult && (
+                                <Badge className={gradingResult.totalScore >= 50 ? "bg-green-600" : "bg-red-600"}>
+                                    Score: {gradingResult.totalScore}%
+                                </Badge>
+                            )}
+                        </h4>
+                        
                         <ScrollArea className="flex-1 pr-4">
                             <div className="space-y-6">
                                 {passage.question_set.map((q, idx) => {
-                                    const isCorrect = showResults && (answers[idx]?.trim().toLowerCase() === q.correct_answer_key.trim().toLowerCase());
+                                    // Find specific feedback for this question if graded
+                                    const qResult = gradingResult?.results.find((r: any) => r.questionIndex === idx);
+                                    
                                     return (
-                                        <div key={`${passage.id}-${idx}`} className={cn("p-4 border rounded-lg", 
-                                            showResults && isCorrect ? "bg-green-50 border-green-200" : "",
-                                            showResults && !isCorrect ? "bg-red-50 border-red-200" : ""
+                                        <div key={idx} className={cn("p-4 border rounded-lg transition-colors", 
+                                            qResult?.isCorrect ? "bg-green-50 border-green-200" : "",
+                                            qResult && !qResult.isCorrect ? "bg-red-50 border-red-200" : ""
                                         )}>
-                                            <p className="font-medium mb-3">{idx + 1}. {q.question}</p>
+                                            <p className="font-medium mb-3 text-sm">{idx + 1}. {q.question}</p>
                                             
+                                            {/* OPTIONS OR INPUT */}
                                             {q.options && q.options.length > 0 ? (
                                                 <RadioGroup 
                                                     value={answers[idx] || ''} 
                                                     onValueChange={(val) => setAnswers(prev => ({...prev, [idx]: val}))}
-                                                    disabled={showResults}
+                                                    disabled={!!gradingResult} // Disable after grading
                                                 >
                                                     {q.options.map((opt, i) => (
-                                                        <div key={`${passage.id}-${q.question}-${i}`} className="flex items-center space-x-2">
+                                                        <div key={i} className="flex items-center space-x-2 mb-1">
                                                             <RadioGroupItem value={opt} id={`q${idx}-opt${i}`} />
                                                             <Label htmlFor={`q${idx}-opt${i}`} className="font-normal cursor-pointer">{opt}</Label>
                                                         </div>
@@ -548,19 +581,22 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                                                     placeholder="Type your answer..." 
                                                     value={answers[idx] || ''}
                                                     onChange={(e) => setAnswers(prev => ({...prev, [idx]: e.target.value}))}
-                                                    disabled={showResults}
+                                                    disabled={!!gradingResult}
                                                 />
                                             )}
 
-                                            {showResults && (
-                                                <div className="mt-3 text-xs pt-3 border-t">
-                                                    {isCorrect ? (
-                                                        <span className="text-green-600 flex items-center gap-1 font-semibold"><CheckCircle2 className="h-3 w-3"/> Correct</span>
-                                                    ) : (
-                                                        <>
-                                                            <p className="text-red-600 font-semibold">Correct Answer: {q.correct_answer_key}</p>
-                                                            {(q as any).explanation && <p className="mt-1 text-sky-700"><strong>Explanation:</strong> {(q as any).explanation}</p>}
-                                                        </>
+                                            {/* AI FEEDBACK SECTION */}
+                                            {qResult && (
+                                                <div className="mt-3 text-xs p-2 rounded bg-white/50 border border-black/5">
+                                                    <div className="flex items-center gap-2 mb-1 font-bold">
+                                                        {qResult.isCorrect ? 
+                                                            <span className="text-green-700 flex items-center gap-1"><CheckCircle2 className="h-3 w-3"/> Correct</span> : 
+                                                            <span className="text-red-700 flex items-center gap-1"><XCircle className="h-3 w-3"/> Incorrect</span>
+                                                        }
+                                                    </div>
+                                                    <p className="text-slate-600 italic">"{qResult.feedback}"</p>
+                                                    {!qResult.isCorrect && (
+                                                        <p className="mt-1 font-semibold text-slate-800">Correct Answer: {q.correct_answer_key}</p>
                                                     )}
                                                 </div>
                                             )}
@@ -569,19 +605,22 @@ function ActivePassageDialog({ passage, open, setOpen }: { passage: ElaReadingPa
                                 })}
                             </div>
                         </ScrollArea>
+                        
+                        {gradingResult && (
+                             <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-md text-sm text-blue-800">
+                                 <strong>Teacher's Remark:</strong> {gradingResult.generalFeedback}
+                             </div>
+                        )}
                     </div>
                 </div>
 
                 <DialogFooter className="pt-4 border-t mt-4">
-                    {!showResults ? (
-                        <Button onClick={handleSubmit} className="w-full md:w-auto">Check Answers</Button>
+                    {!gradingResult ? (
+                        <Button onClick={handleSubmit} disabled={isGrading} className="w-full md:w-auto min-w-[150px]">
+                            {isGrading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Grading...</> : "Submit Answers"}
+                        </Button>
                     ) : (
-                        <div className="flex justify-between w-full items-center">
-                            <div className="font-bold">
-                                Review your answers and compare with the correct solutions provided.
-                            </div>
-                            <Button onClick={handleClose}>Finish Practice</Button>
-                        </div>
+                        <Button onClick={handleClose} className="w-full md:w-auto">Finish Review</Button>
                     )}
                 </DialogFooter>
             </DialogContent>
