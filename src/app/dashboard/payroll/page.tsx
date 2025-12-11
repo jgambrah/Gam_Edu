@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Staff, StaffPayrollConfig, PayrollSettings, PayrollRecord } from '@/lib/types';
 import { PayslipDialog } from './payslip-dialog';
@@ -452,10 +452,13 @@ export default function PayrollPage() {
               </Card>
           </>
         )}
+        
+        {selectedPayslip && (
+            <Dialog open={!!selectedPayslip} onOpenChange={(open) => !open && setSelectedPayslip(null)}>
+                <PayslipDialog payslip={selectedPayslip} />
+            </Dialog>
+        )}
 
-        <Dialog open={!!selectedPayslip} onOpenChange={(open) => !open && setSelectedPayslip(null)}>
-            {selectedPayslip && <PayslipDialog payslip={selectedPayslip} />}
-        </Dialog>
       </div>
     );
   }

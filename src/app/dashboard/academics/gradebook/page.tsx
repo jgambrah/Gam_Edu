@@ -6,7 +6,7 @@ import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { 
-  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, CheckCircle, XCircle, AlertCircle
+  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, CheckCircle, XCircle, AlertCircle, PlusCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -40,8 +40,6 @@ function getGrade(percentage: number) {
 
 // --- SUB-COMPONENT: Transaction Detail Modal (Fixed) ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
-    // FIX: Do not return null. Always render Dialog, but handle empty record inside.
-    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -117,7 +115,6 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
 
     // Handler to safely open modal
     const handleViewDetails = (record: FinancialRecord) => {
-        console.log("Viewing record:", record.id); // Debug log
         setSelectedRecord(record);
         setIsModalOpen(true);
     };
@@ -183,13 +180,13 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
                     </TableBody>
                 </Table>
             </div>
-
-            {/* Modal is rendered always, controlled by isModalOpen */}
-            <TransactionDetailModal 
-                record={selectedRecord} 
-                open={isModalOpen} 
-                setOpen={setIsModalOpen} 
-            />
+            {isModalOpen && (
+                <TransactionDetailModal 
+                    record={selectedRecord} 
+                    open={isModalOpen} 
+                    setOpen={setIsModalOpen} 
+                />
+            )}
         </div>
     );
 }
@@ -529,3 +526,5 @@ export default function GradebookManager() {
     </div>
   );
 }
+
+    

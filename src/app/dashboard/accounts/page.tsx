@@ -447,7 +447,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
     )
 }
 
-function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialRecord, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -464,20 +464,13 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
     async function onSubmit(values: z.infer<typeof recordPaymentSchema>) {
         if (!firestore || !user) return;
         
-        // --- CHANGE: Removed the validation check that blocked overpayment ---
-        // Parents can now pay GH₵500 even if the bill is GH₵100.
-        // The ledger will simply show a negative balance (Credit) for the student.
-
         setIsSubmitting(true);
         try {
             const batch = writeBatch(firestore);
             const recordRef = doc(firestore, 'financialRecords', record.id);
             const newAmountPaid = (record.amountPaid || 0) + values.amount;
             
-            // Calculate new balance status
             const newBalance = record.billedAmount - newAmountPaid - (record.waiverAmount || 0);
-            
-            // If balance is 0 or negative (Credit), mark as Paid
             const newStatus = newBalance <= 0 ? 'Paid' : 'Unpaid';
             
             batch.update(recordRef, {
@@ -485,7 +478,6 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
                 status: newStatus,
             });
 
-            // If paying cash, record in Till
             if (values.method === 'Cash') {
                 const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'));
                 const tillSnapshot = await getDocs(tillQuery);
@@ -504,7 +496,6 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
                     description: `Payment for: ${record.description} (${record.type})`
                 });
                 
-                // Update Till Balance
                 batch.update(doc(firestore, 'tills', activeTill.id), {
                     currentBalance: increment(values.amount)
                 });
@@ -529,43 +520,45 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
         }
     }
     return (
-        <DialogContent>
-            <DialogHeader><DialogTitle>Record Payment</DialogTitle><DialogDescription>Paying for: {record.description}</DialogDescription></DialogHeader>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className={`p-4 border rounded-lg text-center mb-4 ${balance <= 0 ? "bg-green-50 border-green-200" : "bg-indigo-50 border-indigo-100"}`}>
-                         <p className="text-xs uppercase font-semibold text-slate-500">
-                             {balance <= 0 ? "Current Credit" : "Outstanding Balance"}
-                         </p>
-                         <p className={`text-3xl font-bold ${balance <= 0 ? "text-green-700" : "text-indigo-900"}`}>
-                             GH₵{Math.abs(balance).toFixed(2)}
-                         </p>
-                    </div>
-                    
-                    <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Payment Amount (GH₵)</FormLabel>
-                            <FormControl>
-                                <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
-                            </FormControl>
-                            <FormMessage />
-                            <p className="text-[10px] text-muted-foreground">You can enter an amount higher than the balance to create a credit.</p>
-                        </FormItem>
-                    )}/>
-                    <FormField control={form.control} name="method" render={({ field }) => (
-                        <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-                    )}/>
-                    <FormField control={form.control} name="notes" render={({ field }) => (
-                        <FormItem><FormLabel>Notes (Optional)</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage /></FormItem>
-                    )}/>
-                    <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
-                </form>
-            </Form>
-        </DialogContent>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader><DialogTitle>Record Payment</DialogTitle><DialogDescription>Paying for: {record.description}</DialogDescription></DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <div className={`p-4 border rounded-lg text-center mb-4 ${balance <= 0 ? "bg-green-50 border-green-200" : "bg-indigo-50 border-indigo-100"}`}>
+                            <p className="text-xs uppercase font-semibold text-slate-500">
+                                {balance <= 0 ? "Current Credit" : "Outstanding Balance"}
+                            </p>
+                            <p className={`text-3xl font-bold ${balance <= 0 ? "text-green-700" : "text-indigo-900"}`}>
+                                GH₵{Math.abs(balance).toFixed(2)}
+                            </p>
+                        </div>
+                        
+                        <FormField control={form.control} name="amount" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Payment Amount (GH₵)</FormLabel>
+                                <FormControl>
+                                    <Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                                </FormControl>
+                                <FormMessage />
+                                <p className="text-[10px] text-muted-foreground">You can enter an amount higher than the balance to create a credit.</p>
+                            </FormItem>
+                        )}/>
+                        <FormField control={form.control} name="method" render={({ field }) => (
+                            <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="notes" render={({ field }) => (
+                            <FormItem><FormLabel>Notes (Optional)</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Confirm Payment</Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
-function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRecord, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -603,25 +596,27 @@ function ApplyWaiverDialog({ record, setOpen, onUpdate }: { record: FinancialRec
     }
 
     return (
-        <DialogContent>
-            <DialogHeader><DialogTitle>Apply Waiver</DialogTitle></DialogHeader>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-2 text-sm">Max Waiver: GH₵{balance.toFixed(2)}</div>
-                    <FormField control={form.control} name="amount" render={({ field }) => (
-                        <FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
-                    )}/>
-                    <FormField control={form.control} name="reason" render={({ field }) => (
-                        <FormItem><FormLabel>Reason</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
-                    )}/>
-                    <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Apply Waiver</Button>
-                </form>
-            </Form>
-        </DialogContent>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader><DialogTitle>Apply Waiver</DialogTitle></DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="p-2 bg-yellow-50 text-yellow-800 rounded mb-2 text-sm">Max Waiver: GH₵{balance.toFixed(2)}</div>
+                        <FormField control={form.control} name="amount" render={({ field }) => (
+                            <FormItem><FormLabel>Waiver Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField control={form.control} name="reason" render={({ field }) => (
+                            <FormItem><FormLabel>Reason</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Apply Waiver</Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
-function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialRecord, setOpen: (open: boolean) => void, onUpdate: () => void }) {
+function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -656,32 +651,34 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
     }
 
     return (
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle>Edit Record</DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField control={form.control} name="type" render={({ field }) => (
-                        <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-                    )}/>
-                    <FormField control={form.control} name="description" render={({ field }) => (
-                        <FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                    )}/>
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={form.control} name="billedAmount" render={({ field }) => (
-                            <FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit Record</DialogTitle>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField control={form.control} name="type" render={({ field }) => (
+                            <FormItem><FormLabel>Fee Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Tuition Fee', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                         )}/>
-                        <FormField control={form.control} name="dueDate" render={({ field }) => (
-                            <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
-                            <Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button>
-                            </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/></PopoverContent></Popover><FormMessage /></FormItem>
+                        <FormField control={form.control} name="description" render={({ field }) => (
+                            <FormItem><FormLabel>Description</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                         )}/>
-                    </div>
-                    <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Changes</Button>
-                </form>
-            </Form>
-        </DialogContent>
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name="billedAmount" render={({ field }) => (
+                                <FormItem><FormLabel>Billed Amount (GH₵)</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                            )}/>
+                            <FormField control={form.control} name="dueDate" render={({ field }) => (
+                                <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
+                                <Button variant={'outline'} className={cn('pl-3 text-left font-normal',!field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button>
+                                </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus/></PopoverContent></Popover><FormMessage /></FormItem>
+                            )}/>
+                        </div>
+                        <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Changes</Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
@@ -800,9 +797,11 @@ export default function AccountsPage() {
                 <div><CardTitle>Student Billing</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
                 <div className="flex gap-2">
                     <Dialog open={activeForm === 'daily'} onOpenChange={(open) => !open && setActiveForm(null)}>
-                        <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-                            <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
-                        </Button>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                                <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
+                            </Button>
+                        </DialogTrigger>
                         <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />
                     </Dialog>
                     <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
@@ -815,7 +814,6 @@ export default function AccountsPage() {
             </div>
             </CardHeader>
             <CardContent>
-                {activeForm === 'daily' && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
                 {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
                 {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
             </CardContent>
@@ -880,11 +878,37 @@ export default function AccountsPage() {
         </CardContent>
       </Card>
       
-      <Dialog open={!!dialogState.record} onOpenChange={(open) => !open && handleCloseDialog()}>
-          {dialogState.record && (dialogState.type === 'payment' ? <RecordPaymentDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} /> : <ApplyWaiverDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />)}
-      </Dialog>
-      <Dialog open={!!editingRecord} onOpenChange={(open) => !open && handleCloseEditDialog()}>{editingRecord && <EditRecordDialog record={editingRecord} setOpen={handleCloseEditDialog} onUpdate={forceRefetch} />}</Dialog>
-      <TransactionDetailModal record={transactionDetail} open={!!transactionDetail} setOpen={(open) => !open && setTransactionDetail(null)}/>
+      {dialogState.record && dialogState.type === 'payment' && (
+        <RecordPaymentDialog 
+            record={dialogState.record} 
+            open={!!dialogState.record} 
+            setOpen={handleCloseDialog} 
+            onUpdate={forceRefetch} 
+        />
+      )}
+      {dialogState.record && dialogState.type === 'waiver' && (
+        <ApplyWaiverDialog 
+            record={dialogState.record} 
+            open={!!dialogState.record} 
+            setOpen={handleCloseDialog} 
+            onUpdate={forceRefetch} 
+        />
+      )}
+      {editingRecord && (
+        <EditRecordDialog 
+            record={editingRecord} 
+            open={!!editingRecord} 
+            setOpen={handleCloseEditDialog} 
+            onUpdate={forceRefetch} 
+        />
+      )}
+      {transactionDetail && (
+        <TransactionDetailModal 
+            record={transactionDetail} 
+            open={!!transactionDetail} 
+            setOpen={() => setTransactionDetail(null)}
+        />
+      )}
     </div>
   );
 }
