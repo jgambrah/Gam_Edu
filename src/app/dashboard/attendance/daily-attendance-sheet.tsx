@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,7 +38,7 @@ const extendedAttendanceRecordSchema = z.object({
   status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
   notes: z.string().optional(),
   classId: z.string(),
-  usesBusService: z.string().optional(), // Captured as string "true"/"false" from hidden input
+  usesBusService: z.boolean().optional(), // Now a boolean
 });
 
 const attendanceFormSchema = z.object({
@@ -125,11 +126,9 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                     studentId: student.uid,
                     studentName: `${student.firstName} ${student.lastName}`,
                     classId: selectedClassId,
-                    // Default to Present if no record exists
                     status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
                     notes: existingRecord?.notes || '',
-                    // Convert boolean to string for the hidden input
-                    usesBusService: student.usesBusService ? "true" : "false", 
+                    usesBusService: !!student.usesBusService,
                 };
             });
 
@@ -157,7 +156,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         // 1. Save Attendance to Firestore
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            const { usesBusService, id, ...dataToSave } = record; 
+            // Omit studentName from the stored document, it's for display
+            const { studentName, ...dataToSave } = record; 
             
             attendanceBatch.set(recordRef, {
                 ...dataToSave,
@@ -191,16 +191,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 const billingBatch = writeBatch(firestore);
                 let billsCount = 0;
                 const dateStr = format(selectedDate, 'yyyy-MM-dd');
-                const studentDocs = await getDocs(query(collection(firestore, 'students'), where('classId', '==', selectedClassId)));
-                const studentMap = new Map(studentDocs.docs.map(d => [d.id, d.data() as Student]));
-
 
                 for (const record of presentStudents) {
-                    const studentInfo = studentMap.get(record.studentId);
-                    if (!studentInfo) continue;
-                    
-                    const studentName = `${studentInfo.firstName} ${studentInfo.lastName}`;
-
                     // Canteen Bill
                     if (canteenRate > 0) {
                         const canteenRecordId = `canteen-${record.studentId}-${dateStr}`;
@@ -208,7 +200,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                         billingBatch.set(financialRecordRef, {
                             billedAmount: canteenRate,
                             studentId: record.studentId,
-                            studentName: studentName,
+                            studentName: record.studentName,
                             classId: record.classId,
                             type: 'Canteen Fee',
                             description: `Lunch for ${format(selectedDate, 'PPP')}`,
@@ -221,13 +213,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                     }
 
                     // Transport Bill
-                    if (transportRate > 0 && studentInfo.usesBusService) {
+                    if (transportRate > 0 && record.usesBusService) {
                         const transportRecordId = `transport-${record.studentId}-${dateStr}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                         billingBatch.set(financialRecordRef, {
                             billedAmount: transportRate,
                             studentId: record.studentId,
-                            studentName: studentName,
+                            studentName: record.studentName,
                             classId: record.classId,
                             type: 'Transport Fee',
                             description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
@@ -298,21 +290,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                                 <div className="space-y-4">
                                     {fields.map((field, index) => (
                                         <Card key={field.id} className="p-4">
-                                            
-                                            <input type="hidden" {...form.register(`records.${index}.studentName`)} value={field.studentName} />
-                                            <input type="hidden" {...form.register(`records.${index}.studentId`)} value={field.studentId} />
-                                            <input type="hidden" {...form.register(`records.${index}.classId`)} value={field.classId} />
-                                            
-                                            <input 
-                                                type="hidden" 
-                                                {...form.register(`records.${index}.usesBusService`)} 
-                                                defaultValue={field.usesBusService}
-                                            />
-
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                 <div className="flex flex-col">
                                                     <p className="font-medium">{field.studentName}</p>
-                                                    {field.usesBusService === "true" && (
+                                                    {field.usesBusService && (
                                                         <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit font-semibold flex items-center gap-1">
                                                             Bus User
                                                         </span>
