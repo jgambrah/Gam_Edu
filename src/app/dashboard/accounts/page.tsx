@@ -500,8 +500,6 @@ export default function AccountsPage() {
     };
   }, [records]);
 
-  const getStudentById = (studentId: string) => students?.find(s => s.uid === studentId);
-
   const studentFinancials = useMemo(() => {
     if (!records || !students) return [];
 
@@ -511,30 +509,38 @@ export default function AccountsPage() {
       const totalPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
       const totalWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
       const balance = totalBilled - totalPaid - totalWaivers;
+      
+      let runningBalance = 0;
+      const ledger = studentRecords
+        .sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0))
+        .map(rec => {
+            const isDebit = rec.billedAmount > (rec.amountPaid || 0);
+            if(isDebit) {
+                runningBalance += rec.billedAmount;
+            } else {
+                runningBalance -= rec.amountPaid;
+            }
+            return {
+                ...rec,
+                isDebit,
+                runningBalance,
+            }
+        });
 
       return {
         student,
-        records: studentRecords.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)),
         balance,
         hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
+        ledger,
       };
     });
 
     return financialsByStudent.filter(sf => 
-        sf.records.length > 0 &&
+        sf.ledger.length > 0 &&
         (sf.student.firstName + " " + sf.student.lastName).toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [records, students, searchTerm]);
 
-
-  const getStatusVariant = (status: FinancialRecord['status']) => {
-    switch (status) {
-      case 'Paid': return 'default';
-      case 'Unpaid': return 'secondary';
-      case 'Overdue': return 'destructive';
-      default: return 'outline';
-    }
-  };
 
   if (!canAccess) {
     return (
@@ -619,7 +625,7 @@ export default function AccountsPage() {
         <CardContent>
             {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                 <div className="space-y-4">
-                    {studentFinancials.map(({ student, records, balance, hasOverdue }) => (
+                    {studentFinancials.map(({ student, balance, hasOverdue, ledger }) => (
                          <Collapsible key={student.uid} className="border rounded-lg">
                             <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
                                 <div className="flex items-center gap-3">
@@ -628,7 +634,7 @@ export default function AccountsPage() {
                                     </Avatar>
                                     <div className="text-left">
                                         <p className="font-semibold">{student.firstName} {student.lastName}</p>
-                                        <p className="text-sm text-muted-foreground">{getStudentById(student.uid)?.classId || 'N/A'}</p>
+                                        <p className="text-sm text-muted-foreground">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
@@ -644,28 +650,32 @@ export default function AccountsPage() {
                              <CollapsibleContent className="p-4 bg-slate-50 border-t">
                                 <div className="border rounded-md overflow-hidden bg-white">
                                  <Table>
-                                    <TableHeader><TableRow>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Description</TableHead>
-                                        <TableHead className="text-right">Billed</TableHead>
-                                        <TableHead className="text-right">Paid</TableHead>
-                                        <TableHead className="text-center">Status</TableHead>
-                                        <TableHead className="w-[120px]">Actions</TableHead>
-                                    </TableRow></TableHeader>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead className="text-right">Debit</TableHead>
+                                            <TableHead className="text-right">Credit</TableHead>
+                                            <TableHead className="text-right">Balance</TableHead>
+                                            <TableHead className="w-[120px] text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
                                     <TableBody>
-                                        {records.map(rec => {
-                                            const recordBalance = rec.billedAmount - (rec.amountPaid || 0) - (rec.waiverAmount || 0);
-                                            return (
+                                        {ledger.map(rec => (
                                             <TableRow key={rec.id}>
                                                 <TableCell className="text-xs text-muted-foreground">
                                                     {rec.createdAt ? format(rec.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}
                                                 </TableCell>
                                                 <TableCell className="font-medium max-w-[200px] truncate">{rec.description}</TableCell>
-                                                <TableCell className="text-right font-mono">GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                                                <TableCell className="text-right font-mono text-green-600">GH₵{(rec.amountPaid || 0).toFixed(2)}</TableCell>
-                                                <TableCell className="text-center"><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                                                <TableCell className="text-right font-mono text-red-600">
+                                                    {rec.isDebit ? `GH₵${rec.billedAmount.toFixed(2)}` : '-'}
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono text-green-600">
+                                                    {!rec.isDebit ? `GH₵${rec.amountPaid.toFixed(2)}` : '-'}
+                                                </TableCell>
+                                                <TableCell className="text-right font-bold">GH₵{rec.runningBalance.toFixed(2)}</TableCell>
                                                 <TableCell>
-                                                    <div className="flex gap-1">
+                                                    <div className="flex gap-1 justify-end">
                                                         <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" onClick={() => setTransactionDetail(rec)}>
                                                             <Eye className="h-4 w-4"/>
                                                         </Button>
@@ -680,7 +690,7 @@ export default function AccountsPage() {
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
-                                        )})}
+                                        ))}
                                     </TableBody>
                                 </Table>
                                 </div>
@@ -716,3 +726,4 @@ export default function AccountsPage() {
   );
 }
 
+    
