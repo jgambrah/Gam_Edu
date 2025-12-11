@@ -18,7 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, ChevronUp, DollarSign, HandCoins, Receipt } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -34,9 +34,70 @@ import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/no
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+
+// --- Forms and Dialogs (Copied from previous context, unchanged) ---
+
+// This modal shows the details of a single transaction
+function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
+    if (!record) return null;
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Details
+                    </DialogTitle>
+                    <DialogDescription>Transaction ID: {record.id.slice(0, 8)}...</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">Type</p>
+                            <Badge variant="outline">{record.type}</Badge>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">Status</p>
+                            <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                         <p className="text-xs font-medium text-muted-foreground">Description</p>
+                         <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                        <div>
+                            <p className="text-xs text-slate-500 mb-1">Billed Amount</p>
+                            <p className="text-lg font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-xs text-slate-500 mb-1">Amount Paid</p>
+                            <p className="text-lg font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
+                        </div>
+                    </div>
+
+                    <Separator />
+                    
+                    <div className="space-y-2 text-xs text-slate-500">
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1"><CalendarIcon className="h-3 w-3"/> Created At:</span>
+                            <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
+                            <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 
-// --- Forms ---
 function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (open: boolean) => void; students: Student[], onRecordAdded: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -198,7 +259,6 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
             const newAmountPaid = (record.amountPaid || 0) + values.amount;
             const newBalance = record.billedAmount - newAmountPaid - (record.waiverAmount || 0);
             
-            // Allow overpayment. If the new balance is <= 0, the specific bill is 'Paid'.
             const newStatus = newBalance <= 0 ? 'Paid' : 'Unpaid';
             
             batch.update(recordRef, {
@@ -206,7 +266,6 @@ function RecordPaymentDialog({ record, setOpen, onUpdate }: { record: FinancialR
                 status: newStatus,
             });
 
-            // If payment is cash, log it to the active till
             if (values.method === 'Cash') {
                 const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'));
                 const tillSnapshot = await getDocs(tillQuery);
@@ -319,8 +378,7 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    // Create a schema specifically for editing, inheriting from the base schema
-    const editSchema = financialRecordSchema.omit({ studentId: true }); // Can't change the student
+    const editSchema = financialRecordSchema.omit({ studentId: true }); 
 
     const form = useForm<z.infer<typeof editSchema>>({
         resolver: zodResolver(editSchema),
@@ -328,7 +386,7 @@ function EditRecordDialog({ record, setOpen, onUpdate }: { record: FinancialReco
             type: record.type,
             description: record.description,
             billedAmount: record.billedAmount,
-            dueDate: record.dueDate.toDate(), // Convert Firestore Timestamp to Date
+            dueDate: record.dueDate.toDate(), 
         }
     });
 
@@ -390,6 +448,7 @@ export default function AccountsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver'; record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
+  const [transactionDetail, setTransactionDetail] = useState<FinancialRecord | null>(null);
 
 
   const finQuery = useMemoFirebase(() => firestore ? collection(firestore, 'financialRecords') : null, [firestore]);
@@ -455,7 +514,7 @@ export default function AccountsPage() {
 
       return {
         student,
-        records: studentRecords,
+        records: studentRecords.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)),
         balance,
         hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
       };
@@ -583,34 +642,48 @@ export default function AccountsPage() {
                                 </div>
                             </CollapsibleTrigger>
                              <CollapsibleContent className="p-4 bg-slate-50 border-t">
+                                <div className="border rounded-md overflow-hidden bg-white">
                                  <Table>
-                                    <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Type</TableHead><TableHead>Billed</TableHead><TableHead>Paid</TableHead><TableHead>Balance</TableHead><TableHead>Due</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+                                    <TableHeader><TableRow>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Description</TableHead>
+                                        <TableHead className="text-right">Billed</TableHead>
+                                        <TableHead className="text-right">Paid</TableHead>
+                                        <TableHead className="text-center">Status</TableHead>
+                                        <TableHead className="w-[120px]">Actions</TableHead>
+                                    </TableRow></TableHeader>
                                     <TableBody>
                                         {records.map(rec => {
                                             const recordBalance = rec.billedAmount - (rec.amountPaid || 0) - (rec.waiverAmount || 0);
                                             return (
                                             <TableRow key={rec.id}>
-                                                <TableCell className="font-medium">{rec.description}</TableCell>
-                                                <TableCell>{rec.type}</TableCell>
-                                                <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                                                <TableCell>GH₵{(rec.amountPaid || 0).toFixed(2)}</TableCell>
-                                                <TableCell className="font-semibold">GH₵{recordBalance.toFixed(2)}</TableCell>
-                                                <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                                <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                                                <TableCell className="text-xs text-muted-foreground">
+                                                    {rec.createdAt ? format(rec.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}
+                                                </TableCell>
+                                                <TableCell className="font-medium max-w-[200px] truncate">{rec.description}</TableCell>
+                                                <TableCell className="text-right font-mono">GH₵{rec.billedAmount.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right font-mono text-green-600">GH₵{(rec.amountPaid || 0).toFixed(2)}</TableCell>
+                                                <TableCell className="text-center"><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
                                                 <TableCell>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical /></Button></DropdownMenuTrigger>
-                                                        <DropdownMenuContent>
-                                                            <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver/Concession</DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                                    <div className="flex gap-1">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" onClick={() => setTransactionDetail(rec)}>
+                                                            <Eye className="h-4 w-4"/>
+                                                        </Button>
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400"><MoreVertical /></Button></DropdownMenuTrigger>
+                                                            <DropdownMenuContent>
+                                                                <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver</DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         )})}
                                     </TableBody>
                                 </Table>
+                                </div>
                             </CollapsibleContent>
                         </Collapsible>
                     ))}
@@ -632,9 +705,14 @@ export default function AccountsPage() {
             <EditRecordDialog record={editingRecord} setOpen={handleCloseEditDialog} onUpdate={forceRefetch} />
           )}
       </Dialog>
+      
+      <TransactionDetailModal 
+        record={transactionDetail} 
+        open={!!transactionDetail} 
+        setOpen={(open) => !open && setTransactionDetail(null)}
+      />
+
     </div>
   );
 }
-    
 
-    
