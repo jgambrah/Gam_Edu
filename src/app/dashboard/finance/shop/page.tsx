@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, getDocs } from 'firebase/firestore';
 import { 
   ShoppingBag, Package, PlusCircle, ShoppingCart, 
-  Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2
+  Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2, ArchiveRestore, Edit
 } from 'lucide-react';
 
 // UI
@@ -23,6 +23,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 
 // --- TYPES ---
 interface ShopItem {
@@ -37,6 +41,80 @@ interface ShopItem {
 
 interface CartItem extends ShopItem {
     quantity: number;
+}
+
+const restockSchema = z.object({
+    quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
+});
+
+
+// --- COMPONENT: Restock Dialog ---
+function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: ShopItem; open: boolean; onOpenChange: (open: boolean) => void; onRestockComplete: () => void; }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<z.infer<typeof restockSchema>>({
+        resolver: zodResolver(restockSchema),
+        defaultValues: { quantity: 1 },
+    });
+
+    async function onSubmit(values: z.infer<typeof restockSchema>) {
+        if (!firestore) return;
+        setIsSubmitting(true);
+        try {
+            const batch = writeBatch(firestore);
+
+            const itemRef = doc(firestore, 'school_shop_items', item.id);
+            batch.update(itemRef, { stock: increment(values.quantity) });
+
+            const transactionRef = doc(collection(firestore, 'school_shop_transactions'));
+            batch.set(transactionRef, {
+                type: 'RESTOCK',
+                itemId: item.id,
+                itemName: item.name,
+                quantity: values.quantity,
+                date: serverTimestamp(),
+                notes: `Added ${values.quantity} unit(s).`
+            });
+
+            await batch.commit();
+            toast({ title: 'Success', description: `${values.quantity} units of ${item.name} have been added to stock.` });
+            onRestockComplete();
+            onOpenChange(false);
+        } catch (error) {
+            console.error('Error restocking item:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not process the restock.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Restock: {item.name}</DialogTitle>
+                    <DialogDescription>Current stock: {item.stock}. Add more quantity below.</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField control={form.control} name="quantity" render={({ field }) => (
+                            <FormItem>
+                                <Label>Quantity to Add</Label>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Add to Stock
+                        </Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
 }
 
 // --- COMPONENT: Add/Restock Shop Item ---
@@ -329,9 +407,10 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
 export default function SchoolShopPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const [restockItem, setRestockItem] = useState<ShopItem | null>(null);
 
     const itemsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'school_shop_items'), orderBy('name')) : null, [firestore]);
-    const { data: items, isLoading } = useCollection<ShopItem>(itemsQuery);
+    const { data: items, isLoading, forceRefetch } = useCollection<ShopItem>(itemsQuery);
 
     const canManage = ['Administrator', 'Director', 'Accountant'].includes(role);
 
@@ -340,67 +419,84 @@ export default function SchoolShopPage() {
     const lowStockItems = items?.filter(i => i.stock <= i.minStock) || [];
 
     return (
-        <div className="space-y-6 h-full flex flex-col">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-800"><ShoppingBag className="text-emerald-600"/> School Shop</h1>
-                    <p className="text-muted-foreground">Sell uniforms, books, and supplies.</p>
+        <>
+            <div className="space-y-6 h-full flex flex-col">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-800"><ShoppingBag className="text-emerald-600"/> School Shop</h1>
+                        <p className="text-muted-foreground">Sell uniforms, books, and supplies.</p>
+                    </div>
+                    <ShopManager />
                 </div>
-                <ShopManager />
-            </div>
 
-            {lowStockItems.length > 0 && (
-                <div className="bg-orange-50 border border-orange-200 p-3 rounded-md flex items-center gap-3 text-orange-800 text-sm animate-pulse">
-                    <AlertTriangle className="h-5 w-5"/>
-                    <span className="font-semibold">Low Stock Alert:</span>
-                    {lowStockItems.map(i => i.name).join(', ')} need restocking.
-                </div>
-            )}
+                {lowStockItems.length > 0 && (
+                    <div className="bg-orange-50 border border-orange-200 p-3 rounded-md flex items-center gap-3 text-orange-800 text-sm animate-pulse">
+                        <AlertTriangle className="h-5 w-5"/>
+                        <span className="font-semibold">Low Stock Alert:</span>
+                        {lowStockItems.map(i => i.name).join(', ')} need restocking.
+                    </div>
+                )}
 
-            <Tabs defaultValue="pos" className="flex-1 flex flex-col">
-                <TabsList className="w-[300px]">
-                    <TabsTrigger value="pos">Point of Sale</TabsTrigger>
-                    <TabsTrigger value="list">Inventory List</TabsTrigger>
-                </TabsList>
+                <Tabs defaultValue="pos" className="flex-1 flex flex-col">
+                    <TabsList className="w-[300px]">
+                        <TabsTrigger value="pos">Point of Sale</TabsTrigger>
+                        <TabsTrigger value="list">Inventory List</TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="pos" className="flex-1 mt-4">
-                    {isLoading ? <Loader2 className="mx-auto mt-20 animate-spin text-emerald-600"/> : <PointOfSale items={items || []} />}
-                </TabsContent>
+                    <TabsContent value="pos" className="flex-1 mt-4">
+                        {isLoading ? <Loader2 className="mx-auto mt-20 animate-spin text-emerald-600"/> : <PointOfSale items={items || []} />}
+                    </TabsContent>
 
-                <TabsContent value="list">
-                    <Card>
-                        <CardHeader><CardTitle>Merchandise Inventory</CardTitle></CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Item Name</TableHead>
-                                        <TableHead>Category</TableHead>
-                                        <TableHead>Details</TableHead>
-                                        <TableHead className="text-right">Price</TableHead>
-                                        <TableHead className="text-right">Stock</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {items?.map(item => (
-                                        <TableRow key={item.id}>
-                                            <TableCell className="font-medium">{item.name}</TableCell>
-                                            <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
-                                            <TableCell className="text-xs text-muted-foreground">{item.description || '-'}</TableCell>
-                                            <TableCell className="text-right">₵{item.price.toFixed(2)}</TableCell>
-                                            <TableCell className="text-right">
-                                                <span className={`font-bold ${item.stock <= item.minStock ? "text-red-600" : "text-green-600"}`}>
-                                                    {item.stock}
-                                                </span>
-                                            </TableCell>
+                    <TabsContent value="list">
+                        <Card>
+                            <CardHeader><CardTitle>Merchandise Inventory</CardTitle></CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Item Name</TableHead>
+                                            <TableHead>Category</TableHead>
+                                            <TableHead>Details</TableHead>
+                                            <TableHead className="text-right">Price</TableHead>
+                                            <TableHead className="text-right">Stock</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-        </div>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {items?.map(item => (
+                                            <TableRow key={item.id}>
+                                                <TableCell className="font-medium">{item.name}</TableCell>
+                                                <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
+                                                <TableCell className="text-xs text-muted-foreground">{item.description || '-'}</TableCell>
+                                                <TableCell className="text-right">₵{item.price.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <span className={`font-bold ${item.stock <= item.minStock ? "text-red-600" : "text-green-600"}`}>
+                                                        {item.stock}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button variant="outline" size="sm" onClick={() => setRestockItem(item)}>
+                                                        <ArchiveRestore className="h-4 w-4 mr-1"/>
+                                                        Restock
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+            </div>
+            {restockItem && (
+                <RestockDialog
+                    item={restockItem}
+                    open={!!restockItem}
+                    onOpenChange={() => setRestockItem(null)}
+                    onRestockComplete={forceRefetch}
+                />
+            )}
+        </>
     );
 }
