@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
+import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment, getDoc } from 'firebase/firestore';
 import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw } from 'lucide-react';
 import { PayrollSettings, payrollSettingsFormSchema } from '@/lib/types';
 import { useRole } from '@/context/role-context';
@@ -185,8 +185,8 @@ function RetrospectiveBilling() {
         from: new Date(),
         to: new Date(),
     });
-
-    const form = useForm(); // Create a dummy form to provide context
+    
+    const form = useForm();
 
     const handleReprocess = async () => {
         if (!firestore || !dateRange?.from) {
@@ -222,60 +222,38 @@ function RetrospectiveBilling() {
             }
             
             const billingBatch = writeBatch(firestore);
-            let billsCount = 0;
             
             for (const attendanceDoc of recordsToProcess) {
                 const record = attendanceDoc.data();
-                let studentName = record.studentName;
-
-                // FIX: If name is missing (legacy data), fetch it
-                if (!studentName) {
-                    try {
-                        const studentDoc = await getDoc(doc(firestore, 'students', record.studentId));
-                        if (studentDoc.exists()) {
-                            studentName = `${studentDoc.data().firstName} ${studentDoc.data().lastName}`;
-                        } else {
-                            studentName = "Unknown Student";
-                        }
-                    } catch (e) { studentName = "Unknown Student"; }
-                }
-
                 const recordDate = record.date.toDate();
-                const dateStr = format(recordDate, 'yyyy-MM-dd');
 
                 if (canteenRate > 0) {
-                    const canteenRecordId = `canteen-${record.studentId}-${dateStr}`;
+                    const canteenRecordId = `canteen-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: canteenRate,
-                        studentId: record.studentId, studentName: studentName, classId: record.classId,
-                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: recordDate,
+                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
                         createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
-                    billsCount++;
                 }
 
                 if (transportRate > 0 && record.usesBusService) {
-                     const transportRecordId = `transport-${record.studentId}-${dateStr}`;
+                     const transportRecordId = `transport-${record.studentId}-${format(recordDate, 'yyyy-MM-dd')}`;
                     const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                     billingBatch.set(financialRecordRef, {
                         billedAmount: transportRate,
-                        studentId: record.studentId, studentName: studentName, classId: record.classId,
-                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: recordDate,
+                        studentId: record.studentId, studentName: record.studentName, classId: record.classId,
+                        type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
                         createdAt: serverTimestamp(), amountPaid: 0,
                     }, { merge: true });
-                    billsCount++;
                 }
             }
 
-            if (billsCount > 0) {
-                await billingBatch.commit();
-                toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
-            } else {
-                 toast({ title: 'No Changes', description: 'No billable services found for the selected attendance records.' });
-            }
+            await billingBatch.commit();
+            toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });
 
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error reprocessing billing:', error);
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to reprocess billing.' });
         } finally {
