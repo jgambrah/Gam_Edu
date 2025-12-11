@@ -4,22 +4,97 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, writeBatch, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, doc, writeBatch, serverTimestamp, query, orderBy, increment } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, History, ArrowLeftRight, Check, Boxes, FileText, ShoppingCart } from 'lucide-react';
+import { Loader2, PlusCircle, History, ArrowLeftRight, Check, Boxes, FileText, ShoppingCart, ArchiveRestore } from 'lucide-react';
 import { InventoryItem, InventoryTransaction, Staff } from '@/lib/types';
 import Link from 'next/link';
 import { InventoryItemForm } from './inventory-item-form';
 import { CheckoutForm } from './checkout-form';
 import { TransactionHistoryDialog } from './transaction-history-dialog';
 import { SaleDialog } from './sale-dialog';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const restockSchema = z.object({
+    quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
+});
+
+function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: InventoryItem; open: boolean; onOpenChange: (open: boolean) => void; onRestockComplete: () => void; }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<z.infer<typeof restockSchema>>({
+        resolver: zodResolver(restockSchema),
+        defaultValues: { quantity: 1 },
+    });
+
+    async function onSubmit(values: z.infer<typeof restockSchema>) {
+        if (!firestore) return;
+        setIsSubmitting(true);
+        try {
+            const batch = writeBatch(firestore);
+
+            const itemRef = doc(firestore, 'inventory', item.id);
+            batch.update(itemRef, { quantity: increment(values.quantity) });
+
+            const transactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
+            batch.set(transactionRef, {
+                itemId: item.id,
+                transactionType: 'Restock',
+                quantityChange: values.quantity,
+                timestamp: serverTimestamp(),
+                notes: `Added ${values.quantity} unit(s).`
+            });
+
+            await batch.commit();
+            toast({ title: 'Success', description: `${values.quantity} units of ${item.name} have been added to stock.` });
+            onRestockComplete();
+            onOpenChange(false);
+        } catch (error) {
+            console.error('Error restock item:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not process the restock.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Restock: {item.name}</DialogTitle>
+                    <DialogDescription>Current stock: {item.quantity}. Add more quantity below.</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField control={form.control} name="quantity" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantity to Add</FormLabel>
+                                <FormControl><Input type="number" {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Add to Stock
+                        </Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 export default function InventoryPage() {
     const { role } = useRole();
@@ -30,7 +105,7 @@ export default function InventoryPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const [activeDialog, setActiveDialog] = useState<
-        'addItem' | 'checkOut' | 'history' | 'sellItem' | null
+        'addItem' | 'checkOut' | 'history' | 'sellItem' | 'restockItem' | null
     >(null);
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
@@ -45,7 +120,7 @@ export default function InventoryPage() {
     const canManage = role === 'Administrator' || role === 'Director';
     const canSell = role === 'Accountant';
 
-    const handleOpenDialog = (dialog: 'addItem' | 'checkOut' | 'history' | 'sellItem', item?: InventoryItem) => {
+    const handleOpenDialog = (dialog: 'addItem' | 'checkOut' | 'history' | 'sellItem' | 'restockItem', item?: InventoryItem) => {
         setSelectedItem(item || null);
         setActiveDialog(dialog);
     };
@@ -149,6 +224,7 @@ export default function InventoryPage() {
                                         <TableCell>GH₵{(item.unitPrice || 0).toFixed(2)}</TableCell>
                                         <TableCell>{item.currentHolderName || 'N/A'}</TableCell>
                                         <TableCell className="text-right space-x-2">
+                                            {canManage && <Button variant="outline" size="sm" onClick={() => handleOpenDialog('restockItem', item)}><ArchiveRestore className="mr-1 h-4 w-4"/> Restock</Button>}
                                             <Button variant="outline" size="sm" onClick={() => handleOpenDialog('history', item)}><History className="mr-1 h-4 w-4"/> History</Button>
                                             {canManage && item.status === 'Available' && <Button size="sm" onClick={() => handleOpenDialog('checkOut', item)}><ArrowLeftRight className="mr-1 h-4 w-4"/> Check Out</Button>}
                                             {canManage && item.status === 'In Use' && <Button size="sm" variant="secondary" onClick={() => handleCheckIn(item)}><Check className="mr-1 h-4 w-4"/> Check In</Button>}
@@ -180,6 +256,9 @@ export default function InventoryPage() {
                 )}
                 {activeDialog === 'history' && selectedItem && (
                     <TransactionHistoryDialog item={selectedItem} open={true} setOpen={handleCloseDialog} />
+                )}
+                 {activeDialog === 'restockItem' && selectedItem && (
+                    <RestockDialog item={selectedItem} open={true} onOpenChange={handleCloseDialog} onRestockComplete={forceRefetch} />
                 )}
             </Dialog>
         </div>
