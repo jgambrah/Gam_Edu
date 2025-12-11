@@ -1,65 +1,101 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Input Schema
+// --- SHARED TYPES ---
+const MessageSchema = z.object({
+  role: z.enum(['user', 'model']),
+  content: z.string()
+});
+
+// --- ACTION 1: THE OPPONENT (Existing) ---
 const DebateInputSchema = z.object({
   topic: z.string(),
-  userStance: z.string().optional(), // 'Pro' or 'Con' (optional)
-  history: z.array(z.object({
-    role: z.enum(['user', 'model']),
-    content: z.string()
-  })),
+  history: z.array(MessageSchema),
   lastMessage: z.string(),
 });
 
 export async function generateDebateResponse(input: z.infer<typeof DebateInputSchema>) {
   try {
-    // 1. Format history
     const historyText = input.history
       .map(m => `${m.role === 'user' ? 'Debater' : 'Opponent'}: ${m.content}`)
       .join('\n');
     
-    // 2. The "Debate Opponent" Persona
     const prompt = `
-      You are a skilled Debate Coach and Opponent in a formal debate setting.
-      
+      You are a skilled Debate Coach and Opponent.
       TOPIC: "${input.topic}"
       
-      YOUR GOAL: 
-      Challenge the user's arguments logically. Do not be mean, but do not simply agree. 
-      Play "Devil's Advocate". If they make a good point, acknowledge it but offer a counter-perspective.
+      GOAL: Challenge the user's arguments logically. Play "Devil's Advocate".
       
       INSTRUCTIONS:
-      1. Keep responses concise (under 3 sentences).
-      2. Ask ONE thought-provoking question at the end to keep the debate moving.
-      3. Look at the CONVERSATION HISTORY to maintain context.
+      1. Concise response (max 3 sentences).
+      2. End with ONE probing question.
+      3. Maintain context.
       
-      CONVERSATION HISTORY:
+      HISTORY:
       ${historyText}
       
-      CURRENT ARGUMENT FROM USER:
-      "${input.lastMessage}"
+      USER ARGUMENT: "${input.lastMessage}"
       
-      YOUR COUNTER-ARGUMENT:
+      YOUR COUNTER:
     `;
 
     const response = await ai.generate({
       prompt: prompt,
-      config: { temperature: 0.7 }, // Slightly creative for arguments
+      config: { temperature: 0.7 },
     });
 
-    const text = response.text;
-    
-    return { success: true, text: text };
+    return { success: true, text: response.text };
+  } catch (error: any) {
+    return { success: false, text: "I lost my train of thought.", error: error.message };
+  }
+}
+
+// --- ACTION 2: THE JUDGE (New) ---
+const EvaluationSchema = z.object({
+  logicScore: z.number().describe("Score out of 10 for logical consistency"),
+  clarityScore: z.number().describe("Score out of 10 for clarity of expression"),
+  rebuttalScore: z.number().describe("Score out of 10 for ability to counter-argue"),
+  feedback: z.string().describe("Constructive feedback on the user's performance"),
+  keyStrength: z.string().describe("One specific thing the user did well"),
+  areaForImprovement: z.string().describe("One specific thing to improve"),
+});
+
+export async function evaluateDebateAction(history: z.infer<typeof MessageSchema>[]) {
+  try {
+    const transcript = history
+      .map(m => `${m.role === 'user' ? 'User' : 'Opponent'}: ${m.content}`)
+      .join('\n');
+
+    const prompt = `
+      Act as an impartial Debate Judge.
+      Review the following debate transcript.
+      
+      Evaluate the USER (not the Opponent) based on:
+      1. Logic (Did their arguments make sense?)
+      2. Clarity (Was their language clear?)
+      3. Rebuttal (Did they actually answer the opponent's points?)
+      
+      TRANSCRIPT:
+      ${transcript}
+      
+      Provide scores (1-10) and constructive feedback. Output strictly JSON.
+    `;
+
+    const { output } = await ai.generate({
+      prompt: prompt,
+      output: { schema: EvaluationSchema },
+    });
+
+    const data = output;
+    if (!data) throw new Error("No evaluation returned");
+
+    return { success: true, data };
 
   } catch (error: any) {
-    console.error("Debate AI Error:", error);
-    return { 
-      success: false, 
-      text: "I'm having trouble processing that argument. Could you rephrase it?",
-      error: error.message 
-    };
+    console.error("Evaluation Error", error);
+    return { success: false, error: error.message };
   }
 }
