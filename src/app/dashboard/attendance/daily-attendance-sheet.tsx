@@ -15,12 +15,12 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle }from '@/components/ui/card';
-import { CalendarIcon, Loader2, CheckCircle2 } from 'lucide-react';
+import { CalendarIcon, Loader2, CheckCircle2, Bus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, startOfDay, getYear, getMonth } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase, FirestorePermissionError, errorEmitter } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -29,20 +29,20 @@ import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-// --- 1. LOCAL SCHEMA DEFINITION (FIXES DATA STRIPPING) ---
-// We define this here to ensure 'usesBusService' and 'studentName' are captured
-const extendedAttendanceRecordSchema = z.object({
+// --- SCHEMA ---
+// We explicitly include student details here to prevent them from being stripped
+const attendanceRecordSchema = z.object({
   id: z.string().optional(),
   studentId: z.string(),
-  studentName: z.string(), // Explicitly include this
+  studentName: z.string(), 
   status: z.enum(['Present', 'Absent', 'Late', 'Excused']),
   notes: z.string().optional(),
   classId: z.string(),
-  usesBusService: z.boolean().optional(), // Now a boolean
+  usesBusService: z.string().optional(), // Store as string "true"/"false" for hidden inputs
 });
 
 const attendanceFormSchema = z.object({
-    records: z.array(extendedAttendanceRecordSchema)
+    records: z.array(attendanceRecordSchema)
 });
 
 type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
@@ -108,7 +108,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 return;
             }
 
-            // 2. Get Existing Attendance
+            // 2. Get Existing Attendance for this date
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
                 where('classId', '==', selectedClassId),
@@ -128,7 +128,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                     classId: selectedClassId,
                     status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
                     notes: existingRecord?.notes || '',
-                    usesBusService: !!student.usesBusService,
+                    // CRITICAL: Pass the bus status to the form so we can use it later
+                    usesBusService: student.usesBusService ? "true" : "false", 
                 };
             });
 
@@ -151,98 +152,96 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         if (!firestore) return;
         setIsLoading(true);
         
-        const attendanceBatch = writeBatch(firestore);
+        const batch = writeBatch(firestore);
         
-        // 1. Save Attendance to Firestore
+        // 1. Save Attendance
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
-            // Omit studentName from the stored document, it's for display
-            const { studentName, ...dataToSave } = record; 
+            // Remove helper fields before saving to attendance collection
+            const { usesBusService, ...cleanRecord } = record; 
             
-            attendanceBatch.set(recordRef, {
-                ...dataToSave,
+            batch.set(recordRef, {
+                ...cleanRecord,
                 date: startOfDay(selectedDate)
             }, { merge: true });
         });
 
+        // 2. Process Billing (Only if Present/Late)
         try {
-            // Commit attendance first to ensure it's saved regardless of billing outcome
-            await attendanceBatch.commit();
-            toast({ title: 'Attendance Saved', description: 'Now processing associated bills...' });
-
-            // 2. FETCH BILLING RATES
+            // A. Get Rates
             let canteenRate = 0;
             let transportRate = 0;
 
-            try {
-                const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
-                if (canteenSnap.exists()) canteenRate = Number(canteenSnap.data().dailyRate) || 0;
+            const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
+            if (canteenSnap.exists()) canteenRate = Number(canteenSnap.data().dailyRate) || 0;
 
-                const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
-                if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
-            } catch (e) {
-                console.warn("Could not fetch billing rates:", e);
-            }
+            const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
+            if (transportSnap.exists()) transportRate = Number(transportSnap.data().dailyRate) || 0;
 
-            // 3. APPLY BILLS
-            const presentStudents = data.records.filter(r => r.status === 'Present' || r.status === 'Late');
-            if (presentStudents.length > 0 && (canteenRate > 0 || transportRate > 0)) {
-                
-                const billingBatch = writeBatch(firestore);
-                let billsCount = 0;
-                const dateStr = format(selectedDate, 'yyyy-MM-dd');
+            let billsCount = 0;
+            const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
-                for (const record of presentStudents) {
-                    // Canteen Bill
+            // B. Re-fetch student data to be 100% sure of bus status (Safer than trusting form state)
+            // This prevents "stale state" bugs where bus status might be lost
+            const studentDocs = await getDocs(query(collection(firestore, 'students'), where('classId', '==', selectedClassId)));
+            const studentMap = new Map(studentDocs.docs.map(d => [d.id, d.data() as Student]));
+
+            // C. Loop through attendance records
+            for (const record of data.records) {
+                // Only bill if Present or Late
+                if (record.status === 'Present' || record.status === 'Late') {
+                    
+                    const studentInfo = studentMap.get(record.studentId);
+                    if (!studentInfo) continue;
+
+                    // 1. Canteen Bill (Everyone Present gets this?)
+                    // Customize logic here: e.g. check if studentInfo.usesCanteen
                     if (canteenRate > 0) {
-                        const canteenRecordId = `canteen-${record.studentId}-${dateStr}`;
-                        const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
-                        billingBatch.set(financialRecordRef, {
-                            billedAmount: canteenRate,
+                        const billRef = doc(firestore, 'financialRecords', `canteen-${record.studentId}-${dateStr}`);
+                        batch.set(billRef, {
                             studentId: record.studentId,
                             studentName: record.studentName,
                             classId: record.classId,
                             type: 'Canteen Fee',
-                            description: `Lunch for ${format(selectedDate, 'PPP')}`,
+                            description: `Lunch for ${dateStr}`,
+                            billedAmount: canteenRate,
+                            amountPaid: 0,
                             status: 'Unpaid',
                             dueDate: selectedDate,
-                            createdAt: serverTimestamp(),
-                            amountPaid: 0,
+                            createdAt: serverTimestamp()
                         }, { merge: true });
                         billsCount++;
                     }
 
-                    // Transport Bill
-                    if (transportRate > 0 && record.usesBusService) {
-                        const transportRecordId = `transport-${record.studentId}-${dateStr}`;
-                        const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
-                        billingBatch.set(financialRecordRef, {
-                            billedAmount: transportRate,
+                    // 2. Transport Bill (Only if subscribed)
+                    // We check the FRESH data from Firestore (studentInfo), not just the form
+                    if (transportRate > 0 && studentInfo.usesBusService) {
+                        const billRef = doc(firestore, 'financialRecords', `transport-${record.studentId}-${dateStr}`);
+                        batch.set(billRef, {
                             studentId: record.studentId,
                             studentName: record.studentName,
                             classId: record.classId,
                             type: 'Transport Fee',
-                            description: `Bus Ride for ${format(selectedDate, 'PPP')}`,
+                            description: `Bus Ride for ${dateStr}`,
+                            billedAmount: transportRate,
+                            amountPaid: 0,
                             status: 'Unpaid',
                             dueDate: selectedDate,
-                            createdAt: serverTimestamp(),
-                             amountPaid: 0,
+                            createdAt: serverTimestamp()
                         }, { merge: true });
                         billsCount++;
                     }
                 }
-                
-                if (billsCount > 0) {
-                    await billingBatch.commit();
-                    toast({ title: 'Billing Complete', description: `${billsCount} financial records created/updated.` });
-                }
-            } else {
-                 toast({ title: 'Billing Skipped', description: 'No students present or no rates set.' });
             }
 
+            await batch.commit();
+            toast({ title: 'Success', description: `Attendance saved. ${billsCount} bills generated/updated.` });
+
         } catch (error: any) {
-            console.error("Submit/Billing Error:", error);
-            toast({ variant: 'destructive', title: 'Error During Billing', description: error.message || 'Could not save financial records.' });
+            console.error("Billing Error:", error);
+            // If permissions fail for billing, at least attendance might have failed too since it's one batch.
+            // Check Firestore Rules for 'financialRecords'.
+            toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to save data.' });
         } finally {
             setIsLoading(false);
         }
@@ -255,7 +254,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                 <CardDescription>Select a class and date.</CardDescription>
             </CardHeader>
             <CardContent>
-                {/* DATE & CLASS SELECTION */}
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
                     {!propClassId && (
                         <div className="flex-1">
@@ -282,7 +280,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
 
                 {isLoading && !studentsLoaded && <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>}
 
-                {/* STUDENT LIST */}
                 {studentsLoaded && (
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -290,12 +287,19 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                                 <div className="space-y-4">
                                     {fields.map((field, index) => (
                                         <Card key={field.id} className="p-4">
+                                            
+                                            {/* HIDDEN INPUTS: Crucial to keep data alive during submit */}
+                                            <input type="hidden" {...form.register(`records.${index}.studentName`)} defaultValue={field.studentName} />
+                                            <input type="hidden" {...form.register(`records.${index}.studentId`)} defaultValue={field.studentId} />
+                                            <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
+                                            <input type="hidden" {...form.register(`records.${index}.usesBusService`)} defaultValue={field.usesBusService} />
+
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                                                 <div className="flex flex-col">
                                                     <p className="font-medium">{field.studentName}</p>
-                                                    {field.usesBusService && (
+                                                    {field.usesBusService === "true" && (
                                                         <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit font-semibold flex items-center gap-1">
-                                                            Bus User
+                                                            <Bus className="h-3 w-3"/> Bus User
                                                         </span>
                                                     )}
                                                 </div>
@@ -326,7 +330,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
                                     ))}
                                 </div>
                              </ScrollArea>
-                            {fields.length > 0 && <Button type="submit" className="mt-6 w-full" disabled={isLoading}>{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Submit Attendance</Button>}
+                            {fields.length > 0 && <Button type="submit" className="mt-6 w-full" disabled={isLoading}>{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Submit Attendance & Generate Bills</Button>}
                             {fields.length === 0 && <p className="text-center text-muted-foreground p-8">No students found in this class.</p>}
                         </form>
                     </Form>
