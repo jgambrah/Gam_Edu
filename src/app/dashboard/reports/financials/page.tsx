@@ -8,7 +8,7 @@ import { collection, query, orderBy, where } from 'firebase/firestore';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { 
   Printer, Filter, TrendingUp, TrendingDown, Scale, 
-  BookOpen, FileBarChart, DollarSign, CalendarIcon, Loader2 
+  BookOpen, FileBarChart, DollarSign, CalendarIcon, Loader2, Landmark 
 } from 'lucide-react';
 
 // UI
@@ -166,7 +166,14 @@ function TrialBalance({ data }: { data: AccountBalance[] }) {
             </CardHeader>
             <CardContent>
                 <Table>
-                    <TableHeader><TableRow><TableHead>Code</TableHead><TableHead>Account</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead></TableRow></TableHeader>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Code</TableHead>
+                            <TableHead>Account</TableHead>
+                            <TableHead className="text-right">Debit</TableHead>
+                            <TableHead className="text-right">Credit</TableHead>
+                        </TableRow>
+                    </TableHeader>
                     <TableBody>
                         {data.sort((a,b) => a.code.localeCompare(b.code)).map(account => {
                             const balance = account.net;
