@@ -11,7 +11,7 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy, Microscope, Sparkles } from 'lucide-react';
+import { BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, PenSquare, Wand2, CheckCircle2, XCircle, Lightbulb, Trophy, Microscope, Sparkles, Atom, Database, TrendingUp, AlertCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRole } from '@/context/role-context';
 import { GrammarPractice } from './grammar-practice';
@@ -48,6 +48,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { generateElaLessonAction, GeneratedElaLesson } from '@/ai/flows/generate-ela-lesson';
 import { evaluateReadingSubmissionAction } from '@/ai/flows/evaluate-reading-submission';
+import { evaluateWritingAction } from '@/ai/flows/evaluate-writing-submission';
 
 
 interface LessonCard extends GeneratedElaLesson {
@@ -640,122 +641,232 @@ function ActiveChallengeDialog({
     open: boolean, 
     setOpen: (o: boolean) => void 
 }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
     const { toast } = useToast();
     
-    const [text, setText] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    // VIEW 1: SUBMISSION FORM
+    if (!existingSubmission) {
+        return (
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline">{challenge?.challengeType}</Badge>
+                        </div>
+                        <DialogTitle className="text-xl">{challenge?.title}</DialogTitle>
+                    </DialogHeader>
 
-    if (!challenge) return null;
+                    <div className="flex flex-1 gap-6 overflow-hidden min-h-0 pt-2">
+                        {/* LEFT SIDE: PROMPT */}
+                        <div className="w-1/3 flex flex-col border-r pr-6">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                <Lightbulb className="h-4 w-4 text-yellow-500"/> The Prompt
+                            </h4>
+                            <ScrollArea className="flex-1 bg-yellow-50/50 p-4 rounded-md border border-yellow-100">
+                                <p className="text-sm whitespace-pre-wrap leading-relaxed text-slate-800">
+                                    {challenge?.prompt}
+                                </p>
+                            </ScrollArea>
+                        </div>
 
-    const handleSubmit = async () => {
-        if (!user || !text.trim() || !firestore) return;
-        setIsSubmitting(true);
-        const submissionData = {
-            userId: user.uid,
-            challenge_id: challenge.id,
-            challenge_title: challenge.title,
-            type: 'Writing Challenge',
-            submission_text: text,
-            date_submitted: serverTimestamp(),
-            status: 'Submitted',
-            teacher_score: null,
-            teacher_feedback: ''
-        };
-
-        const submissionsCollection = collection(firestore, 'ela_user_submissions');
-        
-        addDoc(submissionsCollection, submissionData)
-        .then(async () => {
-            const leaderboardRef = doc(firestore, 'ela_leaderboard', user.uid);
-            const leaderboardData = {
-                 userId: user.uid,
-                 userName: user.displayName || user.email,
-                 profilePictureUrl: user.photoURL || '',
-                 total_challenges_completed: increment(1),
-            };
-            await setDoc(leaderboardRef, leaderboardData, { merge: true });
-
-            toast({ title: 'Success', description: 'Your work has been submitted for review.' });
-            setOpen(false);
-        })
-        .catch(error => {
-            const permissionError = new FirestorePermissionError({
-                path: submissionsCollection.path,
-                operation: 'create',
-                requestResourceData: submissionData
-            });
-            errorEmitter.emit('permission-error', permissionError);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your work.' });
-        })
-        .finally(() => setIsSubmitting(false));
-    };
-
+                        {/* RIGHT SIDE: EDITOR / STATUS */}
+                        <div className="w-2/3 flex flex-col">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                <PenSquare className="h-4 w-4"/> Your Response
+                            </h4>
+                            {challenge && <StudentSubmissionForm challenge={challenge} setOpen={setOpen} />}
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+    
+    // VIEW 2: VIEWING A SUBMITTED/GRADED PIECE
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
                 <DialogHeader>
                     <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline">{challenge.challengeType}</Badge>
-                        {existingSubmission && <Badge variant={existingSubmission.status === 'Graded' ? 'default' : 'secondary'}>{existingSubmission.status}</Badge>}
+                        <Badge variant="outline">{challenge?.challengeType}</Badge>
+                        <Badge variant={existingSubmission.status === 'Graded' ? 'default' : 'secondary'}>{existingSubmission.status}</Badge>
                     </div>
-                    <DialogTitle className="text-xl">{challenge.title}</DialogTitle>
+                    <DialogTitle className="text-xl">{challenge?.title}</DialogTitle>
                 </DialogHeader>
-
                 <div className="flex flex-1 gap-6 overflow-hidden min-h-0 pt-2">
-                    {/* LEFT SIDE: PROMPT */}
                     <div className="w-1/3 flex flex-col border-r pr-6">
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                            <Lightbulb className="h-4 w-4 text-yellow-500"/> The Prompt
-                        </h4>
+                        <h4 className="font-semibold mb-2 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-yellow-500"/> The Prompt</h4>
                         <ScrollArea className="flex-1 bg-yellow-50/50 p-4 rounded-md border border-yellow-100">
-                            <p className="text-sm whitespace-pre-wrap leading-relaxed text-slate-800">
-                                {challenge.prompt}
-                            </p>
+                            <p className="text-sm whitespace-pre-wrap leading-relaxed text-slate-800">{challenge?.prompt}</p>
                         </ScrollArea>
                     </div>
-
-                    {/* RIGHT SIDE: EDITOR / STATUS */}
                     <div className="w-2/3 flex flex-col">
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                            <PenSquare className="h-4 w-4"/> Your Response
-                        </h4>
-                        
-                        {existingSubmission ? (
-                            <ScrollArea className="flex-1 bg-muted/20 p-4 rounded-md border">
-                                <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif">
-                                    {existingSubmission.submission_text}
+                        <h4 className="font-semibold mb-2 flex items-center gap-2"><PenSquare className="h-4 w-4"/> Your Submission</h4>
+                        <ScrollArea className="flex-1 bg-muted/20 p-4 rounded-md border">
+                            <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif text-lg leading-relaxed">
+                                {existingSubmission.submission_text}
+                            </div>
+                            {existingSubmission.status === 'Graded' && (
+                                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                                    <p className="font-bold text-green-800 mb-1">Teacher Feedback (Score: {existingSubmission.teacher_score}/100)</p>
+                                    <p className="text-sm text-green-700">{existingSubmission.teacher_feedback || "Great job!"}</p>
                                 </div>
-                                {existingSubmission.status === 'Graded' && (
-                                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
-                                        <p className="font-bold text-green-800 mb-1">Teacher Feedback (Score: {existingSubmission.teacher_score}/100)</p>
-                                        <p className="text-sm text-green-700">{existingSubmission.teacher_feedback || "Great job!"}</p>
-                                    </div>
-                                )}
-                            </ScrollArea>
-                        ) : (
-                            <Textarea 
-                                className="flex-1 resize-none font-serif text-lg p-4 leading-relaxed bg-white" 
-                                placeholder="Start writing here..."
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
-                            />
-                        )}
+                            )}
+                        </ScrollArea>
                     </div>
                 </div>
-
-                <DialogFooter className="pt-4 border-t mt-4">
-                    {existingSubmission ? (
-                        <Button onClick={() => setOpen(false)} variant="secondary">Close View</Button>
-                    ) : (
-                        <Button onClick={handleSubmit} disabled={isSubmitting || !text.trim()}>
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Submit Work
-                        </Button>
-                    )}
+                 <DialogFooter className="pt-4 mt-4 border-t">
+                    <Button onClick={() => setOpen(false)} variant="secondary">Close</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+    );
+}
+
+function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingChallenge, setOpen: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [aiResult, setAiResult] = useState<any>(null); // Store the report card
+
+    const form = useForm<{ submission_text: string }>({
+        defaultValues: { submission_text: '' },
+        resolver: zodResolver(z.object({ submission_text: z.string().min(10, "Please write at least a few sentences.") }))
+    });
+
+    async function onSubmit(values: { submission_text: string }) {
+        if (!user || !firestore) return;
+        setIsSubmitting(true);
+
+        try {
+            // 1. Get AI Evaluation First
+            const evaluation = await evaluateWritingAction({
+                prompt: challenge.prompt,
+                studentText: values.submission_text,
+                type: challenge.challengeType
+            });
+
+            const feedbackData = evaluation.success && evaluation.data ? evaluation.data : null;
+            
+            // 2. Save to Firestore (Including AI Feedback)
+            await addDocumentNonBlocking(collection(firestore, 'ela_user_submissions'), {
+                userId: user.uid,
+                challenge_id: challenge.id,
+                challenge_title: challenge.title,
+                type: 'Writing Challenge',
+                submission_text: values.submission_text,
+                date_submitted: serverTimestamp(),
+                status: 'Graded', // Auto-graded by AI
+                
+                // Save AI Data
+                teacher_score: feedbackData ? feedbackData.score : null, 
+                teacher_feedback: feedbackData ? feedbackData.summary : "Pending review",
+                ai_detailed_feedback: feedbackData // Store full object for detailed view
+            });
+
+            // 3. Show Result in UI instead of closing immediately
+            if (feedbackData) {
+                setAiResult(feedbackData);
+                toast({ title: 'Submitted!', description: 'Your work has been graded by AI.' });
+            } else {
+                toast({ title: 'Submitted', description: 'Your work has been sent to the teacher.' });
+                setOpen(false);
+            }
+
+        } catch (error) {
+            console.error('Error submitting work:', error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not submit your work.' });
+            setOpen(false);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+    
+    // VIEW 2: AI REPORT CARD (Shows after successful submit)
+    if (aiResult) {
+        return (
+            <div className="space-y-6 py-2">
+                <div className="flex items-center justify-between bg-slate-50 p-4 rounded-lg border">
+                    <div>
+                        <h3 className="font-bold text-lg text-slate-800">Assessment Complete</h3>
+                        <p className="text-sm text-slate-500">Here is how you did:</p>
+                    </div>
+                    <div className="text-right">
+                        <span className="block text-xs font-bold text-slate-400 uppercase">Score</span>
+                        <span className={`text-3xl font-bold ${aiResult.score >= 70 ? 'text-green-600' : 'text-orange-500'}`}>
+                            {aiResult.score}/100
+                        </span>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="p-3 rounded-md bg-blue-50 text-blue-800 border border-blue-100">
+                        <p className="text-sm italic">"{aiResult.summary}"</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <h4 className="text-xs font-bold uppercase text-green-600 flex items-center gap-1">
+                                <CheckCircle2 className="h-3 w-3"/> Strengths
+                            </h4>
+                            <ul className="text-sm space-y-1 list-disc pl-4 text-slate-700">
+                                {aiResult.strengths.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                            </ul>
+                        </div>
+                        <div className="space-y-2">
+                            <h4 className="text-xs font-bold uppercase text-orange-600 flex items-center gap-1">
+                                <TrendingUp className="h-3 w-3"/> To Improve
+                            </h4>
+                            <ul className="text-sm space-y-1 list-disc pl-4 text-slate-700">
+                                {aiResult.improvements.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="p-4 rounded-md border border-yellow-200 bg-yellow-50">
+                        <h4 className="text-xs font-bold uppercase text-yellow-700 flex items-center gap-1 mb-2">
+                            <Lightbulb className="h-3 w-3"/> AI Writing Tip
+                        </h4>
+                        <p className="text-sm text-slate-700">
+                            <span className="font-semibold">Try rewriting a sentence like this:</span> <br/>
+                            "{aiResult.exampleRewrite}"
+                        </p>
+                    </div>
+                </div>
+
+                <Button onClick={() => setOpen(false)} className="w-full">Done</Button>
+            </div>
+        );
+    }
+
+    // VIEW 1: SUBMISSION FORM
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="submission_text" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Your Response</FormLabel>
+                        <FormControl>
+                            <Textarea 
+                                {...field} 
+                                rows={10} 
+                                placeholder="Type your response here..." 
+                                className="font-serif text-lg leading-relaxed p-4 resize-none"
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}/>
+                <Button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting ? (
+                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing & Submitting...</>
+                    ) : (
+                        "Submit for AI Grading"
+                    )}
+                </Button>
+            </form>
+        </Form>
     );
 }
 
@@ -1519,46 +1630,6 @@ function ManageWritingChallenges() {
             )}
         </>
     );
-}
-
-function ManageDrills() {
-    const firestore = useFirestore();
-    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_grammar_drills')) : null, [firestore]));
-    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
-
-    return (
-        <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-                <div>
-                    <CardTitle>Grammar Drill Bank</CardTitle>
-                    <CardDescription>Manage the collection of grammar problems for student practice sessions.</CardDescription>
-                </div>
-                 <div className="flex gap-2">
-                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
-                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
-                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice grammar questions for any topic.</DialogDescription></DialogHeader><AiProblemGenerator subject="ELA Grammar" setOpen={setIsAiFormOpen} /></DialogContent>
-                    </Dialog>
-                    {/* Placeholder for manual creation if needed */}
-                </div>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? <Skeleton className="h-40 w-full" /> : (
-                <Table>
-                    <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Type</TableHead><TableHead>Question</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {drills?.map(d => (
-                            <TableRow key={d.id}>
-                                <TableCell>{d.topic}</TableCell>
-                                <TableCell><Badge variant="secondary">{d.type}</Badge></TableCell>
-                                <TableCell className="max-w-md truncate">{d.question_prompt}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                )}
-            </CardContent>
-        </Card>
-    )
 }
 
 function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean) => void; onSuccess: () => void; }) {
