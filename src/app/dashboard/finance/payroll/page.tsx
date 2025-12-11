@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, writeBatch, where, getDocs, runTransaction, increment } from 'firebase/firestore';
 import { 
@@ -20,9 +20,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Staff, StaffPayrollConfig, PayrollSettings, PayrollRecord } from '@/lib/types';
-import { PayslipDialog } from '../../payroll/payslip-dialog';
+import { PayslipDialog } from '../payroll/payslip-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 
 // --- CONSTANTS: GHANA 2024 TAX TABLE (Default) ---
@@ -45,7 +49,7 @@ function calculatePayslip(staff: any, config: any) {
     const grossSalary = basic + totalAllowances;
 
     // 2. SSNIT (Tier 1 & 2 Employee Share - 5.5%)
-    const ssnitEmployee = basic * ((config?.ssnitEmployeeRate || 5.5) / 100);
+    const ssnitEmployee = basic * ((config?.ssnitEmployeeContributionRate || 5.5) / 100);
 
     // 3. Provident Fund (Tier 3 - Tax Deductible up to 16.5%)
     const tier3 = basic * ((staff.tier3Contribution || 0) / 100);
@@ -86,7 +90,6 @@ function calculatePayslip(staff: any, config: any) {
         payeTax,
         netSalary,
         employerSSNIT,
-        totalDeductions,
         totalCostToCompany: grossSalary + employerSSNIT,
         allowances: staff.allowances || [],
         deductions: staff.deductions || [],
