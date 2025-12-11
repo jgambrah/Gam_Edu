@@ -17,6 +17,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet, CheckSquare, Coffee } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -772,9 +773,12 @@ export default function AccountsPage() {
             <div className="flex justify-between items-center">
                 <div><CardTitle>Student Billing</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
                 <div className="flex gap-2">
-                    <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-                        <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
-                    </Button>
+                    <Dialog open={activeForm === 'daily'} onOpenChange={(open) => !open && setActiveForm(null)}>
+                        <Button variant={activeForm === 'daily' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'daily' ? null : 'daily')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                            <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
+                        </Button>
+                        <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />
+                    </Dialog>
                     <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
                         <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
                     </Button>
@@ -785,7 +789,6 @@ export default function AccountsPage() {
             </div>
             </CardHeader>
             <CardContent>
-                {activeForm === 'daily' && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
                 {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
                 {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
             </CardContent>
@@ -850,9 +853,6 @@ export default function AccountsPage() {
         </CardContent>
       </Card>
       
-      <Dialog open={activeForm === 'daily'} onOpenChange={(open) => !open && setActiveForm(null)}>
-        {activeForm === 'daily' && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
-      </Dialog>
       <Dialog open={!!dialogState.record} onOpenChange={(open) => !open && handleCloseDialog()}>
           {dialogState.record && (dialogState.type === 'payment' ? <RecordPaymentDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} /> : <ApplyWaiverDialog record={dialogState.record} setOpen={handleCloseDialog} onUpdate={forceRefetch} />)}
       </Dialog>
