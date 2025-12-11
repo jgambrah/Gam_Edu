@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -688,7 +688,7 @@ export default function AccountsPage() {
   const firestore = useFirestore();
   const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver'; record: FinancialRecord | null }>({ type: 'payment', record: null });
+  const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver', record: FinancialRecord | null }>({ type: 'payment', record: null });
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
   const [transactionDetail, setTransactionDetail] = useState<FinancialRecord | null>(null);
 
@@ -796,7 +796,7 @@ export default function AccountsPage() {
             <div className="flex justify-between items-center">
                 <div><CardTitle>Student Billing</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
                 <div className="flex gap-2">
-                    <Dialog open={activeForm === 'daily'} onOpenChange={(open) => !open && setActiveForm(null)}>
+                    <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
                         <DialogTrigger asChild>
                             <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
                                 <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
@@ -912,5 +912,3 @@ export default function AccountsPage() {
     </div>
   );
 }
-
-    
