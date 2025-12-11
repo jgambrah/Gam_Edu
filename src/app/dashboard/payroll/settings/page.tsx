@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -184,6 +186,8 @@ function RetrospectiveBilling() {
         to: new Date(),
     });
 
+    const form = useForm(); // Create a dummy form to provide context
+
     const handleReprocess = async () => {
         if (!firestore || !dateRange?.from) {
             toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range.' });
@@ -285,28 +289,32 @@ function RetrospectiveBilling() {
                 <CardTitle className="flex items-center gap-2"><RefreshCw/> Retrospective Billing</CardTitle>
                 <CardDescription>Recalculate and apply fees for a past date range. Use this if rates have changed or if billing failed previously.</CardDescription>
             </CardHeader>
-            <CardContent className="flex items-end gap-4">
-                 <div className="flex-1">
-                    <FormLabel>Date Range</FormLabel>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date range</span>)}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
-                        </PopoverContent>
-                    </Popover>
-                 </div>
-                 <Button onClick={handleReprocess} disabled={isProcessing}>
-                    {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-                    Reprocess
-                </Button>
+            <CardContent>
+                <Form {...form}>
+                    <form className="flex items-end gap-4">
+                        <FormItem className="flex-1">
+                            <FormLabel>Date Range</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date range</span>)}
+                                </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
+                                </PopoverContent>
+                            </Popover>
+                        </FormItem>
+                        <Button type="button" onClick={handleReprocess} disabled={isProcessing}>
+                            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                            Reprocess
+                        </Button>
+                    </form>
+                </Form>
             </CardContent>
         </Card>
     );
