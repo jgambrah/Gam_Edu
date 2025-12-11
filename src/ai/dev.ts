@@ -24,4 +24,5 @@ import '@/ai/flows/live-classroom.ts';
 import '@/ai/flows/generate-study-plan-flow.ts';
 import '@/ai/flows/ai-tutor-flow.ts';
 import '@/ai/flows/debate-flow.ts';
+import '@/ai/flows/evaluate-reading-submission.ts';
     
