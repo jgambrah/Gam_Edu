@@ -2,8 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore } from '@/firebase'; 
-import { useRole } from '@/context/role-context';
+import { useFirestore, useRole } from '@/context/role-context';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -86,6 +85,7 @@ export default function FixBillingPage() {
             const detectedMissing: MissingBillItem[] = [];
 
             // D. Compare
+            let missingCounter = 0; // To ensure unique IDs
             for (const attDoc of attendanceSnap.docs) {
                 const att = attDoc.data();
                 const studentName = att.studentName || "Unknown Student";
@@ -96,7 +96,7 @@ export default function FixBillingPage() {
                     
                     if (!existingBillIds.has(expectedCanteenId)) {
                         detectedMissing.push({
-                            id: expectedCanteenId,
+                            id: `${expectedCanteenId}-${missingCounter++}`,
                             studentId: att.studentId,
                             studentName: studentName,
                             classId: att.classId,
@@ -114,7 +114,7 @@ export default function FixBillingPage() {
                     const expectedTransportId = `transport-${att.studentId}-${dateStr}`;
                     if (!existingBillIds.has(expectedTransportId)) {
                         detectedMissing.push({
-                            id: expectedTransportId,
+                            id: `${expectedTransportId}-${missingCounter++}`,
                             studentId: att.studentId,
                             studentName: studentName,
                             classId: att.classId,
@@ -152,7 +152,8 @@ export default function FixBillingPage() {
         const itemsToProcess = missingBills.filter(item => selectedItems.includes(item.id));
         
         itemsToProcess.forEach(item => {
-            const ref = doc(firestore, 'financialRecords', item.id);
+            const cleanId = item.id.substring(0, item.id.lastIndexOf('-'));
+            const ref = doc(firestore, 'financialRecords', cleanId);
             batch.set(ref, {
                 billedAmount: item.amount,
                 studentId: item.studentId,
@@ -247,7 +248,7 @@ export default function FixBillingPage() {
                                             <Checkbox checked={selectedItems.length === missingBills.length && missingBills.length > 0} onCheckedChange={toggleSelectAll} />
                                         </TableHead>
                                         <TableHead>Student</TableHead>
-                                        <TableHead>Missing Item</TableHead>
+                                        <TableHead>Missing Fee</TableHead>
                                         <TableHead>Amount</TableHead>
                                         <TableHead>Reason</TableHead>
                                     </TableRow>
