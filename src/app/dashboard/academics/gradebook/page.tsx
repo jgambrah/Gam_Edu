@@ -4,9 +4,9 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { collection, query, where, orderBy } from 'firebase/firestore';
 import { 
-  TrendingUp, User, PlusCircle, Printer, Trophy, BookOpen, AlertCircle, FileText, Loader2, ArrowRight, GraduationCap, CheckSquare, Info 
+  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, CheckCircle, XCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -19,18 +19,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Label } from '@/components/ui/label';
-import { AssessmentFeedbackForm } from '@/app/dashboard/assessments/assessment-feedback-form';
-import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// Imports
+import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
-
-// Define Subject Type locally
-type Subject = { id: string; name: string; code?: string };
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
@@ -41,140 +38,135 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };
 }
 
-// --- SUB-COMPONENT: Student Promotion Tool ---
-function PromoteStudentsTab({ classes }: { classes: Class[] | undefined }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    
-    const [fromClassId, setFromClassId] = useState('');
-    const [toClassId, setToClassId] = useState('');
-    const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set());
-    const [isPromoting, setIsPromoting] = useState(false);
-
-    // Fetch students from the "Source" class
-    const studentsQuery = useMemoFirebase(() => 
-        (firestore && fromClassId) ? query(collection(firestore, 'students'), where('classId', '==', fromClassId)) : null,
-    [firestore, fromClassId]);
-    
-    const { data: students, isLoading } = useCollection<Student>(studentsQuery);
-
-    const toggleStudent = (id: string) => {
-        const newSet = new Set(selectedStudentIds);
-        if (newSet.has(id)) newSet.delete(id);
-        else newSet.add(id);
-        setSelectedStudentIds(newSet);
-    };
-
-    const toggleAll = () => {
-        if (!students) return;
-        if (selectedStudentIds.size === students.length) {
-            setSelectedStudentIds(new Set());
-        } else {
-            setSelectedStudentIds(new Set(students.map(s => s.uid)));
-        }
-    };
-
-    const handlePromote = async () => {
-        if (!firestore || selectedStudentIds.size === 0) return;
-        if (!toClassId) {
-            toast({ variant: 'destructive', title: "Select Destination", description: "Please select which class to move them to." });
-            return;
-        }
-
-        if (!confirm(`Are you sure you want to move ${selectedStudentIds.size} students?`)) return;
-
-        setIsPromoting(true);
-        try {
-            const batch = writeBatch(firestore);
-            
-            selectedStudentIds.forEach(studentId => {
-                const studentRef = doc(firestore, 'students', studentId);
-                
-                if (toClassId === 'GRADUATED') {
-                    batch.update(studentRef, { classId: 'GRADUATED', status: 'Alumni', graduatedAt: serverTimestamp() });
-                } else {
-                    batch.update(studentRef, { classId: toClassId });
-                }
-            });
-
-            await batch.commit();
-            toast({ title: "Promotion Successful", description: `Moved ${selectedStudentIds.size} students.` });
-            setSelectedStudentIds(new Set());
-            setFromClassId('');
-        } catch (e: any) {
-            console.error(e);
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setIsPromoting(false);
-        }
-    };
+// --- SUB-COMPONENT: Transaction Detail Modal ---
+function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
+    if (!record) return null;
 
     return (
-        <Card className="border-t-4 border-t-emerald-600">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <GraduationCap className="h-6 w-6 text-emerald-600"/> Student Promotion
-                </CardTitle>
-                <CardDescription>Move students to the next class at the end of the academic year.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end bg-slate-50 p-4 rounded-lg border">
-                    <div className="space-y-2">
-                        <Label>From Class (Current)</Label>
-                        <Select value={fromClassId} onValueChange={setFromClassId}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Source Class" /></SelectTrigger>
-                            <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                        </Select>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Details
+                    </DialogTitle>
+                    <DialogDescription>Transaction ID: {record.id.slice(0, 8)}...</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">Type</p>
+                            <Badge variant="outline">{record.type}</Badge>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">Status</p>
+                            <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
+                        </div>
                     </div>
-                    <div className="flex justify-center pb-2"><ArrowRight className="h-6 w-6 text-slate-400" /></div>
-                    <div className="space-y-2">
-                        <Label>To Class (Next Level)</Label>
-                        <Select value={toClassId} onValueChange={setToClassId}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Destination" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="GRADUATED" className="text-red-600 font-bold">🎓 Mark as Graduated</SelectItem>
-                                {classes?.filter(c => c.id !== fromClassId).map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                    
+                    <div className="space-y-1">
+                         <p className="text-xs font-medium text-muted-foreground">Description</p>
+                         <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
                     </div>
-                </div>
 
-                {fromClassId && (
-                    <div className="border rounded-md">
-                        <div className="p-2 border-b bg-slate-100 flex justify-between items-center">
-                            <h4 className="font-semibold text-sm pl-2">Select Students ({selectedStudentIds.size}/{students?.length || 0})</h4>
-                            <Button variant="ghost" size="sm" onClick={toggleAll}>{students && selectedStudentIds.size === students.length ? "Unselect All" : "Select All"}</Button>
+                    <div className="grid grid-cols-2 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                        <div>
+                            <p className="text-xs text-slate-500 mb-1">Billed Amount</p>
+                            <p className="text-lg font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
                         </div>
-                        <div className="max-h-[400px] overflow-y-auto">
-                            {isLoading ? <div className="p-8 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></div> : 
-                            !students || students.length === 0 ? <div className="p-8 text-center text-muted-foreground">No students in this class.</div> : (
-                                <Table>
-                                    <TableHeader><TableRow><TableHead className="w-[50px]">Select</TableHead><TableHead>Student Name</TableHead><TableHead>Student ID</TableHead></TableRow></TableHeader>
-                                    <TableBody>
-                                        {students.map(student => (
-                                            <TableRow key={student.uid} className={selectedStudentIds.has(student.uid) ? "bg-emerald-50" : ""}>
-                                                <TableCell>
-                                                    <div className={`h-5 w-5 border rounded cursor-pointer flex items-center justify-center ${selectedStudentIds.has(student.uid) ? 'bg-emerald-600 border-emerald-600' : 'border-slate-300'}`} onClick={() => toggleStudent(student.uid)}>
-                                                        {selectedStudentIds.has(student.uid) && <CheckSquare className="h-3 w-3 text-white" />}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="font-medium">{student.firstName} {student.lastName}</TableCell>
-                                                <TableCell className="text-muted-foreground">{student.id.slice(0,8)}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            )}
+                        <div className="text-right">
+                            <p className="text-xs text-slate-500 mb-1">Amount Paid</p>
+                            <p className="text-lg font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
                         </div>
                     </div>
-                )}
-                <div className="flex justify-end pt-4 border-t">
-                    <Button onClick={handlePromote} disabled={isPromoting || selectedStudentIds.size === 0 || !toClassId} className="bg-emerald-600 hover:bg-emerald-700 w-full md:w-auto">
-                        {isPromoting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <GraduationCap className="mr-2 h-4 w-4"/>} Promote {selectedStudentIds.size} Students
-                    </Button>
+
+                    <Separator />
+                    
+                    <div className="space-y-2 text-xs text-slate-500">
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> Created At:</span>
+                            <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
+                            <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
+                        </div>
+                    </div>
                 </div>
-            </CardContent>
-        </Card>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// --- SUB-COMPONENT: Fee History (Updated Table) ---
+function FeeHistoryDetail({ student, financialRecords }: { student: Student; financialRecords: FinancialRecord[] }) {
+    const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | null>(null);
+
+    const studentRecords = useMemo(() => {
+        return (financialRecords || [])
+            .filter(r => r.studentId === student.uid)
+            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)); // Descending order
+    }, [financialRecords, student.uid]);
+
+    if (studentRecords.length === 0) {
+        return (
+            <div className="text-center py-12 border-2 border-dashed rounded-lg m-4">
+                <p className="text-muted-foreground">No financial records found for this student.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-4">
+            <div className="border rounded-md overflow-hidden">
+                <Table>
+                    <TableHeader className="bg-slate-50">
+                        <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead className="text-right">Billed</TableHead>
+                            <TableHead className="text-right">Paid</TableHead>
+                            <TableHead className="text-center">Status</TableHead>
+                            <TableHead className="w-[50px]"></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {studentRecords.map((record) => (
+                            <TableRow key={record.id} className="hover:bg-slate-50/50">
+                                <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                                    {record.createdAt ? format(record.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}
+                                </TableCell>
+                                <TableCell className="max-w-[200px]">
+                                    <div className="flex flex-col">
+                                        <span className="font-medium text-sm truncate">{record.description}</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-wide">{record.type}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-right font-mono">GH₵{record.billedAmount.toFixed(2)}</TableCell>
+                                <TableCell className="text-right font-mono text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</TableCell>
+                                <TableCell className="text-center">
+                                    {record.status === 'Paid' ? (
+                                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">Paid</Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="text-red-600 border-red-200 bg-red-50">Unpaid</Badge>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-indigo-600" onClick={() => setSelectedRecord(record)}>
+                                        <Eye className="h-4 w-4"/>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+
+            <TransactionDetailModal 
+                record={selectedRecord} 
+                open={!!selectedRecord} 
+                setOpen={(val) => !val && setSelectedRecord(null)} 
+            />
+        </div>
     );
 }
 
@@ -184,61 +176,34 @@ function StudentGradesDetail({
     assessments, 
     rank, 
     totalStudents,
-    year, 
     term,
-    subjectsList 
+    year 
 }: { 
     student: Student; 
     assessments: Assessment[];
     rank: number;
     totalStudents: number;
-    year: string;
     term: string;
-    subjectsList: Subject[] | undefined;
+    year: string;
 }) {
-    // 1. Create Lookup Map (ID -> Name)
-    const subjectMap = useMemo(() => {
-        const map: Record<string, string> = {};
-        if (subjectsList) {
-            subjectsList.forEach(s => {
-                map[s.id] = s.name; // ID -> Name
-                map[s.id.trim()] = s.name; // Trimmed ID -> Name (Safety)
-                if (s.name) map[s.name] = s.name; // Map Name to Name (self-reference)
-            });
-        }
-        return map;
-    }, [subjectsList]);
-
-    // 2. Group by Subject
+    // Group by Subject
     const subjectGrades = useMemo(() => {
         const subjects: Record<string, { total: number, max: number, count: number }> = {};
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
-            
-            let displaySub = 'General';
-
-            const rawSubject = a.subjectId || (a as any).subject || '';
-            
-            if (rawSubject && subjectMap[rawSubject]) {
-                displaySub = subjectMap[rawSubject];
-            } else if (rawSubject) {
-                const isLikelyID = rawSubject.length > 15 && !rawSubject.includes(' ');
-                displaySub = isLikelyID ? `Unknown Subject (${rawSubject.slice(0,4)}...)` : rawSubject;
-            }
-
-            if (!subjects[displaySub]) subjects[displaySub] = { total: 0, max: 0, count: 0 };
-            
-            subjects[displaySub].total += a.score || 0;
-            subjects[displaySub].max += a.maxScore || 0;
-            subjects[displaySub].count++;
+            const sub = a.subjectId || 'General';
+            if (!subjects[sub]) subjects[sub] = { total: 0, max: 0, count: 0 };
+            subjects[sub].total += a.score || 0;
+            subjects[sub].max += a.maxScore || 0;
+            subjects[sub].count++;
         });
 
         return Object.entries(subjects).map(([name, data]) => {
             const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
             return { name, percentage, ...getGrade(percentage) };
         });
-    }, [assessments, student.uid, subjectMap]);
+    }, [assessments, student.uid]);
 
     const overallAverage = subjectGrades.length > 0 
         ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
@@ -266,18 +231,15 @@ function StudentGradesDetail({
                         </div>
                     </CardContent>
                 </Card>
-                
-                {/* PDF REPORT CARD BUTTON */}
                 <Card className="bg-white border-slate-200 shadow-sm">
-                     <CardContent className="p-4 flex flex-col justify-center h-full">
-                        <GenerateReportCard 
+                     <CardContent className="p-4 flex flex-col justify-center h-full items-center">
+                        <GenerateReportCard
                             student={student}
-                            assessments={assessments.filter(a => a.studentId === student.uid)}
+                            assessments={assessments || []}
                             year={year}
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
-                            subjectsList={subjectsList}
                         />
                      </CardContent>
                 </Card>
@@ -307,36 +269,13 @@ function StudentGradesDetail({
                     </TableBody>
                 </Table>
             </div>
-            
-            {/* Raw Assessments List */}
-            <div className="pt-4 border-t">
-                <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-slate-600"><BookOpen className="h-4 w-4"/> Detailed Assessment Log</h4>
-                <div className="space-y-1">
-                    {assessments.filter(a => a.studentId === student.uid).map(a => {
-                        let displaySub = 'General';
-                        const rawSubject = a.subjectId || (a as any).subject || '';
-                        if (rawSubject && subjectMap[rawSubject]) displaySub = subjectMap[rawSubject];
-                        else if (rawSubject) displaySub = rawSubject;
-
-                        return (
-                            <div key={a.id} className="flex justify-between text-sm py-2 px-3 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-colors">
-                                <div className="flex flex-col">
-                                    <span className="font-medium">{a.assessmentName}</span>
-                                    <span className="text-xs text-slate-400">{displaySub} • {a.assessmentType}</span>
-                                </div>
-                                <span className="font-mono font-medium">{a.score}/{a.maxScore}</span>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
         </div>
     );
 }
 
 // --- MAIN PAGE ---
 export default function GradebookManager() {
-  const { user, isUserLoading } = useUser(); 
+  const { user, isUserLoading } = useUser();
   const { role, isRoleLoading } = useRole();
   const firestore = useFirestore();
 
@@ -346,21 +285,17 @@ export default function GradebookManager() {
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
 
-  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role);
+  const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-  // 1. Fetch Classes 
+  // 1. Fetch Classes (Correctly handled for both Admin and Teacher)
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
-      if (role === 'Administrator' || role === 'Director') {
-          return query(collection(firestore, 'classes'));
-      }
-      if (role === 'Teacher') {
-          return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-      }
+      if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
+      if (role === 'Teacher') return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
       return null;
   }, [firestore, user, role, isStaff]);
   
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+  const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
   // 2. Fetch Students
   const studentsQuery = useMemoFirebase(() => 
@@ -385,12 +320,6 @@ export default function GradebookManager() {
     (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
-
-  // 5. FETCH SUBJECTS LIST
-  const subjectsQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'subjects')) : null, 
-  [firestore]);
-  const { data: allSubjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
   // --- DERIVED DATA ---
   
@@ -423,7 +352,7 @@ export default function GradebookManager() {
     return financials;
   }, [students, financialRecords]);
 
-  const isLoading = isUserLoading || isRoleLoading || isLoadingClasses || isLoadingSubjects || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
+  const isLoading = isUserLoading || isRoleLoading || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
 
   if (!isStaff && !isLoading) {
       return <div className="p-8 text-center text-red-500">Access Denied. Staff only.</div>;
@@ -435,7 +364,7 @@ export default function GradebookManager() {
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
                 <div className="flex gap-2">
@@ -444,12 +373,13 @@ export default function GradebookManager() {
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
                         disabled={!selectedClassId}
                     >
-                        <PlusCircle className="mr-2 h-4 w-4" /> Enter Grades
+                        Enter Grades
                     </Button>
                 </div>
             </div>
         </CardHeader>
         
+        {/* FILTERS */}
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
@@ -472,127 +402,106 @@ export default function GradebookManager() {
                     <SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} />
                 </SelectTrigger>
                 <SelectContent>
-                    {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    {teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                 </SelectContent>
              </Select>
           </div>
         </CardContent>
       </Card>
 
+      {/* GRADE ENTRY FORM */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
-              <AssessmentFeedbackForm classId={selectedClassId} classes={classes || []} />
+              <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
           </div>
       )}
       
-      <Tabs defaultValue="academics" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-            <TabsTrigger value="academics">Report Cards</TabsTrigger>
-            {(role === 'Administrator' || role === 'Director') && (
-                <TabsTrigger value="promotion">Promote Class</TabsTrigger>
-            )}
-        </TabsList>
-
-        <TabsContent value="academics" className="mt-6">
-            {selectedClassId && (
-                <Card>
-                    <CardHeader className="py-4 px-6 border-b bg-white">
-                        <CardTitle className="text-lg">Class Performance Report</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        {isLoading ? (
-                            <div className="flex flex-col items-center py-12 gap-2 text-muted-foreground">
-                                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                                <p>Compiling results...</p>
-                            </div>
-                        ) :
-                        rankedStudents.length > 0 ? (
-                        <Accordion type="single" collapsible className="w-full">
-                            {rankedStudents.map((student, index) => {
-                                const financials = studentFinancials[student.uid] || { balance: 0 };
-                                const rank = index + 1; 
-                                
-                                return (
-                                    <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
-                                        <AccordionTrigger className="hover:no-underline py-4">
-                                            <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
-                                                        {rank}
-                                                    </div>
-                                                    <div className="text-left">
-                                                        <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
-                                                        <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
-                                                        {financials.balance > 0 ? `Owes: GH₵${financials.balance}` : 'Fees Paid'}
-                                                    </Badge>
-                                                    <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>
-                                                        Avg: {student.average.toFixed(1)}%
-                                                    </Badge>
-                                                </div>
+      {/* STUDENT LIST */}
+      {selectedClassId && (
+        <Card>
+            <CardHeader className="py-4 px-6 border-b bg-white">
+                <CardTitle className="text-lg">Class Performance Report</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                {isLoading ? (
+                    <div className="flex flex-col items-center py-12 gap-2 text-muted-foreground">
+                        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                        <p>Compiling results...</p>
+                    </div>
+                ) :
+                rankedStudents.length > 0 ? (
+                <Accordion type="single" collapsible className="w-full">
+                    {rankedStudents.map((student, index) => {
+                        const financials = studentFinancials[student.uid] || { balance: 0 };
+                        const rank = index + 1; 
+                        
+                        return (
+                            <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
+                                <AccordionTrigger className="hover:no-underline py-4">
+                                    <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
+                                        
+                                        <div className="flex items-center gap-3">
+                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                {rank}
                                             </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="p-0 border-t bg-slate-50/50">
-                                            <Tabs defaultValue="academics" className="w-full">
-                                                <div className="px-4 pt-2 border-b bg-white">
-                                                    <TabsList className="bg-transparent h-10 p-0">
-                                                        <TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Report Card</TabsTrigger>
-                                                        <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Fee History</TabsTrigger>
-                                                    </TabsList>
-                                                </div>
+                                            <div className="text-left">
+                                                <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
+                                                <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
+                                            </div>
+                                        </div>
 
-                                                <TabsContent value="academics" className="mt-0">
-                                                    <StudentGradesDetail 
-                                                        student={student} 
-                                                        assessments={assessments || []} 
-                                                        rank={rank}
-                                                        totalStudents={rankedStudents.length}
-                                                        year={selectedYear}
-                                                        term={selectedTerm}
-                                                        subjectsList={allSubjects} 
-                                                    />
-                                                </TabsContent>
+                                        <div className="flex items-center gap-3">
+                                            <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
+                                                {financials.balance > 0 ? `Owes: GH₵${financials.balance.toFixed(2)}` : 'Fees Paid'}
+                                            </Badge>
+                                            <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>
+                                                Avg: {student.average.toFixed(1)}%
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="p-0 border-t bg-slate-50/50">
+                                    <Tabs defaultValue="academics" className="w-full">
+                                        <div className="px-4 pt-2 border-b bg-white">
+                                            <TabsList className="bg-transparent h-10 p-0">
+                                                <TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Report Card</TabsTrigger>
+                                                <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none">Fee History</TabsTrigger>
+                                            </TabsList>
+                                        </div>
 
-                                                <TabsContent value="financials" className="mt-0 p-6">
-                                                    <div className="flex items-center gap-4 p-4 bg-white border rounded-lg shadow-sm max-w-md">
-                                                        <div className="bg-slate-100 p-3 rounded-full"><AlertCircle className="h-6 w-6 text-slate-500"/></div>
-                                                        <div>
-                                                            <p className="text-sm font-medium text-slate-500">Current Balance</p>
-                                                            <p className="text-2xl font-bold text-slate-800">GH₵{financials.balance.toFixed(2)}</p>
-                                                        </div>
-                                                        <Button variant="outline" size="sm" className="ml-auto">View Ledger</Button>
-                                                    </div>
-                                                </TabsContent>
-                                            </Tabs>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                )
-                            })}
-                        </Accordion>
-                        ) : (
-                            <div className="text-center py-16">
-                                <FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/>
-                                <p className="text-muted-foreground">No students found.</p>
-                                <p className="text-xs text-slate-400">Select a different class or add students.</p>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-             )}
-             {!selectedClassId && <div className="text-center py-10 text-muted-foreground">Select a class above to view grades.</div>}
-        </TabsContent>
+                                        <TabsContent value="academics" className="mt-0">
+                                            <StudentGradesDetail 
+                                                student={student} 
+                                                assessments={assessments || []} 
+                                                rank={rank}
+                                                totalStudents={rankedStudents.length}
+                                                term={selectedTerm}
+                                                year={selectedYear}
+                                            />
+                                        </TabsContent>
 
-        <TabsContent value="promotion" className="mt-6">
-            <PromoteStudentsTab classes={classes} />
-        </TabsContent>
-      </Tabs>
+                                        <TabsContent value="financials" className="mt-0">
+                                            <FeeHistoryDetail 
+                                                student={student} 
+                                                financialRecords={financialRecords || []}
+                                            />
+                                        </TabsContent>
+                                    </Tabs>
+                                </AccordionContent>
+                            </AccordionItem>
+                        )
+                    })}
+                </Accordion>
+                ) : (
+                    <div className="text-center py-16">
+                        <FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/>
+                        <p className="text-muted-foreground">No students found.</p>
+                        <p className="text-xs text-slate-400">Select a different class or add students.</p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
-
-    
-
-    
