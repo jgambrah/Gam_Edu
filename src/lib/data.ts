@@ -289,6 +289,12 @@ export const navItems: NavItem[] = [
             icon: Star,
             roles: ['Director', 'Administrator'],
         },
+         {
+            path: '/dashboard/payroll/my-payslips',
+            title: 'My Payslips',
+            icon: FileText,
+            roles: ['Teacher', 'Accountant', 'Librarian', 'Cook'],
+        }
     ]
   },
   {
@@ -309,16 +315,16 @@ export const navItems: NavItem[] = [
         icon: Book,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+       {
+        path: '/dashboard/payroll/staff-config',
+        title: 'Staff Payroll Config',
+        icon: Settings,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
       {
         path: '/dashboard/finance/payroll',
         title: 'Payroll',
         icon: Calculator,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
-      {
-        path: '/dashboard/reports/financials',
-        title: 'Financial Reports',
-        icon: BarChart,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
       {
@@ -337,6 +343,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/accounts/cash-till',
         title: 'Cash Till',
         icon: Wallet,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/reports/financials',
+        title: 'Financial Reports',
+        icon: BarChart,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
     ]
@@ -389,12 +401,6 @@ export const navItems: NavItem[] = [
         path: '/dashboard/reports/enrollment',
         title: 'Enrollment',
         icon: Users,
-        roles: ['Director', 'Administrator'],
-      },
-      {
-        path: '/dashboard/reports/inventory',
-        title: 'Inventory',
-        icon: Boxes,
         roles: ['Director', 'Administrator'],
       },
     ]
