@@ -164,6 +164,12 @@ export const navItems: NavItem[] = [
             roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
         },
         {
+            path: '/dashboard/academics/analytics',
+            title: 'Learning Analytics',
+            icon: BrainCircuit,
+            roles: ['Director', 'Administrator', 'Teacher'],
+        },
+        {
             path: '/dashboard/report-cards',
             title: 'Report Cards',
             icon: FileText,
@@ -319,18 +325,6 @@ export const navItems: NavItem[] = [
         path: '/dashboard/finance/procurement',
         title: 'Procurement',
         icon: Truck,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
-      {
-        path: '/dashboard/finance/payroll',
-        title: 'Payroll',
-        icon: Calculator,
-        roles: ['Director', 'Administrator', 'Accountant'],
-      },
-       {
-        path: '/dashboard/finance/fix-billing',
-        title: 'Fix Billing Errors',
-        icon: Wrench,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
       {
@@ -568,5 +562,7 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
+
+    
 
     
