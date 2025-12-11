@@ -7,10 +7,10 @@ import { z } from 'zod';
 // --- SHARED TYPES ---
 const MessageSchema = z.object({
   role: z.enum(['user', 'model']),
-  content: z.string()
+  text: z.string()
 });
 
-// --- ACTION 1: THE OPPONENT (Existing) ---
+// --- ACTION 1: THE OPPONENT ---
 const DebateInputSchema = z.object({
   topic: z.string(),
   history: z.array(MessageSchema),
@@ -20,7 +20,7 @@ const DebateInputSchema = z.object({
 export async function generateDebateResponse(input: z.infer<typeof DebateInputSchema>) {
   try {
     const historyText = input.history
-      .map(m => `${m.role === 'user' ? 'Debater' : 'Opponent'}: ${m.content}`)
+      .map(m => `${m.role === 'user' ? 'Debater' : 'Opponent'}: ${m.text}`)
       .join('\n');
     
     const prompt = `
@@ -53,7 +53,7 @@ export async function generateDebateResponse(input: z.infer<typeof DebateInputSc
   }
 }
 
-// --- ACTION 2: THE JUDGE (New) ---
+// --- ACTION 2: THE JUDGE (FIXED) ---
 const EvaluationSchema = z.object({
   logicScore: z.number().describe("Score out of 10 for logical consistency"),
   clarityScore: z.number().describe("Score out of 10 for clarity of expression"),
@@ -65,23 +65,32 @@ const EvaluationSchema = z.object({
 
 export async function evaluateDebateAction(history: z.infer<typeof MessageSchema>[]) {
   try {
-    const transcript = history
-      .map(m => `${m.role === 'user' ? 'User' : 'Opponent'}: ${m.content}`)
-      .join('\n');
+    console.log("👨‍⚖️ Judge is reviewing history length:", history.length);
+
+    // 1. Better Transcript Formatting
+    const transcript = history.map(m => {
+        const speaker = m.role === 'user' ? '[[STUDENT]]' : '[[OPPONENT]]';
+        return `${speaker}: ${m.text}`;
+    }).join('\n\n');
+
+    console.log("📜 Transcript Preview:\n", transcript.substring(0, 200) + "...");
 
     const prompt = `
-      Act as an impartial Debate Judge.
-      Review the following debate transcript.
+      Act as an impartial, expert Debate Judge.
       
-      Evaluate the USER (not the Opponent) based on:
-      1. Logic (Did their arguments make sense?)
-      2. Clarity (Was their language clear?)
-      3. Rebuttal (Did they actually answer the opponent's points?)
+      Your task is to evaluate the performance of the **[[STUDENT]]** in the following debate transcript.
+      Ignore the performance of the [[OPPONENT]].
       
-      TRANSCRIPT:
+      TRANSCRIPT START:
       ${transcript}
+      TRANSCRIPT END.
       
-      Provide scores (1-10) and constructive feedback. Output strictly JSON.
+      CRITERIA:
+      1. Logic: Did the STUDENT make coherent arguments?
+      2. Clarity: Was the STUDENT's language clear?
+      3. Rebuttal: Did the STUDENT actually answer the OPPONENT's questions?
+
+      NOTE: If the student participated at all, do NOT give a score of 1. Be fair.
     `;
 
     const { output } = await ai.generate({
