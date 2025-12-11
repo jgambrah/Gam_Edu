@@ -515,6 +515,51 @@ export const payrollSettingsFormSchema = z.object({
     }))
 });
 
+export interface TaxBracket {
+  limit: number; 
+  rate: number;  
+}
+
+export interface PayrollConfig {
+  ssnitEmployeeRate: number;
+  ssnitEmployerRate: number;
+  tier3Rate: number;
+  taxBrackets: TaxBracket[];
+}
+
+export interface StaffSalaryDetails {
+  uid: string;
+  name: string;
+  role: string;
+  basicSalary: number;
+  allowances: { name: string; amount: number; isTaxable: boolean }[];
+  tier3Contribution: number;
+  bankName: string;
+  accountNumber: string;
+  tin: string;
+  ssnitNumber: string;
+}
+
+export interface Payslip {
+  id: string;
+  month: string;
+  staffId: string;
+  staffName: string;
+  basicSalary: number;
+  totalAllowances: number;
+  grossSalary: number;
+  ssnitDeduction: number;
+  tier3Deduction: number;
+  taxableIncome: number;
+  payeTax: number;
+  netSalary: number;
+  employerSSNIT: number;
+  totalCostToCompany: number;
+  status: 'Draft' | 'Paid';
+  date: any;
+}
+
+
 export type PayrollSettings = z.infer<typeof payrollSettingsFormSchema> & { id: string };
 
 const allowanceSchema = z.object({ name: z.string().min(1), amount: z.coerce.number().min(0) });
@@ -1152,9 +1197,9 @@ export interface TaxBracket {
 }
 
 export interface PayrollConfig {
-  ssnitEmployeeRate: number; // 5.5%
-  ssnitEmployerRate: number; // 13%
-  tier3Rate: number; // Voluntary %
+  ssnitEmployeeRate: number;
+  ssnitEmployerRate: number;
+  tier3Rate: number;
   taxBrackets: TaxBracket[];
 }
 
@@ -1164,7 +1209,7 @@ export interface StaffSalaryDetails {
   role: string;
   basicSalary: number;
   allowances: { name: string; amount: number; isTaxable: boolean }[];
-  tier3Contribution: number; // Amount or Percentage
+  tier3Contribution: number;
   bankName: string;
   accountNumber: string;
   tin: string;
@@ -1173,25 +1218,41 @@ export interface StaffSalaryDetails {
 
 export interface Payslip {
   id: string;
-  month: string; // "2025-05"
+  month: string;
   staffId: string;
   staffName: string;
   basicSalary: number;
   totalAllowances: number;
   grossSalary: number;
-  
-  // Deductions
-  ssnitDeduction: number; // 5.5%
+  ssnitDeduction: number;
   tier3Deduction: number;
   taxableIncome: number;
   payeTax: number;
-  
   netSalary: number;
-  
-  // Employer Cost
   employerSSNIT: number;
   totalCostToCompany: number;
-  
   status: 'Draft' | 'Paid';
   date: any;
 }
+
+export interface StudentPerformance {
+  studentId: string;
+  studentName: string;
+  attendanceRate: number; // 0-100
+  averageGrade: number;   // 0-100
+  missedAssessments: number;
+  participationScore: number; // Calculated based on behavior records or consistency
+}
+
+export interface AiInsight {
+  atRiskStudents: {
+    studentName: string;
+    reason: string; // e.g. "High grades but dropping attendance"
+    intervention: string; // e.g. "Schedule parent meeting"
+  }[];
+  classTrends: string; // General observation
+  teachingStrategy: string; // Advice for the teacher
+}
+
+
+    
