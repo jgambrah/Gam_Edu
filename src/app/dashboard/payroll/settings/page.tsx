@@ -220,6 +220,7 @@ function RetrospectiveBilling() {
             }
             
             const billingBatch = writeBatch(firestore);
+            let billsCount = 0;
             
             for (const attendanceDoc of recordsToProcess) {
                 const record = attendanceDoc.data();
@@ -265,7 +266,6 @@ function RetrospectiveBilling() {
                 }
             }
 
-            let billsCount = 0;
             if (billsCount > 0) {
                 await billingBatch.commit();
                 toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} attendance records.` });

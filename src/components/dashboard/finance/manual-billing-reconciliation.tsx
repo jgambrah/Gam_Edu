@@ -1,28 +1,29 @@
+
 'use client';
 
 import { useState } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CalendarIcon, Loader2, Search, CheckCircle, AlertCircle } from 'lucide-react';
+import { CalendarIcon, Loader2, Search, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 
 interface MissingBillItem {
-    id: string; // unique key for the row
+    id: string; // Unique ID (e.g. canteen-studentID-date)
     studentId: string;
     studentName: string;
     classId: string;
     type: 'Canteen' | 'Transport';
     amount: number;
-    reason: string; // "Attended but no Canteen bill"
+    reason: string;
 }
 
 export function ManualBillingReconciliation() {
@@ -31,9 +32,11 @@ export function ManualBillingReconciliation() {
     
     const [date, setDate] = useState<Date>(new Date());
     const [isLoading, setIsLoading] = useState(false);
+    const [isFixing, setIsFixing] = useState(false);
     const [missingBills, setMissingBills] = useState<MissingBillItem[]>([]);
-    const [selectedItems, setSelectedItems] = useState<string[]>([]); // IDs of items to process
+    const [selectedItems, setSelectedItems] = useState<string[]>([]); 
 
+    // --- 1. SCAN LOGIC ---
     const handleCheck = async () => {
         if (!firestore) return;
         setIsLoading(true);
@@ -41,17 +44,17 @@ export function ManualBillingReconciliation() {
         setSelectedItems([]);
 
         try {
-            // 1. Get Rates
+            // A. Fetch Rates
             const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
             const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
             const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
             const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
 
             const dateStr = format(date, 'yyyy-MM-dd');
-            const searchDate = date; 
-            searchDate.setHours(0,0,0,0); // Start of day normalization
+            const searchDate = startOfDay(date); // Normalize to 00:00:00
 
-            // 2. Get Attendance (Who was present?)
+            // B. Get Attendance (Who was present?)
+            // We look for 'Present' OR 'Late' students
             const attendanceQ = query(
                 collection(firestore, 'attendance'),
                 where('date', '==', searchDate),
@@ -59,77 +62,89 @@ export function ManualBillingReconciliation() {
             );
             const attendanceSnap = await getDocs(attendanceQ);
             
-            // 3. Get Existing Bills for this Date (Who already paid?)
-            // Note: This relies on the ID naming convention or querying by date
-            // Querying by date is safer if IDs change manually
+            if (attendanceSnap.empty) {
+                toast({ title: "No Attendance Found", description: "No students were marked Present/Late on this date." });
+                setIsLoading(false);
+                return;
+            }
+
+            // C. Get Existing Bills (Who already paid?)
+            // We query bills that match the same dueDate
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
-                where('dueDate', '==', searchDate) // Assuming dueDate = attendance date
+                where('dueDate', '==', searchDate) 
             );
             const billsSnap = await getDocs(billsQ);
             const existingBillIds = new Set(billsSnap.docs.map(d => d.id));
 
             const detectedMissing: MissingBillItem[] = [];
 
-            // 4. Compare
+            // D. Compare Lists (Find the gap)
             for (const attDoc of attendanceSnap.docs) {
                 const att = attDoc.data();
                 
-                // Check Canteen
-                const canteenBillId = `canteen-${att.studentId}-${dateStr}`;
-                if (canteenRate > 0 && !existingBillIds.has(canteenBillId)) {
+                // 1. Check Canteen Gap
+                // The system expects an ID format: canteen-{studentId}-{yyyy-MM-dd}
+                const expectedCanteenId = `canteen-${att.studentId}-${dateStr}`;
+                
+                if (canteenRate > 0 && !existingBillIds.has(expectedCanteenId)) {
                     detectedMissing.push({
-                        id: canteenBillId,
+                        id: expectedCanteenId,
                         studentId: att.studentId,
-                        studentName: att.studentName || 'Unknown',
+                        studentName: att.studentName || 'Unknown Student',
                         classId: att.classId,
                         type: 'Canteen',
                         amount: canteenRate,
-                        reason: 'Present but no Canteen Fee found'
+                        reason: 'Marked Present but no Canteen Bill found'
                     });
                 }
 
-                // Check Transport
-                // We need to know if they use the bus. 
-                // Option A: Check 'usesBusService' on attendance record (if you added it previously)
-                // Option B: Fetch student profile (slower but accurate)
-                // Let's rely on the attendance record if available, or fetch student if missing
-                let usesBus = att.usesBusService === "true" || att.usesBusService === true;
+                // 2. Check Transport Gap
+                // We check the 'usesBusService' flag stored on the attendance record
+                // (Note: Your new attendance code saves this as a string "true")
+                const usesBus = att.usesBusService === "true" || att.usesBusService === true;
                 
                 if (transportRate > 0 && usesBus) {
-                    const transportBillId = `transport-${att.studentId}-${dateStr}`;
-                    if (!existingBillIds.has(transportBillId)) {
+                    const expectedTransportId = `transport-${att.studentId}-${dateStr}`;
+                    if (!existingBillIds.has(expectedTransportId)) {
                         detectedMissing.push({
-                            id: transportBillId,
+                            id: expectedTransportId,
                             studentId: att.studentId,
-                            studentName: att.studentName || 'Unknown',
+                            studentName: att.studentName || 'Unknown Student',
                             classId: att.classId,
                             type: 'Transport',
                             amount: transportRate,
-                            reason: 'Bus User Present but no Transport Fee found'
+                            reason: 'Bus User Present but no Transport Bill found'
                         });
                     }
                 }
             }
 
             setMissingBills(detectedMissing);
+            // Auto-select all by default
+            setSelectedItems(detectedMissing.map(m => m.id));
+
             if (detectedMissing.length === 0) {
-                toast({ title: "All Clear", description: "No missing bills found for this date." });
+                toast({ title: "All Clear ✅", description: "Every present student has been billed correctly for this date." });
+            } else {
+                toast({ title: "Discrepancies Found", description: `Found ${detectedMissing.length} students missing bills.` });
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            toast({ variant: 'destructive', title: "Error", description: "Failed to scan records." });
+            toast({ variant: 'destructive', title: "Scan Failed", description: error.message });
         } finally {
             setIsLoading(false);
         }
     };
 
+    // --- 2. FIX LOGIC ---
     const handleProcess = async () => {
         if (!firestore || selectedItems.length === 0) return;
-        setIsLoading(true);
+        setIsFixing(true);
         const batch = writeBatch(firestore);
         
+        // Filter only checked items
         const itemsToProcess = missingBills.filter(item => selectedItems.includes(item.id));
         
         itemsToProcess.forEach(item => {
@@ -142,7 +157,7 @@ export function ManualBillingReconciliation() {
                 type: item.type === 'Canteen' ? 'Canteen Fee' : 'Transport Fee',
                 description: `${item.type} fee for ${format(date, 'PPP')} (Manual Fix)`,
                 status: 'Unpaid',
-                dueDate: date,
+                dueDate: startOfDay(date), // Ensure date format matches main system
                 createdAt: serverTimestamp(),
                 amountPaid: 0,
             });
@@ -151,12 +166,14 @@ export function ManualBillingReconciliation() {
         try {
             await batch.commit();
             toast({ title: "Success", description: `Generated ${itemsToProcess.length} missing bills.` });
+            
+            // Remove fixed items from the list UI
             setMissingBills(prev => prev.filter(p => !selectedItems.includes(p.id)));
             setSelectedItems([]);
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error", description: "Failed to create bills." });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
         } finally {
-            setIsLoading(false);
+            setIsFixing(false);
         }
     };
 
@@ -169,46 +186,49 @@ export function ManualBillingReconciliation() {
     };
 
     return (
-        <Card className="mt-6 border-orange-200">
+        <Card className="mt-8 border-orange-200 bg-orange-50/20">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-orange-700">
                     <AlertCircle className="h-5 w-5"/> Missing Bill Detector
                 </CardTitle>
                 <CardDescription>
-                    Scan a specific date to find students who attended school but were not billed correctly.
+                    Scan a specific date to find students who attended school but were not billed correctly due to system errors.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 
-                {/* Controls */}
-                <div className="flex gap-4 items-end">
-                    <div className="space-y-2">
+                {/* 1. SELECT DATE & SCAN */}
+                <div className="flex flex-col sm:flex-row gap-4 items-end bg-white p-4 rounded-lg border">
+                    <div className="space-y-2 flex-1 w-full">
                         <Label>Select Date to Audit</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant={"outline"} className={cn("w-[240px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
+                                <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
                                     <CalendarIcon className="mr-2 h-4 w-4" />
                                     {date ? format(date, "PPP") : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
+                            <PopoverContent className="w-auto p-0" align="start">
                                 <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <Button onClick={handleCheck} disabled={isLoading}>
+                    <Button onClick={handleCheck} disabled={isLoading} className="bg-orange-600 hover:bg-orange-700 w-full sm:w-auto">
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4"/>}
                         Scan for Errors
                     </Button>
                 </div>
 
-                {/* Results Table */}
+                {/* 2. RESULTS TABLE */}
                 {missingBills.length > 0 && (
-                    <div className="border rounded-lg p-4 space-y-4">
-                         <div className="flex justify-between items-center">
-                            <h4 className="font-semibold text-orange-800">Found {missingBills.length} Missing Bills</h4>
-                            <Button size="sm" onClick={handleProcess} disabled={isLoading || selectedItems.length === 0}>
-                                Generate {selectedItems.length} Bills
+                    <div className="border rounded-md bg-white overflow-hidden">
+                        <div className="p-3 bg-orange-100 border-b flex justify-between items-center">
+                            <h4 className="font-bold text-orange-800 text-sm flex items-center gap-2">
+                                <AlertCircle className="h-4 w-4"/> Found {missingBills.length} Missing Bills
+                            </h4>
+                            <Button size="sm" onClick={handleProcess} disabled={isFixing || selectedItems.length === 0} className="bg-orange-600 hover:bg-orange-700">
+                                {isFixing ? <Loader2 className="h-3 w-3 animate-spin mr-2"/> : <CheckCircle2 className="h-3 w-3 mr-2"/>}
+                                Fix Selected ({selectedItems.length})
                             </Button>
                         </div>
                         <Table>
@@ -238,9 +258,9 @@ export function ManualBillingReconciliation() {
                                                 }}
                                             />
                                         </TableCell>
-                                        <TableCell>{bill.studentName}</TableCell>
+                                        <TableCell className="font-medium">{bill.studentName}</TableCell>
                                         <TableCell>
-                                            <span className={`px-2 py-1 rounded text-xs font-bold ${bill.type === 'Canteen' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                            <span className={`px-2 py-1 rounded text-xs font-bold border ${bill.type === 'Canteen' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'}`}>
                                                 {bill.type}
                                             </span>
                                         </TableCell>
@@ -251,7 +271,7 @@ export function ManualBillingReconciliation() {
                             </TableBody>
                         </Table>
                     </div>
-                 )}
+                )}
             </CardContent>
         </Card>
     );
