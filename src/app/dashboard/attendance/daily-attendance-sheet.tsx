@@ -158,7 +158,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: DailyAttendanceSh
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
             // Remove helper fields before saving to attendance collection
-            const { usesBusService, ...cleanRecord } = record; 
+            const { usesBusService, id, ...cleanRecord } = record; 
             
             batch.set(recordRef, {
                 ...cleanRecord,
