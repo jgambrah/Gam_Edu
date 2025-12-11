@@ -2,9 +2,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore, useRole } from '@/firebase'; 
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { format, startOfDay } from 'date-fns';
+import { useFirestore } from '@/firebase'; 
+import { useRole } from '@/context/role-context';
+import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -16,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { DateRange } from 'react-day-picker';
 
 interface MissingBillItem {
     id: string; 
@@ -289,6 +291,3 @@ export default function FixBillingPage() {
         </div>
     );
 }
-
-
-    
