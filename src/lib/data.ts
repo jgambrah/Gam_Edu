@@ -302,6 +302,12 @@ export const navItems: NavItem[] = [
         icon: Book,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+       {
+        path: '/dashboard/reports/financials',
+        title: 'Financial Reports',
+        icon: BarChart,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
       {
         path: '/dashboard/finance/procurement',
         title: 'Procurement',
@@ -401,12 +407,6 @@ export const navItems: NavItem[] = [
         title: 'Enrollment',
         icon: Users,
         roles: ['Director', 'Administrator'],
-      },
-       {
-        path: '/dashboard/reports/financials',
-        title: 'Financial',
-        icon: Banknote,
-        roles: ['Director', 'Administrator', 'Accountant'],
       },
        {
         path: '/dashboard/reports/payroll',
