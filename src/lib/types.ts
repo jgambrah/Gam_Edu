@@ -794,7 +794,6 @@ export type ScienceLeaderboardEntry = {
     userName: string;
     profilePictureUrl?: string;
     total_correct_answers: number;
-    total_quizzes_completed: number;
     points?: number;
     quizzesPlayed?: number;
 };
@@ -876,20 +875,6 @@ export type ElaLeaderboardEntry = {
     total_challenges_completed: number;
 };
 
-
-// Game Zone Schemas
-export type GameLobby = {
-    id: string; // The 6-digit game pin
-    quizId: string;
-    hostId: string;
-    status: 'waiting' | 'in-progress' | 'finished';
-    players: {
-      uid: string;
-      name: string;
-      score: number;
-    }[];
-    createdAt: any;
-};
 
 // --- RICH LEARNING MATERIAL ---
 
@@ -1073,43 +1058,42 @@ export interface Lecture {
 
 // --- ACCOUNTING TYPES ---
 
-export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
-
-export interface Account {
+export interface Supplier {
   id: string;
-  code: string; // e.g., "1001"
-  name: string; // e.g., "Cash on Hand"
-  type: AccountType;
-  description?: string;
-  balance: number; // Current running balance
+  name: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  address: string;
+  balance: number; // Amount we owe them
 }
 
-export interface JournalLine {
-  accountId: string;
-  accountName: string;
-  debit: number;
-  credit: number;
-}
-
-export interface JournalEntry {
+export interface PurchaseOrder {
   id: string;
-  date: any; // Timestamp
-  reference: string; // e.g., "INV-001" or "PV-502"
-  description: string;
-  lines: JournalLine[];
-  totalAmount: number;
-  createdBy: string;
-  createdAt: any;
-}
-
-export interface PaymentVoucher {
-  id: string;
-  voucherNumber: string;
-  payee: string; // Vendor or Staff Name
+  supplierId: string;
+  supplierName: string;
   date: any;
-  description: string;
-  expenseAccountId: string; // Debit this
-  paymentAccountId: string; // Credit this (Bank/Cash)
-  amount: number;
-  status: 'Draft' | 'Approved' | 'Paid';
+  status: 'Draft' | 'Sent' | 'Received' | 'Cancelled';
+  items: { 
+    itemId: string; // From Inventory/Shop items
+    name: string; 
+    quantity: number; 
+    unitCost: number; 
+    total: number;
+  }[];
+  totalAmount: number;
+  expectedDate?: any;
+}
+
+export interface VendorBill {
+  id: string;
+  supplierId: string;
+  supplierName: string;
+  poId: string; // Link to PO
+  date: any;
+  dueDate: any;
+  totalAmount: number;
+  amountPaid: number;
+  status: 'Unpaid' | 'Partial' | 'Paid';
+  items: any[];
 }
