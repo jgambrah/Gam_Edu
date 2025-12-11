@@ -870,96 +870,7 @@ function StudentSubmissionForm({ challenge, setOpen }: { challenge: ElaWritingCh
     );
 }
 
-// --- Main ELA Club Page Component ---
-export default function ElaClubPage() {
-  const { role } = useRole();
-  const isTeacherOrAdmin =
-    role === 'Teacher' || role === 'Administrator' || role === 'Director';
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpenCheck />
-            ELA Club
-          </CardTitle>
-          <CardDescription>
-            Improve your reading, writing, and grammar skills.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      <Tabs defaultValue="grammar" className="w-full">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-8" : "grid-cols-4")}>
-          <TabsTrigger value="grammar">
-            <Edit className="mr-2 h-4 w-4" />
-            Grammar Practice
-          </TabsTrigger>
-          <TabsTrigger value="reading">
-            <FileText className="mr-2 h-4 w-4" />
-            Reading Practice
-          </TabsTrigger>
-          <TabsTrigger value="writing">
-            <PenSquare className="mr-2 h-4 w-4" />
-            Writing Challenges
-          </TabsTrigger>
-           <TabsTrigger value="leaderboard">
-            <Trophy className="mr-2 h-4 w-4" />
-            Leaderboard
-          </TabsTrigger>
-           <TabsTrigger value="learn">ELA Explorer</TabsTrigger>
-          {isTeacherOrAdmin && <TabsTrigger value="manage-drills">Manage Drills</TabsTrigger>}
-          {isTeacherOrAdmin && <TabsTrigger value="manage-passages">Manage Passages</TabsTrigger>}
-          {isTeacherOrAdmin && <TabsTrigger value="manage-writing">Manage Writing</TabsTrigger>}
-        </TabsList>
-        <TabsContent value="grammar">
-          <GrammarPractice />
-        </TabsContent>
-        <TabsContent value="reading">
-          <ReadingPracticeTab />
-        </TabsContent>
-        <TabsContent value="writing">
-          <WritingSubmissionTab />
-        </TabsContent>
-        <TabsContent value="leaderboard">
-            <Card>
-                <CardHeader>
-                    <CardTitle>ELA Club Leaderboard</CardTitle>
-                    <CardDescription>Ranking based on correct answers in grammar and reading drills.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ElaLeaderboard />
-                </CardContent>
-            </Card>
-        </TabsContent>
-        <TabsContent value="learn" className="mt-6">
-            <ElaExplorerTab />
-        </TabsContent>
-        {isTeacherOrAdmin && (
-            <TabsContent value="manage-drills">
-                <ManageDrills />
-            </TabsContent>
-        )}
-         {isTeacherOrAdmin && (
-            <TabsContent value="manage-passages">
-                <ManagePassages />
-            </TabsContent>
-        )}
-        {isTeacherOrAdmin && (
-            <TabsContent value="manage-writing">
-                <ManageWritingChallenges />
-            </TabsContent>
-        )}
-      </Tabs>
-    </div>
-  );
-}
-
-// Duplicated components from the rest of the file...
-// These were copied from the provided context, they should be identical
-// to the ones already in the file.
-
+// --- Writing Practice Tab ---
 function WritingSubmissionTab() {
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser();
@@ -1768,3 +1679,131 @@ function AiChallengeGenerator({ setOpen, onSuccess }: { setOpen: (open: boolean)
         </div>
     );
 }
+
+function ManageDrills() {
+    const firestore = useFirestore();
+    const { data: drills, isLoading } = useCollection<ElaGrammarDrill>(useMemoFirebase(() => firestore ? query(collection(firestore, 'ela_grammar_drills')) : null, [firestore]));
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isAiFormOpen, setIsAiFormOpen] = useState(false);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+                <div>
+                    <CardTitle>Grammar Drill Bank</CardTitle>
+                    <CardDescription>Manage grammar and mechanics questions.</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                    <Dialog open={isAiFormOpen} onOpenChange={setIsAiFormOpen}>
+                        <DialogTrigger asChild><Button variant="outline"><Wand2 className="mr-2 h-4"/>Generate with AI</Button></DialogTrigger>
+                        <DialogContent className="max-w-3xl"><DialogHeader><DialogTitle>AI Problem Generator</DialogTitle><DialogDescription>Generate multiple-choice grammar drills.</DialogDescription></DialogHeader><AiProblemGenerator subject="ELA Grammar" setOpen={setIsAiFormOpen} /></DialogContent>
+                    </Dialog>
+                    {/* Add manual creation form here if needed */}
+                </div>
+            </CardHeader>
+            <CardContent>
+                 {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Type</TableHead><TableHead>Prompt</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {drills?.map(drill => (
+                                <TableRow key={drill.id}>
+                                    <TableCell>{drill.topic}</TableCell>
+                                    <TableCell>{drill.type}</TableCell>
+                                    <TableCell className="max-w-md truncate">{drill.question_prompt}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+// --- Main ELA Club Page Component ---
+export default function ElaClubPage() {
+  const { role } = useRole();
+  const isTeacherOrAdmin =
+    role === 'Teacher' || role === 'Administrator' || role === 'Director';
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpenCheck />
+            ELA Club
+          </CardTitle>
+          <CardDescription>
+            Improve your reading, writing, and grammar skills.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      <Tabs defaultValue="grammar" className="w-full">
+        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-8" : "grid-cols-4")}>
+          <TabsTrigger value="grammar">
+            <Edit className="mr-2 h-4 w-4" />
+            Grammar Practice
+          </TabsTrigger>
+          <TabsTrigger value="reading">
+            <FileText className="mr-2 h-4 w-4" />
+            Reading Practice
+          </TabsTrigger>
+          <TabsTrigger value="writing">
+            <PenSquare className="mr-2 h-4 w-4" />
+            Writing Challenges
+          </TabsTrigger>
+           <TabsTrigger value="leaderboard">
+            <Trophy className="mr-2 h-4 w-4" />
+            Leaderboard
+          </TabsTrigger>
+           <TabsTrigger value="learn">ELA Explorer</TabsTrigger>
+          {isTeacherOrAdmin && <TabsTrigger value="manage-drills">Manage Drills</TabsTrigger>}
+          {isTeacherOrAdmin && <TabsTrigger value="manage-passages">Manage Passages</TabsTrigger>}
+          {isTeacherOrAdmin && <TabsTrigger value="manage-writing">Manage Writing</TabsTrigger>}
+        </TabsList>
+        <TabsContent value="grammar">
+          <GrammarPractice />
+        </TabsContent>
+        <TabsContent value="reading">
+          <ReadingPracticeTab />
+        </TabsContent>
+        <TabsContent value="writing">
+          <WritingSubmissionTab />
+        </TabsContent>
+        <TabsContent value="leaderboard">
+            <Card>
+                <CardHeader>
+                    <CardTitle>ELA Club Leaderboard</CardTitle>
+                    <CardDescription>Ranking based on correct answers in grammar and reading drills.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ElaLeaderboard />
+                </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="learn" className="mt-6">
+            <ElaExplorerTab />
+        </TabsContent>
+        {isTeacherOrAdmin && (
+            <TabsContent value="manage-drills">
+                <ManageDrills />
+            </TabsContent>
+        )}
+         {isTeacherOrAdmin && (
+            <TabsContent value="manage-passages">
+                <ManagePassages />
+            </TabsContent>
+        )}
+        {isTeacherOrAdmin && (
+            <TabsContent value="manage-writing">
+                <ManageWritingChallenges />
+            </TabsContent>
+        )}
+      </Tabs>
+    </div>
+  );
+}
+
