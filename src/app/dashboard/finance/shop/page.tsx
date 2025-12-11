@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, writeBatch, increment, getDocs } from 'firebase/firestore';
 import { 
   ShoppingBag, Package, PlusCircle, ShoppingCart, 
-  Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool 
+  Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2
 } from 'lucide-react';
 
 // UI
