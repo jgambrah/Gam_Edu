@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment, getDocs, where, runTransaction } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
-  ArrowRightLeft, Save, Loader2, DollarSign, TrendingDown 
+  ArrowRightLeft, Save, Loader2, DollarSign, TrendingDown, Trash2 
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -472,3 +473,5 @@ export default function AccountingPage() {
         </div>
     );
 }
+
+    
