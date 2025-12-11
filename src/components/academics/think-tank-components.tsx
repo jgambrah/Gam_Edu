@@ -142,14 +142,27 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
     };
 
     const handleConclude = async () => {
-        if (messages.length < 3) return; // Need some history to judge
+        // Validation: Ensure there is actually a debate to judge
+        if (messages.length < 3) {
+            alert("Please exchange at least a few arguments before judging.");
+            return;
+        }
+
         setIsJudging(true);
         try {
-            const historyForAi = messages.map(m => ({ role: m.role, text: m.text }));
+            // Map the current state messages to the simple format the server expects
+            const historyForAi = messages.map(m => ({ 
+                role: m.role, 
+                text: m.text 
+            }));
+            
+            // Call the fixed server action
             const result = await evaluateDebateAction(historyForAi);
             
             if (result.success && result.data) {
                 setEvaluation(result.data);
+            } else {
+                console.error("Judge failed:", result.error);
             }
         } catch (error) {
             console.error(error);
@@ -165,69 +178,71 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
     };
 
     return (
-        <>
-            <Card className="h-[650px] flex flex-col border-indigo-200 shadow-md">
-                <CardHeader className="bg-slate-50 border-b py-3">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <CardTitle className="flex items-center gap-2 text-indigo-800 text-lg">
-                                <Swords className="h-5 w-5"/> Debate Arena
-                            </CardTitle>
-                            <CardDescription className="line-clamp-1 max-w-md text-xs" title={topic.topic}>
-                                {topic.topic}
-                            </CardDescription>
-                        </div>
-                        <div className="flex gap-1">
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={handleConclude} 
-                                disabled={messages.length < 3 || isJudging || isLoading}
-                                className="text-amber-700 border-amber-200 hover:bg-amber-50"
-                            >
-                                {isJudging ? <Loader2 className="h-4 w-4 animate-spin"/> : <Gavel className="h-4 w-4 mr-2"/>}
-                                Conclude & Judge
-                            </Button>
-                            
-                            <Button variant="ghost" size="icon" onClick={handleReset} title="Restart">
-                                <RefreshCw className="h-4 w-4 text-slate-500"/>
-                            </Button>
-                        </div>
+        <Card className="h-[650px] flex flex-col border-indigo-200 shadow-md">
+            <CardHeader className="bg-slate-50 border-b py-3">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle className="flex items-center gap-2 text-indigo-800 text-lg">
+                            <Swords className="h-5 w-5"/> Debate Arena
+                        </CardTitle>
+                        <CardDescription className="line-clamp-1 max-w-md text-xs" title={topic.topic}>
+                            {topic.topic}
+                        </CardDescription>
                     </div>
-                </CardHeader>
-
-                <CardContent className="flex-1 p-0 overflow-hidden flex flex-col">
-                    <ScrollArea className="flex-1 p-4 bg-slate-50/50">
-                        <div className="space-y-4">
-                            {messages.map((msg, i) => (
-                                <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    {msg.role === 'model' && <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0"><Bot className="h-5 w-5 text-indigo-600"/></div>}
-                                    <div className={`max-w-[85%] p-3 rounded-xl text-sm leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border text-slate-700 rounded-bl-none'}`}>
-                                        {msg.text}
-                                    </div>
-                                    {msg.role === 'user' && <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0"><User className="h-5 w-5 text-slate-600"/></div>}
-                                </div>
-                            ))}
-                            {isLoading && <div className="flex gap-3 items-center text-slate-400 text-sm ml-12"><Loader2 className="h-4 w-4 animate-spin"/> Opponent is thinking...</div>}
-                            <div ref={scrollRef} />
-                        </div>
-                    </ScrollArea>
-
-                    <div className="p-4 bg-white border-t mt-auto flex gap-2">
-                        <Input 
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder="Type your argument..."
-                            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                            disabled={isLoading || isJudging}
-                        />
-                        <Button onClick={handleSend} disabled={isLoading || !input.trim() || isJudging} className="bg-indigo-600 hover:bg-indigo-700">
-                            <Send className="h-4 w-4"/>
+                    <div className="flex gap-1">
+                        {/* JUDGE BUTTON */}
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleConclude} 
+                            disabled={messages.length < 3 || isJudging || isLoading}
+                            className="text-amber-700 border-amber-200 hover:bg-amber-50"
+                        >
+                            {isJudging ? <Loader2 className="h-4 w-4 animate-spin"/> : <Gavel className="h-4 w-4 mr-2"/>}
+                            Conclude & Judge
+                        </Button>
+                        
+                        <Button variant="ghost" size="icon" onClick={handleReset} title="Restart Debate">
+                            <RefreshCw className="h-4 w-4 text-slate-500"/>
                         </Button>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </CardHeader>
 
+            <CardContent className="flex-1 p-0 overflow-hidden flex flex-col">
+                {/* Chat Area */}
+                <ScrollArea className="flex-1 p-4 bg-slate-50/50">
+                    <div className="space-y-4">
+                        {messages.map((msg, i) => (
+                            <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                {msg.role === 'model' && <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0"><Bot className="h-5 w-5 text-indigo-600"/></div>}
+                                <div className={`max-w-[85%] p-3 rounded-xl text-sm leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border text-slate-700 rounded-bl-none'}`}>
+                                    {msg.text}
+                                </div>
+                                {msg.role === 'user' && <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0"><User className="h-5 w-5 text-slate-600"/></div>}
+                            </div>
+                        ))}
+                        {isLoading && <div className="flex gap-3 items-center text-slate-400 text-sm ml-12"><Loader2 className="h-4 w-4 animate-spin"/> Opponent is thinking...</div>}
+                        <div ref={scrollRef} />
+                    </div>
+                </ScrollArea>
+
+                {/* Input Area */}
+                <div className="p-4 bg-white border-t mt-auto flex gap-2">
+                    <Input 
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Type your argument..."
+                        onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                        disabled={isLoading || isJudging}
+                    />
+                    <Button onClick={handleSend} disabled={isLoading || !input.trim() || isJudging} className="bg-indigo-600 hover:bg-indigo-700">
+                        <Send className="h-4 w-4"/>
+                    </Button>
+                </div>
+            </CardContent>
+
+            {/* SCORECARD MODAL */}
             {evaluation && (
                 <Dialog open={!!evaluation} onOpenChange={() => setEvaluation(null)}>
                     <DialogContent className="max-w-md">
@@ -239,6 +254,7 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                         </DialogHeader>
                         
                         <div className="space-y-6 py-4">
+                            {/* Scores */}
                             <div className="space-y-4">
                                 <div className="space-y-1">
                                     <div className="flex justify-between text-sm font-medium"><span>Logic & Reasoning</span><span>{evaluation.logicScore}/10</span></div>
@@ -253,6 +269,8 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                                     <Progress value={evaluation.rebuttalScore * 10} className="h-2 bg-slate-100" />
                                 </div>
                             </div>
+
+                            {/* Feedback */}
                             <div className="bg-slate-50 p-4 rounded-lg border space-y-3">
                                 <div className="flex gap-2 text-sm">
                                     <TrendingUp className="h-4 w-4 text-green-600 shrink-0"/>
@@ -273,6 +291,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                     </DialogContent>
                 </Dialog>
             )}
-        </>
+        </Card>
     );
 }
