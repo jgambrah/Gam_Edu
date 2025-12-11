@@ -1146,7 +1146,6 @@ export interface VendorBill {
 
 
 // --- PAYROLL ---
-
 export interface TaxBracket {
   limit: number; 
   rate: number;  

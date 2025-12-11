@@ -49,6 +49,7 @@ import {
   ShoppingBag,
   Wrench,
   Truck,
+  Calculator,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -282,6 +283,12 @@ export const navItems: NavItem[] = [
             icon: Star,
             roles: ['Director', 'Administrator'],
         },
+         {
+            path: '/dashboard/payroll/staff-config',
+            title: 'My Payroll Setup',
+            icon: Settings,
+            roles: ['Teacher', 'Accountant', 'Librarian', 'Cook', 'Director', 'Administrator'],
+        },
     ]
   },
   {
@@ -302,7 +309,7 @@ export const navItems: NavItem[] = [
         icon: Book,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
-       {
+      {
         path: '/dashboard/reports/financials',
         title: 'Financial Reports',
         icon: BarChart,
@@ -312,6 +319,12 @@ export const navItems: NavItem[] = [
         path: '/dashboard/finance/procurement',
         title: 'Procurement',
         icon: Truck,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
+      {
+        path: '/dashboard/finance/payroll',
+        title: 'Payroll',
+        icon: Calculator,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
        {
