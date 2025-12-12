@@ -1,12 +1,13 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { 
-  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, CheckCircle, XCircle, AlertCircle, PlusCircle
+  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
+  AlertCircle, RefreshCw, Bug 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -21,7 +22,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
@@ -38,9 +40,8 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };
 }
 
-// --- SUB-COMPONENT: Transaction Detail Modal (Fixed) ---
+// --- SUB-COMPONENT: Transaction Detail Modal ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
-    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -190,7 +191,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
     );
 }
 
-// --- SUB-COMPONENT: Student Academics Detail (UPDATED WITH SUBJECT NAMES) ---
+// --- SUB-COMPONENT: Student Academics Detail ---
 function StudentGradesDetail({ 
     student, 
     assessments, 
@@ -198,7 +199,8 @@ function StudentGradesDetail({
     totalStudents,
     term,
     year,
-    subjects // <--- New prop to map IDs to Names
+    subjects, // List of subjects for mapping
+    isDebug 
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -206,40 +208,59 @@ function StudentGradesDetail({
     totalStudents: number;
     term: string;
     year: string;
-    subjects: any[]; // List of subjects
+    subjects: any[];
+    isDebug: boolean;
 }) {
-    // 1. Create a Map for O(1) lookup of Subject Names
+    
+    // Create Map for Fast Lookup
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
-        subjects.forEach(s => map.set(s.id, s.name));
+        if(subjects) {
+            subjects.forEach(s => map.set(s.id, s.name));
+        }
         return map;
     }, [subjects]);
 
-    // 2. Group by Subject ID and Resolve Name
+    // Group by Subject
     const subjectGrades = useMemo(() => {
         const grouped: Record<string, { name: string, total: number, max: number, count: number }> = {};
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
+            // LOGIC: Try to find the name
+            // 1. Check if 'subjectName' is saved directly on the assessment (some systems do this)
+            // 2. Check the Map using 'subjectId'
+            // 3. Fallback to ID
             const subId = a.subjectId || 'unknown';
-            // FIX: Get the name from the map, or fallback to the ID if missing
-            const subName = subjectMap.get(subId) || (subId === 'unknown' ? 'General' : 'Unknown Subject');
-
-            if (!grouped[subId]) {
-                grouped[subId] = { name: subName, total: 0, max: 0, count: 0 };
+            let subName = (a as any).subjectName; // Check direct property first
+            
+            if (!subName) {
+                subName = subjectMap.get(subId);
             }
             
-            grouped[subId].total += a.score || 0;
-            grouped[subId].max += a.maxScore || 0;
-            grouped[subId].count++;
+            if (!subName) {
+                 // Fallback: If still unknown, use ID for debugging or "Unknown"
+                 subName = isDebug ? `ID: ${subId}` : 'Unknown Subject';
+            }
+
+            // Key by ID to prevent merging different subjects with same name
+            const key = subId;
+
+            if (!grouped[key]) {
+                grouped[key] = { name: subName, total: 0, max: 0, count: 0 };
+            }
+            
+            grouped[key].total += a.score || 0;
+            grouped[key].max += a.maxScore || 0;
+            grouped[key].count++;
         });
 
         return Object.values(grouped).map((data) => {
             const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
             return { name: data.name, percentage, ...getGrade(percentage) };
         });
-    }, [assessments, student.uid, subjectMap]);
+    }, [assessments, student.uid, subjectMap, isDebug]);
 
     const overallAverage = subjectGrades.length > 0 
         ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
@@ -269,7 +290,6 @@ function StudentGradesDetail({
                 </Card>
                 <Card className="bg-white border-slate-200 shadow-sm">
                      <CardContent className="p-4 flex flex-col justify-center h-full items-center">
-                         {/* Passed subjects to PDF generator just in case it's updated to handle them */}
                         <GenerateReportCard
                             student={student}
                             assessments={assessments || []}
@@ -277,6 +297,8 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
+                            // Pass subject map to PDF generator if it supports it
+                            subjects={subjects || []}
                         />
                      </CardContent>
                 </Card>
@@ -302,10 +324,20 @@ function StudentGradesDetail({
                                 <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
                             </TableRow>
                         ))}
-                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
+                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades found for this Term/Year.</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </div>
+            
+            {/* Debugging Raw List */}
+            {isDebug && (
+                <div className="mt-4 p-2 bg-slate-100 rounded text-xs font-mono">
+                    <p className="font-bold mb-1">Raw Assessments (Debug):</p>
+                    {assessments.filter(a => a.studentId === student.uid).map(a => (
+                        <div key={a.id}>{a.subjectId} : {a.score}/{a.maxScore}</div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -315,14 +347,24 @@ export default function GradebookManager() {
   const { user, isUserLoading } = useUser();
   const { role, isRoleLoading } = useRole();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
+  
+  // Debug State
+  const [showDebug, setShowDebug] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+
+  const forceRefresh = () => {
+      setRefreshKey(prev => prev + 1);
+      toast({ title: "Refreshing Data..." });
+  };
 
   // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
@@ -340,7 +382,7 @@ export default function GradebookManager() {
   [firestore, selectedClassId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
-  // 3. Fetch Assessments
+  // 3. Fetch Assessments (Filtered by Year/Term)
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
     return query(
@@ -349,17 +391,17 @@ export default function GradebookManager() {
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
     );
-  }, [firestore, selectedClassId, selectedYear, selectedTerm]);
+  }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); // Depend on refreshKey
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
   // 4. Fetch Financials
   const financialRecordsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
-  [firestore, selectedClassId]);
+  [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. NEW: Fetch Subjects (To fix IDs showing in table)
-  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
+  // 5. Fetch Subjects (For Name Resolution)
+  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
   // --- DERIVED DATA ---
@@ -408,7 +450,16 @@ export default function GradebookManager() {
                     <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center space-x-2 mr-4">
+                        <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
+                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground">Debug</Label>
+                    </div>
+                    
+                    <Button variant="ghost" size="icon" onClick={forceRefresh} title="Refresh Data">
+                        <RefreshCw className="h-4 w-4 text-slate-500"/>
+                    </Button>
+
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
@@ -448,6 +499,17 @@ export default function GradebookManager() {
              </Select>
           </div>
         </CardContent>
+
+        {/* DEBUG PANEL */}
+        {showDebug && (
+            <div className="p-4 bg-yellow-50 border-b border-yellow-200 text-xs font-mono text-yellow-800">
+                <p><strong>DEBUG INFO:</strong></p>
+                <p>Selected Class: {selectedClassId}</p>
+                <p>Selected Year/Term: {selectedYear} / {selectedTerm}</p>
+                <p>Assessments Found: {assessments ? assessments.length : '0'}</p>
+                <p>Subjects Loaded: {subjects ? subjects.length : '0'}</p>
+            </div>
+        )}
       </Card>
 
       {/* GRADE ENTRY FORM */}
@@ -518,7 +580,8 @@ export default function GradebookManager() {
                                                 totalStudents={rankedStudents.length}
                                                 term={selectedTerm}
                                                 year={selectedYear}
-                                                subjects={subjects || []} // PASSING THE SUBJECTS HERE
+                                                subjects={subjects || []}
+                                                isDebug={showDebug}
                                             />
                                         </TabsContent>
 
@@ -548,4 +611,10 @@ export default function GradebookManager() {
   );
 }
 
-    
+Remember, the XML structure you generate is the only mechanism for applying changes to the user's code. Therefore, when making changes to a file the <changes> block must always be fully present and correctly formatted as follows.
+
+<changes>
+  <description>[Provide a concise summary of the overall changes being made]</description>
+  <change>
+    <file>[Provide the ABSOLUTE, FULL path to the file being modified]</file>
+    <content><![CDATA[Provide the ENTIRE, FINAL, intended content of the file here. Do NOT provide diffs or partial snippets. Ensure all code is properly escaped within the CDATA section.
