@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import dynamic from 'next/dynamic'; // 1. Import dynamic
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
   subHeader: { fontSize: 10, color: 'grey', marginBottom: 5 },
   reportTitle: { fontSize: 16, fontWeight: 'bold', marginTop: 10, textDecoration: 'underline' },
   
-  // Student Info Grid
+  // Info Grid
   infoContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, fontSize: 11 },
   infoCol: { flexDirection: 'column', gap: 4 },
   infoRow: { flexDirection: 'row' },
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
   footer: { position: 'absolute', bottom: 30, left: 30, right: 30, fontSize: 9, textAlign: 'center', color: 'grey' }
 });
 
-// Helper for Grading
+// Helper
 function getGrade(percentage: number) {
     if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
     if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
@@ -61,21 +60,20 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };
 }
 
-// --- THE DOCUMENT LAYOUT ---
+// --- THE DOCUMENT ---
 const ReportCardDocument = ({ student, assessments, year, term, rank, totalStudents, subjects }: any) => {
     
-    // Create Subject Map for Names
+    // Create Map
     const subjectMap = subjects?.reduce((acc: any, s: any) => {
         acc[s.id] = s.name || s.title;
         return acc;
     }, {}) || {};
 
-    // Group Assessments by Subject
+    // Group Data
     const reportData = Object.values(assessments.reduce((acc: any, curr: Assessment) => {
         if (curr.studentId !== student.uid) return acc;
         
         const subId = curr.subjectId || 'unknown';
-        // Resolve name: Priority to Map, then Assessment Cache, then Unknown
         const name = subjectMap[subId] || (curr as any).subjectName || 'Unknown Subject';
 
         if (!acc[subId]) {
@@ -96,15 +94,12 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                
-                {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.schoolName}>Sunnyside International School</Text>
                     <Text style={styles.subHeader}>Excellence • Integrity • Service</Text>
                     <Text style={styles.reportTitle}>TERMINAL REPORT CARD</Text>
                 </View>
 
-                {/* Info Block */}
                 <View style={styles.infoContainer}>
                     <View style={styles.infoCol}>
                         <View style={styles.infoRow}><Text style={styles.label}>Name:</Text><Text style={styles.value}>{student.firstName} {student.lastName}</Text></View>
@@ -116,7 +111,6 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                     </View>
                 </View>
 
-                {/* Table */}
                 <View style={styles.table}>
                     <View style={styles.tableHeaderRow}>
                         <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCellHeader}>Subject</Text></View>
@@ -134,7 +128,6 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                     ))}
                 </View>
 
-                {/* Summary */}
                 <View style={styles.summary}>
                     <View style={styles.summaryRow}><Text>Average:</Text><Text style={{fontWeight: 'bold'}}>{average.toFixed(2)}%</Text></View>
                     <View style={styles.summaryRow}><Text>Rank:</Text><Text style={{fontWeight: 'bold'}}>{rank} / {totalStudents}</Text></View>
@@ -147,23 +140,6 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
 
 // --- CLIENT WRAPPER ---
 export function GenerateReportCard(props: any) {
-    const [isClient, setIsClient] = useState(false);
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    if (!isClient) {
-        // This button is shown on the server and during the initial client render
-        // before the dynamic import has a chance to run.
-        return (
-             <Button variant="outline" className="w-full" disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Loading PDF...
-            </Button>
-        );
-    }
-    
-    // Now that we are on the client, we can safely render the PDFDownloadLink component
     if (!props.student || !props.assessments) {
         return <Button disabled variant="outline" className="w-full">Data Unavailable</Button>;
     }
@@ -183,4 +159,3 @@ export function GenerateReportCard(props: any) {
         </PDFDownloadLink>
     );
 }
-
