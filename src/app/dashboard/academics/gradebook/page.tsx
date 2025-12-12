@@ -4,10 +4,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, writeBatch } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, writeBatch, updateDoc } from 'firebase/firestore';
 import { 
-  TrendingUp, Trophy, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, PlusCircle, Check, XCircle, Pencil
+  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
+  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, Pencil, Check 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 
@@ -219,7 +220,7 @@ function StudentGradesDetail({
     // 1. Subject Map
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
-        if(subjects && subjects.length > 0) {
+        if(subjects) {
             subjects.forEach(s => {
                 const name = s.name || s.title || s.subjectName || "Unnamed";
                 map.set(s.id, name);
@@ -228,20 +229,18 @@ function StudentGradesDetail({
         return map;
     }, [subjects]);
 
-    // 2. GLOBAL STATS (For Class Average & Subject Rank)
+    // 2. GLOBAL STATS (For Class Average)
     const globalSubjectStats = useMemo(() => {
-        // Map<SubjectID, { studentScores: { [uid]: { total: number, max: number } } }>
-        const stats: Record<string, { studentScores: Record<string, { total: number, max: number }> }> = {};
+        // Map<SubjectID, { totalScore: number, totalMax: number }>
+        const stats: Record<string, { totalScore: number, totalMax: number }> = {};
 
         assessments.forEach(a => {
              const subId = a.subjectId || 'unknown';
-             const uId = a.studentId;
+             if (!stats[subId]) stats[subId] = { totalScore: 0, totalMax: 0 };
              
-             if (!stats[subId]) stats[subId] = { studentScores: {} };
-             if (!stats[subId].studentScores[uId]) stats[subId].studentScores[uId] = { total: 0, max: 0 };
-             
-             stats[subId].studentScores[uId].total += (a.score || 0);
-             stats[subId].studentScores[uId].max += (a.maxScore || 0);
+             // Sum raw scores
+             stats[subId].totalScore += (a.score || 0);
+             stats[subId].totalMax += (a.maxScore || 0);
         });
         
         return stats;
@@ -265,7 +264,9 @@ function StudentGradesDetail({
                 grouped[subId] = { name: subName, id: subId, caObtained: 0, caMax: 0, examObtained: 0, examMax: 0, assessmentIds: [] };
             }
             
-            if (grouped[subId].name.startsWith('ID:') && !subName.startsWith('ID:')) grouped[subId].name = subName;
+            if (grouped[subId].name.startsWith('ID:') && !subName.startsWith('ID:')) {
+                grouped[subId].name = subName;
+            }
 
             // WEIGHTING LOGIC
             const type = (a.assessmentType || '').toLowerCase();
@@ -289,29 +290,21 @@ function StudentGradesDetail({
             const examWeighted = examRaw * 50;
             const totalPercent = caWeighted + examWeighted;
 
-            // Class Average & Rank Calculation
+            // Class Average Calculation
             const subStats = globalSubjectStats[data.id];
             let classAvg = 0;
-            let rank = 0;
-            
-            if (subStats) {
-                // Calculate total weighted percentage for EACH student in the class for this subject
-                const studentPcts = Object.entries(subStats.studentScores).map(([uid, scores]) => {
-                    const studentAssessments = assessments.filter(a => a.studentId === uid && a.subjectId === data.id);
-                    const ca = studentAssessments.filter(a => !a.assessmentType.includes('Exam')).reduce((acc, curr) => ({ total: acc.total + (curr.score || 0), max: acc.max + (curr.maxScore || 0) }), {total: 0, max: 0});
-                    const exam = studentAssessments.filter(a => a.assessmentType.includes('Exam')).reduce((acc, curr) => ({ total: acc.total + (curr.score || 0), max: acc.max + (curr.maxScore || 0) }), {total: 0, max: 0});
-                    const studentCaPct = ca.max > 0 ? (ca.total / ca.max) * 50 : 0;
-                    const studentExamPct = exam.max > 0 ? (exam.total / exam.max) * 50 : 0;
-                    return studentCaPct + studentExamPct;
-                });
-                
-                classAvg = studentPcts.reduce((a, b) => a + b, 0) / studentPcts.length;
-                
-                const sortedPcts = studentPcts.sort((a,b) => b - a);
-                rank = sortedPcts.indexOf(totalPercent) + 1;
+            if (subStats && subStats.totalMax > 0) {
+                classAvg = (subStats.totalScore / subStats.totalMax) * 100;
             }
 
-            return { ...data, caWeighted, examWeighted, totalPercent, classAvg, rank, ...getGrade(totalPercent) };
+            return { 
+                ...data, 
+                caWeighted, 
+                examWeighted, 
+                totalPercent, 
+                classAvg, // <--- EXPOSED FOR TABLE
+                ...getGrade(totalPercent) 
+            };
         });
     }, [assessments, student.uid, subjectMap, isDebug, globalSubjectStats]);
 
@@ -341,12 +334,40 @@ function StudentGradesDetail({
             
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-indigo-50 border-indigo-100 shadow-sm"><CardContent className="p-4 flex items-center gap-3"><Trophy className="h-8 w-8 text-indigo-600"/><div><p className="text-xs font-semibold text-indigo-600 uppercase">Class Position</p><p className="text-2xl font-bold text-slate-800">{rank} <span className="text-sm text-slate-400 font-normal">/ {totalStudents}</span></p></div></CardContent></Card>
-                <Card className="bg-emerald-50 border-emerald-100 shadow-sm"><CardContent className="p-4 flex items-center gap-3"><TrendingUp className="h-8 w-8 text-emerald-600"/><div><p className="text-xs font-semibold text-emerald-600 uppercase">Overall Average</p><p className="text-2xl font-bold text-slate-800">{overallAverage.toFixed(1)}%</p></div></CardContent></Card>
-                <Card className="bg-white border-slate-200 shadow-sm"><CardContent className="p-4 flex flex-col justify-center h-full items-center"><GenerateReportCard student={student} assessments={assessments || []} year={year} term={term} rank={rank} totalStudents={totalStudents} subjects={subjects || []} /></CardContent></Card>
+                <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
+                    <CardContent className="p-4 flex items-center gap-3">
+                        <Trophy className="h-8 w-8 text-indigo-600"/>
+                        <div>
+                            <p className="text-xs font-semibold text-indigo-600 uppercase">Class Position</p>
+                            <p className="text-2xl font-bold text-slate-800">{rank} <span className="text-sm text-slate-400 font-normal">/ {totalStudents}</span></p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-emerald-50 border-emerald-100 shadow-sm">
+                    <CardContent className="p-4 flex items-center gap-3">
+                        <TrendingUp className="h-8 w-8 text-emerald-600"/>
+                        <div>
+                            <p className="text-xs font-semibold text-emerald-600 uppercase">Overall Average</p>
+                            <p className="text-2xl font-bold text-slate-800">{overallAverage.toFixed(1)}%</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-white border-slate-200 shadow-sm">
+                     <CardContent className="p-4 flex flex-col justify-center h-full items-center">
+                        <GenerateReportCard
+                            student={student}
+                            assessments={assessments || []}
+                            year={year}
+                            term={term}
+                            rank={rank}
+                            totalStudents={totalStudents}
+                            subjects={subjects || []}
+                        />
+                     </CardContent>
+                </Card>
             </div>
 
-            {/* Table */}
+            {/* Subject Breakdown Table */}
             <div className="border rounded-md">
                 <Table>
                     <TableHeader>
@@ -356,7 +377,6 @@ function StudentGradesDetail({
                             <TableHead className="text-center bg-purple-50/50">Exam (50%)</TableHead>
                             <TableHead className="text-right font-bold">Total</TableHead>
                             <TableHead className="text-right text-slate-500">Class Avg</TableHead>
-                            <TableHead className="text-center">Pos</TableHead>
                             <TableHead className="text-center">Grade</TableHead>
                             <TableHead>Remark</TableHead>
                         </TableRow>
@@ -378,13 +398,12 @@ function StudentGradesDetail({
                                     <TableCell className="text-center bg-purple-50/20 text-slate-600">{sub.examWeighted.toFixed(1)}</TableCell>
                                     <TableCell className="text-right font-bold text-slate-800">{sub.totalPercent.toFixed(1)}%</TableCell>
                                     <TableCell className="text-right text-slate-500">{sub.classAvg.toFixed(1)}%</TableCell>
-                                    <TableCell className="text-center text-xs text-muted-foreground">{sub.rank}</TableCell>
                                     <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
                                     <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
                                 </TableRow>
                             );
                         })}
-                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
+                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </div>
@@ -400,18 +419,24 @@ export default function GradebookManager() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
   
+  // Debug State
   const [showDebug, setShowDebug] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-  const forceRefresh = () => { setRefreshKey(prev => prev + 1); toast({ title: "Refreshing..." }); };
+  const forceRefresh = () => {
+      setRefreshKey(prev => prev + 1);
+      toast({ title: "Refreshing Data..." });
+  };
 
+  // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
       if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
@@ -421,21 +446,35 @@ export default function GradebookManager() {
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-  const studentsQuery = useMemoFirebase(() => (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId, refreshKey]);
+  // 2. Fetch Students
+  const studentsQuery = useMemoFirebase(() => 
+    (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
+  [firestore, selectedClassId, refreshKey]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
+  // 3. Fetch Assessments
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
-    return query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('academicYear', '==', selectedYear), where('term', '==', selectedTerm));
+    return query(
+        collection(firestore, 'assessments'),
+        where('classId', '==', selectedClassId),
+        where('academicYear', '==', selectedYear),
+        where('term', '==', selectedTerm)
+    );
   }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); 
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-  const financialRecordsQuery = useMemoFirebase(() => (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId, refreshKey]);
+  // 4. Fetch Financials
+  const financialRecordsQuery = useMemoFirebase(() => 
+    (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
+  [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
+  // 5. Fetch Subjects
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
+  // --- DERIVED DATA ---
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
       const studentsWithScore = students.map(s => {
@@ -462,7 +501,9 @@ export default function GradebookManager() {
 
   const isLoading = isUserLoading || isRoleLoading || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
 
-  if (!isStaff && !isLoading) return <div className="p-8 text-center text-red-500">Access Denied. Staff only.</div>;
+  if (!isStaff && !isLoading) {
+      return <div className="p-8 text-center text-red-500">Access Denied.</div>;
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -474,7 +515,6 @@ export default function GradebookManager() {
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                    {/* VISIBLE DEBUG CONTROLS */}
                     <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border border-slate-200 shadow-sm">
                         <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
                         <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer font-bold">
@@ -533,7 +573,6 @@ export default function GradebookManager() {
             <div className="p-4 bg-yellow-50 border-b border-yellow-200 text-xs font-mono text-yellow-800 animate-in fade-in slide-in-from-top-2">
                 <p><strong>DEBUG INFO (Refresh Key: {refreshKey}):</strong></p>
                 <p>Selected Class: {selectedClassId || 'None'}</p>
-                <p>Selected Year/Term: {selectedYear} / {selectedTerm}</p>
                 <p>Assessments Found: {assessments ? assessments.length : 'Loading...'}</p>
                 <p>Subjects Loaded: {subjects ? subjects.length : 'Loading...'}</p>
                 <p>User: {user ? user.uid : 'No User'}</p>
@@ -541,7 +580,6 @@ export default function GradebookManager() {
         )}
       </Card>
 
-      {/* GRADE ENTRY FORM */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
               <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
@@ -576,12 +614,19 @@ export default function GradebookManager() {
                                     <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
                                         
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>{rank}</div>
-                                            <div className="text-left"><p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p><p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p></div>
+                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
+                                                {rank}
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
+                                                <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
+                                            </div>
                                         </div>
 
                                         <div className="flex items-center gap-3">
-                                            <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>{financials.balance > 0 ? `Owes: GH₵${financials.balance.toFixed(2)}` : 'Fees Paid'}</Badge>
+                                            <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
+                                                {financials.balance > 0 ? `Owes: GH₵${financials.balance.toFixed(2)}` : 'Fees Paid'}
+                                            </Badge>
                                             <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>
                                                 Avg: {student.average.toFixed(1)}%
                                             </Badge>
