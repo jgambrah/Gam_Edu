@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -33,7 +34,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -45,7 +45,7 @@ import { updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/no
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 
-function ApplicationReviewDialog({ application }: { application: AdmissionApplication }) {
+function ApplicationReviewDialog({ application, open, setOpen }: { application: AdmissionApplication, open: boolean, setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [rejectionReason, setRejectionReason] = useState('');
@@ -156,94 +156,96 @@ function ApplicationReviewDialog({ application }: { application: AdmissionApplic
   };
 
   return (
-    <DialogContent className="max-w-4xl">
-      <DialogHeader>
-        <DialogTitle>Review Application: {application.student.fullName}</DialogTitle>
-        <DialogDescription>Application ID: {application.applicationId} | Submitted: {format(application.submittedAt.toDate(), 'PPP p')}</DialogDescription>
-      </DialogHeader>
-      <div className="max-h-[70vh] overflow-y-auto p-4 space-y-6">
-        {/* Student Details */}
-        <div className="space-y-2">
-            <h4 className="text-lg font-semibold">Student Information</h4>
-            <p><strong>Grade Applied For:</strong> {application.student.desiredGrade}</p>
-            <p><strong>Date of Birth:</strong> {format(new Date(application.student.dateOfBirth), 'PPP')}</p>
-            <p><strong>Gender:</strong> {application.student.gender}</p>
-            <p><strong>Address:</strong> {application.student.address}</p>
-            {application.student.previousSchool && <p><strong>Previous School:</strong> {application.student.previousSchool}</p>}
-        </div>
-        <Separator />
-        {/* Parent Details */}
-        <div className="space-y-2">
-            <h4 className="text-lg font-semibold">Parent / Guardian Information</h4>
-            <p><strong>Name:</strong> {application.parent1.name} ({application.parent1.relationship})</p>
-            <p><strong>Contact:</strong> {application.parent1.email} | {application.parent1.phone}</p>
-        </div>
-        <Separator />
-        {/* Internal Assessment Section */}
-        <div className="space-y-4 rounded-md bg-muted/50 p-4">
-             <h4 className="text-lg font-semibold flex items-center gap-2"><FilePenLine /> Internal Assessment</h4>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="assessment-score">Assessment Test Score</Label>
-                    <Input id="assessment-score" type="number" value={assessmentScore} onChange={e => setAssessmentScore(e.target.value)} />
-                </div>
-             </div>
-              <div className="space-y-2">
-                <Label htmlFor="interview-notes">Assessment Interview Notes</Label>
-                <Textarea id="interview-notes" value={interviewNotes} onChange={e => setInterviewNotes(e.target.value)} rows={4} />
-            </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-4xl">
+        <DialogHeader>
+            <DialogTitle>Review Application: {application.student.fullName}</DialogTitle>
+            <DialogDescription>Application ID: {application.applicationId} | Submitted: {format(application.submittedAt.toDate(), 'PPP p')}</DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[70vh] overflow-y-auto p-4 space-y-6">
+            {/* Student Details */}
             <div className="space-y-2">
-                <Label htmlFor="admin-feedback">General Admin Feedback</Label>
-                <Textarea id="admin-feedback" value={adminFeedback} onChange={e => setAdminFeedback(e.target.value)} rows={4} />
+                <h4 className="text-lg font-semibold">Student Information</h4>
+                <p><strong>Grade Applied For:</strong> {application.student.desiredGrade}</p>
+                <p><strong>Date of Birth:</strong> {format(new Date(application.student.dateOfBirth), 'PPP')}</p>
+                <p><strong>Gender:</strong> {application.student.gender}</p>
+                <p><strong>Address:</strong> {application.student.address}</p>
+                {application.student.previousSchool && <p><strong>Previous School:</strong> {application.student.previousSchool}</p>}
             </div>
-            <Button onClick={handleUpdateAssessment} disabled={isProcessing}>Update Assessment</Button>
-        </div>
-        
-        {application.status === 'Rejected' && (
-            <div className="space-y-4 rounded-md bg-yellow-100 dark:bg-yellow-900/50 p-4">
-                <h4 className="text-lg font-semibold">Rejection Details</h4>
-                <p><strong>Rejection Reason:</strong> {application.rejectionReason}</p>
-                 <div className="space-y-2">
-                    <Label htmlFor="challenge-notes">Challenge/Follow-up Notes</Label>
-                    <Textarea id="challenge-notes" value={challengeNotes} onChange={e => setChallengeNotes(e.target.value)} />
-                    <Button onClick={handleChallenge} disabled={isProcessing}>Save Challenge Notes</Button>
-                </div>
+            <Separator />
+            {/* Parent Details */}
+            <div className="space-y-2">
+                <h4 className="text-lg font-semibold">Parent / Guardian Information</h4>
+                <p><strong>Name:</strong> {application.parent1.name} ({application.parent1.relationship})</p>
+                <p><strong>Contact:</strong> {application.parent1.email} | {application.parent1.phone}</p>
             </div>
-        )}
-
-      </div>
-      <DialogFooter>
-        {application.status === 'Pending Review' && (
-            <>
-                <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button variant="destructive" disabled={isProcessing}>
-                    <ThumbsDown className="mr-2 h-4 w-4" /> Reject Application
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                    <AlertDialogTitle>Reason for Rejection</AlertDialogTitle>
-                    <AlertDialogDescription>Please provide a clear reason for rejecting this application. This will be recorded internally.</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <div className="grid gap-4 py-4">
-                    <Label htmlFor="rejection-reason">Rejection Reason</Label>
-                    <Input id="rejection-reason" value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
+            <Separator />
+            {/* Internal Assessment Section */}
+            <div className="space-y-4 rounded-md bg-muted/50 p-4">
+                <h4 className="text-lg font-semibold flex items-center gap-2"><FilePenLine /> Internal Assessment</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="assessment-score">Assessment Test Score</Label>
+                        <Input id="assessment-score" type="number" value={assessmentScore} onChange={e => setAssessmentScore(e.target.value)} />
                     </div>
-                    <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleReject}>Confirm Rejection</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-                </AlertDialog>
-                <Button onClick={handleAdmit} disabled={isProcessing}>
-                {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
-                Admit Student
-                </Button>
-            </>
-        )}
-      </DialogFooter>
-    </DialogContent>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="interview-notes">Assessment Interview Notes</Label>
+                    <Textarea id="interview-notes" value={interviewNotes} onChange={e => setInterviewNotes(e.target.value)} rows={4} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="admin-feedback">General Admin Feedback</Label>
+                    <Textarea id="admin-feedback" value={adminFeedback} onChange={e => setAdminFeedback(e.target.value)} rows={4} />
+                </div>
+                <Button onClick={handleUpdateAssessment} disabled={isProcessing}>Update Assessment</Button>
+            </div>
+            
+            {application.status === 'Rejected' && (
+                <div className="space-y-4 rounded-md bg-yellow-100 dark:bg-yellow-900/50 p-4">
+                    <h4 className="text-lg font-semibold">Rejection Details</h4>
+                    <p><strong>Rejection Reason:</strong> {application.rejectionReason}</p>
+                    <div className="space-y-2">
+                        <Label htmlFor="challenge-notes">Challenge/Follow-up Notes</Label>
+                        <Textarea id="challenge-notes" value={challengeNotes} onChange={e => setChallengeNotes(e.target.value)} />
+                        <Button onClick={handleChallenge} disabled={isProcessing}>Save Challenge Notes</Button>
+                    </div>
+                </div>
+            )}
+
+        </div>
+        <DialogFooter>
+            {application.status === 'Pending Review' && (
+                <>
+                    <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive" disabled={isProcessing}>
+                        <ThumbsDown className="mr-2 h-4 w-4" /> Reject Application
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                        <AlertDialogTitle>Reason for Rejection</AlertDialogTitle>
+                        <AlertDialogDescription>Please provide a clear reason for rejecting this application. This will be recorded internally.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <div className="grid gap-4 py-4">
+                        <Label htmlFor="rejection-reason">Rejection Reason</Label>
+                        <Input id="rejection-reason" value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
+                        </div>
+                        <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleReject}>Confirm Rejection</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                    </AlertDialog>
+                    <Button onClick={handleAdmit} disabled={isProcessing}>
+                    {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />}
+                    Admit Student
+                    </Button>
+                </>
+            )}
+        </DialogFooter>
+        </DialogContent>
+    </Dialog>
   );
 }
 
@@ -254,6 +256,7 @@ function ApplicationsTable({ status }: { status: AdmissionApplication['status'] 
     [firestore, status]
   );
   const { data: applications, isLoading } = useCollection<AdmissionApplication>(applicationsQuery);
+  const [selectedApplication, setSelectedApplication] = useState<AdmissionApplication | null>(null);
 
   if (isLoading) {
     return <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin" />;
@@ -264,35 +267,39 @@ function ApplicationsTable({ status }: { status: AdmissionApplication['status'] 
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Student Name</TableHead>
-          <TableHead>Grade Applied</TableHead>
-          <TableHead>Parent Name</TableHead>
-          <TableHead>Application Date</TableHead>
-          <TableHead></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {applications.map((app) => (
-          <TableRow key={app.id}>
-            <TableCell>{app.student.fullName}</TableCell>
-            <TableCell>{app.student.desiredGrade}</TableCell>
-            <TableCell>{app.parent1.name}</TableCell>
-            <TableCell>{format(app.submittedAt.toDate(), 'PPP')}</TableCell>
-            <TableCell>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline">Open Application</Button>
-                </DialogTrigger>
-                <ApplicationReviewDialog application={app} />
-              </Dialog>
-            </TableCell>
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Student Name</TableHead>
+            <TableHead>Grade Applied</TableHead>
+            <TableHead>Parent Name</TableHead>
+            <TableHead>Application Date</TableHead>
+            <TableHead></TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {applications.map((app) => (
+            <TableRow key={app.id}>
+              <TableCell>{app.student.fullName}</TableCell>
+              <TableCell>{app.student.desiredGrade}</TableCell>
+              <TableCell>{app.parent1.name}</TableCell>
+              <TableCell>{format(app.submittedAt.toDate(), 'PPP')}</TableCell>
+              <TableCell>
+                  <Button variant="outline" onClick={() => setSelectedApplication(app)}>Open Application</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      {selectedApplication && (
+        <ApplicationReviewDialog 
+            application={selectedApplication} 
+            open={!!selectedApplication} 
+            setOpen={() => setSelectedApplication(null)}
+        />
+      )}
+    </>
   );
 }
 
