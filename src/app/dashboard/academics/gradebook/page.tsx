@@ -43,7 +43,6 @@ function getGrade(percentage: number) {
 
 // --- SUB-COMPONENT: Transaction Detail Modal ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
-    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[425px]">
@@ -230,17 +229,23 @@ function StudentGradesDetail({
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
+            // LOGIC: Try to find the name
+            // 1. Check if 'subjectName' is saved directly on the assessment (some systems do this)
+            // 2. Check the Map using 'subjectId'
+            // 3. Fallback to ID
             const subId = a.subjectId || 'unknown';
-            let subName = (a as any).subjectName; 
+            let subName = (a as any).subjectName; // Check direct property first
             
             if (!subName) {
                 subName = subjectMap.get(subId);
             }
             
             if (!subName) {
+                 // Fallback: If still unknown, use ID for debugging or "Unknown"
                  subName = isDebug ? `ID: ${subId}` : 'Unknown Subject';
             }
 
+            // Key by ID to prevent merging different subjects with same name
             const key = subId;
 
             if (!grouped[key]) {
@@ -264,6 +269,7 @@ function StudentGradesDetail({
 
     return (
         <div className="space-y-6 p-4">
+            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
                     <CardContent className="p-4 flex items-center gap-3">
@@ -292,11 +298,14 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
+                            // Pass subject map to PDF generator if it supports it
                             subjects={subjects || []}
                         />
                      </CardContent>
                 </Card>
             </div>
+
+            {/* Subject Breakdown Table */}
             <div className="border rounded-md">
                 <Table>
                     <TableHeader>
@@ -320,6 +329,8 @@ function StudentGradesDetail({
                     </TableBody>
                 </Table>
             </div>
+            
+            {/* Debugging Raw List */}
             {isDebug && (
                 <div className="mt-4 p-2 bg-slate-100 rounded text-xs font-mono">
                     <p className="font-bold mb-1">Raw Assessments (Debug):</p>
@@ -339,10 +350,13 @@ export default function GradebookManager() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
+  
+  // Debug State
   const [showDebug, setShowDebug] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -353,6 +367,7 @@ export default function GradebookManager() {
       toast({ title: "Refreshing Data..." });
   };
 
+  // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
       if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
@@ -362,11 +377,13 @@ export default function GradebookManager() {
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
+  // 2. Fetch Students
   const studentsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId, refreshKey]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
+  // 3. Fetch Assessments (Filtered by Year/Term)
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
     return query(
@@ -375,19 +392,25 @@ export default function GradebookManager() {
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
     );
-  }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]);
+  }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); // Depend on refreshKey
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
+  // 4. Fetch Financials
   const financialRecordsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
+  // 5. Fetch Subjects (For Name Resolution)
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
+  // --- DERIVED DATA ---
+  
+  // A. Calculate Ranks
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
+      
       const studentsWithScore = students.map(s => {
           const myAssessments = assessments.filter(a => a.studentId === s.uid);
           const total = myAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
@@ -395,12 +418,15 @@ export default function GradebookManager() {
           const average = max > 0 ? (total / max) * 100 : 0;
           return { ...s, average };
       });
+
       return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
+  // B. Financials Map
   const studentFinancials = useMemo(() => {
     if (!students || !financialRecords) return {};
     const financials: Record<string, { balance: number }> = {};
+
     students.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
@@ -430,9 +456,11 @@ export default function GradebookManager() {
                         <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
                         <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1"><Bug className="h-3 w-3"/> Debug</Label>
                     </div>
+                    
                     <Button variant="ghost" size="icon" onClick={forceRefresh} title="Refresh Data">
                         <RefreshCw className="h-4 w-4 text-slate-500"/>
                     </Button>
+
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'outline'} 
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
@@ -444,6 +472,7 @@ export default function GradebookManager() {
             </div>
         </CardHeader>
         
+        {/* FILTERS */}
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
@@ -472,6 +501,7 @@ export default function GradebookManager() {
           </div>
         </CardContent>
 
+        {/* DEBUG PANEL */}
         {showDebug && (
             <div className="p-4 bg-yellow-50 border-b border-yellow-200 text-xs font-mono text-yellow-800">
                 <p><strong>DEBUG INFO:</strong></p>
@@ -483,12 +513,14 @@ export default function GradebookManager() {
         )}
       </Card>
 
+      {/* GRADE ENTRY FORM */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
               <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
           </div>
       )}
       
+      {/* STUDENT LIST */}
       {selectedClassId && (
         <Card>
             <CardHeader className="py-4 px-6 border-b bg-white">
@@ -579,3 +611,18 @@ export default function GradebookManager() {
     </div>
   );
 }
+
+// FIX: GenerateReportCard now needs 'subjects'
+// This is a placeholder since the PDF component is separate. In a real app, you'd pass this down.
+// We'll keep the import but ensure the props match for type safety.
+// Note: This part does not require a code change in THIS file, but acknowledges the dependency.
+// No, the fix is in THIS file, to pass the `subjects` prop to `GenerateReportCard`.
+// The user already provided the code with the fix, I just need to apply it.
+// The `GenerateReportCard` component is in a different file, but it's being used here.
+// The props passed to it need to be correct.
+
+// The user-provided code has `subjects={subjects || []}` being passed to `GenerateReportCard`.
+// It also passes `subjects={subjects || []}` to `StudentGradesDetail`.
+// This is correct. The user's code is complete and addresses the issue.
+
+// I will now replace the content of `src/app/dashboard/academics/gradebook/page.tsx` with the user's provided code.
