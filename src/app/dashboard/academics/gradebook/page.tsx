@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { 
   TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, Bug, PlusCircle, CheckCircle, XCircle 
+  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, CheckCircle 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -393,11 +393,6 @@ export default function GradebookManager() {
       toast({ title: "Refreshing Data..." });
   };
 
-  const handleFormClose = () => {
-      setActiveForm(null);
-      forceRefresh(); // Auto-refresh when form closes
-  };
-
   // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
@@ -472,6 +467,9 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
+
+      {isStaff && showDebug && <SubjectRelinker />}
+
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -482,22 +480,22 @@ export default function GradebookManager() {
                 <div className="flex items-center gap-3">
                     
                     {/* --- DEBUG & REFRESH BUTTONS --- */}
-                    <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border">
+                    <div className="flex items-center space-x-2 bg-slate-100 p-2 rounded-md border border-slate-200">
                         <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
-                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer">
-                            <Bug className="h-3 w-3"/> Debug
+                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer font-medium">
+                            <Bug className="h-3 w-3"/> Debug Mode
                         </Label>
                     </div>
                     
-                    <Button variant="outline" size="icon" onClick={forceRefresh} title="Refresh Data">
-                        <RefreshCw className="h-4 w-4 text-slate-500"/>
+                    <Button variant="outline" size="sm" onClick={forceRefresh} title="Refresh Data" className="h-9">
+                        <RefreshCw className="mr-2 h-3 w-3 text-slate-500"/> Refresh
                     </Button>
 
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'default'} 
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
                         disabled={!selectedClassId}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white h-9"
                     >
                         {activeForm === 'grade' ? <XCircle className="mr-2 h-4 w-4"/> : <PlusCircle className="mr-2 h-4 w-4"/>} 
                         {activeForm === 'grade' ? "Close Form" : "Enter Grades"}
@@ -546,9 +544,6 @@ export default function GradebookManager() {
                 <p>User: {user ? user.uid : 'No User'}</p>
             </div>
         )}
-
-        {showDebug && <SubjectRelinker />}
-
       </Card>
 
       {/* GRADE ENTRY FORM */}
