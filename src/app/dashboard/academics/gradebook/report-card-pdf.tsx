@@ -1,11 +1,26 @@
+
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+import { useMemo } from 'react';
+import dynamic from 'next/dynamic'; // 1. Import dynamic
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { FileDown, Loader2 } from 'lucide-react';
 import { Assessment, Student } from '@/lib/types';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+
+// 2. Dynamically import PDFDownloadLink with SSR disabled
+const PDFDownloadLink = dynamic(
+  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
+  {
+    ssr: false,
+    loading: () => (
+      <Button variant="outline" className="w-full" disabled>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading PDF...
+      </Button>
+    ),
+  }
+);
 
 // --- PDF STYLES ---
 const styles = StyleSheet.create({
@@ -47,10 +62,10 @@ function getGrade(percentage: number) {
 }
 
 // --- THE DOCUMENT LAYOUT ---
-const ReportCardDocument = ({ student, assessments, year, term, rank, totalStudents, subjectsList }: any) => {
+const ReportCardDocument = ({ student, assessments, year, term, rank, totalStudents, subjects }: any) => {
     
     // Create Subject Map for Names
-    const subjectMap = subjectsList?.reduce((acc: any, s: any) => {
+    const subjectMap = subjects?.reduce((acc: any, s: any) => {
         acc[s.id] = s.name || s.title;
         return acc;
     }, {}) || {};
@@ -110,7 +125,7 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                         <View style={{...styles.tableCol, width: '15%'}}><Text style={styles.tableCellHeader}>Grade</Text></View>
                         <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCellHeader}>Remark</Text></View>
                     </View>
-                    {reportData.map((row: any, i) => (
+                    {reportData.map((row: any, i: number) => (
                         <View key={i} style={styles.tableRow}>
                             <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCell}>{row.name}</Text></View>
                             <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCell}>{row.pct.toFixed(1)}%</Text></View>
@@ -155,29 +170,9 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
 
 // --- EXPORTED COMPONENT (Client-Side Wrapper) ---
 export function GenerateReportCard(props: any) {
-    const [isClient, setIsClient] = useState(false);
-
-    // FIX: Only render PDF features after the component has mounted in the browser
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    // Guard clause to prevent rendering if essential data is missing
-    if (!props.assessments || !props.subjectsList) {
-        return (
-            <Button variant="outline" className="w-full" disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing Data...
-            </Button>
-        );
-    }
-    
-    // Client-side only rendering
-    if (!isClient) {
-        return (
-            <Button variant="outline" className="w-full" disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Loading PDF Engine...
-            </Button>
-        );
+    // 3. Simple protection: Ensure we have data before attempting to render
+    if (!props.student || !props.assessments) {
+        return <Button disabled>Data Missing</Button>;
     }
 
     return (
@@ -185,7 +180,8 @@ export function GenerateReportCard(props: any) {
             document={<ReportCardDocument {...props} />}
             fileName={`Report_${props.student.firstName}_${props.student.lastName}.pdf`}
         >
-            {({ loading }) => (
+            {/* @ts-ignore */}
+            {({ loading, error }: any) => (
                 <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4"/>}
                     {loading ? 'Generating...' : 'Download Report Card'}
