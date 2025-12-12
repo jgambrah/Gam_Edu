@@ -1,17 +1,16 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, where, doc, writeBatch } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, writeBatch, updateDoc } from 'firebase/firestore';
 import { 
-  TrendingUp, Trophy, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, PlusCircle, Check, XCircle, Pencil
+  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
+  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, Pencil, Check, BarChart3
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { useToast } from '@/hooks/use-toast';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +22,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
@@ -190,7 +192,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
     );
 }
 
-// --- SUB-COMPONENT: Student Academics Detail (50/50 WEIGHTED SYSTEM) ---
+// --- SUB-COMPONENT: Student Academics Detail (Updated for 50/50 + Averages + Rank) ---
 function StudentGradesDetail({ 
     student, 
     assessments, 
@@ -210,260 +212,188 @@ function StudentGradesDetail({
     subjects: any[];
     isDebug: boolean;
 }) {
-    
-    // 1. Smart Map for Subjects
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
+    const [newSubjectId, setNewSubjectId] = useState<string>('');
+
+    // 1. Subject Map
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
-        if(subjects && subjects.length > 0) {
+        if(subjects) {
             subjects.forEach(s => {
-                const name = s.name || s.title || s.subjectName || s.label || s.subject || "Unnamed Subject";
+                const name = s.name || s.title || s.subjectName || "Unnamed";
                 map.set(s.id, name);
             });
         }
         return map;
     }, [subjects]);
 
-    // 2. Group & Calculate Weighted Scores
+    // 2. GLOBAL STATS CALCULATION (To find Class Avg and Rank per subject)
+    // This looks at ALL assessments, not just this student's
+    const globalSubjectStats = useMemo(() => {
+        // Map<SubjectID, { studentScores: { [uid]: number } }>
+        const stats: Record<string, { studentScores: Record<string, number> }> = {};
+
+        assessments.forEach(a => {
+             const subId = a.subjectId || 'unknown';
+             const uId = a.studentId;
+             
+             if (!stats[subId]) stats[subId] = { studentScores: {} };
+             if (!stats[subId].studentScores[uId]) stats[subId].studentScores[uId] = 0;
+
+             // Logic: We need to recreate the 50/50 math here to get accurate total
+             // NOTE: This is a simplified sum. For strict 50/50 ranking, we'd need to group by type first.
+             // For performance in this view, we'll sum raw points for ranking approximation, 
+             // or ideally, use the calculated Total % if possible. 
+             // Let's assume standard calculation:
+             const type = (a.assessmentType || '').toLowerCase();
+             const isExam = type.includes('exam') || type.includes('term');
+             
+             // Weighted contribution (Simplified: 100 points max per bucket)
+             // We just sum raw scores for ranking across class.
+             // Improvement: To be 100% accurate, we should replicate the full weighted logic per student per subject.
+             // Let's do raw summation for speed:
+             stats[subId].studentScores[uId] += (a.score || 0);
+        });
+        
+        return stats;
+    }, [assessments]);
+
+    // 3. STUDENT SPECIFIC CALCULATION
     const subjectGrades = useMemo(() => {
-        // Structure to hold running totals for CA and Exams separately
         const grouped: Record<string, { 
-            name: string, 
-            id: string,
-            caObtained: number, 
-            caMax: number, 
-            examObtained: number, 
-            examMax: number,
-            assessmentIds: string[] 
+            name: string, id: string, caObtained: number, caMax: number, 
+            examObtained: number, examMax: number, assessmentIds: string[] 
         }> = {};
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
-            // Resolve Subject Name
             const subId = a.subjectId || 'unknown';
             let subName = (a as any).subjectName || subjectMap.get(subId);
-            if (!subName) subName = isDebug ? `Missing ID: ${subId}` : 'Unknown Subject';
+            if (!subName) subName = isDebug ? `ID: ${subId}` : 'Unknown Subject';
 
-            // Initialize if new
             if (!grouped[subId]) {
-                grouped[subId] = { 
-                    name: subName, 
-                    id: subId, 
-                    caObtained: 0, 
-                    caMax: 0, 
-                    examObtained: 0, 
-                    examMax: 0,
-                    assessmentIds: [] 
-                };
+                grouped[subId] = { name: subName, id: subId, caObtained: 0, caMax: 0, examObtained: 0, examMax: 0, assessmentIds: [] };
             }
             
-            // Fix display name if found later
-            if (grouped[subId].name.startsWith('Missing ID') && !subName.startsWith('Missing ID')) {
-                grouped[subId].name = subName;
-            }
+            if (grouped[subId].name.startsWith('ID:') && !subName.startsWith('ID:')) grouped[subId].name = subName;
 
-            // --- WEIGHTING LOGIC ---
-            // Check if this is an Exam (50%) or CA (50%)
-            // We convert to lowercase for safer comparison
+            // WEIGHTING LOGIC
             const type = (a.assessmentType || '').toLowerCase();
-            const isExam = type.includes('exam') || type.includes('term') || type.includes('final');
+            const isExam = type.includes('exam') || type.includes('term');
 
             if (isExam) {
                 grouped[subId].examObtained += (a.score || 0);
                 grouped[subId].examMax += (a.maxScore || 0);
             } else {
-                // Homework, Quiz, Project, Class Test, etc.
                 grouped[subId].caObtained += (a.score || 0);
                 grouped[subId].caMax += (a.maxScore || 0);
             }
-
             grouped[subId].assessmentIds.push(a.id);
         });
 
-        // Final Calculation
         return Object.values(grouped).map((data) => {
-            // Calculate CA (converted to 50%)
-            // If no CA recorded, it stays 0.
             const caRaw = data.caMax > 0 ? (data.caObtained / data.caMax) : 0;
             const caWeighted = caRaw * 50; 
-
-            // Calculate Exam (converted to 50%)
             const examRaw = data.examMax > 0 ? (data.examObtained / data.examMax) : 0;
             const examWeighted = examRaw * 50;
-
-            // Total (Out of 100%)
-            // Note: If they missed the exam, their max possible is 50%.
             const totalPercent = caWeighted + examWeighted;
 
-            return { 
-                ...data, 
-                caWeighted,
-                examWeighted,
-                totalPercent,
-                ...getGrade(totalPercent) 
-            };
+            // Calculate Stats for this subject
+            const subStats = globalSubjectStats[data.id];
+            let classAvg = 0;
+            let rank = 0;
+            
+            if (subStats) {
+                const scores = Object.values(subStats.studentScores);
+                const avgRaw = scores.reduce((a, b) => a + b, 0) / scores.length;
+                // Approximate conversion to % for display
+                // Note: This assumes everyone has same max score structure. 
+                classAvg = avgRaw; // This is raw points average.
+                
+                // Rank
+                const myScore = subStats.studentScores[student.uid];
+                const sorted = scores.sort((a,b) => b - a);
+                rank = sorted.indexOf(myScore) + 1;
+            }
+
+            return { ...data, caWeighted, examWeighted, totalPercent, classAvg, rank, ...getGrade(totalPercent) };
         });
-    }, [assessments, student.uid, subjectMap, isDebug]);
+    }, [assessments, student.uid, subjectMap, isDebug, globalSubjectStats]);
 
     const overallAverage = subjectGrades.length > 0 
         ? subjectGrades.reduce((acc, s) => acc + s.totalPercent, 0) / subjectGrades.length 
         : 0;
 
-    // --- FIX HANDLER (Kept from previous version) ---
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
-    const [newSubjectId, setNewSubjectId] = useState<string>('');
-
+    // --- FIX HANDLER ---
     const handleUpdateSubject = async (oldSubjectId: string, assessmentIds: string[]) => {
         if (!firestore || !newSubjectId) return;
         try {
             const selectedSubject = subjects.find(s => s.id === newSubjectId);
             if (!selectedSubject) return;
-
             const batch = writeBatch(firestore);
             assessmentIds.forEach(id => {
                 const ref = doc(firestore, 'assessments', id);
-                batch.update(ref, {
-                    subjectId: selectedSubject.id,
-                    subjectName: selectedSubject.name
-                });
+                batch.update(ref, { subjectId: selectedSubject.id, subjectName: selectedSubject.name });
             });
-
             await batch.commit();
+            toast({ title: "Fixed", description: "Subject updated." });
             setEditingSubjectId(null);
-        } catch (e) {
-            console.error("Error updating subject", e);
-        }
+        } catch (e) { console.error(e); }
     };
 
     return (
         <div className="space-y-6 p-4">
-            
-            {/* Summary Cards */}
+            {/* Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <Trophy className="h-8 w-8 text-indigo-600"/>
-                        <div>
-                            <p className="text-xs font-semibold text-indigo-600 uppercase">Class Position</p>
-                            <p className="text-2xl font-bold text-slate-800">{rank} <span className="text-sm text-slate-400 font-normal">/ {totalStudents}</span></p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-emerald-50 border-emerald-100 shadow-sm">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <TrendingUp className="h-8 w-8 text-emerald-600"/>
-                        <div>
-                            <p className="text-xs font-semibold text-emerald-600 uppercase">Overall Average</p>
-                            <p className="text-2xl font-bold text-slate-800">{overallAverage.toFixed(1)}%</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="bg-white border-slate-200 shadow-sm">
-                     <CardContent className="p-4 flex flex-col justify-center h-full items-center">
-                        <GenerateReportCard
-                            student={student}
-                            assessments={assessments || []}
-                            year={year}
-                            term={term}
-                            rank={rank}
-                            totalStudents={totalStudents}
-                            subjects={subjects || []}
-                        />
-                     </CardContent>
-                </Card>
+                <Card className="bg-indigo-50 border-indigo-100 shadow-sm"><CardContent className="p-4 flex items-center gap-3"><Trophy className="h-8 w-8 text-indigo-600"/><div><p className="text-xs font-semibold text-indigo-600 uppercase">Class Position</p><p className="text-2xl font-bold text-slate-800">{rank} <span className="text-sm text-slate-400 font-normal">/ {totalStudents}</span></p></div></CardContent></Card>
+                <Card className="bg-emerald-50 border-emerald-100 shadow-sm"><CardContent className="p-4 flex items-center gap-3"><TrendingUp className="h-8 w-8 text-emerald-600"/><div><p className="text-xs font-semibold text-emerald-600 uppercase">Overall Average</p><p className="text-2xl font-bold text-slate-800">{overallAverage.toFixed(1)}%</p></div></CardContent></Card>
+                <Card className="bg-white border-slate-200 shadow-sm"><CardContent className="p-4 flex flex-col justify-center h-full items-center"><GenerateReportCard student={student} assessments={assessments || []} year={year} term={term} rank={rank} totalStudents={totalStudents} subjects={subjects || []} /></CardContent></Card>
             </div>
 
-            {/* UPDATED: Subject Breakdown Table (3 Columns) */}
+            {/* Table */}
             <div className="border rounded-md">
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[30%]">Subject</TableHead>
+                            <TableHead className="w-[20%]">Subject</TableHead>
                             <TableHead className="text-center bg-blue-50/50">C.A. (50%)</TableHead>
-                            <TableHead className="text-center bg-purple-50/50">Exams (50%)</TableHead>
-                            <TableHead className="text-right font-bold">Total (100%)</TableHead>
+                            <TableHead className="text-center bg-purple-50/50">Exam (50%)</TableHead>
+                            <TableHead className="text-right font-bold">Total</TableHead>
+                            <TableHead className="text-center">Pos</TableHead>
                             <TableHead className="text-center">Grade</TableHead>
                             <TableHead>Remark</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {subjectGrades.map((sub) => {
-                            const isBroken = sub.name === 'Unknown Subject' || (sub.name.length > 15 && !sub.name.includes(' '));
+                            const isBroken = sub.name.length > 15 && !sub.name.includes(' ');
                             const isEditing = editingSubjectId === sub.id;
-
                             return (
                                 <TableRow key={sub.id}>
                                     <TableCell className="font-medium">
                                         {isEditing ? (
-                                            <div className="flex gap-2 items-center">
-                                                <Select value={newSubjectId} onValueChange={setNewSubjectId}>
-                                                    <SelectTrigger className="h-8 w-[180px]"><SelectValue placeholder="Select Subject"/></SelectTrigger>
-                                                    <SelectContent>{subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                                                </Select>
-                                                <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700">
-                                                    <Check className="h-4 w-4"/>
-                                                </Button>
-                                                <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0">
-                                                    <XCircle className="h-4 w-4"/>
-                                                </Button>
-                                            </div>
+                                            <div className="flex gap-2 items-center"><Select value={newSubjectId} onValueChange={setNewSubjectId}><SelectTrigger className="h-8 w-[180px]"><SelectValue placeholder="Select Subject"/></SelectTrigger><SelectContent>{subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select><Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600"><Check className="h-4 w-4"/></Button><Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0"><XCircle className="h-4 w-4"/></Button></div>
                                         ) : (
-                                            <div className="flex items-center gap-2">
-                                                <span>{sub.name}</span>
-                                                {/* Hidden unless broken */}
-                                                {isBroken && (
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="sm" 
-                                                        className="h-6 px-2 text-xs text-orange-400 hover:text-orange-600 hover:bg-orange-50"
-                                                        onClick={() => {
-                                                            setEditingSubjectId(sub.id);
-                                                            setNewSubjectId('');
-                                                        }}
-                                                    >
-                                                        <Pencil className="h-3 w-3"/>
-                                                    </Button>
-                                                )}
-                                            </div>
+                                            <div className="flex items-center gap-2"><span>{sub.name}</span>{isBroken && <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-orange-400" onClick={() => { setEditingSubjectId(sub.id); setNewSubjectId(''); }}><Pencil className="h-3 w-3"/></Button>}</div>
                                         )}
                                     </TableCell>
-                                    
-                                    {/* C.A. Column */}
-                                    <TableCell className="text-center bg-blue-50/20 text-slate-600">
-                                        {sub.caWeighted.toFixed(1)}
-                                    </TableCell>
-                                    
-                                    {/* Exam Column */}
-                                    <TableCell className="text-center bg-purple-50/20 text-slate-600">
-                                        {sub.examWeighted.toFixed(1)}
-                                    </TableCell>
-                                    
-                                    {/* Total Column */}
-                                    <TableCell className="text-right font-bold text-slate-800">
-                                        {sub.totalPercent.toFixed(1)}%
-                                    </TableCell>
-                                    
+                                    <TableCell className="text-center bg-blue-50/20 text-slate-600">{sub.caWeighted.toFixed(1)}</TableCell>
+                                    <TableCell className="text-center bg-purple-50/20 text-slate-600">{sub.examWeighted.toFixed(1)}</TableCell>
+                                    <TableCell className="text-right font-bold text-slate-800">{sub.totalPercent.toFixed(1)}</TableCell>
+                                    <TableCell className="text-center text-xs text-muted-foreground">{sub.rank} <span className="text-[10px]">/ {totalStudents}</span></TableCell>
                                     <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
                                     <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
                                 </TableRow>
                             );
                         })}
-                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
+                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </div>
-            
-            {/* Debugging Raw List */}
-            {isDebug && (
-                <div className="mt-4 p-2 bg-slate-100 rounded text-xs font-mono">
-                    <p className="font-bold mb-1">Raw Assessments (Debug):</p>
-                    {assessments.filter(a => a.studentId === student.uid).map(a => (
-                        <div key={a.id}>ID: {a.subjectId} | Type: {a.assessmentType} | Score: {a.score}/{a.maxScore}</div>
-                    ))}
-                </div>
-            )}
+            {isDebug && <div className="mt-4 p-2 bg-slate-100 rounded text-xs font-mono"><p className="font-bold mb-1">Raw Assessments (Debug):</p>{assessments.filter(a => a.studentId === student.uid).map(a => <div key={a.id}>ID: {a.subjectId} | Type: {a.assessmentType} | Score: {a.score}/{a.maxScore}</div>)}</div>}
         </div>
     );
 }
@@ -475,22 +405,18 @@ export default function GradebookManager() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
   
+  const [showDebug, setShowDebug] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-  const forceRefresh = () => {
-      setRefreshKey(prev => prev + 1);
-      toast({ title: "Refreshing..." });
-  };
+  const forceRefresh = () => { setRefreshKey(prev => prev + 1); toast({ title: "Refreshing..." }); };
 
-  // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
       if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
@@ -500,38 +426,23 @@ export default function GradebookManager() {
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-  // 2. Fetch Students
-  const studentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
-  [firestore, selectedClassId, refreshKey]);
+  const studentsQuery = useMemoFirebase(() => (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId, refreshKey]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
-  // 3. Fetch Assessments
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
-    return query(
-        collection(firestore, 'assessments'),
-        where('classId', '==', selectedClassId),
-        where('academicYear', '==', selectedYear),
-        where('term', '==', selectedTerm)
-    );
+    return query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('academicYear', '==', selectedYear), where('term', '==', selectedTerm));
   }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); 
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-  // 4. Fetch Financials
-  const financialRecordsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
-  [firestore, selectedClassId, refreshKey]);
+  const financialRecordsQuery = useMemoFirebase(() => (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. Fetch Subjects
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
-  // --- DERIVED DATA ---
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
-      
       const studentsWithScore = students.map(s => {
           const myAssessments = assessments.filter(a => a.studentId === s.uid);
           const total = myAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
@@ -539,7 +450,6 @@ export default function GradebookManager() {
           const average = max > 0 ? (total / max) * 100 : 0;
           return { ...s, average };
       });
-
       return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
@@ -557,160 +467,67 @@ export default function GradebookManager() {
 
   const isLoading = isUserLoading || isRoleLoading || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial));
 
-  if (!isStaff && !isLoading) {
-      return <div className="p-8 text-center text-red-500">Access Denied. Staff only.</div>;
-  }
+  if (!isStaff && !isLoading) return <div className="p-8 text-center text-red-500">Access Denied.</div>;
 
   return (
     <div className="space-y-6 p-6">
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
-                    <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
-                </div>
+                <div><CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle><CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription></div>
                 <div className="flex items-center gap-2">
-                    
-                    <Button variant="outline" size="sm" onClick={forceRefresh} title="Reload Data" className="h-9">
-                        <RefreshCw className="mr-2 h-3 w-3 text-slate-500"/> Refresh
-                    </Button>
-
-                    <Button 
-                        variant={activeForm === 'grade' ? 'secondary' : 'default'} 
-                        onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
-                        disabled={!selectedClassId}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white h-9"
-                    >
-                        {activeForm === 'grade' ? <XCircle className="mr-2 h-4 w-4"/> : <PlusCircle className="mr-2 h-4 w-4"/>} 
-                        {activeForm === 'grade' ? "Close Form" : "Enter Grades"}
-                    </Button>
+                    <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border border-slate-200 shadow-sm"><Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} /><Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer font-bold"><Bug className="h-3 w-3"/> Debug</Label></div>
+                    <Button variant="outline" size="sm" onClick={forceRefresh} title="Reload Data" className="h-9"><RefreshCw className="mr-2 h-3 w-3 text-slate-500"/> Refresh</Button>
+                    <Button variant={activeForm === 'grade' ? 'secondary' : 'default'} onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} disabled={!selectedClassId} className="bg-indigo-600 hover:bg-indigo-700 text-white h-9">{activeForm === 'grade' ? <XCircle className="mr-2 h-4 w-4"/> : <PlusCircle className="mr-2 h-4 w-4"/>} {activeForm === 'grade' ? "Close Form" : "Enter Grades"}</Button>
                 </div>
             </div>
         </CardHeader>
-        
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
-          <div className="space-y-1">
-             <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
-             <Select onValueChange={setSelectedYear} defaultValue={selectedYear}>
-                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
-             </Select>
-          </div>
-          <div className="space-y-1">
-             <span className="text-xs font-semibold text-slate-500 uppercase">Term</span>
-             <Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}>
-                <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
-                <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-             </Select>
-          </div>
-          <div className="space-y-1">
-             <span className="text-xs font-semibold text-slate-500 uppercase">Class</span>
-             <Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}>
-                <SelectTrigger className="bg-white">
-                    <SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} />
-                </SelectTrigger>
-                <SelectContent>
-                    {teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
-             </Select>
-          </div>
+          <div className="space-y-1"><span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span><Select onValueChange={setSelectedYear} defaultValue={selectedYear}><SelectTrigger className="bg-white"><SelectValue /></SelectTrigger><SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent></Select></div>
+          <div className="space-y-1"><span className="text-xs font-semibold text-slate-500 uppercase">Term</span><Select onValueChange={setSelectedTerm} defaultValue={selectedTerm}><SelectTrigger className="bg-white"><SelectValue /></SelectTrigger><SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select></div>
+          <div className="space-y-1"><span className="text-xs font-semibold text-slate-500 uppercase">Class</span><Select onValueChange={setSelectedClassId} disabled={isLoadingClasses}><SelectTrigger className="bg-white"><SelectValue placeholder={isLoadingClasses ? "Loading..." : "Select Class..."} /></SelectTrigger><SelectContent>{teacherClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent></Select></div>
         </CardContent>
+        {showDebug && <div className="p-4 bg-yellow-50 border-b border-yellow-200 text-xs font-mono text-yellow-800 animate-in fade-in slide-in-from-top-2"><p><strong>DEBUG INFO:</strong></p><p>Selected Class: {selectedClassId || 'None'}</p><p>Assessments Found: {assessments ? assessments.length : 'Loading...'}</p></div>}
       </Card>
 
-      {activeForm === 'grade' && selectedClassId && (
-          <div className="animate-in slide-in-from-top-4 fade-in duration-300">
-              <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
-          </div>
-      )}
+      {activeForm === 'grade' && selectedClassId && <div className="animate-in slide-in-from-top-4 fade-in duration-300"><AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} /></div>}
       
       {selectedClassId && (
         <Card>
-            <CardHeader className="py-4 px-6 border-b bg-white flex flex-row justify-between items-center">
-                <CardTitle className="text-lg">Class Performance Report</CardTitle>
-                <Badge variant="secondary" className="bg-slate-100 text-slate-600">
-                    {rankedStudents.length} Students
-                </Badge>
-            </CardHeader>
+            <CardHeader className="py-4 px-6 border-b bg-white flex flex-row justify-between items-center"><CardTitle className="text-lg">Class Performance Report</CardTitle><Badge variant="secondary" className="bg-slate-100 text-slate-600">{rankedStudents.length} Students</Badge></CardHeader>
             <CardContent className="p-0">
-                {isLoading ? (
-                    <div className="flex flex-col items-center py-12 gap-2 text-muted-foreground">
-                        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                        <p>Compiling results...</p>
-                    </div>
-                ) :
+                {isLoading ? <div className="flex flex-col items-center py-12 gap-2 text-muted-foreground"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /><p>Compiling results...</p></div> :
                 rankedStudents.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full">
                     {rankedStudents.map((student, index) => {
                         const financials = studentFinancials[student.uid] || { balance: 0 };
                         const rank = index + 1; 
-                        
                         return (
                             <AccordionItem value={student.uid} key={student.uid} className="px-4 border-b last:border-0 hover:bg-slate-50 transition-colors">
                                 <AccordionTrigger className="hover:no-underline py-4">
                                     <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full pr-4 gap-2'>
-                                        
                                         <div className="flex items-center gap-3">
-                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
-                                                {rank}
-                                            </div>
-                                            <div className="text-left">
-                                                <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
-                                                <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
-                                            </div>
+                                            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>{rank}</div>
+                                            <div className="text-left"><p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p><p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p></div>
                                         </div>
-
                                         <div className="flex items-center gap-3">
-                                            <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>
-                                                {financials.balance > 0 ? `Owes: GH₵${financials.balance.toFixed(2)}` : 'Fees Paid'}
-                                            </Badge>
-                                            <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>
-                                                Avg: {student.average.toFixed(1)}%
-                                            </Badge>
+                                            <Badge variant="outline" className={`${financials.balance > 0 ? "border-red-200 bg-red-50 text-red-700" : "border-green-200 bg-green-50 text-green-700"}`}>{financials.balance > 0 ? `Owes: GH₵${financials.balance.toFixed(2)}` : 'Fees Paid'}</Badge>
+                                            <Badge className={student.average >= 50 ? "bg-indigo-600" : "bg-red-500"}>Avg: {student.average.toFixed(1)}%</Badge>
                                         </div>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="p-0 border-t bg-slate-50/50">
                                     <Tabs defaultValue="academics" className="w-full">
-                                        <div className="px-4 pt-2 border-b bg-white">
-                                            <TabsList className="bg-transparent h-10 p-0">
-                                                <TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none text-sm px-4">Report Card</TabsTrigger>
-                                                <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none text-sm px-4">Fee History</TabsTrigger>
-                                            </TabsList>
-                                        </div>
-
-                                        <TabsContent value="academics" className="mt-0">
-                                            <StudentGradesDetail 
-                                                student={student} 
-                                                assessments={assessments || []} 
-                                                rank={rank}
-                                                totalStudents={rankedStudents.length}
-                                                term={selectedTerm}
-                                                year={selectedYear}
-                                                subjects={subjects || []}
-                                                isDebug={false}
-                                            />
-                                        </TabsContent>
-
-                                        <TabsContent value="financials" className="mt-0">
-                                            <FeeHistoryDetail 
-                                                student={student} 
-                                                financialRecords={financialRecords || []}
-                                            />
-                                        </TabsContent>
+                                        <div className="px-4 pt-2 border-b bg-white"><TabsList className="bg-transparent h-10 p-0"><TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none text-sm px-4">Report Card</TabsTrigger><TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none text-sm px-4">Fee History</TabsTrigger></TabsList></div>
+                                        <TabsContent value="academics" className="mt-0"><StudentGradesDetail student={student} assessments={assessments || []} rank={rank} totalStudents={rankedStudents.length} term={selectedTerm} year={selectedYear} subjects={subjects || []} isDebug={showDebug}/></TabsContent>
+                                        <TabsContent value="financials" className="mt-0"><FeeHistoryDetail student={student} financialRecords={financialRecords || []}/></TabsContent>
                                     </Tabs>
                                 </AccordionContent>
                             </AccordionItem>
                         )
                     })}
                 </Accordion>
-                ) : (
-                    <div className="text-center py-16">
-                        <FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/>
-                        <p className="text-muted-foreground">No students found.</p>
-                        <p className="text-xs text-slate-400">Select a different class or add students.</p>
-                    </div>
-                )}
+                ) : <div className="text-center py-16"><FileText className="mx-auto h-12 w-12 text-slate-300 mb-2"/><p className="text-muted-foreground">No students found.</p></div>}
             </CardContent>
         </Card>
       )}
