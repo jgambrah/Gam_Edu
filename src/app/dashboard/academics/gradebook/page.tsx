@@ -1,14 +1,13 @@
 
-
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, doc, writeBatch, updateDoc } from 'firebase/firestore';
+import { collection, query, where, doc, writeBatch } from 'firebase/firestore';
 import { 
-  TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, Pencil, Check 
+  TrendingUp, Trophy, FileText, Loader2, Eye, Calendar, Receipt, 
+  AlertCircle, RefreshCw, PlusCircle, Check, XCircle, Pencil
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -23,16 +22,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
 
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
-import SubjectRelinker from '@/components/dashboard/academics/subject-relinker';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
@@ -45,63 +40,63 @@ function getGrade(percentage: number) {
 
 // --- SUB-COMPONENT: Transaction Detail Modal ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
-    if (!record) return null;
-    const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Details
+                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Ledger
                     </DialogTitle>
-                    <DialogDescription>Transaction ID: {record.id.slice(0, 8)}...</DialogDescription>
+                    <DialogDescription>
+                        Details for Transaction ID: <span className="font-mono text-xs">{record?.id ? record.id.slice(0, 8) : '...'}...</span>
+                    </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">Type</p>
-                            <Badge variant="outline">{record.type}</Badge>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">Status</p>
-                            <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                         <p className="text-xs font-medium text-muted-foreground">Description</p>
-                         <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
-                    </div>
 
-                    <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <div>
-                            <p className="text-xs text-slate-500 mb-1">Billed</p>
-                            <p className="text-md font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
+                {record ? (
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <p className="text-xs font-medium text-muted-foreground">Type</p>
+                                <Badge variant="outline">{record.type}</Badge>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xs font-medium text-muted-foreground">Status</p>
+                                <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
+                            </div>
                         </div>
-                        <div className="text-center">
-                            <p className="text-xs text-slate-500 mb-1">Paid</p>
-                            <p className="text-md font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
+                        
+                        <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">Description</p>
+                            <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
                         </div>
-                        <div className="text-right">
-                             <p className="text-xs text-slate-500 mb-1">Balance</p>
-                             <p className="text-md font-bold text-red-600">GH₵{balance.toFixed(2)}</p>
-                        </div>
-                    </div>
 
-                    <Separator />
-                    
-                    <div className="space-y-2 text-xs text-slate-500">
-                        <div className="flex justify-between">
-                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> Created At:</span>
-                            <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
+                        <div className="grid grid-cols-2 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div>
+                                <p className="text-xs text-slate-500 mb-1">Billed Amount</p>
+                                <p className="text-lg font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs text-slate-500 mb-1">Amount Paid</p>
+                                <p className="text-lg font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
-                            <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
+
+                        <Separator />
+                        
+                        <div className="space-y-2 text-xs text-slate-500">
+                            <div className="flex justify-between">
+                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> Created At:</span>
+                                <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
+                                <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="py-10 text-center text-muted-foreground">Loading details...</div>
+                )}
             </DialogContent>
         </Dialog>
     );
@@ -194,7 +189,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
     );
 }
 
-// --- SUB-COMPONENT: Student Academics Detail (WITH QUICK FIX) ---
+// --- SUB-COMPONENT: Student Academics Detail ---
 function StudentGradesDetail({ 
     student, 
     assessments, 
@@ -202,8 +197,7 @@ function StudentGradesDetail({
     totalStudents,
     term,
     year,
-    subjects, 
-    isDebug 
+    subjects
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -212,22 +206,11 @@ function StudentGradesDetail({
     term: string;
     year: string;
     subjects: any[];
-    isDebug: boolean;
 }) {
     const firestore = useFirestore();
-    const { toast } = useToast();
     const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
     const [newSubjectId, setNewSubjectId] = useState<string>('');
 
-    // Add a safety check for the student object
-    if (!student) {
-        return (
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
-                Student data could not be loaded for this entry.
-            </div>
-        );
-    }
-    
     // 1. Smart Map for Subjects
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
@@ -242,7 +225,6 @@ function StudentGradesDetail({
 
     // 2. Group by Subject Logic
     const subjectGrades = useMemo(() => {
-        if (!assessments) return [];
         const grouped: Record<string, { name: string, total: number, max: number, count: number, id: string, assessmentIds: string[] }> = {};
         
         assessments.forEach(a => {
@@ -250,17 +232,21 @@ function StudentGradesDetail({
             
             const subId = a.subjectId || 'unknown';
             
+            // Priority 1: Check Map
             let subName = subjectMap.get(subId);
             
+            // Priority 2: Check assessment cache
             if (!subName) subName = (a as any).subjectName;
 
-            if (!subName) subName = subId; 
+            // Priority 3: Fallback 
+            if (!subName) subName = 'Unknown Subject';
 
             if (!grouped[subId]) {
                 grouped[subId] = { name: subName, total: 0, max: 0, count: 0, id: subId, assessmentIds: [] };
             }
             
-            if (grouped[subId].name === subId && subName !== subId) {
+            // Fix display name if we found a better one later in the loop
+            if (grouped[subId].name === 'Unknown Subject' && subName !== 'Unknown Subject') {
                 grouped[subId].name = subName;
             }
             
@@ -274,46 +260,39 @@ function StudentGradesDetail({
             const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
             return { ...data, percentage, ...getGrade(percentage) };
         });
-    }, [assessments, student.uid, subjectMap, isDebug]);
+    }, [assessments, student.uid, subjectMap]);
 
     const overallAverage = subjectGrades.length > 0 
         ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
         : 0;
 
+    // --- FIX HANDLER ---
     const handleUpdateSubject = async (oldSubjectId: string, assessmentIds: string[]) => {
         if (!firestore || !newSubjectId) return;
-        
         try {
             const selectedSubject = subjects.find(s => s.id === newSubjectId);
             if (!selectedSubject) return;
 
             const batch = writeBatch(firestore);
-            
             assessmentIds.forEach(id => {
                 const ref = doc(firestore, 'assessments', id);
                 batch.update(ref, {
                     subjectId: selectedSubject.id,
-                    subjectName: selectedSubject.name 
+                    subjectName: selectedSubject.name
                 });
             });
 
             await batch.commit();
-            toast({ title: "Fixed", description: "Subject updated successfully." });
             setEditingSubjectId(null);
         } catch (e) {
-            toast({ variant: 'destructive', title: "Error", description: "Could not update." });
+            console.error("Error updating subject", e);
         }
     };
 
     return (
         <div className="space-y-6 p-4">
             
-            {isDebug && (
-                <div className="p-2 bg-red-50 border border-red-200 rounded text-xs font-mono mb-4">
-                    <p className="font-bold text-red-800">DEBUG: SUBJECTS LOADED ({subjects?.length || 0})</p>
-                </div>
-            )}
-
+            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
                     <CardContent className="p-4 flex items-center gap-3">
@@ -337,17 +316,18 @@ function StudentGradesDetail({
                      <CardContent className="p-4 flex flex-col justify-center h-full items-center">
                         <GenerateReportCard
                             student={student}
-                            assessments={assessments}
+                            assessments={assessments || []}
                             year={year}
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
-                            subjectsList={subjects}
+                            subjectsList={subjects || []}
                         />
                      </CardContent>
                 </Card>
             </div>
 
+            {/* Subject Breakdown Table */}
             <div className="border rounded-md">
                 <Table>
                     <TableHeader>
@@ -360,7 +340,8 @@ function StudentGradesDetail({
                     </TableHeader>
                     <TableBody>
                         {subjectGrades.map((sub) => {
-                            const isBroken = sub.name.length > 15 && !sub.name.includes(' ');
+                            // Only show edit if name is weirdly long/unknown (looks like ID)
+                            const isBroken = sub.name === 'Unknown Subject' || (sub.name.length > 15 && !sub.name.includes(' '));
                             const isEditing = editingSubjectId === sub.id;
 
                             return (
@@ -384,17 +365,18 @@ function StudentGradesDetail({
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <span>{sub.name}</span>
+                                                {/* Hidden unless broken */}
                                                 {isBroken && (
                                                     <Button 
-                                                        variant="outline" 
+                                                        variant="ghost" 
                                                         size="sm" 
-                                                        className="h-6 px-2 text-xs text-orange-600 border-orange-200 bg-orange-50 hover:bg-orange-100"
+                                                        className="h-6 px-2 text-xs text-orange-400 hover:text-orange-600 hover:bg-orange-50"
                                                         onClick={() => {
                                                             setEditingSubjectId(sub.id);
                                                             setNewSubjectId('');
                                                         }}
                                                     >
-                                                        <Pencil className="h-3 w-3 mr-1"/> Fix Name
+                                                        <Pencil className="h-3 w-3"/>
                                                     </Button>
                                                 )}
                                             </div>
@@ -421,21 +403,22 @@ export default function GradebookManager() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
   
-  const [showDebug, setShowDebug] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   const forceRefresh = () => {
       setRefreshKey(prev => prev + 1);
-      toast({ title: "Refreshing Data..." });
+      toast({ title: "Refreshing..." });
   };
 
+  // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
       if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
@@ -445,11 +428,13 @@ export default function GradebookManager() {
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
+  // 2. Fetch Students
   const studentsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId, refreshKey]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
+  // 3. Fetch Assessments
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
     return query(
@@ -461,16 +446,20 @@ export default function GradebookManager() {
   }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); 
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
+  // 4. Fetch Financials
   const financialRecordsQuery = useMemoFirebase(() => 
     (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
+  // 5. Fetch Subjects
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
+  // --- DERIVED DATA ---
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
+      
       const studentsWithScore = students.map(s => {
           const myAssessments = assessments.filter(a => a.studentId === s.uid);
           const total = myAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
@@ -478,6 +467,7 @@ export default function GradebookManager() {
           const average = max > 0 ? (total / max) * 100 : 0;
           return { ...s, average };
       });
+
       return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
@@ -501,23 +491,16 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
-      { isStaff && <SubjectRelinker /> }
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border border-slate-200 shadow-sm">
-                        <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
-                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer font-bold">
-                            <Bug className="h-3 w-3"/> Debug
-                        </Label>
-                    </div>
                     
-                    <Button variant="outline" size="sm" onClick={forceRefresh} title="Refresh Data" className="h-9">
+                    <Button variant="outline" size="sm" onClick={forceRefresh} title="Reload Data" className="h-9">
                         <RefreshCw className="mr-2 h-3 w-3 text-slate-500"/> Refresh
                     </Button>
 
@@ -561,17 +544,6 @@ export default function GradebookManager() {
              </Select>
           </div>
         </CardContent>
-
-        {showDebug && (
-            <div className="p-4 bg-yellow-50 border-b border-yellow-200 text-xs font-mono text-yellow-800 animate-in fade-in slide-in-from-top-2">
-                <p><strong>DEBUG INFO (Refresh Key: {refreshKey}):</strong></p>
-                <p>Selected Class: {selectedClassId || 'None'}</p>
-                <p>Selected Year/Term: {selectedYear} / {selectedTerm}</p>
-                <p>Assessments Found: {assessments ? assessments.length : 'Loading...'}</p>
-                <p>Subjects Loaded: {subjects ? subjects.length : 'Loading...'}</p>
-                <p>User: {user ? user.uid : 'No User'}</p>
-            </div>
-        )}
       </Card>
 
       {activeForm === 'grade' && selectedClassId && (
@@ -644,7 +616,6 @@ export default function GradebookManager() {
                                                 term={selectedTerm}
                                                 year={selectedYear}
                                                 subjects={subjects || []}
-                                                isDebug={showDebug}
                                             />
                                         </TabsContent>
 
@@ -673,4 +644,3 @@ export default function GradebookManager() {
     </div>
   );
 }
-
