@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -237,7 +236,7 @@ function StudentGradesDetail({
         }> = {};
         
         assessments.forEach(a => {
-            if (a.studentId !== student.uid) return acc;
+            if (a.studentId !== student.uid) return;
             
             // Resolve Subject Name
             const subId = a.subjectId || 'unknown';
@@ -320,15 +319,21 @@ function StudentGradesDetail({
         try {
             const selectedSubject = subjects.find(s => s.id === newSubjectId);
             if (!selectedSubject) return;
+
             const batch = writeBatch(firestore);
             assessmentIds.forEach(id => {
                 const ref = doc(firestore, 'assessments', id);
-                batch.update(ref, { subjectId: selectedSubject.id, subjectName: selectedSubject.name });
+                batch.update(ref, {
+                    subjectId: selectedSubject.id,
+                    subjectName: selectedSubject.name
+                });
             });
+
             await batch.commit();
-            toast({ title: "Fixed", description: "Subject updated." });
             setEditingSubjectId(null);
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            console.error("Error updating subject", e);
+        }
     };
 
     return (
@@ -396,13 +401,30 @@ function StudentGradesDetail({
                                                     <SelectTrigger className="h-8 w-[180px]"><SelectValue placeholder="Select Subject"/></SelectTrigger>
                                                     <SelectContent>{subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                                                 </Select>
-                                                <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600"><Check className="h-4 w-4"/></Button>
-                                                <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0"><XCircle className="h-4 w-4"/></Button>
+                                                <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700">
+                                                    <Check className="h-4 w-4"/>
+                                                </Button>
+                                                <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0">
+                                                    <XCircle className="h-4 w-4"/>
+                                                </Button>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <span>{sub.name}</span>
-                                                {isBroken && <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-orange-400" onClick={() => { setEditingSubjectId(sub.id); setNewSubjectId(''); }}><Pencil className="h-3 w-3"/></Button>}
+                                                {/* Hidden unless broken */}
+                                                {isBroken && (
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="sm" 
+                                                        className="h-6 px-2 text-xs text-orange-400 hover:text-orange-600 hover:bg-orange-50"
+                                                        onClick={() => {
+                                                            setEditingSubjectId(sub.id);
+                                                            setNewSubjectId('');
+                                                        }}
+                                                    >
+                                                        <Pencil className="h-3 w-3"/>
+                                                    </Button>
+                                                )}
                                             </div>
                                         )}
                                     </TableCell>
