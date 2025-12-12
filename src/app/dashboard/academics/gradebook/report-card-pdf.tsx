@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -48,10 +47,10 @@ function getGrade(percentage: number) {
 }
 
 // --- THE DOCUMENT LAYOUT ---
-const ReportCardDocument = ({ student, assessments, year, term, rank, totalStudents, subjects }: any) => {
+const ReportCardDocument = ({ student, assessments, year, term, rank, totalStudents, subjectsList }: any) => {
     
     // Create Subject Map for Names
-    const subjectMap = subjects?.reduce((acc: any, s: any) => {
+    const subjectMap = subjectsList?.reduce((acc: any, s: any) => {
         acc[s.id] = s.name || s.title;
         return acc;
     }, {}) || {};
@@ -163,6 +162,16 @@ export function GenerateReportCard(props: any) {
         setIsClient(true);
     }, []);
 
+    // Guard clause to prevent rendering if essential data is missing
+    if (!props.assessments || !props.subjectsList) {
+        return (
+            <Button variant="outline" className="w-full" disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Preparing Data...
+            </Button>
+        );
+    }
+    
+    // Client-side only rendering
     if (!isClient) {
         return (
             <Button variant="outline" className="w-full" disabled>
