@@ -24,13 +24,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
