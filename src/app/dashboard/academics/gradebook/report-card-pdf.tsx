@@ -1,9 +1,8 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
 import { Page, Text, View, Document, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
-import { Student, Assessment, Subject } from '@/lib/types'; // Import Subject
+import { Student, Assessment, Subject } from '@/lib/types';
 import { format } from 'date-fns';
 import { Printer, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -70,7 +69,7 @@ const ReportCardDocument = ({
     const subjectGrades = useMemo(() => {
         const subjects: Record<string, { total: number, max: number }> = {};
         
-        assessments.forEach(a => {
+        (assessments || []).forEach(a => {
             let subName = 'General';
             const rawSubject = a.subjectId || (a as any).subject || '';
             if (rawSubject && subjectMap[rawSubject]) {
@@ -167,7 +166,7 @@ export const GenerateReportCard = ({
         document={
             <ReportCardDocument 
                 student={student} 
-                assessments={assessments} 
+                assessments={assessments || []}
                 year={year} 
                 term={term}
                 rank={rank}
@@ -185,10 +184,3 @@ export const GenerateReportCard = ({
         )}
     </PDFDownloadLink>
 );
-
-
-    
-
-    
-
-    
