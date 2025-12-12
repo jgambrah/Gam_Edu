@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -389,7 +390,7 @@ function StudentGradesDetail({
                     </TableHeader>
                     <TableBody>
                         {subjectGrades.map((sub) => {
-                            const isBroken = sub.name.length > 15 && !sub.name.includes(' ');
+                            const isBroken = sub.name === 'Unknown Subject' || (sub.name.length > 15 && !sub.name.includes(' '));
                             const isEditing = editingSubjectId === sub.id;
 
                             return (

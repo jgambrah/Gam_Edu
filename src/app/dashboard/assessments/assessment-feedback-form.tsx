@@ -1,319 +1,204 @@
 
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useFirestore, useUser } from '@/firebase';
+import { collection, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { getAuth } from 'firebase/auth'; 
-import { collection, query, where, addDoc, serverTimestamp, getDocs, updateDoc, onSnapshot, orderBy } from 'firebase/firestore';
-import { assessmentFeedbackSchema } from '@/lib/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { useRole } from '@/context/role-context';
-import type { Class, Student } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Save } from 'lucide-react';
+import { Class, Student } from '@/lib/types';
+import { useCollection, useMemoFirebase } from '@/firebase';
+import { query, where } from 'firebase/firestore';
 
-type Subject = { id: string; name: string; code?: string };
+// --- SCHEMA ---
+const assessmentSchema = z.object({
+  subjectId: z.string().min(1, "Subject is required"),
+  // UPDATED: Strict types to help calculation
+  assessmentType: z.enum([
+    'Class Exercise (CA)', 
+    'Homework (CA)', 
+    'Project (CA)', 
+    'Mid-Term (CA)', 
+    'End of Term Exam (Exam)'
+  ]),
+  maxScore: z.coerce.number().min(1, "Max score must be at least 1"),
+  topic: z.string().optional(),
+  academicYear: z.string(),
+  term: z.string(),
+});
 
-export function AssessmentFeedbackForm({ classId, classes: propClasses }: { classId?: string; classes: Class[] }) {
-    const { user, isUserLoading } = useUser();
-    const { role } = useRole();
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+export function AssessmentFeedbackForm({ classId, classes }: { classId: string, classes: Class[] }) {
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [scores, setScores] = useState<Record<string, string>>({}); // studentId -> score
+
+  // 1. Fetch Students in Class
+  const studentsQuery = useMemoFirebase(() => 
+    (firestore && classId) ? query(collection(firestore, 'students'), where('classId', '==', classId)) : null,
+  [firestore, classId]);
+  const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+
+  // 2. Fetch Subjects
+  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
+  const { data: subjects } = useCollection<any>(subjectsQuery);
+
+  // Form Setup
+  const form = useForm<z.infer<typeof assessmentSchema>>({
+    resolver: zodResolver(assessmentSchema),
+    defaultValues: {
+      academicYear: '2024-2025',
+      term: 'First Term',
+      maxScore: 100
+    }
+  });
+
+  // Handle Score Input
+  const handleScoreChange = (studentId: string, value: string) => {
+    setScores(prev => ({ ...prev, [studentId]: value }));
+  };
+
+  // Submit Batch
+  const onSubmit = async (values: z.infer<typeof assessmentSchema>) => {
+    if (!firestore || !user) return;
     
-    const [students, setStudents] = useState<Student[]>([]);
-  
-    // FETCH REAL SUBJECTS
-    const subjectsQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'subjects'), orderBy('name')) : null, 
-    [firestore]);
-    const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
-
-    const form = useForm<z.infer<typeof assessmentFeedbackSchema>>({
-      resolver: zodResolver(assessmentFeedbackSchema),
-      defaultValues: {
-        academicYear: MOCK_ACADEMIC_YEARS[0],
-        term: MOCK_TERMS[0],
-        assessmentType: 'Quiz',
-        teacherId: user?.uid || '',
-        classId: classId || '',
-        assessmentName: '',
-        studentId: '',
-        subjectId: '',
-        score: 0,
-        maxScore: 100,
-        feedback: '',
-      },
-    });
-
-    const selectedClassId = form.watch('classId');
-
-    // Effect to set the classId from props
-    useEffect(() => {
-        if (classId) {
-            form.setValue('classId', classId);
-        }
-    }, [classId, form]);
-
-    useEffect(() => {
-        if (!selectedClassId || !firestore) {
-            setStudents([]);
-            return;
-        };
-
-        const studentsQuery = query(collection(firestore, 'students'), where('classId', '==', selectedClassId));
-        const unsubscribe = onSnapshot(studentsQuery, (snapshot) => {
-            setStudents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Student)));
-        });
-
-        return () => unsubscribe();
-    }, [selectedClassId, firestore]);
-  
-  
-    async function onSubmit(values: z.infer<typeof assessmentFeedbackSchema>) {
-        const auth = getAuth();
-        const currentUser = auth.currentUser || user;
-
-        if (!currentUser || !firestore) {
-            toast({ variant: 'destructive', title: 'Connection Issue', description: 'Please refresh the page and log in again.' });
-            return;
-        }
-
-        setIsSubmitting(true);
-    
-        try {
-            // FIX: Check for duplicates using SUBJECT ID as well
-            const q = query(
-                collection(firestore, 'assessments'),
-                where('studentId', '==', values.studentId),
-                where('assessmentName', '==', values.assessmentName),
-                where('subjectId', '==', values.subjectId) // <--- CRITICAL ADDITION
-            );
-            
-            const querySnapshot = await getDocs(q);
-
-            const subjectName = subjects?.find(s => s.id === values.subjectId)?.name || 'General';
-
-            const dataToSave = {
-                ...values,
-                subject: subjectName,
-                teacherId: values.teacherId || currentUser.uid,
-                createdAt: serverTimestamp(),
-            };
-
-            if (!querySnapshot.empty) {
-                // Update existing ONLY if name AND subject match
-                const docToUpdate = querySnapshot.docs[0];
-                await updateDoc(docToUpdate.ref, dataToSave);
-                toast({ title: 'Success', description: 'Assessment updated successfully.' });
-            } else {
-                // Create new
-                await addDoc(collection(firestore, 'assessments'), dataToSave);
-                toast({ title: 'Success', description: 'Assessment saved successfully.' });
-            }
-    
-          form.reset({
-              ...values, 
-              score: 0,
-              feedback: '',
-              assessmentName: '', // Clear name so you don't accidentally save same name again immediately
-          });
-
-        } catch (error: any) {
-          console.error("Error saving assessment feedback:", error);
-          if (error.message && error.message.includes('requires an index')) {
-              toast({ variant: 'destructive', title: 'System Setup Required', description: 'An Admin needs to create the database index. Check console.' });
-          } else {
-              toast({ variant: 'destructive', title: 'Error', description: error.message });
-          }
-        } finally {
-          setIsSubmitting(false);
-        }
+    // Validate that we have scores
+    const validScores = Object.entries(scores).filter(([_, score]) => score !== '' && !isNaN(Number(score)));
+    if (validScores.length === 0) {
+      toast({ variant: 'destructive', title: "No Scores", description: "Please enter scores for at least one student." });
+      return;
     }
 
-    const isReady = !!user || !isUserLoading;
-  
-    return (
-      <Card>
-        <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-                <span>Continuous Assessment Entry</span>
-                {!isReady && <Badge variant="outline" className="text-yellow-600 bg-yellow-50"><Loader2 className="h-3 w-3 mr-1 animate-spin"/> Connecting...</Badge>}
-            </CardTitle>
-        </CardHeader>
-        <CardContent>
-            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField control={form.control} name="academicYear" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Academic Year</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                        <SelectContent>{MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}</SelectContent>
+    setIsSubmitting(true);
+    try {
+      const batch = writeBatch(firestore);
+      
+      // Find Subject Name for denormalization
+      const subjectName = subjects?.find(s => s.id === values.subjectId)?.name || 'Unknown Subject';
+
+      validScores.forEach(([studentId, scoreVal]) => {
+        const ref = doc(collection(firestore, 'assessments'));
+        const score = parseFloat(scoreVal);
+        
+        // Safety check
+        if (score > values.maxScore) {
+           throw new Error(`Score for student ${studentId} exceeds max score.`);
+        }
+
+        batch.set(ref, {
+          ...values,
+          studentId,
+          score,
+          subjectName, // Save name directly to fix display issues
+          teacherId: user.uid,
+          classId: classId,
+          createdAt: serverTimestamp(),
+          gradedAt: serverTimestamp()
+        });
+      });
+
+      await batch.commit();
+      toast({ title: "Success", description: `Saved ${validScores.length} grades successfully.` });
+      setScores({}); // Reset scores
+      // Don't reset form values to allow quick entry of next subject
+    } catch (e: any) {
+      console.error(e);
+      toast({ variant: 'destructive', title: "Error", description: e.message || "Failed to save grades." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card className="border-l-4 border-l-blue-600">
+      <CardHeader>
+        <CardTitle>Enter Class Grades</CardTitle>
+      </CardHeader>
+      <CardContent>
+         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            
+            {/* CONFIGURATION ROW */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-lg border">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Subject</label>
+                    <Select onValueChange={(val) => form.setValue('subjectId', val)}>
+                        <SelectTrigger className="bg-white"><SelectValue placeholder="Select Subject" /></SelectTrigger>
+                        <SelectContent>
+                            {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                        </SelectContent>
                     </Select>
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="term" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Term/Semester</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                        <SelectContent>{MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                    {form.formState.errors.subjectId && <p className="text-xs text-red-500">Required</p>}
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Assessment Type</label>
+                    <Select onValueChange={(val: any) => form.setValue('assessmentType', val)}>
+                        <SelectTrigger className="bg-white"><SelectValue placeholder="Type" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Class Exercise (CA)">Class Exercise (CA)</SelectItem>
+                            <SelectItem value="Homework (CA)">Homework (CA)</SelectItem>
+                            <SelectItem value="Project (CA)">Project (CA)</SelectItem>
+                            <SelectItem value="Mid-Term (CA)">Mid-Term (CA)</SelectItem>
+                            <SelectItem value="End of Term Exam (Exam)">End of Term Exam</SelectItem>
+                        </SelectContent>
                     </Select>
-                  </FormItem>
-                )} />
-                {!classId && (
-                    <FormField control={form.control} name="classId" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Class</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger></FormControl>
-                                <SelectContent>{propClasses?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </FormItem>
-                    )}/>
-                )}
-              </div>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="studentId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Student</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={!selectedClassId}>
-                            <FormControl><SelectTrigger><SelectValue placeholder={students.length > 0 ? "Select Student" : "No students found"} /></SelectTrigger></FormControl>
-                            <SelectContent>
-                                {students?.map(s => (
-                                    <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-                
-                 <FormField control={form.control} name="subjectId" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Subject</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={isLoadingSubjects}>
-                            <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a subject" />
-                                </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {subjects?.map(s => (
-                                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-              </div>
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Max Score</label>
+                    <Input type="number" {...form.register('maxScore')} className="bg-white" />
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField control={form.control} name="assessmentName" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assessment Name</FormLabel>
-                        <FormControl><Input placeholder="e.g., Class Test 1" {...field} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-                <FormField control={form.control} name="assessmentType" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assessment Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                            <SelectContent>
-                                <SelectItem value="Quiz">Quiz</SelectItem>
-                                <SelectItem value="Assignment">Assignment</SelectItem>
-                                <SelectItem value="Activity">Activity</SelectItem>
-                                <SelectItem value="Exam">Exam</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-                <FormField control={form.control} name="assessmentDate" render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                        <FormLabel>Assessment Date</FormLabel>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <FormControl>
-                                    <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
-                                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
-                            </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="score" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Score</FormLabel>
-                        <FormControl><Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value))} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-                 <FormField control={form.control} name="maxScore" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Max Possible Score</FormLabel>
-                        <FormControl><Input type="number" {...field} onChange={e => field.onChange(Number(e.target.value))} /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}/>
-              </div>
+                <div className="space-y-2">
+                     <label className="text-sm font-medium">Topic (Optional)</label>
+                     <Input {...form.register('topic')} placeholder="e.g. Algebra" className="bg-white"/>
+                </div>
+            </div>
 
-              <FormField control={form.control} name="feedback" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Feedback / Comments</FormLabel>
-                    <FormControl><Textarea placeholder="Provide qualitative feedback..." {...field} /></FormControl>
-                    <FormMessage />
-                </FormItem>
-                )} />
-              
-              <Button type="submit" disabled={isSubmitting || !isReady} className="w-full">
-                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : !isReady ? "Waiting for Connection..." : "Save Entry"}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    );
-}
+            {/* STUDENTS LIST */}
+            <div className="border rounded-md max-h-[500px] overflow-y-auto">
+                <Table>
+                    <TableHeader>
+                        <TableRow className="bg-slate-100">
+                            <TableHead>Student Name</TableHead>
+                            <TableHead className="w-[150px]">Score</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {loadingStudents ? (
+                            <TableRow><TableCell colSpan={2} className="text-center"><Loader2 className="animate-spin h-6 w-6 mx-auto"/></TableCell></TableRow>
+                        ) : students?.map(student => (
+                            <TableRow key={student.uid}>
+                                <TableCell className="font-medium">{student.firstName} {student.lastName}</TableCell>
+                                <TableCell>
+                                    <Input 
+                                        type="number" 
+                                        placeholder={`/ ${form.watch('maxScore')}`}
+                                        value={scores[student.uid] || ''}
+                                        onChange={(e) => handleScoreChange(student.uid, e.target.value)}
+                                        className={Number(scores[student.uid]) > form.watch('maxScore') ? "border-red-500 bg-red-50" : ""}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
 
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+                Save Grades
+            </Button>
+
+         </form>
+      </CardContent>
+    </
