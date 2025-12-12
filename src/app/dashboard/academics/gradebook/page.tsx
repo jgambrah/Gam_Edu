@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { 
   TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, Bug, PlusCircle, CheckCircle, XCircle 
+  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -212,12 +213,11 @@ function StudentGradesDetail({
     isDebug: boolean;
 }) {
     
-    // 1. Create a "Smart Map" that looks for ANY likely name field
+    // 1. Smart Map
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
         if(subjects && subjects.length > 0) {
             subjects.forEach(s => {
-                // Check all possible field names for the subject title
                 const name = s.name || s.title || s.subjectName || s.label || "Unnamed Subject";
                 map.set(s.id, name);
             });
@@ -233,29 +233,21 @@ function StudentGradesDetail({
             if (a.studentId !== student.uid) return;
             
             const subId = a.subjectId || 'unknown';
-            
-            // LOGIC: Aggressive Name Resolution
-            // Priority 1: Is the name saved directly on the assessment? (Denormalized)
             let subName = (a as any).subjectName || (a as any).subject_name || (a as any).subject;
             
-            // Priority 2: Look up ID in the Subjects Collection Map
             if (!subName || subId !== 'unknown') {
                 const mappedName = subjectMap.get(subId);
                 if (mappedName) subName = mappedName;
             }
             
-            // Priority 3: Fallback
             if (!subName) {
-                 // If debug is on, show the ID so we can trace it. Otherwise "Unknown".
                  subName = isDebug ? `Missing ID: ${subId}` : 'Unknown Subject';
             }
 
-            // Use ID as key to group, but keep the resolved name
             if (!grouped[subId]) {
                 grouped[subId] = { name: subName, total: 0, max: 0, count: 0, id: subId };
             }
             
-            // If we found a better name later in the loop (e.g. from map), update it
             if (grouped[subId].name.startsWith('Missing ID') && !subName.startsWith('Missing ID')) {
                 grouped[subId].name = subName;
             }
@@ -341,7 +333,6 @@ function StudentGradesDetail({
                             <TableRow key={sub.id}>
                                 <TableCell className="font-medium">
                                     {sub.name}
-                                    {/* Show ID in small gray text if name is missing */}
                                     {sub.name.startsWith('Missing') && <div className="text-[10px] text-slate-400 font-mono">{sub.id}</div>}
                                 </TableCell>
                                 <TableCell className="text-right">{sub.percentage.toFixed(1)}%</TableCell>
@@ -390,7 +381,7 @@ export default function GradebookManager() {
       setRefreshKey(prev => prev + 1);
       toast({ title: "Refreshing Data..." });
   };
-  
+
   const handleFormClose = () => {
       setActiveForm(null);
       forceRefresh();
@@ -421,7 +412,7 @@ export default function GradebookManager() {
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
     );
-  }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); // Depend on refreshKey
+  }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); 
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
   // 4. Fetch Financials
@@ -435,8 +426,6 @@ export default function GradebookManager() {
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
   // --- DERIVED DATA ---
-  
-  // A. Calculate Ranks
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
       
@@ -451,7 +440,6 @@ export default function GradebookManager() {
       return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
-  // B. Financials Map
   const studentFinancials = useMemo(() => {
     if (!students || !financialRecords) return {};
     const financials: Record<string, { balance: number }> = {};
@@ -480,22 +468,23 @@ export default function GradebookManager() {
                     <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border">
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center space-x-2 bg-slate-100 p-2 rounded-md border border-slate-200">
                         <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
-                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer">
+                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer font-medium">
                             <Bug className="h-3 w-3"/> Debug Mode
                         </Label>
                     </div>
                     
-                    <Button variant="ghost" size="icon" onClick={forceRefresh} title="Refresh Data">
-                        <RefreshCw className="h-4 w-4 text-slate-500"/>
+                    <Button variant="outline" size="sm" onClick={forceRefresh} title="Refresh Data" className="h-9">
+                        <RefreshCw className="mr-2 h-3 w-3 text-slate-500"/> Refresh
                     </Button>
 
                     <Button 
                         variant={activeForm === 'grade' ? 'destructive' : 'default'} 
                         onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
                         disabled={!selectedClassId}
+                        className="h-9"
                     >
                         {activeForm === 'grade' ? <XCircle className="mr-2 h-4 w-4"/> : <PlusCircle className="mr-2 h-4 w-4"/>} 
                         {activeForm === 'grade' ? "Close Form" : "Enter Grades"}
@@ -647,4 +636,3 @@ export default function GradebookManager() {
     </div>
   );
 }
-    
