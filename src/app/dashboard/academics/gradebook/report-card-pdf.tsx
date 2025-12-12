@@ -72,12 +72,10 @@ const ReportCardDocument = ({
         
         (assessments || []).forEach(a => {
             let subName = 'General';
-            // Use the subjectId field for mapping
             const rawSubjectId = a.subjectId || (a as any).subject || '';
             if (rawSubjectId && subjectMap[rawSubjectId]) {
                 subName = subjectMap[rawSubjectId];
             } else if (rawSubjectId) {
-                // Fallback to the raw ID if name not found in map
                 subName = rawSubjectId;
             }
 
@@ -166,9 +164,9 @@ export const GenerateReportCard = ({
     subjectsList: Subject[] | undefined
 }) => {
     
-    // **FIX**: The primary guard clause. We check if all necessary data is available BEFORE rendering.
-    // This prevents `undefined` props from ever reaching PDFDownloadLink.
-    if (!assessments || !subjectsList) {
+    // FINAL FIX: Ensure both assessments AND subjectsList are loaded and not empty
+    // before attempting to render the PDF link. This prevents the crash.
+    if (!assessments || !subjectsList || subjectsList.length === 0) {
         return (
             <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled>
                 <Loader2 className="h-4 w-4 animate-spin"/>
@@ -187,7 +185,7 @@ export const GenerateReportCard = ({
                     term={term}
                     rank={rank}
                     totalStudents={totalStudents}
-                    subjectsList={subjectsList} // Now we know this is not undefined
+                    subjectsList={subjectsList}
                 />
             }
             fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
