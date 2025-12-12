@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
@@ -321,7 +322,7 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
-                            subjectsList={subjects || []}
+                            subjects={subjects || []}
                         />
                      </CardContent>
                 </Card>
@@ -644,3 +645,6 @@ export default function GradebookManager() {
     </div>
   );
 }
+
+
+    
