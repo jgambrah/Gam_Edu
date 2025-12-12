@@ -4,10 +4,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, updateDoc, writeBatch } from 'firebase/firestore';
 import { 
   TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle 
+  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, Pencil, Check
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -194,7 +194,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
     );
 }
 
-// --- SUB-COMPONENT: Student Academics Detail (FIXED NAME RESOLUTION) ---
+// --- SUB-COMPONENT: Student Academics Detail (With Quick Fix) ---
 function StudentGradesDetail({ 
     student, 
     assessments, 
@@ -214,13 +214,16 @@ function StudentGradesDetail({
     subjects: any[];
     isDebug: boolean;
 }) {
-    
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null); // Track which row is being fixed
+    const [newSubjectId, setNewSubjectId] = useState<string>('');
+
     // 1. Create a "Smart Map" that looks for ANY likely name field
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
         if(subjects && subjects.length > 0) {
             subjects.forEach(s => {
-                // Check all possible field names for the subject title
                 const name = s.name || s.title || s.subjectName || s.label || s.subject || "Unnamed Subject";
                 map.set(s.id, name);
             });
@@ -230,47 +233,35 @@ function StudentGradesDetail({
 
     // 2. Group by Subject
     const subjectGrades = useMemo(() => {
-        const grouped: Record<string, { name: string, total: number, max: number, count: number, id: string }> = {};
+        const grouped: Record<string, { name: string, total: number, max: number, count: number, id: string, assessmentIds: string[] }> = {};
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
             
             const subId = a.subjectId || 'unknown';
             
-            // LOGIC: Aggressive Name Resolution
-            // Priority 1: Is the name saved directly on the assessment? (Denormalized)
-            let subName = (a as any).subjectName || (a as any).subject_name || (a as any).subject;
+            // Priority 1: Check Map (Most reliable)
+            let subName = subjectMap.get(subId);
             
-            // Priority 2: Look up ID in the Subjects Collection Map
-            if (!subName || subId !== 'unknown') {
-                const mappedName = subjectMap.get(subId);
-                if (mappedName) subName = mappedName;
-            }
-            
-            // Priority 3: Fallback
-            if (!subName) {
-                 // If debug is on, show the ID so we can trace it. Otherwise "Unknown".
-                 subName = isDebug ? `Missing ID: ${subId}` : 'Unknown Subject';
-            }
+            // Priority 2: Check assessment cache
+            if (!subName) subName = (a as any).subjectName;
 
-            // Use ID as key to group, but keep the resolved name
+            // Priority 3: Fallback (This triggers the "Fix" button)
+            if (!subName) subName = subId; 
+
             if (!grouped[subId]) {
-                grouped[subId] = { name: subName, total: 0, max: 0, count: 0, id: subId };
-            }
-            
-            // If we found a better name later in the loop (e.g. from map), update it
-            if (grouped[subId].name.startsWith('Missing ID') && !subName.startsWith('Missing ID')) {
-                grouped[subId].name = subName;
+                grouped[subId] = { name: subName, total: 0, max: 0, count: 0, id: subId, assessmentIds: [] };
             }
             
             grouped[subId].total += a.score || 0;
             grouped[subId].max += a.maxScore || 0;
             grouped[subId].count++;
+            grouped[subId].assessmentIds.push(a.id); // Track IDs to update them later
         });
 
         return Object.values(grouped).map((data) => {
             const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
-            return { name: data.name, percentage, ...getGrade(percentage), id: data.id };
+            return { ...data, percentage, ...getGrade(percentage) };
         });
     }, [assessments, student.uid, subjectMap, isDebug]);
 
@@ -278,21 +269,35 @@ function StudentGradesDetail({
         ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
         : 0;
 
+    // --- FIX HANDLER ---
+    const handleUpdateSubject = async (oldSubjectId: string, assessmentIds: string[]) => {
+        if (!firestore || !newSubjectId) return;
+        
+        try {
+            const selectedSubject = subjects.find(s => s.id === newSubjectId);
+            if (!selectedSubject) return;
+
+            const batch = writeBatch(firestore);
+            
+            assessmentIds.forEach(id => {
+                const ref = doc(firestore, 'assessments', id);
+                batch.update(ref, {
+                    subjectId: selectedSubject.id,
+                    subjectName: selectedSubject.name // Save name directly to avoid future lookups
+                });
+            });
+
+            await batch.commit();
+            toast({ title: "Fixed", description: "Subject updated successfully." });
+            setEditingSubjectId(null);
+        } catch (e) {
+            toast({ variant: 'destructive', title: "Error", description: "Could not update." });
+        }
+    };
+
     return (
         <div className="space-y-6 p-4">
             
-            {/* DEBUG VIEW: Show what subjects the system actually knows about */}
-            {isDebug && (
-                <div className="p-2 bg-red-50 border border-red-200 rounded text-xs font-mono mb-4">
-                    <p className="font-bold text-red-800">DEBUG: SUBJECTS LOADED ({subjects.length})</p>
-                    <div className="max-h-20 overflow-y-auto">
-                        {subjects.map(s => (
-                            <div key={s.id}>{s.id} = {s.name || s.title || 'No Name Field'}</div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
@@ -340,32 +345,60 @@ function StudentGradesDetail({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {subjectGrades.map((sub) => (
+                        {subjectGrades.map((sub) => {
+                            // Check if name looks like an ID (long string with numbers, no spaces usually)
+                            const isBroken = sub.name.length > 15 && !sub.name.includes(' '); 
+                            const isEditing = editingSubjectId === sub.id;
+
+                            return (
                             <TableRow key={sub.id}>
                                 <TableCell className="font-medium">
-                                    {sub.name}
-                                    {/* Show ID in small gray text if name is missing */}
-                                    {sub.name.startsWith('Missing') && <div className="text-[10px] text-slate-400 font-mono">{sub.id}</div>}
+                                    {isEditing ? (
+                                        <div className="flex gap-2 items-center">
+                                            <Select value={newSubjectId} onValueChange={setNewSubjectId}>
+                                                <SelectTrigger className="h-8 w-[180px]"><SelectValue placeholder="Select Subject"/></SelectTrigger>
+                                                <SelectContent>
+                                                    {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                            <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700">
+                                                <Check className="h-4 w-4"/>
+                                            </Button>
+                                            <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0">
+                                                <XCircle className="h-4 w-4"/>
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <span>{sub.name}</span>
+                                            {/* Show Fix Button if it looks like an ID */}
+                                            {isBroken && (
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm" 
+                                                    className="h-6 px-2 text-xs text-orange-600 border-orange-200 bg-orange-50 hover:bg-orange-100"
+                                                    onClick={() => {
+                                                        setEditingSubjectId(sub.id);
+                                                        setNewSubjectId(''); // Reset selection
+                                                    }}
+                                                >
+                                                    <Pencil className="h-3 w-3 mr-1"/> Fix Name
+                                                </Button>
+                                            )}
+                                        </div>
+                                    )}
                                 </TableCell>
                                 <TableCell className="text-right">{sub.percentage.toFixed(1)}%</TableCell>
                                 <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
                                 <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
                             </TableRow>
-                        ))}
+                            );
+                        })}
                         {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </div>
             
-            {/* Debugging Raw List */}
-            {isDebug && (
-                <div className="mt-4 p-2 bg-slate-100 rounded text-xs font-mono">
-                    <p className="font-bold mb-1">Raw Assessments (Debug):</p>
-                    {assessments.filter(a => a.studentId === student.uid).map(a => (
-                        <div key={a.id}>ID: {a.subjectId} | Score: {a.score}</div>
-                    ))}
-                </div>
-            )}
         </div>
     );
 }
@@ -394,6 +427,11 @@ export default function GradebookManager() {
       toast({ title: "Refreshing Data..." });
   };
 
+  const handleFormClose = () => {
+      setActiveForm(null);
+      forceRefresh(); // Auto-refresh when form closes
+  };
+
   // 1. Fetch Classes
   const classesQuery = useMemoFirebase(() => {
       if (!firestore || !user || !isStaff) return null;
@@ -410,7 +448,7 @@ export default function GradebookManager() {
   [firestore, selectedClassId, refreshKey]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
-  // 3. Fetch Assessments (Filtered by Year/Term)
+  // 3. Fetch Assessments
   const assessmentsQuery = useMemoFirebase(() => {
     if (!selectedClassId || !firestore) return null;
     return query(
@@ -419,7 +457,7 @@ export default function GradebookManager() {
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
     );
-  }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); // Depend on refreshKey
+  }, [firestore, selectedClassId, selectedYear, selectedTerm, refreshKey]); 
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
   // 4. Fetch Financials
@@ -428,7 +466,7 @@ export default function GradebookManager() {
   [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. Fetch Subjects (For Name Resolution)
+  // 5. Fetch Subjects (Critical for Names)
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
@@ -468,7 +506,7 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
-
+      
       {isStaff && showDebug && <SubjectRelinker />}
 
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
@@ -480,11 +518,10 @@ export default function GradebookManager() {
                 </div>
                 <div className="flex items-center gap-3">
                     
-                    {/* --- DEBUG & REFRESH BUTTONS --- */}
-                    <div className="flex items-center space-x-2 bg-slate-100 p-2 rounded-md border border-slate-200">
+                    <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border">
                         <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
-                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer font-medium">
-                            <Bug className="h-3 w-3"/> Debug Mode
+                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer">
+                            <Bug className="h-3 w-3"/> Debug
                         </Label>
                     </div>
                     
@@ -494,7 +531,7 @@ export default function GradebookManager() {
 
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'default'} 
-                        onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
+                        onClick={() => setActiveForm(activeForm === 'grade' ? handleFormClose : 'grade')} 
                         disabled={!selectedClassId}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white h-9"
                     >
@@ -505,7 +542,6 @@ export default function GradebookManager() {
             </div>
         </CardHeader>
         
-        {/* FILTERS */}
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
@@ -534,7 +570,6 @@ export default function GradebookManager() {
           </div>
         </CardContent>
 
-        {/* DEBUG PANEL */}
         {showDebug && (
             <div className="p-4 bg-yellow-50 border-b border-yellow-200 text-xs font-mono text-yellow-800 animate-in fade-in slide-in-from-top-2">
                 <p><strong>DEBUG INFO (Refresh Key: {refreshKey}):</strong></p>
@@ -547,14 +582,12 @@ export default function GradebookManager() {
         )}
       </Card>
 
-      {/* GRADE ENTRY FORM */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
               <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
           </div>
       )}
       
-      {/* STUDENT LIST */}
       {selectedClassId && (
         <Card>
             <CardHeader className="py-4 px-6 border-b bg-white flex flex-row justify-between items-center">
