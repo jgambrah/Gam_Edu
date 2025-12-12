@@ -1,37 +1,44 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
-import { Page, Text, View, Document, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
-import { Student, Assessment, Subject } from '@/lib/types';
+import { useState, useEffect, useMemo } from 'react';
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
 import { format } from 'date-fns';
-import { Printer, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FileDown, Loader2 } from 'lucide-react';
+import { Assessment, Student } from '@/lib/types';
 
-// --- STYLES (Keep as is) ---
+// --- PDF STYLES ---
 const styles = StyleSheet.create({
-  page: { padding: 40, fontFamily: 'Helvetica', fontSize: 10, color: '#333' },
-  header: { marginBottom: 20, borderBottom: 1, borderBottomColor: '#ccc', paddingBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  schoolName: { fontSize: 24, fontWeight: 'bold', color: '#1a365d', textTransform: 'uppercase' },
-  schoolInfo: { fontSize: 9, color: '#666' },
-  title: { fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginVertical: 15, textTransform: 'uppercase', letterSpacing: 1 },
-  infoContainer: { flexDirection: 'row', marginBottom: 20, backgroundColor: '#f8fafc', padding: 10, borderRadius: 4 },
-  infoCol: { flex: 1 },
-  infoRow: { flexDirection: 'row', marginBottom: 4 },
-  label: { width: 80, fontWeight: 'bold', color: '#64748b' },
-  value: { flex: 1, fontWeight: 'bold' },
-  table: { width: 'auto', borderWidth: 1, borderColor: '#e2e8f0', marginBottom: 20 },
-  tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', minHeight: 25, alignItems: 'center' },
-  tableHeader: { backgroundColor: '#f1f5f9', fontWeight: 'bold' },
-  colSubject: { width: '40%', padding: 5, borderRightWidth: 1, borderRightColor: '#e2e8f0' },
-  colMetric: { width: '15%', padding: 5, borderRightWidth: 1, borderRightColor: '#e2e8f0', textAlign: 'center' },
-  colRemark: { width: '30%', padding: 5, textAlign: 'left' },
-  footer: { marginTop: 30, flexDirection: 'row', justifyContent: 'space-between' },
-  signatureBox: { width: 200, borderTopWidth: 1, borderTopColor: '#000', paddingTop: 5, marginTop: 40, textAlign: 'center' },
-  disclaimer: { position: 'absolute', bottom: 30, left: 40, right: 40, fontSize: 8, textAlign: 'center', color: '#999' }
+  page: { flexDirection: 'column', backgroundColor: '#FFFFFF', padding: 30, fontFamily: 'Helvetica' },
+  header: { marginBottom: 20, textAlign: 'center', borderBottom: 1, borderBottomColor: '#000', paddingBottom: 10 },
+  schoolName: { fontSize: 24, fontWeight: 'bold', marginBottom: 5, textTransform: 'uppercase' },
+  subHeader: { fontSize: 10, color: 'grey', marginBottom: 5 },
+  reportTitle: { fontSize: 16, fontWeight: 'bold', marginTop: 10, textDecoration: 'underline' },
+  
+  // Student Info Grid
+  infoContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, fontSize: 11 },
+  infoCol: { flexDirection: 'column', gap: 4 },
+  infoRow: { flexDirection: 'row' },
+  label: { fontWeight: 'bold', width: 80 },
+  value: { },
+
+  // Table
+  table: { width: 'auto', borderStyle: 'solid', borderWidth: 1, borderColor: '#bfbfbf', borderRightWidth: 0, borderBottomWidth: 0 },
+  tableRow: { margin: 'auto', flexDirection: 'row' },
+  tableHeaderRow: { margin: 'auto', flexDirection: 'row', backgroundColor: '#f0f0f0' },
+  tableCol: { borderStyle: 'solid', borderWidth: 1, borderColor: '#bfbfbf', borderLeftWidth: 0, borderTopWidth: 0 },
+  tableCellHeader: { margin: 5, fontSize: 10, fontWeight: 'bold' },
+  tableCell: { margin: 5, fontSize: 10 },
+
+  // Summary
+  summary: { marginTop: 30, padding: 15, border: 1, borderColor: '#000', borderStyle: 'dashed' },
+  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, fontSize: 11 },
+  
+  footer: { position: 'absolute', bottom: 30, left: 30, right: 30, fontSize: 9, textAlign: 'center', color: 'grey' }
 });
 
-// Grading Helper
+// Helper for Grading
 function getGrade(percentage: number) {
     if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
     if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
@@ -40,162 +47,141 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };
 }
 
-// --- PDF DOCUMENT COMPONENT ---
-const ReportCardDocument = ({ 
-    student, 
-    assessments, 
-    year, 
-    term,
-    rank,
-    totalStudents,
-    subjectsList
-}: { 
-    student: Student, 
-    assessments: Assessment[], 
-    year: string, 
-    term: string,
-    rank: number,
-    totalStudents: number,
-    subjectsList: Subject[]
-}) => {
+// --- THE DOCUMENT LAYOUT ---
+const ReportCardDocument = ({ student, assessments, year, term, rank, totalStudents, subjects }: any) => {
     
-    const subjectMap = useMemo(() => {
-        const map: Record<string, string> = {};
-        if (subjectsList) {
-            subjectsList.forEach(s => { map[s.id] = s.name; });
-        }
-        return map;
-    }, [subjectsList]);
+    // Create Subject Map for Names
+    const subjectMap = subjects?.reduce((acc: any, s: any) => {
+        acc[s.id] = s.name || s.title;
+        return acc;
+    }, {}) || {};
 
-    const subjectGrades = useMemo(() => {
-        const subjects: Record<string, { total: number, max: number }> = {};
+    // Group Assessments by Subject
+    const reportData = Object.values(assessments.reduce((acc: any, curr: Assessment) => {
+        if (curr.studentId !== student.uid) return acc;
         
-        (assessments || []).forEach(a => {
-            let subName = 'General';
-            const rawSubjectId = a.subjectId || (a as any).subject || '';
-            if (rawSubjectId && subjectMap[rawSubjectId]) {
-                subName = subjectMap[rawSubjectId];
-            } else if (rawSubjectId) {
-                subName = rawSubjectId;
-            }
+        const subId = curr.subjectId || 'unknown';
+        // Resolve name: Priority to Map, then Assessment Cache, then Unknown
+        const name = subjectMap[subId] || (curr as any).subjectName || 'Unknown Subject';
 
-            if (!subjects[subName]) subjects[subName] = { total: 0, max: 0 };
-            
-            subjects[subName].total += a.score || 0;
-            subjects[subName].max += a.maxScore || 0;
-        });
+        if (!acc[subId]) {
+            acc[subId] = { id: subId, name, total: 0, max: 0 };
+        }
+        acc[subId].total += curr.score || 0;
+        acc[subId].max += curr.maxScore || 0;
+        return acc;
+    }, {})).map((item: any) => {
+        const pct = item.max > 0 ? (item.total / item.max) * 100 : 0;
+        return { ...item, pct, ...getGrade(pct) };
+    });
 
-        return Object.entries(subjects).map(([name, data]) => {
-            const pct = data.max > 0 ? (data.total / data.max) * 100 : 0;
-            return { name, percentage: pct, ...getGrade(pct) };
-        });
-    }, [assessments, subjectMap]);
-
-    const overallAvg = subjectGrades.length > 0 
-        ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
+    const average = reportData.length > 0 
+        ? reportData.reduce((sum: number, i: any) => sum + i.pct, 0) / reportData.length 
         : 0;
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
-                 <View style={styles.header}>
-                    <View>
-                        <Text style={styles.schoolName}>SunnySide Academy</Text>
-                        <Text style={styles.schoolInfo}>123 Education Lane, Accra, Ghana</Text>
-                        <Text style={styles.schoolInfo}>contact@sunnyside.com</Text>
-                    </View>
+                
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text style={styles.schoolName}>Sunnyside International School</Text>
+                    <Text style={styles.subHeader}>Excellence • Integrity • Service</Text>
+                    <Text style={styles.reportTitle}>TERMINAL REPORT CARD</Text>
                 </View>
-                <Text style={styles.title}>Student Report Card</Text>
+
+                {/* Info Block */}
                 <View style={styles.infoContainer}>
                     <View style={styles.infoCol}>
                         <View style={styles.infoRow}><Text style={styles.label}>Name:</Text><Text style={styles.value}>{student.firstName} {student.lastName}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>ID:</Text><Text style={styles.value}>{student.id ? student.id.slice(0,8).toUpperCase() : 'N/A'}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{student.classId}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Student ID:</Text><Text style={styles.value}>{student.id.slice(0, 8).toUpperCase()}</Text></View>
                     </View>
                     <View style={styles.infoCol}>
-                        <View style={styles.infoRow}><Text style={styles.label}>Year:</Text><Text style={styles.value}>{year}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Academic Year:</Text><Text style={styles.value}>{year}</Text></View>
                         <View style={styles.infoRow}><Text style={styles.label}>Term:</Text><Text style={styles.value}>{term}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Position:</Text><Text style={styles.value}>{rank} / {totalStudents}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{student.classId || 'N/A'}</Text></View>
                     </View>
                 </View>
 
+                {/* Table */}
                 <View style={styles.table}>
-                    <View style={[styles.tableRow, styles.tableHeader]}>
-                        <Text style={styles.colSubject}>Subject</Text>
-                        <Text style={styles.colMetric}>Percent</Text>
-                        <Text style={styles.colMetric}>Grade</Text>
-                        <Text style={styles.colRemark}>Remark</Text>
+                    <View style={styles.tableHeaderRow}>
+                        <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCellHeader}>Subject</Text></View>
+                        <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCellHeader}>Percentage</Text></View>
+                        <View style={{...styles.tableCol, width: '15%'}}><Text style={styles.tableCellHeader}>Grade</Text></View>
+                        <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCellHeader}>Remark</Text></View>
                     </View>
-                    {subjectGrades.map((sub, i) => (
+                    {reportData.map((row: any, i) => (
                         <View key={i} style={styles.tableRow}>
-                            <Text style={styles.colSubject}>{sub.name}</Text>
-                            <Text style={styles.colMetric}>{sub.percentage.toFixed(1)}%</Text>
-                            <Text style={styles.colMetric}>{sub.grade}</Text>
-                            <Text style={styles.colRemark}>{sub.remark}</Text>
+                            <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCell}>{row.name}</Text></View>
+                            <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCell}>{row.pct.toFixed(1)}%</Text></View>
+                            <View style={{...styles.tableCol, width: '15%'}}><Text style={styles.tableCell}>{row.grade}</Text></View>
+                            <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCell}>{row.remark}</Text></View>
                         </View>
                     ))}
-                    <View style={[styles.tableRow, { borderTopWidth: 2, backgroundColor: '#f8fafc' }]}>
-                        <Text style={[styles.colSubject, { fontWeight: 'bold' }]}>Overall Average</Text>
-                        <Text style={[styles.colMetric, { fontWeight: 'bold' }]}>{overallAvg.toFixed(1)}%</Text>
-                        <Text style={styles.colMetric}></Text>
-                        <Text style={styles.colRemark}></Text>
+                    {reportData.length === 0 && (
+                        <View style={styles.tableRow}>
+                            <View style={{...styles.tableCol, width: '100%'}}><Text style={{...styles.tableCell, textAlign: 'center', padding: 10}}>No grades recorded yet.</Text></View>
+                        </View>
+                    )}
+                </View>
+
+                {/* Summary */}
+                <View style={styles.summary}>
+                    <View style={styles.summaryRow}>
+                        <Text>Overall Average:</Text>
+                        <Text style={{fontWeight: 'bold'}}>{average.toFixed(2)}%</Text>
+                    </View>
+                    <View style={styles.summaryRow}>
+                        <Text>Position in Class:</Text>
+                        <Text style={{fontWeight: 'bold'}}>{rank} / {totalStudents}</Text>
+                    </View>
+                    <View style={{...styles.summaryRow, marginTop: 10}}>
+                        <Text>Principal's Remark:</Text>
+                        <Text style={{fontStyle: 'italic'}}>{getGrade(average).remark}</Text>
                     </View>
                 </View>
 
-                 <View style={styles.footer}>
-                    <View style={styles.signatureBox}><Text>Class Teacher Signature</Text></View>
-                    <View style={styles.signatureBox}><Text>Headmaster Signature</Text></View>
+                {/* Signatures */}
+                <View style={{flexDirection: 'row', marginTop: 40, justifyContent: 'space-between', paddingHorizontal: 20}}>
+                    <View style={{borderTop: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Class Teacher's Signature</Text></View>
+                    <View style={{borderTop: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Principal's Signature</Text></View>
                 </View>
-                <Text style={styles.disclaimer}>Generated via CampusConnect System on {format(new Date(), 'PPP')}</Text>
+
+                <Text style={styles.footer}>Generated via Sunnyside Student Information System • {format(new Date(), 'PPP')}</Text>
             </Page>
         </Document>
     );
 };
 
-export const GenerateReportCard = ({ 
-    student, assessments, year, term, rank, totalStudents, subjectsList
-}: {
-    student: Student,
-    assessments: Assessment[],
-    year: string,
-    term: string,
-    rank: number,
-    totalStudents: number,
-    subjectsList: Subject[] | undefined
-}) => {
-    
-    // FINAL FIX: Ensure both assessments AND subjectsList are loaded and not empty
-    // before attempting to render the PDF link. This prevents the crash.
-    if (!assessments || !subjectsList || subjectsList.length === 0) {
+// --- EXPORTED COMPONENT (Client-Side Wrapper) ---
+export function GenerateReportCard(props: any) {
+    const [isClient, setIsClient] = useState(false);
+
+    // FIX: Only render PDF features after the component has mounted in the browser
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    if (!isClient) {
         return (
-            <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled>
-                <Loader2 className="h-4 w-4 animate-spin"/>
-                Generating...
+            <Button variant="outline" className="w-full" disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Loading PDF Engine...
             </Button>
         );
     }
-    
+
     return (
         <PDFDownloadLink
-            document={
-                <ReportCardDocument 
-                    student={student} 
-                    assessments={assessments}
-                    year={year} 
-                    term={term}
-                    rank={rank}
-                    totalStudents={totalStudents}
-                    subjectsList={subjectsList}
-                />
-            }
-            fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
+            document={<ReportCardDocument {...props} />}
+            fileName={`Report_${props.student.firstName}_${props.student.lastName}.pdf`}
         >
             {({ loading }) => (
-                <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
-                    {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Printer className="h-4 w-4"/>}
+                <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4"/>}
                     {loading ? 'Generating...' : 'Download Report Card'}
                 </Button>
             )}
         </PDFDownloadLink>
     );
-};
+}
