@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -324,7 +325,8 @@ function StudentGradesDetail({
                 </Card>
                 <Card className="bg-white border-slate-200 shadow-sm">
                      <CardContent className="p-4 flex flex-col justify-center h-full items-center">
-                        {!assessments || !subjects ? <Loader2 className="h-5 w-5 animate-spin"/> : (
+                        {/* THE FIX IS HERE: Don't render until both are loaded */}
+                        {(!assessments || !subjects) ? <div className="flex items-center gap-2 text-muted-foreground text-sm"><Loader2 className="h-4 w-4 animate-spin"/>Loading report...</div> : (
                             <GenerateReportCard
                                 student={student}
                                 assessments={assessments}
@@ -332,7 +334,7 @@ function StudentGradesDetail({
                                 term={term}
                                 rank={rank}
                                 totalStudents={totalStudents}
-                                subjectsList={subjects}
+                                subjectsList={subjects} 
                             />
                         )}
                      </CardContent>
