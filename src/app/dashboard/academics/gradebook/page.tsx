@@ -40,15 +40,16 @@ function getGrade(percentage: number) {
 
 // --- SUB-COMPONENT: Transaction Detail Modal (Fixed) ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
+    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Details
+                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Ledger
                     </DialogTitle>
                     <DialogDescription>
-                        Transaction ID: <span className="font-mono text-xs">{record?.id ? record.id.slice(0, 8) : '...'}...</span>
+                        Details for Transaction ID: <span className="font-mono text-xs">{record?.id ? record.id.slice(0, 8) : '...'}...</span>
                     </DialogDescription>
                 </DialogHeader>
 
@@ -102,7 +103,7 @@ function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRe
     );
 }
 
-// --- SUB-COMPONENT: Fee History (Updated Table) ---
+// --- SUB-COMPONENT: Fee History ---
 function FeeHistoryDetail({ student, financialRecords }: { student: Student; financialRecords: FinancialRecord[] }) {
     const [selectedRecord, setSelectedRecord] = useState<FinancialRecord | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -110,10 +111,9 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
     const studentRecords = useMemo(() => {
         return (financialRecords || [])
             .filter(r => r.studentId === student.uid)
-            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)); // Descending order
+            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)); 
     }, [financialRecords, student.uid]);
 
-    // Handler to safely open modal
     const handleViewDetails = (record: FinancialRecord) => {
         setSelectedRecord(record);
         setIsModalOpen(true);
@@ -138,7 +138,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
                             <TableHead className="text-right">Billed</TableHead>
                             <TableHead className="text-right">Paid</TableHead>
                             <TableHead className="text-center">Status</TableHead>
-                            <TableHead className="w-[100px]">Action</TableHead>
+                            <TableHead className="w-[80px]">Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -166,9 +166,9 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
                                     <Button 
                                         variant="ghost" 
                                         size="sm" 
-                                        className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 text-xs"
+                                        className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 text-xs h-8"
                                         onClick={(e) => {
-                                            e.stopPropagation(); // Prevents row clicks or accordion collapse
+                                            e.stopPropagation();
                                             handleViewDetails(record);
                                         }}
                                     >
@@ -180,25 +180,25 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
                     </TableBody>
                 </Table>
             </div>
-            {isModalOpen && (
-                <TransactionDetailModal 
-                    record={selectedRecord} 
-                    open={isModalOpen} 
-                    setOpen={setIsModalOpen} 
-                />
-            )}
+
+            <TransactionDetailModal 
+                record={selectedRecord} 
+                open={isModalOpen} 
+                setOpen={setIsModalOpen} 
+            />
         </div>
     );
 }
 
-// --- SUB-COMPONENT: Student Academics Detail ---
+// --- SUB-COMPONENT: Student Academics Detail (UPDATED WITH SUBJECT NAMES) ---
 function StudentGradesDetail({ 
     student, 
     assessments, 
     rank, 
     totalStudents,
     term,
-    year 
+    year,
+    subjects // <--- New prop to map IDs to Names
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -206,25 +206,40 @@ function StudentGradesDetail({
     totalStudents: number;
     term: string;
     year: string;
+    subjects: any[]; // List of subjects
 }) {
-    // Group by Subject
+    // 1. Create a Map for O(1) lookup of Subject Names
+    const subjectMap = useMemo(() => {
+        const map = new Map<string, string>();
+        subjects.forEach(s => map.set(s.id, s.name));
+        return map;
+    }, [subjects]);
+
+    // 2. Group by Subject ID and Resolve Name
     const subjectGrades = useMemo(() => {
-        const subjects: Record<string, { total: number, max: number, count: number }> = {};
+        const grouped: Record<string, { name: string, total: number, max: number, count: number }> = {};
         
         assessments.forEach(a => {
             if (a.studentId !== student.uid) return;
-            const sub = a.subjectId || 'General';
-            if (!subjects[sub]) subjects[sub] = { total: 0, max: 0, count: 0 };
-            subjects[sub].total += a.score || 0;
-            subjects[sub].max += a.maxScore || 0;
-            subjects[sub].count++;
+            
+            const subId = a.subjectId || 'unknown';
+            // FIX: Get the name from the map, or fallback to the ID if missing
+            const subName = subjectMap.get(subId) || (subId === 'unknown' ? 'General' : 'Unknown Subject');
+
+            if (!grouped[subId]) {
+                grouped[subId] = { name: subName, total: 0, max: 0, count: 0 };
+            }
+            
+            grouped[subId].total += a.score || 0;
+            grouped[subId].max += a.maxScore || 0;
+            grouped[subId].count++;
         });
 
-        return Object.entries(subjects).map(([name, data]) => {
+        return Object.values(grouped).map((data) => {
             const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
-            return { name, percentage, ...getGrade(percentage) };
+            return { name: data.name, percentage, ...getGrade(percentage) };
         });
-    }, [assessments, student.uid]);
+    }, [assessments, student.uid, subjectMap]);
 
     const overallAverage = subjectGrades.length > 0 
         ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
@@ -254,6 +269,7 @@ function StudentGradesDetail({
                 </Card>
                 <Card className="bg-white border-slate-200 shadow-sm">
                      <CardContent className="p-4 flex flex-col justify-center h-full items-center">
+                         {/* Passed subjects to PDF generator just in case it's updated to handle them */}
                         <GenerateReportCard
                             student={student}
                             assessments={assessments || []}
@@ -278,8 +294,8 @@ function StudentGradesDetail({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {subjectGrades.map((sub) => (
-                            <TableRow key={sub.name}>
+                        {subjectGrades.map((sub, idx) => (
+                            <TableRow key={idx}>
                                 <TableCell className="font-medium">{sub.name}</TableCell>
                                 <TableCell className="text-right">{sub.percentage.toFixed(1)}%</TableCell>
                                 <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
@@ -341,6 +357,10 @@ export default function GradebookManager() {
     (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
   [firestore, selectedClassId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
+
+  // 5. NEW: Fetch Subjects (To fix IDs showing in table)
+  const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
+  const { data: subjects } = useCollection<any>(subjectsQuery);
 
   // --- DERIVED DATA ---
   
@@ -498,6 +518,7 @@ export default function GradebookManager() {
                                                 totalStudents={rankedStudents.length}
                                                 term={selectedTerm}
                                                 year={selectedYear}
+                                                subjects={subjects || []} // PASSING THE SUBJECTS HERE
                                             />
                                         </TabsContent>
 
