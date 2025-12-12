@@ -2,28 +2,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { FileDown, Loader2 } from 'lucide-react';
 import { Assessment, Student } from '@/lib/types';
 
-// --- CRITICAL FIX: Dynamic Import ---
-// This prevents the PDF library from running on the server
-const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
-  {
-    ssr: false,
-    loading: () => (
-      <Button variant="outline" className="w-full" disabled>
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading PDF...
-      </Button>
-    ),
-  }
-);
-
-// Helper for Grading
+// Helper for Grading (Safe to keep outside)
 function getGrade(percentage: number) {
     if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
     if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
@@ -32,10 +16,38 @@ function getGrade(percentage: number) {
     return { grade: 'F', remark: 'Fail' };
 }
 
-// --- THE DOCUMENT LAYOUT ---
-const ReportCardDocument = ({ student, assessments, year, term, rank, totalStudents, subjects }: any) => {
-    
+export function GenerateReportCard(props: any) {
+    // We store the PDF library in state to ensure it ONLY loads on the client
+    const [PdfLib, setPdfLib] = useState<any>(null);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+        // Dynamically load the library only after mount
+        import('@react-pdf/renderer').then((module) => {
+            setPdfLib(module);
+        }).catch(err => console.error("Failed to load PDF library", err));
+    }, []);
+
+    // 1. Loading State (Library not ready)
+    if (!isClient || !PdfLib) {
+        return (
+            <Button variant="outline" className="w-full" disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Loading PDF Engine...
+            </Button>
+        );
+    }
+
+    // 2. Data Check
+    if (!props.student || !props.assessments) {
+        return <Button disabled className="w-full">Data Unavailable</Button>;
+    }
+
+    // Destructure the library components
+    const { Document, Page, Text, View, StyleSheet, PDFDownloadLink } = PdfLib;
+
     // --- USE PLAIN OBJECTS FOR STYLES (Fixes 'hasOwnProperty' error) ---
+    // We avoid StyleSheet.create() to bypass the registry crash.
     const styles: any = {
         page: { flexDirection: 'column', backgroundColor: '#FFFFFF', padding: 30, fontFamily: 'Helvetica' },
         header: { marginBottom: 20, textAlign: 'center', borderBottomWidth: 1, borderBottomColor: '#000', paddingBottom: 10 },
@@ -58,19 +70,17 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
 
         summary: { marginTop: 30, padding: 15, borderWidth: 1, borderColor: '#000', borderStyle: 'dashed' },
         summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, fontSize: 11 },
-        
         footer: { position: 'absolute', bottom: 30, left: 30, right: 30, fontSize: 9, textAlign: 'center', color: 'grey' }
     };
 
-    // Create Subject Map for Names
-    const subjectMap = subjects?.reduce((acc: any, s: any) => {
+    // --- DATA PROCESSING ---
+    const subjectMap = props.subjects?.reduce((acc: any, s: any) => {
         acc[s.id] = s.name || s.title;
         return acc;
     }, {}) || {};
 
-    // Group Assessments by Subject
-    const reportData = Object.values(assessments.reduce((acc: any, curr: Assessment) => {
-        if (curr.studentId !== student.uid) return acc;
+    const reportData = Object.values(props.assessments.reduce((acc: any, curr: Assessment) => {
+        if (curr.studentId !== props.student.uid) return acc;
         
         const subId = curr.subjectId || 'unknown';
         const name = subjectMap[subId] || (curr as any).subjectName || 'Unknown Subject';
@@ -90,31 +100,28 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
         ? reportData.reduce((sum: number, i: any) => sum + i.pct, 0) / reportData.length 
         : 0;
 
-    return (
+    // --- DOCUMENT ---
+    const MyDocument = (
         <Document>
             <Page size="A4" style={styles.page}>
-                
-                {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.schoolName}>Sunnyside International School</Text>
                     <Text style={styles.subHeader}>Excellence • Integrity • Service</Text>
                     <Text style={styles.reportTitle}>TERMINAL REPORT CARD</Text>
                 </View>
 
-                {/* Info Block */}
                 <View style={styles.infoContainer}>
                     <View style={styles.infoCol}>
-                        <View style={styles.infoRow}><Text style={styles.label}>Name:</Text><Text style={styles.value}>{student.firstName} {student.lastName}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Student ID:</Text><Text style={styles.value}>{student.id.slice(0, 8).toUpperCase()}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Name:</Text><Text style={styles.value}>{props.student.firstName} {props.student.lastName}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Student ID:</Text><Text style={styles.value}>{props.student.id.slice(0, 8).toUpperCase()}</Text></View>
                     </View>
                     <View style={styles.infoCol}>
-                        <View style={styles.infoRow}><Text style={styles.label}>Year:</Text><Text style={styles.value}>{year}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Term:</Text><Text style={styles.value}>{term}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{student.classId || 'N/A'}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Year:</Text><Text style={styles.value}>{props.year}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Term:</Text><Text style={styles.value}>{props.term}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{props.student.classId || 'N/A'}</Text></View>
                     </View>
                 </View>
 
-                {/* Table */}
                 <View style={styles.table}>
                     <View style={styles.tableHeaderRow}>
                         <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCellHeader}>Subject</Text></View>
@@ -132,19 +139,17 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                     ))}
                     {reportData.length === 0 && (
                         <View style={styles.tableRow}>
-                            <View style={{...styles.tableCol, width: '100%'}}><Text style={{...styles.tableCell, textAlign: 'center', padding: 10}}>No grades recorded yet.</Text></View>
+                            <View style={{...styles.tableCol, width: '100%'}}><Text style={{...styles.tableCell, textAlign: 'center', padding: 10}}>No grades recorded.</Text></View>
                         </View>
                     )}
                 </View>
 
-                {/* Summary */}
                 <View style={styles.summary}>
                     <View style={styles.summaryRow}><Text>Average:</Text><Text style={{fontWeight: 'bold'}}>{average.toFixed(2)}%</Text></View>
                     <View style={styles.summaryRow}><Text>Rank:</Text><Text style={{fontWeight: 'bold'}}>{props.rank} / {props.totalStudents}</Text></View>
                     <View style={{...styles.summaryRow, marginTop: 10}}><Text>Principal&apos;s Remark:</Text><Text style={{fontStyle: 'italic'}}>{getGrade(average).remark}</Text></View>
                 </View>
 
-                {/* Signatures */}
                 <View style={{flexDirection: 'row', marginTop: 40, justifyContent: 'space-between', paddingHorizontal: 20}}>
                     <View style={{borderTopWidth: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Class Teacher</Text></View>
                     <View style={{borderTopWidth: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Principal</Text></View>
@@ -154,23 +159,15 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
             </Page>
         </Document>
     );
-};
 
-// --- EXPORTED COMPONENT (Client-Side Wrapper) ---
-export function GenerateReportCard(props: any) {
-    
-    // Safety check for data availability
-    if (!props.student || !props.assessments) {
-        return <Button disabled variant="outline" className="w-full">Data Unavailable</Button>;
-    }
-
+    // 7. Render Button
     return (
         <PDFDownloadLink
-            document={<ReportCardDocument {...props} />}
+            document={MyDocument}
             fileName={`Report_${props.student.firstName}_${props.student.lastName}.pdf`}
         >
             {/* @ts-ignore */}
-            {({ loading, error }: any) => (
+            {({ loading }) => (
                 <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4"/>}
                     {loading ? 'Generating...' : 'Download Report Card'}
@@ -179,4 +176,3 @@ export function GenerateReportCard(props: any) {
         </PDFDownloadLink>
     );
 }
-
