@@ -4,10 +4,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, writeBatch, updateDoc } from 'firebase/firestore';
 import { 
   TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, Pencil, Check
+  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, Pencil, Check 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -28,8 +28,6 @@ import { useToast } from '@/hooks/use-toast';
 
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
-import SubjectRelinker from '@/components/dashboard/academics/subject-relinker';
-
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
@@ -194,7 +192,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
     );
 }
 
-// --- SUB-COMPONENT: Student Academics Detail (With Quick Fix) ---
+// --- SUB-COMPONENT: Student Academics Detail (WITH QUICK FIX) ---
 function StudentGradesDetail({ 
     student, 
     assessments, 
@@ -216,10 +214,10 @@ function StudentGradesDetail({
 }) {
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null); // Track which row is being fixed
+    const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
     const [newSubjectId, setNewSubjectId] = useState<string>('');
 
-    // 1. Create a "Smart Map" that looks for ANY likely name field
+    // 1. Smart Map for Subjects
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
         if(subjects && subjects.length > 0) {
@@ -231,7 +229,7 @@ function StudentGradesDetail({
         return map;
     }, [subjects]);
 
-    // 2. Group by Subject
+    // 2. Group by Subject Logic
     const subjectGrades = useMemo(() => {
         const grouped: Record<string, { name: string, total: number, max: number, count: number, id: string, assessmentIds: string[] }> = {};
         
@@ -240,7 +238,7 @@ function StudentGradesDetail({
             
             const subId = a.subjectId || 'unknown';
             
-            // Priority 1: Check Map (Most reliable)
+            // Priority 1: Check Map
             let subName = subjectMap.get(subId);
             
             // Priority 2: Check assessment cache
@@ -253,10 +251,15 @@ function StudentGradesDetail({
                 grouped[subId] = { name: subName, total: 0, max: 0, count: 0, id: subId, assessmentIds: [] };
             }
             
+            // Fix display name if we found a better one later in the loop
+            if (grouped[subId].name === subId && subName !== subId) {
+                grouped[subId].name = subName;
+            }
+            
             grouped[subId].total += a.score || 0;
             grouped[subId].max += a.maxScore || 0;
             grouped[subId].count++;
-            grouped[subId].assessmentIds.push(a.id); // Track IDs to update them later
+            grouped[subId].assessmentIds.push(a.id); 
         });
 
         return Object.values(grouped).map((data) => {
@@ -283,7 +286,7 @@ function StudentGradesDetail({
                 const ref = doc(firestore, 'assessments', id);
                 batch.update(ref, {
                     subjectId: selectedSubject.id,
-                    subjectName: selectedSubject.name // Save name directly to avoid future lookups
+                    subjectName: selectedSubject.name // Save name directly
                 });
             });
 
@@ -298,6 +301,18 @@ function StudentGradesDetail({
     return (
         <div className="space-y-6 p-4">
             
+            {/* DEBUG VIEW */}
+            {isDebug && (
+                <div className="p-2 bg-red-50 border border-red-200 rounded text-xs font-mono mb-4">
+                    <p className="font-bold text-red-800">DEBUG: SUBJECTS LOADED ({subjects.length})</p>
+                    <div className="max-h-20 overflow-y-auto">
+                        {subjects.map(s => (
+                            <div key={s.id}>{s.id} = {s.name || s.title || 'No Name'}</div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
@@ -346,52 +361,52 @@ function StudentGradesDetail({
                     </TableHeader>
                     <TableBody>
                         {subjectGrades.map((sub) => {
-                            // Check if name looks like an ID (long string with numbers, no spaces usually)
-                            const isBroken = sub.name.length > 15 && !sub.name.includes(' '); 
+                            // Detect if name looks like an ID
+                            const isBroken = sub.name.length > 15 && !sub.name.includes(' ');
                             const isEditing = editingSubjectId === sub.id;
 
                             return (
-                            <TableRow key={sub.id}>
-                                <TableCell className="font-medium">
-                                    {isEditing ? (
-                                        <div className="flex gap-2 items-center">
-                                            <Select value={newSubjectId} onValueChange={setNewSubjectId}>
-                                                <SelectTrigger className="h-8 w-[180px]"><SelectValue placeholder="Select Subject"/></SelectTrigger>
-                                                <SelectContent>
-                                                    {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                                                </SelectContent>
-                                            </Select>
-                                            <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700">
-                                                <Check className="h-4 w-4"/>
-                                            </Button>
-                                            <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0">
-                                                <XCircle className="h-4 w-4"/>
-                                            </Button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <span>{sub.name}</span>
-                                            {/* Show Fix Button if it looks like an ID */}
-                                            {isBroken && (
-                                                <Button 
-                                                    variant="outline" 
-                                                    size="sm" 
-                                                    className="h-6 px-2 text-xs text-orange-600 border-orange-200 bg-orange-50 hover:bg-orange-100"
-                                                    onClick={() => {
-                                                        setEditingSubjectId(sub.id);
-                                                        setNewSubjectId(''); // Reset selection
-                                                    }}
-                                                >
-                                                    <Pencil className="h-3 w-3 mr-1"/> Fix Name
+                                <TableRow key={sub.id}>
+                                    <TableCell className="font-medium">
+                                        {isEditing ? (
+                                            <div className="flex gap-2 items-center">
+                                                <Select value={newSubjectId} onValueChange={setNewSubjectId}>
+                                                    <SelectTrigger className="h-8 w-[180px]"><SelectValue placeholder="Select Subject"/></SelectTrigger>
+                                                    <SelectContent>
+                                                        {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                                                    </SelectContent>
+                                                </Select>
+                                                <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700">
+                                                    <Check className="h-4 w-4"/>
                                                 </Button>
-                                            )}
-                                        </div>
-                                    )}
-                                </TableCell>
-                                <TableCell className="text-right">{sub.percentage.toFixed(1)}%</TableCell>
-                                <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
-                                <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
-                            </TableRow>
+                                                <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0">
+                                                    <XCircle className="h-4 w-4"/>
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <span>{sub.name}</span>
+                                                {/* SHOW FIX BUTTON IF BROKEN */}
+                                                {isBroken && (
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        className="h-6 px-2 text-xs text-orange-600 border-orange-200 bg-orange-50 hover:bg-orange-100"
+                                                        onClick={() => {
+                                                            setEditingSubjectId(sub.id);
+                                                            setNewSubjectId('');
+                                                        }}
+                                                    >
+                                                        <Pencil className="h-3 w-3 mr-1"/> Fix Name
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="text-right">{sub.percentage.toFixed(1)}%</TableCell>
+                                    <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
+                                    <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
+                                </TableRow>
                             );
                         })}
                         {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
@@ -399,6 +414,15 @@ function StudentGradesDetail({
                 </Table>
             </div>
             
+            {/* Debugging Raw List */}
+            {isDebug && (
+                <div className="mt-4 p-2 bg-slate-100 rounded text-xs font-mono">
+                    <p className="font-bold mb-1">Raw Assessments (Debug):</p>
+                    {assessments.filter(a => a.studentId === student.uid).map(a => (
+                        <div key={a.id}>ID: {a.subjectId} | Score: {a.score}</div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -425,11 +449,6 @@ export default function GradebookManager() {
   const forceRefresh = () => {
       setRefreshKey(prev => prev + 1);
       toast({ title: "Refreshing Data..." });
-  };
-
-  const handleFormClose = () => {
-      setActiveForm(null);
-      forceRefresh(); // Auto-refresh when form closes
   };
 
   // 1. Fetch Classes
@@ -466,14 +485,13 @@ export default function GradebookManager() {
   [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. Fetch Subjects (Critical for Names)
+  // 5. Fetch Subjects (Critical)
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
   // --- DERIVED DATA ---
   const rankedStudents = useMemo(() => {
       if (!students || !assessments) return [];
-      
       const studentsWithScore = students.map(s => {
           const myAssessments = assessments.filter(a => a.studentId === s.uid);
           const total = myAssessments.reduce((acc, curr) => acc + (curr.score || 0), 0);
@@ -481,14 +499,12 @@ export default function GradebookManager() {
           const average = max > 0 ? (total / max) * 100 : 0;
           return { ...s, average };
       });
-
       return studentsWithScore.sort((a, b) => b.average - a.average);
   }, [students, assessments]);
 
   const studentFinancials = useMemo(() => {
     if (!students || !financialRecords) return {};
     const financials: Record<string, { balance: number }> = {};
-
     students.forEach(student => {
         const myRecords = financialRecords.filter(r => r.studentId === student.uid);
         const billed = myRecords.reduce((acc, r) => acc + r.billedAmount, 0);
@@ -506,9 +522,6 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
-      
-      {isStaff && showDebug && <SubjectRelinker />}
-
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -516,11 +529,11 @@ export default function GradebookManager() {
                     <CardTitle className="flex items-center gap-2 text-xl"><TrendingUp className="text-indigo-600"/> Smart Gradebook 2.0</CardTitle>
                     <CardDescription>Comprehensive academic reporting and fee tracking.</CardDescription>
                 </div>
-                <div className="flex items-center gap-3">
-                    
-                    <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border">
+                <div className="flex items-center gap-2">
+                    {/* VISIBLE DEBUG CONTROLS */}
+                    <div className="flex items-center space-x-2 mr-4 bg-slate-100 p-2 rounded-md border border-slate-200 shadow-sm">
                         <Switch id="debug-mode" checked={showDebug} onCheckedChange={setShowDebug} />
-                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer">
+                        <Label htmlFor="debug-mode" className="text-xs text-muted-foreground flex items-center gap-1 cursor-pointer font-bold">
                             <Bug className="h-3 w-3"/> Debug
                         </Label>
                     </div>
@@ -531,7 +544,7 @@ export default function GradebookManager() {
 
                     <Button 
                         variant={activeForm === 'grade' ? 'secondary' : 'default'} 
-                        onClick={() => setActiveForm(activeForm === 'grade' ? handleFormClose : 'grade')} 
+                        onClick={() => setActiveForm(activeForm === 'grade' ? null : 'grade')} 
                         disabled={!selectedClassId}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white h-9"
                     >
@@ -542,6 +555,7 @@ export default function GradebookManager() {
             </div>
         </CardHeader>
         
+        {/* FILTERS */}
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50/50 p-6 border-t border-b">
           <div className="space-y-1">
              <span className="text-xs font-semibold text-slate-500 uppercase">Academic Year</span>
@@ -570,6 +584,7 @@ export default function GradebookManager() {
           </div>
         </CardContent>
 
+        {/* DEBUG PANEL */}
         {showDebug && (
             <div className="p-4 bg-yellow-50 border-b border-yellow-200 text-xs font-mono text-yellow-800 animate-in fade-in slide-in-from-top-2">
                 <p><strong>DEBUG INFO (Refresh Key: {refreshKey}):</strong></p>
@@ -582,12 +597,14 @@ export default function GradebookManager() {
         )}
       </Card>
 
+      {/* GRADE ENTRY FORM */}
       {activeForm === 'grade' && selectedClassId && (
           <div className="animate-in slide-in-from-top-4 fade-in duration-300">
               <AssessmentFeedbackForm classId={selectedClassId} classes={teacherClasses || []} />
           </div>
       )}
       
+      {/* STUDENT LIST */}
       {selectedClassId && (
         <Card>
             <CardHeader className="py-4 px-6 border-b bg-white flex flex-row justify-between items-center">
