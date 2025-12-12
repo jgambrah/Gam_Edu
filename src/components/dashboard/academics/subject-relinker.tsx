@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -138,10 +139,3 @@ export default function SubjectRelinker() {
                 >
                     {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Link2 className="mr-2 h-4 w-4"/>}
                     Fix {Object.keys(fixMap).length} Selected Record(s)
-                </Button>
-            </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}

@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { 
   TrendingUp, Trophy, BookOpen, FileText, Loader2, Eye, Calendar, Receipt, 
-  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle, CheckCircle 
+  AlertCircle, RefreshCw, Bug, PlusCircle, XCircle 
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
 import SubjectRelinker from '@/components/dashboard/academics/subject-relinker';
+
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
@@ -427,7 +428,7 @@ export default function GradebookManager() {
   [firestore, selectedClassId, refreshKey]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 5. Fetch Subjects (Critical for Names)
+  // 5. Fetch Subjects (For Name Resolution)
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore, refreshKey]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
