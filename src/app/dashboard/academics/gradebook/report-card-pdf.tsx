@@ -56,7 +56,7 @@ const ReportCardDocument = ({
     term: string,
     rank: number,
     totalStudents: number,
-    subjectsList: Subject[] | undefined
+    subjectsList: Subject[]
 }) => {
     
     const subjectMap = useMemo(() => {
@@ -172,7 +172,7 @@ export const GenerateReportCard = ({
                 term={term}
                 rank={rank}
                 totalStudents={totalStudents}
-                subjectsList={subjectsList}
+                subjectsList={subjectsList || []}
             />
         }
         fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
@@ -186,6 +186,8 @@ export const GenerateReportCard = ({
     </PDFDownloadLink>
 );
 
+
+    
 
     
 
