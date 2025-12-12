@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -71,11 +72,13 @@ const ReportCardDocument = ({
         
         (assessments || []).forEach(a => {
             let subName = 'General';
-            const rawSubject = a.subjectId || (a as any).subject || '';
-            if (rawSubject && subjectMap[rawSubject]) {
-                subName = subjectMap[rawSubject];
-            } else if (rawSubject) {
-                subName = rawSubject;
+            // Use the subjectId field for mapping
+            const rawSubjectId = a.subjectId || (a as any).subject || '';
+            if (rawSubjectId && subjectMap[rawSubjectId]) {
+                subName = subjectMap[rawSubjectId];
+            } else if (rawSubjectId) {
+                // Fallback to the raw ID if name not found in map
+                subName = rawSubjectId;
             }
 
             if (!subjects[subName]) subjects[subName] = { total: 0, max: 0 };
@@ -161,26 +164,40 @@ export const GenerateReportCard = ({
     rank: number,
     totalStudents: number,
     subjectsList: Subject[] | undefined
-}) => (
-    <PDFDownloadLink
-        document={
-            <ReportCardDocument 
-                student={student} 
-                assessments={assessments || []}
-                year={year} 
-                term={term}
-                rank={rank}
-                totalStudents={totalStudents}
-                subjectsList={subjectsList || []}
-            />
-        }
-        fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
-    >
-        {({ loading }) => (
-            <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Printer className="h-4 w-4"/>}
-                {loading ? 'Generating...' : 'Download Report Card'}
+}) => {
+    
+    // **FIX**: The primary guard clause. We check if all necessary data is available BEFORE rendering.
+    // This prevents `undefined` props from ever reaching PDFDownloadLink.
+    if (!assessments || !subjectsList) {
+        return (
+            <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled>
+                <Loader2 className="h-4 w-4 animate-spin"/>
+                Generating...
             </Button>
-        )}
-    </PDFDownloadLink>
-);
+        );
+    }
+    
+    return (
+        <PDFDownloadLink
+            document={
+                <ReportCardDocument 
+                    student={student} 
+                    assessments={assessments}
+                    year={year} 
+                    term={term}
+                    rank={rank}
+                    totalStudents={totalStudents}
+                    subjectsList={subjectsList} // Now we know this is not undefined
+                />
+            }
+            fileName={`${student.firstName}_${student.lastName}_Report.pdf`}
+        >
+            {({ loading }) => (
+                <Button variant="outline" className="w-full gap-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Printer className="h-4 w-4"/>}
+                    {loading ? 'Generating...' : 'Download Report Card'}
+                </Button>
+            )}
+        </PDFDownloadLink>
+    );
+};
