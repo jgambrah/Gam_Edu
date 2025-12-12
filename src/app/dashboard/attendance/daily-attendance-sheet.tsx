@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 
 // Schema matches your data structure
 const attendanceRecordSchema = z.object({
