@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic'; // 1. Import dynamic
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -111,9 +111,8 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                         <View style={styles.infoRow}><Text style={styles.label}>Student ID:</Text><Text style={styles.value}>{student.id.slice(0, 8).toUpperCase()}</Text></View>
                     </View>
                     <View style={styles.infoCol}>
-                        <View style={styles.infoRow}><Text style={styles.label}>Academic Year:</Text><Text style={styles.value}>{year}</Text></View>
+                        <View style={styles.infoRow}><Text style={styles.label}>Year:</Text><Text style={styles.value}>{year}</Text></View>
                         <View style={styles.infoRow}><Text style={styles.label}>Term:</Text><Text style={styles.value}>{term}</Text></View>
-                        <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{student.classId || 'N/A'}</Text></View>
                     </View>
                 </View>
 
@@ -121,7 +120,7 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                 <View style={styles.table}>
                     <View style={styles.tableHeaderRow}>
                         <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCellHeader}>Subject</Text></View>
-                        <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCellHeader}>Percentage</Text></View>
+                        <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCellHeader}>Score</Text></View>
                         <View style={{...styles.tableCol, width: '15%'}}><Text style={styles.tableCellHeader}>Grade</Text></View>
                         <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCellHeader}>Remark</Text></View>
                     </View>
@@ -133,46 +132,40 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                             <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCell}>{row.remark}</Text></View>
                         </View>
                     ))}
-                    {reportData.length === 0 && (
-                        <View style={styles.tableRow}>
-                            <View style={{...styles.tableCol, width: '100%'}}><Text style={{...styles.tableCell, textAlign: 'center', padding: 10}}>No grades recorded yet.</Text></View>
-                        </View>
-                    )}
                 </View>
 
                 {/* Summary */}
                 <View style={styles.summary}>
-                    <View style={styles.summaryRow}>
-                        <Text>Overall Average:</Text>
-                        <Text style={{fontWeight: 'bold'}}>{average.toFixed(2)}%</Text>
-                    </View>
-                    <View style={styles.summaryRow}>
-                        <Text>Position in Class:</Text>
-                        <Text style={{fontWeight: 'bold'}}>{rank} / {totalStudents}</Text>
-                    </View>
-                    <View style={{...styles.summaryRow, marginTop: 10}}>
-                        <Text>Principal's Remark:</Text>
-                        <Text style={{fontStyle: 'italic'}}>{getGrade(average).remark}</Text>
-                    </View>
+                    <View style={styles.summaryRow}><Text>Average:</Text><Text style={{fontWeight: 'bold'}}>{average.toFixed(2)}%</Text></View>
+                    <View style={styles.summaryRow}><Text>Rank:</Text><Text style={{fontWeight: 'bold'}}>{rank} / {totalStudents}</Text></View>
                 </View>
-
-                {/* Signatures */}
-                <View style={{flexDirection: 'row', marginTop: 40, justifyContent: 'space-between', paddingHorizontal: 20}}>
-                    <View style={{borderTop: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Class Teacher's Signature</Text></View>
-                    <View style={{borderTop: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Principal's Signature</Text></View>
-                </View>
-
-                <Text style={styles.footer}>Generated via Sunnyside Student Information System • {format(new Date(), 'PPP')}</Text>
+                <Text style={styles.footer}>Generated via Sunnyside SIS • {format(new Date(), 'PPP')}</Text>
             </Page>
         </Document>
     );
 };
 
-// --- EXPORTED COMPONENT (Client-Side Wrapper) ---
+// --- CLIENT WRAPPER ---
 export function GenerateReportCard(props: any) {
-    // 3. Simple protection: Ensure we have data before attempting to render
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    if (!isClient) {
+        // This button is shown on the server and during the initial client render
+        // before the dynamic import has a chance to run.
+        return (
+             <Button variant="outline" className="w-full" disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Loading PDF...
+            </Button>
+        );
+    }
+    
+    // Now that we are on the client, we can safely render the PDFDownloadLink component
     if (!props.student || !props.assessments) {
-        return <Button disabled>Data Missing</Button>;
+        return <Button disabled variant="outline" className="w-full">Data Unavailable</Button>;
     }
 
     return (
@@ -181,7 +174,7 @@ export function GenerateReportCard(props: any) {
             fileName={`Report_${props.student.firstName}_${props.student.lastName}.pdf`}
         >
             {/* @ts-ignore */}
-            {({ loading, error }: any) => (
+            {({ loading }) => (
                 <Button variant="outline" className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50" disabled={loading}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4"/>}
                     {loading ? 'Generating...' : 'Download Report Card'}
@@ -190,3 +183,4 @@ export function GenerateReportCard(props: any) {
         </PDFDownloadLink>
     );
 }
+
