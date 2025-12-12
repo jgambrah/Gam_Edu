@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -44,63 +45,63 @@ function getGrade(percentage: number) {
 
 // --- SUB-COMPONENT: Transaction Detail Modal ---
 function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRecord | null, open: boolean, setOpen: (o: boolean) => void }) {
+    if (!record) return null;
+    const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Ledger
+                        <Receipt className="h-5 w-5 text-indigo-600"/> Transaction Details
                     </DialogTitle>
-                    <DialogDescription>
-                        Details for Transaction ID: <span className="font-mono text-xs">{record?.id ? record.id.slice(0, 8) : '...'}...</span>
-                    </DialogDescription>
+                    <DialogDescription>Transaction ID: {record.id.slice(0, 8)}...</DialogDescription>
                 </DialogHeader>
-
-                {record ? (
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-xs font-medium text-muted-foreground">Type</p>
-                                <Badge variant="outline">{record.type}</Badge>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-xs font-medium text-muted-foreground">Status</p>
-                                <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
-                            </div>
-                        </div>
-                        
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
-                            <p className="text-xs font-medium text-muted-foreground">Description</p>
-                            <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
+                            <p className="text-xs font-medium text-muted-foreground">Type</p>
+                            <Badge variant="outline">{record.type}</Badge>
                         </div>
-
-                        <div className="grid grid-cols-2 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                            <div>
-                                <p className="text-xs text-slate-500 mb-1">Billed Amount</p>
-                                <p className="text-lg font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-xs text-slate-500 mb-1">Amount Paid</p>
-                                <p className="text-lg font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
-                            </div>
-                        </div>
-
-                        <Separator />
-                        
-                        <div className="space-y-2 text-xs text-slate-500">
-                            <div className="flex justify-between">
-                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> Created At:</span>
-                                <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
-                                <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
-                            </div>
+                        <div className="space-y-1">
+                            <p className="text-xs font-medium text-muted-foreground">Status</p>
+                            <Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge>
                         </div>
                     </div>
-                ) : (
-                    <div className="py-10 text-center text-muted-foreground">Loading details...</div>
-                )}
+                    
+                    <div className="space-y-1">
+                         <p className="text-xs font-medium text-muted-foreground">Description</p>
+                         <div className="p-3 bg-slate-50 rounded-md border text-sm">{record.description}</div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                        <div>
+                            <p className="text-xs text-slate-500 mb-1">Billed</p>
+                            <p className="text-md font-bold text-slate-800">GH₵{record.billedAmount.toFixed(2)}</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-xs text-slate-500 mb-1">Paid</p>
+                            <p className="text-md font-bold text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</p>
+                        </div>
+                        <div className="text-right">
+                             <p className="text-xs text-slate-500 mb-1">Balance</p>
+                             <p className="text-md font-bold text-red-600">GH₵{balance.toFixed(2)}</p>
+                        </div>
+                    </div>
+
+                    <Separator />
+                    
+                    <div className="space-y-2 text-xs text-slate-500">
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3"/> Created At:</span>
+                            <span>{record.createdAt ? format(record.createdAt.toDate(), 'PPP p') : 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1"><AlertCircle className="h-3 w-3"/> Due Date:</span>
+                            <span className="text-red-500 font-medium">{record.dueDate ? format(record.dueDate.toDate(), 'PPP') : 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
             </DialogContent>
         </Dialog>
     );
@@ -218,6 +219,15 @@ function StudentGradesDetail({
     const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
     const [newSubjectId, setNewSubjectId] = useState<string>('');
 
+    // Add a safety check for the student object
+    if (!student) {
+        return (
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
+                Student data could not be loaded for this entry.
+            </div>
+        );
+    }
+    
     // 1. Smart Map for Subjects
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
@@ -325,18 +335,15 @@ function StudentGradesDetail({
                 </Card>
                 <Card className="bg-white border-slate-200 shadow-sm">
                      <CardContent className="p-4 flex flex-col justify-center h-full items-center">
-                        {/* THE FIX IS HERE: Don't render until both are loaded */}
-                        {(!assessments || !subjects) ? <div className="flex items-center gap-2 text-muted-foreground text-sm"><Loader2 className="h-4 w-4 animate-spin"/>Loading report...</div> : (
-                            <GenerateReportCard
-                                student={student}
-                                assessments={assessments}
-                                year={year}
-                                term={term}
-                                rank={rank}
-                                totalStudents={totalStudents}
-                                subjectsList={subjects} 
-                            />
-                        )}
+                        <GenerateReportCard
+                            student={student}
+                            assessments={assessments}
+                            year={year}
+                            term={term}
+                            rank={rank}
+                            totalStudents={totalStudents}
+                            subjectsList={subjects}
+                        />
                      </CardContent>
                 </Card>
             </div>
