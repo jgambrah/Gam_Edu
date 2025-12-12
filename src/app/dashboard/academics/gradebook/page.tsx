@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +23,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast';
 
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
@@ -190,7 +190,7 @@ function FeeHistoryDetail({ student, financialRecords }: { student: Student; fin
     );
 }
 
-// --- SUB-COMPONENT: Student Academics Detail ---
+// --- SUB-COMPONENT: Student Academics Detail (50/50 WEIGHTED SYSTEM) ---
 function StudentGradesDetail({ 
     student, 
     assessments, 
@@ -198,7 +198,8 @@ function StudentGradesDetail({
     totalStudents,
     term,
     year,
-    subjects
+    subjects, 
+    isDebug 
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -207,11 +208,9 @@ function StudentGradesDetail({
     term: string;
     year: string;
     subjects: any[];
+    isDebug: boolean;
 }) {
-    const firestore = useFirestore();
-    const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
-    const [newSubjectId, setNewSubjectId] = useState<string>('');
-
+    
     // 1. Smart Map for Subjects
     const subjectMap = useMemo(() => {
         const map = new Map<string, string>();
@@ -224,70 +223,112 @@ function StudentGradesDetail({
         return map;
     }, [subjects]);
 
-    // 2. Group by Subject Logic
+    // 2. Group & Calculate Weighted Scores
     const subjectGrades = useMemo(() => {
-        const grouped: Record<string, { name: string, total: number, max: number, count: number, id: string, assessmentIds: string[] }> = {};
+        // Structure to hold running totals for CA and Exams separately
+        const grouped: Record<string, { 
+            name: string, 
+            id: string,
+            caObtained: number, 
+            caMax: number, 
+            examObtained: number, 
+            examMax: number,
+            assessmentIds: string[] 
+        }> = {};
         
         assessments.forEach(a => {
-            if (a.studentId !== student.uid) return;
+            if (a.studentId !== student.uid) return acc;
             
+            // Resolve Subject Name
             const subId = a.subjectId || 'unknown';
-            
-            // Priority 1: Check Map
-            let subName = subjectMap.get(subId);
-            
-            // Priority 2: Check assessment cache
-            if (!subName) subName = (a as any).subjectName;
+            let subName = (a as any).subjectName || subjectMap.get(subId);
+            if (!subName) subName = isDebug ? `Missing ID: ${subId}` : 'Unknown Subject';
 
-            // Priority 3: Fallback 
-            if (!subName) subName = 'Unknown Subject';
-
+            // Initialize if new
             if (!grouped[subId]) {
-                grouped[subId] = { name: subName, total: 0, max: 0, count: 0, id: subId, assessmentIds: [] };
+                grouped[subId] = { 
+                    name: subName, 
+                    id: subId, 
+                    caObtained: 0, 
+                    caMax: 0, 
+                    examObtained: 0, 
+                    examMax: 0,
+                    assessmentIds: [] 
+                };
             }
             
-            // Fix display name if we found a better one later in the loop
-            if (grouped[subId].name === 'Unknown Subject' && subName !== 'Unknown Subject') {
+            // Fix display name if found later
+            if (grouped[subId].name.startsWith('Missing ID') && !subName.startsWith('Missing ID')) {
                 grouped[subId].name = subName;
             }
-            
-            grouped[subId].total += a.score || 0;
-            grouped[subId].max += a.maxScore || 0;
-            grouped[subId].count++;
-            grouped[subId].assessmentIds.push(a.id); 
+
+            // --- WEIGHTING LOGIC ---
+            // Check if this is an Exam (50%) or CA (50%)
+            // We convert to lowercase for safer comparison
+            const type = (a.assessmentType || '').toLowerCase();
+            const isExam = type.includes('exam') || type.includes('term') || type.includes('final');
+
+            if (isExam) {
+                grouped[subId].examObtained += (a.score || 0);
+                grouped[subId].examMax += (a.maxScore || 0);
+            } else {
+                // Homework, Quiz, Project, Class Test, etc.
+                grouped[subId].caObtained += (a.score || 0);
+                grouped[subId].caMax += (a.maxScore || 0);
+            }
+
+            grouped[subId].assessmentIds.push(a.id);
         });
 
+        // Final Calculation
         return Object.values(grouped).map((data) => {
-            const percentage = data.max > 0 ? (data.total / data.max) * 100 : 0;
-            return { ...data, percentage, ...getGrade(percentage) };
+            // Calculate CA (converted to 50%)
+            // If no CA recorded, it stays 0.
+            const caRaw = data.caMax > 0 ? (data.caObtained / data.caMax) : 0;
+            const caWeighted = caRaw * 50; 
+
+            // Calculate Exam (converted to 50%)
+            const examRaw = data.examMax > 0 ? (data.examObtained / data.examMax) : 0;
+            const examWeighted = examRaw * 50;
+
+            // Total (Out of 100%)
+            // Note: If they missed the exam, their max possible is 50%.
+            const totalPercent = caWeighted + examWeighted;
+
+            return { 
+                ...data, 
+                caWeighted,
+                examWeighted,
+                totalPercent,
+                ...getGrade(totalPercent) 
+            };
         });
-    }, [assessments, student.uid, subjectMap]);
+    }, [assessments, student.uid, subjectMap, isDebug]);
 
     const overallAverage = subjectGrades.length > 0 
-        ? subjectGrades.reduce((acc, s) => acc + s.percentage, 0) / subjectGrades.length 
+        ? subjectGrades.reduce((acc, s) => acc + s.totalPercent, 0) / subjectGrades.length 
         : 0;
 
-    // --- FIX HANDLER ---
+    // --- FIX HANDLER (Kept from previous version) ---
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
+    const [newSubjectId, setNewSubjectId] = useState<string>('');
+
     const handleUpdateSubject = async (oldSubjectId: string, assessmentIds: string[]) => {
         if (!firestore || !newSubjectId) return;
         try {
             const selectedSubject = subjects.find(s => s.id === newSubjectId);
             if (!selectedSubject) return;
-
             const batch = writeBatch(firestore);
             assessmentIds.forEach(id => {
                 const ref = doc(firestore, 'assessments', id);
-                batch.update(ref, {
-                    subjectId: selectedSubject.id,
-                    subjectName: selectedSubject.name
-                });
+                batch.update(ref, { subjectId: selectedSubject.id, subjectName: selectedSubject.name });
             });
-
             await batch.commit();
+            toast({ title: "Fixed", description: "Subject updated." });
             setEditingSubjectId(null);
-        } catch (e) {
-            console.error("Error updating subject", e);
-        }
+        } catch (e) { console.error(e); }
     };
 
     return (
@@ -328,21 +369,22 @@ function StudentGradesDetail({
                 </Card>
             </div>
 
-            {/* Subject Breakdown Table */}
+            {/* UPDATED: Subject Breakdown Table (3 Columns) */}
             <div className="border rounded-md">
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Subject</TableHead>
-                            <TableHead className="text-right">Score (%)</TableHead>
+                            <TableHead className="w-[30%]">Subject</TableHead>
+                            <TableHead className="text-center bg-blue-50/50">C.A. (50%)</TableHead>
+                            <TableHead className="text-center bg-purple-50/50">Exams (50%)</TableHead>
+                            <TableHead className="text-right font-bold">Total (100%)</TableHead>
                             <TableHead className="text-center">Grade</TableHead>
                             <TableHead>Remark</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {subjectGrades.map((sub) => {
-                            // Only show edit if name is weirdly long/unknown (looks like ID)
-                            const isBroken = sub.name === 'Unknown Subject' || (sub.name.length > 15 && !sub.name.includes(' '));
+                            const isBroken = sub.name.length > 15 && !sub.name.includes(' ');
                             const isEditing = editingSubjectId === sub.id;
 
                             return (
@@ -352,47 +394,53 @@ function StudentGradesDetail({
                                             <div className="flex gap-2 items-center">
                                                 <Select value={newSubjectId} onValueChange={setNewSubjectId}>
                                                     <SelectTrigger className="h-8 w-[180px]"><SelectValue placeholder="Select Subject"/></SelectTrigger>
-                                                    <SelectContent>
-                                                        {subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                                                    </SelectContent>
+                                                    <SelectContent>{subjects.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                                                 </Select>
-                                                <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700">
-                                                    <Check className="h-4 w-4"/>
-                                                </Button>
-                                                <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0">
-                                                    <XCircle className="h-4 w-4"/>
-                                                </Button>
+                                                <Button size="sm" onClick={() => handleUpdateSubject(sub.id, sub.assessmentIds)} className="h-8 w-8 p-0 bg-green-600"><Check className="h-4 w-4"/></Button>
+                                                <Button size="sm" variant="ghost" onClick={() => setEditingSubjectId(null)} className="h-8 w-8 p-0"><XCircle className="h-4 w-4"/></Button>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <span>{sub.name}</span>
-                                                {/* Hidden unless broken */}
-                                                {isBroken && (
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="sm" 
-                                                        className="h-6 px-2 text-xs text-orange-400 hover:text-orange-600 hover:bg-orange-50"
-                                                        onClick={() => {
-                                                            setEditingSubjectId(sub.id);
-                                                            setNewSubjectId('');
-                                                        }}
-                                                    >
-                                                        <Pencil className="h-3 w-3"/>
-                                                    </Button>
-                                                )}
+                                                {isBroken && <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-orange-400" onClick={() => { setEditingSubjectId(sub.id); setNewSubjectId(''); }}><Pencil className="h-3 w-3"/></Button>}
                                             </div>
                                         )}
                                     </TableCell>
-                                    <TableCell className="text-right">{sub.percentage.toFixed(1)}%</TableCell>
+                                    
+                                    {/* C.A. Column */}
+                                    <TableCell className="text-center bg-blue-50/20 text-slate-600">
+                                        {sub.caWeighted.toFixed(1)}
+                                    </TableCell>
+                                    
+                                    {/* Exam Column */}
+                                    <TableCell className="text-center bg-purple-50/20 text-slate-600">
+                                        {sub.examWeighted.toFixed(1)}
+                                    </TableCell>
+                                    
+                                    {/* Total Column */}
+                                    <TableCell className="text-right font-bold text-slate-800">
+                                        {sub.totalPercent.toFixed(1)}%
+                                    </TableCell>
+                                    
                                     <TableCell className="text-center"><Badge variant={sub.grade === 'F' ? 'destructive' : 'outline'}>{sub.grade}</Badge></TableCell>
                                     <TableCell className="text-muted-foreground text-sm">{sub.remark}</TableCell>
                                 </TableRow>
                             );
                         })}
-                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
+                        {subjectGrades.length === 0 && <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No grades recorded yet.</TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </div>
+            
+            {/* Debugging Raw List */}
+            {isDebug && (
+                <div className="mt-4 p-2 bg-slate-100 rounded text-xs font-mono">
+                    <p className="font-bold mb-1">Raw Assessments (Debug):</p>
+                    {assessments.filter(a => a.studentId === student.uid).map(a => (
+                        <div key={a.id}>ID: {a.subjectId} | Type: {a.assessmentType} | Score: {a.score}/{a.maxScore}</div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -617,6 +665,7 @@ export default function GradebookManager() {
                                                 term={selectedTerm}
                                                 year={selectedYear}
                                                 subjects={subjects || []}
+                                                isDebug={false}
                                             />
                                         </TabsContent>
 
@@ -645,6 +694,3 @@ export default function GradebookManager() {
     </div>
   );
 }
-
-
-    
