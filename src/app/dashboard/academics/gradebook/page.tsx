@@ -31,6 +31,7 @@ import { GenerateReportCard } from './report-card-pdf';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student } from '@/lib/types';
+import SubjectRelinker from '@/components/dashboard/academics/subject-relinker';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
@@ -342,7 +343,7 @@ function StudentGradesDetail({
                             term={term}
                             rank={rank}
                             totalStudents={totalStudents}
-                            subjects={subjects || []}
+                            subjectsList={subjects || []}
                         />
                      </CardContent>
                 </Card>
@@ -522,6 +523,7 @@ export default function GradebookManager() {
 
   return (
     <div className="space-y-6 p-6">
+      { isStaff && <SubjectRelinker /> }
       <Card className="border-t-4 border-t-indigo-600 shadow-sm">
         <CardHeader>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -698,3 +700,5 @@ export default function GradebookManager() {
     </div>
   );
 }
+
+    
