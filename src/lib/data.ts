@@ -50,6 +50,7 @@ import {
   Wrench,
   Truck,
   Calculator,
+  Building2,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -418,6 +419,12 @@ export const navItems: NavItem[] = [
     roles: ['Director', 'Administrator'],
     subItems: [
         {
+            path: '/dashboard/admin/school-profile',
+            title: 'School Profile',
+            icon: Building2,
+            roles: ['Director', 'Administrator'],
+        },
+        {
             path: '/dashboard/audit-log',
             title: 'Audit Log',
             icon: FileText,
@@ -566,4 +573,5 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     
 
     
+
 
