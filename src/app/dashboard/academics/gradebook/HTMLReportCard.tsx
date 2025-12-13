@@ -14,37 +14,133 @@ function getGrade(percentage: number) {
 }
 
 // THIS IS THE COMPONENT THAT WILL BE CONVERTED TO PDF
-export const HTMLReportCard = ({ student, assessments, year, term, rank, totalStudents, subjects, schoolProfile }: any) => {
+export const HTMLReportCard = ({ 
+    student, 
+    assessments, 
+    year, 
+    term, 
+    rank, 
+    totalStudents, 
+    subjects, 
+    schoolProfile 
+}: any) => {
     
-    // --- Data Logic (Same as before) ---
+    // 1. Smart Map for Subjects
     const subjectMap = useMemo(() => {
-        return subjects?.reduce((acc: any, s: any) => {
-            acc[s.id] = s.name || s.title;
-            return acc;
-        }, {}) || {};
+        const map = new Map<string, string>();
+        if(subjects && subjects.length > 0) {
+            subjects.forEach((s: any) => {
+                const name = s.name || s.title || s.subjectName || "Unnamed Subject";
+                map.set(s.id, name);
+            });
+        }
+        return map;
     }, [subjects]);
 
-    const reportData = useMemo(() => {
-        return Object.values(assessments.reduce((acc: any, curr: Assessment) => {
-            if (curr.studentId !== student.uid) return acc;
-            
-            const subId = curr.subjectId || 'unknown';
-            const name = subjectMap[subId] || (curr as any).subjectName || 'Unknown Subject';
+    // 2. GLOBAL STATS (For Class Average calculation inside the PDF)
+    const globalSubjectStats = useMemo(() => {
+        const stats: Record<string, { studentScores: Record<string, number>, totalMax: number, totalScore: number }> = {};
 
-            if (!acc[subId]) {
-                acc[subId] = { id: subId, name, total: 0, max: 0 };
-            }
-            acc[subId].total += curr.score || 0;
-            acc[subId].max += curr.maxScore || 0;
-            return acc;
-        }, {})).map((item: any) => {
-            const pct = item.max > 0 ? (item.total / item.max) * 100 : 0;
-            return { ...item, pct, ...getGrade(pct) };
+        assessments.forEach((a: Assessment) => {
+             const subId = a.subjectId || 'unknown';
+             const uId = a.studentId;
+             
+             if (!stats[subId]) stats[subId] = { studentScores: {}, totalMax: 0, totalScore: 0 };
+             if (!stats[subId].studentScores[uId]) stats[subId].studentScores[uId] = 0;
+
+             // Accumulate raw scores for class average calc
+             stats[subId].totalScore += (a.score || 0);
+             stats[subId].totalMax += (a.maxScore || 0);
+
+             // Accumulate for ranking
+             // Note: In the PDF view, we approximate rank based on raw score accumulation per subject
+             // to keep logic consistent with the main view.
+             stats[subId].studentScores[uId] += (a.score || 0);
         });
-    }, [assessments, student.uid, subjectMap]);
+        
+        return stats;
+    }, [assessments]);
 
-    const average = reportData.length > 0 
-        ? reportData.reduce((sum: number, i: any) => sum + i.pct, 0) / reportData.length 
+    // 3. STUDENT SPECIFIC DATA PROCESSING (50/50 Logic)
+    const reportData = useMemo(() => {
+        const grouped: Record<string, { 
+            name: string, id: string, caObtained: number, caMax: number, 
+            examObtained: number, examMax: number
+        }> = {};
+        
+        assessments.forEach((a: Assessment) => {
+            if (a.studentId !== student.uid) return;
+            
+            const subId = a.subjectId || 'unknown';
+            
+            // Name Resolution
+            let subName = (a as any).subjectName;
+            if (!subName) subName = subjectMap.get(subId);
+            if (!subName) subName = 'Unknown Subject';
+
+            if (!grouped[subId]) {
+                grouped[subId] = { name: subName, id: subId, caObtained: 0, caMax: 0, examObtained: 0, examMax: 0 };
+            }
+            
+            if (grouped[subId].name === 'Unknown Subject' && subName !== 'Unknown Subject') {
+                grouped[subId].name = subName;
+            }
+
+            // Weighting Logic
+            const type = (a.assessmentType || '').toLowerCase();
+            const isExam = type.includes('exam') || type.includes('term');
+
+            if (isExam) {
+                grouped[subId].examObtained += (a.score || 0);
+                grouped[subId].examMax += (a.maxScore || 0);
+            } else {
+                grouped[subId].caObtained += (a.score || 0);
+                grouped[subId].caMax += (a.maxScore || 0);
+            }
+        });
+
+        return Object.values(grouped).map((data) => {
+            // Student Math
+            const caRaw = data.caMax > 0 ? (data.caObtained / data.caMax) : 0;
+            const caWeighted = caRaw * 50; 
+            const examRaw = data.examMax > 0 ? (data.examObtained / data.examMax) : 0;
+            const examWeighted = examRaw * 50;
+            const totalPercent = caWeighted + examWeighted;
+
+            // Class Stats Math
+            const subStats = globalSubjectStats[data.id];
+            let classAvg = 0;
+            let subRank = 0;
+            let totalSubStudents = 0;
+            
+            if (subStats) {
+                const scores = Object.values(subStats.studentScores);
+                const avgRaw = scores.reduce((a, b) => a + b, 0) / scores.length;
+                // Approximate class average %
+                classAvg = (avgRaw / (data.caMax + data.examMax)) * 100;
+                
+                // Rank Logic
+                const myScore = subStats.studentScores[student.uid];
+                const sorted = scores.sort((a,b) => b - a);
+                subRank = sorted.indexOf(myScore) + 1;
+                totalSubStudents = scores.length;
+            }
+
+            return { 
+                ...data, 
+                caWeighted, 
+                examWeighted, 
+                totalPercent, 
+                classAvg: isNaN(classAvg) ? 0 : classAvg, 
+                rank: subRank,
+                totalSubStudents,
+                ...getGrade(totalPercent) 
+            };
+        });
+    }, [assessments, student.uid, subjectMap, globalSubjectStats]);
+
+    const overallAverage = reportData.length > 0 
+        ? reportData.reduce((sum, i) => sum + i.totalPercent, 0) / reportData.length 
         : 0;
 
     // --- HTML TEMPLATE (A4 Sized) ---
@@ -55,63 +151,79 @@ export const HTMLReportCard = ({ student, assessments, year, term, rank, totalSt
             style={{ 
                 width: '210mm', 
                 minHeight: '297mm',
-                position: 'relative' // Needed for absolute footer
+                position: 'relative' 
             }}
         >
-            {/* Header */}
+            {/* Header: Dynamic School Profile */}
             <div className="text-center border-b-2 border-black pb-4 mb-6">
-                {schoolProfile?.logoUrl && (
+                {schoolProfile?.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img 
                         src={schoolProfile.logoUrl} 
                         alt="Logo" 
-                        className="w-20 h-20 mx-auto mb-2 object-contain"
-                        crossOrigin="anonymous" // Critical for html2canvas
+                        className="w-24 h-24 mx-auto mb-2 object-contain"
+                        crossOrigin="anonymous" 
                     />
+                ) : (
+                    // Fallback Spacer
+                    <div className="h-4"></div>
                 )}
-                <h1 className="text-3xl font-bold uppercase tracking-wide">{schoolProfile?.name || "Sunnyside International School"}</h1>
-                <p className="text-sm text-gray-600 mt-1">{schoolProfile?.address || "Address: N/A"} • {schoolProfile?.phone || "Phone: N/A"}</p>
-                <p className="text-sm text-gray-600">{schoolProfile?.email || ""} • {schoolProfile?.website || ""}</p>
-                <p className="text-sm italic mt-1 font-semibold">"{schoolProfile?.motto || 'Excellence • Integrity • Service'}"</p>
+                <h1 className="text-3xl font-bold uppercase tracking-wide">{schoolProfile?.name || "School Name Not Set"}</h1>
+                <p className="text-sm text-gray-600 mt-1">{schoolProfile?.address || ""}</p>
+                <div className="flex justify-center gap-4 text-sm text-gray-600">
+                    <span>{schoolProfile?.phone}</span>
+                    <span>{schoolProfile?.email}</span>
+                </div>
+                {schoolProfile?.website && <p className="text-sm text-gray-600">{schoolProfile.website}</p>}
+                
+                <p className="text-sm italic mt-2 font-semibold">"{schoolProfile?.motto || 'Excellence'}"</p>
                 <h2 className="text-xl font-bold mt-4 underline decoration-2 underline-offset-4">TERMINAL REPORT CARD</h2>
             </div>
 
             {/* Student Info Grid */}
-            <div className="flex justify-between mb-6 text-sm">
-                <div className="space-y-1">
-                    <div className="flex gap-2"><span className="font-bold w-24">Name:</span> <span>{student.firstName} {student.lastName}</span></div>
-                    <div className="flex gap-2"><span className="font-bold w-24">Student ID:</span> <span>{student.id.slice(0, 8).toUpperCase()}</span></div>
+            <div className="flex justify-between mb-6 text-sm border p-4 rounded-lg bg-gray-50">
+                <div className="space-y-2">
+                    <div className="flex gap-2"><span className="font-bold w-24">Name:</span> <span className="uppercase">{student.firstName} {student.lastName}</span></div>
+                    <div className="flex gap-2"><span className="font-bold w-24">Student ID:</span> <span className="uppercase">{student.id.slice(0, 8)}</span></div>
                 </div>
-                <div className="space-y-1 text-right">
+                <div className="space-y-2 text-right">
                     <div className="flex gap-2 justify-end"><span className="font-bold">Academic Year:</span> <span>{year}</span></div>
                     <div className="flex gap-2 justify-end"><span className="font-bold">Term:</span> <span>{term}</span></div>
                     <div className="flex gap-2 justify-end"><span className="font-bold">Class:</span> <span>{student.classId || 'N/A'}</span></div>
                 </div>
             </div>
 
-            {/* Grades Table */}
+            {/* Grades Table - Matching Gradebook Exactly */}
             <div className="border border-black mb-8">
-                <table className="w-full text-sm">
+                <table className="w-full text-xs">
                     <thead>
-                        <tr className="bg-gray-100 border-b border-black">
-                            <th className="text-left p-2 border-r border-black w-[40%]">Subject</th>
-                            <th className="text-center p-2 border-r border-black w-[20%]">Score</th>
-                            <th className="text-center p-2 border-r border-black w-[15%]">Grade</th>
-                            <th className="text-left p-2 w-[25%]">Remark</th>
+                        <tr className="bg-gray-200 border-b border-black">
+                            <th className="text-left p-2 border-r border-black w-[25%]">Subject</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">C.A. (50%)</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">Exam (50%)</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">Total</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">Class Avg</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">Pos</th>
+                            <th className="text-center p-2 border-r border-black w-[10%]">Grade</th>
+                            <th className="text-left p-2 w-[15%]">Remark</th>
                         </tr>
                     </thead>
                     <tbody>
                         {reportData.map((row: any, i: number) => (
                             <tr key={i} className="border-b border-black last:border-0">
-                                <td className="p-2 border-r border-black">{row.name}</td>
-                                <td className="p-2 border-r border-black text-center">{row.pct.toFixed(1)}%</td>
+                                <td className="p-2 border-r border-black font-semibold">{row.name}</td>
+                                <td className="p-2 border-r border-black text-center">{row.caWeighted.toFixed(1)}</td>
+                                <td className="p-2 border-r border-black text-center">{row.examWeighted.toFixed(1)}</td>
+                                <td className="p-2 border-r border-black text-center font-bold">{row.totalPercent.toFixed(1)}%</td>
+                                <td className="p-2 border-r border-black text-center text-gray-500">{row.classAvg.toFixed(1)}%</td>
+                                <td className="p-2 border-r border-black text-center">{row.rank}/{row.totalSubStudents}</td>
                                 <td className="p-2 border-r border-black text-center font-bold">{row.grade}</td>
                                 <td className="p-2">{row.remark}</td>
                             </tr>
                         ))}
                         {reportData.length === 0 && (
                             <tr>
-                                <td colSpan={4} className="p-4 text-center italic text-gray-500">No grades recorded yet.</td>
+                                <td colSpan={8} className="p-4 text-center italic text-gray-500">No grades recorded yet.</td>
                             </tr>
                         )}
                     </tbody>
@@ -119,36 +231,44 @@ export const HTMLReportCard = ({ student, assessments, year, term, rank, totalSt
             </div>
 
             {/* Summary Box */}
-            <div className="border border-dashed border-black p-4 mb-12">
-                <div className="flex justify-between mb-2">
-                    <span className="font-bold">Overall Average:</span>
-                    <span className="text-lg font-bold">{average.toFixed(2)}%</span>
+            <div className="border-2 border-dashed border-black p-6 mb-12 rounded-lg bg-gray-50">
+                <div className="flex justify-between mb-4 text-lg">
+                    <div>
+                        <span className="font-bold">Overall Average:</span>
+                        <span className="ml-2">{overallAverage.toFixed(2)}%</span>
+                    </div>
+                    <div>
+                        <span className="font-bold">Class Position:</span>
+                        <span className="ml-2 font-bold underline">{rank} / {totalStudents}</span>
+                    </div>
                 </div>
-                <div className="flex justify-between mb-4">
-                    <span className="font-bold">Class Position:</span>
-                    <span className="text-lg font-bold">{rank} / {totalStudents}</span>
-                </div>
-                <div className="pt-2 border-t border-dashed border-black flex justify-between">
-                    <span className="font-bold">Principal's Remark:</span>
-                    <span className="italic">{getGrade(average).remark}</span>
+                <div className="pt-4 border-t border-dashed border-black flex justify-between items-end">
+                    <div className="w-2/3">
+                        <span className="font-bold block mb-1">Principal's Remark:</span>
+                        <span className="italic text-sm">{getGrade(overallAverage).remark} performance. Keep working hard!</span>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-xs font-bold bg-black text-white px-2 py-1 rounded">OFFICIAL REPORT</span>
+                    </div>
                 </div>
             </div>
 
             {/* Signatures */}
-            <div className="flex justify-between mt-16 px-4">
+            <div className="flex justify-between mt-auto px-8 pb-10">
                 <div className="text-center">
-                    <div className="w-40 border-t border-black mb-1"></div>
-                    <p className="text-xs">Class Teacher</p>
+                    <div className="w-48 border-b-2 border-black mb-2"></div>
+                    <p className="text-xs font-bold uppercase">Class Teacher's Signature</p>
                 </div>
                 <div className="text-center">
-                    <div className="w-40 border-t border-black mb-1"></div>
-                    <p className="text-xs">Principal</p>
+                    <div className="w-48 border-b-2 border-black mb-2"></div>
+                    <p className="text-xs font-bold uppercase">Principal's Signature</p>
+                    <p className="text-[10px] text-gray-500 mt-1">{format(new Date(), 'PPP')}</p>
                 </div>
             </div>
 
             {/* Footer */}
-            <div className="absolute bottom-8 left-0 right-0 text-center text-xs text-gray-400">
-                Generated via Sunnyside SIS • {format(new Date(), 'PPP')}
+            <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] text-gray-400">
+                Generated via Sunnyside Student Information System
             </div>
         </div>
     );
