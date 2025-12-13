@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { FileDown, Loader2 } from 'lucide-react';
+import { HTMLReportCard } from './HTMLReportCard';
 
 export function GenerateReportCard(props: any) {
     const [loading, setLoading] = useState(false);
@@ -10,28 +12,46 @@ export function GenerateReportCard(props: any) {
     const handleDownload = async () => {
         setLoading(true);
         try {
-            // 1. Dynamic Import of Library
-            const { pdf } = await import('@react-pdf/renderer');
-            
-            // 2. Dynamic Import of the Document Component (The file we just created)
-            const { ReportDocument } = await import('./ReportDocument');
+            // Dynamically import libraries
+            const html2canvas = (await import('html2canvas')).default;
+            const jsPDF = (await import('jspdf')).default;
 
-            // 3. Generate Blob
-            const blob = await pdf(<ReportDocument {...props} />).toBlob();
+            // Create a temporary container to render the component for capturing
+            const container = document.createElement('div');
+            container.style.position = 'absolute';
+            container.style.left = '-9999px';
+            document.body.appendChild(container);
+
+            // Render the HTML component into the offscreen container
+            const reportElement = <HTMLReportCard {...props} />;
+            // We use ReactDOM.render for this temporary, off-screen rendering
+            await new Promise(resolve => {
+                ReactDOM.render(reportElement, container, () => resolve(null));
+            });
+
+            const contentToCapture = container.firstChild as HTMLElement;
+            if (!contentToCapture) throw new Error("Could not find rendered content to capture.");
+
+            const canvas = await html2canvas(contentToCapture, {
+                scale: 2, // Increase resolution
+                useCORS: true, // Important for external images
+                logging: false,
+            });
+
+            document.body.removeChild(container);
+
+            // Create PDF
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgData = canvas.toDataURL('image/png');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
             
-            // 4. Force Download
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Report_${props.student.firstName}_${props.student.lastName}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`Report_${props.student.firstName}_${props.student.lastName}.pdf`);
 
         } catch (error) {
-            console.error("PDF Gen Error:", error);
-            alert("Could not generate PDF. Please try again.");
+            console.error("PDF Generation Error:", error);
+            alert("An error occurred while generating the PDF. Please check the console for details.");
         } finally {
             setLoading(false);
         }
