@@ -305,6 +305,5 @@ export default function LogicLabPage() {
       </Dialog>
     </div>
   );
-}
 
     
