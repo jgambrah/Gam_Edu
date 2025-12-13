@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -90,7 +89,7 @@ const ReportCardDocument = ({ student, assessments, year, term, rank, totalStude
                     <Text style={styles.subHeader}>
                         {schoolProfile?.address || "Address: N/A"} • {schoolProfile?.phone || "Phone: N/A"}
                     </Text>
-                     <Text style={styles.subHeader}>{schoolProfile?.motto || "Excellence • Integrity • Service"}</Text>
+                    <Text style={styles.subHeader}>{schoolProfile?.motto || "Excellence • Integrity • Service"}</Text>
                     <Text style={styles.reportTitle}>TERMINAL REPORT CARD</Text>
                 </View>
 
@@ -200,4 +199,3 @@ export function GenerateReportCard(props: any) {
         </Button>
     );
 }
-
