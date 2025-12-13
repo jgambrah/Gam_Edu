@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -37,45 +38,70 @@ export const HTMLReportCard = ({
         return map;
     }, [subjects]);
 
-    // 2. GLOBAL STATS (For Class Average calculation inside the PDF)
+    // 2. GLOBAL STATS (The Fix: Calculate Weighted Averages for the whole class)
     const globalSubjectStats = useMemo(() => {
-        const stats: Record<string, { studentScores: Record<string, number>, totalMax: number, totalScore: number }> = {};
+        // Step A: Group ALL assessments by Subject -> Student
+        const grouping: Record<string, Record<string, { ca: number, caMax: number, exam: number, examMax: number }>> = {};
 
         assessments.forEach((a: Assessment) => {
              const subId = a.subjectId || 'unknown';
              const uId = a.studentId;
              
-             if (!stats[subId]) stats[subId] = { studentScores: {}, totalMax: 0, totalScore: 0 };
-             if (!stats[subId].studentScores[uId]) stats[subId].studentScores[uId] = 0;
+             if (!grouping[subId]) grouping[subId] = {};
+             if (!grouping[subId][uId]) grouping[subId][uId] = { ca: 0, caMax: 0, exam: 0, examMax: 0 };
 
-             // Accumulate raw scores for class average calc
-             stats[subId].totalScore += (a.score || 0);
-             stats[subId].totalMax += (a.maxScore || 0);
+             const type = (a.assessmentType || '').toLowerCase();
+             const isExam = type.includes('exam') || type.includes('term');
 
-             // Accumulate for ranking
-             // Note: In the PDF view, we approximate rank based on raw score accumulation per subject
-             // to keep logic consistent with the main view.
-             stats[subId].studentScores[uId] += (a.score || 0);
+             if (isExam) {
+                 grouping[subId][uId].exam += (a.score || 0);
+                 grouping[subId][uId].examMax += (a.maxScore || 0);
+             } else {
+                 grouping[subId][uId].ca += (a.score || 0);
+                 grouping[subId][uId].caMax += (a.maxScore || 0);
+             }
+        });
+
+        // Step B: Calculate Weighted Totals for everyone to get Class Avg & Rank
+        const stats: Record<string, { average: number, studentScores: Record<string, number> }> = {};
+        
+        Object.keys(grouping).forEach(subId => {
+            const studentsInSub = grouping[subId];
+            let sumPercentages = 0;
+            let count = 0;
+            const scoresMap: Record<string, number> = {};
+
+            Object.entries(studentsInSub).forEach(([uid, data]) => {
+                const caPct = data.caMax > 0 ? (data.ca / data.caMax) * 50 : 0;
+                const examPct = data.examMax > 0 ? (data.exam / data.examMax) * 50 : 0;
+                const final = caPct + examPct;
+                
+                scoresMap[uid] = final;
+                sumPercentages += final;
+                count++;
+            });
+
+            stats[subId] = {
+                average: count > 0 ? sumPercentages / count : 0,
+                studentScores: scoresMap
+            };
         });
         
         return stats;
     }, [assessments]);
 
-    // 3. STUDENT SPECIFIC DATA PROCESSING (50/50 Logic)
+    // 3. STUDENT SPECIFIC DATA (Display Logic)
     const reportData = useMemo(() => {
         const grouped: Record<string, { 
             name: string, id: string, caObtained: number, caMax: number, 
-            examObtained: number, examMax: number
+            examObtained: number, examMax: number 
         }> = {};
         
         assessments.forEach((a: Assessment) => {
             if (a.studentId !== student.uid) return;
             
             const subId = a.subjectId || 'unknown';
-            
-            // Name Resolution
-            let subName = (a as any).subjectName;
-            if (!subName) subName = subjectMap.get(subId);
+            let subName = (a as any).subjectName || subjectMap.get(subId);
             if (!subName) subName = 'Unknown Subject';
 
             if (!grouped[subId]) {
@@ -86,7 +112,6 @@ export const HTMLReportCard = ({
                 grouped[subId].name = subName;
             }
 
-            // Weighting Logic
             const type = (a.assessmentType || '').toLowerCase();
             const isExam = type.includes('exam') || type.includes('term');
 
@@ -107,23 +132,18 @@ export const HTMLReportCard = ({
             const examWeighted = examRaw * 50;
             const totalPercent = caWeighted + examWeighted;
 
-            // Class Stats Math
+            // Class Stats
             const subStats = globalSubjectStats[data.id];
-            let classAvg = 0;
+            let classAvg = subStats ? subStats.average : 0;
             let subRank = 0;
             let totalSubStudents = 0;
             
             if (subStats) {
-                const scores = Object.values(subStats.studentScores);
-                const avgRaw = scores.reduce((a, b) => a + b, 0) / scores.length;
-                // Approximate class average %
-                classAvg = (avgRaw / (data.caMax + data.examMax)) * 100;
-                
-                // Rank Logic
-                const myScore = subStats.studentScores[student.uid];
-                const sorted = scores.sort((a,b) => b - a);
-                subRank = sorted.indexOf(myScore) + 1;
-                totalSubStudents = scores.length;
+                const allScores = Object.values(subStats.studentScores).sort((a,b) => b - a);
+                // Find index (1-based)
+                // Use a small epsilon for float comparison safety
+                subRank = allScores.findIndex(s => Math.abs(s - totalPercent) < 0.001) + 1;
+                totalSubStudents = allScores.length;
             }
 
             return { 
@@ -131,7 +151,7 @@ export const HTMLReportCard = ({
                 caWeighted, 
                 examWeighted, 
                 totalPercent, 
-                classAvg: isNaN(classAvg) ? 0 : classAvg, 
+                classAvg, 
                 rank: subRank,
                 totalSubStudents,
                 ...getGrade(totalPercent) 
@@ -171,8 +191,8 @@ export const HTMLReportCard = ({
                 <h1 className="text-3xl font-bold uppercase tracking-wide">{schoolProfile?.name || "School Name Not Set"}</h1>
                 <p className="text-sm text-gray-600 mt-1">{schoolProfile?.address || ""}</p>
                 <div className="flex justify-center gap-4 text-sm text-gray-600">
-                    <span>{schoolProfile?.phone}</span>
-                    <span>{schoolProfile?.email}</span>
+                    <span>{schoolProfile?.phone || ""}</span>
+                    <span>{schoolProfile?.email || ""}</span>
                 </div>
                 {schoolProfile?.website && <p className="text-sm text-gray-600">{schoolProfile.website}</p>}
                 
