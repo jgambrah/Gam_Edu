@@ -25,10 +25,11 @@ export function GenerateReportCard(props: any) {
         try {
             // 1. Dynamically import the library only when clicked
             const pdfLib = await import('@react-pdf/renderer');
-            const { Document, Page, Text, View, StyleSheet, Image } = pdfLib;
+            // FIX: Use the components directly from the pdfLib object
+            // const { Document, Page, Text, View, StyleSheet, Image } = pdfLib;
 
             // 2. Define Styles (Inside the function to avoid global scope issues)
-            const styles = StyleSheet.create({
+            const styles = pdfLib.StyleSheet.create({
                 page: { flexDirection: 'column', backgroundColor: '#FFFFFF', padding: 30, fontFamily: 'Helvetica' },
                 header: { marginBottom: 20, textAlign: 'center', borderBottomWidth: 1, borderBottomColor: '#000', paddingBottom: 10 },
                 schoolName: { fontSize: 24, fontWeight: 'bold', marginBottom: 5, textTransform: 'uppercase' },
@@ -82,66 +83,66 @@ export function GenerateReportCard(props: any) {
 
             // 4. Construct the Document
             const Doc = (
-                <Document>
-                    <Page size="A4" style={styles.page}>
-                        <View style={styles.header}>
+                <pdfLib.Document>
+                    <pdfLib.Page size="A4" style={styles.page}>
+                        <pdfLib.View style={styles.header}>
                             {props.schoolProfile?.logoUrl && (
-                                <Image 
+                                <pdfLib.Image 
                                     src={props.schoolProfile.logoUrl} 
                                     style={{ width: 50, height: 50, alignSelf: 'center', marginBottom: 10 }} 
                                 />
                             )}
-                            <Text style={styles.schoolName}>{props.schoolProfile?.name || "Sunnyside International School"}</Text>
-                            <Text style={styles.subHeader}>
+                            <pdfLib.Text style={styles.schoolName}>{props.schoolProfile?.name || "Sunnyside International School"}</pdfLib.Text>
+                            <pdfLib.Text style={styles.subHeader}>
                                 {props.schoolProfile?.address || "Address: N/A"} • {props.schoolProfile?.phone || "Phone: N/A"}
-                            </Text>
-                            <Text style={styles.subHeader}>{props.schoolProfile?.motto || "Excellence • Integrity • Service"}</Text>
-                            <Text style={styles.reportTitle}>TERMINAL REPORT CARD</Text>
-                        </View>
+                            </pdfLib.Text>
+                            <pdfLib.Text style={styles.subHeader}>{props.schoolProfile?.motto || "Excellence • Integrity • Service"}</pdfLib.Text>
+                            <pdfLib.Text style={styles.reportTitle}>TERMINAL REPORT CARD</pdfLib.Text>
+                        </pdfLib.View>
 
-                        <View style={styles.infoContainer}>
-                            <View style={styles.infoCol}>
-                                <View style={styles.infoRow}><Text style={styles.label}>Name:</Text><Text style={styles.value}>{props.student.firstName} {props.student.lastName}</Text></View>
-                                <View style={styles.infoRow}><Text style={styles.label}>Student ID:</Text><Text style={styles.value}>{props.student.id.slice(0, 8).toUpperCase()}</Text></View>
-                            </View>
-                            <View style={styles.infoCol}>
-                                <View style={styles.infoRow}><Text style={styles.label}>Year:</Text><Text style={styles.value}>{props.year}</Text></View>
-                                <View style={styles.infoRow}><Text style={styles.label}>Term:</Text><Text style={styles.value}>{props.term}</Text></View>
-                                <View style={styles.infoRow}><Text style={styles.label}>Class:</Text><Text style={styles.value}>{props.student.classId || 'N/A'}</Text></View>
-                            </View>
-                        </View>
+                        <pdfLib.View style={styles.infoContainer}>
+                            <pdfLib.View style={styles.infoCol}>
+                                <pdfLib.View style={styles.infoRow}><pdfLib.Text style={styles.label}>Name:</pdfLib.Text><pdfLib.Text style={styles.value}>{props.student.firstName} {props.student.lastName}</pdfLib.Text></pdfLib.View>
+                                <pdfLib.View style={styles.infoRow}><pdfLib.Text style={styles.label}>Student ID:</pdfLib.Text><pdfLib.Text style={styles.value}>{props.student.id.slice(0, 8).toUpperCase()}</pdfLib.Text></pdfLib.View>
+                            </pdfLib.View>
+                            <pdfLib.View style={styles.infoCol}>
+                                <pdfLib.View style={styles.infoRow}><pdfLib.Text style={styles.label}>Year:</pdfLib.Text><pdfLib.Text style={styles.value}>{props.year}</pdfLib.Text></pdfLib.View>
+                                <pdfLib.View style={styles.infoRow}><pdfLib.Text style={styles.label}>Term:</pdfLib.Text><pdfLib.Text style={styles.value}>{props.term}</pdfLib.Text></pdfLib.View>
+                                <pdfLib.View style={styles.infoRow}><pdfLib.Text style={styles.label}>Class:</pdfLib.Text><pdfLib.Text style={styles.value}>{props.student.classId || 'N/A'}</pdfLib.Text></pdfLib.View>
+                            </pdfLib.View>
+                        </pdfLib.View>
 
-                        <View style={styles.table}>
-                            <View style={styles.tableHeaderRow}>
-                                <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCellHeader}>Subject</Text></View>
-                                <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCellHeader}>Score</Text></View>
-                                <View style={{...styles.tableCol, width: '15%'}}><Text style={styles.tableCellHeader}>Grade</Text></View>
-                                <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCellHeader}>Remark</Text></View>
-                            </View>
+                        <pdfLib.View style={styles.table}>
+                            <pdfLib.View style={styles.tableHeaderRow}>
+                                <pdfLib.View style={{...styles.tableCol, width: '40%'}}><pdfLib.Text style={styles.tableCellHeader}>Subject</pdfLib.Text></pdfLib.View>
+                                <pdfLib.View style={{...styles.tableCol, width: '20%'}}><pdfLib.Text style={styles.tableCellHeader}>Score</pdfLib.Text></pdfLib.View>
+                                <pdfLib.View style={{...styles.tableCol, width: '15%'}}><pdfLib.Text style={styles.tableCellHeader}>Grade</pdfLib.Text></pdfLib.View>
+                                <pdfLib.View style={{...styles.tableCol, width: '25%'}}><pdfLib.Text style={styles.tableCellHeader}>Remark</pdfLib.Text></pdfLib.View>
+                            </pdfLib.View>
                             {reportData.map((row: any, i) => (
-                                <View key={i} style={styles.tableRow}>
-                                    <View style={{...styles.tableCol, width: '40%'}}><Text style={styles.tableCell}>{row.name}</Text></View>
-                                    <View style={{...styles.tableCol, width: '20%'}}><Text style={styles.tableCell}>{row.pct.toFixed(1)}%</Text></View>
-                                    <View style={{...styles.tableCol, width: '15%'}}><Text style={styles.tableCell}>{row.grade}</Text></View>
-                                    <View style={{...styles.tableCol, width: '25%'}}><Text style={styles.tableCell}>{row.remark}</Text></View>
-                                </View>
+                                <pdfLib.View key={i} style={styles.tableRow}>
+                                    <pdfLib.View style={{...styles.tableCol, width: '40%'}}><pdfLib.Text style={styles.tableCell}>{row.name}</pdfLib.Text></pdfLib.View>
+                                    <pdfLib.View style={{...styles.tableCol, width: '20%'}}><pdfLib.Text style={styles.tableCell}>{row.pct.toFixed(1)}%</pdfLib.Text></pdfLib.View>
+                                    <pdfLib.View style={{...styles.tableCol, width: '15%'}}><pdfLib.Text style={styles.tableCell}>{row.grade}</pdfLib.Text></pdfLib.View>
+                                    <pdfLib.View style={{...styles.tableCol, width: '25%'}}><pdfLib.Text style={styles.tableCell}>{row.remark}</pdfLib.Text></pdfLib.View>
+                                </pdfLib.View>
                             ))}
-                        </View>
+                        </pdfLib.View>
 
-                        <View style={styles.summary}>
-                            <View style={styles.summaryRow}><Text>Average:</Text><Text style={{fontWeight: 'bold'}}>{average.toFixed(2)}%</Text></View>
-                            <View style={styles.summaryRow}><Text>Rank:</Text><Text style={{fontWeight: 'bold'}}>{props.rank} / {props.totalStudents}</Text></View>
-                            <View style={{...styles.summaryRow, marginTop: 10}}><Text>Principal&apos;s Remark:</Text><Text style={{fontStyle: 'italic'}}>{getGrade(average).remark}</Text></View>
-                        </View>
+                        <pdfLib.View style={styles.summary}>
+                            <pdfLib.View style={styles.summaryRow}><pdfLib.Text>Average:</pdfLib.Text><pdfLib.Text style={{fontWeight: 'bold'}}>{average.toFixed(2)}%</pdfLib.Text></pdfLib.View>
+                            <pdfLib.View style={styles.summaryRow}><pdfLib.Text>Rank:</pdfLib.Text><pdfLib.Text style={{fontWeight: 'bold'}}>{props.rank} / {props.totalStudents}</pdfLib.Text></pdfLib.View>
+                            <pdfLib.View style={{...styles.summaryRow, marginTop: 10}}><pdfLib.Text>Principal&apos;s Remark:</pdfLib.Text><pdfLib.Text style={{fontStyle: 'italic'}}>{getGrade(average).remark}</pdfLib.Text></pdfLib.View>
+                        </pdfLib.View>
 
-                        <View style={{flexDirection: 'row', marginTop: 40, justifyContent: 'space-between', paddingHorizontal: 20}}>
-                            <View style={{borderTopWidth: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Class Teacher</Text></View>
-                            <View style={{borderTopWidth: 1, width: 150, alignItems: 'center'}}><Text style={{fontSize: 9, marginTop: 5}}>Principal</Text></View>
-                        </View>
+                        <pdfLib.View style={{flexDirection: 'row', marginTop: 40, justifyContent: 'space-between', paddingHorizontal: 20}}>
+                            <pdfLib.View style={{borderTopWidth: 1, width: 150, alignItems: 'center'}}><pdfLib.Text style={{fontSize: 9, marginTop: 5}}>Class Teacher</pdfLib.Text></pdfLib.View>
+                            <pdfLib.View style={{borderTopWidth: 1, width: 150, alignItems: 'center'}}><pdfLib.Text style={{fontSize: 9, marginTop: 5}}>Principal</pdfLib.Text></pdfLib.View>
+                        </pdfLib.View>
 
-                        <Text style={styles.footer}>Generated via Sunnyside SIS • {format(new Date(), 'PPP')}</Text>
-                    </Page>
-                </Document>
+                        <pdfLib.Text style={styles.footer}>Generated via Sunnyside SIS • {format(new Date(), 'PPP')}</pdfLib.Text>
+                    </pdfLib.Page>
+                </pdfLib.Document>
             );
 
             // 5. Generate Blob and Trigger Download
