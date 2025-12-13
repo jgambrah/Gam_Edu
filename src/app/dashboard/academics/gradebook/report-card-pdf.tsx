@@ -31,12 +31,11 @@ export function GenerateReportCard(props: any) {
         loadPdfLibrary().then(lib => setPdfLib(lib));
     }, []);
 
-    // --- FIX: Moved useMemo hooks to the top level ---
     const reportCardData = useMemo(() => {
         if (!props.assessments || !props.subjects) return [];
         return props.subjects.map((subject: any) => {
             const subjectAssessments = props.assessments.filter((a: any) => a.subjectId === subject.id);
-            if (subjectAssessments.length === 0) return { subject: subject.name, finalGrade: 'N/A', percentage: 0 };
+            if (subjectAssessments.length === 0) return { subject: subject.name, finalGrade: 'N/A', percentage: 0, remark: 'No assessments' };
             
             // Calculate CA and Exam separately
             const caAssessments = subjectAssessments.filter((a: any) => a.assessmentType?.includes('(CA)'));
@@ -63,7 +62,6 @@ export function GenerateReportCard(props: any) {
         if (validGrades.length === 0) return 0;
         return validGrades.reduce((acc: any, s: any) => acc + s.percentage, 0) / validGrades.length;
     }, [reportCardData]);
-    // --- END FIX ---
 
     const handleDownload = () => {
         setIsGenerating(true);
@@ -101,94 +99,62 @@ export function GenerateReportCard(props: any) {
 
     const MyDocument = (
         <Document>
-            {/* @ts-ignore */}
             <Page size="A4" style={styles.page}>
-                 {/* @ts-ignore */}
                 <View style={styles.header}>
                     {props.schoolProfile?.logoUrl && (
-                        /* @ts-ignore */
                         <Image 
                             src={props.schoolProfile.logoUrl} 
                             style={{ width: 50, height: 50, alignSelf: 'center', marginBottom: 10 }} 
                         />
                     )}
-                    {/* @ts-ignore */}
                     <Text style={styles.schoolName}>
                         {props.schoolProfile?.name || "Sunnyside International School"}
                     </Text>
-                     {/* @ts-ignore */}
                     <Text style={styles.subHeader}>
                         {props.schoolProfile?.address || "Address: N/A"} • {props.schoolProfile?.phone || "Phone: N/A"}
                     </Text>
-                     {/* @ts-ignore */}
                     <Text style={styles.subHeader}>
                         {props.schoolProfile?.email || ""} • {props.schoolProfile?.website || ""}
                     </Text>
-                     {/* @ts-ignore */}
                     <Text style={{...styles.subHeader, fontStyle: 'italic', marginTop: 2}}>
                         "{props.schoolProfile?.motto || 'Excellence • Integrity • Service'}"
                     </Text>
-                    {/* @ts-ignore */}
                     <Text style={styles.reportTitle}>TERMINAL REPORT CARD</Text>
                 </View>
-                {/* @ts-ignore */}
                 <View style={styles.studentInfo}>
-                     {/* @ts-ignore */}
                     <Text>Student: {props.student.firstName} {props.student.lastName}</Text>
-                     {/* @ts-ignore */}
                     <Text>Term: {props.term}</Text>
-                     {/* @ts-ignore */}
                     <Text>Year: {props.year}</Text>
-                     {/* @ts-ignore */}
                     <Text>Position: {props.rank}/{props.totalStudents}</Text>
                 </View>
-                {/* @ts-ignore */}
                 <View style={styles.table}>
-                     {/* @ts-ignore */}
                     <View style={styles.tableRow}>
-                         {/* @ts-ignore */}
                         <Text style={styles.tableColHeader}>Subject</Text>
-                         {/* @ts-ignore */}
                         <Text style={styles.tableColHeader}>Score (%)</Text>
-                         {/* @ts-ignore */}
                         <Text style={styles.tableColHeader}>Grade</Text>
-                         {/* @ts-ignore */}
                         <Text style={styles.tableColHeader}>Remark</Text>
                     </View>
                     {reportCardData.map((item: any) => (
                         <View key={item.subject} style={styles.tableRow}>
-                             {/* @ts-ignore */}
                             <Text style={styles.tableCol}>{item.subject}</Text>
-                             {/* @ts-ignore */}
                             <Text style={styles.tableCol}>{item.percentage > 0 ? item.percentage : 'N/A'}</Text>
-                             {/* @ts-ignore */}
                             <Text style={styles.tableCol}>{item.finalGrade}</Text>
-                             {/* @ts-ignore */}
                             <Text style={styles.tableCol}>{item.remark}</Text>
                         </View>
                     ))}
                 </View>
-                 {/* @ts-ignore */}
                  <View style={styles.summarySection}>
-                     {/* @ts-ignore */}
                     <View style={styles.summaryCard}>
-                         {/* @ts-ignore */}
                         <Text style={{fontFamily: 'Helvetica-Bold'}}>Overall Average</Text>
-                         {/* @ts-ignore */}
                         <Text style={{fontSize: 24, fontFamily: 'Helvetica-Bold', marginTop: 5}}>{overallAverage.toFixed(1)}%</Text>
                     </View>
-                     {/* @ts-ignore */}
                     <View style={styles.summaryCard}>
-                         {/* @ts-ignore */}
                         <Text style={{fontFamily: 'Helvetica-Bold'}}>General Comment</Text>
-                         {/* @ts-ignore */}
                         <Text style={{marginTop: 5}}>A satisfactory performance. Keep it up.</Text>
                     </View>
                  </View>
                 
-                 {/* @ts-ignore */}
                 <View style={styles.footer} fixed>
-                     {/* @ts-ignore */}
                     <Text>Generated by CampusConnect on {new Date().toLocaleDateString()}</Text>
                 </View>
             </Page>
