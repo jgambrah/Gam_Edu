@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -464,8 +465,7 @@ export default function GradebookManager() {
                                             />
                                         </TabsContent>
                                         <TabsContent value="financials" className="mt-0">
-                                            {/* Note: Ensure FeeHistoryDetail import is handled if separate */}
-                                            {/* <FeeHistoryDetail student={student} financialRecords={financialRecords || []} /> */}
+                                            <FeeHistoryDetail student={student} financialRecords={financialRecords || []} />
                                         </TabsContent>
                                     </Tabs>
                                 </AccordionContent>
