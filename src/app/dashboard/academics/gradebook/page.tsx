@@ -114,9 +114,48 @@ function RemarksForm({
     );
 }
 
-// ... (TransactionDetailModal & FeeHistoryDetail remain the same - omitted for brevity) ...
-// (Assume standard imports for FeeHistoryDetail here)
-// import { FeeHistoryDetail } from './fee-history-detail'; // Or paste the code if inline
+// --- SUB-COMPONENT: Fee History ---
+function FeeHistoryDetail({ student, financialRecords }: { student: Student; financialRecords: FinancialRecord[] }) {
+    
+    const studentRecords = useMemo(() => {
+        return (financialRecords || [])
+            .filter(r => r.studentId === student.uid)
+            .sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
+    }, [financialRecords, student.uid]);
+
+    if (studentRecords.length === 0) {
+        return <p className="text-center text-muted-foreground p-8">No financial records found for this student.</p>
+    }
+
+    return (
+        <div className="p-4">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-right">Billed</TableHead>
+                        <TableHead className="text-right">Paid</TableHead>
+                        <TableHead className="text-right">Status</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {studentRecords.map((record) => (
+                        <TableRow key={record.id}>
+                            <TableCell className="text-xs">{record.createdAt ? format(record.createdAt.toDate(), 'PPP') : 'N/A'}</TableCell>
+                            <TableCell>{record.description}</TableCell>
+                            <TableCell><Badge variant="outline">{record.type}</Badge></TableCell>
+                            <TableCell className="text-right">GH₵{record.billedAmount.toFixed(2)}</TableCell>
+                            <TableCell className="text-right text-green-600">GH₵{(record.amountPaid || 0).toFixed(2)}</TableCell>
+                            <TableCell className="text-right"><Badge variant={record.status === 'Paid' ? 'default' : 'destructive'}>{record.status}</Badge></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
 
 // --- SUB-COMPONENT: Student Academics Detail ---
 function StudentGradesDetail({ 
