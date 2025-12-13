@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -97,7 +98,7 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 p-4">
-      <div className="w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-full max-h-[900px]">
+      <div className="max-w-6xl w-full min-h-[650px] max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
         {/* Left Side: Branding */}
         <div className="w-full md:w-1/2 bg-gradient-to-br from-indigo-600 to-purple-700 p-8 sm:p-12 text-white flex flex-col justify-between relative overflow-hidden">
             {/* Decorative Circles */}
