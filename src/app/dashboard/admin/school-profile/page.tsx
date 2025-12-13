@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useDoc, useUser } from '@/firebase';
+// FIX: Added useMemoFirebase to imports
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
 import { useToast } from '@/hooks/use-toast';
@@ -18,9 +19,15 @@ export default function SchoolProfilePage() {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
-  // 1. Fetch Existing Settings
-  // We store profile data in 'schoolSettings/profile'
-  const settingsRef = firestore ? doc(firestore, 'schoolSettings', 'profile') : null;
+  // --- FIX START ---
+  // We use useMemoFirebase to prevent the reference from being recreated on every render.
+  // This stops the "Blinking" issue.
+  const settingsRef = useMemoFirebase(
+    () => firestore ? doc(firestore, 'schoolSettings', 'profile') : null,
+    [firestore]
+  );
+  // --- FIX END ---
+
   const { data: profile, isLoading } = useDoc(settingsRef);
 
   // Form State
@@ -30,7 +37,7 @@ export default function SchoolProfilePage() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
-  const [logoUrl, setLogoUrl] = useState(''); // Just a URL text field for now
+  const [logoUrl, setLogoUrl] = useState('');
 
   // Load data when fetched
   useEffect(() => {
@@ -64,15 +71,17 @@ export default function SchoolProfilePage() {
     }
   };
 
-  if (role !== 'Administrator' && role !== 'Director') {
+  const canManage = ['Administrator', 'Director'].includes(role || '');
+
+  if (!canManage) {
       return <div className="p-8 text-center text-red-500">Access Denied</div>;
   }
 
-  if (isLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin"/></div>;
+  if (isLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
-        <Card className="border-t-4 border-t-blue-600">
+        <Card className="border-t-4 border-t-blue-600 shadow-md">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl">
                     <Building2 className="text-blue-600"/> School Profile Settings
@@ -122,8 +131,8 @@ export default function SchoolProfilePage() {
                     </div>
 
                     <div className="pt-4 border-t flex justify-end">
-                        <Button type="submit" disabled={isSaving} className="w-[150px]">
-                            {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>}
+                        <Button type="submit" disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 w-[150px]">
+                            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Save className="mr-2 h-4 w-4"/>}
                             Save Profile
                         </Button>
                     </div>
