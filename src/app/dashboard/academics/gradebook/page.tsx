@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -649,3 +648,6 @@ export default function GradebookManager() {
     </div>
   );
 }
+
+// ... TransactionDetailModal and FeeHistoryDetail components would be here ...
+// They are unchanged from your previous version, so I'm omitting them for brevity.
