@@ -1,20 +1,18 @@
 
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, getDoc, arrayUnion } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, Terminal, CheckCircle2, Lock, 
-  ChevronRight, Code2, Bot, Trash2, BookOpen 
+  ChevronRight, Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight 
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -45,11 +43,13 @@ export default function LogicLabPage() {
   useEffect(() => {
     if(!user || !firestore) return;
     const fetchProgress = async () => {
-        const ref = doc(firestore, 'student_progress', user.uid);
-        const snap = await getDoc(ref);
-        if (snap.exists() && snap.data().logicLabCompleted) {
-            setCompletedMissions(snap.data().logicLabCompleted);
-        }
+        try {
+            const ref = doc(firestore, 'student_progress', user.uid);
+            const snap = await getDoc(ref);
+            if (snap.exists() && snap.data().logicLabCompleted) {
+                setCompletedMissions(snap.data().logicLabCompleted);
+            }
+        } catch (e) { console.error("Progress Load Error", e); }
     };
     fetchProgress();
   }, [user, firestore]);
@@ -85,18 +85,14 @@ export default function LogicLabPage() {
         const normalizedOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normalizedExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
 
-        if (normalizedOutput === normalizedExpected || result.output.includes(activeMission.expectedOutput)) {
+        if (normalizedOutput.includes(normalizedExpected) || normalizedOutput === normalizedExpected) {
             toast({ title: "Mission Accomplished!", description: "Code output matches expectation.", className: "bg-green-600 text-white" });
             
             if (!completedMissions.includes(currentMissionIndex)) {
                 const newCompleted = [...completedMissions, currentMissionIndex];
                 setCompletedMissions(newCompleted);
-                
-                // Save to DB
                 if (user && firestore) {
-                    await setDoc(doc(firestore, 'student_progress', user.uid), {
-                        logicLabCompleted: newCompleted
-                    }, { merge: true });
+                    await setDoc(doc(firestore, 'student_progress', user.uid), { logicLabCompleted: newCompleted }, { merge: true });
                 }
             }
         } else {
@@ -220,6 +216,18 @@ export default function LogicLabPage() {
               
               {/* TOOLBOX */}
               <div className="w-1/3 bg-slate-100 rounded-lg p-4 flex flex-col gap-2 overflow-y-auto border">
+                  <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Structure</h4>
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                      {/* FIX 1: Add New Line Button */}
+                      <Button variant="outline" className="border-slate-300 bg-white" onClick={() => handleAddBlock('[NEWLINE]')}>
+                          <CornerDownLeft className="h-3 w-3 mr-1"/> Enter
+                      </Button>
+                      {/* FIX 2: Add Indent Button (Tab) */}
+                      <Button variant="outline" className="border-slate-300 bg-white" onClick={() => handleAddBlock('    ')}>
+                          <ArrowRight className="h-3 w-3 mr-1"/> Indent
+                      </Button>
+                  </div>
+
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Available Blocks</h4>
                   {activeMission.availableBlocks.map((block, i) => (
                       <Button 
@@ -237,23 +245,40 @@ export default function LogicLabPage() {
               <div className="flex-1 flex flex-col gap-4">
                   
                   {/* Canvas */}
-                  <div className="flex-1 bg-white rounded-lg border-2 border-dashed border-slate-300 p-4 overflow-y-auto relative">
+                  <div className="flex-1 bg-white rounded-lg border-2 border-dashed border-slate-300 p-4 overflow-y-auto relative font-mono text-sm">
                       {workspaceBlocks.length === 0 && (
                           <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">
-                              Click blocks to add them here
+                              Click blocks to build your code here
                           </div>
                       )}
-                      <div className="space-y-2">
-                          {workspaceBlocks.map((block, i) => (
-                              <div key={i} className="flex items-center gap-2 animate-in slide-in-from-left-2 fade-in duration-200">
-                                  <div className="bg-indigo-600 text-white px-3 py-2 rounded shadow-md font-mono text-sm flex-1">
-                                      {block}
+                      
+                      {/* FIX 3: Render logic for New Lines */}
+                      <div className="flex flex-wrap items-center gap-2 content-start">
+                          {workspaceBlocks.map((block, i) => {
+                              if (block === '[NEWLINE]') {
+                                  return <div key={i} className="w-full h-4 border-b border-slate-100 mb-2 relative group">
+                                      <span className="absolute right-0 top-0 text-xs text-slate-300 select-none">↵</span>
+                                      <button onClick={() => handleRemoveBlock(i)} className="absolute left-0 top-0 text-red-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-3 w-3"/></button>
+                                  </div>;
+                              }
+                              if (block === '    ') {
+                                  return <div key={i} className="w-8 h-8 bg-slate-50 border border-slate-200 rounded flex items-center justify-center text-slate-300 group relative">
+                                      <span>→</span>
+                                      <button onClick={() => handleRemoveBlock(i)} className="absolute -top-1 -right-1 bg-white rounded-full text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-3 w-3"/></button>
                                   </div>
-                                  <button onClick={() => handleRemoveBlock(i)} className="text-red-400 hover:text-red-600">
-                                      <Trash2 className="h-4 w-4"/>
-                                  </button>
-                              </div>
-                          ))}
+                              }
+                              return (
+                                  <div key={i} className="group relative bg-indigo-600 text-white px-3 py-2 rounded shadow-md cursor-grab active:cursor-grabbing hover:bg-indigo-700 transition-all">
+                                      {block}
+                                      <button 
+                                        onClick={() => handleRemoveBlock(i)} 
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                                      >
+                                          <Trash2 className="h-3 w-3"/>
+                                      </button>
+                                  </div>
+                              );
+                          })}
                       </div>
                   </div>
 
@@ -305,5 +330,4 @@ export default function LogicLabPage() {
       </Dialog>
     </div>
   );
-
-    
+}
