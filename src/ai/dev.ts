@@ -27,4 +27,5 @@ import '@/ai/flows/debate-flow.ts';
 import '@/ai/flows/evaluate-reading-submission.ts';
 import '@/ai/flows/evaluate-writing-submission.ts';
 import '@/ai/flows/learning-analytics.ts';
+import '@/ai/flows/logic-lab-actions.ts';
     
