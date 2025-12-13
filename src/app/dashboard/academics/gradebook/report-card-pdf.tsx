@@ -13,6 +13,15 @@ const loadPdfLibrary = async () => {
   return module;
 };
 
+// This is a mock function. A real implementation would be more complex.
+function getGrade(percentage: number) {
+    if (percentage >= 80) return { grade: 'A', remark: 'Excellent' };
+    if (percentage >= 70) return { grade: 'B', remark: 'Very Good' };
+    if (percentage >= 60) return { grade: 'C', remark: 'Good' };
+    if (percentage >= 50) return { grade: 'D', remark: 'Pass' };
+    return { grade: 'F', remark: 'Fail' };
+}
+
 export function GenerateReportCard(props: any) {
     const [PdfLib, setPdfLib] = useState<any>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -22,10 +31,42 @@ export function GenerateReportCard(props: any) {
         loadPdfLibrary().then(lib => setPdfLib(lib));
     }, []);
 
+    // --- FIX: Moved useMemo hooks to the top level ---
+    const reportCardData = useMemo(() => {
+        if (!props.assessments || !props.subjects) return [];
+        return props.subjects.map((subject: any) => {
+            const subjectAssessments = props.assessments.filter((a: any) => a.subjectId === subject.id);
+            if (subjectAssessments.length === 0) return { subject: subject.name, finalGrade: 'N/A', percentage: 0 };
+            
+            // Calculate CA and Exam separately
+            const caAssessments = subjectAssessments.filter((a: any) => a.assessmentType?.includes('(CA)'));
+            const examAssessments = subjectAssessments.filter((a: any) => a.assessmentType?.includes('(Exam)'));
+
+            const caTotal = caAssessments.reduce((acc: any, a: any) => acc + (a.score || 0), 0);
+            const caMax = caAssessments.reduce((acc: any, a: any) => acc + (a.maxScore || 0), 0);
+            const caWeighted = caMax > 0 ? (caTotal / caMax) * 50 : 0;
+            
+            const examTotal = examAssessments.reduce((acc: any, a: any) => acc + (a.score || 0), 0);
+            const examMax = examAssessments.reduce((acc: any, a: any) => acc + (a.maxScore || 0), 0);
+            const examWeighted = examMax > 0 ? (examTotal / examMax) * 50 : 0;
+            
+            const percentage = caWeighted + examWeighted;
+            const { grade, remark } = getGrade(percentage);
+
+            return { subject: subject.name, finalGrade: grade, remark, percentage: parseFloat(percentage.toFixed(1)) };
+        });
+    }, [props.assessments, props.subjects]);
+
+    const overallAverage = useMemo(() => {
+        if (!reportCardData || reportCardData.length === 0) return 0;
+        const validGrades = reportCardData.filter((s: any) => s.percentage > 0);
+        if (validGrades.length === 0) return 0;
+        return validGrades.reduce((acc: any, s: any) => acc + s.percentage, 0) / validGrades.length;
+    }, [reportCardData]);
+    // --- END FIX ---
+
     const handleDownload = () => {
         setIsGenerating(true);
-        // The PDFDownloadLink will handle the actual download
-        // This state is mostly for showing user feedback
         setTimeout(() => setIsGenerating(false), 2000); 
     };
 
@@ -57,28 +98,6 @@ export function GenerateReportCard(props: any) {
         summaryCard: { flex: 1, border: '1 solid #eee', padding: 15, borderRadius: 5 },
         footer: { position: 'absolute', bottom: 30, left: 40, right: 40, textAlign: 'center', fontSize: 8, color: 'grey' }
     });
-
-    // Report Data Calculation (Same as before)
-    const reportCardData = useMemo(() => {
-        if (!props.assessments) return [];
-        return (props.subjects || []).map((subject: any) => {
-            const subjectAssessments = props.assessments.filter((a: any) => a.subjectId === subject.id);
-            if (subjectAssessments.length === 0) return { subject: subject.name, finalGrade: 'N/A', percentage: 0 };
-            const totalScore = subjectAssessments.reduce((acc: any, a: any) => acc + (a.score || 0), 0);
-            const maxScore = subjectAssessments.reduce((acc: any, a: any) => acc + (a.maxScore || 0), 0);
-            const percentage = maxScore > 0 ? (totalScore / maxScore) * 100 : 0;
-            let finalGrade = 'F';
-            if (percentage >= 80) finalGrade = 'A';
-            else if (percentage >= 70) finalGrade = 'B';
-            else if (percentage >= 60) finalGrade = 'C';
-            else if (percentage >= 50) finalGrade = 'D';
-            return { subject: subject.name, finalGrade, percentage: parseFloat(percentage.toFixed(1)) };
-        });
-    }, [props.assessments, props.subjects]);
-
-    const overallAverage = reportCardData.length > 0
-        ? reportCardData.reduce((acc: any, s: any) => acc + s.percentage, 0) / reportCardData.length
-        : 0;
 
     const MyDocument = (
         <Document>
@@ -137,7 +156,7 @@ export function GenerateReportCard(props: any) {
                         <Text style={styles.tableColHeader}>Remark</Text>
                     </View>
                     {reportCardData.map((item: any) => (
-                         /* @ts-ignore */
+                         /* @ts-ignore */}
                         <View key={item.subject} style={styles.tableRow}>
                              {/* @ts-ignore */}
                             <Text style={styles.tableCol}>{item.subject}</Text>
@@ -146,7 +165,7 @@ export function GenerateReportCard(props: any) {
                              {/* @ts-ignore */}
                             <Text style={styles.tableCol}>{item.finalGrade}</Text>
                              {/* @ts-ignore */}
-                            <Text style={styles.tableCol}>{getGrade(item.percentage).remark}</Text>
+                            <Text style={styles.tableCol}>{item.remark}</Text>
                         </View>
                     ))}
                 </View>
