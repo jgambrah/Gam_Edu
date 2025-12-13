@@ -108,18 +108,18 @@ export default function LoginPage() {
 
           <div className="relative z-10">
               <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/30">
-                  <School className="w-8 h-8 text-white"/>
+                  <AppLogo className="w-8 h-8 text-white"/>
               </div>
               <h1 className="text-4xl font-bold mb-4">CampusConnect</h1>
               <p className="text-indigo-100 text-lg leading-relaxed max-w-prose">
-              Your Digital Campus Ecosystem. Connect with peers, manage events, and collaborate seamlessly in one unified platform.
+                Experience the next generation of AI-driven education management. Personalized learning, automated admin, and seamless communication.
               </p>
           </div>
           
           <div className="relative z-10 space-y-4">
-              <FeatureItem>Real-time Student Community</FeatureItem>
-              <FeatureItem>Campus Event Tracking</FeatureItem>
-              <FeatureItem>Academic Resource Sharing</FeatureItem>
+              <FeatureItem>Adaptive Learning Paths</FeatureItem>
+              <FeatureItem>Real-time Analytics</FeatureItem>
+              <FeatureItem>AI-Powered Tutoring</FeatureItem>
           </div>
       </div>
 
