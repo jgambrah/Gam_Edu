@@ -1,21 +1,20 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useFirestore, useUser } from '@/firebase';
-import { collection, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, doc, writeBatch, serverTimestamp, query, where } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, Calculator } from 'lucide-react';
 import { Class, Student } from '@/lib/types';
-import { useCollection, useMemoFirebase } from '@/firebase';
-import { query, where } from 'firebase/firestore';
 
 // --- SCHEMA ---
 const assessmentSchema = z.object({
@@ -39,38 +38,39 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
   const { user } = useUser();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [scores, setScores] = useState<Record<string, string>>({}); // studentId -> score
+  const [scores, setScores] = useState<Record<string, string>>({}); 
 
-  // 1. Fetch Students in Class
+  // Fetch Students & Subjects
   const studentsQuery = useMemoFirebase(() => 
     (firestore && classId) ? query(collection(firestore, 'students'), where('classId', '==', classId)) : null,
   [firestore, classId]);
   const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
-  // 2. Fetch Subjects
   const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
   const { data: subjects } = useCollection<any>(subjectsQuery);
 
-  // Form Setup
   const form = useForm<z.infer<typeof assessmentSchema>>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
       academicYear: '2024-2025',
       term: 'First Term',
-      maxScore: 100
+      maxScore: 100 // Default max score
     }
   });
 
-  // Handle Score Input
+  const currentMax = form.watch('maxScore');
+  const currentType = form.watch('assessmentType');
+
+  // Handle Score Input with Validation
   const handleScoreChange = (studentId: string, value: string) => {
+    // Prevent entering numbers higher than max
+    if (Number(value) > currentMax) return; 
     setScores(prev => ({ ...prev, [studentId]: value }));
   };
 
-  // Submit Batch
   const onSubmit = async (values: z.infer<typeof assessmentSchema>) => {
     if (!firestore || !user) return;
     
-    // Validate that we have scores
     const validScores = Object.entries(scores).filter(([_, score]) => score !== '' && !isNaN(Number(score)));
     if (validScores.length === 0) {
       toast({ variant: 'destructive', title: "No Scores", description: "Please enter scores for at least one student." });
@@ -80,24 +80,17 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
     setIsSubmitting(true);
     try {
       const batch = writeBatch(firestore);
-      
-      // Find Subject Name for denormalization
       const subjectName = subjects?.find(s => s.id === values.subjectId)?.name || 'Unknown Subject';
 
       validScores.forEach(([studentId, scoreVal]) => {
         const ref = doc(collection(firestore, 'assessments'));
         const score = parseFloat(scoreVal);
         
-        // Safety check
-        if (score > values.maxScore) {
-           throw new Error(`Score for student ${studentId} exceeds max score.`);
-        }
-
         batch.set(ref, {
           ...values,
           studentId,
           score,
-          subjectName, // Save name directly to fix display issues
+          subjectName, 
           teacherId: user.uid,
           classId: classId,
           createdAt: serverTimestamp(),
@@ -107,20 +100,21 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
 
       await batch.commit();
       toast({ title: "Success", description: `Saved ${validScores.length} grades successfully.` });
-      setScores({}); // Reset scores
-      // Don't reset form values to allow quick entry of next subject
+      setScores({}); 
     } catch (e: any) {
       console.error(e);
-      toast({ variant: 'destructive', title: "Error", description: e.message || "Failed to save grades." });
+      toast({ variant: 'destructive', title: "Error", description: e.message });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="border-l-4 border-l-blue-600">
+    <Card className="border-l-4 border-l-blue-600 shadow-md">
       <CardHeader>
-        <CardTitle>Enter Class Grades</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+            <Calculator className="h-5 w-5 text-blue-600"/> Enter Class Grades
+        </CardTitle>
       </CardHeader>
       <CardContent>
          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -128,9 +122,9 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
             {/* CONFIGURATION ROW */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-lg border">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Subject</label>
+                    <label className="text-sm font-bold text-slate-700">Subject</label>
                     <Select onValueChange={(val) => form.setValue('subjectId', val)}>
-                        <SelectTrigger className="bg-white"><SelectValue placeholder="Select Subject" /></SelectTrigger>
+                        <SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Select Subject" /></SelectTrigger>
                         <SelectContent>
                             {subjects?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                         </SelectContent>
@@ -139,27 +133,28 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Assessment Type</label>
+                    <label className="text-sm font-bold text-slate-700">Assessment Category</label>
                     <Select onValueChange={(val: any) => form.setValue('assessmentType', val)}>
-                        <SelectTrigger className="bg-white"><SelectValue placeholder="Type" /></SelectTrigger>
+                        <SelectTrigger className="bg-white border-slate-300"><SelectValue placeholder="Type" /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Class Exercise (CA)">Class Exercise (CA)</SelectItem>
                             <SelectItem value="Homework (CA)">Homework (CA)</SelectItem>
                             <SelectItem value="Project (CA)">Project (CA)</SelectItem>
                             <SelectItem value="Mid-Term (CA)">Mid-Term (CA)</SelectItem>
-                            <SelectItem value="End of Term Exam (Exam)">End of Term Exam</SelectItem>
+                            <Separator />
+                            <SelectItem value="End of Term Exam (Exam)">End of Term Exam (50%)</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">Max Score</label>
-                    <Input type="number" {...form.register('maxScore')} className="bg-white" />
+                    <label className="text-sm font-bold text-slate-700">Max Possible Score</label>
+                    <Input type="number" {...form.register('maxScore')} className="bg-white border-slate-300 font-bold" />
                 </div>
 
                 <div className="space-y-2">
-                     <label className="text-sm font-medium">Topic (Optional)</label>
-                     <Input {...form.register('topic')} placeholder="e.g. Algebra" className="bg-white"/>
+                     <label className="text-sm font-bold text-slate-700">Topic (Optional)</label>
+                     <Input {...form.register('topic')} placeholder="e.g. Algebra" className="bg-white border-slate-300"/>
                 </div>
             </div>
 
@@ -169,32 +164,42 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
                     <TableHeader>
                         <TableRow className="bg-slate-100">
                             <TableHead>Student Name</TableHead>
-                            <TableHead className="w-[150px]">Score</TableHead>
+                            <TableHead className="w-[200px]">Score (Out of {currentMax})</TableHead>
+                            <TableHead className="w-[150px] text-right">Weighted Value</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {loadingStudents ? (
-                            <TableRow><TableCell colSpan={2} className="text-center"><Loader2 className="animate-spin h-6 w-6 mx-auto"/></TableCell></TableRow>
-                        ) : students?.map(student => (
+                            <TableRow><TableCell colSpan={3} className="text-center"><Loader2 className="animate-spin h-6 w-6 mx-auto"/></TableCell></TableRow>
+                        ) : students?.map(student => {
+                            const raw = parseFloat(scores[student.uid] || '0');
+                            const percentage = (raw / currentMax) * 100;
+                            
+                            return (
                             <TableRow key={student.uid}>
                                 <TableCell className="font-medium">{student.firstName} {student.lastName}</TableCell>
                                 <TableCell>
-                                    <Input 
-                                        type="number" 
-                                        placeholder={`/ ${form.watch('maxScore')}`}
-                                        value={scores[student.uid] || ''}
-                                        onChange={(e) => handleScoreChange(student.uid, e.target.value)}
-                                        className={Number(scores[student.uid]) > form.watch('maxScore') ? "border-red-500 bg-red-50" : ""}
-                                    />
+                                    <div className="relative">
+                                        <Input 
+                                            type="number" 
+                                            value={scores[student.uid] || ''}
+                                            onChange={(e) => handleScoreChange(student.uid, e.target.value)}
+                                            className="pr-12 font-mono"
+                                        />
+                                        <span className="absolute right-3 top-2.5 text-xs text-muted-foreground">/ {currentMax}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-right text-muted-foreground font-mono text-xs">
+                                    {raw > 0 ? `${percentage.toFixed(1)}%` : '-'}
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        )})}
                     </TableBody>
                 </Table>
             </div>
 
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Save className="mr-2 h-4 w-4"/>}
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg font-bold" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <Save className="mr-2 h-5 w-5"/>}
                 Save Grades
             </Button>
 
@@ -203,3 +208,6 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
     </Card>
   );
 }
+
+function Separator() {
+    return <div className="h-px bg-slate-200 my
