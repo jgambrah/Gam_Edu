@@ -156,7 +156,6 @@ export function GenerateReportCard(props: any) {
                         <Text style={styles.tableColHeader}>Remark</Text>
                     </View>
                     {reportCardData.map((item: any) => (
-                         /* @ts-ignore */}
                         <View key={item.subject} style={styles.tableRow}>
                              {/* @ts-ignore */}
                             <Text style={styles.tableCol}>{item.subject}</Text>
