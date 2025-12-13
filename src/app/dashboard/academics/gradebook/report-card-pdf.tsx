@@ -3,9 +3,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileDown, Loader2 } from 'lucide-react';
-import { ReportDocument } from './ReportDocument'; 
-import type { Assessment } from '@/lib/types';
-
 
 export function GenerateReportCard(props: any) {
     const [loading, setLoading] = useState(false);
@@ -13,16 +10,16 @@ export function GenerateReportCard(props: any) {
     const handleDownload = async () => {
         setLoading(true);
         try {
-            // 1. Import PDF Library On-Demand
+            // 1. Dynamic Import of Library
             const { pdf } = await import('@react-pdf/renderer');
             
-            // 2. Construct the document element
-            const docElement = (
-                <ReportDocument {...props} />
-            );
+            // 2. Dynamic Import of the Document Component (The file we just created)
+            const { ReportDocument } = await import('./ReportDocument');
 
-            // 3. Generate Blob and Trigger Download
-            const blob = await pdf(docElement).toBlob();
+            // 3. Generate Blob
+            const blob = await pdf(<ReportDocument {...props} />).toBlob();
+            
+            // 4. Force Download
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
@@ -34,7 +31,7 @@ export function GenerateReportCard(props: any) {
 
         } catch (error) {
             console.error("PDF Gen Error:", error);
-            alert("Failed to generate PDF. Please try again.");
+            alert("Could not generate PDF. Please try again.");
         } finally {
             setLoading(false);
         }
