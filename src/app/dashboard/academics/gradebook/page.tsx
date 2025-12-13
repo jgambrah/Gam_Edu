@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, doc, writeBatch, updateDoc } from 'firebase/firestore';
 import { 
@@ -25,7 +25,9 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { GenerateReportCard } from './report-card-pdf';
 
@@ -201,7 +203,8 @@ function StudentGradesDetail({
     term,
     year,
     subjects, 
-    isDebug 
+    isDebug,
+    schoolProfile
 }: { 
     student: Student; 
     assessments: Assessment[];
@@ -211,6 +214,7 @@ function StudentGradesDetail({
     year: string;
     subjects: any[];
     isDebug: boolean;
+    schoolProfile: any;
 }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -394,6 +398,7 @@ function StudentGradesDetail({
                             rank={rank}
                             totalStudents={totalStudents}
                             subjects={subjects || []}
+                            schoolProfile={schoolProfile}
                         />
                      </CardContent>
                 </Card>
@@ -468,6 +473,10 @@ export default function GradebookManager() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+
+  // --- NEW: FETCH SCHOOL PROFILE ---
+  const profileRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolSettings', 'profile') : null, [firestore]);
+  const { data: schoolProfile } = useDoc(profileRef);
 
   const forceRefresh = () => {
       setRefreshKey(prev => prev + 1);
@@ -608,8 +617,25 @@ export default function GradebookManager() {
                                 <AccordionContent className="p-0 border-t bg-slate-50/50">
                                     <Tabs defaultValue="academics" className="w-full">
                                         <div className="px-4 pt-2 border-b bg-white"><TabsList className="bg-transparent h-10 p-0"><TabsTrigger value="academics" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none text-sm px-4">Report Card</TabsTrigger><TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none shadow-none text-sm px-4">Fee History</TabsTrigger></TabsList></div>
-                                        <TabsContent value="academics" className="mt-0"><StudentGradesDetail student={student} assessments={assessments || []} rank={rank} totalStudents={rankedStudents.length} term={selectedTerm} year={selectedYear} subjects={subjects || []} isDebug={showDebug}/></TabsContent>
-                                        <TabsContent value="financials" className="mt-0"><FeeHistoryDetail student={student} financialRecords={financialRecords || []}/></TabsContent>
+                                        <TabsContent value="academics" className="mt-0">
+                                            <StudentGradesDetail 
+                                                student={student} 
+                                                assessments={assessments || []} 
+                                                rank={rank}
+                                                totalStudents={rankedStudents.length}
+                                                term={selectedTerm}
+                                                year={selectedYear}
+                                                subjects={subjects || []}
+                                                isDebug={showDebug}
+                                                schoolProfile={schoolProfile}
+                                            />
+                                        </TabsContent>
+                                        <TabsContent value="financials" className="mt-0">
+                                            <FeeHistoryDetail 
+                                                student={student} 
+                                                financialRecords={financialRecords || []}
+                                            />
+                                        </TabsContent>
                                     </Tabs>
                                 </AccordionContent>
                             </AccordionItem>
