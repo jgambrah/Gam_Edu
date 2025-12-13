@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -24,7 +25,7 @@ export function GenerateReportCard(props: any) {
         try {
             // 1. Dynamically import the library only when clicked
             const pdfLib = await import('@react-pdf/renderer');
-            const { Document, Page, Text, View, StyleSheet, pdf, Image } = pdfLib;
+            const { Document, Page, Text, View, StyleSheet, Image } = pdfLib;
 
             // 2. Define Styles (Inside the function to avoid global scope issues)
             const styles = StyleSheet.create({
@@ -144,7 +145,7 @@ export function GenerateReportCard(props: any) {
             );
 
             // 5. Generate Blob and Trigger Download
-            const blob = await pdf(Doc).toBlob();
+            const blob = await pdfLib.pdf(Doc).toBlob();
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
