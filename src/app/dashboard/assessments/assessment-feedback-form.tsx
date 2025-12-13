@@ -15,11 +15,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Calculator } from 'lucide-react';
 import { Class, Student } from '@/lib/types';
+import { Separator } from '@/components/ui/separator';
 
 // --- SCHEMA ---
 const assessmentSchema = z.object({
   subjectId: z.string().min(1, "Subject is required"),
-  // UPDATED: Strict types to help calculation
   assessmentType: z.enum([
     'Class Exercise (CA)', 
     'Homework (CA)', 
@@ -208,6 +208,3 @@ export function AssessmentFeedbackForm({ classId, classes }: { classId: string, 
     </Card>
   );
 }
-
-function Separator() {
-    return <div className="h-px bg-slate-200 my
