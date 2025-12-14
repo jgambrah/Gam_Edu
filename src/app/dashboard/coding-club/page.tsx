@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Code, MousePointerClick, Youtube, Code2 } from 'lucide-react';
+import { Code, MousePointerClick, Youtube, Code2, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import dynamic from 'next/dynamic';
@@ -69,10 +69,26 @@ export default function CodingClubPage() {
                 </Link>
                 </CardContent>
             </Card>
+
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-indigo-500" /> Option 2: Logic Lab</CardTitle>
+                    <CardDescription>
+                       An interactive, block-based environment to learn core programming concepts, powered by AI.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button asChild>
+                        <Link href="/dashboard/coding-club/logic-lab">
+                            Enter the Logic Lab
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
           
             <Card className="w-full">
                 <CardHeader>
-                    <CardTitle>Option 2: Integrated Blockly Editor</CardTitle>
+                    <CardTitle>Option 3: Integrated Blockly Editor</CardTitle>
                     <CardDescription>
                         Use our built-in block-based editor to create and save your projects directly in CampusConnect.
                     </CardDescription>
