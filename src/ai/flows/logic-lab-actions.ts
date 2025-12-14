@@ -21,7 +21,7 @@ export async function interpretBlockCodeAction(blocks: string[]) {
       1. Simulate the execution of this code.
       2. Return ONLY the console output.
       3. If there is a syntax error, return "Error: [Reason]".
-      4. Handle indentation automatically if logical structures (if/else/def) are detected.
+      4. Handle indentation automatically if logical structures (if/else/def) are detected but not explicitly indented (though explicit indentation is preferred).
     `;
 
     const response = await ai.generate({
