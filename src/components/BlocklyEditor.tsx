@@ -19,7 +19,7 @@ import confetti from 'canvas-confetti';
 
 // --- IMPORTS FOR PLUGINS ---
 import { installAllBlocks as installColourBlocks } from '@blockly/field-colour';
-import { multiLineEditor } from '@blockly/field-multilineinput';
+import multiLineEditor from '@blockly/field-multilineinput';
 
 // Register the plugins
 installColourBlocks({
