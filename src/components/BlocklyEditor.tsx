@@ -17,15 +17,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useSound from 'use-sound';
 import confetti from 'canvas-confetti';
 
-// --- IMPORTS FOR COLOUR BLOCKS ---
+// --- IMPORTS FOR PLUGINS ---
 import { installAllBlocks as installColourBlocks } from '@blockly/field-colour';
+import { multiLineEditor } from '@blockly/field-multilineinput';
 
-// Register the Colour Blocks and Generators
+// Register the plugins
 installColourBlocks({
   javascript: javascriptGenerator,
 });
+Blockly.fieldRegistry.register('field_multilineinput', multiLineEditor);
 
-// --- 1. DEFINE CUSTOM BLOCKS ---
+
+// --- 1. DEFINE CUSTOM BLOCKS (Optional) ---
 Blockly.Blocks['get_science_fact'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput().appendField("🧪 get science fact");
@@ -43,7 +46,7 @@ javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block
       "Bananas are curved because they grow towards the sun.",
       "Water can boil and freeze at the same time."
   ];
-  const code = `[${"'" + facts.join("','") + "'"}] [Math.floor(Math.random() * ${facts.length})]`;
+  const code = `[${facts.map(f => `'${f}'`).join(',')}] [Math.floor(Math.random() * ${facts.length})]`;
   return [code, javascriptGenerator.ORDER_ATOMIC];
 };
 
