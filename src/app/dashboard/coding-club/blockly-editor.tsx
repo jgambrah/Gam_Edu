@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -17,7 +18,6 @@ import useSound from 'use-sound';
 import confetti from 'canvas-confetti';
 
 // --- IMPORTS FOR COLOUR BLOCKS ---
-// Ensure you have run: npm install @blockly/field-colour
 import { installAllBlocks as installColourBlocks } from '@blockly/field-colour';
 
 // Register the Colour Blocks and Generators
