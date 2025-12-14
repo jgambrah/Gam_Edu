@@ -40,19 +40,7 @@ export default function CodingClubPage() {
         <CardContent className="space-y-8">
             <Card className="w-full">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Code2 className="text-indigo-600"/> Logic Lab</CardTitle>
-                    <CardDescription>Learn coding concepts step-by-step with our guided block-based missions.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Link href="/dashboard/coding-club/logic-lab">
-                        <Button className="bg-indigo-600 hover:bg-indigo-700">Enter the Logic Lab</Button>
-                    </Link>
-                </CardContent>
-            </Card>
-
-            <Card className="w-full">
-                <CardHeader>
-                <CardTitle>Option 2: Scratch Platform</CardTitle>
+                <CardTitle>Option 1: Scratch Platform</CardTitle>
                 <CardDescription>
                     A visual, block-based coding language perfect for beginners.
                     Create stories, games, and animations.
@@ -79,6 +67,18 @@ export default function CodingClubPage() {
                         Watch a Beginner's Tutorial
                     </Button>
                 </Link>
+                </CardContent>
+            </Card>
+
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Code2 className="text-indigo-600"/> Option 2: Logic Lab</CardTitle>
+                    <CardDescription>Learn coding concepts step-by-step with our guided block-based missions.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Link href="/dashboard/coding-club/logic-lab">
+                        <Button className="bg-indigo-600 hover:bg-indigo-700">Enter the Logic Lab</Button>
+                    </Link>
                 </CardContent>
             </Card>
           
@@ -110,5 +110,3 @@ export default function CodingClubPage() {
     </div>
   );
 }
-
-    
