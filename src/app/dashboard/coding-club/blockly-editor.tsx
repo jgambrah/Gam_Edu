@@ -13,6 +13,7 @@ import { useAuth, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import useSound from 'use-sound';
 
 Blockly.Blocks['get_science_fact'] = {
   init: function(this: Blockly.Block) {
@@ -171,12 +172,14 @@ export function BlocklyEditor() {
   const { user } = useAuth();
   const firestore = useFirestore();
 
+  const [playClick] = useSound('/sounds/click.mp3');
+  const [playSuccess] = useSound('/sounds/success.mp3');
+  
   const blocklyDivRef = useRef<HTMLDivElement>(null);
   
   const { workspace } = useBlocklyWorkspace({
     ref: blocklyDivRef,
     toolboxConfiguration: toolboxCategories,
-    // FIX: Remove initialXml from here to prevent race conditions on hot-reload
     workspaceConfiguration: {
         grid: {
           spacing: 20,
@@ -229,12 +232,10 @@ export function BlocklyEditor() {
         const data = docSnap.data();
         const dom = Blockly.Xml.textToDom(data.xml);
         Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, workspace);
-        // setXml is handled by onXmlChange, no need to call it here.
         toast({ title: 'Project Loaded', description: 'Your saved project has been loaded.' });
       } else {
         toast({ title: 'No Saved Project', description: 'We could not find a saved project for your account.' });
         workspace.clear();
-        // setXml(''); handled by onXmlChange
       }
     } catch (error) {
       console.error('Error loading project:', error);
@@ -244,12 +245,10 @@ export function BlocklyEditor() {
     }
   }, [user, firestore, toast, workspace]);
 
-  // FIX: Load content into the editor only once after it's fully initialized.
   useEffect(() => {
     if(user && workspace && isLoading) {
         handleLoad().finally(() => setIsLoading(false));
     } else if (!user && !isLoading) {
-        // If not logged in, stop loading.
         setIsLoading(false);
     }
   }, [user, workspace, handleLoad, isLoading]);
@@ -298,6 +297,7 @@ export function BlocklyEditor() {
             "   (Did you forget a 'Print' block?)"
         ]);
       } else {
+        playSuccess();
         setLogs((prev) => [...prev, "✅ Finished."]);
       }
 
