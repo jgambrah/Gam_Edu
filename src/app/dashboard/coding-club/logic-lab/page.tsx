@@ -25,6 +25,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { useForm } from 'react-hook-form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
 
@@ -64,12 +66,10 @@ export default function LogicLabPage() {
   const [editingMission, setEditingMission] = useState<Mission | null>(null);
 
   // Now fetching curriculum from Firestore
-  const { data: CURRICULUM, isLoading: isLoadingMissions, forceRefetch: refetchMissions } = useCollection<Mission>(
-    useMemoFirebase(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore])
-  );
+  const missionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore]);
+  const { data: CURRICULUM, isLoading: isLoadingMissions, forceRefetch: refetchMissions } = useCollection<Mission>(missionsQuery);
   
   const activeMission = useMemo(() => {
-    // Use fallback immediately if live data isn't ready
     const curriculumData = (CURRICULUM && CURRICULUM.length > 0) ? CURRICULUM : CURRICULUM_FALLBACK;
     const sortedCurriculum = [...curriculumData].sort((a,b) => a.id - b.id);
     return sortedCurriculum.find(m => m.id === currentMissionIndex) || sortedCurriculum[0];
@@ -392,12 +392,78 @@ function MissionForm({ mission, setOpen, onSuccess }: { mission: Mission | null;
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Input {...form.register('title')} placeholder="Title" />
-          <Textarea {...form.register('task')} placeholder="Task" />
-          <Textarea {...form.register('theory')} placeholder="Theory (Markdown)" />
-          <Input {...form.register('expectedOutput')} placeholder="Expected Output" />
-          <Input {...form.register('hint')} placeholder="Hint" />
-          <Textarea {...form.register('availableBlocks', { setValueAs: v => v.split(',').map(s => s.trim()) })} placeholder="Blocks, comma, separated" />
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Title" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="task"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea placeholder="Task" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="theory"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea placeholder="Theory (Markdown)" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="expectedOutput"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Expected Output" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="hint"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Hint" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="availableBlocks"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Textarea placeholder="Blocks, comma, separated" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="animate-spin" /> : 'Save Mission'}
           </Button>
@@ -407,3 +473,4 @@ function MissionForm({ mission, setOpen, onSuccess }: { mission: Mission | null;
   );
 }
 
+    
