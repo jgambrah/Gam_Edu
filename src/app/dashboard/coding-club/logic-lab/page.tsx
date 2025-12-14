@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
@@ -125,6 +126,14 @@ export default function LogicLabPage() {
         if (normOutput === normExpected || result.output.includes(activeMission.expectedOutput)) {
             toast({ title: "Mission Accomplished!", description: "Output matches!", className: "bg-green-600 text-white" });
             
+            // --- "CELEBRATION MODE" TRIGGER ---
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            // ------------------------------------
+
             if (!completedMissions.includes(currentMissionIndex)) {
                 const newCompleted = [...completedMissions, currentMissionIndex];
                 setCompletedMissions(newCompleted);
