@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, addDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, onSnapshot, query } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
   Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical 
@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
+import AdminBlockManager from './AdminBlockManager';
 import AdminMissionCreator from '@/components/AdminMissionCreator';
 import confetti from 'canvas-confetti';
 
@@ -45,7 +46,7 @@ export default function LogicLabPage() {
   const [userQuestion, setUserQuestion] = useState('');
   const [isCoachThinking, setIsCoachThinking] = useState(false);
 
-  // EFFECT: LOAD EXTRA MISSIONS FROM DB
+  // --- 2. EFFECT: LOAD EXTRA MISSIONS FROM DB ---
   useEffect(() => {
     if (!firestore) return;
 
@@ -66,8 +67,7 @@ export default function LogicLabPage() {
 
     return () => unsubscribe();
   }, [firestore]);
-
-
+  
   const activeMission = allMissions[currentMissionIndex] || allMissions[0];
 
   // Helper: Get Color based on Block Type
@@ -124,12 +124,12 @@ export default function LogicLabPage() {
 
   const handleAddBlock = (block: string) => {
     setWorkspaceBlocks([...workspaceBlocks, block]);
-    setLastResult(null); 
+    setLastResult(null); // Clear the red box
   };
 
   const handleRemoveBlock = (index: number) => {
     setWorkspaceBlocks(workspaceBlocks.filter((_, i) => i !== index));
-    setLastResult(null); 
+    setLastResult(null); // Clear the red box
   };
 
   const handleHardReset = () => {
@@ -138,11 +138,15 @@ export default function LogicLabPage() {
     setCoachChat([]);               
     setIsRunning(false);            
     setIsCoachThinking(false);
-    setLastResult(null); 
-    toast({ description: "Workspace cleared." });
+    setLastResult(null); // Ensure feedback is wiped
+    
+    toast({ 
+        description: "Workspace cleared ready for next attempt.",
+        duration: 2000
+    });
   };
 
-  // --- RUN LOGIC (UPDATED) ---
+  // --- RUN LOGIC (UPDATED WITH MODES) ---
   const handleRun = async (mode: 'test' | 'submit') => {
     if (workspaceBlocks.length === 0) return;
     
@@ -341,6 +345,7 @@ export default function LogicLabPage() {
                           {block}
                       </Button>
                   ))}
+                  <AdminBlockManager missionId={activeMission.id} />
               </div>
 
               {/* CANVAS & CONSOLE */}
@@ -402,7 +407,7 @@ export default function LogicLabPage() {
                           <Eraser className="h-4 w-4"/>
                       </Button>
                       <Button variant="outline" onClick={() => setIsCoachOpen(true)} className="text-purple-600 border-purple-200 bg-purple-50">
-                          <Bot className="mr-2 h-4 w-4"/>
+                          <Bot className="mr-2 h-4 w-4"/> Coach
                       </Button>
                   </div>
 
@@ -446,6 +451,7 @@ export default function LogicLabPage() {
 
       {/* COACH MODAL */}
       <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
+          {/* ... (Same as before) ... */}
           <DialogContent className="sm:max-w-[400px]">
               <DialogHeader><DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle></DialogHeader>
               <div className="h-[300px] bg-slate-50 rounded border p-3 overflow-y-auto space-y-3">
