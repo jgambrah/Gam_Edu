@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Loader2, Code, MousePointerClick, Youtube, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 // Import the Editor Dynamically with SSR FALSE
 const BlocklyEditor = dynamic(
