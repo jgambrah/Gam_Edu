@@ -22,7 +22,11 @@ export const CURRICULUM: Mission[] = [
     task: "Assign 'SuperBot' to a variable named 'hero' and print it.",
     expectedOutput: "SuperBot",
     hint: "Connect the variable name, equals sign, and value.",
-    availableBlocks: ["hero", "=", "'SuperBot'", "print(", ")", "score", "100"]
+    availableBlocks: [
+      "hero", "villain", "score", "=", "==", 
+      "'SuperBot'", "'MegaTron'", "100", "0", 
+      "print(", "input(", ")", "# Comment"
+    ]
   },
   {
     id: 1,
@@ -33,7 +37,11 @@ export const CURRICULUM: Mission[] = [
     task: "Print the exact phrase 'Hello Python'.",
     expectedOutput: "Hello Python",
     hint: "Use print with the string literal.",
-    availableBlocks: ["print(", "'Hello Python'", ")", "input(", "name ="]
+    availableBlocks: [
+      "print(", "printf(", "echo", 
+      "'Hello Python'", "'Hello World'", "'User'", 
+      ")", ";", "input(", "name ="
+    ]
   },
   {
     id: 2,
@@ -44,7 +52,11 @@ export const CURRICULUM: Mission[] = [
     task: "Convert the string '10' to an integer, add 5 to it, and print the result.",
     expectedOutput: "15",
     hint: "Wrap the string in int(), then add 5.",
-    availableBlocks: ["print(", "int(", "'10'", ")", "+", "5", ")"]
+    availableBlocks: [
+      "print(", "int(", "str(", "float(", 
+      "'10'", "10", "'5'", "5", 
+      "+", "-", "*", ")", "="
+    ]
   },
   {
     id: 3,
@@ -55,7 +67,12 @@ export const CURRICULUM: Mission[] = [
     task: "Calculate 10 multiplied by 5 and print the result.",
     expectedOutput: "50",
     hint: "Use the asterisk * for multiplication.",
-    availableBlocks: ["print(", "10", "*", "5", ")", "+", "/"]
+    availableBlocks: [
+      "print(", "x", "y", "result =", 
+      "10", "5", "2", "50", 
+      "+", "-", "*", "/", "%", "**", 
+      ")", "="
+    ]
   },
   {
     id: 4,
@@ -66,7 +83,12 @@ export const CURRICULUM: Mission[] = [
     task: "Create variable age = 12, then print age + 1.",
     expectedOutput: "13",
     hint: "Two lines of code needed.",
-    availableBlocks: ["age", "=", "12", "print(", "age", "+", "1", ")"]
+    availableBlocks: [
+      "age", "year", "num", "=", 
+      "12", "1", "13", "'12'", 
+      "print(", "input(", ")", 
+      "+", "-", "*"
+    ]
   },
 
   // --- MISSION 2: DECISION MAKING & LOOPS ---
@@ -79,7 +101,12 @@ export const CURRICULUM: Mission[] = [
     task: "Print True if 5 is less than 10.",
     expectedOutput: "True",
     hint: "Use the < operator.",
-    availableBlocks: ["print(", "5", "<", "10", ")", ">", "=="]
+    availableBlocks: [
+      "print(", "if", "True", "False", 
+      "5", "10", "0", 
+      "<", ">", "==", "!=", "<=", ">=", 
+      ")", "and", "or"
+    ]
   },
   {
     id: 6,
@@ -90,7 +117,12 @@ export const CURRICULUM: Mission[] = [
     task: "Write logic: If 10 > 5, print 'Bigger'.",
     expectedOutput: "Bigger",
     hint: "Remember the colon : and indentation is simulated by order here.",
-    availableBlocks: ["if", "10", ">", "5", ":", "print('Bigger')", "else:", "print('Smaller')"]
+    availableBlocks: [
+      "if", "else:", "elif", 
+      "10", "5", "0", 
+      ">", "<", "==", ":", 
+      "print(", "'Bigger'", "'Smaller'", ")"
+    ]
   },
   {
     id: 7,
@@ -101,7 +133,13 @@ export const CURRICULUM: Mission[] = [
     task: "Set x = 1. While x < 3, print x, then increment x by 1.",
     expectedOutput: "1\n2",
     hint: "Initialize, Condition, Action, Update.",
-    availableBlocks: ["x = 1", "while", "x", "<", "3", ":", "print(x)", "x = x + 1"]
+    availableBlocks: [
+      "x = 1", "x = 0", "i = 0", 
+      "while", "for", "if", 
+      "x", "<", ">", "3", "5", ":", 
+      "print(x)", "print(i)", 
+      "x = x + 1", "x += 1", "break"
+    ]
   },
   {
     id: 8,
@@ -112,7 +150,12 @@ export const CURRICULUM: Mission[] = [
     task: "Use a for loop with range(3) to print numbers 0, 1, 2.",
     expectedOutput: "0\n1\n2",
     hint: "for i in range(...)",
-    availableBlocks: ["for", "i", "in", "range(3)", ":", "print(i)"]
+    availableBlocks: [
+      "for", "while", "if", 
+      "i", "x", "num", 
+      "in", "of", "range(3)", "range(5)", "range(1, 4)", 
+      ":", "print(i)", "print(x)"
+    ]
   },
   {
     id: 9,
@@ -123,7 +166,12 @@ export const CURRICULUM: Mission[] = [
     task: "Loop range(5). If i == 3, break. Else print i.",
     expectedOutput: "0\n1\n2",
     hint: "Combine loop with if/break.",
-    availableBlocks: ["for", "i", "in", "range(5)", ":", "if", "i", "==", "3", ":", "break", "print(i)"]
+    availableBlocks: [
+      "for", "i", "in", "range(5)", ":", 
+      "if", "i", "==", "3", "5", ":", 
+      "break", "continue", "pass", 
+      "print(i)", "else:"
+    ]
   },
   {
     id: 10,
@@ -134,7 +182,11 @@ export const CURRICULUM: Mission[] = [
     task: "If 5 > 2, pass. Else print 'No'. (Output should be empty/nothing).",
     expectedOutput: "",
     hint: "Just use pass in the if block.",
-    availableBlocks: ["if", "5", ">", "2", ":", "pass", "else:", "print('No')"]
+    availableBlocks: [
+      "if", "5", ">", "2", ":", 
+      "pass", "break", "continue", 
+      "else:", "print('No')", "print('Yes')"
+    ]
   },
   {
     id: 11,
@@ -145,7 +197,12 @@ export const CURRICULUM: Mission[] = [
     task: "Set score = 80. If score > 90 print 'A', elif score > 70 print 'B'.",
     expectedOutput: "B",
     hint: "Use elif for the second condition.",
-    availableBlocks: ["score = 80", "if", "score > 90", ":", "print('A')", "elif", "score > 70", ":", "print('B')"]
+    availableBlocks: [
+      "score = 80", "score = 50", 
+      "if", "elif", "else:", 
+      "score", ">", "<", "90", "70", "50", ":", 
+      "print('A')", "print('B')", "print('C')"
+    ]
   },
   {
     id: 12,
@@ -156,7 +213,11 @@ export const CURRICULUM: Mission[] = [
     task: "Print 'Go' 2 times using a for loop and range(2).",
     expectedOutput: "Go\nGo",
     hint: "for loop with range(2)",
-    availableBlocks: ["for", "x", "in", "range(2)", ":", "print('Go')", "print('Stop')"]
+    availableBlocks: [
+      "for", "while", "x", "in", 
+      "range(2)", "range(5)", ":", 
+      "print('Go')", "print('Stop')", "if x > 1:"
+    ]
   },
 
   // --- MISSION 3: FUNCTIONS ---
@@ -169,7 +230,12 @@ export const CURRICULUM: Mission[] = [
     task: "Define a function that sets x = 5 and prints x. Call it.",
     expectedOutput: "5",
     hint: "Define, indent content, then call.",
-    availableBlocks: ["def", "my_func():", "x = 5", "print(x)", "my_func()"]
+    availableBlocks: [
+      "def", "my_func():", "main():", 
+      "x = 5", "global x", 
+      "print(x)", "return x", 
+      "my_func()", "call my_func"
+    ]
   },
   {
     id: 14,
@@ -180,7 +246,11 @@ export const CURRICULUM: Mission[] = [
     task: "Define function `greet(name)` that prints 'Hello ' + name. Call `greet('Sam')`.",
     expectedOutput: "Hello Sam",
     hint: "Use the parameter inside the print.",
-    availableBlocks: ["def", "greet(name):", "print(", "'Hello '", "+", "name", ")", "greet('Sam')"]
+    availableBlocks: [
+      "def", "greet(name):", "hello():", 
+      "print(", "'Hello '", "+", "name", ")", 
+      "greet('Sam')", "greet()", "return name"
+    ]
   },
   {
     id: 15,
@@ -191,7 +261,12 @@ export const CURRICULUM: Mission[] = [
     task: "Create a lambda `add = lambda x: x + 5`. Print `add(10)`.",
     expectedOutput: "15",
     hint: "Assign lambda to a variable then call it.",
-    availableBlocks: ["add =", "lambda x:", "x + 5", "print(", "add(10)", ")"]
+    availableBlocks: [
+      "add =", "func =", 
+      "lambda x:", "def x:", 
+      "x + 5", "return x + 5", 
+      "print(", "add(10)", "add(5)", ")"
+    ]
   },
   {
     id: 16,
@@ -202,7 +277,11 @@ export const CURRICULUM: Mission[] = [
     task: "Write a recursive function to print 'A' once. (Simulated for block logic). Just Call a function `rec()` that prints 'A'.",
     expectedOutput: "A",
     hint: "Just define and call for this simple test.",
-    availableBlocks: ["def", "rec():", "print('A')", "rec()"]
+    availableBlocks: [
+      "def", "rec():", 
+      "print('A')", "return", 
+      "rec()", "if True:"
+    ]
   },
   {
     id: 17,
@@ -213,7 +292,11 @@ export const CURRICULUM: Mission[] = [
     task: "Define `square(n)` that prints `n * n`. Call `square(4)`.",
     expectedOutput: "16",
     hint: "Math inside the function.",
-    availableBlocks: ["def", "square(n):", "print(n * n)", "square(4)", "square(2)"]
+    availableBlocks: [
+      "def", "square(n):", "double(n):", 
+      "print(", "n * n", "n + n", ")", 
+      "square(4)", "square(2)", "return"
+    ]
   },
 
   // --- MISSION 4: COLLECTIONS ---
@@ -226,7 +309,11 @@ export const CURRICULUM: Mission[] = [
     task: "Create a list `nums = [1, 2]`. Print `nums[0]`.",
     expectedOutput: "1",
     hint: "Index 0 is the first item.",
-    availableBlocks: ["nums =", "[1, 2]", "print(", "nums[0]", ")", "nums[1]"]
+    availableBlocks: [
+      "nums =", "list =", 
+      "[1, 2]", "(1, 2)", "{1, 2}", 
+      "print(", "nums[0]", "nums[1]", "nums(0)", ")"
+    ]
   },
   {
     id: 19,
@@ -237,7 +324,11 @@ export const CURRICULUM: Mission[] = [
     task: "Create `tup = (10, 20)`. Print `tup[1]`.",
     expectedOutput: "20",
     hint: "Use parentheses.",
-    availableBlocks: ["tup =", "(10, 20)", "print(", "tup[1]", ")"]
+    availableBlocks: [
+      "tup =", "list =", 
+      "(10, 20)", "[10, 20]", 
+      "print(", "tup[1]", "tup[0]", ")"
+    ]
   },
   {
     id: 20,
@@ -248,7 +339,10 @@ export const CURRICULUM: Mission[] = [
     task: "Print the first letter of 'Python' using index 0.",
     expectedOutput: "P",
     hint: "String indices works like lists.",
-    availableBlocks: ["text =", "'Python'", "print(", "text[0]", ")"]
+    availableBlocks: [
+      "text =", "'Python'", 
+      "print(", "text[0]", "text[1]", "text[-1]", ")"
+    ]
   },
   {
     id: 21,
@@ -259,7 +353,11 @@ export const CURRICULUM: Mission[] = [
     task: "Create a set `s = {1, 1, 2}`. Print `s`. (Note duplicates are removed).",
     expectedOutput: "{1, 2}",
     hint: "Use curly braces.",
-    availableBlocks: ["s =", "{1, 1, 2}", "print(", "s", ")"]
+    availableBlocks: [
+      "s =", "list =", 
+      "{1, 1, 2}", "[1, 1, 2]", "(1, 1, 2)", 
+      "print(", "s", ")"
+    ]
   },
   {
     id: 22,
@@ -270,7 +368,11 @@ export const CURRICULUM: Mission[] = [
     task: "Create `d = {'a': 1}`. Print `d['a']`.",
     expectedOutput: "1",
     hint: "Access by key.",
-    availableBlocks: ["d =", "{'a': 1}", "print(", "d['a']", ")"]
+    availableBlocks: [
+      "d =", "map =", 
+      "{'a': 1}", "['a': 1]", 
+      "print(", "d['a']", "d[0]", ")"
+    ]
   },
   {
     id: 23,
@@ -281,10 +383,14 @@ export const CURRICULUM: Mission[] = [
     task: "Create a list `x = [5, 6]`. Change index 0 to 9. Print x.",
     expectedOutput: "[9, 6]",
     hint: "Assign to the index.",
-    availableBlocks: ["x =", "[5, 6]", "x[0] = 9", "print(x)", "x[1] = 9"]
+    availableBlocks: [
+      "x =", "[5, 6]", "(5, 6)", 
+      "x[0] = 9", "x(0) = 9", 
+      "print(x)", "x.append(9)"
+    ]
   },
 
-  // --- MISSION 5: MODULES AND FILES ---
+  // --- MISSION 5: MODULES ---
   {
     id: 24,
     section: "Mission 5: Modules and Files",
@@ -294,7 +400,10 @@ export const CURRICULUM: Mission[] = [
     task: "Import math and print `math.sqrt(16)`.",
     expectedOutput: "4.0",
     hint: "Use import first.",
-    availableBlocks: ["import math", "print(", "math.sqrt(16)", ")"]
+    availableBlocks: [
+      "import math", "include math", 
+      "print(", "math.sqrt(16)", "math.pow(4)", ")"
+    ]
   },
   {
     id: 25,
@@ -305,7 +414,11 @@ export const CURRICULUM: Mission[] = [
     task: "Simulate writing: Print 'Writing to file...'.",
     expectedOutput: "Writing to file...",
     hint: "We simulate file ops with print for now.",
-    availableBlocks: ["print('Writing to file...')", "f = open('test.txt')", "f.write('Hi')"]
+    availableBlocks: [
+      "print('Writing to file...')", 
+      "f = open('test.txt')", "f.close()", 
+      "f.write('Hi')", "f.read()"
+    ]
   },
   {
     id: 26,
@@ -316,7 +429,10 @@ export const CURRICULUM: Mission[] = [
     task: "Import os. Print 'os.getcwd()' (Simulated output: /home).",
     expectedOutput: "/home",
     hint: "Combine the strings to simulate output.",
-    availableBlocks: ["import os", "print('/home')", "os.getcwd()"]
+    availableBlocks: [
+      "import os", "import sys", 
+      "print('/home')", "os.getcwd()", "os.listdir()"
+    ]
   },
   {
     id: 27,
@@ -327,7 +443,10 @@ export const CURRICULUM: Mission[] = [
     task: "Import random. Print 'Random Number'.",
     expectedOutput: "Random Number",
     hint: "Just printing a string placeholder.",
-    availableBlocks: ["import random", "print('Random Number')", "random.randint(1,10)"]
+    availableBlocks: [
+      "import random", "import math", 
+      "print('Random Number')", "random.randint(1,10)"
+    ]
   },
 
   // --- MISSION 6: EXCEPTION HANDLING ---
@@ -340,7 +459,10 @@ export const CURRICULUM: Mission[] = [
     task: "Print 'Error' to simulate an exception caught.",
     expectedOutput: "Error",
     hint: "Simulate the output.",
-    availableBlocks: ["print('Error')", "1 / 0", "raise Exception"]
+    availableBlocks: [
+      "print('Error')", "print('Success')", 
+      "1 / 0", "raise Exception", "try:"
+    ]
   },
   {
     id: 29,
@@ -351,7 +473,12 @@ export const CURRICULUM: Mission[] = [
     task: "Try to divide 1/0. Except: print 'Cannot divide'.",
     expectedOutput: "Cannot divide",
     hint: "Use try/except blocks.",
-    availableBlocks: ["try:", "x = 1 / 0", "except:", "print('Cannot divide')"]
+    availableBlocks: [
+      "try:", "if:", 
+      "x = 1 / 0", "x = 1 + 1", 
+      "except:", "else:", 
+      "print('Cannot divide')", "print(x)"
+    ]
   },
   {
     id: 30,
@@ -362,7 +489,11 @@ export const CURRICULUM: Mission[] = [
     task: "Raise a ValueError. (Simulated output: 'ValueError Raised').",
     expectedOutput: "ValueError Raised",
     hint: "Just print the simulation string.",
-    availableBlocks: ["print('ValueError Raised')", "raise ValueError"]
+    availableBlocks: [
+      "print('ValueError Raised')", 
+      "raise ValueError", "raise TypeError", 
+      "try:", "except ValueError:"
+    ]
   },
   {
     id: 31,
@@ -373,7 +504,11 @@ export const CURRICULUM: Mission[] = [
     task: "Try printing variable 'y' (undefined). Except: print 'Not Found'.",
     expectedOutput: "Not Found",
     hint: "try/except structure.",
-    availableBlocks: ["try:", "print(y)", "except:", "print('Not Found')"]
+    availableBlocks: [
+      "try:", "except:", 
+      "print(y)", "print('y')", 
+      "print('Not Found')", "pass"
+    ]
   },
 
   // --- MISSION 7: OOP ---
@@ -386,7 +521,11 @@ export const CURRICULUM: Mission[] = [
     task: "Define class Dog with a pass. Print 'Dog class created'.",
     expectedOutput: "Dog class created",
     hint: "Define class then print.",
-    availableBlocks: ["class Dog:", "pass", "print('Dog class created')"]
+    availableBlocks: [
+      "class Dog:", "def Dog():", 
+      "pass", "return", 
+      "print('Dog class created')"
+    ]
   },
   {
     id: 33,
@@ -397,7 +536,11 @@ export const CURRICULUM: Mission[] = [
     task: "Define class with `__init__` that prints 'Init'. Create object.",
     expectedOutput: "Init",
     hint: "Define class, init, then instantiate.",
-    availableBlocks: ["class A:", "def __init__(self):", "print('Init')", "a = A()"]
+    availableBlocks: [
+      "class A:", "class B:", 
+      "def __init__(self):", "def init():", 
+      "print('Init')", "a = A()", "a.init()"
+    ]
   },
   {
     id: 34,
@@ -408,7 +551,11 @@ export const CURRICULUM: Mission[] = [
     task: "Class B inherits from A. A has method `hi()`. Call `B().hi()`.",
     expectedOutput: "Hi",
     hint: "Class B(A):",
-    availableBlocks: ["class A:", "def hi(self): print('Hi')", "class B(A): pass", "b = B()", "b.hi()"]
+    availableBlocks: [
+      "class A:", "class B(A):", "class B:", 
+      "def hi(self): print('Hi')", "pass", 
+      "b = B()", "b.hi()", "b.hello()"
+    ]
   },
   {
     id: 35,
@@ -419,7 +566,11 @@ export const CURRICULUM: Mission[] = [
     task: "Set class variable `x=1`. Print `MyClass.x`.",
     expectedOutput: "1",
     hint: "Access variable via class name.",
-    availableBlocks: ["class MyClass:", "x = 1", "print(MyClass.x)"]
+    availableBlocks: [
+      "class MyClass:", "class Obj:", 
+      "x = 1", "self.x = 1", 
+      "print(MyClass.x)", "print(x)"
+    ]
   },
   {
     id: 36,
@@ -430,7 +581,11 @@ export const CURRICULUM: Mission[] = [
     task: "Create object `p = Person()`. Print 'Person created'.",
     expectedOutput: "Person created",
     hint: "Simulate object creation output.",
-    availableBlocks: ["class Person: pass", "p = Person()", "print('Person created')"]
+    availableBlocks: [
+      "class Person: pass", "def Person:", 
+      "p = Person()", "p = new Person()", 
+      "print('Person created')"
+    ]
   },
 
   // --- MISSION 8: ADVANCED ---
@@ -443,7 +598,10 @@ export const CURRICULUM: Mission[] = [
     task: "Create iterator for list [1, 2]. Print next(it).",
     expectedOutput: "1",
     hint: "Use iter() then next().",
-    availableBlocks: ["it = iter([1, 2])", "print(next(it))"]
+    availableBlocks: [
+      "it = iter([1, 2])", "it = [1, 2]", 
+      "print(next(it))", "print(it[0])"
+    ]
   },
   {
     id: 38,
@@ -454,7 +612,11 @@ export const CURRICULUM: Mission[] = [
     task: "Define gen that yields 5. Print next(gen()).",
     expectedOutput: "5",
     hint: "Use yield keyword.",
-    availableBlocks: ["def gen():", "yield 5", "print(next(gen()))"]
+    availableBlocks: [
+      "def gen():", "class gen:", 
+      "yield 5", "return 5", 
+      "print(next(gen()))", "print(gen())"
+    ]
   },
   {
     id: 39,
@@ -465,7 +627,11 @@ export const CURRICULUM: Mission[] = [
     task: "Define outer function returning inner function that prints 'Secret'. Call it.",
     expectedOutput: "Secret",
     hint: "Nested def.",
-    availableBlocks: ["def outer():", "def inner(): print('Secret')", "return inner", "fn = outer()", "fn()"]
+    availableBlocks: [
+      "def outer():", "def inner(): print('Secret')", 
+      "return inner", "return print", 
+      "fn = outer()", "fn()"
+    ]
   },
   {
     id: 40,
@@ -476,7 +642,11 @@ export const CURRICULUM: Mission[] = [
     task: "Use @dec on func. (Simulate output 'Decorated').",
     expectedOutput: "Decorated",
     hint: "Print the simulation.",
-    availableBlocks: ["@dec", "def func(): pass", "print('Decorated')"]
+    availableBlocks: [
+      "@dec", "#dec", 
+      "def func(): pass", 
+      "print('Decorated')"
+    ]
   },
   {
     id: 41,
@@ -487,7 +657,11 @@ export const CURRICULUM: Mission[] = [
     task: "Define class with @property name returning 'Bob'. Print obj.name.",
     expectedOutput: "Bob",
     hint: "Use @property decorator.",
-    availableBlocks: ["class P:", "@property", "def name(self): return 'Bob'", "obj = P()", "print(obj.name)"]
+    availableBlocks: [
+      "class P:", "@property", 
+      "def name(self): return 'Bob'", "def name():", 
+      "obj = P()", "print(obj.name)", "print(obj.name())"
+    ]
   },
   {
     id: 42,
@@ -498,6 +672,9 @@ export const CURRICULUM: Mission[] = [
     task: "Create a generator that yields 'End'. Print it.",
     expectedOutput: "End",
     hint: "yield + next.",
-    availableBlocks: ["def g(): yield 'End'", "print(next(g()))"]
+    availableBlocks: [
+      "def g(): yield 'End'", "def g(): return 'End'", 
+      "print(next(g()))", "print(g())"
+    ]
   }
 ];
