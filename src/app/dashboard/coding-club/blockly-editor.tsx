@@ -16,7 +16,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useSound from 'use-sound';
 import confetti from 'canvas-confetti';
 
-// --- 1. DEFINE CUSTOM BLOCKS (Optional) ---
+// --- IMPORTS FOR COLOUR BLOCKS ---
+// Ensure you have run: npm install @blockly/field-colour
+import { installAllBlocks as installColourBlocks } from '@blockly/field-colour';
+
+// Register the Colour Blocks and Generators
+installColourBlocks({
+  javascript: javascriptGenerator,
+});
+
+// --- 1. DEFINE CUSTOM BLOCKS ---
 Blockly.Blocks['get_science_fact'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput().appendField("🧪 get science fact");
@@ -34,7 +43,7 @@ javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block
       "Bananas are curved because they grow towards the sun.",
       "Water can boil and freeze at the same time."
   ];
-  const code = `[${facts.map(f => `'${f}'`).join(',')}] [Math.floor(Math.random() * ${facts.length})]`;
+  const code = `[${"'" + facts.join("','") + "'"}] [Math.floor(Math.random() * ${facts.length})]`;
   return [code, javascriptGenerator.ORDER_ATOMIC];
 };
 
@@ -54,7 +63,7 @@ const toolboxCategories = {
           { kind: 'block', type: 'logic_negate' },
           { kind: 'block', type: 'logic_boolean' },
           { kind: 'block', type: 'logic_null' },
-          { kind: 'block', type: 'logic_ternary' }, // Added Ternary
+          { kind: 'block', type: 'logic_ternary' },
         ],
       },
       // 🔄 LOOPS
@@ -79,7 +88,7 @@ const toolboxCategories = {
             }
           },
           { kind: 'block', type: 'controls_forEach' },
-          { kind: 'block', type: 'controls_flow_statements' }, // Break/Continue
+          { kind: 'block', type: 'controls_flow_statements' },
         ],
       },
       // 🧮 MATH
@@ -95,12 +104,12 @@ const toolboxCategories = {
                 B: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
             }
           },
-          { kind: 'block', type: 'math_single' }, // Sqrt, Abs, etc.
-          { kind: 'block', type: 'math_trig' },   // Sin, Cos, Tan
-          { kind: 'block', type: 'math_constant' }, // Pi, Infinity
-          { kind: 'block', type: 'math_number_property' }, // Even, Odd, Prime
+          { kind: 'block', type: 'math_single' },
+          { kind: 'block', type: 'math_trig' },
+          { kind: 'block', type: 'math_constant' },
+          { kind: 'block', type: 'math_number_property' },
           { kind: 'block', type: 'math_round' },
-          { kind: 'block', type: 'math_on_list' }, // Sum, Min, Max
+          { kind: 'block', type: 'math_on_list' },
           { kind: 'block', type: 'math_modulo' },
           { 
             kind: 'block', 
@@ -112,7 +121,7 @@ const toolboxCategories = {
           },
           { kind: 'block', type: 'math_random_int' },
           { kind: 'block', type: 'math_random_float' },
-          { kind: 'block', type: 'math_atan2' }, // Added Atan2
+          { kind: 'block', type: 'math_atan2' },
         ],
       },
       // 📝 TEXT
@@ -122,7 +131,7 @@ const toolboxCategories = {
         colour: '%{BKY_TEXTS_HUE}',
         contents: [
           { kind: 'block', type: 'text' },
-          { kind: 'block', type: 'text_multiline' }, // Added Multiline
+          { kind: 'block', type: 'text_multiline' },
           { kind: 'block', type: 'text_join' },
           { 
             kind: 'block', 
@@ -164,10 +173,10 @@ const toolboxCategories = {
           { kind: 'block', type: 'lists_getSublist' },
           { kind: 'block', type: 'lists_split' },
           { kind: 'block', type: 'lists_sort' },
-          { kind: 'block', type: 'lists_reverse' }, // Added Reverse
+          { kind: 'block', type: 'lists_reverse' },
         ],
       },
-      // 🎨 COLOUR
+      // 🎨 COLOUR (REQUIRES PLUGIN)
       {
         kind: 'category',
         name: 'Colour',
@@ -179,7 +188,7 @@ const toolboxCategories = {
           { kind: 'block', type: 'colour_blend' },
         ],
       },
-      { kind: 'sep' }, // Separator
+      { kind: 'sep' },
       // 📦 VARIABLES
       {
         kind: 'category',
@@ -207,7 +216,7 @@ const toolboxCategories = {
     ]
 };
 
-export function BlocklyEditor() {
+export default function BlocklyEditor() {
   const [xml, setXml] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -238,7 +247,6 @@ export function BlocklyEditor() {
   // --- CODE GENERATION & SAFETY ---
   useEffect(() => {
     if (workspace) {
-        // Infinite loop protection
         javascriptGenerator.INFINITE_LOOP_TRAP = 'if(--window.loopTrap < 0) throw "Infinite loop detected!";\n';
         
         const updateCode = () => {
@@ -250,7 +258,7 @@ export function BlocklyEditor() {
     }
   }, [workspace]);
 
-  // --- ACTIONS: SAVE / LOAD / RUN ---
+  // --- ACTIONS ---
   const handleSave = async () => {
     if (!user || !workspace) {
       toast({ variant: 'destructive', title: 'Login Required', description: 'Please login to save your work.' });
@@ -283,7 +291,6 @@ export function BlocklyEditor() {
     finally { setIsFetching(false); }
   }, [user, firestore, toast, workspace]);
 
-  // Load on mount
   useEffect(() => {
     if(user && workspace && isLoading) handleLoad().finally(() => setIsLoading(false));
     else if (!user && !isLoading) setIsLoading(false);
@@ -298,9 +305,8 @@ export function BlocklyEditor() {
     try {
       let outputCount = 0;
       const customLogger = (msg: any) => { outputCount++; setLogs(prev => [...prev, String(msg)]); };
-      (window as any).loopTrap = 1000; // Protection
+      (window as any).loopTrap = 1000; 
       
-      // Sandbox
       const wrappedCode = `
         const window = {}; const document = {}; 
         const alert = customLogger; const console = { log: customLogger };
@@ -319,7 +325,6 @@ export function BlocklyEditor() {
 
   return (
     <div className="flex flex-col gap-4 h-[calc(100vh-100px)]">
-        {/* Top Bar */}
         <div className="flex justify-between items-center bg-white p-2 rounded-lg border shadow-sm">
             <div className="bg-orange-100 p-2 rounded text-orange-600 font-bold flex items-center gap-2"><Code2 className="h-5 w-5" /> Block Builder</div>
             <div className="flex items-center gap-2">
@@ -330,7 +335,6 @@ export function BlocklyEditor() {
             </div>
         </div>
         
-        {/* Workspace */}
         <div className="flex-1 flex gap-4 min-h-0">
             <div className="flex-1 relative border rounded-lg overflow-hidden shadow-sm bg-slate-50">
                 <div ref={blocklyDivRef} className="absolute inset-0" />
@@ -360,4 +364,3 @@ export function BlocklyEditor() {
     </div>
   );
 }
-    
