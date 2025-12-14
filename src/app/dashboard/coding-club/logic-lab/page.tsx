@@ -1,19 +1,18 @@
 
 'use client';
 
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { CURRICULUM as CURRICULUM_FALLBACK, type Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
-import { useUser, useFirestore, useCollection } from '@/firebase';
-import { doc, setDoc, getDoc, arrayUnion, query, collection, updateDoc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, setDoc, getDoc, collection, query, updateDoc, addDoc } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, Terminal, CheckCircle2, Lock, 
-  ChevronRight, Code2, Bot, Trash2, BookOpen, Wand2 
+  ChevronRight, Code2, Bot, Trash2, BookOpen, Wand2, PlusCircle
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -21,9 +20,10 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
 
@@ -41,6 +41,8 @@ export default function LogicLabPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { role } = useRole();
+  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   // State
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
@@ -54,20 +56,21 @@ export default function LogicLabPage() {
   const [coachChat, setCoachChat] = useState<{role: 'user'|'model', text: string}[]>([]);
   const [userQuestion, setUserQuestion] = useState('');
   const [isCoachThinking, setIsCoachThinking] = useState(false);
+  
+  // Admin states
+  const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
+  const [isMissionFormOpen, setIsMissionFormOpen] = useState(false);
+  const [editingMission, setEditingMission] = useState<Mission | null>(null);
 
   // Now fetching curriculum from Firestore
   const { data: CURRICULUM, isLoading: isLoadingMissions, forceRefetch: refetchMissions } = useCollection<Mission>(
-    useMemo(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore])
+    useMemoFirebase(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore])
   );
-
-  const CURRICULUM_FALLBACK = [
-    { id: 0, title: 'Loading Mission...', section: 'Loading...', category: '', theory: '', task: 'Please wait...', expectedOutput: '', hint: '', availableBlocks: [] }
-  ];
   
   const activeMission = useMemo(() => {
-    if (!CURRICULUM) return CURRICULUM_FALLBACK[currentMissionIndex]; // Fallback while loading
-    const sortedCurriculum = [...CURRICULUM].sort((a,b) => a.id - b.id);
-    return sortedCurriculum[currentMissionIndex];
+    const curriculumData = CURRICULUM || CURRICULUM_FALLBACK;
+    const sortedCurriculum = [...curriculumData].sort((a,b) => a.id - b.id);
+    return sortedCurriculum.find(m => m.id === currentMissionIndex) || sortedCurriculum[0];
   }, [CURRICULUM, currentMissionIndex]);
 
   // Load Progress from Firestore
@@ -103,13 +106,11 @@ export default function LogicLabPage() {
     setIsRunning(true);
     setConsoleOutput('Running...');
 
-    // 1. Run Code via AI
     const result = await interpretBlockCodeAction(workspaceBlocks);
     
     if (result.success) {
         setConsoleOutput(result.output);
 
-        // 2. Check Success
         const normalizedOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normalizedExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
 
@@ -166,17 +167,22 @@ export default function LogicLabPage() {
       setIsCoachThinking(false);
   };
 
-  // Group Missions by Section
   const groupedMissions = useMemo(() => {
+    const curriculumData = CURRICULUM || CURRICULUM_FALLBACK;
     const groups: Record<string, Mission[]> = {};
-    (CURRICULUM || CURRICULUM_FALLBACK).forEach(m => {
+    [...curriculumData].sort((a,b) => a.id - b.id).forEach(m => {
         if(!groups[m.section]) groups[m.section] = [];
         groups[m.section].push(m);
     });
     return groups;
   }, [CURRICULUM]);
+  
+  const openMissionForm = (mission?: Mission) => {
+    setEditingMission(mission || null);
+    setIsMissionFormOpen(true);
+  };
 
-  if (isLoadingMissions) {
+  if (isLoadingMissions && !CURRICULUM) {
     return <div className="flex h-full w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
   
@@ -185,9 +191,9 @@ export default function LogicLabPage() {
         <div className="flex h-full w-full items-center justify-center">
             <Card className="text-center">
                 <CardHeader>
-                    <CardTitle>Loading Mission...</CardTitle>
+                    <CardTitle>Mission Not Found</CardTitle>
                     <CardContent>
-                        <p>If this takes too long, please ensure the curriculum has been loaded into Firestore.</p>
+                        <p>The selected mission could not be loaded.</p>
                     </CardContent>
                 </CardHeader>
             </Card>
@@ -209,7 +215,10 @@ export default function LogicLabPage() {
          <ScrollArea className="flex-1 p-4">
              {Object.entries(groupedMissions).map(([section, missions]) => (
                  <div key={section} className="mb-6">
-                     <h3 className="text-xs font-bold uppercase text-slate-500 mb-2">{section}</h3>
+                     <div className="flex justify-between items-center mb-2">
+                        <h3 className="text-xs font-bold uppercase text-slate-500">{section}</h3>
+                        {canManage && <Button variant="ghost" size="sm" className="h-6" onClick={() => openMissionForm()}><PlusCircle className="h-3 w-3"/></Button>}
+                     </div>
                      <div className="space-y-1">
                          {missions.map(m => {
                              const isLocked = m.id > 0 && !completedMissions.includes(m.id - 1);
@@ -217,21 +226,23 @@ export default function LogicLabPage() {
                              const isActive = m.id === currentMissionIndex;
                              
                              return (
-                                 <button
-                                    key={m.id}
-                                    disabled={isLocked}
-                                    onClick={() => { setCurrentMissionIndex(m.id); handleClear(); }}
-                                    className={`w-full text-left p-2 rounded text-sm flex items-center justify-between transition-colors
-                                        ${isActive ? 'bg-indigo-100 text-indigo-800 font-medium' : 'hover:bg-slate-200'}
-                                        ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
-                                    `}
-                                 >
-                                     <span className="flex items-center gap-2">
-                                         {isLocked ? <Lock className="h-3 w-3"/> : <span>{m.id + 1}.</span>}
-                                         {m.title}
-                                     </span>
-                                     {isCompleted && <CheckCircle2 className="h-4 w-4 text-green-600"/>}
-                                 </button>
+                                 <div key={m.id} className="group flex items-center gap-1">
+                                    <button
+                                        disabled={isLocked}
+                                        onClick={() => { setCurrentMissionIndex(m.id); handleClear(); }}
+                                        className={`w-full text-left p-2 rounded text-sm flex items-center justify-between transition-colors
+                                            ${isActive ? 'bg-indigo-100 text-indigo-800 font-medium' : 'hover:bg-slate-200'}
+                                            ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
+                                        `}
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            {isLocked ? <Lock className="h-3 w-3"/> : <span>{m.id + 1}.</span>}
+                                            {m.title}
+                                        </span>
+                                        {isCompleted && <CheckCircle2 className="h-4 w-4 text-green-600"/>}
+                                    </button>
+                                    {canManage && <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => openMissionForm(m)}><Edit className="h-3 w-3"/></Button>}
+                                 </div>
                              )
                          })}
                      </div>
@@ -263,16 +274,10 @@ export default function LogicLabPage() {
 
           <div className="flex-1 flex gap-4 min-h-0">
               
-              {/* TOOLBOX */}
               <div className="w-1/3 bg-slate-100 rounded-lg p-4 flex flex-col gap-2 overflow-y-auto border">
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Available Blocks</h4>
                   {activeMission.availableBlocks.map((block, i) => (
-                      <Button 
-                        key={i} 
-                        variant="secondary" 
-                        className="justify-start font-mono text-xs h-auto py-2 bg-white border shadow-sm hover:border-indigo-400"
-                        onClick={() => handleAddBlock(block)}
-                      >
+                      <Button key={i} variant="secondary" className="justify-start font-mono text-xs h-auto py-2 bg-white border shadow-sm hover:border-indigo-400" onClick={() => handleAddBlock(block)}>
                           {block}
                       </Button>
                   ))}
@@ -281,20 +286,12 @@ export default function LogicLabPage() {
               <div className="flex-1 flex flex-col gap-4">
                   
                   <div className="flex-1 bg-white rounded-lg border-2 border-dashed border-slate-300 p-4 overflow-y-auto relative">
-                      {workspaceBlocks.length === 0 && (
-                          <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">
-                              Click blocks to add them here
-                          </div>
-                      )}
+                      {workspaceBlocks.length === 0 && <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">Click blocks to add them here</div>}
                       <div className="space-y-2">
                           {workspaceBlocks.map((block, i) => (
                               <div key={i} className="flex items-center gap-2 animate-in slide-in-from-left-2 fade-in duration-200">
-                                  <div className="bg-indigo-600 text-white px-3 py-2 rounded shadow-md font-mono text-sm flex-1">
-                                      {block}
-                                  </div>
-                                  <button onClick={() => handleRemoveBlock(i)} className="text-red-400 hover:text-red-600">
-                                      <Trash2 className="h-4 w-4"/>
-                                  </button>
+                                  <div className="bg-indigo-600 text-white px-3 py-2 rounded shadow-md font-mono text-sm flex-1">{block}</div>
+                                  <button onClick={() => handleRemoveBlock(i)} className="text-red-400 hover:text-red-600"><Trash2 className="h-4 w-4"/></button>
                               </div>
                           ))}
                       </div>
@@ -320,18 +317,13 @@ export default function LogicLabPage() {
           </div>
       </div>
 
-      {/* CODE COACH MODAL */}
       <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
           <DialogContent className="sm:max-w-[400px]">
-              <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle>
-              </DialogHeader>
+              <DialogHeader><DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle></DialogHeader>
               <div className="h-[300px] bg-slate-50 rounded border p-3 overflow-y-auto space-y-3">
                   {coachChat.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] p-2 rounded text-xs ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white border text-slate-700'}`}>
-                              {msg.text}
-                          </div>
+                          <div className={`max-w-[85%] p-2 rounded text-xs ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white border text-slate-700'}`}>{msg.text}</div>
                       </div>
                   ))}
                   {isCoachThinking && <div className="text-xs text-slate-400 animate-pulse">Coach is typing...</div>}
@@ -344,6 +336,69 @@ export default function LogicLabPage() {
               </DialogFooter>
           </DialogContent>
       </Dialog>
+      
+      {canManage && <Dialog open={isMissionFormOpen} onOpenChange={setIsMissionFormOpen}><MissionForm mission={editingMission} setOpen={setIsMissionFormOpen} onSuccess={refetchMissions} /></Dialog>}
     </div>
+  );
+}
+
+function MissionForm({ mission, setOpen, onSuccess }: { mission: Mission | null; setOpen: (open: boolean) => void; onSuccess: () => void; }) {
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<Mission>({
+    defaultValues: mission || {
+      id: 0,
+      section: '',
+      title: '',
+      category: 'Basics',
+      theory: '',
+      task: '',
+      expectedOutput: '',
+      hint: '',
+      availableBlocks: [],
+    },
+  });
+
+  const onSubmit = async (data: Mission) => {
+    setIsSubmitting(true);
+    try {
+        if(mission) { // Editing
+            await updateDoc(doc(firestore, 'logic_lab_missions', mission.id.toString()), data);
+            toast({ title: "Mission Updated" });
+        } else { // Creating
+            const newDocRef = doc(firestore, 'logic_lab_missions', data.id.toString());
+            await setDoc(newDocRef, data);
+            toast({ title: "Mission Created" });
+        }
+        onSuccess();
+        setOpen(false);
+    } catch(e: any) {
+        toast({ variant: 'destructive', title: 'Error', description: e.message });
+    } finally {
+        setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <DialogContent className="max-w-3xl">
+      <DialogHeader>
+        <DialogTitle>{mission ? 'Edit Mission' : 'Create New Mission'}</DialogTitle>
+      </DialogHeader>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Input {...form.register('title')} placeholder="Title" />
+          <Textarea {...form.register('task')} placeholder="Task" />
+          <Textarea {...form.register('theory')} placeholder="Theory (Markdown)" />
+          <Input {...form.register('expectedOutput')} placeholder="Expected Output" />
+          <Input {...form.register('hint')} placeholder="Hint" />
+          <Textarea {...form.register('availableBlocks', { setValueAs: v => v.split(',').map(s => s.trim()) })} placeholder="Blocks, comma, separated" />
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="animate-spin" /> : 'Save Mission'}
+          </Button>
+        </form>
+      </Form>
+    </DialogContent>
   );
 }
