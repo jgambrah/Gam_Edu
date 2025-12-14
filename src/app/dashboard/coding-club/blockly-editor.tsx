@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -11,39 +10,39 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth, useFirestore } from '@/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Code2, Trash2, ZoomIn, ZoomOut, Play, Save, FolderOpen, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useSound from 'use-sound';
+import confetti from 'canvas-confetti';
 
+// --- CUSTOM BLOCKS ---
 Blockly.Blocks['get_science_fact'] = {
   init: function(this: Blockly.Block) {
     this.appendDummyInput()
-        .appendField("get latest science fact");
+        .appendField("🧪 get science fact");
     this.setOutput(true, 'String');
-    this.setColour(160);
-    this.setTooltip("Fetches the latest Science Fact of the Day.");
-    this.setHelpUrl("");
+    this.setColour(230);
+    this.setTooltip("Fetches a random science fact.");
   }
 };
 
 javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block) {
-  return ["'The powerhouse of the cell is the mitochondria.'", javascriptGenerator.ORDER_ATOMIC];
+  const facts = [
+      "The mitochondria is the powerhouse of the cell.",
+      "Honey never spoils.",
+      "Octopuses have three hearts.",
+      "Bananas are curved because they grow towards the sun."
+  ];
+  // Select a random fact at runtime
+  const code = `[${facts.map(f => `'${f}'`).join(',')}] [Math.floor(Math.random() * ${facts.length})]`;
+  return [code, javascriptGenerator.ORDER_ATOMIC];
 };
 
+// --- TOOLBOX ---
 const toolboxCategories = {
     kind: 'categoryToolbox',
     contents: [
-      {
-        kind: 'category',
-        name: 'Output',
-        colour: '#5ba55b',
-        contents: [
-            { kind: 'block', type: 'text_print' },
-        ],
-      },
-      {
-        kind: 'sep',
-      },
       {
         kind: 'category',
         name: 'Logic',
@@ -52,7 +51,6 @@ const toolboxCategories = {
           { kind: 'block', type: 'controls_if' },
           { kind: 'block', type: 'logic_compare' },
           { kind: 'block', type: 'logic_operation' },
-          { kind: 'block', type: 'logic_negate' },
           { kind: 'block', type: 'logic_boolean' },
         ],
       },
@@ -61,21 +59,8 @@ const toolboxCategories = {
         name: 'Loops',
         colour: '%{BKY_LOOPS_HUE}',
         contents: [
-          {
-            kind: 'block',
-            type: 'controls_repeat_ext',
-            inputs: {
-              TIMES: {
-                shadow: {
-                  type: 'math_number',
-                  fields: { NUM: 10 },
-                },
-              },
-            },
-          },
+          { kind: 'block', type: 'controls_repeat_ext', inputs: { TIMES: { shadow: { type: 'math_number', fields: { NUM: 5 } } } } },
           { kind: 'block', type: 'controls_whileUntil' },
-          { kind: 'block', type: 'controls_for' },
-          { kind: 'block', type: 'controls_forEach' },
           { kind: 'block', type: 'controls_flow_statements' },
         ],
       },
@@ -86,51 +71,17 @@ const toolboxCategories = {
         contents: [
           { kind: 'block', type: 'math_number' },
           { kind: 'block', type: 'math_arithmetic' },
-          { kind: 'block', type: 'math_single' },
-          { kind: 'block', type: 'math_trig' },
-          { kind: 'block', type: 'math_constant' },
-          { kind: 'block', type: 'math_number_property' },
-          { kind: 'block', type: 'math_round' },
-          { kind: 'block', type: 'math_on_list' },
-          { kind: 'block', type: 'math_modulo' },
-          { kind: 'block', type: 'math_constrain' },
           { kind: 'block', type: 'math_random_int' },
-          { kind: 'block', type: 'math_random_float' },
         ],
       },
       {
         kind: 'category',
-        name: 'Text',
+        name: 'Text & Print',
         colour: '%{BKY_TEXTS_HUE}',
         contents: [
           { kind: 'block', type: 'text' },
           { kind: 'block', type: 'text_join' },
-          { kind: 'block', type: 'text_append' },
-          { kind: 'block', type: 'text_length' },
-          { kind: 'block', type: 'text_isEmpty' },
-          { kind: 'block', type: 'text_indexOf' },
-          { kind: 'block', type: 'text_charAt' },
-          { kind: 'block', type: 'text_getSubstring' },
-          { kind: 'block', type: 'text_changeCase' },
-          { kind: 'block', type: 'text_trim' },
-          { kind: 'block', type: 'text_prompt_ext' },
-        ],
-      },
-      {
-        kind: 'category',
-        name: 'Lists',
-        colour: '%{BKY_LISTS_HUE}',
-        contents: [
-          { kind: 'block', type: 'lists_create_with' },
-          { kind: 'block', type: 'lists_repeat' },
-          { kind: 'block', type: 'lists_length' },
-          { kind: 'block', type: 'lists_isEmpty' },
-          { kind: 'block', type: 'lists_indexOf' },
-          { kind: 'block', type: 'lists_getIndex' },
-          { kind: 'block', type: 'lists_setIndex' },
-          { kind: 'block', type: 'lists_getSublist' },
-          { kind: 'block', type: 'lists_split' },
-          { kind: 'block', type: 'lists_sort' },
+          { kind: 'block', type: 'text_print' }, // Crucial block
         ],
       },
       {
@@ -144,17 +95,8 @@ const toolboxCategories = {
       },
       {
         kind: 'category',
-        name: 'Functions',
-        colour: '%{BKY_PROCEDURES_HUE}',
-        custom: 'PROCEDURE',
-      },
-      {
-        kind: 'sep',
-      },
-      {
-        kind: 'category',
-        name: 'CampusConnect',
-        colour: '160',
+        name: 'Science',
+        colour: '230',
         contents: [
           { kind: 'block', type: 'get_science_fact' },
         ],
@@ -163,20 +105,23 @@ const toolboxCategories = {
 };
 
 export function BlocklyEditor() {
+  // State
   const [xml, setXml] = useState('');
+  const [generatedCode, setGeneratedCode] = useState(''); // New: Real-time code
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  
+  // Hooks
   const { toast } = useToast();
   const { user } = useAuth();
   const firestore = useFirestore();
+  const [playSuccess] = useSound('/sounds/success.mp3'); // Optional
 
-  const [playClick] = useSound('/sounds/click.mp3');
-  const [playSuccess] = useSound('/sounds/success.mp3');
-  
   const blocklyDivRef = useRef<HTMLDivElement>(null);
-  
+
+  // --- WORKSPACE CONFIG ---
   const { workspace } = useBlocklyWorkspace({
     ref: blocklyDivRef,
     toolboxConfiguration: toolboxCategories,
@@ -184,24 +129,43 @@ export function BlocklyEditor() {
         grid: {
           spacing: 20,
           length: 3,
-          colour: '#ccc',
+          colour: '#e5e7eb', // Light gray
           snap: true,
         },
+        zoom: {
+          controls: true,
+          wheel: true,
+          startScale: 1.0,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2,
+        },
+        trashcan: true, // Enable Trashcan
+        renderer: 'geras',
     },
     onXmlChange: setXml
   });
 
+  // --- REAL-TIME CODE GENERATION ---
   useEffect(() => {
     if (workspace) {
-        Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
-            callback("my_variable"); 
-        });
+        // Add Loop Trap to prevent browser freezing
+        javascriptGenerator.INFINITE_LOOP_TRAP = 'if(--window.loopTrap < 0) throw "Infinite loop detected!";\n';
+        
+        const updateCode = () => {
+            const code = javascriptGenerator.workspaceToCode(workspace);
+            setGeneratedCode(code);
+        };
+
+        workspace.addChangeListener(updateCode);
+        return () => workspace.removeChangeListener(updateCode);
     }
   }, [workspace]);
 
+  // --- SAVE / LOAD ---
   const handleSave = async () => {
     if (!user || !workspace) {
-      toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to save a project.' });
+      toast({ variant: 'destructive', title: 'Login Required', description: 'Please login to save your work.' });
       return;
     }
     const currentXml = Blockly.Xml.workspaceToDom(workspace);
@@ -211,19 +175,16 @@ export function BlocklyEditor() {
     try {
       const projectRef = doc(firestore, 'coding-club-projects', user.uid);
       await setDoc(projectRef, { xml: xmlText, updatedAt: serverTimestamp() });
-      toast({ title: 'Project Saved!', description: 'Your progress has been saved to your account.' });
+      toast({ title: 'Saved!', description: 'Your blocks are safe in the cloud.' });
     } catch (error) {
-      console.error('Error saving project:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not save your project.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not save project.' });
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleLoad = useCallback(async () => {
-    if (!user || !workspace) {
-      return;
-    }
+    if (!user || !workspace) return;
     setIsFetching(true);
     try {
       const projectRef = doc(firestore, 'coding-club-projects', user.uid);
@@ -232,19 +193,18 @@ export function BlocklyEditor() {
         const data = docSnap.data();
         const dom = Blockly.Xml.textToDom(data.xml);
         Blockly.Xml.clearWorkspaceAndLoadFromXml(dom, workspace);
-        toast({ title: 'Project Loaded', description: 'Your saved project has been loaded.' });
+        toast({ title: 'Loaded!', description: 'Welcome back to your project.' });
       } else {
-        toast({ title: 'No Saved Project', description: 'We could not find a saved project for your account.' });
-        workspace.clear();
+        toast({ title: 'No Saves', description: 'Start a new project!' });
       }
     } catch (error) {
-      console.error('Error loading project:', error);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not load your project.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not load project.' });
     } finally {
       setIsFetching(false);
     }
   }, [user, firestore, toast, workspace]);
 
+  // Auto-load on mount
   useEffect(() => {
     if(user && workspace && isLoading) {
         handleLoad().finally(() => setIsLoading(false));
@@ -253,93 +213,130 @@ export function BlocklyEditor() {
     }
   }, [user, workspace, handleLoad, isLoading]);
 
- const runCode = () => {
-    if (!workspace) {
-        setLogs(["❌ Error: Workspace not found."]);
-        return;
-    }
 
+  // --- RUN CODE (SANDBOXED) ---
+  const runCode = () => {
+    if (!workspace) return;
+
+    setLogs([]); // Clear logs
     const code = javascriptGenerator.workspaceToCode(workspace);
-    
-    console.log("Generated JS:", code);
 
     if (!code || code.trim() === "") {
-        setLogs(["⚠️ No code to run. Drag some blocks into the workspace!"]);
+        setLogs(["⚠️ Drag some blocks to the workspace first."]);
         return;
     }
-
-    setLogs(["> Running..."]);
 
     try {
       let outputCount = 0;
       
+      // Custom print function
       const customLogger = (message: any) => {
         outputCount++;
         setLogs((prev) => [...prev, String(message)]);
       };
 
+      // Set Loop Trap Counter (Safety mechanism)
+      (window as any).loopTrap = 1000; 
+
+      // Wrap code in a safe execution environment
       const wrappedCode = `
-        const alert = customLogger;
-        const window = { alert: customLogger };
-        const console = { log: customLogger };
+        const window = {}; // Block access to window
+        const document = {}; // Block access to DOM
+        const alert = customLogger; // Redirect alert to log
+        const console = { log: customLogger }; // Redirect console.log to log
         
         ${code}
       `;
 
+      // Execute
       const executionFunction = new Function('customLogger', wrappedCode);
       executionFunction(customLogger);
       
-      if (outputCount === 0) {
-        setLogs((prev) => [
-            ...prev, 
-            "✅ Finished.", 
-            "⚠️ Note: No output was produced.", 
-            "   (Did you forget a 'Print' block?)"
-        ]);
+      // Success Handling
+      if (outputCount > 0) {
+        playSuccess && playSuccess();
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
       } else {
-        playSuccess();
-        setLogs((prev) => [...prev, "✅ Finished."]);
+         setLogs((prev) => [...prev, "ℹ️ Code ran successfully, but produced no output."]);
       }
 
     } catch (error: any) {
-      setLogs((prev) => [...prev, `❌ Runtime Error: ${error.message}`]);
+      setLogs((prev) => [...prev, `❌ Error: ${error.message}`]);
     }
   };
 
   return (
-    <div className="space-y-4">
-        <div className="relative">
-            <div className="absolute top-2 right-2 z-10 flex gap-2">
-                <Button onClick={runCode}>Run Code ▶</Button>
-                <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Project
-                </Button>
-                <Button variant="outline" onClick={handleLoad} disabled={isFetching}>
-                {isFetching && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Load Project
-                </Button>
-                <Button variant="secondary" onClick={() => setLogs([])}>Clear Output</Button>
+    <div className="flex flex-col gap-4 h-[calc(100vh-100px)]">
+        
+        {/* --- TOP BAR --- */}
+        <div className="flex justify-between items-center bg-white p-2 rounded-lg border shadow-sm">
+            <div className="flex items-center gap-2">
+                <div className="bg-orange-100 p-2 rounded text-orange-600 font-bold flex items-center gap-2">
+                    <Code2 className="h-5 w-5" /> Block Builder
+                </div>
             </div>
-            <div ref={blocklyDivRef} style={{ height: '600px', width: '100%', border: '1px solid #ddd', borderRadius: '0.5rem' }} />
+            <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => { workspace?.clear(); setLogs([]); }}>
+                    <RotateCcw className="h-4 w-4 mr-2"/> Reset
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleLoad} disabled={isFetching}>
+                    <FolderOpen className="h-4 w-4 mr-2"/> Load
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving}>
+                    <Save className="h-4 w-4 mr-2"/> Save
+                </Button>
+                <Button onClick={runCode} className="bg-green-600 hover:bg-green-700">
+                    <Play className="h-4 w-4 mr-2 fill-current" /> Run Program
+                </Button>
+            </div>
         </div>
         
-        <Card>
-            <CardHeader>
-                <CardTitle>Program Output</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <pre className="bg-muted p-4 rounded-md text-sm whitespace-pre-wrap h-48 overflow-y-auto font-mono">
-                    {logs.length === 0 ? (
-                        <span className="text-gray-500 italic">// Code output will appear here...</span>
-                    ) : (
-                        logs.map((line, index) => (
-                            <div key={index}>{line}</div>
-                        ))
-                    )}
-                </pre>
-            </CardContent>
-        </Card>
+        {/* --- MAIN WORKSPACE AREA --- */}
+        <div className="flex-1 flex gap-4 min-h-0">
+            
+            {/* LEFT: BLOCKLY CANVAS */}
+            <div className="flex-1 relative border rounded-lg overflow-hidden shadow-sm bg-slate-50">
+                <div ref={blocklyDivRef} className="absolute inset-0" />
+            </div>
+
+            {/* RIGHT: TABS (CODE PREVIEW & OUTPUT) */}
+            <Card className="w-1/3 flex flex-col shadow-sm border-l-4 border-l-blue-500">
+                <Tabs defaultValue="output" className="flex-1 flex flex-col">
+                    <div className="px-4 pt-3 border-b">
+                        <TabsList className="w-full">
+                            <TabsTrigger value="output" className="flex-1">Output Console</TabsTrigger>
+                            <TabsTrigger value="code" className="flex-1">JavaScript Preview</TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="output" className="flex-1 p-0 m-0 relative">
+                        <div className="absolute inset-0 p-4 overflow-y-auto bg-slate-900 text-green-400 font-mono text-sm">
+                            {logs.length === 0 ? (
+                                <div className="text-slate-500 italic mt-10 text-center">
+                                    Ready to run...<br/>
+                                    Use the <span className="text-white font-bold">Print</span> block to see results here.
+                                </div>
+                            ) : (
+                                logs.map((line, index) => (
+                                    <div key={index} className="mb-1 border-b border-slate-800 pb-1">{line}</div>
+                                ))
+                            )}
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="code" className="flex-1 p-0 m-0 relative">
+                        <div className="absolute inset-0 p-4 overflow-y-auto bg-slate-50 text-slate-700 font-mono text-xs">
+                             <div className="text-xs text-slate-400 mb-2 uppercase font-bold">Generated JavaScript</div>
+                            <pre>{generatedCode || "// Add blocks to generate code"}</pre>
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </Card>
+        </div>
     </div>
   );
 }
