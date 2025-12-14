@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { CURRICULUM as CURRICULUM_FALLBACK_DATA, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -97,10 +97,10 @@ export default function LogicLabPage() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
-
-  const isAdmin = role === 'Administrator' || role === 'Director';
   const CURRICULUM_FALLBACK = CURRICULUM_FALLBACK_DATA;
 
+  const isAdmin = role === 'Administrator' || role === 'Director';
+  
   // --- STATE ---
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<number[]>([]);
@@ -117,7 +117,7 @@ export default function LogicLabPage() {
 
   // --- DATA FETCHING ---
   const { data: CURRICULUM, isLoading: isLoadingMissions, forceRefetch: refetchMissions } = useCollection<Mission>(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'logic_lab_missions')) : null, [firestore])
+    useMemoFirebase(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore])
   );
   
   const activeMission = useMemo(() => {
@@ -377,7 +377,9 @@ export default function LogicLabPage() {
                 <DialogHeader><DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle></DialogHeader>
                 <div className="h-[300px] bg-slate-50 rounded border p-3 overflow-y-auto space-y-3">
                     {coachChat.map((msg, i) => (
-                        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[85%] p-2 rounded text-xs ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white border text-slate-700'}`}>{msg.text}</div></div>
+                        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[85%] p-2 rounded text-xs ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white border text-slate-700'}`}>{msg.text}</div>
+                        </div>
                     ))}
                     {isCoachThinking && <div className="text-xs text-slate-400 animate-pulse">Coach is typing...</div>}
                 </div>
@@ -396,4 +398,3 @@ export default function LogicLabPage() {
     </>
   );
 }
-
