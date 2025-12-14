@@ -1,28 +1,26 @@
 
 'use client';
 
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Code, MousePointerClick, Youtube, Code2, BrainCircuit } from 'lucide-react';
-import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
+import React from 'react';
 import dynamic from 'next/dynamic';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Loader2, Code, MousePointerClick, Youtube, BrainCircuit } from 'lucide-react';
+import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Import the Editor Dynamically with SSR FALSE
 const BlocklyEditor = dynamic(
-  () => import('./blockly-editor').then((mod) => mod.BlocklyEditor),
-  {
+  () => import('@/components/BlocklyEditor'), 
+  { 
     ssr: false,
-    loading: () => <Skeleton className="h-[600px] w-full" />,
+    loading: () => (
+      <div className="flex items-center justify-center h-[500px] bg-slate-50 border rounded-lg text-slate-400 gap-2">
+        <Loader2 className="h-6 w-6 animate-spin" />
+        Loading Block Editor...
+      </div>
+    )
   }
 );
-
 
 export default function CodingClubPage() {
   return (
