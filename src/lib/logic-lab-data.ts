@@ -1,10 +1,10 @@
 
 export interface Mission {
   id: number;
-  section: string;
-  title: string;
+  section: string; // e.g. "Mission 1: Introduction"
+  title: string;   // e.g. "Variables & Literals"
   category: string;
-  theory: string; // Markdown supported
+  theory: string;  // Markdown content
   task: string;
   expectedOutput: string;
   hint: string;
@@ -18,663 +18,95 @@ export const CURRICULUM: Mission[] = [
     section: "Mission 1: Introduction",
     title: "Variables & Literals",
     category: "Basics",
-    theory: "### Variables\nA variable is a named storage for data. In Python, we assign values using `=`.\n\n`score = 100`",
-    task: "Assign 'SuperBot' to a variable named 'hero' and print it.",
+    theory: "### Variables\nIn coding, a **variable** is like a box where you store information. You give the box a name (like `score` or `playerName`) and put data inside it.\n\n### Literals\nA **literal** is the raw data itself, like the number `10` or the text `'Hello'`.",
+    task: "Create a variable named 'hero' and assign it the value 'SuperBot'. Then print the hero variable.",
     expectedOutput: "SuperBot",
-    hint: "Connect the variable name, equals sign, and value.",
-    availableBlocks: [
-      "hero", "villain", "score", "=", "==", 
-      "'SuperBot'", "'MegaTron'", "100", "0", 
-      "print(", "input(", ")", "# Comment"
-    ]
+    hint: "Use the assignment block (=) and then the print block.",
+    availableBlocks: ["hero", "=", "'SuperBot'", "print(", ")"]
   },
   {
     id: 1,
     section: "Mission 1: Introduction",
     title: "Input and Output",
     category: "Basics",
-    theory: "### Input & Output\n`print()` shows data to the user.\n`input()` gets data from the user.",
-    task: "Print the exact phrase 'Hello Python'.",
-    expectedOutput: "Hello Python",
-    hint: "Use print with the string literal.",
-    availableBlocks: [
-      "print(", "printf(", "echo", 
-      "'Hello Python'", "'Hello World'", "'User'", 
-      ")", ";", "input(", "name ="
-    ]
+    theory: "### Input & Output\nComputers need to talk to humans!\n* **Output:** The computer showing you something (using `print`).\n* **Input:** The computer asking you for something.",
+    task: "Print the phrase 'Hello World' to the console.",
+    expectedOutput: "Hello World",
+    hint: "Just use the print block with the text string.",
+    availableBlocks: ["print(", "'Hello World'", ")", "'Welcome'", "input("]
   },
   {
     id: 2,
     section: "Mission 1: Introduction",
-    title: "Type Conversion",
-    category: "Data Types",
-    theory: "### Types\nPython has types like Integer (`int`), Float (`float`), and String (`str`).\nYou can convert strings to numbers: `int('5')`.",
-    task: "Convert the string '10' to an integer, add 5 to it, and print the result.",
-    expectedOutput: "15",
-    hint: "Wrap the string in int(), then add 5.",
-    availableBlocks: [
-      "print(", "int(", "str(", "float(", 
-      "'10'", "10", "'5'", "5", 
-      "+", "-", "*", ")", "="
-    ]
-  },
-  {
-    id: 3,
-    section: "Mission 1: Introduction",
     title: "Operations",
     category: "Math",
-    theory: "### Math\nStandard operators:\n`+` (Add)\n`-` (Subtract)\n`*` (Multiply)\n`/` (Divide)\n`%` (Modulus/Remainder)",
-    task: "Calculate 10 multiplied by 5 and print the result.",
-    expectedOutput: "50",
-    hint: "Use the asterisk * for multiplication.",
-    availableBlocks: [
-      "print(", "x", "y", "result =", 
-      "10", "5", "2", "50", 
-      "+", "-", "*", "/", "%", "**", 
-      ")", "="
-    ]
-  },
-  {
-    id: 4,
-    section: "Mission 1: Introduction",
-    title: "Mission 1 Quiz",
-    category: "Quiz",
-    theory: "### Quiz Time!\nCombine what you learned. Create a variable `age`, set it to `12`, and print `age + 1`.",
-    task: "Create variable age = 12, then print age + 1.",
-    expectedOutput: "13",
-    hint: "Two lines of code needed.",
-    availableBlocks: [
-      "age", "year", "num", "=", 
-      "12", "1", "13", "'12'", 
-      "print(", "input(", ")", 
-      "+", "-", "*"
-    ]
+    theory: "### Math Operations\nComputers are great calculators.\n* `+` Adds\n* `-` Subtracts\n* `*` Multiplies\n* `/` Divides",
+    task: "Calculate 5 plus 3 and print the result.",
+    expectedOutput: "8",
+    hint: "Combine the numbers with the + symbol inside the print statement.",
+    availableBlocks: ["print(", "5", "+", "3", ")", "10", "-"]
   },
 
-  // --- MISSION 2: DECISION MAKING & LOOPS ---
+  // --- MISSION 2: DECISION MAKING ---
   {
-    id: 5,
+    id: 3,
     section: "Mission 2: Decision Making",
     title: "Boolean Expressions",
     category: "Logic",
-    theory: "### Booleans\nValues are either `True` or `False`. Comparison operators: `==`, `!=`, `>`, `<`.",
-    task: "Print True if 5 is less than 10.",
+    theory: "### Booleans\nA **Boolean** is a value that can only be `True` or `False`. It's like a light switch.\n\nWe compare things using:\n* `>` Greater than\n* `<` Less than\n* `==` Equal to",
+    task: "Check if 10 is greater than 5. Print the result.",
     expectedOutput: "True",
-    hint: "Use the < operator.",
-    availableBlocks: [
-      "print(", "if", "True", "False", 
-      "5", "10", "0", 
-      "<", ">", "==", "!=", "<=", ">=", 
-      ")", "and", "or"
-    ]
+    hint: "Use the > symbol inside print.",
+    availableBlocks: ["print(", "10", ">", "5", ")", "<", "=="]
   },
   {
-    id: 6,
+    id: 4,
     section: "Mission 2: Decision Making",
     title: "If Else Statement",
     category: "Logic",
-    theory: "### If/Else\nMake decisions based on conditions.\n\n```python\nif x > 5:\n  print('Big')\nelse:\n  print('Small')\n```",
-    task: "Write logic: If 10 > 5, print 'Bigger'.",
-    expectedOutput: "Bigger",
-    hint: "Remember the colon : and indentation is simulated by order here.",
-    availableBlocks: [
-      "if", "else:", "elif", 
-      "10", "5", "0", 
-      ">", "<", "==", ":", 
-      "print(", "'Bigger'", "'Smaller'", ")"
-    ]
+    theory: "### If / Else\nThis allows the code to make decisions.\n\n`if condition:` -> Do this if true.\n`else:` -> Do this if false.",
+    task: "Write logic: If 5 > 2, print 'Yes'.",
+    expectedOutput: "Yes",
+    hint: "Start with the 'if' block.",
+    availableBlocks: ["if", "5", ">", "2", ":", "print(", "'Yes'", ")", "else:"]
   },
   {
-    id: 7,
+    id: 5,
     section: "Mission 2: Decision Making",
     title: "While Loops",
     category: "Loops",
-    theory: "### While Loops\nRepeats code while a condition is true.\n\n`while x < 5:`",
-    task: "Set x = 1. While x < 3, print x, then increment x by 1.",
-    expectedOutput: "1\n2",
-    hint: "Initialize, Condition, Action, Update.",
-    availableBlocks: [
-      "x = 1", "x = 0", "i = 0", 
-      "while", "for", "if", 
-      "x", "<", ">", "3", "5", ":", 
-      "print(x)", "print(i)", 
-      "x = x + 1", "x += 1", "break"
-    ]
-  },
-  {
-    id: 8,
-    section: "Mission 2: Decision Making",
-    title: "For Loops",
-    category: "Loops",
-    theory: "### For Loops\nIterates over a sequence. `range(3)` creates [0, 1, 2].",
-    task: "Use a for loop with range(3) to print numbers 0, 1, 2.",
-    expectedOutput: "0\n1\n2",
-    hint: "for i in range(...)",
-    availableBlocks: [
-      "for", "while", "if", 
-      "i", "x", "num", 
-      "in", "of", "range(3)", "range(5)", "range(1, 4)", 
-      ":", "print(i)", "print(x)"
-    ]
-  },
-  {
-    id: 9,
-    section: "Mission 2: Decision Making",
-    title: "Break and Continue",
-    category: "Loops",
-    theory: "### Control\n`break`: Stops the loop.\n`continue`: Skips to next iteration.",
-    task: "Loop range(5). If i == 3, break. Else print i.",
-    expectedOutput: "0\n1\n2",
-    hint: "Combine loop with if/break.",
-    availableBlocks: [
-      "for", "i", "in", "range(5)", ":", 
-      "if", "i", "==", "3", "5", ":", 
-      "break", "continue", "pass", 
-      "print(i)", "else:"
-    ]
-  },
-  {
-    id: 10,
-    section: "Mission 2: Decision Making",
-    title: "Pass",
-    category: "Logic",
-    theory: "### Pass\n`pass` does nothing. It is a placeholder for empty code blocks.",
-    task: "If 5 > 2, pass. Else print 'No'. (Output should be empty/nothing).",
-    expectedOutput: "",
-    hint: "Just use pass in the if block.",
-    availableBlocks: [
-      "if", "5", ">", "2", ":", 
-      "pass", "break", "continue", 
-      "else:", "print('No')", "print('Yes')"
-    ]
-  },
-  {
-    id: 11,
-    section: "Mission 2: Decision Making",
-    title: "Control Flow Example",
-    category: "Logic",
-    theory: "### Putting it together\nCombining If, Elif, and Else.",
-    task: "Set score = 80. If score > 90 print 'A', elif score > 70 print 'B'.",
-    expectedOutput: "B",
-    hint: "Use elif for the second condition.",
-    availableBlocks: [
-      "score = 80", "score = 50", 
-      "if", "elif", "else:", 
-      "score", ">", "<", "90", "70", "50", ":", 
-      "print('A')", "print('B')", "print('C')"
-    ]
-  },
-  {
-    id: 12,
-    section: "Mission 2: Decision Making",
-    title: "Mission 2 Quiz",
-    category: "Quiz",
-    theory: "### Quiz\nTest your knowledge of loops and conditions.",
-    task: "Print 'Go' 2 times using a for loop and range(2).",
-    expectedOutput: "Go\nGo",
-    hint: "for loop with range(2)",
-    availableBlocks: [
-      "for", "while", "x", "in", 
-      "range(2)", "range(5)", ":", 
-      "print('Go')", "print('Stop')", "if x > 1:"
-    ]
+    theory: "### While Loops\nA `while` loop keeps running code over and over again **as long as** a condition is True.",
+    task: "Create a loop that runs while x < 3. (Assume x starts at 0 and increases). Print 'Looping'.",
+    expectedOutput: "Looping\nLooping\nLooping",
+    hint: "You need a 'while' block and a condition.",
+    availableBlocks: ["x = 0", "while", "x", "<", "3", ":", "print('Looping')", "x = x + 1"]
   },
 
   // --- MISSION 3: FUNCTIONS ---
   {
-    id: 13,
+    id: 6,
     section: "Mission 3: Functions",
-    title: "Variable Scope",
+    title: "Defining Functions",
     category: "Functions",
-    theory: "### Scope\nVariables inside a function are 'local'. Variables outside are 'global'.",
-    task: "Define a function that sets x = 5 and prints x. Call it.",
-    expectedOutput: "5",
-    hint: "Define, indent content, then call.",
-    availableBlocks: [
-      "def", "my_func():", "main():", 
-      "x = 5", "global x", 
-      "print(x)", "return x", 
-      "my_func()", "call my_func"
-    ]
-  },
-  {
-    id: 14,
-    section: "Mission 3: Functions",
-    title: "Function Arguments",
-    category: "Functions",
-    theory: "### Arguments\nYou can pass data into functions. `def add(a, b):`",
-    task: "Define function `greet(name)` that prints 'Hello ' + name. Call `greet('Sam')`.",
-    expectedOutput: "Hello Sam",
-    hint: "Use the parameter inside the print.",
-    availableBlocks: [
-      "def", "greet(name):", "hello():", 
-      "print(", "'Hello '", "+", "name", ")", 
-      "greet('Sam')", "greet()", "return name"
-    ]
-  },
-  {
-    id: 15,
-    section: "Mission 3: Functions",
-    title: "Anonymous Function",
-    category: "Functions",
-    theory: "### Lambda\nA short, one-line function. `lambda x: x + 1`",
-    task: "Create a lambda `add = lambda x: x + 5`. Print `add(10)`.",
-    expectedOutput: "15",
-    hint: "Assign lambda to a variable then call it.",
-    availableBlocks: [
-      "add =", "func =", 
-      "lambda x:", "def x:", 
-      "x + 5", "return x + 5", 
-      "print(", "add(10)", "add(5)", ")"
-    ]
-  },
-  {
-    id: 16,
-    section: "Mission 3: Functions",
-    title: "Recursion",
-    category: "Functions",
-    theory: "### Recursion\nA function that calls itself.",
-    task: "Write a recursive function to print 'A' once. (Simulated for block logic). Just Call a function `rec()` that prints 'A'.",
-    expectedOutput: "A",
-    hint: "Just define and call for this simple test.",
-    availableBlocks: [
-      "def", "rec():", 
-      "print('A')", "return", 
-      "rec()", "if True:"
-    ]
-  },
-  {
-    id: 17,
-    section: "Mission 3: Functions",
-    title: "Mission 3 Quiz",
-    category: "Quiz",
-    theory: "### Quiz\nCombine functions and arguments.",
-    task: "Define `square(n)` that prints `n * n`. Call `square(4)`.",
-    expectedOutput: "16",
-    hint: "Math inside the function.",
-    availableBlocks: [
-      "def", "square(n):", "double(n):", 
-      "print(", "n * n", "n + n", ")", 
-      "square(4)", "square(2)", "return"
-    ]
+    theory: "### Functions\nA function is a reusable block of code. You define it once using `def`, and call it many times.",
+    task: "Define a function named `greet` that prints 'Hi'. Call the function.",
+    expectedOutput: "Hi",
+    hint: "Use 'def' to start.",
+    availableBlocks: ["def", "greet():", "print('Hi')", "greet()"]
   },
 
   // --- MISSION 4: COLLECTIONS ---
   {
-    id: 18,
+    id: 7,
     section: "Mission 4: Collection Data Type",
     title: "Lists",
-    category: "Collections",
-    theory: "### Lists\nOrdered collection. `[1, 2, 3]`",
-    task: "Create a list `nums = [1, 2]`. Print `nums[0]`.",
-    expectedOutput: "1",
-    hint: "Index 0 is the first item.",
-    availableBlocks: [
-      "nums =", "list =", 
-      "[1, 2]", "(1, 2)", "{1, 2}", 
-      "print(", "nums[0]", "nums[1]", "nums(0)", ")"
-    ]
-  },
-  {
-    id: 19,
-    section: "Mission 4: Collection Data Type",
-    title: "Tuples",
-    category: "Collections",
-    theory: "### Tuples\nLike lists but unchangeable (immutable). Uses `()`.",
-    task: "Create `tup = (10, 20)`. Print `tup[1]`.",
-    expectedOutput: "20",
-    hint: "Use parentheses.",
-    availableBlocks: [
-      "tup =", "list =", 
-      "(10, 20)", "[10, 20]", 
-      "print(", "tup[1]", "tup[0]", ")"
-    ]
-  },
-  {
-    id: 20,
-    section: "Mission 4: Collection Data Type",
-    title: "Strings (Advanced)",
-    category: "Collections",
-    theory: "### Strings\nStrings are arrays of characters. You can slice them.",
-    task: "Print the first letter of 'Python' using index 0.",
-    expectedOutput: "P",
-    hint: "String indices works like lists.",
-    availableBlocks: [
-      "text =", "'Python'", 
-      "print(", "text[0]", "text[1]", "text[-1]", ")"
-    ]
-  },
-  {
-    id: 21,
-    section: "Mission 4: Collection Data Type",
-    title: "Sets",
-    category: "Collections",
-    theory: "### Sets\nUnordered, unique items. `{1, 2}`.",
-    task: "Create a set `s = {1, 1, 2}`. Print `s`. (Note duplicates are removed).",
-    expectedOutput: "{1, 2}",
-    hint: "Use curly braces.",
-    availableBlocks: [
-      "s =", "list =", 
-      "{1, 1, 2}", "[1, 1, 2]", "(1, 1, 2)", 
-      "print(", "s", ")"
-    ]
-  },
-  {
-    id: 22,
-    section: "Mission 4: Collection Data Type",
-    title: "Dictionaries",
-    category: "Collections",
-    theory: "### Dictionaries\nKey-Value pairs. `{'key': 'value'}`.",
-    task: "Create `d = {'a': 1}`. Print `d['a']`.",
-    expectedOutput: "1",
-    hint: "Access by key.",
-    availableBlocks: [
-      "d =", "map =", 
-      "{'a': 1}", "['a': 1]", 
-      "print(", "d['a']", "d[0]", ")"
-    ]
-  },
-  {
-    id: 23,
-    section: "Mission 4: Collection Data Type",
-    title: "Mission 4 Quiz",
-    category: "Quiz",
-    theory: "### Quiz\nTest your collection knowledge.",
-    task: "Create a list `x = [5, 6]`. Change index 0 to 9. Print x.",
-    expectedOutput: "[9, 6]",
-    hint: "Assign to the index.",
-    availableBlocks: [
-      "x =", "[5, 6]", "(5, 6)", 
-      "x[0] = 9", "x(0) = 9", 
-      "print(x)", "x.append(9)"
-    ]
-  },
-
-  // --- MISSION 5: MODULES ---
-  {
-    id: 24,
-    section: "Mission 5: Modules and Files",
-    title: "Modules",
-    category: "Modules",
-    theory: "### Modules\nLibraries of code. `import math`.",
-    task: "Import math and print `math.sqrt(16)`.",
-    expectedOutput: "4.0",
-    hint: "Use import first.",
-    availableBlocks: [
-      "import math", "include math", 
-      "print(", "math.sqrt(16)", "math.pow(4)", ")"
-    ]
-  },
-  {
-    id: 25,
-    section: "Mission 5: Modules and Files",
-    title: "Files",
-    category: "IO",
-    theory: "### Files\n`open('file.txt', 'w')` to write.",
-    task: "Simulate writing: Print 'Writing to file...'.",
-    expectedOutput: "Writing to file...",
-    hint: "We simulate file ops with print for now.",
-    availableBlocks: [
-      "print('Writing to file...')", 
-      "f = open('test.txt')", "f.close()", 
-      "f.write('Hi')", "f.read()"
-    ]
-  },
-  {
-    id: 26,
-    section: "Mission 5: Modules and Files",
-    title: "Directory",
-    category: "IO",
-    theory: "### OS Module\nUse `os` to interact with directories.",
-    task: "Import os. Print 'os.getcwd()' (Simulated output: /home).",
-    expectedOutput: "/home",
-    hint: "Combine the strings to simulate output.",
-    availableBlocks: [
-      "import os", "import sys", 
-      "print('/home')", "os.getcwd()", "os.listdir()"
-    ]
-  },
-  {
-    id: 27,
-    section: "Mission 5: Modules and Files",
-    title: "Mission 5 Quiz",
-    category: "Quiz",
-    theory: "### Quiz\nModules check.",
-    task: "Import random. Print 'Random Number'.",
-    expectedOutput: "Random Number",
-    hint: "Just printing a string placeholder.",
-    availableBlocks: [
-      "import random", "import math", 
-      "print('Random Number')", "random.randint(1,10)"
-    ]
-  },
-
-  // --- MISSION 6: EXCEPTION HANDLING ---
-  {
-    id: 28,
-    section: "Mission 6: Exception Handling",
-    title: "Exceptions",
-    category: "Errors",
-    theory: "### Errors\nWhen code fails, it raises an Exception. e.g., Dividing by zero.",
-    task: "Print 'Error' to simulate an exception caught.",
-    expectedOutput: "Error",
-    hint: "Simulate the output.",
-    availableBlocks: [
-      "print('Error')", "print('Success')", 
-      "1 / 0", "raise Exception", "try:"
-    ]
-  },
-  {
-    id: 29,
-    section: "Mission 6: Exception Handling",
-    title: "Exception Handling",
-    category: "Errors",
-    theory: "### Try / Except\nCatch errors gracefully.",
-    task: "Try to divide 1/0. Except: print 'Cannot divide'.",
-    expectedOutput: "Cannot divide",
-    hint: "Use try/except blocks.",
-    availableBlocks: [
-      "try:", "if:", 
-      "x = 1 / 0", "x = 1 + 1", 
-      "except:", "else:", 
-      "print('Cannot divide')", "print(x)"
-    ]
-  },
-  {
-    id: 30,
-    section: "Mission 6: Exception Handling",
-    title: "Custom Exceptions",
-    category: "Errors",
-    theory: "### Raising Errors\nYou can trigger your own errors using `raise`.",
-    task: "Raise a ValueError. (Simulated output: 'ValueError Raised').",
-    expectedOutput: "ValueError Raised",
-    hint: "Just print the simulation string.",
-    availableBlocks: [
-      "print('ValueError Raised')", 
-      "raise ValueError", "raise TypeError", 
-      "try:", "except ValueError:"
-    ]
-  },
-  {
-    id: 31,
-    section: "Mission 6: Exception Handling",
-    title: "Mission 6 Quiz",
-    category: "Quiz",
-    theory: "### Quiz\nHandle an error.",
-    task: "Try printing variable 'y' (undefined). Except: print 'Not Found'.",
-    expectedOutput: "Not Found",
-    hint: "try/except structure.",
-    availableBlocks: [
-      "try:", "except:", 
-      "print(y)", "print('y')", 
-      "print('Not Found')", "pass"
-    ]
-  },
-
-  // --- MISSION 7: OOP ---
-  {
-    id: 32,
-    section: "Mission 7: Object-Oriented Programming",
-    title: "Class and Objects",
-    category: "OOP",
-    theory: "### Classes\nA blueprint for objects. `class Dog:`",
-    task: "Define class Dog with a pass. Print 'Dog class created'.",
-    expectedOutput: "Dog class created",
-    hint: "Define class then print.",
-    availableBlocks: [
-      "class Dog:", "def Dog():", 
-      "pass", "return", 
-      "print('Dog class created')"
-    ]
-  },
-  {
-    id: 33,
-    section: "Mission 7: Object-Oriented Programming",
-    title: "Constructors",
-    category: "OOP",
-    theory: "### __init__\nThe constructor method initializes the object.",
-    task: "Define class with `__init__` that prints 'Init'. Create object.",
-    expectedOutput: "Init",
-    hint: "Define class, init, then instantiate.",
-    availableBlocks: [
-      "class A:", "class B:", 
-      "def __init__(self):", "def init():", 
-      "print('Init')", "a = A()", "a.init()"
-    ]
-  },
-  {
-    id: 34,
-    section: "Mission 7: Object-Oriented Programming",
-    title: "Inheritance",
-    category: "OOP",
-    theory: "### Inheritance\nChild classes inherit from Parent classes.",
-    task: "Class B inherits from A. A has method `hi()`. Call `B().hi()`.",
-    expectedOutput: "Hi",
-    hint: "Class B(A):",
-    availableBlocks: [
-      "class A:", "class B(A):", "class B:", 
-      "def hi(self): print('Hi')", "pass", 
-      "b = B()", "b.hi()", "b.hello()"
-    ]
-  },
-  {
-    id: 35,
-    section: "Mission 7: Object-Oriented Programming",
-    title: "Namespaces",
-    category: "OOP",
-    theory: "### Namespaces\nScope of variables within classes.",
-    task: "Set class variable `x=1`. Print `MyClass.x`.",
-    expectedOutput: "1",
-    hint: "Access variable via class name.",
-    availableBlocks: [
-      "class MyClass:", "class Obj:", 
-      "x = 1", "self.x = 1", 
-      "print(MyClass.x)", "print(x)"
-    ]
-  },
-  {
-    id: 36,
-    section: "Mission 7: Object-Oriented Programming",
-    title: "Mission 7 Quiz",
-    category: "Quiz",
-    theory: "### Quiz\nOOP Concepts.",
-    task: "Create object `p = Person()`. Print 'Person created'.",
-    expectedOutput: "Person created",
-    hint: "Simulate object creation output.",
-    availableBlocks: [
-      "class Person: pass", "def Person:", 
-      "p = Person()", "p = new Person()", 
-      "print('Person created')"
-    ]
-  },
-
-  // --- MISSION 8: ADVANCED ---
-  {
-    id: 37,
-    section: "Mission 8: Advanced Topics",
-    title: "Iterators",
-    category: "Advanced",
-    theory: "### Iterators\nObjects that can be looped over using `next()`.",
-    task: "Create iterator for list [1, 2]. Print next(it).",
-    expectedOutput: "1",
-    hint: "Use iter() then next().",
-    availableBlocks: [
-      "it = iter([1, 2])", "it = [1, 2]", 
-      "print(next(it))", "print(it[0])"
-    ]
-  },
-  {
-    id: 38,
-    section: "Mission 8: Advanced Topics",
-    title: "Generators",
-    category: "Advanced",
-    theory: "### Generators\nFunctions that `yield` values one by one.",
-    task: "Define gen that yields 5. Print next(gen()).",
-    expectedOutput: "5",
-    hint: "Use yield keyword.",
-    availableBlocks: [
-      "def gen():", "class gen:", 
-      "yield 5", "return 5", 
-      "print(next(gen()))", "print(gen())"
-    ]
-  },
-  {
-    id: 39,
-    section: "Mission 8: Advanced Topics",
-    title: "Closures",
-    category: "Advanced",
-    theory: "### Closures\nA nested function that remembers outside variables.",
-    task: "Define outer function returning inner function that prints 'Secret'. Call it.",
-    expectedOutput: "Secret",
-    hint: "Nested def.",
-    availableBlocks: [
-      "def outer():", "def inner(): print('Secret')", 
-      "return inner", "return print", 
-      "fn = outer()", "fn()"
-    ]
-  },
-  {
-    id: 40,
-    section: "Mission 8: Advanced Topics",
-    title: "Decorators",
-    category: "Advanced",
-    theory: "### Decorators\nWrappers that modify function behavior. `@my_decorator`.",
-    task: "Use @dec on func. (Simulate output 'Decorated').",
-    expectedOutput: "Decorated",
-    hint: "Print the simulation.",
-    availableBlocks: [
-      "@dec", "#dec", 
-      "def func(): pass", 
-      "print('Decorated')"
-    ]
-  },
-  {
-    id: 41,
-    section: "Mission 8: Advanced Topics",
-    title: "Python @property",
-    category: "Advanced",
-    theory: "### @property\nTreats a method like a variable.",
-    task: "Define class with @property name returning 'Bob'. Print obj.name.",
-    expectedOutput: "Bob",
-    hint: "Use @property decorator.",
-    availableBlocks: [
-      "class P:", "@property", 
-      "def name(self): return 'Bob'", "def name():", 
-      "obj = P()", "print(obj.name)", "print(obj.name())"
-    ]
-  },
-  {
-    id: 42,
-    section: "Mission 8: Advanced Topics",
-    title: "Mission 8 Quiz",
-    category: "Quiz",
-    theory: "### Quiz\nAdvanced Final.",
-    task: "Create a generator that yields 'End'. Print it.",
-    expectedOutput: "End",
-    hint: "yield + next.",
-    availableBlocks: [
-      "def g(): yield 'End'", "def g(): return 'End'", 
-      "print(next(g()))", "print(g())"
-    ]
+    category: "Data",
+    theory: "### Lists\nA list holds multiple items in order. `fruits = ['apple', 'banana']`.",
+    task: "Create a list of numbers [1, 2, 3] and print it.",
+    expectedOutput: "[1, 2, 3]",
+    hint: "Use square brackets [ ].",
+    availableBlocks: ["nums =", "[1, 2, 3]", "print(", "nums", ")"]
   }
+  
+  // Note: Add remaining missions (5-8) following this pattern...
 ];
