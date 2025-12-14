@@ -69,22 +69,10 @@ export default function CodingClubPage() {
                 </Link>
                 </CardContent>
             </Card>
-
-            <Card className="w-full">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Code2 className="text-indigo-600"/> Option 2: Logic Lab</CardTitle>
-                    <CardDescription>Learn coding concepts step-by-step with our guided block-based missions.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Link href="/dashboard/coding-club/logic-lab">
-                        <Button className="bg-indigo-600 hover:bg-indigo-700">Enter the Logic Lab</Button>
-                    </Link>
-                </CardContent>
-            </Card>
           
             <Card className="w-full">
                 <CardHeader>
-                    <CardTitle>Option 3: Integrated Blockly Editor</CardTitle>
+                    <CardTitle>Option 2: Integrated Blockly Editor</CardTitle>
                     <CardDescription>
                         Use our built-in block-based editor to create and save your projects directly in CampusConnect.
                     </CardDescription>
