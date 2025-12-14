@@ -25,7 +25,6 @@ import multiLineEditor from '@blockly/field-multilineinput';
 installColourBlocks({
   javascript: javascriptGenerator,
 });
-// The multiline field is registered automatically upon import, so we don't need to call register manually.
 
 
 // --- 1. DEFINE CUSTOM BLOCKS (Optional) ---
@@ -134,7 +133,6 @@ const toolboxCategories = {
         colour: '%{BKY_TEXTS_HUE}',
         contents: [
           { kind: 'block', type: 'text' },
-          { kind: 'block', type: 'text_multiline' },
           { kind: 'block', type: 'text_join' },
           { 
             kind: 'block', 
@@ -367,5 +365,3 @@ export default function BlocklyEditor() {
     </div>
   );
 }
-
-    
