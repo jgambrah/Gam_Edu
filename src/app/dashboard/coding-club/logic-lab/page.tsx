@@ -2,10 +2,10 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { CURRICULUM as CURRICULUM_FALLBACK, Mission } from '@/lib/logic-lab-data';
+import { CURRICULUM as CURRICULUM_FALLBACK_DATA, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { doc, setDoc, getDoc, updateDoc, arrayUnion, collection } from 'firebase/firestore';
+import { doc, setDoc, getDoc, arrayUnion, collection, updateDoc } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
   Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Settings
@@ -114,13 +114,14 @@ export default function LogicLabPage() {
   const [isCoachThinking, setIsCoachThinking] = useState(false);
 
   // --- DATA FETCHING ---
-  // Now fetching curriculum from Firestore
   const { data: CURRICULUM, isLoading: isLoadingMissions, forceRefetch: refetchMissions } = useCollection<Mission>(
     useMemoFirebase(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore])
   );
   
+  const CURRICULUM_FALLBACK = CURRICULUM || [];
+
   const activeMission = useMemo(() => {
-    if (!CURRICULUM) return CURRICULUM_FALLBACK[currentMissionIndex]; // Fallback while loading
+    if (!CURRICULUM) return CURRICULUM_FALLBACK_DATA[currentMissionIndex]; // Fallback while loading
     const sortedCurriculum = [...CURRICULUM].sort((a,b) => a.id - b.id);
     return sortedCurriculum[currentMissionIndex];
   }, [CURRICULUM, currentMissionIndex]);
@@ -216,7 +217,7 @@ export default function LogicLabPage() {
   };
 
   const groupedMissions = useMemo(() => {
-    const sortedCurriculum = CURRICULUM ? [...CURRICULUM].sort((a,b) => a.id - b.id) : CURRICULUM_FALLBACK;
+    const sortedCurriculum = CURRICULUM ? [...CURRICULUM].sort((a,b) => a.id - b.id) : CURRICULUM_FALLBACK_DATA;
     const groups: Record<string, Mission[]> = {};
     sortedCurriculum.forEach(m => {
         if(!groups[m.section]) groups[m.section] = [];
@@ -225,7 +226,6 @@ export default function LogicLabPage() {
     return groups;
   }, [CURRICULUM]);
   
-  const CURRICULUM_FALLBACK = CURRICULUM || [];
 
   return (
     <>
@@ -288,7 +288,7 @@ export default function LogicLabPage() {
                             </Button>
                         )}
                         <Button variant="outline" size="sm" onClick={explainTheory}>
-                            <BookOpen className="h-4 w-4 mr-2"/> Explain
+                            <BookOpen className="h-4 w-4 mr-2"/> Explain Concept
                         </Button>
                       </div>
                     </div>
@@ -384,5 +384,3 @@ export default function LogicLabPage() {
     </>
   );
 }
-
-    
