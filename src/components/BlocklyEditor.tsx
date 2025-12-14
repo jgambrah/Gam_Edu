@@ -25,7 +25,7 @@ import multiLineEditor from '@blockly/field-multilineinput';
 installColourBlocks({
   javascript: javascriptGenerator,
 });
-Blockly.fieldRegistry.register('field_multilineinput', multiLineEditor);
+// The multiline field is registered automatically upon import, so we don't need to call register manually.
 
 
 // --- 1. DEFINE CUSTOM BLOCKS (Optional) ---
@@ -367,3 +367,5 @@ export default function BlocklyEditor() {
     </div>
   );
 }
+
+    
