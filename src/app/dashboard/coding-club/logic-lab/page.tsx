@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import confetti from 'canvas-confetti';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
@@ -19,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
 import AdminBlockManager from './AdminBlockManager'; 
+import confetti from 'canvas-confetti';
 
 export default function LogicLabPage() {
   const { user } = useUser();
@@ -123,7 +123,7 @@ export default function LogicLabPage() {
         const normOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
 
-        if (normOutput === normExpected || result.output.includes(activeMission.expectedOutput)) {
+        if (normOutput === normExpected || (normExpected && result.output.includes(activeMission.expectedOutput))) {
             toast({ title: "Mission Accomplished!", description: "Output matches!", className: "bg-green-600 text-white" });
             
             // --- "CELEBRATION MODE" TRIGGER ---
