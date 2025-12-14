@@ -2,13 +2,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser, useFirestore } from '@/firebase'; // Adjust to your actual import paths
+import { useUser, useFirestore } from '@/firebase'; 
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { PlusCircle, Loader2 } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react'; // Changed icon to simple Plus
 
-// Input Props
 interface Props {
-  missionId: number; // We use the ID from your CURRICULUM
+  missionId: number; 
 }
 
 export default function AdminBlockManager({ missionId }: Props) {
@@ -19,8 +18,7 @@ export default function AdminBlockManager({ missionId }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // HARDCODED ADMIN CHECK (Double security layer)
-  // Ensure this matches the UID in your Firestore Rules
+  // YOUR ADMIN UID
   const ADMIN_UID = "gZxe3nMbGcQhNgEzkwEZwDBnkFR2";
 
   useEffect(() => {
@@ -31,15 +29,19 @@ export default function AdminBlockManager({ missionId }: Props) {
     }
   }, [user]);
 
-  const handleAddBlock = async () => {
+  const handleAddBlock = async (e?: React.FormEvent) => {
+    // Prevent default form refresh if called via onSubmit
+    if (e) e.preventDefault(); 
+    
     if (!newBlock.trim() || !firestore) return;
     setIsSubmitting(true);
 
     try {
+      // Ensure ID is string for Firestore
       const docRef = doc(firestore, 'logic_lab_missions', missionId.toString());
       const docSnap = await getDoc(docRef);
 
-      // If document doesn't exist yet, create it. Otherwise, update it.
+      // Create doc if it doesn't exist, otherwise update
       if (!docSnap.exists()) {
         await setDoc(docRef, {
           availableBlocks: arrayUnion(newBlock.trim())
@@ -60,33 +62,46 @@ export default function AdminBlockManager({ missionId }: Props) {
     }
   };
 
-  // Render nothing if not admin
+  // If not admin, hide completely
   if (!isAdmin) return null;
 
   return (
-    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-      <div className="flex items-center gap-2 mb-2 text-red-800 font-bold text-xs uppercase">
-        <span className="bg-red-200 px-1 rounded">Admin Zone</span>
-        <span>Add Block to Mission {missionId}</span>
+    <div className="mt-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg shadow-sm">
+      <div className="mb-2">
+        <h3 className="text-red-800 font-bold text-xs uppercase tracking-wider">
+           👮 Admin Control
+        </h3>
+        <p className="text-[10px] text-red-600">
+          Adding to Mission {missionId}
+        </p>
       </div>
       
-      <div className="flex gap-2">
+      {/* Use a form so pressing "Enter" works automatically */}
+      <form onSubmit={handleAddBlock} className="flex flex-col gap-2">
         <input
           type="text"
           value={newBlock}
           onChange={(e) => setNewBlock(e.target.value)}
-          placeholder="e.g. x = 10"
-          className="flex-1 border border-red-300 rounded px-2 py-1 text-sm text-black"
+          placeholder="Type block code here..."
+          className="w-full border border-red-300 rounded px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-red-500"
         />
+        
         <button
-          onClick={handleAddBlock}
+          type="submit"
           disabled={isSubmitting}
-          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+          className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded text-sm flex items-center justify-center gap-2 transition-colors"
         >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : <PlusCircle className="h-4 w-4"/>}
-          Add
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin"/> Adding...
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4"/> Add Block
+            </>
+          )}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
