@@ -99,6 +99,7 @@ export default function LogicLabPage() {
   const { toast } = useToast();
 
   const isAdmin = role === 'Administrator' || role === 'Director';
+  const CURRICULUM_FALLBACK = CURRICULUM_FALLBACK_DATA;
 
   // --- STATE ---
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
@@ -119,11 +120,9 @@ export default function LogicLabPage() {
     useMemoFirebase(() => firestore ? query(collection(firestore, 'logic_lab_missions')) : null, [firestore])
   );
   
-  const CURRICULUM_FALLBACK = CURRICULUM_FALLBACK_DATA;
-
   const activeMission = useMemo(() => {
-    if (!CURRICULUM) return CURRICULUM_FALLBACK[currentMissionIndex]; // Fallback while loading
-    const sortedCurriculum = [...CURRICULUM].sort((a,b) => a.id - b.id);
+    const curriculumData = CURRICULUM || CURRICULUM_FALLBACK;
+    const sortedCurriculum = [...curriculumData].sort((a,b) => a.id - b.id);
     return sortedCurriculum[currentMissionIndex];
   }, [CURRICULUM, currentMissionIndex, CURRICULUM_FALLBACK]);
 
@@ -397,3 +396,4 @@ export default function LogicLabPage() {
     </>
   );
 }
+
