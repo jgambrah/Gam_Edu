@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
-import AdminBlockManager from './AdminBlockManager'; 
+import AdminBlockManager from './AdminBlockManager';
 
 export default function LogicLabPage() {
   const { user } = useUser();
@@ -117,6 +117,7 @@ export default function LogicLabPage() {
     toast({ description: "Workspace cleared." });
   };
 
+  // --- UPDATED RUN LOGIC ---
   const handleRun = async (mode: 'test' | 'submit') => {
     if (workspaceBlocks.length === 0) return;
     
@@ -131,11 +132,6 @@ export default function LogicLabPage() {
     if (result.success) {
         setConsoleOutput(result.output);
 
-        if (mode === 'test') {
-            setIsRunning(false);
-            return; 
-        }
-
         const normOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
         const isSuccess = normOutput === normExpected || result.output.includes(activeMission.expectedOutput);
@@ -147,22 +143,31 @@ export default function LogicLabPage() {
                 origin: { y: 0.6 },
                 colors: ['#4f46e5', '#16a34a', '#db2777']
             });
-
-            setLastResult({ success: true, actual: result.output, expected: activeMission.expectedOutput });
-            toast({ title: "Mission Accomplished!", description: "Excellent work!", className: "bg-green-600 text-white" });
             
-            if (!completedMissions.includes(currentMissionIndex)) {
-                const newCompleted = [...completedMissions, currentMissionIndex];
-                setCompletedMissions(newCompleted);
-                if (user && firestore) {
-                    await setDoc(doc(firestore, 'student_progress', user.uid), {
-                        logicLabCompleted: newCompleted
-                    }, { merge: true });
+            if (mode === 'submit') {
+                setLastResult({ success: true, actual: result.output, expected: activeMission.expectedOutput });
+                toast({ title: "Mission Accomplished!", description: "Excellent work!", className: "bg-green-600 text-white" });
+                
+                if (!completedMissions.includes(currentMissionIndex)) {
+                    const newCompleted = [...completedMissions, currentMissionIndex];
+                    setCompletedMissions(newCompleted);
+                    if (user && firestore) {
+                        await setDoc(doc(firestore, 'student_progress', user.uid), {
+                            logicLabCompleted: newCompleted
+                        }, { merge: true });
+                    }
                 }
+            } else { // Test Run Success
+                 toast({ title: "Correct!", description: "Your code produced the right output.", className: "bg-green-600 text-white" });
             }
-        } else {
-            setLastResult({ success: false, actual: result.output, expected: activeMission.expectedOutput });
-            toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but didn't match the mission goal." });
+
+        } else { // Incorrect Output
+            if (mode === 'submit') {
+                setLastResult({ success: false, actual: result.output, expected: activeMission.expectedOutput });
+                toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but didn't match the mission goal." });
+            } else {
+                 toast({ variant: 'destructive', title: "Test Run Incorrect", description: "The output doesn't match the mission goal." });
+            }
         }
     } else {
         setConsoleOutput(`Error: ${result.output}`);
