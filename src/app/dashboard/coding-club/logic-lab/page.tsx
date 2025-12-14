@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { 
-  Play, RotateCcw, HelpCircle, Terminal, CheckCircle2, Lock, 
-  ChevronRight, Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight 
+  Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight 
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
