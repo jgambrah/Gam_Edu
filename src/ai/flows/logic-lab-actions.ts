@@ -1,13 +1,15 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 // --- ACTION 1: INTERPRETER ---
-// Acts as a Python/JS runtime simulator
 export async function interpretBlockCodeAction(blocks: string[]) {
   try {
-    const codeString = blocks.join(' ');
+    // FIX: Convert the "[NEWLINE]" token into an actual line break (\n)
+    // and join other blocks with spaces.
+    const codeString = blocks.map(b => b === '[NEWLINE]' ? '\n' : b).join(' ');
     
     const prompt = `
       Act as a strict Python Code Interpreter.
@@ -19,12 +21,12 @@ export async function interpretBlockCodeAction(blocks: string[]) {
       1. Simulate the execution of this code.
       2. Return ONLY the console output.
       3. If there is a syntax error, return "Error: [Reason]".
-      4. Do not provide explanations, just the output.
+      4. Handle indentation automatically if logical structures (if/else/def) are detected.
     `;
 
     const response = await ai.generate({
       prompt: prompt,
-      config: { temperature: 0 }, // Strict deterministic output
+      config: { temperature: 0 },
     });
 
     return { success: true, output: response.text.trim() };
