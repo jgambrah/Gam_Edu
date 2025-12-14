@@ -18,7 +18,6 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
 import AdminBlockManager from './AdminBlockManager'; 
-import confetti from 'canvas-confetti';
 // import useSound from 'use-sound'; // UNCOMMENT IF YOU INSTALL THE LIBRARY
 
 export default function LogicLabPage() {
@@ -76,12 +75,15 @@ export default function LogicLabPage() {
     fetchProgress();
   }, [user, firestore]);
 
-  // 2. Load Real-Time Blocks
+  // 2. Load Real-Time Blocks & Reset on Mission Change
   useEffect(() => {
     setDynamicBlocks(activeMission.availableBlocks); 
-    setLastResult(null); // Reset feedback on mission change
-    handleHardReset();   // Reset workspace on mission change
     
+    // AUTO RESET when Mission Changes (This prevents confusion)
+    setWorkspaceBlocks([]);
+    setConsoleOutput('');
+    setLastResult(null);
+
     if (!firestore) return;
 
     const missionRef = doc(firestore, "logic_lab_missions", activeMission.id.toString());
@@ -89,6 +91,7 @@ export default function LogicLabPage() {
         if (docSnap.exists()) {
             const data = docSnap.data();
             if (data.availableBlocks && Array.isArray(data.availableBlocks)) {
+                // Merge and remove duplicates
                 const merged = Array.from(new Set([
                     ...activeMission.availableBlocks, 
                     ...data.availableBlocks
@@ -102,27 +105,37 @@ export default function LogicLabPage() {
 
   // --- ACTIONS ---
 
+  // FIX 1: Clear errors immediately when user modifies code
   const handleAddBlock = (block: string) => {
     setWorkspaceBlocks([...workspaceBlocks, block]);
-    // playClick(); // Trigger sound
+    setLastResult(null); // Clear the red box
   };
 
+  // FIX 2: Clear errors immediately when user modifies code
   const handleRemoveBlock = (index: number) => {
     setWorkspaceBlocks(workspaceBlocks.filter((_, i) => i !== index));
+    setLastResult(null); // Clear the red box
   };
 
+  // FIX 3: Robust Reset Function
   const handleHardReset = () => {
     setWorkspaceBlocks([]);         
     setConsoleOutput('');           
     setCoachChat([]);               
     setIsRunning(false);            
     setIsCoachThinking(false);
-    setLastResult(null);
+    setLastResult(null); // Ensure feedback is wiped
+    
+    toast({ 
+        description: "Workspace cleared ready for next attempt.",
+        duration: 2000
+    });
   };
 
   const handleRun = async () => {
     if (workspaceBlocks.length === 0) return;
     
+    // Clear previous state before running
     setConsoleOutput(''); 
     setLastResult(null);
     setIsRunning(true);
@@ -134,18 +147,14 @@ export default function LogicLabPage() {
     if (result.success) {
         setConsoleOutput(result.output);
 
-        // Normalize
+        // Normalize for comparison (ignores spaces and case)
         const normOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
+        
+        // Success Logic
         const isSuccess = normOutput === normExpected || (activeMission.expectedOutput && result.output.includes(activeMission.expectedOutput));
 
         if (isSuccess) {
-            // playSuccess();
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
             setLastResult({ success: true, actual: result.output, expected: activeMission.expectedOutput });
             toast({ title: "Mission Accomplished!", description: "Excellent work!", className: "bg-green-600 text-white" });
             
@@ -159,9 +168,9 @@ export default function LogicLabPage() {
                 }
             }
         } else {
-            // playError();
+            // Failure Logic
             setLastResult({ success: false, actual: result.output, expected: activeMission.expectedOutput });
-            toast({ variant: 'destructive', title: "Incorrect Output", description: "Check the feedback panel." });
+            toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but the answer is wrong." });
         }
     } else {
         setConsoleOutput(`Error: ${result.output}`);
@@ -226,7 +235,7 @@ export default function LogicLabPage() {
                                  <button
                                     key={m.id}
                                     disabled={isLocked}
-                                    onClick={() => setCurrentMissionIndex(m.id)}
+                                    onClick={() => setCurrentMissionIndex(m.id)} // Effect hook handles reset
                                     className={`w-full text-left p-2 rounded text-sm flex items-center justify-between transition-colors
                                         ${isActive ? 'bg-indigo-100 text-indigo-800 font-medium' : 'hover:bg-slate-200'}
                                         ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
@@ -254,7 +263,7 @@ export default function LogicLabPage() {
                   <div className="flex justify-between items-start">
                     <div>
                         <CardTitle className="text-lg">{activeMission.title}</CardTitle>
-                        <p className="text-sm text-slate-600 mt-1">{activeMission.task}</p>
+                        <p className="text-sm text-slate-600 mt-1">Task: <span className="font-bold text-indigo-700">{activeMission.task}</span></p>
                     </div>
                     <Button variant="outline" size="sm" onClick={explainTheory}>
                         <BookOpen className="h-4 w-4 mr-2"/> Explain Concept
@@ -270,7 +279,6 @@ export default function LogicLabPage() {
               
               {/* TOOLBOX */}
               <div className="w-1/3 bg-slate-100 rounded-lg p-4 flex flex-col gap-2 overflow-y-auto border">
-                  {/* STRUCTURE BUTTONS */}
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Structure</h4>
                   <div className="grid grid-cols-2 gap-2 mb-4">
                       <Button variant="outline" className="border-slate-300 bg-white hover:bg-slate-100" onClick={() => handleAddBlock('[NEWLINE]')}>
@@ -282,8 +290,6 @@ export default function LogicLabPage() {
                   </div>
 
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Available Blocks</h4>
-                  
-                  {/* Dynamic Blocks List */}
                   {dynamicBlocks.map((block, i) => (
                       <Button 
                         key={`${block}-${i}`} 
@@ -317,9 +323,7 @@ export default function LogicLabPage() {
                                   return (
                                     <div key={i} className="w-full h-6 border-b border-slate-200 mb-2 relative group flex items-end">
                                         <span className="absolute right-0 top-1 text-xs text-slate-300 select-none">↵</span>
-                                        <button onClick={() => handleRemoveBlock(i)} className="absolute left-0 top-1 text-red-300 hover:text-red-500 opacity-0 group-hover:opacity-100">
-                                            <Trash2 className="h-3 w-3"/>
-                                        </button>
+                                        <button onClick={() => handleRemoveBlock(i)} className="absolute left-0 top-1 text-red-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-3 w-3"/></button>
                                     </div>
                                   );
                               }
@@ -327,9 +331,7 @@ export default function LogicLabPage() {
                                   return (
                                     <div key={i} className="w-8 h-8 bg-slate-50 border border-slate-200 rounded flex items-center justify-center text-slate-300 group relative">
                                         <span className="text-xs">→</span>
-                                        <button onClick={() => handleRemoveBlock(i)} className="absolute -top-1 -right-1 bg-white rounded-full text-red-500 opacity-0 group-hover:opacity-100 border shadow-sm z-10">
-                                            <Trash2 className="h-3 w-3"/>
-                                        </button>
+                                        <button onClick={() => handleRemoveBlock(i)} className="absolute -top-1 -right-1 bg-white rounded-full text-red-500 opacity-0 group-hover:opacity-100 border shadow-sm z-10"><Trash2 className="h-3 w-3"/></button>
                                     </div>
                                   );
                               }
@@ -361,17 +363,15 @@ export default function LogicLabPage() {
 
                   {/* CONSOLE & FEEDBACK PANEL */}
                   <div className="flex flex-col gap-2">
-                      <div className="h-32 bg-black rounded-lg p-3 font-mono text-sm text-green-400 overflow-y-auto shadow-inner relative group">
+                      <div className="h-32 bg-black rounded-lg p-3 font-mono text-sm text-green-400 overflow-y-auto shadow-inner relative">
                           <div className="flex justify-between items-center opacity-50 border-b border-green-900 mb-2 pb-1 text-xs">
                              <span>TERMINAL OUTPUT</span>
-                             <button onClick={() => setConsoleOutput('')} className="hover:text-white cursor-pointer" title="Clear Text">
-                                Clear
-                             </button>
+                             <button onClick={() => setConsoleOutput('')} className="hover:text-white cursor-pointer">Clear</button>
                           </div>
                           <pre className="whitespace-pre-wrap">{consoleOutput}</pre>
                       </div>
 
-                      {/* --- NEW: SMART FEEDBACK PANEL --- */}
+                      {/* --- SMART FEEDBACK PANEL --- */}
                       {lastResult && !lastResult.success && (
                           <div className="bg-red-50 border border-red-200 rounded-lg p-3 animate-in slide-in-from-bottom-2 fade-in">
                               <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-2">
@@ -379,7 +379,7 @@ export default function LogicLabPage() {
                               </div>
                               <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                                   <div>
-                                      <span className="text-slate-500 block mb-1">We Expected:</span>
+                                      <span className="text-slate-500 block mb-1">Mission Expected:</span>
                                       <div className="bg-green-100 text-green-800 p-2 rounded border border-green-200">
                                           {lastResult.expected}
                                       </div>
@@ -391,9 +391,6 @@ export default function LogicLabPage() {
                                       </div>
                                   </div>
                               </div>
-                              <div className="mt-2 text-xs text-slate-600 italic">
-                                  Hint: Check your variables and exact spelling!
-                              </div>
                           </div>
                       )}
                   </div>
@@ -404,7 +401,6 @@ export default function LogicLabPage() {
 
       {/* COACH MODAL */}
       <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
-          {/* ... (Same as before) ... */}
           <DialogContent className="sm:max-w-[400px]">
               <DialogHeader><DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle></DialogHeader>
               <div className="h-[300px] bg-slate-50 rounded border p-3 overflow-y-auto space-y-3">
