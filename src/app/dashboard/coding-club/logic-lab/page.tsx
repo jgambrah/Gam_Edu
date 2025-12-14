@@ -2,16 +2,13 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-// Imports for data and types
-import { CURRICULUM, Mission } from '@/lib/logic-lab-data'; // Point to your data file
-import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions'; // Point to your AI actions
-// Firebase Imports
-import { useUser, useFirestore } from '@/firebase'; // Adjust to your hooks
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
-// UI Imports
+import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
+import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2 
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser 
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,7 +32,7 @@ export default function LogicLabPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [isCoachOpen, setIsCoachOpen] = useState(false);
   
-  // Dynamic Blocks (Static + Admin Added)
+  // Dynamic Blocks
   const [dynamicBlocks, setDynamicBlocks] = useState<string[]>([]);
 
   // Chat State
@@ -55,14 +52,14 @@ export default function LogicLabPage() {
             if (snap.exists() && snap.data().logicLabCompleted) {
                 setCompletedMissions(snap.data().logicLabCompleted);
             }
-        } catch (e) { console.error("Error loading progress", e); }
+        } catch(e) { console.error(e); }
     };
     fetchProgress();
   }, [user, firestore]);
 
-  // 2. Load Real-Time Blocks (Admin Feature)
+  // 2. Load Real-Time Blocks
   useEffect(() => {
-    setDynamicBlocks(activeMission.availableBlocks); // Reset to static first
+    setDynamicBlocks(activeMission.availableBlocks); 
     if (!firestore) return;
 
     const missionRef = doc(firestore, "logic_lab_missions", activeMission.id.toString());
@@ -70,7 +67,6 @@ export default function LogicLabPage() {
         if (docSnap.exists()) {
             const data = docSnap.data();
             if (data.availableBlocks && Array.isArray(data.availableBlocks)) {
-                // Merge and remove duplicates
                 const merged = Array.from(new Set([
                     ...activeMission.availableBlocks, 
                     ...data.availableBlocks
@@ -92,27 +88,42 @@ export default function LogicLabPage() {
     setWorkspaceBlocks(workspaceBlocks.filter((_, i) => i !== index));
   };
 
-  const handleClear = () => {
-    setWorkspaceBlocks([]);
-    setConsoleOutput('');
+  // --- NEW: HARD RESET FUNCTION ---
+  // This completely wipes the state to avoid "stuck" errors
+  const handleHardReset = () => {
+    setWorkspaceBlocks([]);         // Clear the blocks
+    setConsoleOutput('');           // Clear the error message
+    setCoachChat([]);               // Clear the chat history
+    setIsRunning(false);            // Stop any running process
+    setIsCoachThinking(false);
+    
+    toast({ 
+      title: "Workspace Reset", 
+      description: "All blocks and errors have been cleared.",
+    });
   };
 
   const handleRun = async () => {
     if (workspaceBlocks.length === 0) return;
+    
+    // 1. Clear console immediately so old errors don't linger visually
+    setConsoleOutput(''); 
     setIsRunning(true);
-    setConsoleOutput('Running...');
+    
+    // Small delay to show "Running" state
+    setTimeout(() => setConsoleOutput('Running code...'), 50);
 
     const result = await interpretBlockCodeAction(workspaceBlocks);
     
     if (result.success) {
         setConsoleOutput(result.output);
 
-        // Check Success (Normalize strings)
+        // Check Success
         const normOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
 
-        if (normOutput === normExpected || (normExpected && normOutput.includes(normExpected))) {
-            toast({ title: "Mission Accomplished!", description: "Code output matches expectation.", className: "bg-green-600 text-white" });
+        if (normOutput === normExpected || result.output.includes(activeMission.expectedOutput)) {
+            toast({ title: "Mission Accomplished!", description: "Output matches!", className: "bg-green-600 text-white" });
             
             if (!completedMissions.includes(currentMissionIndex)) {
                 const newCompleted = [...completedMissions, currentMissionIndex];
@@ -139,7 +150,6 @@ export default function LogicLabPage() {
       setCoachChat(newChat);
       setUserQuestion('');
 
-      // Use a placeholder or the imported function
       const response = await getCodeCoachResponseAction({
           currentBlocks: workspaceBlocks,
           availableBlocks: dynamicBlocks,
@@ -197,7 +207,7 @@ export default function LogicLabPage() {
                                  <button
                                     key={m.id}
                                     disabled={isLocked}
-                                    onClick={() => { setCurrentMissionIndex(m.id); handleClear(); }}
+                                    onClick={() => { setCurrentMissionIndex(m.id); handleHardReset(); }}
                                     className={`w-full text-left p-2 rounded text-sm flex items-center justify-between transition-colors
                                         ${isActive ? 'bg-indigo-100 text-indigo-800 font-medium' : 'hover:bg-slate-200'}
                                         ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
@@ -241,14 +251,13 @@ export default function LogicLabPage() {
               
               {/* TOOLBOX */}
               <div className="w-1/3 bg-slate-100 rounded-lg p-4 flex flex-col gap-2 overflow-y-auto border">
-                  {/* --- NEW SECTION: STRUCTURE --- */}
+                  
+                  {/* STRUCTURE BUTTONS */}
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Structure</h4>
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                      {/* Enter Button */}
                       <Button variant="outline" className="border-slate-300 bg-white hover:bg-slate-100" onClick={() => handleAddBlock('[NEWLINE]')}>
                           <CornerDownLeft className="h-3 w-3 mr-1"/> Enter
                       </Button>
-                      {/* Indent Button */}
                       <Button variant="outline" className="border-slate-300 bg-white hover:bg-slate-100" onClick={() => handleAddBlock('    ')}>
                           <ArrowRight className="h-3 w-3 mr-1"/> Indent
                       </Button>
@@ -256,7 +265,7 @@ export default function LogicLabPage() {
 
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Available Blocks</h4>
                   
-                  {/* Dynamic Blocks List */}
+                  {/* DYNAMIC BLOCKS */}
                   {dynamicBlocks.map((block, i) => (
                       <Button 
                         key={`${block}-${i}`} 
@@ -275,7 +284,7 @@ export default function LogicLabPage() {
               {/* CANVAS & CONSOLE */}
               <div className="flex-1 flex flex-col gap-4">
                   
-                  {/* CANVAS with Special Formatting */}
+                  {/* CANVAS */}
                   <div className="flex-1 bg-white rounded-lg border-2 border-dashed border-slate-300 p-4 overflow-y-auto relative font-mono text-sm">
                       {workspaceBlocks.length === 0 && (
                           <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">
@@ -285,7 +294,7 @@ export default function LogicLabPage() {
                       
                       <div className="flex flex-wrap items-center gap-2 content-start">
                           {workspaceBlocks.map((block, i) => {
-                              // CASE 1: NEW LINE (Full width separator)
+                              // NEW LINE
                               if (block === '[NEWLINE]') {
                                   return (
                                     <div key={i} className="w-full h-6 border-b border-slate-200 mb-2 relative group flex items-end">
@@ -296,7 +305,7 @@ export default function LogicLabPage() {
                                     </div>
                                   );
                               }
-                              // CASE 2: INDENT (Spacer)
+                              // INDENT
                               if (block === '    ') {
                                   return (
                                     <div key={i} className="w-8 h-8 bg-slate-50 border border-slate-200 rounded flex items-center justify-center text-slate-300 group relative">
@@ -307,7 +316,7 @@ export default function LogicLabPage() {
                                     </div>
                                   );
                               }
-                              // CASE 3: STANDARD BLOCK
+                              // STANDARD BLOCK
                               return (
                                   <div key={i} className="group relative bg-indigo-600 text-white px-3 py-2 rounded shadow-md cursor-grab active:cursor-grabbing hover:bg-indigo-700 transition-all">
                                       {block}
@@ -323,21 +332,37 @@ export default function LogicLabPage() {
                       </div>
                   </div>
 
-                  {/* Actions */}
+                  {/* ACTIONS BAR */}
                   <div className="flex gap-2">
-                      <Button onClick={handleRun} disabled={isRunning} className="flex-1 bg-green-600 hover:bg-green-700">
+                      <Button onClick={handleRun} disabled={isRunning} className="flex-1 bg-green-600 hover:bg-green-700 shadow-sm">
                           {isRunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Play className="mr-2 h-4 w-4"/>}
                           Run Code
                       </Button>
-                      <Button variant="outline" onClick={handleClear}><RotateCcw className="h-4 w-4"/></Button>
+                      
+                      {/* NEW: RESET ALL BUTTON */}
+                      <Button 
+                        variant="outline" 
+                        onClick={handleHardReset} 
+                        className="bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:text-red-700"
+                        title="Clear blocks and console"
+                      >
+                          <Eraser className="h-4 w-4 mr-2"/> Reset Workspace
+                      </Button>
+                      
                       <Button variant="outline" onClick={() => setIsCoachOpen(true)} className="text-purple-600 border-purple-200 bg-purple-50">
                           <Bot className="mr-2 h-4 w-4"/> Ask Coach
                       </Button>
                   </div>
 
-                  {/* Console */}
-                  <div className="h-32 bg-black rounded-lg p-3 font-mono text-sm text-green-400 overflow-y-auto shadow-inner">
-                      <div className="opacity-50 border-b border-green-900 mb-2 pb-1 text-xs">TERMINAL OUTPUT</div>
+                  {/* CONSOLE OUTPUT */}
+                  <div className="h-32 bg-black rounded-lg p-3 font-mono text-sm text-green-400 overflow-y-auto shadow-inner relative group">
+                      <div className="flex justify-between items-center opacity-50 border-b border-green-900 mb-2 pb-1 text-xs">
+                         <span>TERMINAL OUTPUT</span>
+                         {/* Mini Clear Console Button */}
+                         <button onClick={() => setConsoleOutput('')} className="hover:text-white cursor-pointer" title="Clear Text">
+                            Clear
+                         </button>
+                      </div>
                       <pre className="whitespace-pre-wrap">{consoleOutput}</pre>
                   </div>
 
@@ -345,7 +370,7 @@ export default function LogicLabPage() {
           </div>
       </div>
 
-      {/* CODE COACH MODAL */}
+      {/* COACH MODAL */}
       <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
           <DialogContent className="sm:max-w-[400px]">
               <DialogHeader>
@@ -372,5 +397,3 @@ export default function LogicLabPage() {
     </div>
   );
 }
-
-    
