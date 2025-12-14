@@ -34,7 +34,8 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
         allowedOrigins: ["*"]
-    }
+    },
+    allowedDevOrigins: ["*"]
   }
 };
 
