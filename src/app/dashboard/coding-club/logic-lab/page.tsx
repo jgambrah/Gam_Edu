@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import confetti from 'canvas-confetti';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
@@ -19,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
 import AdminBlockManager from './AdminBlockManager';
+import confetti from 'canvas-confetti'; 
 
 export default function LogicLabPage() {
   const { user } = useUser();
@@ -117,7 +117,7 @@ export default function LogicLabPage() {
     toast({ description: "Workspace cleared." });
   };
 
-  // --- UPDATED RUN LOGIC ---
+  // --- RUN LOGIC (UPDATED) ---
   const handleRun = async (mode: 'test' | 'submit') => {
     if (workspaceBlocks.length === 0) return;
     
@@ -132,42 +132,53 @@ export default function LogicLabPage() {
     if (result.success) {
         setConsoleOutput(result.output);
 
+        // CHECK SUCCESS (For BOTH modes now)
         const normOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
         const isSuccess = normOutput === normExpected || result.output.includes(activeMission.expectedOutput);
 
+        // COMMON: CELEBRATION (Trigger confetti in ANY mode if correct)
         if (isSuccess) {
-            confetti({
+             confetti({
                 particleCount: 150,
                 spread: 70,
                 origin: { y: 0.6 },
                 colors: ['#4f46e5', '#16a34a', '#db2777']
             });
-            
-            if (mode === 'submit') {
-                setLastResult({ success: true, actual: result.output, expected: activeMission.expectedOutput });
-                toast({ title: "Mission Accomplished!", description: "Excellent work!", className: "bg-green-600 text-white" });
-                
-                if (!completedMissions.includes(currentMissionIndex)) {
-                    const newCompleted = [...completedMissions, currentMissionIndex];
-                    setCompletedMissions(newCompleted);
-                    if (user && firestore) {
-                        await setDoc(doc(firestore, 'student_progress', user.uid), {
-                            logicLabCompleted: newCompleted
-                        }, { merge: true });
-                    }
-                }
-            } else { // Test Run Success
-                 toast({ title: "Correct!", description: "Your code produced the right output.", className: "bg-green-600 text-white" });
-            }
+        }
 
-        } else { // Incorrect Output
-            if (mode === 'submit') {
-                setLastResult({ success: false, actual: result.output, expected: activeMission.expectedOutput });
-                toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but didn't match the mission goal." });
-            } else {
-                 toast({ variant: 'destructive', title: "Test Run Incorrect", description: "The output doesn't match the mission goal." });
+        // MODE 1: TEST RUN (Sandbox)
+        if (mode === 'test') {
+            setIsRunning(false);
+            
+            // If correct, give them a hint to submit
+            if (isSuccess) {
+                toast({ 
+                    title: "Correct Code!", 
+                    description: "Great job! Click 'Submit Mission' to save your progress.", 
+                    className: "bg-green-600 text-white" 
+                });
             }
+            return; 
+        }
+
+        // MODE 2: SUBMIT (Strict Check with Grading)
+        if (isSuccess) {
+            setLastResult({ success: true, actual: result.output, expected: activeMission.expectedOutput });
+            toast({ title: "Mission Accomplished!", description: "Progress saved.", className: "bg-green-600 text-white" });
+            
+            if (!completedMissions.includes(currentMissionIndex)) {
+                const newCompleted = [...completedMissions, currentMissionIndex];
+                setCompletedMissions(newCompleted);
+                if (user && firestore) {
+                    await setDoc(doc(firestore, 'student_progress', user.uid), {
+                        logicLabCompleted: newCompleted
+                    }, { merge: true });
+                }
+            }
+        } else {
+            setLastResult({ success: false, actual: result.output, expected: activeMission.expectedOutput });
+            toast({ variant: 'destructive', title: "Incorrect Output", description: "The answer is wrong. Check the red box below." });
         }
     } else {
         setConsoleOutput(`Error: ${result.output}`);
@@ -344,12 +355,15 @@ export default function LogicLabPage() {
                       </div>
                   </div>
 
-                  {/* ACTIONS BAR */}
+                  {/* ACTIONS BAR - UPDATED */}
                   <div className="flex gap-2">
+                      
+                      {/* 1. TEST RUN (SANDBOX) */}
                       <Button onClick={() => handleRun('test')} disabled={isRunning} className="bg-blue-600 hover:bg-blue-700 shadow-sm" title="Just run code without grading">
                           <FlaskConical className="mr-2 h-4 w-4"/> Test Run
                       </Button>
-                      
+
+                      {/* 2. SUBMIT MISSION (STRICT) */}
                       <Button onClick={() => handleRun('submit')} disabled={isRunning} className="flex-1 bg-green-600 hover:bg-green-700 shadow-sm" title="Check answer against mission">
                           {isRunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Play className="mr-2 h-4 w-4"/>}
                           Submit Mission
@@ -363,7 +377,7 @@ export default function LogicLabPage() {
                       </Button>
                   </div>
 
-                  {/* CONSOLE & FEEDBACK PANEL */}
+                  {/* CONSOLE */}
                   <div className="flex flex-col gap-2">
                       <div className="h-32 bg-black rounded-lg p-3 font-mono text-sm text-green-400 overflow-y-auto shadow-inner relative">
                           <div className="flex justify-between items-center opacity-50 border-b border-green-900 mb-2 pb-1 text-xs">
@@ -373,6 +387,7 @@ export default function LogicLabPage() {
                           <pre className="whitespace-pre-wrap">{consoleOutput}</pre>
                       </div>
 
+                      {/* ERROR PANEL (Only shows on Submit failure) */}
                       {lastResult && !lastResult.success && (
                           <div className="bg-red-50 border border-red-200 rounded-lg p-3 animate-in slide-in-from-bottom-2 fade-in">
                               <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-2">
@@ -400,7 +415,7 @@ export default function LogicLabPage() {
           </div>
       </div>
 
-      {/* COACH MODAL */}
+      {/* DIALOGS ... (Keep existing code) */}
       <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
           <DialogContent className="sm:max-w-[400px]">
               <DialogHeader><DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle></DialogHeader>
