@@ -8,7 +8,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { doc, setDoc, getDoc, collection, query, updateDoc, addDoc } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, Terminal, CheckCircle2, Lock, 
-  ChevronRight, Code2, Bot, Trash2, BookOpen, Wand2, PlusCircle
+  ChevronRight, Code2, Bot, Trash2, BookOpen, Wand2, PlusCircle, Edit
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
 
@@ -68,7 +69,8 @@ export default function LogicLabPage() {
   );
   
   const activeMission = useMemo(() => {
-    const curriculumData = CURRICULUM || CURRICULUM_FALLBACK;
+    // Use fallback immediately if live data isn't ready
+    const curriculumData = (CURRICULUM && CURRICULUM.length > 0) ? CURRICULUM : CURRICULUM_FALLBACK;
     const sortedCurriculum = [...curriculumData].sort((a,b) => a.id - b.id);
     return sortedCurriculum.find(m => m.id === currentMissionIndex) || sortedCurriculum[0];
   }, [CURRICULUM, currentMissionIndex]);
@@ -168,7 +170,7 @@ export default function LogicLabPage() {
   };
 
   const groupedMissions = useMemo(() => {
-    const curriculumData = CURRICULUM || CURRICULUM_FALLBACK;
+    const curriculumData = (CURRICULUM && CURRICULUM.length > 0) ? CURRICULUM : CURRICULUM_FALLBACK;
     const groups: Record<string, Mission[]> = {};
     [...curriculumData].sort((a,b) => a.id - b.id).forEach(m => {
         if(!groups[m.section]) groups[m.section] = [];
@@ -323,7 +325,9 @@ export default function LogicLabPage() {
               <div className="h-[300px] bg-slate-50 rounded border p-3 overflow-y-auto space-y-3">
                   {coachChat.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] p-2 rounded text-xs ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white border text-slate-700'}`}>{msg.text}</div>
+                          <div className={`max-w-[85%] p-2 rounded text-xs ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white border text-slate-700'}`}>
+                              {msg.text}
+                          </div>
                       </div>
                   ))}
                   {isCoachThinking && <div className="text-xs text-slate-400 animate-pulse">Coach is typing...</div>}
@@ -402,3 +406,4 @@ function MissionForm({ mission, setOpen, onSuccess }: { mission: Mission | null;
     </DialogContent>
   );
 }
+
