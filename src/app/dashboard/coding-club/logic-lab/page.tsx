@@ -1,51 +1,28 @@
 
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
-import { CURRICULUM as CURRICULUM_FALLBACK, type Mission } from '@/lib/logic-lab-data';
+import { useState, useMemo, useEffect } from 'react';
+import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { doc, setDoc, getDoc, collection, query, updateDoc, addDoc } from 'firebase/firestore';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { 
-  Play, RotateCcw, HelpCircle, Terminal, CheckCircle2, Lock, 
-  ChevronRight, Code2, Bot, Trash2, BookOpen, Wand2, PlusCircle, Edit
+  Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight 
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { useRole } from '@/context/role-context';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-
-const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
-
-// Helper to map student class
-const getStudentGroup = (className: string = '') => {
-    const name = className.toLowerCase();
-    if (name.includes('bs1') || name.includes('bs2') || name.includes('bs3')) return 'Novice (Basic 1-3)';
-    if (name.includes('bs4') || name.includes('bs5') || name.includes('bs6')) return 'Apprentice (Basic 4-6)';
-    if (name.includes('jhs')) return 'Scholar (JHS)';
-    if (name.includes('shs')) return 'Master (SHS)';
-    return 'Scholar (JHS)'; 
-};
 
 export default function LogicLabPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { role } = useRole();
-  const canManage = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   // State
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
@@ -59,31 +36,20 @@ export default function LogicLabPage() {
   const [coachChat, setCoachChat] = useState<{role: 'user'|'model', text: string}[]>([]);
   const [userQuestion, setUserQuestion] = useState('');
   const [isCoachThinking, setIsCoachThinking] = useState(false);
-  
-  // Admin states
-  const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
-  const [isMissionFormOpen, setIsMissionFormOpen] = useState(false);
-  const [editingMission, setEditingMission] = useState<Mission | null>(null);
 
-  // Now fetching curriculum from Firestore
-  const missionsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore]);
-  const { data: CURRICULUM, isLoading: isLoadingMissions, forceRefetch: refetchMissions } = useCollection<Mission>(missionsQuery);
-  
-  const activeMission = useMemo(() => {
-    const curriculumData = (CURRICULUM && CURRICULUM.length > 0) ? CURRICULUM : CURRICULUM_FALLBACK;
-    const sortedCurriculum = [...curriculumData].sort((a,b) => a.id - b.id);
-    return sortedCurriculum.find(m => m.id === currentMissionIndex) || sortedCurriculum[0];
-  }, [CURRICULUM, currentMissionIndex]);
+  const activeMission = CURRICULUM[currentMissionIndex];
 
-  // Load Progress from Firestore
+  // Load Progress
   useEffect(() => {
     if(!user || !firestore) return;
     const fetchProgress = async () => {
-        const ref = doc(firestore, 'student_progress', user.uid);
-        const snap = await getDoc(ref);
-        if (snap.exists() && snap.data().logicLabCompleted) {
-            setCompletedMissions(snap.data().logicLabCompleted);
-        }
+        try {
+            const ref = doc(firestore, 'student_progress', user.uid);
+            const snap = await getDoc(ref);
+            if (snap.exists() && snap.data().logicLabCompleted) {
+                setCompletedMissions(snap.data().logicLabCompleted);
+            }
+        } catch (e) { console.error("Progress Load Error", e); }
     };
     fetchProgress();
   }, [user, firestore]);
@@ -113,20 +79,18 @@ export default function LogicLabPage() {
     if (result.success) {
         setConsoleOutput(result.output);
 
+        // Normalize strings for comparison
         const normalizedOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normalizedExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
 
-        if (normalizedOutput === normalizedExpected || result.output.includes(activeMission.expectedOutput)) {
+        if (normalizedOutput.includes(normalizedExpected) || normalizedOutput === normalizedExpected) {
             toast({ title: "Mission Accomplished!", description: "Code output matches expectation.", className: "bg-green-600 text-white" });
             
             if (!completedMissions.includes(currentMissionIndex)) {
                 const newCompleted = [...completedMissions, currentMissionIndex];
                 setCompletedMissions(newCompleted);
-                
                 if (user && firestore) {
-                    await setDoc(doc(firestore, 'student_progress', user.uid), {
-                        logicLabCompleted: newCompleted
-                    }, { merge: true });
+                    await setDoc(doc(firestore, 'student_progress', user.uid), { logicLabCompleted: newCompleted }, { merge: true });
                 }
             }
         } else {
@@ -158,7 +122,7 @@ export default function LogicLabPage() {
       }
       setIsCoachThinking(false);
   };
-
+  
   const explainTheory = async () => {
       setIsCoachOpen(true);
       setIsCoachThinking(true);
@@ -169,44 +133,20 @@ export default function LogicLabPage() {
       setIsCoachThinking(false);
   };
 
+  // Group Missions
   const groupedMissions = useMemo(() => {
-    const curriculumData = (CURRICULUM && CURRICULUM.length > 0) ? CURRICULUM : CURRICULUM_FALLBACK;
     const groups: Record<string, Mission[]> = {};
-    [...curriculumData].sort((a,b) => a.id - b.id).forEach(m => {
+    CURRICULUM.forEach(m => {
         if(!groups[m.section]) groups[m.section] = [];
         groups[m.section].push(m);
     });
     return groups;
-  }, [CURRICULUM]);
-  
-  const openMissionForm = (mission?: Mission) => {
-    setEditingMission(mission || null);
-    setIsMissionFormOpen(true);
-  };
-
-  if (isLoadingMissions && !CURRICULUM) {
-    return <div className="flex h-full w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
-  }
-  
-  if (!activeMission) {
-    return (
-        <div className="flex h-full w-full items-center justify-center">
-            <Card className="text-center">
-                <CardHeader>
-                    <CardTitle>Mission Not Found</CardTitle>
-                    <CardContent>
-                        <p>The selected mission could not be loaded.</p>
-                    </CardContent>
-                </CardHeader>
-            </Card>
-        </div>
-    );
-  }
+  }, []);
 
   return (
     <div className="flex h-[calc(100vh-2rem)] gap-4 p-4">
       
-      {/* --- SIDEBAR: MISSION LOG --- */}
+      {/* SIDEBAR */}
       <Card className="w-1/4 flex flex-col h-full bg-slate-50 border-r-0 rounded-r-none">
          <div className="p-4 border-b bg-white">
              <h2 className="font-bold text-xl flex items-center gap-2 text-indigo-700">
@@ -217,10 +157,7 @@ export default function LogicLabPage() {
          <ScrollArea className="flex-1 p-4">
              {Object.entries(groupedMissions).map(([section, missions]) => (
                  <div key={section} className="mb-6">
-                     <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-xs font-bold uppercase text-slate-500">{section}</h3>
-                        {canManage && <Button variant="ghost" size="sm" className="h-6" onClick={() => openMissionForm()}><PlusCircle className="h-3 w-3"/></Button>}
-                     </div>
+                     <h3 className="text-xs font-bold uppercase text-slate-500 mb-2">{section}</h3>
                      <div className="space-y-1">
                          {missions.map(m => {
                              const isLocked = m.id > 0 && !completedMissions.includes(m.id - 1);
@@ -228,23 +165,21 @@ export default function LogicLabPage() {
                              const isActive = m.id === currentMissionIndex;
                              
                              return (
-                                 <div key={m.id} className="group flex items-center gap-1">
-                                    <button
-                                        disabled={isLocked}
-                                        onClick={() => { setCurrentMissionIndex(m.id); handleClear(); }}
-                                        className={`w-full text-left p-2 rounded text-sm flex items-center justify-between transition-colors
-                                            ${isActive ? 'bg-indigo-100 text-indigo-800 font-medium' : 'hover:bg-slate-200'}
-                                            ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
-                                        `}
-                                    >
-                                        <span className="flex items-center gap-2">
-                                            {isLocked ? <Lock className="h-3 w-3"/> : <span>{m.id + 1}.</span>}
-                                            {m.title}
-                                        </span>
-                                        {isCompleted && <CheckCircle2 className="h-4 w-4 text-green-600"/>}
-                                    </button>
-                                    {canManage && <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => openMissionForm(m)}><Edit className="h-3 w-3"/></Button>}
-                                 </div>
+                                 <button
+                                    key={m.id}
+                                    disabled={isLocked}
+                                    onClick={() => { setCurrentMissionIndex(m.id); handleClear(); }}
+                                    className={`w-full text-left p-2 rounded text-sm flex items-center justify-between transition-colors
+                                        ${isActive ? 'bg-indigo-100 text-indigo-800 font-medium' : 'hover:bg-slate-200'}
+                                        ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}
+                                    `}
+                                 >
+                                     <span className="flex items-center gap-2">
+                                         {isLocked ? <Lock className="h-3 w-3"/> : <span>{m.id + 1}.</span>}
+                                         {m.title}
+                                     </span>
+                                     {isCompleted && <CheckCircle2 className="h-4 w-4 text-green-600"/>}
+                                 </button>
                              )
                          })}
                      </div>
@@ -253,10 +188,9 @@ export default function LogicLabPage() {
          </ScrollArea>
       </Card>
 
-      {/* --- MAIN WORKSPACE --- */}
+      {/* WORKSPACE */}
       <div className="flex-1 flex flex-col gap-4 h-full overflow-hidden">
           
-          {/* Theory & Task Header */}
           <Card className="shrink-0 bg-white border-l-4 border-l-indigo-500">
               <CardHeader className="py-4">
                   <div className="flex justify-between items-start">
@@ -276,29 +210,74 @@ export default function LogicLabPage() {
 
           <div className="flex-1 flex gap-4 min-h-0">
               
+              {/* TOOLBOX */}
               <div className="w-1/3 bg-slate-100 rounded-lg p-4 flex flex-col gap-2 overflow-y-auto border">
+                  <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Structure</h4>
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                      {/* FIX 1: Add New Line Button */}
+                      <Button variant="outline" className="border-slate-300 bg-white" onClick={() => handleAddBlock('[NEWLINE]')}>
+                          <CornerDownLeft className="h-3 w-3 mr-1"/> Enter
+                      </Button>
+                      {/* FIX 2: Add Indent Button (Tab) */}
+                      <Button variant="outline" className="border-slate-300 bg-white" onClick={() => handleAddBlock('    ')}>
+                          <ArrowRight className="h-3 w-3 mr-1"/> Indent
+                      </Button>
+                  </div>
+
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Available Blocks</h4>
                   {activeMission.availableBlocks.map((block, i) => (
-                      <Button key={i} variant="secondary" className="justify-start font-mono text-xs h-auto py-2 bg-white border shadow-sm hover:border-indigo-400" onClick={() => handleAddBlock(block)}>
+                      <Button 
+                        key={i} 
+                        variant="secondary" 
+                        className="justify-start font-mono text-xs h-auto py-2 bg-white border shadow-sm hover:border-indigo-400"
+                        onClick={() => handleAddBlock(block)}
+                      >
                           {block}
                       </Button>
                   ))}
               </div>
 
+              {/* CANVAS */}
               <div className="flex-1 flex flex-col gap-4">
                   
-                  <div className="flex-1 bg-white rounded-lg border-2 border-dashed border-slate-300 p-4 overflow-y-auto relative">
-                      {workspaceBlocks.length === 0 && <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">Click blocks to add them here</div>}
-                      <div className="space-y-2">
-                          {workspaceBlocks.map((block, i) => (
-                              <div key={i} className="flex items-center gap-2 animate-in slide-in-from-left-2 fade-in duration-200">
-                                  <div className="bg-indigo-600 text-white px-3 py-2 rounded shadow-md font-mono text-sm flex-1">{block}</div>
-                                  <button onClick={() => handleRemoveBlock(i)} className="text-red-400 hover:text-red-600"><Trash2 className="h-4 w-4"/></button>
-                              </div>
-                          ))}
+                  <div className="flex-1 bg-white rounded-lg border-2 border-dashed border-slate-300 p-4 overflow-y-auto relative font-mono text-sm">
+                      {workspaceBlocks.length === 0 && (
+                          <div className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none">
+                              Click blocks to build your code here
+                          </div>
+                      )}
+                      
+                      {/* FIX 3: Render logic for New Lines */}
+                      <div className="flex flex-wrap items-center gap-2 content-start">
+                          {workspaceBlocks.map((block, i) => {
+                              if (block === '[NEWLINE]') {
+                                  return <div key={i} className="w-full h-4 border-b border-slate-100 mb-2 relative group">
+                                      <span className="absolute right-0 top-0 text-xs text-slate-300 select-none">↵</span>
+                                      <button onClick={() => handleRemoveBlock(i)} className="absolute left-0 top-0 text-red-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-3 w-3"/></button>
+                                  </div>;
+                              }
+                              if (block === '    ') {
+                                  return <div key={i} className="w-8 h-8 bg-slate-50 border border-slate-200 rounded flex items-center justify-center text-slate-300 group relative">
+                                      <span>→</span>
+                                      <button onClick={() => handleRemoveBlock(i)} className="absolute -top-1 -right-1 bg-white rounded-full text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-3 w-3"/></button>
+                                  </div>
+                              }
+                              return (
+                                  <div key={i} className="group relative bg-indigo-600 text-white px-3 py-2 rounded shadow-md cursor-grab active:cursor-grabbing hover:bg-indigo-700 transition-all">
+                                      {block}
+                                      <button 
+                                        onClick={() => handleRemoveBlock(i)} 
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                                      >
+                                          <Trash2 className="h-3 w-3"/>
+                                      </button>
+                                  </div>
+                              );
+                          })}
                       </div>
                   </div>
 
+                  {/* Actions & Console */}
                   <div className="flex gap-2">
                       <Button onClick={handleRun} disabled={isRunning} className="flex-1 bg-green-600 hover:bg-green-700">
                           {isRunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Play className="mr-2 h-4 w-4"/>}
@@ -319,9 +298,12 @@ export default function LogicLabPage() {
           </div>
       </div>
 
+      {/* CODE COACH MODAL */}
       <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
           <DialogContent className="sm:max-w-[400px]">
-              <DialogHeader><DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle></DialogHeader>
+              <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle>
+              </DialogHeader>
               <div className="h-[300px] bg-slate-50 rounded border p-3 overflow-y-auto space-y-3">
                   {coachChat.map((msg, i) => (
                       <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -340,137 +322,6 @@ export default function LogicLabPage() {
               </DialogFooter>
           </DialogContent>
       </Dialog>
-      
-      {canManage && <Dialog open={isMissionFormOpen} onOpenChange={setIsMissionFormOpen}><MissionForm mission={editingMission} setOpen={setIsMissionFormOpen} onSuccess={refetchMissions} /></Dialog>}
     </div>
   );
 }
-
-function MissionForm({ mission, setOpen, onSuccess }: { mission: Mission | null; setOpen: (open: boolean) => void; onSuccess: () => void; }) {
-  const firestore = useFirestore();
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<Mission>({
-    defaultValues: mission || {
-      id: 0,
-      section: '',
-      title: '',
-      category: 'Basics',
-      theory: '',
-      task: '',
-      expectedOutput: '',
-      hint: '',
-      availableBlocks: [],
-    },
-  });
-
-  const onSubmit = async (data: Mission) => {
-    setIsSubmitting(true);
-    try {
-        if(mission) { // Editing
-            await updateDoc(doc(firestore, 'logic_lab_missions', mission.id.toString()), data);
-            toast({ title: "Mission Updated" });
-        } else { // Creating
-            const newDocRef = doc(firestore, 'logic_lab_missions', data.id.toString());
-            await setDoc(newDocRef, data);
-            toast({ title: "Mission Created" });
-        }
-        onSuccess();
-        setOpen(false);
-    } catch(e: any) {
-        toast({ variant: 'destructive', title: 'Error', description: e.message });
-    } finally {
-        setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <DialogContent className="max-w-3xl">
-      <DialogHeader>
-        <DialogTitle>{mission ? 'Edit Mission' : 'Create New Mission'}</DialogTitle>
-      </DialogHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Title" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="task"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea placeholder="Task" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="theory"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea placeholder="Theory (Markdown)" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="expectedOutput"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Expected Output" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="hint"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Hint" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="availableBlocks"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea placeholder="Blocks, comma, separated" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="animate-spin" /> : 'Save Mission'}
-          </Button>
-        </form>
-      </Form>
-    </DialogContent>
-  );
-}
-
-    
