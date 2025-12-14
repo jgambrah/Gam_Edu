@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { CURRICULUM as CURRICULUM_FALLBACK_DATA, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { doc, setDoc, getDoc, arrayUnion, collection, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, arrayUnion, collection, updateDoc, query } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
   Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Settings
@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // --- Admin: Manage Mission Dialog ---
 function ManageMissionDialog({ mission, open, onOpenChange, onMissionUpdate }: { mission: Mission, open: boolean, onOpenChange: (open: boolean) => void, onMissionUpdate: () => void }) {
@@ -115,26 +116,28 @@ export default function LogicLabPage() {
 
   // --- DATA FETCHING ---
   const { data: CURRICULUM, isLoading: isLoadingMissions, forceRefetch: refetchMissions } = useCollection<Mission>(
-    useMemoFirebase(() => firestore ? collection(firestore, 'logic_lab_missions') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'logic_lab_missions')) : null, [firestore])
   );
   
-  const CURRICULUM_FALLBACK = CURRICULUM || [];
+  const CURRICULUM_FALLBACK = CURRICULUM_FALLBACK_DATA;
 
   const activeMission = useMemo(() => {
-    if (!CURRICULUM) return CURRICULUM_FALLBACK_DATA[currentMissionIndex]; // Fallback while loading
+    if (!CURRICULUM) return CURRICULUM_FALLBACK[currentMissionIndex]; // Fallback while loading
     const sortedCurriculum = [...CURRICULUM].sort((a,b) => a.id - b.id);
     return sortedCurriculum[currentMissionIndex];
-  }, [CURRICULUM, currentMissionIndex]);
+  }, [CURRICULUM, currentMissionIndex, CURRICULUM_FALLBACK]);
 
   // Load Progress
   useEffect(() => {
     if(!user || !firestore) return;
     const fetchProgress = async () => {
-        const ref = doc(firestore, 'student_progress', user.uid);
-        const snap = await getDoc(ref);
-        if (snap.exists() && snap.data().logicLabCompleted) {
-            setCompletedMissions(snap.data().logicLabCompleted);
-        }
+        try {
+            const ref = doc(firestore, 'student_progress', user.uid);
+            const snap = await getDoc(ref);
+            if (snap.exists() && snap.data().logicLabCompleted) {
+                setCompletedMissions(snap.data().logicLabCompleted);
+            }
+        } catch (e) { console.error("Progress Load Error", e); }
     };
     fetchProgress();
   }, [user, firestore]);
@@ -155,7 +158,7 @@ export default function LogicLabPage() {
   };
 
   const handleRun = async () => {
-    if (workspaceBlocks.length === 0) return;
+    if (workspaceBlocks.length === 0 || !activeMission) return;
     setIsRunning(true);
     setConsoleOutput('Running...');
 
@@ -189,7 +192,7 @@ export default function LogicLabPage() {
   };
   
   const handleAskCoach = async () => {
-      if(!userQuestion.trim()) return;
+      if(!userQuestion.trim() || !activeMission) return;
       setIsCoachThinking(true);
       const newChat = [...coachChat, { role: 'user' as const, text: userQuestion }];
       setCoachChat(newChat);
@@ -207,6 +210,7 @@ export default function LogicLabPage() {
   };
 
   const explainTheory = async () => {
+      if(!activeMission) return;
       setIsCoachOpen(true);
       setIsCoachThinking(true);
       const response = await explainCodingConceptAction(activeMission.title);
@@ -217,14 +221,15 @@ export default function LogicLabPage() {
   };
 
   const groupedMissions = useMemo(() => {
-    const sortedCurriculum = CURRICULUM ? [...CURRICULUM].sort((a,b) => a.id - b.id) : CURRICULUM_FALLBACK_DATA;
+    const curriculumData = CURRICULUM || CURRICULUM_FALLBACK_DATA;
+    const sortedCurriculum = [...curriculumData].sort((a,b) => a.id - b.id);
     const groups: Record<string, Mission[]> = {};
     sortedCurriculum.forEach(m => {
         if(!groups[m.section]) groups[m.section] = [];
         groups[m.section].push(m);
     });
     return groups;
-  }, [CURRICULUM]);
+  }, [CURRICULUM, CURRICULUM_FALLBACK_DATA]);
   
 
   return (
@@ -275,27 +280,35 @@ export default function LogicLabPage() {
         <div className="flex-1 flex flex-col gap-4 h-full overflow-hidden">
             
             <Card className="shrink-0 bg-white border-l-4 border-l-indigo-500">
-                <CardHeader className="py-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                          <CardTitle className="text-lg">{activeMission.title}</CardTitle>
-                          <p className="text-sm text-slate-600 mt-1">{activeMission.task}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        {isAdmin && (
-                            <Button variant="destructive" size="sm" onClick={() => setIsManageOpen(true)}>
-                                <Settings className="h-4 w-4 mr-2"/> Manage
+                 {activeMission ? (
+                    <CardHeader className="py-4">
+                        <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle className="text-lg">{activeMission.title}</CardTitle>
+                            <p className="text-sm text-slate-600 mt-1">{activeMission.task}</p>
+                        </div>
+                        <div className="flex gap-2">
+                            {isAdmin && (
+                                <Button variant="destructive" size="sm" onClick={() => setIsManageOpen(true)}>
+                                    <Settings className="h-4 w-4 mr-2"/> Manage
+                                </Button>
+                            )}
+                            <Button variant="outline" size="sm" onClick={explainTheory}>
+                                <BookOpen className="h-4 w-4 mr-2"/> Explain Concept
                             </Button>
-                        )}
-                        <Button variant="outline" size="sm" onClick={explainTheory}>
-                            <BookOpen className="h-4 w-4 mr-2"/> Explain Concept
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="mt-2 p-3 bg-indigo-50 rounded text-sm text-indigo-900 prose prose-sm max-w-none">
-                        <ReactMarkdown>{activeMission.theory}</ReactMarkdown>
-                    </div>
-                </CardHeader>
+                        </div>
+                        </div>
+                        <div className="mt-2 p-3 bg-indigo-50 rounded text-sm text-indigo-900 prose prose-sm max-w-none">
+                            <ReactMarkdown>{activeMission.theory}</ReactMarkdown>
+                        </div>
+                    </CardHeader>
+                ) : (
+                     <CardHeader className="py-4">
+                        <Skeleton className="h-6 w-1/2" />
+                        <Skeleton className="h-4 w-3/4 mt-1" />
+                        <Skeleton className="h-20 w-full mt-2" />
+                    </CardHeader>
+                )}
             </Card>
 
             <div className="flex-1 flex gap-4 min-h-0">
@@ -312,7 +325,7 @@ export default function LogicLabPage() {
                     </div>
 
                     <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Available Blocks</h4>
-                    {activeMission.availableBlocks.map((block, i) => (
+                    {activeMission?.availableBlocks.map((block, i) => (
                         <Button key={i} variant="secondary" className="justify-start font-mono text-xs h-auto py-2 bg-white border shadow-sm hover:border-indigo-400" onClick={() => handleAddBlock(block)}>
                             {block}
                         </Button>
