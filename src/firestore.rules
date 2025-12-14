@@ -251,6 +251,15 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == userId;
     }
     
+    // --- NEW LOGIC LAB RULES ---
+    match /student_progress/{userId} {
+        allow read, write: if request.auth.uid == userId;
+    }
+    match /logic_lab_missions/{missionId} {
+        allow read: if isSignedIn();
+        allow write: if request.auth.uid == 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2'; // Admin-only write
+    }
+
     // Allow students to save their own learning history
     match /science_learning_history/{historyId} {
       allow list: if isSignedIn() && request.query.where.userId == request.auth.uid;
@@ -319,4 +328,3 @@ service cloud.firestore {
     }
   }
 }
-

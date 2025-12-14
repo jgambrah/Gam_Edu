@@ -4,8 +4,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, setDoc, getDoc, collection } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
   Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight 
@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import AdminBlockManager from './AdminBlockManager'; // Import the new component
 
 export default function LogicLabPage() {
   const { user } = useUser();
@@ -37,9 +38,26 @@ export default function LogicLabPage() {
   const [userQuestion, setUserQuestion] = useState('');
   const [isCoachThinking, setIsCoachThinking] = useState(false);
 
-  const activeMission = CURRICULUM[currentMissionIndex];
+  // Fetch dynamic blocks from Firestore
+  const dynamicBlocksQuery = useMemoFirebase(() => collection(firestore, 'logic_lab_missions'), [firestore]);
+  const { data: dynamicBlocksData } = useCollection(dynamicBlocksQuery);
 
-  // Load Progress
+  const activeMissionStatic = CURRICULUM[currentMissionIndex];
+
+  // Combine static and dynamic blocks for the active mission
+  const activeMission = useMemo(() => {
+    if (!activeMissionStatic) return null;
+    
+    const dynamicData = dynamicBlocksData?.find(doc => doc.id === currentMissionIndex.toString());
+    const dynamicMissionBlocks = dynamicData?.availableBlocks || [];
+
+    return {
+        ...activeMissionStatic,
+        availableBlocks: [...activeMissionStatic.availableBlocks, ...dynamicMissionBlocks]
+    };
+  }, [currentMissionIndex, activeMissionStatic, dynamicBlocksData]);
+
+  // Load Progress from Firestore
   useEffect(() => {
     if(!user || !firestore) return;
     const fetchProgress = async () => {
@@ -70,7 +88,7 @@ export default function LogicLabPage() {
   };
 
   const handleRun = async () => {
-    if (workspaceBlocks.length === 0) return;
+    if (workspaceBlocks.length === 0 || !activeMission) return;
     setIsRunning(true);
     setConsoleOutput('Running...');
 
@@ -103,7 +121,7 @@ export default function LogicLabPage() {
   };
 
   const handleAskCoach = async () => {
-      if(!userQuestion.trim()) return;
+      if(!userQuestion.trim() || !activeMission) return;
       setIsCoachThinking(true);
       
       const newChat = [...coachChat, { role: 'user' as const, text: userQuestion }];
@@ -122,8 +140,9 @@ export default function LogicLabPage() {
       }
       setIsCoachThinking(false);
   };
-  
+
   const explainTheory = async () => {
+      if(!activeMission) return;
       setIsCoachOpen(true);
       setIsCoachThinking(true);
       const response = await explainCodingConceptAction(activeMission.title);
@@ -133,7 +152,6 @@ export default function LogicLabPage() {
       setIsCoachThinking(false);
   };
 
-  // Group Missions
   const groupedMissions = useMemo(() => {
     const groups: Record<string, Mission[]> = {};
     CURRICULUM.forEach(m => {
@@ -142,6 +160,10 @@ export default function LogicLabPage() {
     });
     return groups;
   }, []);
+
+  if (!activeMission) {
+    return <div className="flex h-full w-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin"/></div>
+  }
 
   return (
     <div className="flex h-[calc(100vh-2rem)] gap-4 p-4">
@@ -214,11 +236,9 @@ export default function LogicLabPage() {
               <div className="w-1/3 bg-slate-100 rounded-lg p-4 flex flex-col gap-2 overflow-y-auto border">
                   <h4 className="text-xs font-bold uppercase text-slate-500 mb-2">Structure</h4>
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                      {/* FIX 1: Add New Line Button */}
                       <Button variant="outline" className="border-slate-300 bg-white" onClick={() => handleAddBlock('[NEWLINE]')}>
                           <CornerDownLeft className="h-3 w-3 mr-1"/> Enter
                       </Button>
-                      {/* FIX 2: Add Indent Button (Tab) */}
                       <Button variant="outline" className="border-slate-300 bg-white" onClick={() => handleAddBlock('    ')}>
                           <ArrowRight className="h-3 w-3 mr-1"/> Indent
                       </Button>
@@ -235,6 +255,7 @@ export default function LogicLabPage() {
                           {block}
                       </Button>
                   ))}
+                   <AdminBlockManager missionId={activeMission.id} />
               </div>
 
               {/* CANVAS */}
@@ -247,7 +268,6 @@ export default function LogicLabPage() {
                           </div>
                       )}
                       
-                      {/* FIX 3: Render logic for New Lines */}
                       <div className="flex flex-wrap items-center gap-2 content-start">
                           {workspaceBlocks.map((block, i) => {
                               if (block === '[NEWLINE]') {
