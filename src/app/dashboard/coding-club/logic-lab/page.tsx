@@ -9,7 +9,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, TestTube 
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical 
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -73,9 +73,9 @@ export default function LogicLabPage() {
   // 2. Load Real-Time Blocks & Reset on Mission Change
   useEffect(() => {
     setDynamicBlocks(activeMission.availableBlocks); 
-    
-    // AUTO RESET when Mission Changes (This prevents confusion)
-    handleHardReset();
+    setWorkspaceBlocks([]);
+    setConsoleOutput('');
+    setLastResult(null);
 
     if (!firestore) return;
 
@@ -114,45 +114,40 @@ export default function LogicLabPage() {
     setIsRunning(false);            
     setIsCoachThinking(false);
     setLastResult(null); 
-    
-    toast({ 
-        description: "Workspace cleared.",
-        duration: 2000
-    });
+    toast({ description: "Workspace cleared." });
   };
 
-  const handleTestRun = async () => {
-    if (workspaceBlocks.length === 0) return;
-    setIsRunning(true);
-    setConsoleOutput('Testing code...');
-    setLastResult(null);
-
-    const result = await interpretBlockCodeAction(workspaceBlocks);
-    setConsoleOutput(result.output);
-    setIsRunning(false);
-    toast({ title: "Test Run Complete", description: "Output is shown in the terminal. No grading was performed." });
-  };
-  
-  const handleSubmitMission = async () => {
+  const handleRun = async (mode: 'test' | 'submit') => {
     if (workspaceBlocks.length === 0) return;
     
     setConsoleOutput(''); 
     setLastResult(null);
     setIsRunning(true);
     
-    setTimeout(() => setConsoleOutput('Submitting for grading...'), 50);
+    setTimeout(() => setConsoleOutput('Running code...'), 50);
 
     const result = await interpretBlockCodeAction(workspaceBlocks);
     
     if (result.success) {
         setConsoleOutput(result.output);
 
+        if (mode === 'test') {
+            setIsRunning(false);
+            return; 
+        }
+
         const normOutput = result.output.replace(/\s+/g, '').toLowerCase();
         const normExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
-        const isSuccess = normOutput === normExpected || (activeMission.expectedOutput && normOutput.includes(normExpected));
+        const isSuccess = normOutput === normExpected || result.output.includes(activeMission.expectedOutput);
 
         if (isSuccess) {
-            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#4f46e5', '#16a34a', '#db2777']
+            });
+
             setLastResult({ success: true, actual: result.output, expected: activeMission.expectedOutput });
             toast({ title: "Mission Accomplished!", description: "Excellent work!", className: "bg-green-600 text-white" });
             
@@ -167,7 +162,7 @@ export default function LogicLabPage() {
             }
         } else {
             setLastResult({ success: false, actual: result.output, expected: activeMission.expectedOutput });
-            toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but the answer is wrong." });
+            toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but didn't match the mission goal." });
         }
     } else {
         setConsoleOutput(`Error: ${result.output}`);
@@ -344,20 +339,22 @@ export default function LogicLabPage() {
                       </div>
                   </div>
 
-                  {/* ACTIONS */}
+                  {/* ACTIONS BAR */}
                   <div className="flex gap-2">
-                      <Button onClick={handleTestRun} disabled={isRunning} className="flex-1 bg-sky-600 hover:bg-sky-700 shadow-sm text-white">
-                        <TestTube className="mr-2 h-4 w-4"/> Test Run
+                      <Button onClick={() => handleRun('test')} disabled={isRunning} className="bg-blue-600 hover:bg-blue-700 shadow-sm" title="Just run code without grading">
+                          <FlaskConical className="mr-2 h-4 w-4"/> Test Run
                       </Button>
-                      <Button onClick={handleSubmitMission} disabled={isRunning} className="flex-1 bg-green-600 hover:bg-green-700 shadow-sm">
+                      
+                      <Button onClick={() => handleRun('submit')} disabled={isRunning} className="flex-1 bg-green-600 hover:bg-green-700 shadow-sm" title="Check answer against mission">
                           {isRunning ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Play className="mr-2 h-4 w-4"/>}
                           Submit Mission
                       </Button>
+
                       <Button variant="outline" onClick={handleHardReset} className="text-red-600 hover:bg-red-50" title="Reset Workspace">
-                          <Eraser className="h-4 w-4 mr-2"/> Reset
+                          <Eraser className="h-4 w-4"/>
                       </Button>
                       <Button variant="outline" onClick={() => setIsCoachOpen(true)} className="text-purple-600 border-purple-200 bg-purple-50">
-                          <Bot className="mr-2 h-4 w-4"/> Coach
+                          <Bot className="mr-2 h-4 w-4"/>
                       </Button>
                   </div>
 
@@ -374,17 +371,17 @@ export default function LogicLabPage() {
                       {lastResult && !lastResult.success && (
                           <div className="bg-red-50 border border-red-200 rounded-lg p-3 animate-in slide-in-from-bottom-2 fade-in">
                               <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-2">
-                                  <AlertCircle className="h-4 w-4"/> Incorrect Output
+                                  <AlertCircle className="h-4 w-4"/> Mission Failed
                               </div>
                               <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                                   <div>
-                                      <span className="text-slate-500 block mb-1">Mission Expected:</span>
+                                      <span className="text-slate-500 block mb-1">Expected:</span>
                                       <div className="bg-green-100 text-green-800 p-2 rounded border border-green-200">
                                           {lastResult.expected}
                                       </div>
                                   </div>
                                   <div>
-                                      <span className="text-slate-500 block mb-1">Your Code Printed:</span>
+                                      <span className="text-slate-500 block mb-1">Your Output:</span>
                                       <div className="bg-red-100 text-red-800 p-2 rounded border border-red-200 break-words">
                                           {lastResult.actual || "(Nothing)"}
                                       </div>
