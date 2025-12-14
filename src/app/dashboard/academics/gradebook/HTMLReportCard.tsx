@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -23,7 +22,8 @@ export const HTMLReportCard = ({
     rank, 
     totalStudents, 
     subjects, 
-    schoolProfile 
+    schoolProfile,
+    customRemark 
 }: any) => {
     
     // 1. Smart Map for Subjects
@@ -251,8 +251,8 @@ export const HTMLReportCard = ({
             </div>
 
             {/* Summary Box */}
-            <div className="border-2 border-dashed border-black p-6 mb-12 rounded-lg bg-gray-50">
-                <div className="flex justify-between mb-4 text-lg">
+            <div className="border-2 border-dashed border-black p-4 mb-8 rounded-lg bg-gray-50 space-y-3">
+                <div className="flex justify-between text-lg">
                     <div>
                         <span className="font-bold">Overall Average:</span>
                         <span className="ml-2">{overallAverage.toFixed(2)}%</span>
@@ -262,15 +262,23 @@ export const HTMLReportCard = ({
                         <span className="ml-2 font-bold underline">{rank} / {totalStudents}</span>
                     </div>
                 </div>
-                <div className="pt-4 border-t border-dashed border-black flex justify-between items-end">
-                    <div className="w-2/3">
-                        <span className="font-bold block mb-1">Principal's Remark:</span>
-                        <span className="italic text-sm">{getGrade(overallAverage).remark} performance. Keep working hard!</span>
+                
+                {/* FIX: Render Teacher's Remark */}
+                {customRemark?.teacherRemark && (
+                    <div className="pt-3 border-t border-dashed border-black">
+                        <span className="font-bold block mb-1 text-sm">Class Teacher's Remark:</span>
+                        <span className="italic text-sm text-gray-700">{customRemark.teacherRemark}</span>
                     </div>
-                    <div className="text-right">
-                        <span className="text-xs font-bold bg-black text-white px-2 py-1 rounded">OFFICIAL REPORT</span>
+                )}
+                
+                {/* FIX: Render Principal's Remark */}
+                {customRemark?.principalRemark && (
+                     <div className="pt-3 border-t border-dashed border-black">
+                        <span className="font-bold block mb-1 text-sm">Principal's Remark:</span>
+                        <span className="italic text-sm text-gray-700">{customRemark.principalRemark}</span>
                     </div>
-                </div>
+                )}
+
             </div>
 
             {/* Signatures */}
