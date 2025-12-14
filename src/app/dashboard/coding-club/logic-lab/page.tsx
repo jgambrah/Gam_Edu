@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, onSnapshot, query, orderBy, addDoc } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
   Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical 
@@ -17,8 +17,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
-import AdminBlockManager from './AdminBlockManager';
-import confetti from 'canvas-confetti'; 
+import AdminMissionCreator from '@/components/AdminMissionCreator';
+import confetti from 'canvas-confetti';
 
 export default function LogicLabPage() {
   const { user } = useUser();
@@ -26,6 +26,7 @@ export default function LogicLabPage() {
   const { toast } = useToast();
 
   // --- STATE ---
+  const [allMissions, setAllMissions] = useState<Mission[]>(CURRICULUM);
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<number[]>([]);
   const [workspaceBlocks, setWorkspaceBlocks] = useState<string[]>([]);
@@ -44,7 +45,30 @@ export default function LogicLabPage() {
   const [userQuestion, setUserQuestion] = useState('');
   const [isCoachThinking, setIsCoachThinking] = useState(false);
 
-  const activeMission = CURRICULUM[currentMissionIndex];
+  // EFFECT: LOAD EXTRA MISSIONS FROM DB
+  useEffect(() => {
+    if (!firestore) return;
+
+    // Listen to the new 'logic_lab_curriculum' collection
+    const q = query(collection(firestore, 'logic_lab_curriculum'));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const dbMissions: Mission[] = [];
+        snapshot.forEach((doc) => {
+            dbMissions.push(doc.data() as Mission);
+        });
+
+        // Merge Static CURRICULUM + Database Missions
+        // We sort by ID to keep them in order
+        const merged = [...CURRICULUM, ...dbMissions].sort((a, b) => a.id - b.id);
+        setAllMissions(merged);
+    });
+
+    return () => unsubscribe();
+  }, [firestore]);
+
+
+  const activeMission = allMissions[currentMissionIndex] || allMissions[0];
 
   // Helper: Get Color based on Block Type
   const getBlockColor = (text: string) => {
@@ -72,6 +96,7 @@ export default function LogicLabPage() {
 
   // 2. Load Real-Time Blocks & Reset on Mission Change
   useEffect(() => {
+    if (!activeMission) return;
     setDynamicBlocks(activeMission.availableBlocks); 
     setWorkspaceBlocks([]);
     setConsoleOutput('');
@@ -212,12 +237,16 @@ export default function LogicLabPage() {
 
   const groupedMissions = useMemo(() => {
     const groups: Record<string, Mission[]> = {};
-    CURRICULUM.forEach(m => {
+    allMissions.forEach(m => {
         if(!groups[m.section]) groups[m.section] = [];
         groups[m.section].push(m);
     });
     return groups;
-  }, []);
+  }, [allMissions]);
+
+  if (!activeMission) {
+    return <div className="flex h-screen w-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
 
   return (
     <div className="flex h-[calc(100vh-2rem)] gap-4 p-4">
@@ -260,6 +289,7 @@ export default function LogicLabPage() {
                      </div>
                  </div>
              ))}
+              <AdminMissionCreator />
          </ScrollArea>
       </Card>
 
@@ -311,7 +341,6 @@ export default function LogicLabPage() {
                           {block}
                       </Button>
                   ))}
-                  <AdminBlockManager missionId={activeMission.id} />
               </div>
 
               {/* CANVAS & CONSOLE */}
@@ -415,7 +444,7 @@ export default function LogicLabPage() {
           </div>
       </div>
 
-      {/* DIALOGS ... (Keep existing code) */}
+      {/* COACH MODAL */}
       <Dialog open={isCoachOpen} onOpenChange={setIsCoachOpen}>
           <DialogContent className="sm:max-w-[400px]">
               <DialogHeader><DialogTitle className="flex items-center gap-2"><Bot className="h-5 w-5 text-purple-600"/> Code Coach</DialogTitle></DialogHeader>
