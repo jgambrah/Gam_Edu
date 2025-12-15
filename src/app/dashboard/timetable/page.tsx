@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2 } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
+import TimetableSeeder from '@/components/TimetableSeeder';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 
@@ -202,24 +203,27 @@ export default function TimetablePage() {
       </Card>
 
       {canGenerate && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Wand2 /> AI Timetable Generation</CardTitle>
-            <CardDescription>Generate or reschedule the school's entire timetable using AI.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea
-              placeholder="Enter a rescheduling reason or custom constraint (e.g. 'Math classes should be in the morning')"
-              value={customConstraint}
-              onChange={(e) => setCustomConstraint(e.target.value)}
-              rows={3}
-            />
-            <Button onClick={handleGenerateTimetable} disabled={isGenerating} className="w-full">
-              {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-              Generate New Timetable
-            </Button>
-          </CardContent>
-        </Card>
+        <>
+          <TimetableSeeder />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Wand2 /> AI Timetable Generation</CardTitle>
+              <CardDescription>Generate or reschedule the school's entire timetable using AI.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                placeholder="Enter a rescheduling reason or custom constraint (e.g. 'Math classes should be in the morning')"
+                value={customConstraint}
+                onChange={(e) => setCustomConstraint(e.target.value)}
+                rows={3}
+              />
+              <Button onClick={handleGenerateTimetable} disabled={isGenerating} className="w-full">
+                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                Generate New Timetable
+              </Button>
+            </CardContent>
+          </Card>
+        </>
       )}
     </div>
   );
