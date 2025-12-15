@@ -103,7 +103,7 @@ service cloud.firestore {
     }
     
     // Announcements are readable by their audience, writable by admins
-    match /announcements/{announcementId} {
+    match /announcements_v2/{announcementId} {
       allow read: if isSignedIn() && ('Everybody' in resource.data.audience || getUserRole(request.auth.uid) in resource.data.audience);
       allow write: if isAdmin();
     }
