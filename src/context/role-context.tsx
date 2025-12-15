@@ -63,7 +63,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         if (staffSnap.exists()) {
           console.log("[RoleContext] Found in 'staff'");
           setRole(staffSnap.data().role as Role);
-          setProfile(data);
+          setProfile(staffSnap.data());
           setLoading(false);
           return;
         }
@@ -110,7 +110,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 export const useRole = () => useContext(RoleContext);
 
 // --- DEBUG ROLE GUARD ---
-export function RoleGuard({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) {
+export function RoleGuard({ children, allowedRoles = [] }: { children: React.ReactNode; allowedRoles?: string[] }) {
   const { role, loading, refreshRole } = useRole();
   const auth = useAuth();
   const user = auth?.user;
@@ -132,6 +132,10 @@ export function RoleGuard({ children, allowedRoles }: { children: React.ReactNod
   const effectiveRole = (role === 'Administrator' || role === 'Director') ? 'Admin' : role;
   
   if (effectiveRole && allowedRoles.includes(effectiveRole)) {
+    return <>{children}</>;
+  }
+  
+  if (allowedRoles.includes('all')) {
     return <>{children}</>;
   }
 

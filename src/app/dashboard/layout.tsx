@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
@@ -8,6 +9,7 @@ import ClientBoundary from './client-boundary';
 import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import { AiChat } from '@/components/ai-chat';
+import { ALL_ROLES } from '@/lib/types';
 
 export default function DashboardLayout({
   children,
@@ -17,7 +19,7 @@ export default function DashboardLayout({
   return (
     <Suspense fallback={<div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
       <RoleProvider>
-        <RoleGuard>
+        <RoleGuard allowedRoles={ALL_ROLES}>
             <SidebarProvider>
             <Sidebar>
                 <AppSidebar />
