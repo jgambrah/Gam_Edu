@@ -2,103 +2,62 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser, useFirestore } from '@/firebase'; 
+import { useAuth, useFirestore } from '@/firebase'; // Adjust path to your firebase config
 import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Loader2, Database, CheckCircle2 } from 'lucide-react';
-import { getDay } from 'date-fns';
+import { Loader2, Wrench } from 'lucide-react';
 
 export default function SystemRepair() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const firestore = useFirestore();
   const [loading, setLoading] = useState(false);
-  const [logs, setLogs] = useState<string[]>([]);
 
-  const addLog = (msg: string) => setLogs(prev => [...prev, `> ${msg}`]);
-
-  const populateData = async () => {
+  const fixSystem = async () => {
+    if (!user || !firestore) return;
     setLoading(true);
-    setLogs([]);
-    addLog("Initializing Data Population...");
-
-    if (!firestore || !user) return;
-
     try {
-      // 1. Create a Class
-      addLog("Creating Class: Grade 1...");
-      const classRef = await addDoc(collection(firestore, 'classes'), {
-        name: "Grade 1 - Alpha",
-        capacity: 30,
-        currentStudents: 1
+      // 1. CREATE YOUR ADMIN PROFILE
+      // This fixes the "Role-Based" rule check.
+      // It creates a document in 'users' with your UID.
+      await setDoc(doc(firestore, 'users', user.uid), {
+        email: user.email,
+        role: 'Admin', // <--- THIS IS THE KEY
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+
+      // 2. CREATE A DUMMY TIMETABLE (To Initialize Collection)
+      // This ensures the 'timetables' collection actually exists.
+      const timetableRef = collection(firestore, 'timetables');
+      await addDoc(timetableRef, {
+        day: 'Monday',
+        subject: 'Mathematics',
+        timeSlotId: 1,
+        startTime: '08:00',
+        endTime: '09:00',
+        classId: 'demo-class'
       });
 
-      // 2. Create a Student
-      addLog("Creating Student: Demo Student...");
-      await addDoc(collection(firestore, 'students'), {
-        fullName: "Alice Wonderland",
-        classId: classRef.id,
-        gender: "Female",
-        status: "Active"
-      });
-
-      // 3. Create Timetable for TODAY
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      const todayName = days[getDay(new Date())];
+      alert("✅ System Repaired!\n1. Admin Role Assigned.\n2. Timetables Collection Initialized.\n\nTry refreshing the Dashboard now.");
       
-      addLog(`Creating Schedule for: ${todayName}...`);
-      
-      await addDoc(collection(firestore, 'timetables'), {
-        day: todayName, // Matches dashboard filter
-        subjectId: "math-101",
-        subject: "Mathematics", // Fallback name
-        classId: classRef.id,
-        timeSlotId: 1, // Matches sort order
-        startTime: "09:00",
-        endTime: "10:00",
-        teacherId: user.uid
-      });
-
-      // 4. Create Subject
-      await addDoc(collection(firestore, 'subjects'), {
-        id: "math-101",
-        name: "Mathematics",
-        code: "MTH1"
-      });
-
-      addLog("✅ DATA POPULATED SUCCESSFULLY!");
-      addLog("👉 REFRESH THE PAGE NOW.");
-
     } catch (error: any) {
       console.error(error);
-      addLog(`❌ Error: ${error.message}`);
-      
-      if (error.message.includes("index")) {
-        addLog("⚠️ INDEX MISSING! Check your browser console for a link to create it.");
-      }
+      alert(`❌ Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-4 bg-slate-900 text-green-400 border-2 border-green-500 rounded-lg my-4 shadow-xl font-mono text-sm">
-      <div className="flex justify-between items-center mb-4 border-b border-green-800 pb-2">
-        <h3 className="font-bold flex items-center gap-2">
-            <Database className="h-5 w-5"/> Data Injector
-        </h3>
-      </div>
-      
-      <div className="bg-black p-3 rounded h-40 overflow-y-auto mb-4 border border-green-900">
-        {logs.length === 0 ? <span className="opacity-50">Ready to inject data...</span> : logs.map((l, i) => <div key={i}>{l}</div>)}
-      </div>
-
-      <Button 
-        onClick={populateData} 
-        disabled={loading} 
-        className="bg-blue-600 hover:bg-blue-500 text-white w-full font-bold"
-      >
-        {loading ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle2 className="mr-2 h-4 w-4" />}
-        POPULATE DASHBOARD DATA
+    <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg my-4">
+      <h3 className="font-bold text-orange-800 flex items-center gap-2">
+        <Wrench className="h-4 w-4"/> System Repair Tool
+      </h3>
+      <p className="text-sm text-orange-700 mb-3">
+        Click this to force-create your Admin Role and initialize collections.
+      </p>
+      <Button onClick={fixSystem} disabled={loading} className="bg-orange-600 hover:bg-orange-700">
+        {loading ? <Loader2 className="animate-spin mr-2"/> : null}
+        Fix Admin Permissions & Data
       </Button>
     </div>
   );
