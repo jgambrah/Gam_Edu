@@ -107,7 +107,7 @@ export default function LessonPlanningPage() {
           </div>
           <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild>
-              <Button disabled={isLoadingClasses || !classes || classes.length === 0}>
+              <Button>
                 {isLoadingClasses ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
