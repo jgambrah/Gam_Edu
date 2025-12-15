@@ -43,31 +43,33 @@ export default function DashboardPage() {
     const { role } = useRole();
     const firestore = useFirestore();
 
-    // 1. Students Query
+    // --- 1. DEFINE QUERIES (Standard useMemo) ---
+    
+    // Students
     const studentsQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'students')) : null, 
     [firestore]);
-    const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+    const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery as any);
 
-    // 2. Staff Query
+    // Staff
     const staffQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'staff')) : null, 
     [firestore]);
-    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(staffQuery);
+    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(staffQuery as any);
 
-    // 3. Classes Query
+    // Classes
     const classesQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'classes')) : null, 
     [firestore]);
-    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery);
+    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery as any);
 
-    // 4. Announcements Query
+    // Announcements
     const announcementsQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, 
     [firestore]);
-    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(announcementsQuery);
+    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(announcementsQuery as any);
 
-    // 5. Timetable Query
+    // Timetable (Today)
     const today = getDay(new Date()); 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const todayName = days[today];
@@ -75,18 +77,16 @@ export default function DashboardPage() {
     const timetableQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')) : null, 
     [firestore, todayName]);
-    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
+    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery as any);
 
-    // 6. Subjects Query
+    // Subjects
     const subjectsQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'subjects')) : null, 
     [firestore]);
-    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(subjectsQuery);
+    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(subjectsQuery as any);
 
 
-    const isLoading = loadingStudents || loadingStaff || loadingClasses || loadingAnnouncements || loadingTimetable || loadingSubjects;
-
-    // --- Data Processing for Charts ---
+    // --- DATA PROCESSING ---
     const enrollmentData = useMemo(() => {
         if (!students || !classes) return [];
         return classes.map(c => ({
@@ -97,16 +97,14 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-6 p-6">
-            <div className="flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Welcome back, {user?.displayName || 'Admin'}. Today is {format(new Date(), 'eeee, MMMM d')}.
-                    </p>
-                </div>
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                <p className="text-muted-foreground">
+                    Welcome back, {user?.displayName || 'Admin'}. Today is {format(new Date(), 'eeee, MMMM d')}.
+                </p>
             </div>
 
-            {/* STATS CARDS */}
+            {/* STATS ROW */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} isLoading={loadingStudents} link="/dashboard/students-v3"/>
                 <StatCard title="Total Staff" value={staff?.length || 0} icon={UserCog} isLoading={loadingStaff} link="/dashboard/staff-management-v2"/>
@@ -156,7 +154,6 @@ export default function DashboardPage() {
                         <CardContent>
                             {loadingAnnouncements ? (
                                 <div className="space-y-2">
-                                    <Skeleton className="h-12 w-full" />
                                     <Skeleton className="h-12 w-full" />
                                     <Skeleton className="h-12 w-full" />
                                 </div>
@@ -256,4 +253,3 @@ export default function DashboardPage() {
     );
 }
 
-    
