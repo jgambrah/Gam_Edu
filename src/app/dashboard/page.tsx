@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { 
     Users, GraduationCap, UserCog, Megaphone, Calendar as CalendarIcon, 
-    BookOpen, CheckSquare, Activity, Wallet, ShieldAlert 
+    BookOpen, CheckSquare, Activity, Wallet, ShieldAlert, UserPlus
 } from 'lucide-react';
 import { format, getDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
