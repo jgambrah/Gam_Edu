@@ -27,13 +27,8 @@ import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 
 function isNavItemVisible(item: NavItem, role: UserRole | null) {
-  if (item.roles === 'all') {
-    return true;
-  }
-  if (role && item.roles.includes(role)) {
-    return true;
-  }
-  return false;
+  // Always return true to show all items
+  return true;
 }
 
 function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boolean }) {
@@ -141,9 +136,9 @@ export default function AppSidebar() {
           </Avatar>
           <div className="flex flex-col">
             <span className="text-sm font-medium truncate">
-              {user?.email ?? 'Demo User'}
+              Demo User
             </span>
-            <span className="text-xs text-muted-foreground">{role}</span>
+            <span className="text-xs text-muted-foreground">No Role</span>
           </div>
         </div>
       </SidebarFooter>
