@@ -31,8 +31,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverActions: {
-    allowedOrigins: ["*"]
+  experimental: {
+    serverActions: true,
   },
 };
 
