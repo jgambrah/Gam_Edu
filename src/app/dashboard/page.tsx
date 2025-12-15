@@ -1,153 +1,254 @@
 
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Ensure useMemoFirebase is imported
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, limit, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { 
-    Users, GraduationCap, UserCog, Megaphone, PlusCircle, ArrowRight, UserPlus, Calendar as CalendarIcon
+    Users, GraduationCap, UserCog, Megaphone, Calendar as CalendarIcon, 
+    BookOpen, CheckSquare, Activity, Wallet, ShieldAlert 
 } from 'lucide-react';
 import { format, getDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Student, Staff, Class, Announcement, TimetableEntry, Subject } from '@/lib/types';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 import { useMemo } from 'react';
 
-// --- STATS CARD COMPONENT ---
-function StatCard({ title, value, icon: Icon, link, isLoading }: { title: string; value: number | string; icon: React.ElementType; link?: string; isLoading: boolean }) {
-    const cardContent = (
-        <Card className="hover:border-primary transition-colors cursor-pointer h-full">
+// ============================================================================
+// 1. SHARED COMPONENTS
+// ============================================================================
+
+function StatCard({ title, value, icon: Icon, colorClass }: any) {
+    return (
+        <Card className="hover:shadow-md transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className={`p-2 rounded-full ${colorClass || 'bg-slate-100'}`}>
+                    <Icon className="h-4 w-4 text-slate-700" />
+                </div>
             </CardHeader>
             <CardContent>
-                {isLoading ? (
-                    <Skeleton className="h-8 w-20" />
-                ) : (
-                    <div className="text-2xl font-bold">{value}</div>
-                )}
+                <div className="text-2xl font-bold">{value}</div>
             </CardContent>
         </Card>
     );
-
-    return link ? <Link href={link}>{cardContent}</Link> : cardContent;
 }
 
-// --- MAIN DASHBOARD PAGE ---
-export default function DashboardPage() {
-    const { user } = useUser();
-    const firestore = useFirestore();
+function WelcomeHeader({ user, role }: any) {
+    return (
+        <div className="flex flex-col gap-1 mb-6">
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">
+                Welcome back, {user?.displayName || user?.email?.split('@')[0]}. 
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                    {role}
+                </span>
+            </p>
+        </div>
+    );
+}
 
-    // --- 1. DEFINE QUERIES (USING useMemoFirebase) ---
-    // The previous error happened because we swapped this for standard useMemo.
-    // We must use useMemoFirebase as your useCollection hook requires it.
+// ============================================================================
+// 2. ROLE-SPECIFIC DASHBOARDS
+// ============================================================================
 
-    // Students
-    const { data: students, isLoading: loadingStudents } = useCollection<Student>(
-        useMemoFirebase(
-            () => firestore ? query(collection(firestore, 'students')) : null, 
-            [firestore]
-        )
+// --- STUDENT VIEW ---
+function StudentDashboard({ user }: any) {
+    return (
+        <div className="space-y-6">
+            <WelcomeHeader user={user} role="Student" />
+            
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="My Subjects" value="8" icon={BookOpen} colorClass="bg-blue-100" />
+                <StatCard title="Assignments Pending" value="3" icon={CheckSquare} colorClass="bg-orange-100" />
+                <StatCard title="Attendance" value="95%" icon={Activity} colorClass="bg-green-100" />
+                <StatCard title="Upcoming Exams" value="2" icon={CalendarIcon} colorClass="bg-purple-100" />
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+                <Card>
+                    <CardHeader><CardTitle>Today's Timetable</CardTitle></CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            {/* Placeholder Data */}
+                            <div className="flex items-center justify-between p-3 bg-slate-50 rounded border-l-4 border-blue-500">
+                                <div><p className="font-bold">Mathematics</p><p className="text-xs text-muted-foreground">09:00 AM - 10:00 AM</p></div>
+                                <span className="bg-white px-2 py-1 rounded text-xs border">Room 101</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-slate-50 rounded border-l-4 border-green-500">
+                                <div><p className="font-bold">Science</p><p className="text-xs text-muted-foreground">10:15 AM - 11:15 AM</p></div>
+                                <span className="bg-white px-2 py-1 rounded text-xs border">Lab 2</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader><CardTitle>My Tasks</CardTitle></CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="h-2 w-2 rounded-full bg-red-500"/>
+                                <p className="text-sm">Complete Math Homework (Due Tomorrow)</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="h-2 w-2 rounded-full bg-yellow-500"/>
+                                <p className="text-sm">Read Chapter 4 for English</p>
+                            </div>
+                        </div>
+                        <Button className="w-full mt-6" variant="outline" asChild>
+                            <Link href="/dashboard/assignments">View All Assignments</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+// --- TEACHER VIEW ---
+function TeacherDashboard({ user }: any) {
+    return (
+        <div className="space-y-6">
+            <WelcomeHeader user={user} role="Teacher" />
+
+            <div className="grid gap-4 md:grid-cols-3">
+                <StatCard title="My Classes" value="4" icon={Users} colorClass="bg-indigo-100" />
+                <StatCard title="Pending Grading" value="12" icon={CheckSquare} colorClass="bg-yellow-100" />
+                <StatCard title="Next Class" value="10:00 AM" icon={ClockIcon} colorClass="bg-blue-100" />
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+                {/* Quick Actions */}
+                <Card className="col-span-1">
+                    <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
+                    <CardContent className="space-y-2">
+                        <Button asChild className="w-full justify-start" variant="outline">
+                            <Link href="/dashboard/attendance"><Users className="mr-2 h-4 w-4"/> Take Attendance</Link>
+                        </Button>
+                        <Button asChild className="w-full justify-start" variant="outline">
+                            <Link href="/dashboard/academics/gradebook"><BookOpen className="mr-2 h-4 w-4"/> Gradebook</Link>
+                        </Button>
+                        <Button asChild className="w-full justify-start" variant="outline">
+                            <Link href="/dashboard/assignments"><CheckSquare className="mr-2 h-4 w-4"/> Create Assignment</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Schedule */}
+                <Card className="col-span-2">
+                    <CardHeader><CardTitle>Today's Schedule</CardTitle></CardHeader>
+                    <CardContent>
+                        <div className="space-y-2">
+                            {['Grade 5 - Math', 'Grade 6 - Science', 'JHS 1 - Physics'].map((cls, i) => (
+                                <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50">
+                                    <span className="font-medium">{cls}</span>
+                                    <Button size="sm" variant="ghost">Start Class</Button>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+// --- PARENT VIEW ---
+function ParentDashboard({ user }: any) {
+    return (
+        <div className="space-y-6">
+            <WelcomeHeader user={user} role="Parent" />
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <Card className="bg-indigo-50 border-indigo-100">
+                    <CardHeader><CardTitle className="text-indigo-900">Fees & Payments</CardTitle></CardHeader>
+                    <CardContent>
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-sm text-indigo-700">Outstanding Balance</span>
+                            <span className="text-2xl font-bold text-indigo-900">$0.00</span>
+                        </div>
+                        <Button className="w-full bg-indigo-600 hover:bg-indigo-700">Make Payment</Button>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader><CardTitle>Announcements</CardTitle></CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-slate-500 italic">No new announcements from the school.</p>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+// --- ADMIN DASHBOARD (The Full Version) ---
+function AdminDashboard({ user, firestore }: any) {
+    // Queries only run if Admin
+    const { data: students, isLoading: loadingStudents } = useCollection(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'students')) : null, [firestore])
+    );
+    const { data: staff, isLoading: loadingStaff } = useCollection(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore])
+    );
+    const { data: classes, isLoading: loadingClasses } = useCollection(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore])
+    );
+    const { data: announcements, isLoading: loadingAnnouncements } = useCollection(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, [firestore])
     );
 
-    // Staff
-    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(
-        useMemoFirebase(
-            () => firestore ? query(collection(firestore, 'staff')) : null, 
-            [firestore]
-        )
-    );
-
-    // Classes
-    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(
-        useMemoFirebase(
-            () => firestore ? query(collection(firestore, 'classes')) : null, 
-            [firestore]
-        )
-    );
-
-    // Announcements
-    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(
-        useMemoFirebase(
-            () => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, 
-            [firestore]
-        )
-    );
-
-    // Timetable (Today)
+    // Timetable
     const today = getDay(new Date()); 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const todayName = days[today];
-
-    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(
+    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection(
         useMemoFirebase(
             () => firestore ? query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')) : null, 
             [firestore, todayName]
         )
     );
-
-    // Subjects
-    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(
-        useMemoFirebase(
-            () => firestore ? query(collection(firestore, 'subjects')) : null, 
-            [firestore]
-        )
+    const { data: subjects } = useCollection(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'subjects')) : null, [firestore])
     );
 
 
-    // --- DATA PROCESSING (Standard useMemo is fine here for local math) ---
+    // Enrollment Chart Data
     const enrollmentData = useMemo(() => {
         if (!students || !classes) return [];
-        return classes.map(c => ({
+        return classes.map((c: any) => ({
             name: c.name.replace('Grade ', 'G'),
-            count: students.filter(s => s.classId === c.id).length
-        })).filter(c => c.count > 0);
+            count: students.filter((s: any) => s.classId === c.id).length
+        })).filter((c: any) => c.count > 0);
     }, [students, classes]);
 
     return (
-        <div className="space-y-6 p-6">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-                <p className="text-muted-foreground">
-                    Welcome back, {user?.displayName || 'Admin'}. Today is {format(new Date(), 'eeee, MMMM d')}.
-                </p>
+        <div className="space-y-6">
+            <WelcomeHeader user={user} role="Administrator" />
+
+            {/* Stats */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} isLoading={loadingStudents} />
+                <StatCard title="Total Staff" value={staff?.length || 0} icon={UserCog} isLoading={loadingStaff} />
+                <StatCard title="Active Classes" value={classes?.length || 0} icon={Users} isLoading={loadingClasses} />
+                <StatCard title="News" value={announcements?.length || 0} icon={Megaphone} isLoading={loadingAnnouncements} />
             </div>
 
-            {/* STATS ROW */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} isLoading={loadingStudents} link="/dashboard/students-v3"/>
-                <StatCard title="Total Staff" value={staff?.length || 0} icon={UserCog} isLoading={loadingStaff} link="/dashboard/staff-management-v2"/>
-                <StatCard title="Active Classes" value={classes?.length || 0} icon={Users} isLoading={loadingClasses} link="/dashboard/academics"/>
-                <StatCard title="Announcements" value={announcements?.length || 0} icon={Megaphone} isLoading={loadingAnnouncements} link="/dashboard/announcements"/>
-            </div>
-            
             <div className="grid gap-6 lg:grid-cols-7">
-                
-                {/* LEFT COLUMN (Charts & News) */}
+                {/* Left Column */}
                 <div className="lg:col-span-4 space-y-6">
-                    {/* Enrollment Chart */}
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Enrollment by Class</CardTitle>
-                            <CardDescription>Student distribution across grade levels.</CardDescription>
-                        </CardHeader>
+                        <CardHeader><CardTitle>Enrollment by Class</CardTitle></CardHeader>
                         <CardContent>
-                            {loadingStudents || loadingClasses ? (
-                                <Skeleton className="h-[250px] w-full" />
-                            ) : (
+                            {loadingStudents ? <Skeleton className="h-[250px] w-full" /> : (
                                 <div className="h-[250px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={enrollmentData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                             <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                                             <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false}/>
-                                            <Tooltip 
-                                                cursor={{fill: 'transparent'}}
-                                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                            />
+                                            <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px' }}/>
                                             <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} barSize={40} />
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -155,113 +256,98 @@ export default function DashboardPage() {
                             )}
                         </CardContent>
                     </Card>
-
-                    {/* Announcements List */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Recent News</CardTitle>
-                            <Button variant="ghost" size="sm" asChild className="text-xs">
-                                <Link href="/dashboard/announcements">View All</Link>
-                            </Button>
-                        </CardHeader>
-                        <CardContent>
-                            {loadingAnnouncements ? (
-                                <div className="space-y-2">
-                                    <Skeleton className="h-12 w-full" />
-                                    <Skeleton className="h-12 w-full" />
-                                </div>
-                            ) : announcements && announcements.length > 0 ? (
-                                <div className="space-y-4">
-                                    {announcements.map(post => (
-                                        <div key={post.id} className="flex flex-col gap-1 border-b pb-3 last:border-0 last:pb-0">
-                                            <div className="flex justify-between items-start">
-                                                <h4 className="font-semibold text-sm line-clamp-1">{post.title}</h4>
-                                                <span className="text-[10px] text-muted-foreground bg-slate-100 px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                    {post.createdAt ? format(post.createdAt.toDate(), 'MMM d') : '...'}
-                                                </span>
-                                            </div>
-                                            <p className="text-xs text-muted-foreground line-clamp-2">{post.content}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-muted-foreground text-sm">No recent announcements.</div>
-                            )}
-                        </CardContent>
-                    </Card>
                 </div>
 
-                {/* RIGHT COLUMN (Actions & Schedule) */}
+                {/* Right Column */}
                 <div className="lg:col-span-3 space-y-6">
-                    {/* Quick Actions Grid */}
                     <Card>
                         <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
                         <CardContent className="grid grid-cols-2 gap-3">
-                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all">
-                                <Link href="/dashboard/students-v3">
-                                    <UserPlus className="h-5 w-5"/>
-                                    <span className="text-xs">Add Student</span>
-                                </Link>
-                            </Button>
-                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-all">
-                                <Link href="/dashboard/staff-management-v2">
-                                    <UserCog className="h-5 w-5"/>
-                                    <span className="text-xs">Add Staff</span>
-                                </Link>
-                            </Button>
-                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition-all">
-                                <Link href="/dashboard/announcements">
-                                    <Megaphone className="h-5 w-5"/>
-                                    <span className="text-xs">Post News</span>
-                                </Link>
-                            </Button>
-                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-all">
-                                <Link href="/dashboard/academics/gradebook">
-                                    <PlusCircle className="h-5 w-5"/>
-                                    <span className="text-xs">Grades</span>
-                                </Link>
-                            </Button>
+                            <Button asChild variant="outline" className="h-20 flex flex-col gap-2 hover:bg-indigo-50"><Link href="/dashboard/students-v3"><UserPlus className="h-5 w-5"/><span className="text-xs">Add Student</span></Link></Button>
+                            <Button asChild variant="outline" className="h-20 flex flex-col gap-2 hover:bg-pink-50"><Link href="/dashboard/staff-management-v2"><UserCog className="h-5 w-5"/><span className="text-xs">Add Staff</span></Link></Button>
+                            <Button asChild variant="outline" className="h-20 flex flex-col gap-2 hover:bg-orange-50"><Link href="/dashboard/announcements"><Megaphone className="h-5 w-5"/><span className="text-xs">Post News</span></Link></Button>
+                            <Button asChild variant="outline" className="h-20 flex flex-col gap-2 hover:bg-green-50"><Link href="/dashboard/finance"><Wallet className="h-5 w-5"/><span className="text-xs">Finance</span></Link></Button>
                         </CardContent>
                     </Card>
 
-                    {/* Today's Schedule */}
-                    <Card className="h-full">
-                        <CardHeader>
-                            <CardTitle>Today's Schedule</CardTitle>
-                            <CardDescription className="text-xs uppercase font-bold text-indigo-600">{todayName}</CardDescription>
-                        </CardHeader>
+                    <Card>
+                        <CardHeader><CardTitle>Today's Schedule ({todayName})</CardTitle></CardHeader>
                         <CardContent>
-                            {loadingTimetable ? (
-                                <div className="space-y-3">
-                                    <Skeleton className="h-10 w-full" />
-                                    <Skeleton className="h-10 w-full" />
-                                </div>
-                            ) : todayTimetable && todayTimetable.length > 0 ? (
-                                <div className="space-y-3">
-                                    {todayTimetable.slice(0, 5).map((entry, i) => (
-                                        <div key={entry.id || i} className="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 transition-colors border-l-2 border-transparent hover:border-indigo-500">
-                                            <div className="flex flex-col items-center justify-center bg-indigo-100 text-indigo-700 rounded w-12 h-12 shrink-0">
-                                                <span className="text-xs font-bold">09:00</span>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-sm truncate">{subjects?.find(s => s.id === entry.subjectId)?.name || 'Unknown Subject'}</p>
-                                                <p className="text-xs text-muted-foreground truncate">{classes?.find(c => c.id === entry.classId)?.name || 'Unknown Class'}</p>
-                                            </div>
+                            {loadingTimetable ? <Skeleton className="h-20 w-full" /> : todayTimetable && todayTimetable.length > 0 ? (
+                                <div className="space-y-2">
+                                    {todayTimetable.map((t: any) => (
+                                        <div key={t.id} className="p-3 border rounded bg-slate-50 flex justify-between">
+                                            <span className="font-bold text-indigo-700 text-xs">{t.startTime}</span>
+                                            <span className="text-sm">{t.subject}</span>
+                                            <span className="text-xs text-gray-500">{classes?.find((c: any) => c.id === t.classId)?.name}</span>
                                         </div>
                                     ))}
                                 </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
-                                    <div className="bg-slate-100 p-3 rounded-full mb-2">
-                                        <CalendarIcon className="h-6 w-6 text-slate-400" />
-                                    </div>
-                                    <p className="text-sm">No classes scheduled.</p>
-                                </div>
-                            )}
+                            ) : <p className="text-center text-gray-500 py-4 text-sm">No classes scheduled.</p>}
                         </CardContent>
                     </Card>
                 </div>
             </div>
         </div>
     );
+}
+
+// ============================================================================
+// 3. MAIN CONTROLLER
+// ============================================================================
+
+// Icon helper for Teacher Dashboard
+function ClockIcon(props: any) { return <Clock {...props} /> } // Just alias Clock from lucide import if needed
+import { Clock } from 'lucide-react';
+
+export default function DashboardPage() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { role, loading } = useRole();
+
+    if (loading) {
+        return <div className="flex h-96 items-center justify-center"><Skeleton className="h-12 w-12 rounded-full" /></div>;
+    }
+
+    if (!user) {
+        return <div className="p-8 text-center">Please log in.</div>;
+    }
+
+    // --- SMART SWITCH ---
+    switch (role) {
+        case 'Student':
+            return <StudentDashboard user={user} />;
+        
+        case 'Parent':
+            return <ParentDashboard user={user} />;
+        
+        case 'Teacher':
+            return <TeacherDashboard user={user} />;
+        
+        case 'Admin':
+        case 'Administrator':
+        case 'Director':
+            return <AdminDashboard user={user} firestore={firestore} />;
+            
+        case 'Accountant':
+            return (
+                <div className="space-y-6">
+                    <WelcomeHeader user={user} role="Accountant" />
+                    <Card><CardContent className="p-8 text-center text-gray-500">Go to the Finance Module from the sidebar.</CardContent></Card>
+                </div>
+            );
+
+        default:
+            // Fallback for users with no role (or 'Staff' generic)
+            return (
+                <div className="p-6 flex flex-col items-center justify-center h-[50vh] text-center space-y-4">
+                    <div className="bg-yellow-100 p-4 rounded-full"><ShieldAlert className="h-10 w-10 text-yellow-600" /></div>
+                    <h2 className="text-xl font-bold">Account Pending Setup</h2>
+                    <p className="text-muted-foreground max-w-md">
+                        Your account is active, but a specific role dashboard has not been configured for "<strong>{role || 'Unknown'}</strong>".
+                        <br/>Please contact the administrator.
+                    </p>
+                </div>
+            );
+    }
 }
