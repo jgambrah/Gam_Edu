@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -101,7 +102,7 @@ export default function AppSidebar() {
         <SidebarMenu>
           {loading ? (
             <div className="space-y-2 px-2">
-             {[...Array(5)].map(i => <div key={i} className="h-10 bg-slate-100 rounded animate-pulse"/>)}
+             {[...Array(5)].map((_, i) => <div key={i} className="h-10 bg-slate-100 rounded animate-pulse"/>)}
            </div>
           ) : filteredNav.map((item) =>
             isNavItemVisible(item, role) ? (
