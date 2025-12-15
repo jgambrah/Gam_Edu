@@ -27,7 +27,8 @@ import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 
 function isNavItemVisible(item: NavItem, role: UserRole) {
-  return item.roles === 'all' || item.roles.includes(role);
+  // FIX: Always return true to show all items, bypassing role checks.
+  return true;
 }
 
 function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boolean }) {
