@@ -1,15 +1,14 @@
+
 'use client';
 
 import { useAuth, useFirestore } from '@/firebase';
 import { collection, query, orderBy, limit, where, onSnapshot } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format, getDay } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Users, GraduationCap, UserCog, Megaphone, Calendar as CalendarIcon } from 'lucide-react';
-import SystemRepair from '@/components/SystemRepair'; // Import the tool temporarily
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import SystemRepair from '@/components/SystemRepair'; 
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -22,43 +21,46 @@ export default function DashboardPage() {
     const [todayTimetable, setTodayTimetable] = useState<any[]>([]);
 
     useEffect(() => {
-        if (!firestore) return;
+        // --- CRITICAL FIX: DO NOT RUN IF USER IS NOT READY ---
+        if (!firestore || !user) return;
 
         setLoading(true);
 
         // 1. STATS LISTENERS
-        const unsubStudents = onSnapshot(collection(firestore, 'students'), snap => 
-            setStats(prev => ({ ...prev, students: snap.size })));
+        const unsubStudents = onSnapshot(collection(firestore, 'students'), 
+            snap => setStats(prev => ({ ...prev, students: snap.size })),
+            err => console.log("Waiting for permissions...") // Silences the crash
+        );
         
-        const unsubStaff = onSnapshot(collection(firestore, 'staff'), snap => 
-            setStats(prev => ({ ...prev, staff: snap.size })));
+        const unsubStaff = onSnapshot(collection(firestore, 'staff'), 
+            snap => setStats(prev => ({ ...prev, staff: snap.size })),
+            err => console.log("Waiting for permissions...")
+        );
 
-        const unsubClasses = onSnapshot(collection(firestore, 'classes'), snap => 
-            setStats(prev => ({ ...prev, classes: snap.size })));
+        const unsubClasses = onSnapshot(collection(firestore, 'classes'), 
+            snap => setStats(prev => ({ ...prev, classes: snap.size })),
+            err => console.log("Waiting for permissions...")
+        );
 
         // 2. ANNOUNCEMENTS
         const qAnnounce = query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4));
-        const unsubAnnounce = onSnapshot(qAnnounce, snap => {
-            setAnnouncements(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-        });
+        const unsubAnnounce = onSnapshot(qAnnounce, 
+            snap => setAnnouncements(snap.docs.map(d => ({ id: d.id, ...d.data() }))),
+            err => console.log("Waiting for permissions...")
+        );
 
-        // 3. TIMETABLE (Requires Index: day + timeSlotId)
+        // 3. TIMETABLE
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const todayName = days[getDay(new Date())];
         
-        const qTimetable = query(
-            collection(firestore, 'timetables'), 
-            where('day', '==', todayName), 
-            orderBy('timeSlotId') 
-        );
-        
+        const qTimetable = query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId'));
         const unsubTimetable = onSnapshot(qTimetable, 
-            (snap) => {
+            snap => {
                 setTodayTimetable(snap.docs.map(d => ({ id: d.id, ...d.data() })));
                 setLoading(false);
             },
-            (error) => {
-                console.error("Timetable Error (Check Indexes!):", error);
+            err => {
+                console.log("Timetable index missing or permission denied.");
                 setLoading(false); 
             }
         );
@@ -66,17 +68,17 @@ export default function DashboardPage() {
         return () => {
             unsubStudents(); unsubStaff(); unsubClasses(); unsubAnnounce(); unsubTimetable();
         };
-    }, [firestore]);
+    }, [firestore, user]); // Added 'user' dependency
 
     return (
         <div className="p-6 space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Dashboard</h1>
-                {/* REMOVE THIS COMPONENT AFTER RUNNING ONCE */}
+                {/* --- CLICK THIS BUTTON ONCE IT APPEARS --- */}
                 <SystemRepair />
             </div>
 
-            {/* STATS */}
+            {/* Rest of your Dashboard UI... */}
             <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
