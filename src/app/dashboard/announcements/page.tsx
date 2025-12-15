@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { format } from 'date-fns';
@@ -65,7 +65,7 @@ function PostAnnouncementForm({
     const [selectedAudience, setSelectedAudience] = useState<Audience[]>(['Everybody']);
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
     const handleAudienceChange = (audience: Audience, checked: boolean | 'indeterminate') => {
         if (checked) {
@@ -241,7 +241,7 @@ function PostAnnouncementForm({
 export default function AnnouncementsPage() {
   const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { toast } = useToast();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
