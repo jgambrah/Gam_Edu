@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useAuth, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, onSnapshot, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,7 +40,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { AdmissionApplication, Class, Student, studentRegistrationSchema, StudentRegistrationData } from '@/lib/types';
 import { format, differenceInYears } from 'date-fns';
-import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2 } from 'lucide-react';
+import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2, AlertCircle } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
@@ -54,8 +54,8 @@ import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
-import { serverTimestamp } from 'firebase/firestore';
 import { ApplicationTracker } from '@/components/dashboard/admissions/application-tracker';
+import { Badge } from '@/components/ui/badge';
 
 
 function ParentApplicationForm({ onSuccess }: { onSuccess: () => void }) {
@@ -177,6 +177,7 @@ function ParentApplicationForm({ onSuccess }: { onSuccess: () => void }) {
       );
 }
 
+// --- ADMIN REVIEW DASHBOARD ---
 function AdminApplicationDashboard() {
     const firestore = useFirestore();
     const { user } = useAuth();
@@ -184,17 +185,21 @@ function AdminApplicationDashboard() {
     const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     
+    // NEW: Real Classes State
     const [availableClasses, setAvailableClasses] = useState<{id: string, name: string, capacity: number, currentStudents: number}[]>([]);
     
+    // Dialog State
     const [selectedApp, setSelectedApp] = useState<any>(null);
     const [decision, setDecision] = useState<'Approve' | 'Reject' | null>(null);
     const [assignedClass, setAssignedClass] = useState('');
     const [rejectionReason, setRejectionReason] = useState('');
     const [processing, setProcessing] = useState(false);
 
+    // AI State
     const [aiThinking, setAiThinking] = useState(false);
     const [aiReasoning, setAiReasoning] = useState<string | null>(null);
 
+    // 1. Fetch Applications (Real-time)
     useEffect(() => {
         if (!firestore) return;
         const q = query(collection(firestore, 'admissionApplications'), where('status', '==', 'Pending Review'));
@@ -206,34 +211,36 @@ function AdminApplicationDashboard() {
         return () => unsubscribe();
     }, [firestore]);
 
+    // 2. Fetch REAL Classes from 'classes' collection
     useEffect(() => {
         if (!firestore) return;
-        const fetchClassesAndStudents = async () => {
-            const classesQuery = await getDocs(collection(firestore, 'classes'));
-            const studentsQuery = await getDocs(collection(firestore, 'students'));
+        const fetchClasses = async () => {
+            const querySnapshot = await getDocs(collection(firestore, 'classes'));
             
+            const studentsQuery = await getDocs(collection(firestore, 'students'));
             const studentsData = studentsQuery.docs.map(doc => doc.data() as Student);
             
-            const classesData = classesQuery.docs.map(doc => {
+            const classesData = querySnapshot.docs.map(doc => {
                 const currentStudents = studentsData.filter(s => s.classId === doc.id).length;
                 return {
                     id: doc.id,
                     name: doc.data().name || doc.id,
-                    capacity: doc.data().capacity || 30,
-                    currentStudents: currentStudents
+                    capacity: doc.data().capacity || 30, // Default if missing
+                    currentStudents: currentStudents,
                 };
             });
             setAvailableClasses(classesData as any);
         };
-        fetchClassesAndStudents();
+        fetchClasses();
     }, [firestore]);
 
+    // 3. AI Placement Handler
     const handleAskAI = async () => {
         if (!selectedApp || availableClasses.length === 0) return;
         setAiThinking(true);
         setAiReasoning(null);
 
-        const dob = selectedApp.student.dateOfBirth ? new Date(selectedApp.student.dateOfBirth) : new Date();
+        const dob = selectedApp.student.dateOfBirth?.toDate ? selectedApp.student.dateOfBirth.toDate() : new Date();
         const age = differenceInYears(new Date(), dob);
 
         const aiResult = await recommendClassPlacementAction(
@@ -339,6 +346,32 @@ function AdminApplicationDashboard() {
             setProcessing(false);
         }
     };
+    
+    // --- AI Screener Logic ---
+    const getAiFlags = (app: any) => {
+        const flags = [];
+
+        // 1. Age Mismatch Check
+        const dob = app.student.dateOfBirth?.toDate ? app.student.dateOfBirth.toDate() : null;
+        if(dob) {
+            const age = differenceInYears(new Date(), dob);
+            const gradeNum = parseInt(app.student.desiredGrade.replace(/\D/g, ''), 10);
+            
+            // Simple rule: age should be around grade number + 5
+            if (gradeNum && (age < gradeNum + 4 || age > gradeNum + 7)) {
+                flags.push({type: 'warning', text: `AI Flag: Age Mismatch (Age ${age} for ${app.student.desiredGrade})`});
+            }
+        }
+
+        // 2. Capacity Check
+        const targetClasses = availableClasses.filter(c => c.name.includes(app.student.desiredGrade));
+        if (targetClasses.length > 0 && targetClasses.every(c => c.currentStudents >= c.capacity)) {
+            flags.push({type: 'info', text: 'AI Flag: Waitlist Recommended (Class Full)'});
+        }
+        
+        return flags;
+    };
+
 
     if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
 
@@ -350,29 +383,38 @@ function AdminApplicationDashboard() {
                 <Card><CardContent className="p-8 text-center text-gray-500">No pending applications found.</CardContent></Card>
             ) : (
                 <div className="grid gap-4">
-                    {applications.map((app) => (
-                        <Card key={app.id} className="flex flex-row items-center justify-between p-4">
-                            <div>
-                                <h3 className="font-bold text-lg">{app.student.fullName}</h3>
-                                <p className="text-sm text-gray-500">Desired: {app.student.desiredGrade} | ID: {app.applicationId}</p>
-                                <p className="text-xs text-gray-400">Parent: {app.parent1.name}</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
-                                    onClick={() => { setSelectedApp(app); setDecision('Approve'); }}>
-                                    <Check className="mr-2 h-4 w-4" /> Approve
-                                </Button>
-                                <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                                    onClick={() => { setSelectedApp(app); setDecision('Reject'); }}>
-                                    <X className="mr-2 h-4 w-4" /> Reject
-                                </Button>
-                            </div>
-                        </Card>
-                    ))}
+                    {applications.map((app) => {
+                        const aiFlags = getAiFlags(app);
+                        return (
+                            <Card key={app.id} className="flex flex-row items-center justify-between p-4">
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="font-bold text-lg">{app.student.fullName}</h3>
+                                        {aiFlags.map((flag, i) => (
+                                            <Badge key={i} variant={flag.type === 'warning' ? 'destructive' : 'secondary'}>
+                                                <AlertCircle className="h-3 w-3 mr-1" /> {flag.text}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                    <p className="text-sm text-gray-500">Desired: {app.student.desiredGrade} | ID: {app.applicationId}</p>
+                                    <p className="text-xs text-gray-400">Parent: {app.parent1.name}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                                        onClick={() => { setSelectedApp(app); setDecision('Approve'); }}>
+                                        <Check className="mr-2 h-4 w-4" /> Approve
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                                        onClick={() => { setSelectedApp(app); setDecision('Reject'); }}>
+                                        <X className="mr-2 h-4 w-4" /> Reject
+                                    </Button>
+                                </div>
+                            </Card>
+                        )
+                    })}
                 </div>
             )}
 
-            {/* DECISION DIALOG */}
             <Dialog open={!!selectedApp} onOpenChange={(open) => { if(!open) { setSelectedApp(null); setAiReasoning(null); } }}>
                 <DialogContent>
                     <DialogHeader>
@@ -454,6 +496,10 @@ function ParentDashboard() {
     const [myApps, setMyApps] = useState<any[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(true);
+    
+    // We need available classes here to display the assigned class name.
+    const { data: availableClasses } = useCollection<any>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+
 
     useEffect(() => {
         if (!user || !firestore) return;
@@ -495,7 +541,7 @@ function ParentDashboard() {
                                         <CardTitle className="text-lg">{app.student.fullName}</CardTitle>
                                         <CardDescription>Application ID: {app.applicationId}</CardDescription>
                                     </div>
-                                    <Badge className={
+                                     <Badge className={
                                         app.status === 'Admitted' ? 'bg-green-600' : 
                                         app.status === 'Rejected' ? 'bg-red-600' : 'bg-blue-600'
                                     }>
@@ -504,7 +550,7 @@ function ParentDashboard() {
                                 </div>
                             </CardHeader>
                             
-                            <CardContent className="pt-6">
+                             <CardContent className="pt-6">
                                 <ApplicationTracker status={app.status} />
                                 
                                 <div className="mt-6 space-y-2">
@@ -522,7 +568,7 @@ function ParentDashboard() {
                                             <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
                                             <div>
                                                 <strong>Admission Offer Received!</strong><br/>
-                                                Assigned to class: {availableClasses.find(c => c.id === app.assignedClassId)?.name || app.assignedClassId}
+                                                Assigned to class: {availableClasses?.find((c: any) => c.id === app.assignedClassId)?.name || app.assignedClassId}
                                             </div>
                                         </div>
                                     )}
@@ -562,3 +608,5 @@ export default function AdmissionsPage() {
         </Card>
     );
 }
+
+    
