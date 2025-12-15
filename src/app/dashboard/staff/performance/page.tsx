@@ -166,7 +166,7 @@ export default function PerformanceReviewsPage() {
           <div className="w-full md:w-1/3 pt-2">
             <Select onValueChange={setSelectedStaffId}>
               <SelectTrigger><SelectValue placeholder="Select a staff member to view reviews" /></SelectTrigger>
-              <SelectContent>{staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+              <SelectContent>{staffList?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
             </Select>
           </div>
         </CardHeader>
@@ -210,4 +210,3 @@ export default function PerformanceReviewsPage() {
   );
 }
 
-    
