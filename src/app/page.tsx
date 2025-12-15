@@ -1,41 +1,39 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import LoginForm from '@/components/auth/login-form'; // Ensure this path is correct for your project
-import SystemRepair from '@/components/SystemRepair'; 
+import LoginForm from '@/components/auth/login-form'; 
+import { GraduationCap } from 'lucide-react';
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <div className="w-full max-w-md space-y-8">
         
-        {/* 1. HEADER */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-indigo-900">Sunnyside Academy</h1>
-          <p className="text-slate-500">School Management System</p>
+        {/* Logo / Header */}
+        <div className="flex flex-col items-center text-center space-y-2">
+          <div className="bg-indigo-600 p-3 rounded-full">
+            <GraduationCap className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-indigo-900 tracking-tight">Sunnyside Academy</h1>
+          <p className="text-slate-500">School Management Portal</p>
         </div>
 
-        {/* 2. LOGIN FORM CARD */}
-        <Card className="shadow-xl border-t-4 border-t-indigo-600">
-          <CardHeader>
-            <CardTitle>Welcome Back</CardTitle>
-            <CardDescription>Please sign in to your account</CardDescription>
+        {/* Login Form */}
+        <Card className="shadow-xl border-0 ring-1 ring-slate-200">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-semibold tracking-tight">Sign in</CardTitle>
+            <CardDescription>
+              Enter your credentials to access your dashboard
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* This is your actual Login Component */}
-            <LoginForm /> 
+            <LoginForm />
           </CardContent>
         </Card>
 
-        {/* 3. REPAIR TOOL (Visible Publicly for Debugging) */}
-        <div className="mt-8">
-            <p className="text-xs text-center text-slate-400 mb-2 uppercase tracking-widest">
-                Admin Diagnostic Tools
-            </p>
-            <SystemRepair />
-        </div>
-
+        <p className="px-8 text-center text-sm text-muted-foreground">
+          Having trouble? Contact the IT department.
+        </p>
       </div>
     </div>
   );
