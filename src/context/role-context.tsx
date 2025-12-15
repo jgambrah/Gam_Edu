@@ -7,6 +7,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { Loader2, ShieldAlert, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import SystemRepair from '@/components/SystemRepair';
 
 type Role = 'Admin' | 'Teacher' | 'Student' | 'Parent' | 'Staff' | 'Director' | 'Administrator' | null;
 
@@ -101,7 +102,7 @@ export const useRole = () => useContext(RoleContext);
 
 // --- ROLE GUARD ---
 export function RoleGuard({ children, allowedRoles = [] }: { children: React.ReactNode; allowedRoles?: string[] }) {
-  const { role, loading } = useRole();
+  const { role, loading, refreshRole } = useRole();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
 
@@ -137,6 +138,7 @@ export function RoleGuard({ children, allowedRoles = [] }: { children: React.Rea
                 <Button onClick={() => router.push('/')} variant="outline" className="w-full">
                 Go Back to Login
                 </Button>
+                 <SystemRepair onRepair={refreshRole} />
             </div>
         </div>
     );
