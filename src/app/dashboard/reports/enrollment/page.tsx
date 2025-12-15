@@ -146,7 +146,7 @@ export default function EnrollmentReportsPage() {
                                 <TableHeader><TableRow><TableHead>First Name</TableHead><TableHead>Last Name</TableHead><TableHead>Class</TableHead><TableHead>Gender</TableHead></TableRow></TableHeader>
                                 <TableBody>
                                     {students?.map(s => (
-                                        <TableRow key={s.uid}>
+                                        <TableRow key={s.id}>
                                             <TableCell>{s.firstName}</TableCell>
                                             <TableCell>{s.lastName}</TableCell>
                                             <TableCell>{classes?.find(c => c.id === s.classId)?.name || 'N/A'}</TableCell>
