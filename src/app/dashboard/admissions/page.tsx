@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useAuth, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,7 +40,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { AdmissionApplication, Class, Student, studentRegistrationSchema, StudentRegistrationData } from '@/lib/types';
 import { format, differenceInYears } from 'date-fns';
-import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus } from 'lucide-react';
+import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit, Sparkles, Check, X, UserPlus, CheckCircle2 } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
@@ -489,28 +489,50 @@ function ParentDashboard() {
                 <div className="space-y-4">
                     {myApps.map(app => (
                         <Card key={app.id} className="overflow-hidden">
-                            <CardHeader className="pb-4">
+                            <CardHeader className="pb-4 border-b bg-slate-50/50">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <CardTitle>{app.student.fullName}</CardTitle>
-                                        <CardDescription>Applied for {app.student.desiredGrade} on {app.submittedAt?.toDate().toLocaleDateString()}</CardDescription>
+                                        <CardTitle className="text-lg">{app.student.fullName}</CardTitle>
+                                        <CardDescription>Application ID: {app.applicationId}</CardDescription>
                                     </div>
-                                    <Badge variant={
-                                        app.status === 'Admitted' ? 'default' : 
-                                        app.status === 'Rejected' ? 'destructive' : 'secondary'
-                                    } className={app.status === 'Admitted' ? 'bg-green-600' : ''}>
+                                    <Badge className={
+                                        app.status === 'Admitted' ? 'bg-green-600' : 
+                                        app.status === 'Rejected' ? 'bg-red-600' : 'bg-blue-600'
+                                    }>
                                         {app.status}
                                     </Badge>
                                 </div>
                             </CardHeader>
-                            <CardContent>
+                            
+                            <CardContent className="pt-6">
                                 <ApplicationTracker status={app.status} />
-                                {app.status === 'Rejected' && (
-                                    <Alert variant="destructive" className="mt-4">
-                                        <AlertTitle>Decision Details</AlertTitle>
-                                        <AlertDescription>{app.rejectionReason || 'The school has not provided a specific reason.'}</AlertDescription>
-                                    </Alert>
-                                )}
+                                
+                                <div className="mt-6 space-y-2">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-slate-500">Desired Grade:</span>
+                                        <span className="font-medium">{app.student.desiredGrade}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-slate-500">Submitted On:</span>
+                                        <span>{app.submittedAt?.toDate().toLocaleDateString()}</span>
+                                    </div>
+
+                                    {app.status === 'Admitted' && (
+                                        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-800 text-sm flex items-start gap-2">
+                                            <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
+                                            <div>
+                                                <strong>Admission Offer Received!</strong><br/>
+                                                Assigned to class: {availableClasses.find(c => c.id === app.assignedClassId)?.name || app.assignedClassId}
+                                            </div>
+                                        </div>
+                                    )}
+                                     {app.status === 'Rejected' && (
+                                        <Alert variant="destructive" className="mt-4">
+                                            <AlertTitle>Decision Details</AlertTitle>
+                                            <AlertDescription>{app.rejectionReason || 'The school has not provided a specific reason.'}</AlertDescription>
+                                        </Alert>
+                                    )}
+                                </div>
                             </CardContent>
                         </Card>
                     ))}
