@@ -2,10 +2,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser, useFirestore } from '@/firebase'; // Using your App's hooks
+import { useUser, useFirestore } from '@/firebase'; 
 import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Loader2, Wrench, Terminal } from 'lucide-react';
+import { Loader2, Database, CheckCircle2 } from 'lucide-react';
+import { getDay } from 'date-fns';
 
 export default function SystemRepair() {
   const { user } = useUser();
@@ -15,57 +16,64 @@ export default function SystemRepair() {
 
   const addLog = (msg: string) => setLogs(prev => [...prev, `> ${msg}`]);
 
-  const fixSystem = async () => {
+  const populateData = async () => {
     setLoading(true);
-    setLogs([]); // Clear previous logs
-    addLog("Starting repair process...");
+    setLogs([]);
+    addLog("Initializing Data Population...");
 
-    if (!user) {
-        addLog("❌ Error: No User found from useUser() hook.");
-        setLoading(false);
-        return;
-    }
-    if (!firestore) {
-        addLog("❌ Error: Firestore not initialized.");
-        setLoading(false);
-        return;
-    }
-
-    addLog(`User Detected: ${user.email} (${user.uid})`);
+    if (!firestore || !user) return;
 
     try {
-      // 1. SET ADMIN ROLE
-      addLog("Attempting to write to 'users' collection...");
-      const userRef = doc(firestore, 'users', user.uid);
-      
-      await setDoc(userRef, {
-        email: user.email,
-        role: 'Admin', // Setting the role
-        fixedAt: new Date().toISOString()
-      }, { merge: true });
-      
-      addLog("✅ User Profile Created/Updated successfully.");
-
-      // 2. CREATE DUMMY TIMETABLE (To fix 'timetables' permission issues)
-      addLog("Attempting to create dummy timetable...");
-      const timetableRef = collection(firestore, 'timetables');
-      await addDoc(timetableRef, {
-        day: 'SystemCheck',
-        note: 'Initialization Entry',
-        createdAt: new Date()
+      // 1. Create a Class
+      addLog("Creating Class: Grade 1...");
+      const classRef = await addDoc(collection(firestore, 'classes'), {
+        name: "Grade 1 - Alpha",
+        capacity: 30,
+        currentStudents: 1
       });
+
+      // 2. Create a Student
+      addLog("Creating Student: Demo Student...");
+      await addDoc(collection(firestore, 'students'), {
+        fullName: "Alice Wonderland",
+        classId: classRef.id,
+        gender: "Female",
+        status: "Active"
+      });
+
+      // 3. Create Timetable for TODAY
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const todayName = days[getDay(new Date())];
       
-      addLog("✅ Timetable collection initialized.");
-      addLog("🎉 SUCCESS! You are now an Admin.");
-      addLog("👉 PLEASE REFRESH THE PAGE NOW.");
+      addLog(`Creating Schedule for: ${todayName}...`);
+      
+      await addDoc(collection(firestore, 'timetables'), {
+        day: todayName, // Matches dashboard filter
+        subjectId: "math-101",
+        subject: "Mathematics", // Fallback name
+        classId: classRef.id,
+        timeSlotId: 1, // Matches sort order
+        startTime: "09:00",
+        endTime: "10:00",
+        teacherId: user.uid
+      });
+
+      // 4. Create Subject
+      await addDoc(collection(firestore, 'subjects'), {
+        id: "math-101",
+        name: "Mathematics",
+        code: "MTH1"
+      });
+
+      addLog("✅ DATA POPULATED SUCCESSFULLY!");
+      addLog("👉 REFRESH THE PAGE NOW.");
 
     } catch (error: any) {
       console.error(error);
-      addLog(`❌ FAILURE: ${error.message}`);
-      addLog(`Code: ${error.code}`);
+      addLog(`❌ Error: ${error.message}`);
       
-      if (error.code === 'permission-denied') {
-        addLog("⚠️ HINT: Your Firestore Rules are blocking the write.");
+      if (error.message.includes("index")) {
+        addLog("⚠️ INDEX MISSING! Check your browser console for a link to create it.");
       }
     } finally {
       setLoading(false);
@@ -76,26 +84,21 @@ export default function SystemRepair() {
     <div className="p-4 bg-slate-900 text-green-400 border-2 border-green-500 rounded-lg my-4 shadow-xl font-mono text-sm">
       <div className="flex justify-between items-center mb-4 border-b border-green-800 pb-2">
         <h3 className="font-bold flex items-center gap-2">
-            <Terminal className="h-5 w-5"/> Admin Repair Terminal
+            <Database className="h-5 w-5"/> Data Injector
         </h3>
       </div>
       
-      <div className="mb-4 space-y-1">
-        <p>User: {user ? "✅ Connected" : "❌ Disconnected"}</p>
-        <p>DB: {firestore ? "✅ Connected" : "❌ Disconnected"}</p>
-      </div>
-
       <div className="bg-black p-3 rounded h-40 overflow-y-auto mb-4 border border-green-900">
-        {logs.length === 0 ? <span className="opacity-50">Waiting for command...</span> : logs.map((l, i) => <div key={i}>{l}</div>)}
+        {logs.length === 0 ? <span className="opacity-50">Ready to inject data...</span> : logs.map((l, i) => <div key={i}>{l}</div>)}
       </div>
 
       <Button 
-        onClick={fixSystem} 
+        onClick={populateData} 
         disabled={loading} 
-        className="bg-green-700 hover:bg-green-600 text-white w-full font-bold"
+        className="bg-blue-600 hover:bg-blue-500 text-white w-full font-bold"
       >
-        {loading ? <Loader2 className="animate-spin mr-2"/> : <Wrench className="mr-2 h-4 w-4" />}
-        RUN FIX SCRIPT
+        {loading ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+        POPULATE DASHBOARD DATA
       </Button>
     </div>
   );
