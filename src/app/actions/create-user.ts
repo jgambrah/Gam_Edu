@@ -100,26 +100,26 @@ export async function createNewUser(
     }
 
     // Special handling for the specific director user to ensure profile exists
-    if (email === 'jgambrah@sunnyside.com' || email === 'gambrahjames@sunnyside.com') {
+    if (email === 'director@sunnyside.com') {
         const directorDocRef = firestore.collection('staff').doc(userRecord.uid);
         await directorDocRef.set({
             uid: userRecord.uid,
             email: email,
             role: 'Director',
-            firstName: details?.firstName || 'James',
-            lastName: details?.lastName || 'Gambrah',
+            firstName: details?.firstName || 'Director',
+            lastName: details?.lastName || 'User',
         }, { merge: true });
     }
 
     // Special handling for the teacher user to ensure profile exists
-    if (email === 'graceantwi@sunnyside.com') {
+    if (email === 'teacher@sunnyside.com') {
         const teacherDocRef = firestore.collection('staff').doc(userRecord.uid);
         await teacherDocRef.set({
             uid: userRecord.uid,
             email: email,
             role: 'Teacher',
-            firstName: details?.firstName || 'Grace',
-            lastName: details?.lastName || 'Antwi',
+            firstName: details?.firstName || 'Teacher',
+            lastName: details?.lastName || 'User',
         }, { merge: true });
     }
 
