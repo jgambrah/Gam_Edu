@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -7,21 +6,36 @@ import { z } from 'zod';
 // --- ACTION 1: INTERPRETER ---
 export async function interpretBlockCodeAction(blocks: string[]) {
   try {
-    // FIX: Convert the "[NEWLINE]" token into an actual line break (\n)
-    // and join other blocks with spaces.
-    const codeString = blocks.map(b => b === '[NEWLINE]' ? '\n' : b).join(' ');
-    
+    // STEP 1: Turn blocks into a string
+    let codeString = blocks.map(b => b === '[NEWLINE]' ? '\n' : b).join(' ');
+
+    // STEP 2: THE FIX - Remove spaces immediately after a new line
+    // This turns "\n print" into "\nprint" so Python doesn't crash on IndentationError
+    codeString = codeString.replace(/\n\s+/g, '\n');
+
     const prompt = `
-      Act as a strict Python Code Interpreter.
-      
-      INPUT CODE:
+      Act as a specific Python Runtime Simulator for a logic puzzle game.
+
+      RAW CODE:
       ${codeString}
-      
-      INSTRUCTIONS:
-      1. Simulate the execution of this code.
-      2. Return ONLY the console output.
-      3. If there is a syntax error, return "Error: [Reason]".
-      4. Handle indentation automatically if logical structures (if/else/def) are detected but not explicitly indented (though explicit indentation is preferred).
+
+      RULES FOR EXECUTION:
+      1. **Sanitize First:** If the code looks messy (e.g. "name=input..."), assume valid Python spacing internally.
+      2. **Handle input():** 
+         - The user cannot type. You must SIMULATE the user's input.
+         - Print the prompt string exactly as written.
+         - Then, on the same line (or next, depending on print behavior), output a GENERIC value (like "UserValue" or "10").
+         - DO NOT use names like "Alice" or "Bob".
+      3. **Output format:** Return *only* the final terminal output.
+
+      SCENARIO TEST:
+      Code:
+      name = input('Hello: ')
+      print(name)
+
+      Expected Output:
+      Hello: UserValue
+      UserValue
     `;
 
     const response = await ai.generate({
