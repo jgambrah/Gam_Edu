@@ -5,7 +5,8 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Loader2, ShieldAlert, UserX } from 'lucide-react';
-import { Button } from '@/components/ui/button'; // Ensure you have this, or use standard <button>
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 type Role = 'Admin' | 'Teacher' | 'Student' | 'Parent' | 'Staff' | 'Director' | 'Administrator' | null;
 
@@ -13,7 +14,7 @@ interface RoleContextType {
   role: Role;
   loading: boolean;
   profile: any;
-  refreshRole: () => void; // Added refresh function
+  refreshRole: () => void;
 }
 
 const RoleContext = createContext<RoleContextType>({ role: null, loading: true, profile: null, refreshRole: () => {} });
@@ -110,6 +111,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 export const useRole = () => useContext(RoleContext);
 
 // --- DEBUG ROLE GUARD ---
+// FIX: Added a default empty array for allowedRoles
 export function RoleGuard({ children, allowedRoles = [] }: { children: React.ReactNode; allowedRoles?: string[] }) {
   const { role, loading, refreshRole } = useRole();
   const auth = useAuth();
@@ -128,19 +130,13 @@ export function RoleGuard({ children, allowedRoles = [] }: { children: React.Rea
   }
 
   // 2. Success State
-  // We map 'Administrator' and 'Director' to 'Admin' logic just in case
   const effectiveRole = (role === 'Administrator' || role === 'Director') ? 'Admin' : role;
   
   if (effectiveRole && allowedRoles.includes(effectiveRole)) {
     return <>{children}</>;
   }
-  
-  if (allowedRoles.includes('all')) {
-    return <>{children}</>;
-  }
 
   // 3. BLOCKED STATE (Debug View)
-  // This replaces the "Blank Page" with useful info
   return (
     <div className="flex h-screen w-full items-center justify-center bg-red-50 p-6">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 border border-red-200">
@@ -168,7 +164,6 @@ export function RoleGuard({ children, allowedRoles = [] }: { children: React.Rea
             </Button>
         </div>
         
-        {/* REPAIR BUTTON (Only shows if no role found) */}
         {!role && (
              <div className="mt-4 pt-4 border-t">
                  <p className="text-xs text-center text-slate-400 mb-2">Development Mode</p>
@@ -176,8 +171,6 @@ export function RoleGuard({ children, allowedRoles = [] }: { children: React.Rea
                     className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                     onClick={() => {
                         import('@/components/SystemRepair').then(mod => {
-                            // We can't render the component easily here without complex state, 
-                            // so we direct the user to the Login page where we put the repair tool
                             alert("Please go to the Login Page or Homepage to see the System Repair Tool.");
                             window.location.href = "/";
                         })
