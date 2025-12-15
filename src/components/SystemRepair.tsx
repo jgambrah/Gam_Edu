@@ -38,17 +38,19 @@ export default function SystemRepair() {
     try {
       setDebugMsg(`Found User: ${user.uid}. Updating Role...`);
       
-      // 2. FORCE ADMIN ROLE
-      await setDoc(doc(firestore, 'users', user.uid), {
+      // 2. FORCE ADMIN ROLE IN THE CORRECT 'staff' collection
+      await setDoc(doc(firestore, 'staff', user.uid), {
+        uid: user.uid,
         email: user.email,
-        role: 'Admin', 
+        firstName: 'Super',
+        lastName: 'Admin',
+        role: 'Director', // This is the role the rules check for Admin access
         repairedAt: new Date().toISOString()
       }, { merge: true });
 
       setDebugMsg("Role Set. Creating Dummy Timetable...");
 
       // 3. FORCE COLLECTION INIT
-      // We create a dummy doc to force the collection into existence
       await addDoc(collection(firestore, 'timetables'), {
         day: 'Monday',
         subject: 'System Test',
@@ -60,7 +62,7 @@ export default function SystemRepair() {
       });
 
       setDebugMsg("✅ Success! Refresh the page.");
-      alert("✅ SUCCESS! \n\n1. Role set to 'Admin'.\n2. 'timetables' collection created.\n\nPlease refresh the page now.");
+      alert("✅ SUCCESS! \n\n1. Admin Role Assigned in 'staff' collection.\n2. 'timetables' collection initialized.\n\nPlease refresh the Dashboard now.");
       
     } catch (error: any) {
       console.error(error);
