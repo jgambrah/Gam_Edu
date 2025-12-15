@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, limit, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -40,53 +40,52 @@ function StatCard({ title, value, icon: Icon, link, isLoading }: { title: string
 // --- MAIN DASHBOARD PAGE ---
 export default function DashboardPage() {
     const { user } = useUser();
-    const { role } = useRole();
     const firestore = useFirestore();
 
-    // 1. Students Query
-    const studentsQuery = useMemoFirebase(() => 
+    // --- 1. DEFINE QUERIES (Standard useMemo) ---
+    
+    // Students
+    const studentsQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'students')) : null, 
     [firestore]);
     const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
-    // 2. Staff Query
-    const staffQuery = useMemoFirebase(() => 
+    // Staff
+    const staffQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'staff')) : null, 
     [firestore]);
     const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(staffQuery);
 
-    // 3. Classes Query
-    const classesQuery = useMemoFirebase(() => 
+    // Classes
+    const classesQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'classes')) : null, 
     [firestore]);
     const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery);
 
-    // 4. Announcements Query
-    const announcementsQuery = useMemoFirebase(() => 
+    // Announcements
+    const announcementsQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, 
     [firestore]);
     const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(announcementsQuery);
 
-    // 5. Timetable Query
+    // Timetable (Today)
     const today = getDay(new Date()); 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const todayName = days[today];
 
-    const timetableQuery = useMemoFirebase(() => 
+    const timetableQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')) : null, 
     [firestore, todayName]);
     const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
 
-    // 6. Subjects Query
-    const subjectsQuery = useMemoFirebase(() => 
+    // Subjects
+    const subjectsQuery = useMemo(() => 
         firestore ? query(collection(firestore, 'subjects')) : null, 
     [firestore]);
     const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(subjectsQuery);
 
 
-    const isLoading = loadingStudents || loadingStaff || loadingClasses || loadingAnnouncements || loadingTimetable || loadingSubjects;
-
-    // --- Data Processing for Charts ---
+    // --- DATA PROCESSING ---
     const enrollmentData = useMemo(() => {
         if (!students || !classes) return [];
         return classes.map(c => ({
@@ -106,7 +105,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* STATS CARDS */}
+            {/* STATS ROW */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} isLoading={loadingStudents} link="/dashboard/students-v3"/>
                 <StatCard title="Total Staff" value={staff?.length || 0} icon={UserCog} isLoading={loadingStaff} link="/dashboard/staff-management-v2"/>
@@ -137,7 +136,7 @@ export default function DashboardPage() {
                                                 cursor={{fill: 'transparent'}}
                                                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                                             />
-                                            <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={40} name="Students"/>
+                                            <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} barSize={40} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -156,7 +155,6 @@ export default function DashboardPage() {
                         <CardContent>
                             {loadingAnnouncements ? (
                                 <div className="space-y-2">
-                                    <Skeleton className="h-12 w-full" />
                                     <Skeleton className="h-12 w-full" />
                                     <Skeleton className="h-12 w-full" />
                                 </div>
@@ -255,3 +253,5 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
