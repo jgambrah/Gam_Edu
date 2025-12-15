@@ -3,7 +3,39 @@
 
 import React, { useMemo, type ReactNode } from 'react';
 import { FirebaseProvider } from '@/firebase/provider';
-import { initializeFirebase } from '@/firebase';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { initializeFirestore, getFirestore, Firestore, persistentLocalCache } from 'firebase/firestore'; 
+import { firebaseConfig } from './config';
+
+// Global variables to hold instances
+let firebaseApp: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
+
+export function initializeFirebase() {
+  if (typeof window === 'undefined') return null;
+
+  if (!getApps().length) {
+    firebaseApp = initializeApp(firebaseConfig);
+    try {
+      firestore = initializeFirestore(firebaseApp, {
+        experimentalForceLongPolling: true,
+        localCache: persistentLocalCache({}),
+      });
+    } catch (e) {
+      console.warn("Firestore persistence failed, falling back:", e);
+      firestore = getFirestore(firebaseApp);
+    }
+  } else {
+    firebaseApp = getApp();
+    firestore = getFirestore(firebaseApp);
+  }
+  auth = getAuth(firebaseApp);
+
+  return { firebaseApp, auth, firestore };
+}
+
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -11,9 +43,8 @@ interface FirebaseClientProviderProps {
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const firebaseServices = useMemo(() => {
-    // Initialize Firebase on the client side, once per component mount.
     return initializeFirebase();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   return (
     <FirebaseProvider
@@ -25,3 +56,6 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
     </FirebaseProvider>
   );
 }
+
+// Export the auth instance for direct use in client components like the login page
+export { auth };
