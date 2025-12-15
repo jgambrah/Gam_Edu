@@ -25,7 +25,7 @@ export default function LoginForm() {
     // This effect handles the case where a user is already logged in
     useEffect(() => {
         if (!isUserLoading && user) {
-            router.push('/dashboard');
+            router.push('/dashboard/staff');
         }
     }, [user, isUserLoading, router]);
 
