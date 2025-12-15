@@ -6,6 +6,8 @@ import Header from '@/components/navigation/header';
 import { Sidebar, SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import ClientBoundary from './client-boundary';
 import { AiChat } from '@/components/ai-chat';
+import { RoleGuard } from '@/context/role-context';
+import { ALL_ROLES } from '@/lib/types';
 
 export default function DashboardLayout({
   children,
@@ -13,17 +15,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <AppSidebar />
-      </Sidebar>
-      <SidebarInset>
-        <Header />
-        <ClientBoundary>
-          <main className="p-4 lg:p-6">{children}</main>
-          <AiChat />
-        </ClientBoundary>
-      </SidebarInset>
-    </SidebarProvider>
+    <RoleGuard allowedRoles={ALL_ROLES}>
+      <SidebarProvider>
+        <Sidebar>
+          <AppSidebar />
+        </Sidebar>
+        <SidebarInset>
+          <Header />
+          <ClientBoundary>
+            <main className="p-4 lg:p-6">{children}</main>
+            <AiChat />
+          </ClientBoundary>
+        </SidebarInset>
+      </SidebarProvider>
+    </RoleGuard>
   );
 }
