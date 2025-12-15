@@ -214,7 +214,7 @@ function ElaLeaderboard() {
                             <div className="flex items-center gap-3">
                                 <Avatar>
                                     <AvatarImage src={entry.profilePictureUrl} />
-                                    <AvatarFallback>{entry.userName?.charAt(0) || 'S'}</AvatarFallback>
+                                    <AvatarFallback>{entry.userName ? entry.userName.charAt(0) : 'S'}</AvatarFallback>
                                 </Avatar>
                                 <span>{entry.userName}</span>
                             </div>
@@ -380,6 +380,11 @@ function ReadingPracticeTab() {
       if (selectedPassageId) setIsReaderOpen(true);
   };
 
+  // Helper utility for classnames
+  function cn(...classes: (string | undefined | null | false)[]) {
+    return classes.filter(Boolean).join(' ');
+  }
+
   return (
     <>
         <Card>
@@ -400,6 +405,7 @@ function ReadingPracticeTab() {
             (!isStaff && !studentClassId) ? (
                 <div className="text-center py-8">
                     <p className="text-muted-foreground">You are not assigned to a class.</p>
+                    <p className="text-xs text-red-400 mt-2">Debug: User ID: {user?.uid || 'Not Found'}</p>
                 </div>
             ) :
             passages && passages.length > 0 ? (
@@ -1806,4 +1812,3 @@ export default function ElaClubPage() {
     </div>
   );
 }
-
