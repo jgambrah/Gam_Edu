@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, writeBatch, query, where } from 'firebase/firestore';
@@ -32,11 +32,9 @@ export default function TimetablePage() {
   const classesQuery = useMemoFirebase(
     () => {
       if (!user) return null;
-      // All non-student roles should be able to see all classes to select from.
       if (role && role !== 'Student') {
         return collection(firestore, 'classes');
       }
-      // Students don't need this query, their class is determined from their profile.
       return null;
     },
     [firestore, user, role]
@@ -47,7 +45,7 @@ export default function TimetablePage() {
   const { data: subjects } = useCollection<Subject>(useMemoFirebase(() => user ? collection(firestore, 'subjects') : null, [firestore, user]));
   const { data: rooms } = useCollection<Room>(useMemoFirebase(() => user ? collection(firestore, 'rooms') : null, [firestore, user]));
   const { data: timeSlots } = useCollection<TimeSlot>(useMemoFirebase(() => user ? collection(firestore, 'timeSlots') : null, [firestore, user]));
-  const { data: timetable, isLoading: isTimetableLoading } = useCollection<TimetableEntry>(useMemoFirebase(() => user ? collection(firestore, 'timetables') : null, [firestore, user]));
+  const { data: timetable, isLoading: isTimetableLoading, forceRefetch } = useCollection<TimetableEntry>(useMemoFirebase(() => user ? collection(firestore, 'timetables') : null, [firestore, user]));
   const { data: studentData } = useCollection<Student>(useMemoFirebase(() => user && role === 'Student' ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role]));
 
   useEffect(() => {
@@ -101,10 +99,10 @@ export default function TimetablePage() {
       
       await batch.commit();
 
-      // Placeholder for school-wide notification
       console.log("School-wide notification: Timetable has been updated.");
 
       toast({ title: "Success!", description: "A new timetable has been generated and saved." });
+      forceRefetch(); // Force a refetch of the timetable data
 
     } catch (error) {
       console.error("Error generating timetable:", error);
