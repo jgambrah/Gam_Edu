@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,7 +40,7 @@ function LessonPlanDetails({ plan }: { plan: LessonPlan & { teacherName?: string
 
 export default function LessonPlanningPage() {
   const { role } = useRole();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const [isFormOpen, setFormOpen] = useState(false);
 
