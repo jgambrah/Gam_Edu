@@ -18,7 +18,6 @@ export default function DashboardLayout({
 }) {
   return (
     <Suspense fallback={<div className="flex min-h-screen w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-primary" /></div>}>
-      <RoleProvider>
         <RoleGuard allowedRoles={ALL_ROLES}>
             <SidebarProvider>
             <Sidebar>
@@ -33,7 +32,6 @@ export default function DashboardLayout({
             </SidebarInset>
             </SidebarProvider>
         </RoleGuard>
-      </RoleProvider>
     </Suspense>
   );
 }
