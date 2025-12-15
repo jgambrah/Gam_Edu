@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, limit, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { 
-    Users, GraduationCap, UserCog, Megaphone, PlusCircle, ArrowRight, UserPlus, Clock, BookOpen, Calendar as CalendarIcon
+    Users, GraduationCap, UserCog, Megaphone, PlusCircle, ArrowRight, UserPlus, Calendar as CalendarIcon 
 } from 'lucide-react';
 import { format, getDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,9 +19,9 @@ import { useMemo } from 'react';
 // --- STATS CARD COMPONENT ---
 function StatCard({ title, value, icon: Icon, link, isLoading }: { title: string; value: number | string; icon: React.ElementType; link?: string; isLoading: boolean }) {
     const cardContent = (
-        <Card className="hover:border-primary transition-colors">
+        <Card className="hover:border-primary transition-colors cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
                 <Icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -37,37 +37,51 @@ function StatCard({ title, value, icon: Icon, link, isLoading }: { title: string
     return link ? <Link href={link}>{cardContent}</Link> : cardContent;
 }
 
-
 // --- MAIN DASHBOARD PAGE ---
 export default function DashboardPage() {
     const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
 
-    const { data: students, isLoading: loadingStudents } = useCollection<Student>(
-        useMemoFirebase(() => query(collection(firestore, 'students')), [firestore])
-    );
-    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(
-        useMemoFirebase(() => query(collection(firestore, 'staff')), [firestore])
-    );
-    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(
-        useMemoFirebase(() => query(collection(firestore, 'classes')), [firestore])
-    );
-    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(
-        useMemoFirebase(() => query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)), [firestore])
-    );
+    // 1. Students Query
+    const studentsQuery = useMemo(() => 
+        firestore ? query(collection(firestore, 'students')) : null, 
+    [firestore]);
+    const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery as any);
 
-    const today = getDay(new Date()); // Sunday = 0, Monday = 1...
+    // 2. Staff Query
+    const staffQuery = useMemo(() => 
+        firestore ? query(collection(firestore, 'staff')) : null, 
+    [firestore]);
+    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(staffQuery as any);
+
+    // 3. Classes Query
+    const classesQuery = useMemo(() => 
+        firestore ? query(collection(firestore, 'classes')) : null, 
+    [firestore]);
+    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery as any);
+
+    // 4. Announcements Query
+    const announcementsQuery = useMemo(() => 
+        firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, 
+    [firestore]);
+    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(announcementsQuery as any);
+
+    // 5. Timetable Query
+    const today = getDay(new Date()); 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const todayName = days[today];
 
-    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(
-        useMemoFirebase(() => query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')), [firestore, todayName])
-    );
+    const timetableQuery = useMemo(() => 
+        firestore ? query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')) : null, 
+    [firestore, todayName]);
+    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery as any);
 
-    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(
-        useMemoFirebase(() => query(collection(firestore, 'subjects')), [firestore])
-    );
+    // 6. Subjects Query
+    const subjectsQuery = useMemo(() => 
+        firestore ? query(collection(firestore, 'subjects')) : null, 
+    [firestore]);
+    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(subjectsQuery as any);
 
 
     const isLoading = loadingStudents || loadingStaff || loadingClasses || loadingAnnouncements || loadingTimetable || loadingSubjects;
@@ -83,109 +97,156 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-6">
-            <div className="space-y-1">
-                <h1 className="text-3xl font-bold">Welcome back, {user?.displayName || 'Admin'}!</h1>
-                <p className="text-muted-foreground">Here's a snapshot of your school today, {format(new Date(), 'eeee, MMMM d')}.</p>
+            <div className="flex justify-between items-end">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                    <p className="text-muted-foreground mt-1">
+                        Welcome back, {user?.displayName || 'Admin'}. Today is {format(new Date(), 'eeee, MMMM d')}.
+                    </p>
+                </div>
             </div>
 
             {/* STATS CARDS */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} isLoading={isLoading} link="/dashboard/students-v3"/>
-                <StatCard title="Total Staff" value={staff?.length || 0} icon={UserCog} isLoading={isLoading} link="/dashboard/staff-management-v2"/>
-                <StatCard title="Active Classes" value={classes?.length || 0} icon={Users} isLoading={isLoading} link="/dashboard/academics"/>
-                <StatCard title="Announcements" value={announcements?.length || 0} icon={Megaphone} isLoading={isLoading} link="/dashboard/announcements"/>
+                <StatCard title="Total Students" value={students?.length || 0} icon={GraduationCap} isLoading={loadingStudents} link="/dashboard/students-v3"/>
+                <StatCard title="Total Staff" value={staff?.length || 0} icon={UserCog} isLoading={loadingStaff} link="/dashboard/staff-management-v2"/>
+                <StatCard title="Active Classes" value={classes?.length || 0} icon={Users} isLoading={loadingClasses} link="/dashboard/academics"/>
+                <StatCard title="Announcements" value={announcements?.length || 0} icon={Megaphone} isLoading={loadingAnnouncements} link="/dashboard/announcements"/>
             </div>
             
-            <div className="grid gap-6 lg:grid-cols-5">
-                {/* Main Content Area */}
-                <div className="lg:col-span-3 space-y-6">
-                    {/* Enrollment Analytics */}
+            <div className="grid gap-6 lg:grid-cols-7">
+                
+                {/* LEFT COLUMN (Charts & News) */}
+                <div className="lg:col-span-4 space-y-6">
+                    {/* Enrollment Chart */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Enrollment by Class</CardTitle>
-                            <CardDescription>A quick look at student distribution across classes.</CardDescription>
+                            <CardDescription>Student distribution across grade levels.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {isLoading ? <Skeleton className="h-48 w-full" /> : (
-                                <ResponsiveContainer width="100%" height={200}>
-                                    <BarChart data={enrollmentData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                                        <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                                        <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false}/>
-                                        <Tooltip cursor={{fill: 'hsl(var(--muted))'}} contentStyle={{backgroundColor: 'hsl(var(--background))'}}/>
-                                        <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Students"/>
-                                    </BarChart>
-                                </ResponsiveContainer>
+                            {loadingStudents || loadingClasses ? (
+                                <Skeleton className="h-[250px] w-full" />
+                            ) : (
+                                <div className="h-[250px] w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={enrollmentData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                            <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false}/>
+                                            <Tooltip 
+                                                cursor={{fill: 'transparent'}}
+                                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                            />
+                                            <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={40} name="Students"/>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
                             )}
                         </CardContent>
                     </Card>
 
-                    {/* RECENT ANNOUNCEMENTS */}
+                    {/* Announcements List */}
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Recent Announcements</CardTitle>
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle>Recent News</CardTitle>
+                            <Button variant="ghost" size="sm" asChild className="text-xs">
+                                <Link href="/dashboard/announcements">View All</Link>
+                            </Button>
                         </CardHeader>
                         <CardContent>
-                            {isLoading ? <Skeleton className="h-40 w-full" /> : announcements && announcements.length > 0 ? (
+                            {loadingAnnouncements ? (
+                                <div className="space-y-2">
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                </div>
+                            ) : announcements && announcements.length > 0 ? (
                                 <div className="space-y-4">
                                     {announcements.map(post => (
-                                        <div key={post.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-md border">
-                                            <div>
-                                                <p className="font-semibold text-sm">{post.title}</p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    By {post.authorName} on {post.createdAt ? format(post.createdAt.toDate(), 'PPP') : '...'}
-                                                </p>
+                                        <div key={post.id} className="flex flex-col gap-1 border-b pb-3 last:border-0 last:pb-0">
+                                            <div className="flex justify-between items-start">
+                                                <h4 className="font-semibold text-sm line-clamp-1">{post.title}</h4>
+                                                <span className="text-[10px] text-muted-foreground bg-slate-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                    {post.createdAt ? format(post.createdAt.toDate(), 'MMM d') : '...'}
+                                                </span>
                                             </div>
-                                            <Button asChild variant="ghost" size="sm">
-                                                <Link href="/dashboard/announcements">View <ArrowRight className="ml-2 h-4 w-4"/></Link>
-                                            </Button>
+                                            <p className="text-xs text-muted-foreground line-clamp-2">{post.content}</p>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-sm text-center text-muted-foreground py-8">No announcements found.</p>
+                                <div className="text-center py-8 text-muted-foreground text-sm">No recent announcements.</div>
                             )}
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Right Sidebar */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* QUICK ACTIONS */}
+                {/* RIGHT COLUMN (Actions & Schedule) */}
+                <div className="lg:col-span-3 space-y-6">
+                    {/* Quick Actions Grid */}
                     <Card>
                         <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
-                        <CardContent className="grid grid-cols-2 gap-2">
-                            <Button asChild variant="outline"><Link href="/dashboard/students-v3"><UserPlus className="mr-2 h-4 w-4"/>Add Student</Link></Button>
-                            <Button asChild variant="outline"><Link href="/dashboard/staff-management-v2"><UserCog className="mr-2 h-4 w-4"/>Add Staff</Link></Button>
-                            <Button asChild variant="outline"><Link href="/dashboard/announcements"><Megaphone className="mr-2 h-4 w-4"/>Post News</Link></Button>
-                            <Button asChild variant="outline"><Link href="/dashboard/academics/gradebook"><PlusCircle className="mr-2 h-4 w-4"/>Enter Grades</Link></Button>
+                        <CardContent className="grid grid-cols-2 gap-3">
+                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 transition-all">
+                                <Link href="/dashboard/students-v3">
+                                    <UserPlus className="h-5 w-5"/>
+                                    <span className="text-xs">Add Student</span>
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-all">
+                                <Link href="/dashboard/staff-management-v2">
+                                    <UserCog className="h-5 w-5"/>
+                                    <span className="text-xs">Add Staff</span>
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition-all">
+                                <Link href="/dashboard/announcements">
+                                    <Megaphone className="h-5 w-5"/>
+                                    <span className="text-xs">Post News</span>
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-all">
+                                <Link href="/dashboard/academics/gradebook">
+                                    <PlusCircle className="h-5 w-5"/>
+                                    <span className="text-xs">Grades</span>
+                                </Link>
+                            </Button>
                         </CardContent>
                     </Card>
 
-                    {/* TODAY'S SCHEDULE */}
-                    <Card>
+                    {/* Today's Schedule */}
+                    <Card className="h-full">
                         <CardHeader>
                             <CardTitle>Today's Schedule</CardTitle>
-                            <CardDescription>{format(new Date(), 'eeee, MMMM d')}</CardDescription>
+                            <CardDescription className="text-xs uppercase font-bold text-indigo-600">{todayName}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {isLoading ? <Skeleton className="h-32 w-full"/> : todayTimetable && todayTimetable.length > 0 ? (
+                            {loadingTimetable ? (
                                 <div className="space-y-3">
-                                    {todayTimetable.slice(0, 5).map(entry => (
-                                        <div key={entry.id} className="flex items-center gap-4 text-sm p-2 rounded-md bg-slate-50 border">
-                                            <div className="text-center w-16 px-2 py-1 bg-primary text-primary-foreground rounded">
-                                                <p className="font-bold text-xs">9:00</p>
-                                                <p className="text-[10px]">AM</p>
+                                    <Skeleton className="h-10 w-full" />
+                                    <Skeleton className="h-10 w-full" />
+                                </div>
+                            ) : todayTimetable && todayTimetable.length > 0 ? (
+                                <div className="space-y-3">
+                                    {todayTimetable.slice(0, 5).map((entry, i) => (
+                                        <div key={entry.id || i} className="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 transition-colors border-l-2 border-transparent hover:border-indigo-500">
+                                            <div className="flex flex-col items-center justify-center bg-indigo-100 text-indigo-700 rounded w-12 h-12 shrink-0">
+                                                <span className="text-xs font-bold">09:00</span>
                                             </div>
-                                            <div>
-                                                <p className="font-semibold text-slate-800">{subjects?.find(s => s.id === entry.subjectId)?.name || '...'}</p>
-                                                <p className="text-xs text-muted-foreground">{classes?.find(c => c.id === entry.classId)?.name || '...'}</p>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-semibold text-sm truncate">{subjects?.find(s => s.id === entry.subjectId)?.name || 'Unknown Subject'}</p>
+                                                <p className="text-xs text-muted-foreground truncate">{classes?.find(c => c.id === entry.classId)?.name || 'Unknown Class'}</p>
                                             </div>
                                         </div>
                                     ))}
-                                    {todayTimetable.length > 5 && <p className="text-xs text-center text-muted-foreground mt-2">+ {todayTimetable.length - 5} more</p>}
                                 </div>
                             ) : (
-                                <p className="text-center text-muted-foreground py-8">No classes scheduled for today.</p>
+                                <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground">
+                                    <div className="bg-slate-100 p-3 rounded-full mb-2">
+                                        <CalendarIcon className="h-6 w-6 text-slate-400" />
+                                    </div>
+                                    <p className="text-sm">No classes scheduled.</p>
+                                </div>
                             )}
                         </CardContent>
                     </Card>
