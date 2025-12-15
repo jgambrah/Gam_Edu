@@ -2,7 +2,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useUser } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Loader2, ShieldAlert, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -102,7 +102,7 @@ export const useRole = () => useContext(RoleContext);
 // --- ROLE GUARD ---
 export function RoleGuard({ children, allowedRoles = [] }: { children: React.ReactNode; allowedRoles?: string[] }) {
   const { role, loading } = useRole();
-  const { user, isUserLoading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
 
   // If we are still checking the user or their role, show a loading screen.
