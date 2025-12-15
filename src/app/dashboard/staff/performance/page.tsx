@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,7 +47,7 @@ function StarRating({ rating, setRating, readOnly = false }: { rating: number; s
 // Performance Review Form
 function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean) => void, staffList: Staff[] }) {
   const firestore = useFirestore();
-  const { user } = useAuth();
+  const { user } = useUser();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -116,7 +116,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
 // Main page component
 export default function PerformanceReviewsPage() {
   const { role } = useRole();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [isFormOpen, setFormOpen] = useState(false);
@@ -209,3 +209,5 @@ export default function PerformanceReviewsPage() {
     </div>
   );
 }
+
+    
