@@ -18,7 +18,10 @@ interface RoleContextType {
 const RoleContext = createContext<RoleContextType>({ role: null, loading: true, profile: null });
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  // FIX: Don't destructure immediately. useAuth() might be null during SSR or Init.
+  const auth = useAuth();
+  const user = auth?.user; 
+  
   const firestore = useFirestore();
   const [role, setRole] = useState<Role>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -26,7 +29,12 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function fetchRole() {
-      // 1. If not logged in, stop loading
+      // 1. If auth system isn't ready yet, keep loading
+      if (!auth) {
+        return; 
+      }
+
+      // 2. If auth is ready but no user is logged in
       if (!user) {
         setRole(null);
         setProfile(null);
@@ -34,13 +42,13 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // 2. If logged in but Firestore isn't ready yet, keep loading
+      // 3. If logged in but Firestore isn't ready
       if (!firestore) {
         return; 
       }
 
       try {
-        // --- PRIORITY 1: CHECK 'USERS' (Admin/Repair Tool Fix) ---
+        // --- PRIORITY 1: CHECK 'USERS' (Admin Fix) ---
         const userRef = doc(firestore, 'users', user.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
@@ -82,7 +90,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // If no document found in any collection
+        // Found user in Auth but not in DB
         console.warn("User authenticated but no profile found.");
         setRole(null);
       } catch (error) {
@@ -93,7 +101,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     }
 
     fetchRole();
-  }, [user, firestore]);
+  }, [auth, user, firestore]); // Dependencies updated
 
   return (
     <RoleContext.Provider value={{ role, loading, profile }}>
@@ -104,17 +112,16 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
 export const useRole = () => useContext(RoleContext);
 
-// --- RESTORED ROLEGUARD COMPONENT ---
-// This was missing, causing your build error
+// --- ROLE GUARD COMPONENT ---
 export function RoleGuard({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) {
   const { role, loading } = useRole();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && role && !allowedRoles.includes(role)) {
-      // Optional: Redirect unauthorized users
-      // router.push('/dashboard'); 
-    }
+    // Optional: Add redirect logic here if needed
+    // if (!loading && role && !allowedRoles.includes(role)) {
+    //   router.push('/dashboard'); 
+    // }
   }, [role, loading, allowedRoles, router]);
 
   if (loading) {
@@ -128,8 +135,7 @@ export function RoleGuard({ children, allowedRoles }: { children: React.ReactNod
     );
   }
 
-  // If strictly enforcing (return null), or just rendering children (for layout handling)
-  // Here we return null if role doesn't match, acting as a true Guard
+  // Hide content if role doesn't match
   if (!role || !allowedRoles.includes(role)) {
     return null; 
   }
