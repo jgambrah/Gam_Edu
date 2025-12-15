@@ -1,3 +1,4 @@
+
 'use client';
 
 import AppSidebar from '@/components/navigation/sidebar';
@@ -5,6 +6,8 @@ import Header from '@/components/navigation/header';
 import { Sidebar, SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import ClientBoundary from './client-boundary';
 import { AiChat } from '@/components/ai-chat';
+import { RoleGuard } from '@/context/role-context';
+import { ALL_ROLES } from '@/lib/types';
 
 export default function DashboardLayout({
   children,
@@ -12,6 +15,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
+    <RoleGuard allowedRoles={[...ALL_ROLES]}>
       <SidebarProvider>
         <Sidebar>
           <AppSidebar />
@@ -24,5 +28,6 @@ export default function DashboardLayout({
           </ClientBoundary>
         </SidebarInset>
       </SidebarProvider>
+    </RoleGuard>
   );
 }

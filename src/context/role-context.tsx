@@ -46,19 +46,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log(`[RoleContext] Checking roles for ${user.uid}...`);
 
-        // 1. Check USERS (Admin Repair Tool location)
-        const userRef = doc(firestore, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          console.log("[RoleContext] Found in 'users'");
-          const data = userSnap.data();
-          setRole(data.role as Role); 
-          setProfile(data);
-          setLoading(false);
-          return;
-        }
-
-        // 2. Check STAFF
+        // 1. Check STAFF (Primary location for roles)
         const staffRef = doc(firestore, 'staff', user.uid);
         const staffSnap = await getDoc(staffRef);
         if (staffSnap.exists()) {
@@ -69,7 +57,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // 3. Check STUDENTS
+        // 2. Check STUDENTS
         const studentRef = doc(firestore, 'students', user.uid);
         const studentSnap = await getDoc(studentRef);
         if (studentSnap.exists()) {
@@ -79,7 +67,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // 4. Check PARENTS
+        // 3. Check PARENTS
         const parentRef = doc(firestore, 'parents', user.uid);
         const parentSnap = await getDoc(parentRef);
         if (parentSnap.exists()) {
@@ -89,10 +77,11 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        console.warn("[RoleContext] No profile found in DB.");
-        setRole(null);
+        console.warn("[RoleContext] No profile found in DB for this authenticated user.");
+        setRole(null); // Explicitly set role to null if no profile is found
       } catch (error) {
-        console.error("[RoleContext] Error:", error);
+        console.error("[RoleContext] Error fetching role:", error);
+        setRole(null);
       } finally {
         setLoading(false);
       }
@@ -110,15 +99,14 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
 export const useRole = () => useContext(RoleContext);
 
-// --- DEBUG ROLE GUARD ---
-// FIX: Added a default empty array for allowedRoles
+// --- ROLE GUARD ---
 export function RoleGuard({ children, allowedRoles = [] }: { children: React.ReactNode; allowedRoles?: string[] }) {
-  const { role, loading, refreshRole } = useRole();
-  const auth = useAuth();
-  const user = auth?.user;
+  const { role, loading } = useRole();
+  const { user, isUserLoading } = useAuth();
+  const router = useRouter();
 
-  // 1. Loading State
-  if (loading) {
+  // If we are still checking the user or their role, show a loading screen.
+  if (loading || isUserLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-2">
@@ -129,59 +117,49 @@ export function RoleGuard({ children, allowedRoles = [] }: { children: React.Rea
     );
   }
 
-  // 2. Success State
-  const effectiveRole = (role === 'Administrator' || role === 'Director') ? 'Admin' : role;
+  // If loading is finished but there is no user, redirect to login page.
+  if (!user) {
+    router.push('/');
+    return null; 
+  }
   
-  if (effectiveRole && allowedRoles.includes(effectiveRole)) {
-    return <>{children}</>;
+  // If user is logged in but has no assigned role, they can't proceed.
+  if (!role) {
+     return (
+        <div className="flex h-screen w-full items-center justify-center bg-red-50 p-6">
+            <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 border border-red-200 text-center">
+                <UserX className="h-12 w-12 text-red-400 mx-auto mb-4"/>
+                <h1 className="text-xl font-bold text-red-800">Profile Not Found</h1>
+                <p className="text-slate-600 text-sm my-2">
+                    Your user account is authenticated, but no corresponding profile (Staff, Student, or Parent) was found in the database.
+                </p>
+                <p className="text-xs text-slate-400 mb-4">Please contact your school administrator to have your profile created.</p>
+                <Button onClick={() => router.push('/')} variant="outline" className="w-full">
+                Go Back to Login
+                </Button>
+            </div>
+        </div>
+    );
   }
 
-  // 3. BLOCKED STATE (Debug View)
-  return (
-    <div className="flex h-screen w-full items-center justify-center bg-red-50 p-6">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 border border-red-200">
-        <div className="flex items-center gap-2 text-red-600 mb-4">
-          <ShieldAlert className="h-8 w-8" />
-          <h1 className="text-xl font-bold">Access Denied</h1>
+  // If a role is found, check if it is in the list of allowed roles for the page.
+  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    return (
+       <div className="flex h-screen w-full items-center justify-center bg-yellow-50 p-6">
+            <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 border border-yellow-200 text-center">
+                <ShieldAlert className="h-12 w-12 text-yellow-500 mx-auto mb-4"/>
+                <h1 className="text-xl font-bold text-yellow-800">Access Denied</h1>
+                <p className="text-slate-600 text-sm my-2">
+                    Your role as a <strong className="text-black">{role}</strong> does not have permission to view this page.
+                </p>
+                 <Button onClick={() => router.push('/dashboard')} variant="outline" className="w-full">
+                    Go to Dashboard
+                </Button>
+            </div>
         </div>
-        
-        <div className="space-y-3 text-sm font-mono bg-slate-100 p-4 rounded mb-4">
-          <p><strong>User ID:</strong> {user?.uid || "Not Logged In"}</p>
-          <p><strong>Role Found:</strong> {role ? <span className="text-green-600">{role}</span> : <span className="text-red-600">NULL (No Profile)</span>}</p>
-          <p><strong>Required Roles:</strong> {allowedRoles.join(', ')}</p>
-        </div>
+    );
+  }
 
-        <p className="text-slate-600 text-sm mb-4">
-          Your account exists in Authentication, but the system cannot find a matching Profile Document in Firestore to verify your role.
-        </p>
-
-        <div className="flex gap-2">
-            <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
-              Reload Page
-            </Button>
-            <Button onClick={refreshRole} className="w-full">
-              Retry Check
-            </Button>
-        </div>
-        
-        {!role && (
-             <div className="mt-4 pt-4 border-t">
-                 <p className="text-xs text-center text-slate-400 mb-2">Development Mode</p>
-                 <Button 
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-                    onClick={() => {
-                        import('@/components/SystemRepair').then(mod => {
-                            alert("Please go to the Login Page or Homepage to see the System Repair Tool.");
-                            window.location.href = "/";
-                        })
-                    }}
-                 >
-                    <UserX className="h-4 w-4 mr-2"/>
-                    Go to Repair Tool
-                 </Button>
-             </div>
-        )}
-      </div>
-    </div>
-  );
+  // If all checks pass, render the children.
+  return <>{children}</>;
 }
