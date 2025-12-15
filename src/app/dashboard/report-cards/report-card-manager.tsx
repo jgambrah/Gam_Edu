@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense, useState, useMemo } from 'react';
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus } from '@/lib/types';
+import { reportCardCommentSchema, ReportCard, ReportCardComment, ReportCardStatus, Class } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { MOCK_SUBJECTS, MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Loader2, Send, CheckCircle, ShieldCheck, Printer } from 'lucide-react';
@@ -103,12 +104,16 @@ export default function ReportCardManager() {
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
   const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[0]);
   const [processingStudentId, setProcessingStudentId] = useState<string | null>(null);
-
-  const teacherClassesQuery = useMemoFirebase(
-    () => user && (role === 'Administrator' || role === 'Director') ? collection(firestore, 'classes') : query(collection(firestore, 'classes'), where('teacherId', '==', user?.uid || '')),
-    [firestore, user, role]
-  );
-  const { data: teacherClasses } = useCollection(teacherClassesQuery);
+  
+  const classesQuery = useMemoFirebase(() => {
+      if(!firestore || !user) return null;
+      if (role === 'Teacher') {
+        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+      }
+      return collection(firestore, 'classes');
+  }, [firestore, user, role]);
+  
+  const { data: teacherClasses } = useCollection<Class>(classesQuery);
 
   const studentsQuery = useMemoFirebase(
     () => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
@@ -138,14 +143,12 @@ export default function ReportCardManager() {
         const dataToSet: Partial<ReportCard> = { status: newStatus };
         if (newStatus === 'Published') {
             dataToSet.publishedAt = serverTimestamp();
-            // Simulate notifications
             console.log(`Notification Sent to Parents of ${student.firstName} ${student.lastName}`);
             toast({ title: 'Parent Notified', description: 'An in-app and email notification has been sent.' });
         }
         
         await setDoc(reportCardRef, dataToSet, { merge: true });
 
-        // Ensure a report card document exists
         const reportCardData: ReportCard = getStudentReportCard(student.uid) || {
             id: reportCardId,
             studentId: student.uid,
