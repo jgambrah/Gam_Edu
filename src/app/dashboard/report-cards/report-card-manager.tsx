@@ -2,7 +2,7 @@
 'use client';
 
 import { Suspense, useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
 function CommentForm({ student, reportCard, disabled }: { student: Student; reportCard: ReportCard | undefined; disabled: boolean; }) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -95,7 +95,7 @@ function CommentForm({ student, reportCard, disabled }: { student: Student; repo
 }
 
 export default function ReportCardManager() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
