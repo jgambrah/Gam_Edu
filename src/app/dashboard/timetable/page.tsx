@@ -166,6 +166,9 @@ export default function TimetablePage() {
 
   return (
     <div className="space-y-6">
+      {canGenerate && (
+          <TimetableSeeder />
+      )}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -203,27 +206,24 @@ export default function TimetablePage() {
       </Card>
 
       {canGenerate && (
-        <>
-          <TimetableSeeder />
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Wand2 /> AI Timetable Generation</CardTitle>
-              <CardDescription>Generate or reschedule the school's entire timetable using AI.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Enter a rescheduling reason or custom constraint (e.g. 'Math classes should be in the morning')"
-                value={customConstraint}
-                onChange={(e) => setCustomConstraint(e.target.value)}
-                rows={3}
-              />
-              <Button onClick={handleGenerateTimetable} disabled={isGenerating} className="w-full">
-                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                Generate New Timetable
-              </Button>
-            </CardContent>
-          </Card>
-        </>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Wand2 /> AI Timetable Generation</CardTitle>
+            <CardDescription>Generate or reschedule the school's entire timetable using AI.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              placeholder="Enter a rescheduling reason or custom constraint (e.g. 'Math classes should be in the morning')"
+              value={customConstraint}
+              onChange={(e) => setCustomConstraint(e.target.value)}
+              rows={3}
+            />
+            <Button onClick={handleGenerateTimetable} disabled={isGenerating} className="w-full">
+              {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+              Generate New Timetable
+            </Button>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
