@@ -45,18 +45,11 @@ function StarRating({ rating, setRating, readOnly = false }: { rating: number; s
 }
 
 // Performance Review Form
-function PerformanceReviewForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean) => void, staffList: Staff[] }) {
   const firestore = useFirestore();
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const staffQuery = useMemoFirebase(() => {
-    if (!user) return null;
-    const excludedRoles: UserRole[] = ['Administrator', 'Director'];
-    return query(collection(firestore, 'staff'), where('role', 'not-in', excludedRoles));
-  }, [firestore, user]);
-  const { data: staffList } = useCollection<Staff>(staffQuery);
 
   const form = useForm<z.infer<typeof performanceReviewSchema>>({
     resolver: zodResolver(performanceReviewSchema),
@@ -129,7 +122,7 @@ export default function PerformanceReviewsPage() {
   const [isFormOpen, setFormOpen] = useState(false);
 
   const staffQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
+    if (!user) return null;
     const excludedRoles: UserRole[] = ['Administrator', 'Director'];
     return query(collection(firestore, 'staff'), where('role', 'not-in', excludedRoles));
   }, [firestore, user]);
@@ -161,7 +154,9 @@ export default function PerformanceReviewsPage() {
         </div>
         <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
           <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Log New Review</Button></DialogTrigger>
-          <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>New Performance Review</DialogTitle><DialogDescription>Fill out the form to log a new review for a staff member.</DialogDescription></DialogHeader><PerformanceReviewForm setOpen={setFormOpen} /></DialogContent>
+          <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>New Performance Review</DialogTitle><DialogDescription>Fill out the form to log a new review for a staff member.</DialogDescription></DialogHeader>
+            <PerformanceReviewForm setOpen={setFormOpen} staffList={staffList || []} />
+          </DialogContent>
         </Dialog>
       </div>
 
