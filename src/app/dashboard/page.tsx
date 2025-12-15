@@ -14,6 +14,7 @@ import { format, getDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Student, Staff, Class, Announcement, TimetableEntry, Subject } from '@/lib/types';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useMemo } from 'react';
 
 // --- STATS CARD COMPONENT ---
 function StatCard({ title, value, icon: Icon, link, isLoading }: { title: string; value: number | string; icon: React.ElementType; link?: string; isLoading: boolean }) {
