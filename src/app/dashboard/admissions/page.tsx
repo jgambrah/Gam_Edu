@@ -45,7 +45,7 @@ import { updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/no
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { recommendClassPlacementAction } from '@/ai/flows/admission-actions';
-import { Alert, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 function ApplicationReviewDialog({ application, open, setOpen, classes, students }: { application: AdmissionApplication, open: boolean, setOpen: (open: boolean) => void, classes: Class[], students: Student[] }) {
   const firestore = useFirestore();
