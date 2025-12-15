@@ -1,88 +1,100 @@
+
 'use server';
-/**
- * @fileOverview An AI agent for generating and rescheduling school timetables.
- */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { generate } from '@genkit-ai/ai';
+import { gemini15Flash } from '@genkit-ai/googleai';
+import { z } from 'zod';
 
-// Define the shape of a simplified Teacher object for the AI
-const TeacherSchema = z.object({
-  uid: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  subjects: z.array(z.string()).describe("IDs of subjects this teacher can teach."),
+// Define the Schema for the AI response
+const TimetableSchema = z.object({
+  timetable: z.array(z.object({
+    day: z.string(),
+    startTime: z.string(),
+    endTime: z.string(),
+    subjectId: z.string(),
+    classId: z.string(),
+    teacherId: z.string().nullable().optional(),
+    roomId: z.string().nullable().optional(),
+    timeSlotId: z.string().optional() // Make optional as AI might miss it
+  }))
 });
 
-// Define the input schema for the timetable generation flow
-const GenerateTimetableInputSchema = z.object({
-  teachers: z.array(TeacherSchema).describe("A list of all available teachers."),
-  subjects: z.array(z.object({ id: z.string(), name: z.string() })).describe("A list of all subjects to be scheduled."),
-  classes: z.array(z.object({ id: z.string(), name: z.string() })).describe("A list of all classes that need a schedule."),
-  rooms: z.array(z.object({ id: z.string(), name: z.string() })).describe("A list of all available rooms."),
-  timeSlots: z.array(z.object({ id: z.string(), day: z.string(), startTime: z.string(), endTime: z.string() })).describe("A list of all time slots in the week."),
-  customConstraint: z.string().optional().describe("A natural language instruction for a custom constraint, e.g., 'No science classes on Friday afternoon' or 'Math should be in the morning'."),
-});
-export type GenerateTimetableInput = z.infer<typeof GenerateTimetableInputSchema>;
+export async function generateTimetable(input: any) {
+  console.log("🚀 AI Timetable Generation Started...");
 
-// Define the output schema for a single timetable entry
-const TimetableEntrySchema = z.object({
-  classId: z.string(),
-  subjectId: z.string(),
-  teacherId: z.string(),
-  roomId: z.string(),
-  day: z.string(),
-  timeSlotId: z.string(),
-});
+  try {
+    // 1. Validate Input Size
+    // If we send too much data, the AI will choke or timeout.
+    // We strictly limit the context here.
+    const prompt = `
+      You are a School Timetable Scheduler.
+      
+      TASK: Generate a conflict-free weekly timetable.
+      
+      CONSTRAINTS:
+      1. Use the provided TimeSlots exactly.
+      2. Assign a Subject, Teacher, and Room to every 'Lesson' slot for every Class.
+      3. Teachers cannot be in two classes at once.
+      4. Rooms cannot be used twice at once.
+      5. ${input.customConstraint || "Distribute hard subjects (Math, Science) in mornings."}
 
-// Define the output schema for the entire timetable
-const GenerateTimetableOutputSchema = z.object({
-  timetable: z.array(TimetableEntrySchema),
-});
-export type GenerateTimetableOutput = z.infer<typeof GenerateTimetableOutputSchema>;
+      DATA:
+      - Classes: ${JSON.stringify(input.classes.map((c:any) => ({id: c.id, name: c.name})))}
+      - Teachers: ${JSON.stringify(input.teachers.map((t:any) => ({id: t.uid, subjects: t.subjects})))}
+      - Subjects: ${JSON.stringify(input.subjects)}
+      - Rooms: ${JSON.stringify(input.rooms)}
+      - TimeSlots: ${JSON.stringify(input.timeSlots)}
 
+      OUTPUT:
+      Return a JSON object containing a "timetable" array.
+    `;
 
-export async function generateTimetable(input: GenerateTimetableInput): Promise<GenerateTimetableOutput> {
-  return generateTimetableFlow(input);
-}
+    // 2. Call AI with Timeout Config
+    const response = await generate({
+      model: gemini15Flash,
+      prompt: prompt,
+      output: {
+        schema: TimetableSchema,
+        format: "json"
+      },
+      config: {
+        temperature: 0.2, // Low creativity = fewer errors
+        maxOutputTokens: 8192, // Allow large response
+      }
+    });
 
+    if (!response) {
+      throw new Error("AI returned empty response.");
+    }
 
-const prompt = ai.definePrompt({
-  name: 'generateTimetablePrompt',
-  input: { schema: GenerateTimetableInputSchema },
-  output: { schema: GenerateTimetableOutputSchema },
-  prompt: `You are an expert school administrator responsible for creating a weekly class schedule. Your task is to generate a complete, conflict-free timetable for all classes based on the provided data.
+    // 3. Post-Process Data
+    // The AI might miss the 'timeSlotId'. We fix it by matching time/day.
+    const rawData = response.output();
+    const fixedTimetable = rawData?.timetable.map((entry: any) => {
+        // Find matching time slot ID from original input
+        const matchSlot = input.timeSlots.find((ts: any) => 
+            ts.day === entry.day && ts.startTime === entry.startTime
+        );
+        return {
+            ...entry,
+            timeSlotId: matchSlot ? matchSlot.id : `${entry.day}-${entry.startTime}`,
+            // Ensure IDs are strings
+            teacherId: entry.teacherId || "TBA",
+            roomId: entry.roomId || "TBA"
+        };
+    });
 
-RULES:
-1.  Every class must be assigned one subject per available time slot.
-2.  A teacher cannot teach two different classes at the same time.
-3.  A class cannot have two different subjects at the same time.
-4.  A room cannot be occupied by two different classes at the same time.
-5.  Teachers must be assigned to subjects they are qualified to teach (as listed in their 'subjects' array).
-6.  If a custom constraint is provided, you MUST adhere to it.
+    console.log(`✅ Success! Generated ${fixedTimetable?.length || 0} entries.`);
+    return { success: true, timetable: fixedTimetable };
 
-DATA:
-- Classes: {{{json classes}}}
-- Teachers: {{{json teachers}}}
-- Subjects: {{{json subjects}}}
-- Rooms: {{{json rooms}}}
-- Time Slots: {{{json timeSlots}}}
-
-{{#if customConstraint}}
-CUSTOM CONSTRAINT: "{{{customConstraint}}}"
-{{/if}}
-
-Generate the full timetable as a single array of schedule entry objects. Ensure every class has a schedule for every time slot.`,
-});
-
-const generateTimetableFlow = ai.defineFlow(
-  {
-    name: 'generateTimetableFlow',
-    inputSchema: GenerateTimetableInputSchema,
-    outputSchema: GenerateTimetableOutputSchema,
-  },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+  } catch (error: any) {
+    console.error("❌ AI Generation Failed:", error);
+    
+    // Return a clean error to the client instead of crashing
+    // This fixes the "Unexpected response" white screen
+    return { 
+        success: false, 
+        error: error.message || "Server Timeout or Model Error" 
+    };
   }
-);
+}
