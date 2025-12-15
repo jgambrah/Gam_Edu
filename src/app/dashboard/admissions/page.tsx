@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useCollection, useFirestore, useAuth, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -38,14 +38,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { AdmissionApplication } from '@/lib/types';
-import { format } from 'date-fns';
-import { Loader2, ShieldCheck, ThumbsDown, FilePenLine } from 'lucide-react';
+import { AdmissionApplication, Class, Student } from '@/lib/types';
+import { format, differenceInYears } from 'date-fns';
+import { Loader2, ShieldCheck, ThumbsDown, FilePenLine, BrainCircuit } from 'lucide-react';
 import { updateDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { recommendClassPlacementAction } from '@/ai/flows/admission-actions';
+import { Alert, AlertTitle } from '@/components/ui/alert';
 
-function ApplicationReviewDialog({ application, open, setOpen }: { application: AdmissionApplication, open: boolean, setOpen: (open: boolean) => void }) {
+function ApplicationReviewDialog({ application, open, setOpen, classes, students }: { application: AdmissionApplication, open: boolean, setOpen: (open: boolean) => void, classes: Class[], students: Student[] }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [rejectionReason, setRejectionReason] = useState('');
@@ -54,6 +56,45 @@ function ApplicationReviewDialog({ application, open, setOpen }: { application: 
   const [assessmentScore, setAssessmentScore] = useState(application.assessmentTestScore || '');
   const [interviewNotes, setInterviewNotes] = useState(application.assessmentInterviewNotes || '');
   const [adminFeedback, setAdminFeedback] = useState(application.adminFeedback || '');
+  
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiRecommendation, setAiRecommendation] = useState<{ recommendedClassId: string, reasoning: string } | null>(null);
+
+  const handleAiPlacement = async () => {
+    setIsAiLoading(true);
+    setAiRecommendation(null);
+    try {
+        const studentAge = differenceInYears(new Date(), new Date(application.student.dateOfBirth));
+        
+        const classData = classes.map(c => {
+            const currentStudents = students.filter(s => s.classId === c.id).length;
+            return {
+                id: c.id,
+                name: c.name,
+                capacity: c.capacity || 30, // Default capacity if not set
+                currentStudents: currentStudents,
+            };
+        });
+
+        const result = await recommendClassPlacementAction({
+            name: application.student.fullName,
+            age: studentAge,
+            gender: application.student.gender,
+            desiredGrade: application.student.desiredGrade,
+        }, classData);
+
+        if (result.success && result.data) {
+            setAiRecommendation(result.data);
+            toast({ title: "AI Recommendation", description: "Placement suggestion is ready." });
+        } else {
+            throw new Error(result.error);
+        }
+    } catch(e: any) {
+        toast({ variant: 'destructive', title: "AI Error", description: e.message });
+    } finally {
+        setIsAiLoading(false);
+    }
+  };
 
 
   const handleUpdateAssessment = async () => {
@@ -92,7 +133,14 @@ function ApplicationReviewDialog({ application, open, setOpen }: { application: 
     setIsProcessing(true);
     try {
       const appRef = doc(firestore, 'admissionApplications', application.id);
-      await updateDocumentNonBlocking(appRef, { status: 'Admitted' });
+      
+      const classId = aiRecommendation?.recommendedClassId || application.student.desiredGrade.toLowerCase().replace(/\s+/g, '-');
+      
+      await updateDocumentNonBlocking(appRef, { 
+        status: 'Admitted',
+        // Save the AI's reason if available
+        adminFeedback: aiRecommendation ? `AI Recommendation: ${aiRecommendation.reasoning}. ${adminFeedback}` : adminFeedback,
+      });
 
       const studentId = application.student.email?.split('@')[0] || `student-${Math.random().toString(36).substring(2,9)}`;
       const studentRef = doc(firestore, 'students', studentId);
@@ -101,23 +149,38 @@ function ApplicationReviewDialog({ application, open, setOpen }: { application: 
         firstName: application.student.fullName.split(' ')[0],
         lastName: application.student.fullName.split(' ').slice(1).join(' '),
         email: application.student.email,
-        classId: application.student.desiredGrade.toLowerCase().replace(/\s+/g, '-'),
+        classId: classId,
         dateOfBirth: application.student.dateOfBirth,
         gender: application.student.gender,
         address: application.student.address
       }, { merge: true });
 
-      const parentId = application.parent1.email.split('@')[0] || `parent-${Math.random().toString(36).substring(2,9)}`;
-      const parentRef = doc(firestore, 'parents', parentId);
-      await setDocumentNonBlocking(parentRef, {
-        uid: parentId,
-        firstName: application.parent1.name.split(' ')[0],
-        lastName: application.parent1.name.split(' ').slice(1).join(' '),
-        email: application.parent1.email,
-        phone: application.parent1.phone,
-        address: application.parent1.address,
-        studentIds: [studentId],
-      }, { merge: true });
+      // Check if parent exists before creating
+      const parentEmail = application.parent1.email;
+      const parentQuery = query(collection(firestore, 'parents'), where('email', '==', parentEmail));
+      const parentSnap = await getDocs(parentQuery);
+      
+      if (parentSnap.empty) {
+          const parentId = parentEmail.split('@')[0] || `parent-${Math.random().toString(36).substring(2,9)}`;
+          const parentRef = doc(firestore, 'parents', parentId);
+          await setDocumentNonBlocking(parentRef, {
+            uid: parentId,
+            firstName: application.parent1.name.split(' ')[0],
+            lastName: application.parent1.name.split(' ').slice(1).join(' '),
+            email: application.parent1.email,
+            phone: application.parent1.phone,
+            address: application.parent1.address,
+            studentIds: [studentId],
+          }, { merge: true });
+      } else {
+          // If parent exists, add student to their list
+          const parentDoc = parentSnap.docs[0];
+          const existingIds = parentDoc.data().studentIds || [];
+          if (!existingIds.includes(studentId)) {
+              await updateDocumentNonBlocking(parentDoc.ref, { studentIds: [...existingIds, studentId] });
+          }
+      }
+
 
       toast({
         title: 'Application Admitted!',
@@ -182,13 +245,31 @@ function ApplicationReviewDialog({ application, open, setOpen }: { application: 
             <Separator />
             {/* Internal Assessment Section */}
             <div className="space-y-4 rounded-md bg-muted/50 p-4">
-                <h4 className="text-lg font-semibold flex items-center gap-2"><FilePenLine /> Internal Assessment</h4>
+                <h4 className="text-lg font-semibold flex items-center gap-2"><FilePenLine /> Internal Assessment & Placement</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="assessment-score">Assessment Test Score</Label>
                         <Input id="assessment-score" type="number" value={assessmentScore} onChange={e => setAssessmentScore(e.target.value)} />
                     </div>
+                     <div className="space-y-2 md:col-span-2">
+                        <Label>Smart Placement Assistant</Label>
+                        <Button variant="outline" onClick={handleAiPlacement} disabled={isAiLoading} className="w-full">
+                           {isAiLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>} 
+                            Ask AI for Placement Recommendation
+                        </Button>
+                     </div>
                 </div>
+
+                {aiRecommendation && (
+                    <Alert className="bg-indigo-50 border-indigo-200">
+                        <BrainCircuit className="h-4 w-4 text-indigo-600"/>
+                        <AlertTitle className="font-bold text-indigo-800">AI Recommendation: Place in {classes.find(c => c.id === aiRecommendation.recommendedClassId)?.name || 'Unknown'}</AlertTitle>
+                        <AlertDescription className="text-indigo-700">
+                            Reason: {aiRecommendation.reasoning}
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 <div className="space-y-2">
                     <Label htmlFor="interview-notes">Assessment Interview Notes</Label>
                     <Textarea id="interview-notes" value={interviewNotes} onChange={e => setInterviewNotes(e.target.value)} rows={4} />
@@ -256,6 +337,9 @@ function ApplicationsTable({ status }: { status: AdmissionApplication['status'] 
     [firestore, status]
   );
   const { data: applications, isLoading } = useCollection<AdmissionApplication>(applicationsQuery);
+  const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+  const { data: students } = useCollection<Student>(useMemoFirebase(() => collection(firestore, 'students'), [firestore]));
+  
   const [selectedApplication, setSelectedApplication] = useState<AdmissionApplication | null>(null);
 
   if (isLoading) {
@@ -297,6 +381,8 @@ function ApplicationsTable({ status }: { status: AdmissionApplication['status'] 
             application={selectedApplication} 
             open={!!selectedApplication} 
             setOpen={() => setSelectedApplication(null)}
+            classes={classes || []}
+            students={students || []}
         />
       )}
     </>
