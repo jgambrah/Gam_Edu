@@ -2,7 +2,6 @@
 'use server';
 
 import { generate } from '@genkit-ai/ai';
-import { gemini15Flash } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 
 // Define the Schema for the AI response
@@ -51,7 +50,7 @@ export async function generateTimetable(input: any) {
 
     // 2. Call AI with Timeout Config
     const response = await generate({
-      model: gemini15Flash,
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: prompt,
       output: {
         schema: TimetableSchema,
