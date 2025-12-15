@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { initializeFirebase } from '@/firebase/client-provider'; 
+import { auth } from '@/firebase/client-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +21,6 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const { auth } = initializeFirebase() || {};
   
   // Form State
   const [email, setEmail] = useState('');
@@ -31,28 +30,12 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!auth) {
-        toast({
-            variant: "destructive",
-            title: "Initialization Error",
-            description: "Firebase is not ready. Please refresh."
-        });
-        setIsLoading(false);
-        return;
-    }
-
     try {
-      // 1. Authenticate against existing Firebase Users
       await signInWithEmailAndPassword(auth, email, password);
-      
-      // 2. Success - Redirect to Dashboard
-      // The RoleGuard inside /dashboard will handle permissions now.
       toast({ title: "Welcome back!", description: "Signing you in..." });
       router.push('/dashboard');
-
     } catch (error: any) {
       console.error("Login Error:", error);
-      
       let msg = "Invalid credentials.";
       if (error.code === 'auth/user-not-found') msg = "No user found with this email.";
       if (error.code === 'auth/wrong-password') msg = "Incorrect password.";
@@ -71,16 +54,17 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-full flex">
       
-      {/* --- LEFT SIDE: BRANDING & MARKETING --- */}
-      <div className="hidden lg:flex w-1/2 bg-slate-900 text-white flex-col justify-between p-12 relative overflow-hidden">
-        {/* Background Accents */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600 rounded-full blur-3xl opacity-20 -mr-16 -mt-16"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-10 -ml-20 -mb-20"></div>
+      {/* --- LEFT SIDE: BRANDING (GAM IT Solutions) --- */}
+      <div className="hidden lg:flex w-1/2 bg-purple-950 text-white flex-col justify-between p-12 relative overflow-hidden">
+        
+        {/* Background Accents (Updated to Purple tones) */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600 rounded-full blur-3xl opacity-20 -mr-16 -mt-16"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-fuchsia-700 rounded-full blur-3xl opacity-15 -ml-20 -mb-20"></div>
 
         {/* Logo Area */}
         <div className="flex items-center gap-2 z-10">
-          <div className="bg-indigo-600 p-2 rounded-lg">
-            <GraduationCap className="h-6 w-6 text-white" />
+          <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm border border-white/10">
+            <GraduationCap className="h-6 w-6 text-purple-200" />
           </div>
           <span className="text-xl font-bold tracking-wide">CampusConnect</span>
         </div>
@@ -88,32 +72,38 @@ export default function LoginPage() {
         {/* Hero Text */}
         <div className="z-10 max-w-md space-y-6">
           <h1 className="text-4xl font-bold leading-tight">
-            Experience the next generation of AI-driven education.
+            Experience the next generation of AI-driven education management.
           </h1>
-          <p className="text-slate-400 text-lg">
+          <p className="text-purple-200 text-lg">
             Personalized learning, automated administration, and seamless communication in one platform.
           </p>
 
           {/* Feature List */}
           <div className="space-y-4 pt-4">
             <div className="flex items-center gap-3">
-              <div className="bg-slate-800 p-2 rounded-full"><BrainCircuit className="h-5 w-5 text-indigo-400" /></div>
-              <span className="font-medium">Adaptive Learning Paths</span>
+              <div className="bg-purple-900/50 p-2 rounded-full border border-purple-700/50">
+                <BrainCircuit className="h-5 w-5 text-purple-300" />
+              </div>
+              <span className="font-medium text-purple-100">Adaptive Learning Paths</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="bg-slate-800 p-2 rounded-full"><LineChart className="h-5 w-5 text-pink-400" /></div>
-              <span className="font-medium">Real-time Analytics</span>
+              <div className="bg-purple-900/50 p-2 rounded-full border border-purple-700/50">
+                <LineChart className="h-5 w-5 text-pink-300" />
+              </div>
+              <span className="font-medium text-purple-100">Real-time Analytics</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="bg-slate-800 p-2 rounded-full"><Sparkles className="h-5 w-5 text-yellow-400" /></div>
-              <span className="font-medium">AI-Powered Tutoring</span>
+              <div className="bg-purple-900/50 p-2 rounded-full border border-purple-700/50">
+                <Sparkles className="h-5 w-5 text-yellow-300" />
+              </div>
+              <span className="font-medium text-purple-100">AI-Powered Tutoring</span>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="z-10 text-xs text-slate-500">
-          © 2025 Sunnyside Academy. All rights reserved.
+        {/* Footer (Copyright) */}
+        <div className="z-10 text-xs text-purple-300/60">
+          © 2025 GAM IT Solutions. All rights reserved.
         </div>
       </div>
 
@@ -137,14 +127,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-11"
+                className="h-11 border-slate-200 focus:border-purple-500 focus:ring-purple-500"
               />
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+                <a href="#" className="text-sm font-medium text-purple-600 hover:text-purple-500">Forgot password?</a>
               </div>
               <Input 
                 id="password" 
@@ -153,11 +143,11 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="h-11"
+                className="h-11 border-slate-200 focus:border-purple-500 focus:ring-purple-500"
               />
             </div>
 
-            <Button type="submit" disabled={isLoading} className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-base">
+            <Button type="submit" disabled={isLoading} className="w-full h-11 bg-purple-700 hover:bg-purple-800 text-base font-semibold shadow-lg shadow-purple-200">
               {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Sign In"}
             </Button>
 
@@ -165,7 +155,7 @@ export default function LoginPage() {
 
           <div className="text-center text-sm">
             <span className="text-slate-500">Don't have an account? </span>
-            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500 hover:underline">
+            <a href="#" className="font-semibold text-purple-700 hover:text-purple-600 hover:underline">
               Sign Up
             </a>
           </div>
