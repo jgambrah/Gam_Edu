@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useCollection, useFirestore, useUser } from '@/firebase';
+import { useCollection, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, limit, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -44,44 +44,44 @@ export default function DashboardPage() {
     const firestore = useFirestore();
 
     // 1. Students Query
-    const studentsQuery = useMemo(() => 
+    const studentsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'students')) : null, 
     [firestore]);
-    const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery as any);
+    const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
 
     // 2. Staff Query
-    const staffQuery = useMemo(() => 
+    const staffQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'staff')) : null, 
     [firestore]);
-    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(staffQuery as any);
+    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(staffQuery);
 
     // 3. Classes Query
-    const classesQuery = useMemo(() => 
+    const classesQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'classes')) : null, 
     [firestore]);
-    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery as any);
+    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery);
 
     // 4. Announcements Query
-    const announcementsQuery = useMemo(() => 
+    const announcementsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, 
     [firestore]);
-    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(announcementsQuery as any);
+    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(announcementsQuery);
 
     // 5. Timetable Query
     const today = getDay(new Date()); 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const todayName = days[today];
 
-    const timetableQuery = useMemo(() => 
+    const timetableQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')) : null, 
     [firestore, todayName]);
-    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery as any);
+    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
 
     // 6. Subjects Query
-    const subjectsQuery = useMemo(() => 
+    const subjectsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'subjects')) : null, 
     [firestore]);
-    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(subjectsQuery as any);
+    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(subjectsQuery);
 
 
     const isLoading = loadingStudents || loadingStaff || loadingClasses || loadingAnnouncements || loadingTimetable || loadingSubjects;
