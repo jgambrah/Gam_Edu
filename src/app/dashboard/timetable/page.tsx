@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, writeBatch, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +20,7 @@ type ClassData = { id: string; name: string };
 type Student = { classId: string; id: string; uid: string; };
 
 export default function TimetablePage() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
