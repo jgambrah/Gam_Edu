@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useCollection, useFirestore, useUser } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; // Ensure useMemoFirebase is imported
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, limit, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { 
-    Users, GraduationCap, UserCog, Megaphone, PlusCircle, ArrowRight, UserPlus, Calendar as CalendarIcon 
+    Users, GraduationCap, UserCog, Megaphone, PlusCircle, ArrowRight, UserPlus, Calendar as CalendarIcon
 } from 'lucide-react';
 import { format, getDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -42,50 +42,64 @@ export default function DashboardPage() {
     const { user } = useUser();
     const firestore = useFirestore();
 
-    // --- 1. DEFINE QUERIES (Standard useMemo) ---
-    
+    // --- 1. DEFINE QUERIES (USING useMemoFirebase) ---
+    // The previous error happened because we swapped this for standard useMemo.
+    // We must use useMemoFirebase as your useCollection hook requires it.
+
     // Students
-    const studentsQuery = useMemo(() => 
-        firestore ? query(collection(firestore, 'students')) : null, 
-    [firestore]);
-    const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+    const { data: students, isLoading: loadingStudents } = useCollection<Student>(
+        useMemoFirebase(
+            () => firestore ? query(collection(firestore, 'students')) : null, 
+            [firestore]
+        )
+    );
 
     // Staff
-    const staffQuery = useMemo(() => 
-        firestore ? query(collection(firestore, 'staff')) : null, 
-    [firestore]);
-    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(staffQuery);
+    const { data: staff, isLoading: loadingStaff } = useCollection<Staff>(
+        useMemoFirebase(
+            () => firestore ? query(collection(firestore, 'staff')) : null, 
+            [firestore]
+        )
+    );
 
     // Classes
-    const classesQuery = useMemo(() => 
-        firestore ? query(collection(firestore, 'classes')) : null, 
-    [firestore]);
-    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery);
+    const { data: classes, isLoading: loadingClasses } = useCollection<Class>(
+        useMemoFirebase(
+            () => firestore ? query(collection(firestore, 'classes')) : null, 
+            [firestore]
+        )
+    );
 
     // Announcements
-    const announcementsQuery = useMemo(() => 
-        firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, 
-    [firestore]);
-    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(announcementsQuery);
+    const { data: announcements, isLoading: loadingAnnouncements } = useCollection<Announcement>(
+        useMemoFirebase(
+            () => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(4)) : null, 
+            [firestore]
+        )
+    );
 
     // Timetable (Today)
     const today = getDay(new Date()); 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const todayName = days[today];
 
-    const timetableQuery = useMemo(() => 
-        firestore ? query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')) : null, 
-    [firestore, todayName]);
-    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
+    const { data: todayTimetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(
+        useMemoFirebase(
+            () => firestore ? query(collection(firestore, 'timetables'), where('day', '==', todayName), orderBy('timeSlotId')) : null, 
+            [firestore, todayName]
+        )
+    );
 
     // Subjects
-    const subjectsQuery = useMemo(() => 
-        firestore ? query(collection(firestore, 'subjects')) : null, 
-    [firestore]);
-    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(subjectsQuery);
+    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(
+        useMemoFirebase(
+            () => firestore ? query(collection(firestore, 'subjects')) : null, 
+            [firestore]
+        )
+    );
 
 
-    // --- DATA PROCESSING ---
+    // --- DATA PROCESSING (Standard useMemo is fine here for local math) ---
     const enrollmentData = useMemo(() => {
         if (!students || !classes) return [];
         return classes.map(c => ({
@@ -96,13 +110,11 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Welcome back, {user?.displayName || 'Admin'}. Today is {format(new Date(), 'eeee, MMMM d')}.
-                    </p>
-                </div>
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                <p className="text-muted-foreground">
+                    Welcome back, {user?.displayName || 'Admin'}. Today is {format(new Date(), 'eeee, MMMM d')}.
+                </p>
             </div>
 
             {/* STATS ROW */}
@@ -253,5 +265,3 @@ export default function DashboardPage() {
         </div>
     );
 }
-
-    
