@@ -112,26 +112,11 @@ export function RoleGuard({ children }: { children: ReactNode }) {
       return;
     }
     
-    // 2. Logged In + On Dashboard Root -> Redirect to Portal
-    if (user && role && pathname === '/dashboard') {
-      console.log("🔀 Redirecting based on role:", role);
-
-      if (role === 'Teacher') {
-        router.push('/dashboard/academics'); 
-      } else if (role === 'Student') {
-        router.push('/dashboard/assignments');
-      } else if (role === 'Parent') {
-        router.push('/dashboard/report-cards');
-      } else {
-        // Admins, Directors, etc.
-        router.push('/dashboard/staff-management-v2');
-      }
-    }
   }, [isLoading, user, role, pathname, router]);
 
 
   // --- LOADING SCREEN ---
-  if (isLoading || (user && role && pathname === '/dashboard')) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-slate-50">
           <div className="flex flex-col items-center gap-4">
