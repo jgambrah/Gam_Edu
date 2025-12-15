@@ -1,5 +1,4 @@
 
-
 rules_version = '2';
 
 service cloud.firestore {
@@ -25,7 +24,7 @@ service cloud.firestore {
         return 'Student';
       }
       // Check if user is in parents collection
-      if (exists(/databases/$(database)/documents/parents/$(parentId))) {
+      if (exists(/databases/$(database)/documents/parents/$(userId))) {
         return 'Parent';
       }
       return ''; // Default to no role
@@ -38,6 +37,10 @@ service cloud.firestore {
 
     function isAdmin() {
       return isOneOfRoles(request.auth.uid, ['Administrator', 'Director']);
+    }
+
+    function isAccountant() {
+      return isOneOfRoles(request.auth.uid, ['Accountant']);
     }
 
     function isTeacher() {
@@ -124,6 +127,12 @@ service cloud.firestore {
             allow create: if isStudent();
         }
     }
+    
+    // ADMISSIONS
+    match /admissionApplications/{applicationId} {
+        allow create: if isParent(); // Only parents can create new applications
+        allow read, update: if isAdmin(); // Admins can manage them
+    }
 
     // Live Classroom Rules
     match /lectures/{lectureId} {
@@ -136,6 +145,16 @@ service cloud.firestore {
       match /reactions/{reactionId} {
         allow read, create: if isSignedIn();
       }
+    }
+    
+    match /active_classes/{roomId} {
+        allow read, write: if isSignedIn();
+        match /callerCandidates/{candidateId} {
+            allow read, write: if isSignedIn();
+        }
+        match /calleeCandidates/{candidateId} {
+            allow read, write: if isSignedIn();
+        }
     }
 
     // Clubs
@@ -237,10 +256,20 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == userId;
     }
     
+    // --- NEW LOGIC LAB RULES ---
+    match /student_progress/{userId} {
+        allow read, write: if request.auth.uid == userId;
+    }
+    match /logic_lab_missions/{missionId} {
+        allow read: if isSignedIn();
+        allow write: if request.auth.uid == 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2'; // Admin-only write
+    }
+
     // Allow students to save their own learning history
     match /science_learning_history/{historyId} {
+      allow list: if isSignedIn() && request.query.where.userId == request.auth.uid;
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow list, get: if isSignedIn() && request.query.where.userId == request.auth.uid || resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
     match /math_learning_history/{historyId} {
@@ -278,9 +307,31 @@ service cloud.firestore {
         }
     }
 
+    // --- TILL MANAGEMENT ---
+    match /tills/{tillId} {
+      allow read: if isAccountant() || isAdmin();
+      
+      // Accountants can create their own till
+      allow create: if isAccountant() && request.resource.data.accountantId == request.auth.uid;
+      
+      // Accountants can submit their own open tills for approval
+      allow update: if isAccountant() && resource.data.accountantId == request.auth.uid && resource.data.status == 'Open' 
+        || isAdmin(); // Admins can approve/reject
+
+      match /transactions/{transactionId} {
+        // Accountants can record transactions in their own open tills
+        allow create: if isAccountant() && get(/databases/$(database)/documents/tills/$(tillId)).data.status == 'Open' 
+                       && get(/databases/$(database)/documents/tills/$(tillId)).data.accountantId == request.auth.uid;
+        // Admins and the till's accountant can read transactions
+        allow read: if isAdmin() || (isAccountant() && get(/databases/$(database)/documents/tills/$(tillId)).data.accountantId == request.auth.uid);
+      }
+    }
+
     // Catch-all for remaining collections (adjust as needed)
     match /{document=**} {
       allow read, write: if isAdmin();
     }
   }
 }
+
+    

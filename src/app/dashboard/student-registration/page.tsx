@@ -306,3 +306,5 @@ export default function StudentRegistrationPage() {
 
     return <StudentRegistrationForm />;
 }
+
+    
