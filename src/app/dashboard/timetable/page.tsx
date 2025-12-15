@@ -103,13 +103,20 @@ export default function TimetablePage() {
     toast({ title: "AI is on the job!", description: "Generating a new timetable. This may take a moment." });
 
     try {
-      // Prepare simplified data for AI
-      const simplifiedTeachers = allTeachers.map(t => ({
+      // FIX: Filter out invalid teachers (missing UIDs) to satisfy AI Schema
+      const validTeachers = allTeachers.filter(t => t.uid && t.firstName && t.lastName);
+
+      const simplifiedTeachers = validTeachers.map(t => ({
         uid: t.uid,
         firstName: t.firstName,
         lastName: t.lastName,
+        // Ensure subjects logic is safe
         subjects: subjects.filter(s => s.teacherIds?.includes(t.uid)).map(s => s.id)
       }));
+
+      if (simplifiedTeachers.length === 0) {
+        throw new Error("No valid teachers found. Check Staff records.");
+      }
 
       const input = {
         teachers: simplifiedTeachers,
@@ -120,19 +127,16 @@ export default function TimetablePage() {
         customConstraint: customConstraint,
       };
 
-      // Call AI Server Action
       const result = await generateTimetable(input);
       
       const batch = writeBatch(firestore);
 
-      // 1. Delete ALL existing entries (Reset)
       if(timetable) {
           timetable.forEach(entry => {
             batch.delete(doc(firestore, 'timetables', entry.id));
           });
       }
       
-      // 2. Add NEW entries
       if (result && result.timetable) {
           result.timetable.forEach((entry: any) => {
             const newDocRef = doc(collection(firestore, 'timetables'));
@@ -145,13 +149,14 @@ export default function TimetablePage() {
       toast({ title: "Success!", description: "A new timetable has been generated and saved." });
       forceRefetch(); 
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating timetable:", error);
-      toast({ variant: 'destructive', title: "AI Error", description: "Could not generate timetable." });
+      toast({ variant: 'destructive', title: "AI Error", description: error.message || "Could not generate timetable." });
     } finally {
       setIsGenerating(false);
     }
   };
+
 
   if (!canAccess) {
     return (
