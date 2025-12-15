@@ -4,11 +4,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, writeBatch, query, where } from 'firebase/firestore';
+import { collection, doc, writeBatch, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TimetableDisplay } from './timetable-display';
-import { TimeSlot, TimetableEntry, Subject, Room } from '@/lib/types';
+import { TimeSlot, TimetableEntry, Subject, Room, Student, Class } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -16,8 +16,6 @@ import { Loader2, Wand2 } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
-type ClassData = { id: string; name: string };
-type Student = { classId: string; id: string; uid: string; };
 
 export default function TimetablePage() {
   const { user } = useUser();
@@ -29,25 +27,63 @@ export default function TimetablePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [customConstraint, setCustomConstraint] = useState('');
 
-  const classesQuery = useMemoFirebase(
-    () => {
-      if (!user) return null;
-      if (role && role !== 'Student') {
-        return collection(firestore, 'classes');
-      }
-      return null;
-    },
-    [firestore, user, role]
+  // 1. Classes Query
+  const { data: classes } = useCollection<Class>(
+    useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'classes')) : null, 
+        [firestore]
+    )
   );
-  const { data: classes } = useCollection<ClassData>(classesQuery);
 
-  const { data: allTeachers } = useCollection<Teacher>(useMemoFirebase(() => user ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]));
-  const { data: subjects } = useCollection<Subject>(useMemoFirebase(() => user ? collection(firestore, 'subjects') : null, [firestore, user]));
-  const { data: rooms } = useCollection<Room>(useMemoFirebase(() => user ? collection(firestore, 'rooms') : null, [firestore, user]));
-  const { data: timeSlots } = useCollection<TimeSlot>(useMemoFirebase(() => user ? collection(firestore, 'timeSlots') : null, [firestore, user]));
-  const { data: timetable, isLoading: isTimetableLoading, forceRefetch } = useCollection<TimetableEntry>(useMemoFirebase(() => user ? collection(firestore, 'timetables') : null, [firestore, user]));
-  const { data: studentData } = useCollection<Student>(useMemoFirebase(() => user && role === 'Student' ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user, role]));
+  // 2. Teachers Query
+  const { data: allTeachers } = useCollection<Teacher>(
+    useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, 
+        [firestore]
+    )
+  );
 
+  // 3. Subjects Query
+  const { data: subjects } = useCollection<Subject>(
+    useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'subjects')) : null, 
+        [firestore]
+    )
+  );
+
+  // 4. Rooms Query
+  const { data: rooms } = useCollection<Room>(
+    useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'rooms')) : null, 
+        [firestore]
+    )
+  );
+
+  // 5. TimeSlots Query (Ordered)
+  const { data: timeSlots } = useCollection<TimeSlot>(
+    useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'timeSlots'), orderBy('startTime')) : null, 
+        [firestore]
+    )
+  );
+
+  // 6. Timetable Query
+  const { data: timetable, isLoading: isTimetableLoading, forceRefetch } = useCollection<TimetableEntry>(
+    useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'timetables')) : null, 
+        [firestore]
+    )
+  );
+
+  // 7. Student Data (Only if role is Student)
+  const { data: studentData } = useCollection<Student>(
+    useMemoFirebase(
+        () => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null,
+        [firestore, user, role]
+    )
+  );
+
+  // Auto-select class for Students
   useEffect(() => {
     if (role === 'Student' && studentData && studentData.length > 0) {
       const currentStudent = studentData[0];
@@ -57,52 +93,56 @@ export default function TimetablePage() {
     }
   }, [role, studentData]);
 
-  const canAccess = ['Student', 'Teacher', 'Administrator', 'Director'].includes(role);
-  const canGenerate = ['Administrator', 'Director'].includes(role);
+  const canAccess = ['Student', 'Teacher', 'Admin', 'Administrator', 'Director'].includes(role || '');
+  const canGenerate = ['Admin', 'Administrator', 'Director'].includes(role || '');
 
   const handleGenerateTimetable = async () => {
-    if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots) return;
+    if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore) return;
     setIsGenerating(true);
     toast({ title: "AI is on the job!", description: "Generating a new timetable. This may take a moment." });
 
     try {
+      // Prepare simplified data for AI
       const simplifiedTeachers = allTeachers.map(t => ({
         uid: t.uid,
         firstName: t.firstName,
         lastName: t.lastName,
-        subjects: subjects.filter(s => s.teacherIds.includes(t.uid)).map(s => s.id)
+        subjects: subjects.filter(s => s.teacherIds?.includes(t.uid)).map(s => s.id)
       }));
 
       const input = {
         teachers: simplifiedTeachers,
         subjects: subjects.map(({ id, name }) => ({ id, name })),
-        classes: classes.map(({ id, name }) => ({ id, name })),
-        rooms: rooms.map(({ id, name }) => ({ id, name })),
-        timeSlots: timeSlots.map(({ id, day, startTime, endTime }) => ({ id, day, startTime, endTime })),
+        classes: classes?.map(({ id, name }) => ({ id, name })) || [],
+        rooms: rooms?.map(({ id, name }) => ({ id, name })) || [],
+        timeSlots: timeSlots?.map(({ id, day, startTime, endTime }) => ({ id, day, startTime, endTime })) || [],
         customConstraint: customConstraint,
       };
 
+      // Call AI Server Action
       const result = await generateTimetable(input);
       
       const batch = writeBatch(firestore);
 
-      // Clear existing timetable
-      timetable?.forEach(entry => {
-        batch.delete(doc(firestore, 'timetables', entry.id));
-      });
+      // 1. Delete ALL existing entries (Reset)
+      if(timetable) {
+          timetable.forEach(entry => {
+            batch.delete(doc(firestore, 'timetables', entry.id));
+          });
+      }
       
-      // Add new timetable entries
-      result.timetable.forEach(entry => {
-        const newDocRef = doc(collection(firestore, 'timetables'));
-        batch.set(newDocRef, entry);
-      });
+      // 2. Add NEW entries
+      if (result && result.timetable) {
+          result.timetable.forEach((entry: any) => {
+            const newDocRef = doc(collection(firestore, 'timetables'));
+            batch.set(newDocRef, entry);
+          });
+      }
       
       await batch.commit();
 
-      console.log("School-wide notification: Timetable has been updated.");
-
       toast({ title: "Success!", description: "A new timetable has been generated and saved." });
-      forceRefetch(); // Force a refetch of the timetable data
+      forceRefetch(); 
 
     } catch (error) {
       console.error("Error generating timetable:", error);
@@ -136,7 +176,9 @@ export default function TimetablePage() {
               <div className="w-1/3">
                 <Select onValueChange={setSelectedClassId} value={selectedClassId}>
                   <SelectTrigger><SelectValue placeholder="Select a class" /></SelectTrigger>
-                  <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                  <SelectContent>
+                      {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
                 </Select>
               </div>
             )}
@@ -167,14 +209,14 @@ export default function TimetablePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
-              placeholder="Enter a rescheduling reason or custom constraint. e.g., 'Cancel all classes on Friday afternoon for a school event' or 'Math classes should be in the morning'."
+              placeholder="Enter a rescheduling reason or custom constraint (e.g. 'Math classes should be in the morning')"
               value={customConstraint}
               onChange={(e) => setCustomConstraint(e.target.value)}
               rows={3}
             />
             <Button onClick={handleGenerateTimetable} disabled={isGenerating} className="w-full">
               {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-              Generate New Timetable with AI
+              Generate New Timetable
             </Button>
           </CardContent>
         </Card>
