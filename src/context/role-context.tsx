@@ -135,10 +135,12 @@ export function RoleGuard({ children, allowedRoles = [] }: { children: React.Rea
                     Your user account is authenticated, but no corresponding profile (Staff, Student, or Parent) was found in the database.
                 </p>
                 <p className="text-xs text-slate-400 mb-4">Please contact your school administrator to have your profile created.</p>
-                <Button onClick={() => router.push('/')} variant="outline" className="w-full">
-                Go Back to Login
+                
+                <SystemRepair onRepair={refreshRole} />
+
+                <Button onClick={() => router.push('/')} variant="outline" className="w-full mt-4">
+                    Go Back to Login
                 </Button>
-                 <SystemRepair onRepair={refreshRole} />
             </div>
         </div>
     );
