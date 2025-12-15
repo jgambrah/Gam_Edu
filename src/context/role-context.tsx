@@ -4,6 +4,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type Role = 'Admin' | 'Teacher' | 'Student' | 'Parent' | 'Staff' | 'Director' | 'Administrator' | null;
 
@@ -24,40 +26,43 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function fetchRole() {
-      if (!user || !firestore) {
+      // 1. If not logged in, stop loading
+      if (!user) {
         setRole(null);
         setProfile(null);
         setLoading(false);
         return;
       }
 
+      // 2. If logged in but Firestore isn't ready yet, keep loading
+      if (!firestore) {
+        return; 
+      }
+
       try {
-        // We check collections in order of priority
-        
-        // 1. Check USERS (This is where the Repair Tool put you!)
+        // --- PRIORITY 1: CHECK 'USERS' (Admin/Repair Tool Fix) ---
         const userRef = doc(firestore, 'users', user.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
           const data = userSnap.data();
-          // Map "Admin" to the role state
           setRole(data.role as Role); 
           setProfile(data);
           setLoading(false);
           return;
         }
 
-        // 2. Check STAFF
+        // --- PRIORITY 2: CHECK 'STAFF' ---
         const staffRef = doc(firestore, 'staff', user.uid);
         const staffSnap = await getDoc(staffRef);
         if (staffSnap.exists()) {
           const data = staffSnap.data();
-          setRole(data.role as Role); // e.g. "Teacher", "Accountant"
+          setRole(data.role as Role);
           setProfile(data);
           setLoading(false);
           return;
         }
 
-        // 3. Check STUDENTS
+        // --- PRIORITY 3: CHECK 'STUDENTS' ---
         const studentRef = doc(firestore, 'students', user.uid);
         const studentSnap = await getDoc(studentRef);
         if (studentSnap.exists()) {
@@ -67,7 +72,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // 4. Check PARENTS
+        // --- PRIORITY 4: CHECK 'PARENTS' ---
         const parentRef = doc(firestore, 'parents', user.uid);
         const parentSnap = await getDoc(parentRef);
         if (parentSnap.exists()) {
@@ -77,7 +82,8 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        console.warn("User authenticated but no profile found in users, staff, students, or parents.");
+        // If no document found in any collection
+        console.warn("User authenticated but no profile found.");
         setRole(null);
       } catch (error) {
         console.error("Error fetching role:", error);
@@ -97,3 +103,36 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useRole = () => useContext(RoleContext);
+
+// --- RESTORED ROLEGUARD COMPONENT ---
+// This was missing, causing your build error
+export function RoleGuard({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) {
+  const { role, loading } = useRole();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && role && !allowedRoles.includes(role)) {
+      // Optional: Redirect unauthorized users
+      // router.push('/dashboard'); 
+    }
+  }, [role, loading, allowedRoles, router]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-2">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          <p className="text-sm text-slate-500">Verifying permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If strictly enforcing (return null), or just rendering children (for layout handling)
+  // Here we return null if role doesn't match, acting as a true Guard
+  if (!role || !allowedRoles.includes(role)) {
+    return null; 
+  }
+
+  return <>{children}</>;
+}
