@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc, query, getDocs } from 'firebase/firestore';
 import { Loader2, PlusCircle, Trash2, Users } from 'lucide-react';
 import { Staff, StaffPayrollConfig, staffPayrollConfigSchema } from '@/lib/types';
@@ -149,7 +149,7 @@ function StaffPayrollForm({ staff }: { staff: Staff }) {
 
 export default function StaffPayrollConfigPage() {
     const { role } = useRole();
-    const { user } = useAuth();
+    const { user } = useUser();
     const firestore = useFirestore();
     const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
