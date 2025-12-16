@@ -176,7 +176,7 @@ export default function StaffPayrollConfigPage() {
                                 <SelectValue placeholder="Select a staff member to configure..." />
                             </SelectTrigger>
                             <SelectContent>
-                                {staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                                {staffList?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
