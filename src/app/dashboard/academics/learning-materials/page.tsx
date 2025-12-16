@@ -444,13 +444,13 @@ export default function LearningMaterialsPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4">
-                    {subjectsList.map((subject) => (
-                        <div key={subject} onClick={() => setCurrentSubject(subject)} className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-blue-300 cursor-pointer transition-all flex flex-col items-center justify-center gap-3 text-center group">
+                    {subjectsData?.map((subject) => (
+                        <div key={subject.id} onClick={() => setCurrentSubject(subject.name)} className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-blue-300 cursor-pointer transition-all flex flex-col items-center justify-center gap-3 text-center group">
                             <div className="bg-blue-50 p-4 rounded-full group-hover:bg-blue-100 transition-colors"><Folder className="h-8 w-8 text-blue-500 fill-blue-500/20" /></div>
-                            <h3 className="font-semibold text-slate-700 group-hover:text-blue-700">{subject}</h3>
+                            <h3 className="font-semibold text-slate-700 group-hover:text-blue-700">{subject.name}</h3>
                         </div>
                     ))}
-                    {subjectsList.length === 0 && <p className="col-span-full text-center text-muted-foreground">No subjects defined.</p>}
+                    {(subjectsData?.length || 0) === 0 && <p className="col-span-full text-center text-muted-foreground">No subjects defined.</p>}
                 </CardContent>
             </Card>
 
@@ -492,7 +492,7 @@ export default function LearningMaterialsPage() {
                     <CardHeader className="pb-2">
                         <div className="flex justify-between items-start">
                             <div><CardTitle className="text-lg">{mat.topicTitle || (mat as any).title}</CardTitle>{mat.description && <p className="text-sm text-slate-600 mt-1">{mat.description}</p>}</div>
-                            {canManage && (<div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => handleEdit(mat)}><Edit className="h-4 w-4 text-slate-500" /></Button><Button variant="ghost" size="icon" onClick={() => handleDelete(mat.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button></div>)}
+                            {canManage && (<div className="flex gap-1"><Button variant="ghost" size="sm" onClick={() => handleEdit(mat)}><Edit className="h-4 w-4 text-slate-500" /></Button><Button variant="ghost" size="sm" onClick={() => handleDelete(mat.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button></div>)}
                         </div>
                     </CardHeader>
                     <CardContent className="flex-1 pb-4">
