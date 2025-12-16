@@ -26,7 +26,7 @@ import { PerformanceReview, performanceReviewSchema, Staff, UserRole } from '@/l
 import { Skeleton } from '@/components/ui/skeleton';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Slider } from "@/components/ui/slider";
-// Optional AI import - keep if you implemented the AI flow
+// AI import is optional, will remove if it causes issues.
 // import { generateReviewText } from '@/ai/flows/staff-review-flow'; 
 import PerformanceSetup from '@/components/PerformanceSetup';
 
@@ -98,7 +98,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
 
   const handleAiGenerate = async () => {
       setAiLoading(true);
-      // Mocking AI response for now
+      // Mocking AI response for now as the flow doesn't exist
       setTimeout(() => {
         form.setValue('strengths', 'Excellent classroom management and rapport with students.');
         form.setValue('improvementAreas', 'Could incorporate more technology into lessons.');
@@ -137,7 +137,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
             <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select staff" /></SelectTrigger></FormControl>
             <SelectContent>
               {staffList
-                ?.filter(s => s.uid && s.firstName) 
+                ?.filter(s => s.uid && s.firstName)
                 .map(s => (
                   <SelectItem key={s.id} value={s.uid}>
                     {s.firstName} {s.lastName}
@@ -207,10 +207,9 @@ export default function PerformanceReviewsPage() {
 
   // 1. DETERMINE PERMISSIONS
   const isAdmin = ['Admin', 'Administrator', 'Director'].includes(role || '');
-  const isStaff = ['Teacher', 'Staff', 'Accountant', 'Librarian', 'Cook'].includes(role || '');
+  const isStaff = ['Teacher', 'Staff', 'Accountant', 'Librarian'].includes(role || '');
 
   // 2. AUTO-SELECT FOR STAFF
-  // If user is just Staff, force the selection to their own ID immediately
   useEffect(() => {
       if (!isAdmin && user?.uid) {
           setSelectedStaffId(user.uid);
@@ -218,26 +217,30 @@ export default function PerformanceReviewsPage() {
   }, [isAdmin, user]);
 
   // 3. FETCH STAFF LIST (Admin Only)
-  const staffQuery = useMemoFirebase(
-    () => (isAdmin && firestore) ? query(collection(firestore, 'staff')) : null, 
-    [firestore, isAdmin]
-  );
+  const staffQuery = useMemoFirebase(() => {
+      if (!isAdmin || !firestore) return null;
+      return query(collection(firestore, 'staff'));
+    }, [firestore, isAdmin]);
   const { data: staffList } = useCollection<Staff>(staffQuery);
   
   const reviewableStaff = useMemo(() => {
     if (!staffList) return [];
     return staffList.filter(s => 
-        s.uid && 
+        s.uid &&
         s.firstName &&
         !['Administrator', 'Director'].includes(s.role)
     );
   }, [staffList]);
 
   // 4. FETCH REVIEWS
-  const reviewsQuery = useMemoFirebase(
-    () => (firestore && user && selectedStaffId) ? query(collection(firestore, 'performanceReviews'), where('staffId', '==', selectedStaffId), orderBy('reviewDate', 'asc')) : null,
-    [firestore, user, selectedStaffId]
-  );
+  const reviewsQuery = useMemoFirebase(() => {
+    if (!firestore || !user || !selectedStaffId) return null;
+    return query(
+        collection(firestore, 'performanceReviews'),
+        where('staffId', '==', selectedStaffId),
+        orderBy('reviewDate', 'asc')
+    );
+  }, [firestore, user, selectedStaffId]);
   const { data: rawReviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
 
   const sortedReviews = useMemo(() => rawReviews ? [...rawReviews].reverse() : [], [rawReviews]);
@@ -269,9 +272,6 @@ export default function PerformanceReviewsPage() {
         </div>
         
         {isAdmin && (
-            <div className="flex gap-2">
-            <PerformanceSetup />
-            
             <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild><Button className="bg-indigo-600 hover:bg-indigo-700"><PlusCircle className="mr-2 h-4 w-4" /> New Evaluation</Button></DialogTrigger>
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -279,7 +279,6 @@ export default function PerformanceReviewsPage() {
                 <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff || []} />
             </DialogContent>
             </Dialog>
-        </div>
         )}
       </div>
 
