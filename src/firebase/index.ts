@@ -30,7 +30,7 @@ export function initializeFirebase() {
     try {
       firestore = initializeFirestore(firebaseApp, {
         experimentalForceLongPolling: true,
-        localCache: persistentLocalCache(/*settings*/{}),
+        localCache: persistentLocalCache({}),
       });
       console.log("🔥 Firestore initialized with Long Polling (Stable Mode)");
     } catch (e) {
