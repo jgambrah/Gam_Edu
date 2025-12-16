@@ -15,7 +15,7 @@ import { format, getDay, isAfter, startOfToday } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 import { useMemo } from 'react';
-import type { Assignment, Student, Staff, Class, Announcement, TimetableEntry, Subject, Submission, StudentSubmission } from '@/lib/types';
+import type { Assignment, Student, Staff, Class, Announcement, TimetableEntry, Subject, StudentSubmission } from '@/lib/types';
 
 
 // ============================================================================
@@ -68,10 +68,11 @@ function StudentDashboard({ profile, role }: { profile: Student, role: UserRole 
     const { data: assignments, isLoading: loadingAssignments } = useCollection<Assignment>(assignmentsQuery);
 
     // 2. Get student's submissions to know what's pending
-    const submissionsQuery = useMemoFirebase(() =>
-        profile?.uid ? query(collection(firestore, 'submissions'), where('studentId', '==', profile.uid)) : null,
-        [firestore, profile]
-    );
+    const submissionsQuery = useMemoFirebase(() => {
+        if (!profile?.uid) return null;
+        // This query is simplified for demonstration. In a larger app, you'd query a subcollection.
+        return query(collection(firestore, 'submissions'), where('studentId', '==', profile.uid));
+    }, [firestore, profile]);
     const { data: submissions, isLoading: loadingSubmissions } = useCollection<StudentSubmission>(submissionsQuery);
     
     // 3. Get student's attendance
@@ -81,6 +82,14 @@ function StudentDashboard({ profile, role }: { profile: Student, role: UserRole 
     );
     const { data: attendance, isLoading: loadingAttendance } = useCollection<any>(attendanceQuery);
 
+    // 4. Get Timetable data
+    const timetableQuery = useMemoFirebase(() => profile?.classId ? query(collection(firestore, 'timetables'), where('classId', '==', profile.classId)) : null, [firestore, profile]);
+    const { data: timetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
+    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]));
+    const { data: timeSlots, isLoading: loadingTimeSlots } = useCollection<any>(useMemoFirebase(() => collection(firestore, 'timeSlots'), [firestore]));
+
+    const isLoading = loadingAssignments || loadingSubmissions || loadingAttendance || loadingTimetable || loadingSubjects || loadingTimeSlots;
+
     const pendingAssignments = useMemo(() => {
         if (!assignments || !submissions) return 0;
         const submittedIds = new Set(submissions.map(s => s.assignmentId));
@@ -89,9 +98,29 @@ function StudentDashboard({ profile, role }: { profile: Student, role: UserRole 
 
     const attendanceRate = useMemo(() => {
         if (!attendance || attendance.length === 0) return 'N/A';
-        const present = attendance.filter(a => a.status === 'Present' || a.status === 'Late').length;
+        const present = attendance.filter((a: any) => a.status === 'Present' || a.status === 'Late').length;
         return `${Math.round((present / attendance.length) * 100)}%`;
     }, [attendance]);
+    
+    const todaysSchedule = useMemo(() => {
+        if (!timetable || !subjects || !timeSlots) return [];
+        const todayName = format(new Date(), 'EEEE'); // e.g., "Monday"
+        return timetable
+            .filter(entry => {
+                const slot = timeSlots.find((ts: any) => ts.id === entry.timeSlotId);
+                return slot?.day === todayName;
+            })
+            .map(entry => {
+                const subject = subjects.find(s => s.id === entry.subjectId);
+                const slot = timeSlots.find((ts: any) => ts.id === entry.timeSlotId);
+                return {
+                    subjectName: subject?.name || 'Unknown',
+                    time: `${slot?.startTime} - ${slot?.endTime}`,
+                    room: entry.roomId, // Assuming room name is stored directly or needs another lookup
+                };
+            })
+            .sort((a,b) => a.time.localeCompare(b.time));
+    }, [timetable, subjects, timeSlots]);
     
     return (
         <div className="space-y-6">
@@ -119,11 +148,21 @@ function StudentDashboard({ profile, role }: { profile: Student, role: UserRole 
                 <Card>
                     <CardHeader><CardTitle>Today's Timetable</CardTitle></CardHeader>
                     <CardContent>
-                        {/* Placeholder, as real-time timetable fetching is complex */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between p-3 bg-slate-50 rounded border-l-4 border-blue-500"><div><p className="font-bold">Mathematics</p><p className="text-xs text-muted-foreground">09:00 AM - 10:00 AM</p></div><span className="bg-white px-2 py-1 rounded text-xs border">Room 101</span></div>
-                            <div className="flex items-center justify-between p-3 bg-slate-50 rounded border-l-4 border-green-500"><div><p className="font-bold">Science</p><p className="text-xs text-muted-foreground">10:15 AM - 11:15 AM</p></div><span className="bg-white px-2 py-1 rounded text-xs border">Lab 2</span></div>
-                        </div>
+                        {isLoading ? <Skeleton className="h-24 w-full" /> : todaysSchedule.length > 0 ? (
+                            <div className="space-y-4">
+                                {todaysSchedule.map((item, index) => (
+                                    <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded border-l-4 border-l-blue-500">
+                                        <div>
+                                            <p className="font-bold">{item.subjectName}</p>
+                                            <p className="text-xs text-muted-foreground">{item.time}</p>
+                                        </div>
+                                        <span className="bg-white px-2 py-1 rounded text-xs border">{item.room}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-center text-muted-foreground pt-8">No classes scheduled for today.</p>
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -139,10 +178,37 @@ function TeacherDashboard({ profile, role }: { profile: Staff, role: UserRole })
         useMemoFirebase(() => firestore ? query(collection(firestore, 'classes'), where('teacherId', '==', profile.uid)) : null, [firestore, profile])
     );
     
-    // A simplified query to get a count of submissions needing grading
     const { data: pendingSubmissions, isLoading: loadingSubmissions } = useCollection(
         useMemoFirebase(() => firestore ? query(collection(firestore, 'submissions'), where('status', '!=', 'Graded')) : null, [firestore])
     );
+    
+    // Get Timetable data for today's schedule
+    const { data: timetable, isLoading: loadingTimetable } = useCollection<TimetableEntry>(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'timetables'), where('teacherId', '==', profile.uid)) : null, [firestore, profile])
+    );
+    const { data: subjects, isLoading: loadingSubjects } = useCollection<Subject>(useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]));
+    const { data: timeSlots, isLoading: loadingTimeSlots } = useCollection<any>(useMemoFirebase(() => collection(firestore, 'timeSlots'), [firestore]));
+
+    const isLoading = loadingClasses || loadingSubmissions || loadingTimetable || loadingSubjects || loadingTimeSlots;
+
+    const todaysSchedule = useMemo(() => {
+        if (!timetable || !teacherClasses || !subjects || !timeSlots) return [];
+        const todayName = format(new Date(), 'EEEE');
+        return timetable
+            .filter(entry => {
+                const slot = timeSlots.find((ts: any) => ts.id === entry.timeSlotId);
+                return slot?.day === todayName;
+            })
+            .map(entry => {
+                const subject = subjects.find(s => s.id === entry.subjectId);
+                const className = teacherClasses.find(c => c.id === entry.classId)?.name;
+                return {
+                    className,
+                    subjectName: subject?.name,
+                };
+            })
+            .filter(item => item.className && item.subjectName); // Filter out entries with missing data
+    }, [timetable, teacherClasses, subjects, timeSlots]);
 
     return (
         <div className="space-y-6">
@@ -168,12 +234,16 @@ function TeacherDashboard({ profile, role }: { profile: Staff, role: UserRole })
                     <CardHeader><CardTitle>Today's Schedule</CardTitle></CardHeader>
                     <CardContent>
                         <div className="space-y-2">
-                            {['Grade 5 - Math', 'Grade 6 - Science', 'JHS 1 - Physics'].map((cls, i) => (
-                                <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50">
-                                    <span className="font-medium">{cls}</span>
-                                    <Button size="sm" variant="ghost" asChild><Link href="/dashboard/live-classroom">Start Class</Link></Button>
-                                </div>
-                            ))}
+                             {isLoading ? <Skeleton className="h-24 w-full" /> : todaysSchedule.length > 0 ? (
+                                todaysSchedule.map((item, i) => (
+                                    <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50">
+                                        <span className="font-medium">{item.className} - {item.subjectName}</span>
+                                        <Button size="sm" variant="ghost" asChild><Link href="/dashboard/live-classroom">Start Class</Link></Button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-center text-muted-foreground pt-8">No classes scheduled for today.</p>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
