@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { PerformanceReview, performanceReviewSchema, Staff, UserRole } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import PerformanceSetup from '@/components/PerformanceSetup';
 
 // Star rating component
 function StarRating({ rating, setRating, readOnly = false }: { rating: number; setRating?: (rating: number) => void; readOnly?: boolean }) {
@@ -83,7 +84,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField control={form.control} name="staffId" render={({ field }) => (
-          <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl><SelectContent>{staffList?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+          <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl><SelectContent>{staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
         )} />
         <div className="grid grid-cols-2 gap-4">
           <FormField control={form.control} name="reviewDate" render={({ field }) => (
@@ -121,13 +122,11 @@ export default function PerformanceReviewsPage() {
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [isFormOpen, setFormOpen] = useState(false);
 
-  // --- FIX 1: Staff Query Memoization ---
-  // Ensure we consistently return a query object if firestore exists
   const staffQuery = useMemoFirebase(
     () => firestore ? query(collection(firestore, 'staff')) : null, 
     [firestore]
   );
-  const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
+  const { data: staffList, isLoading: isLoadingStaff, forceRefetch } = useCollection<Staff>(staffQuery);
   
   const reviewableStaff = useMemo(() => {
     if (!staffList) return [];
@@ -135,8 +134,6 @@ export default function PerformanceReviewsPage() {
     return staffList.filter(s => !excludedRoles.includes(s.role));
   }, [staffList]);
 
-  // --- FIX 2: Reviews Query Memoization ---
-  // Ensure the dependency array handles the logic, and we return null only when truly not ready
   const reviewsQuery = useMemoFirebase(
     () => {
         if (!firestore || !selectedStaffId) return null;
@@ -150,7 +147,7 @@ export default function PerformanceReviewsPage() {
   );
   const { data: reviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
   
-  if (role !== 'Administrator' && role !== 'Director' && role !== 'Admin') { // Added 'Admin' check
+  if (role !== 'Administrator' && role !== 'Director' && role !== 'Admin') {
     return (
       <Card>
         <CardHeader>
@@ -163,6 +160,7 @@ export default function PerformanceReviewsPage() {
 
   return (
     <div className="space-y-6">
+      <PerformanceSetup onRepair={forceRefetch} />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Staff Performance Reviews</h1>
@@ -171,7 +169,7 @@ export default function PerformanceReviewsPage() {
         <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
           <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Log New Review</Button></DialogTrigger>
           <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>New Performance Review</DialogTitle><DialogDescription>Fill out the form to log a new review for a staff member.</DialogDescription></DialogHeader>
-            <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff || []} />
+            <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff} />
           </DialogContent>
         </Dialog>
       </div>
