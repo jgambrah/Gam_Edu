@@ -156,7 +156,7 @@ export default function StaffPayrollConfigPage() {
     const staffListQuery = useMemoFirebase(() => (user && firestore) ? collection(firestore, 'staff') : null, [firestore, user]);
     const { data: staffList } = useCollection<Staff>(staffListQuery);
     
-    if (!['Administrator', 'Director', 'Accountant'].includes(role)) {
+    if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
         return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;
     }
     

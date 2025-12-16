@@ -137,7 +137,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
             <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select staff" /></SelectTrigger></FormControl>
             <SelectContent>
               {staffList
-                ?.filter(s => s.uid) // <--- FIX: Only allow staff with a valid UID
+                ?.filter(s => s.uid && s.firstName) 
                 .map(s => (
                   <SelectItem key={s.id} value={s.uid}>
                     {s.firstName} {s.lastName}
@@ -210,6 +210,7 @@ export default function PerformanceReviewsPage() {
   const isStaff = ['Teacher', 'Staff', 'Accountant', 'Librarian', 'Cook'].includes(role || '');
 
   // 2. AUTO-SELECT FOR STAFF
+  // If user is just Staff, force the selection to their own ID immediately
   useEffect(() => {
       if (!isAdmin && user?.uid) {
           setSelectedStaffId(user.uid);
@@ -221,27 +222,20 @@ export default function PerformanceReviewsPage() {
     () => (isAdmin && firestore) ? query(collection(firestore, 'staff')) : null, 
     [firestore, isAdmin]
   );
-  const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
+  const { data: staffList } = useCollection<Staff>(staffQuery);
   
   const reviewableStaff = useMemo(() => {
     if (!staffList) return [];
     return staffList.filter(s => 
-        s.uid && // Ensure ID exists
-        s.firstName && // Ensure Name exists
+        s.uid && 
+        s.firstName &&
         !['Administrator', 'Director'].includes(s.role)
     );
   }, [staffList]);
 
   // 4. FETCH REVIEWS
   const reviewsQuery = useMemoFirebase(
-    () => {
-        if (!firestore || !user || !selectedStaffId) return null;
-        return query(
-            collection(firestore, 'performanceReviews'), 
-            where('staffId', '==', selectedStaffId), 
-            orderBy('reviewDate', 'asc')
-        );
-    },
+    () => (firestore && user && selectedStaffId) ? query(collection(firestore, 'performanceReviews'), where('staffId', '==', selectedStaffId), orderBy('reviewDate', 'asc')) : null,
     [firestore, user, selectedStaffId]
   );
   const { data: rawReviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
@@ -277,6 +271,7 @@ export default function PerformanceReviewsPage() {
         {isAdmin && (
             <div className="flex gap-2">
             <PerformanceSetup />
+            
             <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild><Button className="bg-indigo-600 hover:bg-indigo-700"><PlusCircle className="mr-2 h-4 w-4" /> New Evaluation</Button></DialogTrigger>
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
