@@ -36,12 +36,12 @@ function StatCard({ title, value, icon: Icon, colorClass }: any) {
     );
 }
 
-function WelcomeHeader({ user, role }: any) {
+function WelcomeHeader({ profile, role }: any) {
     return (
         <div className="flex flex-col gap-1 mb-6">
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground">
-                Welcome back, {user?.displayName || user?.email?.split('@')[0]}. 
+                Welcome back, {profile?.firstName || 'User'}. 
                 <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
                     {role}
                 </span>
@@ -55,10 +55,10 @@ function WelcomeHeader({ user, role }: any) {
 // ============================================================================
 
 // --- STUDENT VIEW ---
-function StudentDashboard({ user }: any) {
+function StudentDashboard({ profile, role }: any) {
     return (
         <div className="space-y-6">
-            <WelcomeHeader user={user} role="Student" />
+            <WelcomeHeader profile={profile} role={role} />
             
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="My Subjects" value="8" icon={BookOpen} colorClass="bg-blue-100" />
@@ -109,10 +109,10 @@ function StudentDashboard({ user }: any) {
 }
 
 // --- TEACHER VIEW ---
-function TeacherDashboard({ user }: any) {
+function TeacherDashboard({ profile, role }: any) {
     return (
         <div className="space-y-6">
-            <WelcomeHeader user={user} role="Teacher" />
+            <WelcomeHeader profile={profile} role={role} />
 
             <div className="grid gap-4 md:grid-cols-3">
                 <StatCard title="My Classes" value="4" icon={Users} colorClass="bg-indigo-100" />
@@ -157,10 +157,10 @@ function TeacherDashboard({ user }: any) {
 }
 
 // --- PARENT VIEW ---
-function ParentDashboard({ user }: any) {
+function ParentDashboard({ profile, role }: any) {
     return (
         <div className="space-y-6">
-            <WelcomeHeader user={user} role="Parent" />
+            <WelcomeHeader profile={profile} role={role} />
 
             <div className="grid gap-4 md:grid-cols-2">
                 <Card className="bg-indigo-50 border-indigo-100">
@@ -185,7 +185,7 @@ function ParentDashboard({ user }: any) {
 }
 
 // --- ADMIN DASHBOARD (The Full Version) ---
-function AdminDashboard({ user, firestore }: any) {
+function AdminDashboard({ profile, role, firestore }: any) {
     // Queries only run if Admin
     const { data: students, isLoading: loadingStudents } = useCollection(
         useMemoFirebase(() => firestore ? query(collection(firestore, 'students')) : null, [firestore])
@@ -226,7 +226,7 @@ function AdminDashboard({ user, firestore }: any) {
 
     return (
         <div className="space-y-6">
-            <WelcomeHeader user={user} role="Administrator" />
+            <WelcomeHeader profile={profile} role={role} />
 
             {/* Stats */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -301,38 +301,37 @@ function ClockIcon(props: any) { return <Clock {...props} /> } // Just alias Clo
 import { Clock } from 'lucide-react';
 
 export default function DashboardPage() {
-    const { user } = useUser();
     const firestore = useFirestore();
-    const { role, loading } = useRole();
+    const { role, loading, profile } = useRole(); // Use the profile from the hook
 
     if (loading) {
         return <div className="flex h-96 items-center justify-center"><Skeleton className="h-12 w-12 rounded-full" /></div>;
     }
 
-    if (!user) {
+    if (!profile) {
         return <div className="p-8 text-center">Please log in.</div>;
     }
 
     // --- SMART SWITCH ---
     switch (role) {
         case 'Student':
-            return <StudentDashboard user={user} />;
+            return <StudentDashboard profile={profile} role={role} />;
         
         case 'Parent':
-            return <ParentDashboard user={user} />;
+            return <ParentDashboard profile={profile} role={role} />;
         
         case 'Teacher':
-            return <TeacherDashboard user={user} />;
+            return <TeacherDashboard profile={profile} role={role} />;
         
         case 'Admin':
         case 'Administrator':
         case 'Director':
-            return <AdminDashboard user={user} firestore={firestore} />;
+            return <AdminDashboard profile={profile} role={role} firestore={firestore} />;
             
         case 'Accountant':
             return (
                 <div className="space-y-6">
-                    <WelcomeHeader user={user} role="Accountant" />
+                    <WelcomeHeader profile={profile} role={role} />
                     <Card><CardContent className="p-8 text-center text-gray-500">Go to the Finance Module from the sidebar.</CardContent></Card>
                 </div>
             );
@@ -351,3 +350,5 @@ export default function DashboardPage() {
             );
     }
 }
+
+    
