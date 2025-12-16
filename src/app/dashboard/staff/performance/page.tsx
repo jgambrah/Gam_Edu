@@ -1,17 +1,17 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, addDoc, serverTimestamp, doc, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, Star } from 'lucide-react';
+import { Loader2, PlusCircle, Star, RefreshCw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,12 +19,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Textarea } from '@/components/ui/textarea';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { PerformanceReview, performanceReviewSchema, Staff, UserRole } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import PerformanceSetup from '@/components/PerformanceSetup';
+// IMPORT THE SETUP TOOL
+import PerformanceSetup from '@/components/PerformanceSetup'; 
 
 // Star rating component
 function StarRating({ rating, setRating, readOnly = false }: { rating: number; setRating?: (rating: number) => void; readOnly?: boolean }) {
@@ -84,7 +85,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField control={form.control} name="staffId" render={({ field }) => (
-          <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl><SelectContent>{staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+          <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl><SelectContent>{staffList?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
         )} />
         <div className="grid grid-cols-2 gap-4">
           <FormField control={form.control} name="reviewDate" render={({ field }) => (
@@ -114,7 +115,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
   );
 }
 
-// Main page component
+// --- MAIN PAGE COMPONENT ---
 export default function PerformanceReviewsPage() {
   const { role } = useRole();
   const { user } = useUser();
@@ -122,11 +123,12 @@ export default function PerformanceReviewsPage() {
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [isFormOpen, setFormOpen] = useState(false);
 
+  // 1. Staff List Query (Only for Admins)
   const staffQuery = useMemoFirebase(
     () => firestore ? query(collection(firestore, 'staff')) : null, 
     [firestore]
   );
-  const { data: staffList, isLoading: isLoadingStaff, forceRefetch } = useCollection<Staff>(staffQuery);
+  const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
   
   const reviewableStaff = useMemo(() => {
     if (!staffList) return [];
@@ -134,25 +136,35 @@ export default function PerformanceReviewsPage() {
     return staffList.filter(s => !excludedRoles.includes(s.role));
   }, [staffList]);
 
+  // 2. Reviews Query (THE CRITICAL PART)
   const reviewsQuery = useMemoFirebase(
     () => {
-        if (!firestore || !selectedStaffId) return null;
-        return query(
-            collection(firestore, 'performanceReviews'), 
-            where('staffId', '==', selectedStaffId), 
-            orderBy('reviewDate', 'desc')
-        );
+        if (!firestore || !user) return null;
+
+        // If a staff member is selected, query THEIR reviews
+        if (selectedStaffId) {
+            return query(
+                collection(firestore, 'performanceReviews'), 
+                where('staffId', '==', selectedStaffId), 
+                orderBy('reviewDate', 'desc')
+            );
+        }
+        // If NO staff selected, return NULL (Don't fetch anything yet)
+        // This prevents the "Permission Denied" list error on load
+        return null; 
     },
-    [firestore, selectedStaffId]
+    [firestore, user, selectedStaffId]
   );
+
   const { data: reviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
   
+  // Access Control
   if (role !== 'Administrator' && role !== 'Director' && role !== 'Admin') {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Access Denied</CardTitle>
-          <CardDescription>This module is only accessible to Administrators and Directors.</CardDescription>
+          <CardDescription>This module is only accessible to Administrators.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -160,31 +172,42 @@ export default function PerformanceReviewsPage() {
 
   return (
     <div className="space-y-6">
-      <PerformanceSetup onRepair={forceRefetch} />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Staff Performance Reviews</h1>
-          <p className="text-muted-foreground">Document, track, and review staff appraisals.</p>
+          <p className="text-muted-foreground">Document and track appraisals.</p>
         </div>
-        <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-          <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Log New Review</Button></DialogTrigger>
-          <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>New Performance Review</DialogTitle><DialogDescription>Fill out the form to log a new review for a staff member.</DialogDescription></DialogHeader>
-            <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff} />
-          </DialogContent>
-        </Dialog>
+        
+        {/* ADD SETUP TOOL HERE FOR DEBUGGING */}
+        <div className="flex gap-2">
+            <PerformanceSetup onRepair={() => {}} />
+            
+            <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+            <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Log New Review</Button></DialogTrigger>
+            <DialogContent className="sm:max-w-2xl">
+                <DialogHeader><DialogTitle>New Performance Review</DialogTitle><DialogDescription>Fill details below.</DialogDescription></DialogHeader>
+                {/* Ensure PerformanceReviewForm is defined above or imported */}
+                <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff || []} />
+            </DialogContent>
+            </Dialog>
+        </div>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Select Staff Member</CardTitle>
+          <CardDescription>Select a teacher or staff member to view their history.</CardDescription>
           <div className="w-full md:w-1/3 pt-2">
             <Select onValueChange={setSelectedStaffId}>
-              <SelectTrigger><SelectValue placeholder="Select a staff member to view reviews" /></SelectTrigger>
-              <SelectContent>{reviewableStaff?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+              <SelectTrigger><SelectValue placeholder="Select staff..." /></SelectTrigger>
+              <SelectContent>
+                  {reviewableStaff?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+              </SelectContent>
             </Select>
           </div>
         </CardHeader>
         <CardContent>
+          {/* Loading State */}
           {isLoadingReviews && selectedStaffId && (
              <div className="space-y-2">
                 <Skeleton className="h-14 w-full" />
@@ -192,17 +215,18 @@ export default function PerformanceReviewsPage() {
             </div>
           )}
 
+          {/* Results State */}
           {!isLoadingReviews && selectedStaffId && reviews && reviews.length > 0 && (
             <Accordion type="single" collapsible className="w-full">
               {reviews.map(review => (
                 <AccordionItem value={review.id} key={review.id}>
                   <AccordionTrigger>
                     <div className='flex justify-between items-center w-full pr-4'>
-                        <span>Review on {review.reviewDate?.toDate ? format(review.reviewDate.toDate(), 'PPP') : 'Unknown Date'} by {review.reviewerName}</span>
+                        <span>{review.reviewDate?.toDate ? format(review.reviewDate.toDate(), 'PPP') : 'Date N/A'}</span>
                         <StarRating rating={review.rating} readOnly />
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="p-4 bg-muted/50 rounded-md space-y-4">
+                  <AccordionContent className="p-4 bg-muted/50 rounded-md space-y-2">
                      <div className='prose prose-sm max-w-none'>
                         <h4>Strengths</h4><p>{review.strengths}</p>
                         <h4>Areas for Improvement</h4><p>{review.improvementAreas}</p>
@@ -215,8 +239,16 @@ export default function PerformanceReviewsPage() {
             </Accordion>
           )}
 
+          {/* Empty State */}
           {!isLoadingReviews && selectedStaffId && (!reviews || reviews.length === 0) && (
-            <div className="text-center py-10"><p className="text-muted-foreground">No performance reviews found for this staff member.</p></div>
+            <div className="text-center py-10"><p className="text-muted-foreground">No reviews found for this staff member.</p></div>
+          )}
+          
+          {/* Initial State */}
+          {!selectedStaffId && (
+              <div className="text-center py-10 text-muted-foreground italic">
+                  Select a staff member above to load data.
+              </div>
           )}
         </CardContent>
       </Card>
