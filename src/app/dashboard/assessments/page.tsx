@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRole } from '@/context/role-context';
@@ -17,15 +18,32 @@ import {
   } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import { Assessment, BehavioralRecord } from '@/lib/types';
+import { Assessment, BehavioralRecord, Student } from '@/lib/types';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
   
 function AssessmentsLog() {
     const firestore = useFirestore();
-    const assessmentsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'assessments'), orderBy('assessmentDate', 'desc')) : null, [firestore]);
-    const { data: assessments, isLoading } = useCollection<Assessment>(assessmentsQuery);
+    
+    const assessmentsQuery = useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'assessments'), orderBy('assessmentDate', 'desc')) : null, 
+        [firestore]
+    );
+    const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
+
+    const studentsQuery = useMemoFirebase(
+        () => firestore ? query(collection(firestore, 'students')) : null,
+        [firestore]
+    );
+    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+    
+    const studentMap = useMemo(() => {
+        if (!students) return new Map();
+        return new Map(students.map(s => [s.uid, `${s.firstName} ${s.lastName}`]));
+    }, [students]);
+
+    const isLoading = isLoadingAssessments || isLoadingStudents;
 
     const toDate = (dateValue: any): Date | null => {
         if (!dateValue) return null;
@@ -68,7 +86,7 @@ function AssessmentsLog() {
                             return (
                                 <TableRow key={item.id}>
                                     <TableCell>{assessmentDate ? format(assessmentDate, 'PPP') : 'Invalid Date'}</TableCell>
-                                    <TableCell>{item.studentId}</TableCell>
+                                    <TableCell>{studentMap.get(item.studentId) || item.studentId}</TableCell>
                                     <TableCell>{item.assessmentName}</TableCell>
                                     <TableCell>{item.assessmentType}</TableCell>
                                     <TableCell>{item.score !== undefined && item.maxScore !== undefined ? `${item.score}/${item.maxScore}` : 'N/A'}</TableCell>
