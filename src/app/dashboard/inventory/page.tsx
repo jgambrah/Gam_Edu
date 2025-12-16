@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, writeBatch, serverTimestamp, query, orderBy, increment } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -98,7 +98,7 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
 
 export default function InventoryPage() {
     const { role } = useRole();
-    const { user } = useAuth();
+    const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [refetchKey, setRefetchKey] = useState(0);
