@@ -83,7 +83,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField control={form.control} name="staffId" render={({ field }) => (
-          <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl><SelectContent>{staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+          <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a staff member" /></SelectTrigger></FormControl><SelectContent>{staffList?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
         )} />
         <div className="grid grid-cols-2 gap-4">
           <FormField control={form.control} name="reviewDate" render={({ field }) => (
@@ -121,10 +121,12 @@ export default function PerformanceReviewsPage() {
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [isFormOpen, setFormOpen] = useState(false);
 
-  const staffQuery = useMemoFirebase(() => {
-    if (!user) return null;
-    return query(collection(firestore, 'staff'));
-  }, [firestore, user]);
+  // --- FIX 1: Staff Query Memoization ---
+  // Ensure we consistently return a query object if firestore exists
+  const staffQuery = useMemoFirebase(
+    () => firestore ? query(collection(firestore, 'staff')) : null, 
+    [firestore]
+  );
   const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
   
   const reviewableStaff = useMemo(() => {
@@ -133,13 +135,22 @@ export default function PerformanceReviewsPage() {
     return staffList.filter(s => !excludedRoles.includes(s.role));
   }, [staffList]);
 
+  // --- FIX 2: Reviews Query Memoization ---
+  // Ensure the dependency array handles the logic, and we return null only when truly not ready
   const reviewsQuery = useMemoFirebase(
-    () => (user && selectedStaffId) ? query(collection(firestore, 'performanceReviews'), where('staffId', '==', selectedStaffId), orderBy('reviewDate', 'desc')) : null,
-    [firestore, user, selectedStaffId]
+    () => {
+        if (!firestore || !selectedStaffId) return null;
+        return query(
+            collection(firestore, 'performanceReviews'), 
+            where('staffId', '==', selectedStaffId), 
+            orderBy('reviewDate', 'desc')
+        );
+    },
+    [firestore, selectedStaffId]
   );
   const { data: reviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
   
-  if (role !== 'Administrator' && role !== 'Director') {
+  if (role !== 'Administrator' && role !== 'Director' && role !== 'Admin') { // Added 'Admin' check
     return (
       <Card>
         <CardHeader>
@@ -189,7 +200,7 @@ export default function PerformanceReviewsPage() {
                 <AccordionItem value={review.id} key={review.id}>
                   <AccordionTrigger>
                     <div className='flex justify-between items-center w-full pr-4'>
-                        <span>Review on {format(review.reviewDate.toDate(), 'PPP')} by {review.reviewerName}</span>
+                        <span>Review on {review.reviewDate?.toDate ? format(review.reviewDate.toDate(), 'PPP') : 'Unknown Date'} by {review.reviewerName}</span>
                         <StarRating rating={review.rating} readOnly />
                     </div>
                   </AccordionTrigger>
