@@ -67,7 +67,7 @@ function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boole
 export default function AppSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
-  const { role, loading } = useRole(); 
+  const { role, profile, loading } = useRole(); 
 
   const handleSignOut = async () => {
     try {
@@ -153,7 +153,7 @@ export default function AppSidebar() {
           </Avatar>
           <div className="flex flex-col">
             <span className="text-sm font-medium truncate">
-              {user?.displayName || user?.email || "User"}
+              {profile?.firstName || user?.displayName || user?.email || "User"}
             </span>
             <span className="text-xs text-muted-foreground capitalize">
               {loading ? 'Loading...' : role || 'No Role'}
