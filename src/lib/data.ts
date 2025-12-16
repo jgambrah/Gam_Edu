@@ -261,6 +261,7 @@ export const navItems: NavItem[] = [
         {
             path: '/dashboard/forum',
             title: 'Forum',
+            icon: MessageSquare,
             roles: ['Director', 'Administrator', 'Teacher', 'Student', 'Parent', 'Librarian', 'Cook', 'Transport Staff'],
         },
         {
@@ -295,7 +296,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/financials',
     title: 'Financials',
     icon: Banknote,
-    roles: ['Director', 'Administrator', 'Accountant', 'Teacher', 'Librarian', 'Cook'],
+    roles: ['Director', 'Administrator', 'Accountant'],
      subItems: [
       {
         path: '/dashboard/accounts',
@@ -579,3 +580,4 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
 
 
     
+
