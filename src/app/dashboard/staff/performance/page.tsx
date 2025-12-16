@@ -28,6 +28,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianG
 import { Slider } from "@/components/ui/slider";
 // Optional AI import - keep if you implemented the AI flow
 // import { generateReviewText } from '@/ai/flows/staff-review-flow'; 
+import PerformanceSetup from '@/components/PerformanceSetup';
 
 // --- COMPONENTS ---
 
@@ -97,19 +98,6 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
 
   const handleAiGenerate = async () => {
       setAiLoading(true);
-      // try {
-      //     const result = await generateReviewText(metrics);
-      //     if (result.success && result.data) {
-      //         form.setValue('strengths', result.data.strengths);
-      //         form.setValue('improvementAreas', result.data.improvements);
-      //         form.setValue('goals', result.data.goals);
-      //         toast({ title: "AI Magic!", description: "Review drafted successfully." });
-      //     }
-      // } catch (e) {
-      //     toast({ title: "AI Error", description: "Could not generate text." });
-      // } finally {
-      //     setAiLoading(false);
-      // }
       // Mocking AI response for now
       setTimeout(() => {
         form.setValue('strengths', 'Excellent classroom management and rapport with students.');
@@ -146,7 +134,18 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
             <FormField control={form.control} name="staffId" render={({ field }) => (
-            <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select staff" /></SelectTrigger></FormControl><SelectContent>{staffList?.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+            <FormItem><FormLabel>Staff Member</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select staff" /></SelectTrigger></FormControl>
+            <SelectContent>
+              {staffList
+                ?.filter(s => s.uid) // <--- FIX: Only allow staff with a valid UID
+                .map(s => (
+                  <SelectItem key={s.id} value={s.uid}>
+                    {s.firstName} {s.lastName}
+                  </SelectItem>
+                ))
+              }
+            </SelectContent>
+            </Select><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="reviewDate" render={({ field }) => (
             <FormItem className="flex flex-col"><FormLabel>Review Date</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>
@@ -219,19 +218,30 @@ export default function PerformanceReviewsPage() {
 
   // 3. FETCH STAFF LIST (Admin Only)
   const staffQuery = useMemoFirebase(
-      () => (isAdmin && firestore) ? query(collection(firestore, 'staff')) : null, 
-      [firestore, isAdmin]
+    () => (isAdmin && firestore) ? query(collection(firestore, 'staff')) : null, 
+    [firestore, isAdmin]
   );
-  const { data: staffList } = useCollection<Staff>(staffQuery);
+  const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
   
   const reviewableStaff = useMemo(() => {
     if (!staffList) return [];
-    return staffList.filter(s => !['Administrator', 'Director'].includes(s.role as UserRole));
+    return staffList.filter(s => 
+        s.uid && // Ensure ID exists
+        s.firstName && // Ensure Name exists
+        !['Administrator', 'Director'].includes(s.role)
+    );
   }, [staffList]);
 
   // 4. FETCH REVIEWS
   const reviewsQuery = useMemoFirebase(
-    () => (firestore && user && selectedStaffId) ? query(collection(firestore, 'performanceReviews'), where('staffId', '==', selectedStaffId), orderBy('reviewDate', 'asc')) : null,
+    () => {
+        if (!firestore || !user || !selectedStaffId) return null;
+        return query(
+            collection(firestore, 'performanceReviews'), 
+            where('staffId', '==', selectedStaffId), 
+            orderBy('reviewDate', 'asc')
+        );
+    },
     [firestore, user, selectedStaffId]
   );
   const { data: rawReviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
@@ -265,6 +275,8 @@ export default function PerformanceReviewsPage() {
         </div>
         
         {isAdmin && (
+            <div className="flex gap-2">
+            <PerformanceSetup />
             <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild><Button className="bg-indigo-600 hover:bg-indigo-700"><PlusCircle className="mr-2 h-4 w-4" /> New Evaluation</Button></DialogTrigger>
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -272,6 +284,7 @@ export default function PerformanceReviewsPage() {
                 <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff || []} />
             </DialogContent>
             </Dialog>
+        </div>
         )}
       </div>
 
