@@ -256,13 +256,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/communication',
     title: 'Communication',
     icon: MessageSquare,
-    roles: 'all',
+    roles: ['Director', 'Administrator', 'Teacher', 'Student', 'Parent', 'Librarian', 'Cook', 'Transport Staff'],
     subItems: [
         {
             path: '/dashboard/forum',
             title: 'Forum',
             icon: MessageSquare,
-            roles: 'all',
+            roles: ['Director', 'Administrator', 'Teacher', 'Student', 'Parent', 'Librarian', 'Cook', 'Transport Staff'],
         },
         {
             path: '/dashboard/messages',
@@ -573,6 +573,7 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     
 
     
+
 
 
 
