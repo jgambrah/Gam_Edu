@@ -123,10 +123,15 @@ export default function PerformanceReviewsPage() {
 
   const staffQuery = useMemoFirebase(() => {
     if (!user) return null;
-    const excludedRoles: UserRole[] = ['Administrator', 'Director'];
-    return query(collection(firestore, 'staff'), where('role', 'not-in', excludedRoles));
+    return query(collection(firestore, 'staff'));
   }, [firestore, user]);
-  const { data: staffList } = useCollection<Staff>(staffQuery);
+  const { data: staffList, isLoading: isLoadingStaff } = useCollection<Staff>(staffQuery);
+  
+  const reviewableStaff = useMemo(() => {
+    if (!staffList) return [];
+    const excludedRoles: UserRole[] = ['Administrator', 'Director'];
+    return staffList.filter(s => !excludedRoles.includes(s.role));
+  }, [staffList]);
 
   const reviewsQuery = useMemoFirebase(
     () => (user && selectedStaffId) ? query(collection(firestore, 'performanceReviews'), where('staffId', '==', selectedStaffId), orderBy('reviewDate', 'desc')) : null,
@@ -155,7 +160,7 @@ export default function PerformanceReviewsPage() {
         <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
           <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Log New Review</Button></DialogTrigger>
           <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>New Performance Review</DialogTitle><DialogDescription>Fill out the form to log a new review for a staff member.</DialogDescription></DialogHeader>
-            <PerformanceReviewForm setOpen={setFormOpen} staffList={staffList || []} />
+            <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff || []} />
           </DialogContent>
         </Dialog>
       </div>
@@ -166,7 +171,7 @@ export default function PerformanceReviewsPage() {
           <div className="w-full md:w-1/3 pt-2">
             <Select onValueChange={setSelectedStaffId}>
               <SelectTrigger><SelectValue placeholder="Select a staff member to view reviews" /></SelectTrigger>
-              <SelectContent>{staffList?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
+              <SelectContent>{reviewableStaff?.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent>
             </Select>
           </div>
         </CardHeader>
@@ -209,4 +214,3 @@ export default function PerformanceReviewsPage() {
     </div>
   );
 }
-
