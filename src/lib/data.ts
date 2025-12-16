@@ -162,7 +162,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/academics/gradebook',
             title: 'Gradebook',
             icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Parent'],
         },
         {
             path: '/dashboard/academics/analytics',
@@ -573,5 +573,6 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     
 
     
+
 
 
