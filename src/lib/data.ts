@@ -262,7 +262,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/forum',
             title: 'Forum',
             icon: MessageSquare,
-            roles: ['Director', 'Administrator', 'Teacher', 'Student', 'Parent', 'Librarian', 'Cook', 'Transport Staff'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Student', 'Librarian', 'Cook', 'Transport Staff'],
         },
         {
             path: '/dashboard/messages',
@@ -580,4 +580,5 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
 
 
     
+
 
