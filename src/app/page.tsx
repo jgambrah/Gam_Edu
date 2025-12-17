@@ -15,6 +15,7 @@ import {
   Calculator,
   Banknote,
   UserCog,
+  BrainCircuit,
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -77,6 +78,10 @@ export default function LoginPage() {
               </p>
               <div className="space-y-4 pt-4">
                 <div className="flex items-center gap-3">
+                  <div className="bg-white/10 p-2 rounded-full border border-white/20"><BrainCircuit className="h-5 w-5 text-green-200" /></div>
+                  <span className="font-medium">AI-Powered Tutoring & Learning Paths</span>
+                </div>
+                <div className="flex items-center gap-3">
                   <div className="bg-white/10 p-2 rounded-full border border-white/20"><Calculator className="h-5 w-5 text-purple-200" /></div>
                   <span className="font-medium">Automated Payroll & Tax Calculation</span>
                 </div>
@@ -120,7 +125,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <Label htmlFor="password">Password</Label>
-                    <a href="#" className="text-sm font-medium text-purple-600 hover:text-purple-500">Forgot password?</a>
+                    <a href="/password-reset" className="text-sm font-medium text-purple-600 hover:text-purple-500">Forgot password?</a>
                   </div>
                   <Input 
                     id="password" 
