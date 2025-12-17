@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useMemo, Suspense } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, doc, query, where, Timestamp } from 'firebase/firestore';
+import { collection, doc, query, where, Timestamp, orderBy } from 'firebase/firestore';
 import { ReportCard, Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, User, FileText, CalendarCheck, ShieldAlert, BadgeInfo } from 'lucide-react';
@@ -62,7 +63,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
                         className={cn("w-[300px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y")) ) : (<span>Pick a date</span>)}
+                        {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date</span>)}
                     </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="end">
@@ -169,7 +170,7 @@ export default function MyChildrenPage() {
             return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
         }
         return null;
-    }, [firestore, role, parentData]);
+    }, [firestore, role, user, parentData]);
 
     const { data: students, isLoading: areStudentsLoading } = useCollection<Student>(studentsQuery);
     
