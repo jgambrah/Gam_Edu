@@ -1,11 +1,13 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// Input Schemas
+// Input Schemas from lib/types
+import type { FinancialRecord } from '@/lib/types';
 export type BankTx = { id: string; date: string; description: string; amount: number };
-export type InternalTx = { id: string; date: string; description: string; amount: number; reference?: string };
+export type InternalTx = FinancialRecord;
 
 // Output Schema (Structured JSON)
 const ReconciliationSchema = z.object({
@@ -49,7 +51,7 @@ export async function autoReconcileFlow(bankLines: BankTx[], ledgerLines: Intern
       ${JSON.stringify(bankLines)}
 
       [INTERNAL ENTRIES]:
-      ${JSON.stringify(ledgerLines)}
+      ${JSON.stringify(ledgerLines.map(l => ({ id: l.id, date: l.createdAt, description: l.description, amount: l.billedAmount })))}
     `;
 
     const { output } = await ai.generate({

@@ -1,19 +1,18 @@
 
 'use client';
 
-import { useState } from 'react';
-import { useUser, useFirestore } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
+import { useState, useMemo } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Wand2, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { autoReconcileFlow } from '@/ai/flows/reconciliation-flow';
+import { autoReconcileFlow, BankTx, InternalTx } from '@/ai/flows/reconciliation-flow';
+import type { FinancialRecord } from '@/lib/types';
 
-// --- TYPES ---
-type BankTx = { id: string; date: string; description: string; amount: number; status: 'Pending' | 'Matched' };
-type InternalTx = { id: string; date: string; description: string; amount: number };
+
 type MatchSuggestion = { bankTransactionId: string; internalTransactionId: string; confidence: 'High' | 'Medium' | 'Low'; reasoning: string };
 
 export default function ReconciliationPage() {
@@ -23,13 +22,16 @@ export default function ReconciliationPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [bankData, setBankData] = useState<BankTx[]>([]);
-  const [ledgerData, setLedgerData] = useState<InternalTx[]>([]);
   const [suggestions, setSuggestions] = useState<MatchSuggestion[]>([]);
 
-  // 1. SIMULATE LOADING DATA (In production, you'd fetch from Firestore 'bank_feeds' and 'expenses')
-  const loadMockData = async () => {
+  // 1. Fetch live Firestore data
+  const { data: ledgerData, isLoading: isLoadingLedger } = useCollection<FinancialRecord>(
+      useMemoFirebase(() => firestore ? collection(firestore, 'financialRecords') : null, [firestore])
+  );
+
+  // 2. SIMULATE LOADING BANK DATA (This part remains as a demo/upload simulation)
+  const loadMockBankData = () => {
     setIsLoading(true);
-    // Simulating fetching data...
     setTimeout(() => {
         setBankData([
             { id: 'b1', date: '2024-03-01', description: 'AWS EMEA SERVICE', amount: 120.50, status: 'Pending' },
@@ -37,24 +39,23 @@ export default function ReconciliationPage() {
             { id: 'b3', date: '2024-03-05', description: 'STAPLES #9928', amount: 45.99, status: 'Pending' },
             { id: 'b4', date: '2024-03-06', description: 'UNKNOWN TRANSFER', amount: 200.00, status: 'Pending' },
         ]);
-        setLedgerData([
-            { id: 'i1', date: '2024-02-28', description: 'Amazon Web Services - Feb', amount: 120.50 }, // Match (Date diff)
-            { id: 'i2', date: '2024-03-03', description: 'Fees: John Doe', amount: 5000.00 }, // Match (Exact)
-            { id: 'i3', date: '2024-03-05', description: 'Office Supplies', amount: 45.99 }, // Match (Fuzzy)
-            { id: 'i4', date: '2024-03-10', description: 'Bus Fuel', amount: 200.00 }, // Possible false positive (Date diff)
-        ]);
+        toast({ title: 'Bank Data Loaded', description: "In a real app, you would upload a CSV or connect a bank feed." });
         setIsLoading(false);
     }, 1000);
   };
 
-  // 2. TRIGGER AI RECONCILIATION
+  // 3. TRIGGER AI RECONCILIATION
   const handleAutoReconcile = async () => {
     if (bankData.length === 0) return;
+    if (!ledgerData || ledgerData.length === 0) {
+        toast({ variant: 'destructive', title: "No Ledger Data", description: "No internal financial records found to match against." });
+        return;
+    }
     setIsLoading(true);
     setSuggestions([]);
 
     try {
-        const result = await autoReconcileFlow(bankData, ledgerData);
+        const result = await autoReconcileFlow(bankData, ledgerData as InternalTx[]);
         
         if (result.success && result.data) {
             setSuggestions(result.data.matches as MatchSuggestion[]);
@@ -70,32 +71,16 @@ export default function ReconciliationPage() {
     }
   };
 
-  // 3. CONFIRM MATCH (Save to DB)
+  // 4. CONFIRM MATCH (Save to DB)
   const confirmMatch = async (match: MatchSuggestion) => {
     if (!firestore) return;
     
-    try {
-        const batch = writeBatch(firestore);
-        
-        // Mark Bank Tx as Reconciled
-        // Note: In a real app, these documents would exist in Firestore. 
-        // For this demo, we just update local state.
-        
-        // Mock DB Update:
-        // const bankRef = doc(firestore, 'bank_transactions', match.bankTransactionId);
-        // batch.update(bankRef, { status: 'Reconciled', matchedWith: match.internalTransactionId });
-        
-        // await batch.commit();
-
-        // Update UI
-        setSuggestions(prev => prev.filter(s => s.bankTransactionId !== match.bankTransactionId));
-        setBankData(prev => prev.filter(b => b.id !== match.bankTransactionId));
-        
-        toast({ title: "Reconciled", description: "Transaction matched successfully." });
-
-    } catch (e) {
-        toast({ variant: 'destructive', title: "Error", description: "Could not save match." });
-    }
+    // In a real app, this would update Firestore records.
+    // For now, we update the UI state to simulate the match.
+    setSuggestions(prev => prev.filter(s => s.bankTransactionId !== match.bankTransactionId));
+    setBankData(prev => prev.filter(b => b.id !== match.bankTransactionId));
+    
+    toast({ title: "Reconciled", description: "Transaction matched successfully." });
   };
 
   return (
@@ -106,13 +91,13 @@ export default function ReconciliationPage() {
                 <p className="text-muted-foreground">Match bank statements with internal records using AI.</p>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={loadMockData} disabled={isLoading || bankData.length > 0}>
+                <Button variant="outline" onClick={loadMockBankData} disabled={isLoading || bankData.length > 0}>
                     {isLoading ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : null}
-                    Load Data (Demo)
+                    Load Bank Statement (Demo)
                 </Button>
-                <Button onClick={handleAutoReconcile} disabled={isLoading || bankData.length === 0} className="bg-purple-600 hover:bg-purple-700">
+                <Button onClick={handleAutoReconcile} disabled={isLoading || bankData.length === 0 || isLoadingLedger} className="bg-purple-600 hover:bg-purple-700">
                     <Wand2 className="mr-2 h-4 w-4" /> 
-                    {isLoading ? "Analyzing..." : "Auto-Reconcile"}
+                    {isLoading || isLoadingLedger ? "Analyzing..." : "Auto-Reconcile"}
                 </Button>
             </div>
         </div>
@@ -122,7 +107,7 @@ export default function ReconciliationPage() {
             <Card>
                 <CardHeader><CardTitle>Unreconciled Bank Lines ({bankData.length})</CardTitle></CardHeader>
                 <CardContent className="space-y-2">
-                    {bankData.length === 0 ? <p className="text-sm text-muted-foreground">No pending transactions.</p> : 
+                    {bankData.length === 0 ? <p className="text-sm text-muted-foreground">Load a bank statement to begin.</p> : 
                      bankData.map(tx => (
                         <div key={tx.id} className="p-3 border rounded-lg flex justify-between items-center text-sm">
                             <div>
@@ -146,12 +131,12 @@ export default function ReconciliationPage() {
                 <CardContent className="space-y-4">
                     {suggestions.length === 0 ? (
                         <div className="text-center py-10 text-muted-foreground">
-                            {isLoading ? "AI is comparing records..." : "Click 'Auto-Reconcile' to generate matches."}
+                            {isLoading || isLoadingLedger ? "AI is comparing records..." : "Click 'Auto-Reconcile' to generate matches."}
                         </div>
                     ) : (
                         suggestions.map((match, i) => {
                             const bank = bankData.find(b => b.id === match.bankTransactionId);
-                            const ledger = ledgerData.find(l => l.id === match.internalTransactionId);
+                            const ledger = ledgerData?.find(l => l.id === match.internalTransactionId);
                             if (!bank || !ledger) return null;
 
                             return (
@@ -168,12 +153,12 @@ export default function ReconciliationPage() {
                                     <div className="flex items-center justify-between text-sm">
                                         <div className="flex-1 p-2 bg-slate-50 rounded">
                                             <p className="font-bold text-slate-700">{bank.description}</p>
-                                            <p className="text-xs text-slate-500">{bank.date} • ${bank.amount}</p>
+                                            <p className="text-xs text-slate-500">{bank.date} • ${bank.amount.toFixed(2)}</p>
                                         </div>
                                         <ArrowRight className="mx-2 text-slate-300" />
                                         <div className="flex-1 p-2 bg-indigo-50 rounded border border-indigo-100">
                                             <p className="font-bold text-indigo-900">{ledger.description}</p>
-                                            <p className="text-xs text-indigo-600">{ledger.date} • ${ledger.amount}</p>
+                                            <p className="text-xs text-indigo-600">{ledger.createdAt ? new Date(ledger.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'} • ${ledger.billedAmount.toFixed(2)}</p>
                                         </div>
                                     </div>
                                     
@@ -190,5 +175,3 @@ export default function ReconciliationPage() {
     </div>
   );
 }
-
-    
