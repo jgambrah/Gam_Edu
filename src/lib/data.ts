@@ -52,6 +52,7 @@ import {
   Calculator,
   Building2,
   ListOrdered,
+  RefreshCcw,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -347,6 +348,12 @@ export const navItems: NavItem[] = [
         icon: Wallet,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
+       {
+        path: '/dashboard/finance/reconciliation',
+        title: 'Reconciliation',
+        icon: RefreshCcw,
+        roles: ['Director', 'Administrator', 'Accountant'],
+      },
       {
         path: '/dashboard/reports/financials',
         title: 'Financial Reports',
@@ -391,7 +398,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/reports',
     title: 'Reporting & Analytics',
     icon: BarChart,
-    roles: ['Director', 'Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
      subItems: [
       {
         path: '/dashboard/reports/academics',
@@ -587,6 +594,7 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
 
 
     
+
 
 
 
