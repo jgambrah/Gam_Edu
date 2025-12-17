@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +14,7 @@ import { PayrollRecord } from '@/lib/types';
 import { PayslipDialog } from '../payroll/payslip-dialog';
 
 export default function MyPayslipsPage() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
 
   const payslipsQuery = useMemoFirebase(
