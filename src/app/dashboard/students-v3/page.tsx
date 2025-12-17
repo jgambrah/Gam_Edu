@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
@@ -190,7 +190,7 @@ export default function StudentsV3Page() {
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <GraduationCap className="h-6 w-6 text-green-600"/> Student Management
+                    <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
                     Found: {students?.length || 0} | Showing: {filteredStudents.length}
@@ -200,6 +200,7 @@ export default function StudentsV3Page() {
                 <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
+                
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
@@ -237,6 +238,7 @@ export default function StudentsV3Page() {
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p className="font-medium">No students visible.</p>
+                    
                     <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs text-left text-yellow-800 w-full max-w-xs">
                         <p><strong>Debug Stats:</strong></p>
                         <p>Total Fetched: {students?.length || 0}</p>
@@ -306,6 +308,7 @@ export default function StudentsV3Page() {
                             )}
                         </SelectContent>
                     </Select>
+                    {(classes || []).length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please use a Debug/Initialize button if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -322,11 +325,11 @@ export default function StudentsV3Page() {
                     <Checkbox id="usesBusService" name="usesBusService" />
                     <Label htmlFor="usesBusService">This student uses the bus service</Label>
                 </div>
-                <div className="pt-2">
-                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
+                <DialogFooter>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
-                </div>
+                </DialogFooter>
             </form>
         </DialogContent>
       </Dialog>
@@ -367,9 +370,11 @@ export default function StudentsV3Page() {
                         <Checkbox id="editUsesBusService" name="usesBusService" defaultChecked={editingStudent.usesBusService} />
                         <Label htmlFor="editUsesBusService">This student uses the bus service</Label>
                     </div>
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-                    </Button>
+                    <DialogFooter>
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        </Button>
+                    </DialogFooter>
                 </form>
             )}
         </DialogContent>
@@ -377,5 +382,3 @@ export default function StudentsV3Page() {
     </div>
   );
 }
-
-    
