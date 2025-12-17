@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { type Student, type AttendanceRecord, type Class } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -44,7 +44,7 @@ const attendanceFormSchema = z.object({
 type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
 
 export function DailyAttendanceSheet({ classId: propClassId }: { classId?: string }) {
-    const { user } = useAuth();
+    const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
