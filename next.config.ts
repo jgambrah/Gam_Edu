@@ -33,6 +33,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {},
+    allowedDevOrigins: ["*.cloudworkstations.dev"],
   },
 };
 
