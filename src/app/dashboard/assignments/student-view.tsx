@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth, useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
@@ -99,7 +100,7 @@ export default function StudentAssignmentsView() {
         ...(assignments || []).map(item => ({ ...item, type: 'assignment' as const })),
         ...(quizzes || []).map(item => ({...item, type: 'quiz' as const }))
     ];
-    return allItems.sort((a,b) => b.createdAt.toDate() - a.createdAt.toDate());
+    return allItems.sort((a,b) => (b.createdAt?.toDate() ?? 0) - (a.createdAt?.toDate() ?? 0));
   }, [assignments, quizzes]);
 
   const submissionsMap = useMemo(() => {

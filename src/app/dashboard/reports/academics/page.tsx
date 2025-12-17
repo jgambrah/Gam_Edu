@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -45,13 +44,13 @@ export default function AcademicReportsPage() {
 
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-    const subjectsQuery = useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]);
+    const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
     const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-    const studentsQuery = useMemoFirebase(() => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId]);
+    const studentsQuery = useMemoFirebase(() => (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId]);
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
-    const assessmentsQuery = useMemoFirebase(() => (selectedClassId && selectedSubjectId) ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('subjectId', '==', selectedSubjectId)) : null, [firestore, selectedClassId, selectedSubjectId]);
+    const assessmentsQuery = useMemoFirebase(() => (firestore && selectedClassId && selectedSubjectId) ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('subjectId', '==', selectedSubjectId)) : null, [firestore, selectedClassId, selectedSubjectId]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Report Data Calculation

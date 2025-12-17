@@ -38,7 +38,7 @@ export default function CommunicationPage() {
   const { data } = useCollection<Announcement>(announcementsQuery);
 
   useEffect(() => {
-    if (data) {
+    if (data !== undefined) {
         setAnnouncements(data);
         setIsLoading(false);
     }

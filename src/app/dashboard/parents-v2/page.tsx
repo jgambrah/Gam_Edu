@@ -3,16 +3,17 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
-// UI
+// UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { HeartHandshake, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -45,10 +46,10 @@ export default function ParentsPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   
-  const parentsQuery = useMemoFirebase(() => collection(firestore, 'parents'), [firestore]);
+  const parentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'parents') : null, [firestore]);
   const {data: parents, isLoading: isLoadingParents, forceRefetch: forceRefetchParents } = useCollection<ParentMember>(parentsQuery);
 
-  const studentsQuery = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
+  const studentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
   const {data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -63,7 +64,7 @@ export default function ParentsPage() {
   
   const handleAddParent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isSubmitting) return;
+      if (isSubmitting || !firestore) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
@@ -99,7 +100,7 @@ export default function ParentsPage() {
 
   const handleUpdateParent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!editingParent || isSubmitting) return;
+    if (!editingParent || isSubmitting || !firestore) return;
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
@@ -121,6 +122,7 @@ export default function ParentsPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!firestore) return;
     if (!confirm("Are you sure you want to delete this parent's profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'parents', id));
@@ -146,7 +148,9 @@ export default function ParentsPage() {
                 <CardTitle className="text-2xl flex items-center gap-2">
                     <HeartHandshake className="h-6 w-6 text-pink-500"/> Parent Management
                 </CardTitle>
-                <CardDescription>Manage parents and link them to their children.</CardDescription>
+                <CardDescription>
+                    Found: {parents?.length || 0} | Showing: {filteredParents.length}
+                </CardDescription>
             </div>
             <div className="flex gap-2">
                 <Button variant="outline" onClick={forceRefetchParents} disabled={isLoading}>

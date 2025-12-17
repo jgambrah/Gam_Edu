@@ -31,6 +31,7 @@ export default function PayrollReportsPage() {
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
 
     const handleFetchRecords = async () => {
+        if (!firestore) return;
         setIsFetching(true);
         setFetchedRecords([]); // Clear previous results
         try {

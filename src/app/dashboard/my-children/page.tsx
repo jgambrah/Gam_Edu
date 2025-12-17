@@ -30,7 +30,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
     });
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !dateRange?.from) return null;
+        if (!firestore || !dateRange?.from || !studentId) return null;
         const start = startOfDay(dateRange.from);
         const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
@@ -169,16 +169,16 @@ export default function MyChildrenPage() {
     const { role } = useRole();
     const firestore = useFirestore();
 
-    const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, role]);
+    const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, role]);
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
 
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore) return null;
+        if (!firestore || !user) return null;
+        if (role === 'Student') {
+            return query(collection(firestore, 'students'), where('uid', '==', user.uid));
+        }
         if (role === 'Parent' && parentData?.studentIds?.length) {
             return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
-        }
-        if (role === 'Student' && user) {
-            return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }
         return null;
     }, [firestore, role, user, parentData]);
@@ -187,12 +187,12 @@ export default function MyChildrenPage() {
     
     const isLoading = isUserLoading || isParentLoading || areStudentsLoading;
 
-    if (role !== 'Parent') {
+    if (role !== 'Parent' && role !== 'Student') {
         return (
             <Card>
                 <CardHeader>
                     <CardTitle>Access Denied</CardTitle>
-                    <CardDescription>This page is for parents only.</CardDescription>
+                    <CardDescription>This page is for parents and students only.</CardDescription>
                 </CardHeader>
             </Card>
         );
@@ -234,7 +234,7 @@ function StudentParentReportCardView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
     
     const reportsQuery = useMemoFirebase(
-      () => firestore ? query(collection(firestore, 'report-cards'), where('studentId', '==', studentId), where('status', '==', 'Published')) : null,
+      () => firestore && studentId ? query(collection(firestore, 'report-cards'), where('studentId', '==', studentId), where('status', '==', 'Published')) : null,
       [firestore, studentId]
     );
     const { data: reports, isLoading } = useCollection<ReportCard>(reportsQuery);

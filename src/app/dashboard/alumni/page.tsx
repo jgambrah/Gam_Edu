@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -35,6 +36,7 @@ function GraduateStudentForm({ setOpen, students }: { setOpen: (open: boolean) =
   });
 
   async function onSubmit(values: z.infer<typeof graduateStudentSchema>) {
+    if (!firestore) return;
     setIsSubmitting(true);
     try {
       const studentRef = doc(firestore, 'students', values.studentId);
@@ -118,6 +120,7 @@ function EditAlumniDetailsForm({ setOpen, alumnus }: { setOpen: (open: boolean) 
     });
   
     async function onSubmit(values: AlumniDetails) {
+      if (!firestore) return;
       setIsSubmitting(true);
       try {
         const studentRef = doc(firestore, 'students', alumnus.uid);
@@ -171,7 +174,10 @@ export default function AlumniPage() {
   const [isGraduateFormOpen, setGraduateFormOpen] = useState(false);
   const [editingAlumnus, setEditingAlumnus] = useState<Student | null>(null);
 
-  const studentsQuery = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
+  const studentsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'students');
+  }, [firestore]);
   const { data: students, isLoading } = useCollection<Student>(studentsQuery);
   
   const activeStudents = useMemo(() => students?.filter(s => s.enrollmentStatus !== 'Graduated') || [], [students]);

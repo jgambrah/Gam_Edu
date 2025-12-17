@@ -123,7 +123,7 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
     const [reply, setReply] = useState('');
     const [isReplying, setIsReplying] = useState(false);
 
-    const repliesQuery = useMemoFirebase(() => query(collection(firestore, `forumThreads/${thread.id}/replies`), orderBy('createdAt', 'asc')), [firestore, thread.id]);
+    const repliesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, `forumThreads/${thread.id}/replies`), orderBy('createdAt', 'asc')) : null, [firestore, thread.id]);
     const { data: replies, isLoading } = useCollection<ForumReply>(repliesQuery);
 
     const handlePostReply = async () => {
@@ -274,20 +274,17 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
 // --- Main Page (Fixed Logic) ---
 export default function ForumPage() {
     const firestore = useFirestore();
-    // RESTORED: Use useUser() like the working version
     const { user, isUserLoading } = useUser(); 
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
   
-    // 1. Fetch Threads
     const threadsQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
+        if (!firestore) return null;
         return query(collection(firestore, 'forumThreads'));
-    }, [firestore, user]);
+    }, [firestore]);
 
     const { data: rawThreads, isLoading: isDataLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
 
-    // 2. Sort Client-Side (Newest first)
     const threads = useMemo(() => {
         if (!rawThreads) return [];
         return [...rawThreads].sort((a, b) => {
@@ -297,7 +294,6 @@ export default function ForumPage() {
         });
     }, [rawThreads]);
 
-    // 3. Safe Date Formatter
     const safeFormatDate = (timestamp: any) => {
         if (!timestamp) return 'N/A';
         try {
@@ -313,7 +309,6 @@ export default function ForumPage() {
         }
     };
 
-    // RESTORED: Wait for User Auth to finish before showing "Empty" state
     const isLoading = isUserLoading || isDataLoading;
 
     if (selectedThread) {
