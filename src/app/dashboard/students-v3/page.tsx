@@ -64,10 +64,10 @@ export default function StudentsV3Page() {
   const [selectedGender, setSelectedGender] = useState('');
   
   // --- DATA FETCHING (REFACTORED) ---
-  const studentsQuery = useMemoFirebase(() => collection(firestore, 'students'), [firestore]);
+  const studentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
   const { data: students, isLoading: isLoadingStudents, forceRefetch: refetchStudents } = useCollection<Student>(studentsQuery);
 
-  const classesQuery = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
+  const classesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
   const { data: classes, isLoading: isLoadingClasses, forceRefetch: refetchClasses } = useCollection<Class>(classesQuery);
 
   const isLoading = isLoadingStudents || isLoadingClasses;
@@ -113,6 +113,10 @@ export default function StudentsV3Page() {
           const result = await createNewUser(email, "password123", 'Student', { firstName, lastName });
           if ('error' in result) throw new Error(result.error);
 
+          if (!firestore) {
+            throw new Error("Database not available");
+          }
+
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
               firstName: firstName,
@@ -140,7 +144,7 @@ export default function StudentsV3Page() {
 
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!editingStudent || isSubmitting) return;
+    if (!editingStudent || isSubmitting || !firestore) return;
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const values = Object.fromEntries(formData.entries());
@@ -168,6 +172,7 @@ export default function StudentsV3Page() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!firestore) return;
     if (!confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
@@ -200,7 +205,6 @@ export default function StudentsV3Page() {
                 <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
-                
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
@@ -326,7 +330,7 @@ export default function StudentsV3Page() {
                     <Label htmlFor="usesBusService">This student uses the bus service</Label>
                 </div>
                 <DialogFooter>
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
                 </DialogFooter>
