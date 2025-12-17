@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, where } from 'firebase/firestore';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
@@ -358,7 +358,7 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
 export default function FinancialReportsPage() {
     const firestore = useFirestore();
     const { role } = useRole();
-    const { user } = useAuth();
+    const { user } = useUser();
     
     // Date Filtering
     const [fromDate, setFromDate] = useState<Date>(startOfMonth(new Date()));
@@ -476,3 +476,5 @@ export default function FinancialReportsPage() {
         </div>
     );
 }
+
+    
