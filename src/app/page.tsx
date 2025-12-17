@@ -9,12 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Loader2, 
-  BrainCircuit, 
-  LineChart, 
-  Sparkles, 
-  GraduationCap 
+import {
+  Loader2,
+  BrainCircuit,
+  LineChart,
+  Sparkles,
+  GraduationCap
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -52,12 +52,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex">
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
       
       {/* --- LEFT SIDE: BRANDING (GAM IT Solutions) --- */}
-      <div className="hidden lg:flex w-1/2 bg-purple-950 text-white flex-col justify-between p-12 relative overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-between p-12 bg-purple-950 text-white relative overflow-hidden">
         
-        {/* Background Accents (Updated to Purple tones) */}
+        {/* Background Accents */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600 rounded-full blur-3xl opacity-20 -mr-16 -mt-16"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-fuchsia-700 rounded-full blur-3xl opacity-15 -ml-20 -mb-20"></div>
 
@@ -108,7 +108,7 @@ export default function LoginPage() {
       </div>
 
       {/* --- RIGHT SIDE: LOGIN FORM --- */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white p-8">
+      <div className="flex items-center justify-center p-6 sm:p-12 bg-background">
         <div className="w-full max-w-md space-y-8">
           
           <div className="space-y-2 text-center lg:text-left">
