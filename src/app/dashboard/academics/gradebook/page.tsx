@@ -1,24 +1,30 @@
+
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { useRole } from "@/context/role-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import GradebookManager from "./gradebook2-manager";
+import { Loader2 } from "lucide-react";
 
-export default function DeprecatedGradebookPage() {
+export default function GradebookPage() {
     const { role, loading } = useRole();
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading) {
-            if (role === 'Parent') {
-                router.replace('/dashboard/my-children');
-            }
+        if (!loading && role === 'Parent') {
+            router.replace('/dashboard/my-children');
         }
     }, [role, loading, router]);
-
+    
+    if (loading) {
+        return (
+             <div className="flex h-64 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        )
+    }
 
     if (role === 'Parent') {
         return (
@@ -26,21 +32,40 @@ export default function DeprecatedGradebookPage() {
                 <CardHeader>
                     <CardTitle>Redirecting...</CardTitle>
                     <CardDescription>
-                        Moving to the new parent dashboard.
+                        Parents should view grades under "My Children". Redirecting you now.
+                    </CardDescription>
+                </CardHeader>
+            </Card>
+        );
+    }
+    
+    if (role === 'Student') {
+         return (
+             <Card>
+                <CardHeader>
+                    <CardTitle>Gradebook Access</CardTitle>
+                    <CardDescription>
+                        Please view your grades and report cards under the "Report Cards" section.
                     </CardDescription>
                 </CardHeader>
             </Card>
         );
     }
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Page Deprecated</CardTitle>
-        <CardDescription>
-            This page is no longer in use for your role. Please use the appropriate module from the sidebar.
-        </CardDescription>
-      </CardHeader>
-    </Card>
-  );
+    // For Teacher, Administrator, Director
+    if (['Teacher', 'Administrator', 'Director'].includes(role || '')) {
+        return <GradebookManager />;
+    }
+
+    // Fallback for any other roles or states
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Access Denied</CardTitle>
+                <CardDescription>
+                    The gradebook is not available for your role.
+                </CardDescription>
+            </CardHeader>
+        </Card>
+    );
 }
