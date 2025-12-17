@@ -1,9 +1,8 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { 
   collection, 
   getDocs, 
@@ -24,13 +23,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 
-// --- TYPES ---
+// --- TYPE DEFINITIONS ---
 type Student = {
   id: string;
   uid: string;
@@ -52,7 +51,7 @@ type Class = {
 
 export default function StudentsV3Page() {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
   // --- STATE ---
@@ -341,7 +340,7 @@ export default function StudentsV3Page() {
                         <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStudent.firstName} required /></div>
                         <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStudent.lastName} required /></div>
                     </div>
-                    <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
+                     <div className="space-y-2"><Label>Email</Label><Input value={editingStudent.email} disabled className="bg-slate-100" /></div>
                     <div className="space-y-2">
                         <Label>Class</Label>
                         <Select value={selectedClassId} onValueChange={setSelectedClassId}>
@@ -378,3 +377,5 @@ export default function StudentsV3Page() {
     </div>
   );
 }
+
+    
