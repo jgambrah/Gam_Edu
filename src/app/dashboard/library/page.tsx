@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, writeBatch, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -102,16 +102,16 @@ function LibraryItemForm({ setOpen }: { setOpen: (open: boolean) => void }) {
 // --- Main Library Page ---
 export default function LibraryPage() {
   const { role } = useRole();
-  const { user } = useAuth();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isFormOpen, setFormOpen] = useState(false);
   const [filter, setFilter] = useState('');
 
-  const canManage = ['Librarian', 'Administrator', 'Director'].includes(role);
-  const canBorrow = ['Student', 'Teacher'].includes(role);
+  const canManage = ['Librarian', 'Administrator', 'Director'].includes(role || '');
+  const canBorrow = ['Student', 'Teacher'].includes(role || '');
 
-  const libraryQuery = useMemoFirebase(() => collection(firestore, 'library'), [firestore]);
+  const libraryQuery = useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore]);
   const { data: libraryItems, isLoading } = useCollection<LibraryItem>(libraryQuery);
 
   const filteredItems = useMemo(() => {
@@ -241,5 +241,3 @@ export default function LibraryPage() {
     </div>
   );
 }
-
-    
