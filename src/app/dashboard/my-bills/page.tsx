@@ -87,7 +87,7 @@ export default function MyBillsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
 
-    const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, role]);
+    const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, role]);
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
 
     const studentsQuery = useMemoFirebase(() => {
@@ -99,7 +99,7 @@ export default function MyBillsPage() {
             return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
         }
         return null;
-    }, [firestore, user, role, parentData]);
+    }, [firestore, role, user, parentData]);
 
     const { data: students, isLoading: areStudentsLoading } = useCollection<Student>(studentsQuery);
     

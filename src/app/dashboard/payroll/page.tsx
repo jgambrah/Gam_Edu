@@ -314,7 +314,7 @@ export default function PayrollPage() {
       } finally {
           setIsFetching(false);
       }
-    }
+    };
   
     const handleRunPayroll = async () => {
       if (!hasRequiredData || !staffList) return;
@@ -442,7 +442,14 @@ export default function PayrollPage() {
                                       <TableCell>GH₵{rec.totalDeductions.toFixed(2)}</TableCell>
                                       <TableCell className="font-bold">GH₵{rec.netSalary.toFixed(2)}</TableCell>
                                       <TableCell className="text-right">
-                                          <Button variant="outline" onClick={() => setSelectedPayslip(rec)}>View Payslip</Button>
+                                          <Dialog>
+                                              <DialogTrigger asChild>
+                                                  <Button variant="outline" onClick={() => setSelectedPayslip(rec)}>View Payslip</Button>
+                                              </DialogTrigger>
+                                              {selectedPayslip && selectedPayslip.id === rec.id && (
+                                                  <PayslipDialog payslip={selectedPayslip} />
+                                              )}
+                                          </Dialog>
                                       </TableCell>
                                   </TableRow>
                               ))}
@@ -462,5 +469,3 @@ export default function PayrollPage() {
       </div>
     );
   }
-
-    

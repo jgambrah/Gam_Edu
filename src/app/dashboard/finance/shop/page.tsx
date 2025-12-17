@@ -68,12 +68,11 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
             const itemRef = doc(firestore, 'school_shop_items', item.id);
             batch.update(itemRef, { stock: increment(values.quantity) });
 
-            const transactionRef = doc(collection(firestore, 'school_shop_transactions'));
+            const transactionRef = doc(collection(firestore, `school_shop_items/${item.id}/transactions`));
             batch.set(transactionRef, {
-                type: 'RESTOCK',
                 itemId: item.id,
-                itemName: item.name,
-                quantity: values.quantity,
+                transactionType: 'RESTOCK',
+                quantityChange: values.quantity,
                 date: serverTimestamp(),
                 notes: `Added ${values.quantity} unit(s).`
             });
@@ -339,7 +338,7 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
                                 <div>
                                     <h4 className="font-semibold text-sm line-clamp-2 text-slate-700">{item.name}</h4>
                                     <div className="flex justify-between items-end mt-1">
-                                        <span className="font-bold text-emerald-700 text-lg">₵{item.price.toFixed(2)}</span>
+                                        <span className="font-bold text-emerald-700 text-lg">GH₵{item.price.toFixed(2)}</span>
                                         <span className={`text-xs px-2 py-0.5 rounded font-medium ${item.stock < item.minStock ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'}`}>
                                             {item.stock} left
                                         </span>
@@ -367,10 +366,10 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
                             <div key={item.id} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200">
                                 <div>
                                     <p className="font-medium text-sm text-slate-800">{item.name}</p>
-                                    <p className="text-xs text-slate-500">{item.quantity} x ₵{item.price}</p>
+                                    <p className="text-xs text-slate-500">{item.quantity} x GH₵{item.price}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <p className="font-bold text-slate-700">₵{(item.quantity * item.price).toFixed(2)}</p>
+                                    <p className="font-bold text-slate-700">GH₵{(item.quantity * item.price).toFixed(2)}</p>
                                     <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)} className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4"/></Button>
                                 </div>
                             </div>
@@ -468,7 +467,7 @@ export default function SchoolShopPage() {
                                                 <TableCell className="font-medium">{item.name}</TableCell>
                                                 <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
                                                 <TableCell className="text-xs text-muted-foreground">{item.description || '-'}</TableCell>
-                                                <TableCell className="text-right">₵{item.price.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right">GH₵{(item.unitPrice || 0).toFixed(2)}</TableCell>
                                                 <TableCell className="text-right">
                                                     <span className={`font-bold ${item.stock <= item.minStock ? "text-red-600" : "text-green-600"}`}>
                                                         {item.stock}

@@ -59,7 +59,6 @@ function ImportDialog({ type, onUploadComplete }: { type: 'Bank' | 'Cashbook', o
                 const collectionName = type === 'Bank' ? 'bank_transactions' : 'financialRecords';
                 let count = 0;
 
-                // Skip Header Row (index 0) and loop
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
@@ -155,8 +154,8 @@ export default function ReconciliationPage() {
             return {
                 id: doc.id,
                 description: data.description || data.title || 'Unknown',
-                amount: Number(data.amount) || 0,
-                date: data.date?.toDate ? data.date.toDate().toISOString().split('T')[0] : (data.date || 'N/A'),
+                amount: Number(data.billedAmount) || 0,
+                date: data.dueDate?.toDate ? data.dueDate.toDate().toISOString().split('T')[0] : (data.date || 'N/A'),
             };
         }) as InternalTx[];
 
@@ -236,7 +235,7 @@ export default function ReconciliationPage() {
             </div>
             <div className="flex gap-2">
                 <Dialog>
-                    <DialogTrigger asChild><Button variant="outline"><Upload className="mr-2 h-4 w-4"/> Import</Button></DialogTrigger>
+                    <DialogTrigger asChild><Button variant="outline"><Upload className="mr-2 h-4 w-4"/> Import Data</Button></DialogTrigger>
                     <DialogContent>
                         <DialogHeader><DialogTitle>Import Records</DialogTitle><DialogDescription>Upload CSV files.</DialogDescription></DialogHeader>
                         <Tabs defaultValue="bank" className="w-full">
@@ -299,7 +298,7 @@ export default function ReconciliationPage() {
                                 <p className="text-xs text-muted-foreground">{tx.date}</p>
                             </div>
                             <span className={`font-mono font-bold ${tx.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                                ${tx.amount.toFixed(2)}
+                                GH₵{tx.amount.toFixed(2)}
                             </span>
                         </div>
                     ))}
@@ -338,8 +337,8 @@ export default function ReconciliationPage() {
                                                 </Button>
                                             </div>
                                             <div className="flex justify-between text-xs gap-2">
-                                                <div className="flex-1 bg-slate-50 p-2 rounded"><p className="font-bold">{bank.description}</p><p>${bank.amount}</p></div>
-                                                <div className="flex-1 bg-indigo-50 p-2 rounded"><p className="font-bold">{ledger.description}</p><p>${ledger.amount}</p></div>
+                                                <div className="flex-1 bg-slate-50 p-2 rounded"><p className="font-bold">{bank.description}</p><p>GH₵{bank.amount}</p></div>
+                                                <div className="flex-1 bg-indigo-50 p-2 rounded"><p className="font-bold">{ledger.description}</p><p>GH₵{ledger.amount}</p></div>
                                             </div>
                                             <p className="text-xs text-slate-400 italic">"{match.reasoning}"</p>
                                         </div>
@@ -374,7 +373,7 @@ export default function ReconciliationPage() {
                                         <p className="font-semibold text-slate-800">{tx.description}</p>
                                         <p className="text-xs text-muted-foreground">{tx.date}</p>
                                     </div>
-                                    <span className="font-mono font-bold text-slate-700">${tx.amount.toFixed(2)}</span>
+                                    <span className="font-mono font-bold text-slate-700">GH₵{tx.amount.toFixed(2)}</span>
                                 </div>
                             ))}
                         </CardContent>
