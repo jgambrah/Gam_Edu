@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useAuth } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -150,14 +150,13 @@ function ResourceCreationForm({ setOpen }: { setOpen: (open: boolean) => void })
 export default function ResourcesPage() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user } = useAuth(); // Import useAuth to get user
+  const { user } = useUser();
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const canManage = role === 'Administrator' || role === 'Teacher' || role === 'Director';
 
-  // Make the query conditional on the user object
   const resourcesQuery = useMemoFirebase(() => {
-    if (!user) return null; // If no user, return null to prevent the query
+    if (!user || !firestore) return null;
     return collection(firestore, 'resources');
   }, [firestore, user]); 
 
