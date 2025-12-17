@@ -166,13 +166,13 @@ export default function SubjectsPage() {
   const forceRefetch = useCallback(() => setRefetchKey(prev => prev + 1), []);
 
   const subjectsQuery = useMemoFirebase(() => {
-    if (!firestore) return null; // FIX: Safety Check
+    if (!firestore) return null;
     return collection(firestore, 'subjects');
   }, [firestore, refetchKey]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
   const teachersQuery = useMemoFirebase(() => {
-    if (!firestore || !canManage) return null; // FIX: Safety Check
+    if (!firestore || !canManage) return null;
     return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
   }, [firestore, canManage, refetchKey]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);

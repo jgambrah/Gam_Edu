@@ -26,8 +26,8 @@ export default function EnrollmentReportsPage() {
     const canAccess = ['Administrator', 'Director'].includes(role);
 
     // Data Fetching
-    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => collection(firestore, 'students'), [firestore]));
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
     // Report Data Calculation
     const reportData = useMemo(() => {

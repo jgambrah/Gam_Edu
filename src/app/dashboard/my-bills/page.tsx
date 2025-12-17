@@ -16,13 +16,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 function StudentBillView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
-    const recordsQuery = useMemoFirebase(() => query(collection(firestore, 'financialRecords'), where('studentId', '==', studentId)), [firestore, studentId]);
+    const recordsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), where('studentId', '==', studentId)) : null, [firestore, studentId]);
     const { data: records, isLoading } = useCollection<FinancialRecord>(recordsQuery);
 
     const summary = useMemo(() => {
         if (!records) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
         const totalBilled = records.reduce((acc, r) => acc + r.billedAmount, 0);
-        const totalPaid = records.reduce((acc, r) => acc + r.amountPaid, 0);
+        const totalPaid = records.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
         const totalWaivers = records.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
         const balance = totalBilled - totalPaid - totalWaivers;
         return { totalBilled, totalPaid, totalWaivers, balance };
@@ -91,7 +91,7 @@ export default function MyBillsPage() {
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
 
     const studentsQuery = useMemoFirebase(() => {
-        if (!user) return null;
+        if (!firestore || !user) return null;
         if (role === 'Student') {
             return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -14,14 +15,12 @@ export function GenerateReportCard(props: any) {
     const printRef = useRef<HTMLDivElement>(null);
     const firestore = useFirestore();
 
-    // --- FIX: Fetch School Profile Data ---
     const schoolProfileRef = useMemoFirebase(
-        () => firestore ? doc(firestore, 'schoolSettings', 'profile') : null,
+        () => (firestore ? doc(firestore, 'schoolSettings', 'profile') : null),
         [firestore]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
     
-    // Disable button while profile is loading to prevent premature PDF generation
     const isReady = !isLoadingProfile;
 
     const handleDownloadPdf = async () => {
@@ -74,7 +73,6 @@ export function GenerateReportCard(props: any) {
 
             <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
                 <div ref={printRef}>
-                    {/* FIX: Pass schoolProfile down to the HTML component */}
                     <HTMLReportCard {...props} schoolProfile={schoolProfile} />
                 </div>
             </div>

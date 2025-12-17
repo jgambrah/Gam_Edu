@@ -30,7 +30,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
     });
 
     const attendanceQuery = useMemoFirebase(() => {
-        if (!dateRange?.from) return null;
+        if (!firestore || !dateRange?.from) return null;
         const start = startOfDay(dateRange.from);
         const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
@@ -92,7 +92,7 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
 function BehavioralHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
     const recordsQuery = useMemoFirebase(() => {
-        if (!studentId) return null; // Safety check
+        if (!firestore || !studentId) return null; // Safety check
         return query(
             collection(firestore, 'behavioral_records'), 
             where('studentId', '==', studentId), 
@@ -173,8 +173,12 @@ export default function MyChildrenPage() {
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
 
     const studentsQuery = useMemoFirebase(() => {
+        if (!firestore) return null;
         if (role === 'Parent' && parentData?.studentIds?.length) {
             return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
+        }
+        if (role === 'Student' && user) {
+            return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }
         return null;
     }, [firestore, role, user, parentData]);
@@ -230,7 +234,7 @@ function StudentParentReportCardView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
     
     const reportsQuery = useMemoFirebase(
-      () => query(collection(firestore, 'report-cards'), where('studentId', '==', studentId), where('status', '==', 'Published')),
+      () => firestore ? query(collection(firestore, 'report-cards'), where('studentId', '==', studentId), where('status', '==', 'Published')) : null,
       [firestore, studentId]
     );
     const { data: reports, isLoading } = useCollection<ReportCard>(reportsQuery);

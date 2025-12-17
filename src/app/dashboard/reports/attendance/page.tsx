@@ -68,12 +68,9 @@ export default function AttendanceReportsPage() {
     }, [firestore, user, dateRange]);
     const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
     
-    // 3. Fetch Students (Crucial for Name Lookup)
-    // FIX: Simplified query to just get ALL students if Admin, or filtered by Teacher classes if Teacher
-    // This ensures we have the names available to map IDs to Names.
+    // 3. Fetch Students
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !user) return null;
-        // Optimization: Could filter by classId if selected, but fetching all is safer for "Unknown" fixes
         return collection(firestore, 'students');
     }, [firestore, user]);
     
@@ -85,17 +82,14 @@ export default function AttendanceReportsPage() {
     const filteredData = useMemo(() => {
         if (!attendanceRecords || !students) return [];
 
-        // Create a Map for O(1) lookup speed instead of .find() inside .map()
         const studentMap = new Map(students.map(s => [s.uid, s]));
         const classMap = new Map(classes?.map(c => [c.id, c.name]));
 
         let data = attendanceRecords.map(record => {
             const student = studentMap.get(record.studentId);
-            
-            // Fallback Logic: Check record.studentName (if saved directly) OR lookup from student list
             const displayName = student 
                 ? `${student.firstName} ${student.lastName}` 
-                : (record.studentName || 'Unknown Student'); // Fallback to name stored on record if available
+                : (record.studentName || 'Unknown Student');
 
             return {
                 ...record,
@@ -104,7 +98,6 @@ export default function AttendanceReportsPage() {
             }
         });
 
-        // Filter Logic
         if (selectedClassId !== 'all') {
             data = data.filter(record => record.classId === selectedClassId);
         }
@@ -112,13 +105,11 @@ export default function AttendanceReportsPage() {
             data = data.filter(record => record.status === selectedStatus);
         }
         
-        // Sort by Date Descending
         return data.sort((a,b) => b.date.seconds - a.date.seconds);
 
     }, [attendanceRecords, selectedClassId, selectedStatus, students, classes]);
 
     const summaryData = useMemo(() => {
-        // Use filteredData for charts so charts match the table
         const dataForSummary = filteredData; 
 
         const totalRecords = dataForSummary.length;
@@ -148,7 +139,7 @@ export default function AttendanceReportsPage() {
             pieData,
         };
 
-    }, [filteredData]); // Depend on filteredData instead of raw records
+    }, [filteredData]);
     
 
     if (!canAccess) {
@@ -172,7 +163,7 @@ export default function AttendanceReportsPage() {
                 <div className="flex gap-2">
                     <Button asChild variant="outline"><Link href="/dashboard/reports/academics">Academics</Link></Button>
                     <Button asChild variant="outline"><Link href="/dashboard/reports/enrollment">Enrollment</Link></Button>
-                    <Button asChild variant="outline"><Link href="/dashboard/reports/financials">Financials</Link></Button>
+                    <Button asChild variant="outline"><Link href="#">Financials</Link></Button>
                     <Button onClick={() => window.print()}><Printer className="mr-2"/>Print</Button>
                 </div>
             </div>

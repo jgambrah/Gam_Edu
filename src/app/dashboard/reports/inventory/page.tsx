@@ -36,7 +36,7 @@ export default function InventoryReportsPage() {
 
     const canAccess = ['Administrator', 'Director'].includes(role);
 
-    const { data: inventory, isLoading } = useCollection<InventoryItem>(useMemoFirebase(() => collection(firestore, 'inventory'), [firestore]));
+    const { data: inventory, isLoading } = useCollection<InventoryItem>(useMemoFirebase(() => firestore ? collection(firestore, 'inventory') : null, [firestore]));
 
     const reportData = useMemo(() => {
         if (!inventory) {

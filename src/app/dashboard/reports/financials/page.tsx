@@ -48,8 +48,6 @@ function GeneralLedger({
     const ledgerData = useMemo(() => {
         if (!journals || !accounts) return [];
         
-        // If 'all', show flat list of all lines (Huge list)
-        // Better to force selection or show grouped
         if (selectedAccountId === 'all') return [];
 
         const account = accounts.find(a => a.id === selectedAccountId);
@@ -58,15 +56,11 @@ function GeneralLedger({
         const lines: any[] = [];
         let runningBalance = 0;
 
-        // Sort by date ascending for running balance
         const sortedJournals = [...journals].sort((a,b) => a.date.seconds - b.date.seconds);
 
         sortedJournals.forEach(journal => {
             const line = journal.lines.find(l => l.accountId === selectedAccountId);
             if (line) {
-                // Calculate impact based on account type
-                // Asset/Expense: Dr increases (+), Cr decreases (-)
-                // Liability/Equity/Revenue: Cr increases (+), Dr decreases (-)
                 let change = 0;
                 if (['Asset', 'Expense'].includes(account.type)) {
                     change = line.debit - line.credit;
@@ -219,9 +213,7 @@ function IncomeStatement({ data }: { data: AccountBalance[] }) {
     const revenue = data.filter(a => a.type === 'Revenue');
     const expenses = data.filter(a => a.type === 'Expense');
 
-    // Revenue is normally Credit (Negative net in our logic), so we flip sign
     const totalRevenue = Math.abs(revenue.reduce((sum, a) => sum + (a.net < 0 ? a.net : 0), 0));
-    // Expenses are normally Debit (Positive net)
     const totalExpense = expenses.reduce((sum, a) => sum + (a.net > 0 ? a.net : 0), 0);
     
     const netIncome = totalRevenue - totalExpense;
@@ -287,11 +279,9 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
     const equity = data.filter(a => a.type === 'Equity');
 
     const totalAssets = assets.reduce((sum, a) => sum + a.net, 0);
-    // Liabilities/Equity are Credits (Negative net), convert to positive for display
     const totalLiabilities = Math.abs(liabilities.reduce((sum, a) => sum + a.net, 0));
     const totalEquity = Math.abs(equity.reduce((sum, a) => sum + a.net, 0));
     
-    // Total Equity & Liabilities should equal Assets
     const totalEquityAndLiabilities = totalLiabilities + totalEquity + netIncome;
 
     return (
@@ -380,8 +370,7 @@ export default function FinancialReportsPage() {
     const accountsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'accounts')) : null, [firestore]);
     const { data: accounts, isLoading: accLoading } = useCollection<Account>(accountsQuery);
 
-    // 2. Fetch ALL Journals (Then filter client side for specific dates)
-    // NOTE: For very large apps, you would filter by date in the query. For school scale, client filter is fine and allows flexible reporting.
+    // 2. Fetch ALL Journals
     const journalsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'journal_entries'), orderBy('date', 'asc')) : null, [firestore]);
     const { data: allJournals, isLoading: jLoading } = useCollection<JournalEntry>(journalsQuery);
 
@@ -389,13 +378,11 @@ export default function FinancialReportsPage() {
     const { calculatedBalances, netIncome } = useMemo(() => {
         if (!accounts || !allJournals) return { calculatedBalances: [], netIncome: 0 };
 
-        // Filter Journals by Date
         const filteredJournals = allJournals.filter(j => {
             const d = j.date.toDate();
             return d >= fromDate && d <= toDate;
         });
 
-        // Calculate Balances
         const balances: AccountBalance[] = accounts.map(acc => {
             let debit = 0;
             let credit = 0;
@@ -408,8 +395,6 @@ export default function FinancialReportsPage() {
                 }
             });
 
-            // Net Calculation based on Accounting Equation
-            // For Trial Balance: Assets/Expenses are Positive (Debit), Liabilities/Revenue/Equity are Negative (Credit)
             let net = 0;
             if (['Asset', 'Expense'].includes(acc.type)) {
                 net = debit - credit;
@@ -420,7 +405,6 @@ export default function FinancialReportsPage() {
             return { ...acc, debit, credit, net };
         });
 
-        // Calculate Net Income for Balance Sheet
         const revenue = Math.abs(balances.filter(a => a.type === 'Revenue').reduce((sum, a) => sum + (a.net < 0 ? a.net : 0), 0));
         const expense = balances.filter(a => a.type === 'Expense').reduce((sum, a) => sum + (a.net > 0 ? a.net : 0), 0);
 

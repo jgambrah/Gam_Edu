@@ -1,7 +1,7 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-// FIX: Added useMemoFirebase to imports
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
@@ -19,15 +19,10 @@ export default function SchoolProfilePage() {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
-  // --- FIX START ---
-  // We use useMemoFirebase to prevent the reference from being recreated on every render.
-  // This stops the "Blinking" issue.
   const settingsRef = useMemoFirebase(
-    () => firestore ? doc(firestore, 'schoolSettings', 'profile') : null,
+    () => (firestore ? doc(firestore, 'schoolSettings', 'profile') : null),
     [firestore]
   );
-  // --- FIX END ---
-
   const { data: profile, isLoading } = useDoc(settingsRef);
 
   // Form State
