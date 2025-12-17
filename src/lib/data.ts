@@ -51,6 +51,7 @@ import {
   Truck,
   Calculator,
   Building2,
+  ListOrdered,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -120,13 +121,19 @@ export const navItems: NavItem[] = [
     path: '/dashboard/academics',
     title: 'Academics',
     icon: BookOpen,
-    roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Student', 'Parent'],
     subItems: [
         {
             path: '/dashboard/academics',
             title: 'Classes',
             icon: Users,
             roles: ['Director', 'Administrator', 'Teacher'],
+        },
+        {
+            path: '/dashboard/my-children',
+            title: 'My Children',
+            icon: ListOrdered,
+            roles: ['Parent'],
         },
         {
             path: '/dashboard/academics/subjects',
@@ -162,7 +169,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/academics/gradebook',
             title: 'Gradebook',
             icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director', 'Parent'],
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
             path: '/dashboard/academics/analytics',
@@ -580,5 +587,6 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
 
 
     
+
 
 

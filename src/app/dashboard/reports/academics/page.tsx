@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
@@ -13,6 +14,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { FileText, Printer, BarChart2, Users } from 'lucide-react';
 import { Class, Subject, Student, Assessment } from '@/lib/types';
 import Link from 'next/link';
+import { useUser } from '@/firebase/provider';
 
 const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'F' | 'N/A' => {
     if (score >= 90) return 'A';
@@ -26,13 +28,21 @@ const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'F' | 'N/A' =>
 export default function AcademicReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { user } = useUser();
     const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
     const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
 
     const canAccess = ['Administrator', 'Director', 'Teacher'].includes(role);
 
     // Data Fetching
-    const classesQuery = useMemoFirebase(() => collection(firestore, 'classes'), [firestore]);
+    const classesQuery = useMemoFirebase(() => {
+        if (!user || !firestore) return null;
+        if (role === 'Teacher') {
+            return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        }
+        return collection(firestore, 'classes');
+    }, [firestore, user, role]);
+
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     const subjectsQuery = useMemoFirebase(() => collection(firestore, 'subjects'), [firestore]);
