@@ -91,14 +91,21 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
 
 function BehavioralHistory({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
-    const recordsQuery = useMemoFirebase(() => query(collection(firestore, 'behavioral_records'), where('studentId', '==', studentId), orderBy('date', 'desc')), [firestore, studentId]);
+    const recordsQuery = useMemoFirebase(() => {
+        if (!studentId) return null; // Safety check
+        return query(
+            collection(firestore, 'behavioral_records'), 
+            where('studentId', '==', studentId), 
+            orderBy('date', 'desc')
+        );
+    }, [firestore, studentId]);
     const { data: records, isLoading } = useCollection<BehavioralRecord>(recordsQuery);
 
     const getIcon = (type: BehavioralRecord['incidentType']) => {
         switch(type) {
             case 'Positive Behavior': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
             case 'Infraction':
-            case 'Disciplinary Action': return <AlertCircle className="h-4 w-4 text-red-500" />;
+            case 'Disciplinary Action': return <ShieldAlert className="h-4 w-4 text-red-500" />;
             default: return <BadgeInfo className="h-4 w-4 text-slate-500"/>
         }
     };
