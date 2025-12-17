@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 // FIX: Using getDocs instead of useCollection hooks
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
@@ -42,7 +42,7 @@ type Class = {
 
 export default function StudentsPage() {
   const firestore = useFirestore();
-  const { user, isUserLoading } = useAuth();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
   // Data State
@@ -443,11 +443,11 @@ export default function StudentsPage() {
                     <Checkbox id="usesBusService" name="usesBusService" />
                     <Label htmlFor="usesBusService">This student uses the bus service</Label>
                 </div>
-                <div className="pt-2">
+                <DialogFooter>
                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Account"}
                     </Button>
-                </div>
+                </DialogFooter>
             </form>
         </DialogContent>
       </Dialog>
@@ -488,9 +488,11 @@ export default function StudentsPage() {
                         <Checkbox id="editUsesBusService" name="usesBusService" defaultChecked={editingStudent.usesBusService} />
                         <Label htmlFor="editUsesBusService">This student uses the bus service</Label>
                     </div>
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-                    </Button>
+                    <DialogFooter>
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        </Button>
+                    </DialogFooter>
                 </form>
             )}
         </DialogContent>
@@ -498,3 +500,5 @@ export default function StudentsPage() {
     </div>
   );
 }
+
+    
