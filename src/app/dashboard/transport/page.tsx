@@ -140,7 +140,7 @@ function BusManagementDialog({ open, onOpenChange, onBusChange }: { open: boolea
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { data: buses, isLoading } = useCollection<Bus>(useMemoFirebase(() => collection(firestore, 'buses'), [firestore]));
+    const { data: buses, isLoading } = useCollection<Bus>(useMemoFirebase(() => firestore ? collection(firestore, 'buses') : null, [firestore]));
 
     const form = useForm({
         defaultValues: { name: '', capacity: 30 }
@@ -216,8 +216,8 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange }: { open: bo
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { data: buses } = useCollection<Bus>(useMemoFirebase(() => collection(firestore, 'buses'), [firestore]));
-    const { data: drivers } = useCollection<Student>(useMemoFirebase(() => query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')), [firestore]));
+    const { data: buses } = useCollection<Bus>(useMemoFirebase(() => firestore ? collection(firestore, 'buses') : null, [firestore]));
+    const { data: drivers } = useCollection<Student>(useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')) : null, [firestore]));
 
     const form = useForm<z.infer<typeof routeSchema>>({
         resolver: zodResolver(routeSchema),
@@ -310,11 +310,11 @@ export default function TransportPage() {
   const canManage = ['Administrator', 'Director'].includes(role);
 
   // Data fetching
-  const { data: routes, forceRefetch: refetchRoutes, isLoading: isLoadingRoutes } = useCollection<Route>(useMemoFirebase(() => collection(firestore, 'routes'), [firestore]));
-  const { data: buses, forceRefetch: refetchBuses, isLoading: isLoadingBuses } = useCollection<Bus>(useMemoFirebase(() => collection(firestore, 'buses'), [firestore]));
-  const { data: students, forceRefetch: refetchStudents, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => collection(firestore, 'students'), [firestore]));
-  const { data: drivers } = useCollection<Student>(useMemoFirebase(() => query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')), [firestore]));
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+  const { data: routes, forceRefetch: refetchRoutes, isLoading: isLoadingRoutes } = useCollection<Route>(useMemoFirebase(() => firestore ? collection(firestore, 'routes') : null, [firestore]));
+  const { data: buses, forceRefetch: refetchBuses, isLoading: isLoadingBuses } = useCollection<Bus>(useMemoFirebase(() => firestore ? collection(firestore, 'buses') : null, [firestore]));
+  const { data: students, forceRefetch: refetchStudents, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
+  const { data: drivers } = useCollection<Student>(useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')) : null, [firestore]));
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
 
   const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents || isLoadingClasses;
