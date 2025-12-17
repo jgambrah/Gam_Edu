@@ -332,13 +332,15 @@ export default function BS7IntegratedSciencePage() {
   const canManage = ['Teacher', 'Administrator', 'Director'].includes(role);
 
   const materialsQuery = useMemoFirebase(
-    () =>
-      query(
-        collection(firestore, 'learning_materials'),
-        where('courseId', '==', 'bs7-integrated-science'),
-        orderBy('strand'),
-        orderBy('subStrand')
-      ),
+    () => {
+        if (!firestore) return null; // FIX: Add guard
+        return query(
+            collection(firestore, 'learning_materials'),
+            where('courseId', '==', 'bs7-integrated-science'),
+            orderBy('strand'),
+            orderBy('subStrand')
+        )
+    },
     [firestore]
   );
 
