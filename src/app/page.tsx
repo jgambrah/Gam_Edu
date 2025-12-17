@@ -11,10 +11,10 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import {
   Loader2,
-  BrainCircuit,
-  LineChart,
-  Sparkles,
-  GraduationCap
+  GraduationCap,
+  Calculator,
+  Banknote,
+  UserCog,
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -77,16 +77,16 @@ export default function LoginPage() {
               </p>
               <div className="space-y-4 pt-4">
                 <div className="flex items-center gap-3">
-                  <div className="bg-white/10 p-2 rounded-full border border-white/20"><BrainCircuit className="h-5 w-5 text-purple-200" /></div>
-                  <span className="font-medium">Adaptive Learning Paths</span>
+                  <div className="bg-white/10 p-2 rounded-full border border-white/20"><Calculator className="h-5 w-5 text-purple-200" /></div>
+                  <span className="font-medium">Automated Payroll & Tax Calculation</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="bg-white/10 p-2 rounded-full border border-white/20"><LineChart className="h-5 w-5 text-pink-200" /></div>
-                  <span className="font-medium">Real-time Analytics</span>
+                  <div className="bg-white/10 p-2 rounded-full border border-white/20"><Banknote className="h-5 w-5 text-pink-200" /></div>
+                  <span className="font-medium">Integrated Student Billing & Payments</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="bg-white/10 p-2 rounded-full border border-white/20"><Sparkles className="h-5 w-5 text-yellow-200" /></div>
-                  <span className="font-medium">AI-Powered Tutoring</span>
+                  <div className="bg-white/10 p-2 rounded-full border border-white/20"><UserCog className="h-5 w-5 text-yellow-200" /></div>
+                  <span className="font-medium">HR & Staff Leave Management</span>
                 </div>
               </div>
             </div>
