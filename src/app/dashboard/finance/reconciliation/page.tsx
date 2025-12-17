@@ -7,16 +7,17 @@ import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, or
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Wand2, CheckCircle2, ArrowRight, RefreshCw, Upload, FileSpreadsheet, Download } from 'lucide-react';
+import { Loader2, Wand2, CheckCircle2, ArrowRight, RefreshCw, Upload, FileSpreadsheet, Link2, MousePointerClick } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { autoReconcileFlow } from '@/ai/flows/reconciliation-flow';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 // --- TYPES ---
 type BankTx = { 
     id: string; 
-    date: string; // Stored as ISO string or timestamp in DB
+    date: string; 
     description: string; 
     amount: number; 
     status?: 'Pending' | 'Reconciled' 
@@ -25,7 +26,7 @@ type BankTx = {
 type InternalTx = { 
     id: string; 
     date: string; 
-    description: string; // or 'category' or 'title'
+    description: string; 
     amount: number; 
 };
 
@@ -36,7 +37,7 @@ type MatchSuggestion = {
     reasoning: string 
 };
 
-// --- COMPONENT: CSV UPLOADER ---
+// --- IMPORT COMPONENT (Unchanged) ---
 function ImportDialog({ type, onUploadComplete }: { type: 'Bank' | 'Cashbook', onUploadComplete: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -56,28 +57,23 @@ function ImportDialog({ type, onUploadComplete }: { type: 'Bank' | 'Cashbook', o
                 const lines = csvData.split('\n');
                 const batch = writeBatch(firestore);
                 const collectionName = type === 'Bank' ? 'bank_transactions' : 'financialRecords';
-                
                 let count = 0;
 
                 // Skip Header Row (index 0) and loop
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
-
-                    // ASSUMING CSV FORMAT: Date, Description, Amount
-                    // Example: 2024-03-01, Amazon Purchase, 120.50
                     const [dateStr, desc, amtStr] = line.split(',');
 
                     if (dateStr && desc && amtStr) {
                         const newDocRef = doc(collection(firestore, collectionName));
-                        // Clean data
                         const cleanAmount = parseFloat(amtStr.replace(/[^0-9.-]+/g, ""));
-                        const cleanDate = new Date(dateStr); // Try parse
+                        const cleanDate = new Date(dateStr); 
 
                         if (!isNaN(cleanAmount)) {
                             batch.set(newDocRef, {
-                                date: cleanDate, // Store as Timestamp object in DB
-                                description: desc.replace(/"/g, ''), // Remove quotes
+                                date: cleanDate, 
+                                description: desc.replace(/"/g, ''),
                                 amount: cleanAmount,
                                 status: 'Pending',
                                 uploadedAt: serverTimestamp(),
@@ -87,20 +83,16 @@ function ImportDialog({ type, onUploadComplete }: { type: 'Bank' | 'Cashbook', o
                         }
                     }
                 }
-
                 await batch.commit();
-                toast({ title: "Import Successful", description: `Imported ${count} records into ${type}.` });
+                toast({ title: "Import Successful", description: `Imported ${count} records.` });
                 onUploadComplete();
-                
             } catch (error: any) {
-                console.error("CSV Error:", error);
-                toast({ variant: "destructive", title: "Import Failed", description: "Check CSV format (Date, Description, Amount)" });
+                toast({ variant: "destructive", title: "Import Failed", description: "Check CSV format." });
             } finally {
                 setIsUploading(false);
                 if (fileInputRef.current) fileInputRef.current.value = '';
             }
         };
-
         reader.readAsText(file);
     };
 
@@ -109,29 +101,11 @@ function ImportDialog({ type, onUploadComplete }: { type: 'Bank' | 'Cashbook', o
             <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-slate-50 transition-colors">
                 <FileSpreadsheet className="h-10 w-10 text-slate-400 mb-2" />
                 <p className="text-sm font-medium text-slate-900">Upload {type} CSV</p>
-                <p className="text-xs text-slate-500 mb-4">Format: Date, Description, Amount</p>
-                
-                <input 
-                    type="file" 
-                    accept=".csv" 
-                    className="hidden" 
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                />
-                
-                <Button 
-                    onClick={() => fileInputRef.current?.click()} 
-                    disabled={isUploading} 
-                    variant="outline"
-                >
+                <input type="file" accept=".csv" className="hidden" ref={fileInputRef} onChange={handleFileUpload}/>
+                <Button onClick={() => fileInputRef.current?.click()} disabled={isUploading} variant="outline" className="mt-2">
                     {isUploading ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Upload className="mr-2 h-4 w-4"/>}
                     {isUploading ? "Processing..." : "Select File"}
                 </Button>
-            </div>
-            
-            <div className="bg-blue-50 p-3 rounded text-xs text-blue-800">
-                <strong>Tip:</strong> Create a CSV file in Excel/Sheets with 3 columns:
-                <br/><code>2024-01-25, Walmart Store, 45.99</code>
             </div>
         </div>
     );
@@ -147,43 +121,40 @@ export default function ReconciliationPage() {
   const [bankData, setBankData] = useState<BankTx[]>([]);
   const [ledgerData, setLedgerData] = useState<InternalTx[]>([]);
   const [suggestions, setSuggestions] = useState<MatchSuggestion[]>([]);
-  const [view, setView] = useState<'bank' | 'cashbook'>('bank'); // For import dialog
+  
+  // --- NEW STATE FOR MANUAL MATCHING ---
+  const [selectedBankId, setSelectedBankId] = useState<string | null>(null);
+  const [selectedLedgerId, setSelectedLedgerId] = useState<string | null>(null);
 
   // 1. FETCH DATA
   const fetchLiveData = async () => {
     if (!firestore) return;
     setIsLoading(true);
     try {
-        // A. Bank Transactions (Only Pending)
+        // Bank
         const bankRef = collection(firestore, 'bank_transactions');
-        const qBank = query(bankRef, where('status', '==', 'Pending')); // Only fetch unreconciled
+        const qBank = query(bankRef, where('status', '==', 'Pending'));
         const bankSnap = await getDocs(qBank);
-        
         const realBankData = bankSnap.docs.map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
                 description: data.description || 'Unknown',
                 amount: Number(data.amount) || 0,
-                // Handle Firestore Timestamp or String date
                 date: data.date?.toDate ? data.date.toDate().toISOString().split('T')[0] : (data.date || 'N/A'),
                 status: data.status
             };
         }) as BankTx[];
 
-        // B. Financial Records (Cashbook)
-        // Usually we fetch records created by the Finance Module
+        // Ledger
         const ledgerRef = collection(firestore, 'financialRecords');
-        const qLedger = query(ledgerRef, orderBy('date', 'desc'), where('status', '!=', 'Reconciled')); // Optimization
-        // Note: For this to work perfectly, you need an index on financialRecords (status + date). 
-        // If index error, remove the 'where' clause temporarily.
+        const qLedger = query(ledgerRef, orderBy('date', 'desc')); // Removed status filter for broader matching
         const ledgerSnap = await getDocs(ledgerRef);
-        
         const realLedgerData = ledgerSnap.docs.map(doc => {
             const data = doc.data();
             return {
                 id: doc.id,
-                description: data.description || data.title || 'Unknown Record',
+                description: data.description || data.title || 'Unknown',
                 amount: Number(data.amount) || 0,
                 date: data.date?.toDate ? data.date.toDate().toISOString().split('T')[0] : (data.date || 'N/A'),
             };
@@ -191,10 +162,11 @@ export default function ReconciliationPage() {
 
         setBankData(realBankData);
         setLedgerData(realLedgerData);
+        setSuggestions([]); // Clear old suggestions on refresh
 
     } catch (error: any) {
-        console.error("Error fetching data:", error);
-        toast({ variant: 'destructive', title: "Error", description: "Could not load data. Check indexes." });
+        console.error(error);
+        toast({ variant: 'destructive', title: "Error", description: "Could not load data." });
     } finally {
         setIsLoading(false);
     }
@@ -210,14 +182,11 @@ export default function ReconciliationPage() {
 
     try {
         const result = await autoReconcileFlow(bankData, ledgerData);
-        
         if (result.success && result.data) {
             setSuggestions(result.data.matches as MatchSuggestion[]);
             toast({ title: "Analysis Complete", description: `AI found ${result.data.matches.length} potential matches.` });
         } else {
-             // If AI returns no matches or error, show toast
-             if(result.error) toast({ variant: 'destructive', title: "AI Error", description: result.error });
-             else toast({ title: "No Matches", description: "AI couldn't find any obvious matches." });
+             toast({ variant: 'destructive', title: "AI Error", description: result.error });
         }
     } catch (e) {
         toast({ variant: 'destructive', title: "Error", description: "AI Service unavailable." });
@@ -226,168 +195,193 @@ export default function ReconciliationPage() {
     }
   };
 
-  // 3. CONFIRM MATCH
-  const confirmMatch = async (match: MatchSuggestion) => {
+  // 3. HANDLE MATCH (Manual or AI)
+  const executeMatch = async (bankId: string, ledgerId: string, isManual = false) => {
     if (!firestore) return;
     try {
         const batch = writeBatch(firestore);
+        const bankRef = doc(firestore, 'bank_transactions', bankId);
         
-        // Update Bank Tx
-        const bankRef = doc(firestore, 'bank_transactions', match.bankTransactionId);
         batch.update(bankRef, { 
             status: 'Reconciled', 
-            matchedLedgerId: match.internalTransactionId,
-            reconciledAt: serverTimestamp() 
+            matchedLedgerId: ledgerId,
+            reconciledAt: serverTimestamp(),
+            method: isManual ? 'Manual' : 'AI'
         });
-
-        // Optional: Update Ledger Record too
-        // const ledgerRef = doc(firestore, 'financialRecords', match.internalTransactionId);
-        // batch.update(ledgerRef, { status: 'Reconciled' });
         
         await batch.commit();
 
-        setSuggestions(prev => prev.filter(s => s.bankTransactionId !== match.bankTransactionId));
-        setBankData(prev => prev.filter(b => b.id !== match.bankTransactionId));
-        toast({ title: "Reconciled", description: "Match confirmed." });
+        // UI Updates
+        setSuggestions(prev => prev.filter(s => s.bankTransactionId !== bankId));
+        setBankData(prev => prev.filter(b => b.id !== bankId));
+        setLedgerData(prev => prev.filter(l => l.id !== ledgerId)); // Remove used ledger item from view to avoid double match
+        
+        // Clear selection
+        setSelectedBankId(null);
+        setSelectedLedgerId(null);
+
+        toast({ title: isManual ? "Linked Manually" : "Reconciled", description: "Transaction matched successfully." });
 
     } catch (e) {
-        toast({ variant: 'destructive', title: "Error", description: "Database update failed." });
+        toast({ variant: 'destructive', title: "Error", description: "Update failed." });
     }
   };
 
   return (
     <div className="space-y-6">
-        {/* HEADER ACTIONS */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Smart Reconciliation</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Reconciliation</h1>
                 <p className="text-muted-foreground">Match bank statements with internal cashbook.</p>
             </div>
             <div className="flex gap-2">
                 <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="outline"><Upload className="mr-2 h-4 w-4"/> Import Data</Button>
-                    </DialogTrigger>
+                    <DialogTrigger asChild><Button variant="outline"><Upload className="mr-2 h-4 w-4"/> Import</Button></DialogTrigger>
                     <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Import Records</DialogTitle>
-                            <DialogDescription>Upload CSV files to populate the system.</DialogDescription>
-                        </DialogHeader>
+                        <DialogHeader><DialogTitle>Import Records</DialogTitle><DialogDescription>Upload CSV files.</DialogDescription></DialogHeader>
                         <Tabs defaultValue="bank" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2">
-                                <TabsTrigger value="bank">Bank Statement</TabsTrigger>
-                                <TabsTrigger value="cashbook">Legacy Cashbook</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="bank">
-                                <ImportDialog type="Bank" onUploadComplete={() => { fetchLiveData(); }} />
-                            </TabsContent>
-                            <TabsContent value="cashbook">
-                                <ImportDialog type="Cashbook" onUploadComplete={() => { fetchLiveData(); }} />
-                            </TabsContent>
+                            <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="bank">Bank Statement</TabsTrigger><TabsTrigger value="cashbook">Legacy Cashbook</TabsTrigger></TabsList>
+                            <TabsContent value="bank"><ImportDialog type="Bank" onUploadComplete={fetchLiveData} /></TabsContent>
+                            <TabsContent value="cashbook"><ImportDialog type="Cashbook" onUploadComplete={fetchLiveData} /></TabsContent>
                         </Tabs>
                     </DialogContent>
                 </Dialog>
 
-                <Button variant="outline" onClick={fetchLiveData} disabled={isLoading}>
-                    <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}/>
-                    Refresh
-                </Button>
-                
-                <Button onClick={handleAutoReconcile} disabled={isLoading || bankData.length === 0} className="bg-purple-600 hover:bg-purple-700">
-                    <Wand2 className="mr-2 h-4 w-4" /> 
-                    {isLoading ? "Analyzing..." : "Auto-Reconcile"}
-                </Button>
+                <Button variant="outline" onClick={fetchLiveData} disabled={isLoading}><RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}/> Refresh</Button>
+                <Button onClick={handleAutoReconcile} disabled={isLoading || bankData.length === 0} className="bg-purple-600 hover:bg-purple-700"><Wand2 className="mr-2 h-4 w-4" /> AI Match</Button>
             </div>
         </div>
 
+        {/* --- MANUAL MATCHING BAR --- */}
+        {selectedBankId && selectedLedgerId && (
+            <div className="bg-indigo-600 text-white p-4 rounded-lg flex justify-between items-center animate-in slide-in-from-top-2 shadow-lg">
+                <div className="flex items-center gap-2">
+                    <Link2 className="h-5 w-5" />
+                    <span className="font-semibold">Link selected items?</span>
+                </div>
+                <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => { setSelectedBankId(null); setSelectedLedgerId(null); }}>Cancel</Button>
+                    <Button 
+                        variant="default" 
+                        size="sm" 
+                        className="bg-green-500 hover:bg-green-600 text-white border-0"
+                        onClick={() => executeMatch(selectedBankId, selectedLedgerId, true)}
+                    >
+                        Confirm Match
+                    </Button>
+                </div>
+            </div>
+        )}
+
         <div className="grid lg:grid-cols-2 gap-6">
-            {/* LEFT: Unmatched Transactions */}
-            <Card className="h-[600px] flex flex-col">
-                <CardHeader className="pb-2">
-                    <CardTitle>Unreconciled Bank Lines</CardTitle>
-                    <CardDescription>{bankData.length} items pending</CardDescription>
+            
+            {/* LEFT: Unmatched Bank Transactions */}
+            <Card className="h-[600px] flex flex-col border-t-4 border-t-slate-500">
+                <CardHeader className="pb-2 bg-slate-50">
+                    <CardTitle className="text-sm uppercase tracking-wide text-slate-500 flex items-center gap-2">
+                        <MousePointerClick className="h-4 w-4"/> Bank Statement ({bankData.length})
+                    </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto space-y-2 pr-2">
-                    {bankData.length === 0 ? (
-                        <div className="text-center py-20 text-muted-foreground border-2 border-dashed rounded-lg">
-                            <FileSpreadsheet className="h-8 w-8 mx-auto mb-2 opacity-50"/>
-                            <p>No transactions found.</p>
-                            <p className="text-xs mt-1">Click "Import Data" to upload a statement.</p>
-                        </div>
-                    ) : (
-                     bankData.map(tx => (
-                        <div key={tx.id} className="p-3 border rounded-lg flex justify-between items-center text-sm hover:bg-slate-50 transition-colors">
+                <CardContent className="flex-1 overflow-y-auto space-y-2 p-2">
+                    {bankData.map(tx => (
+                        <div 
+                            key={tx.id} 
+                            onClick={() => setSelectedBankId(selectedBankId === tx.id ? null : tx.id)}
+                            className={cn(
+                                "p-3 border rounded-lg flex justify-between items-center text-sm cursor-pointer transition-all",
+                                selectedBankId === tx.id 
+                                    ? "bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500 shadow-md" 
+                                    : "hover:bg-slate-50 hover:border-slate-300"
+                            )}
+                        >
                             <div>
                                 <p className="font-semibold text-slate-800">{tx.description}</p>
                                 <p className="text-xs text-muted-foreground">{tx.date}</p>
                             </div>
-                            <div className="text-right">
-                                <span className={`font-mono font-bold block ${tx.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                                    ${tx.amount.toFixed(2)}
-                                </span>
-                                <Badge variant="outline" className="text-[10px] scale-90 origin-right">Pending</Badge>
-                            </div>
+                            <span className={`font-mono font-bold ${tx.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                                ${tx.amount.toFixed(2)}
+                            </span>
                         </div>
-                    )))}
+                    ))}
                 </CardContent>
             </Card>
 
-            {/* RIGHT: AI Suggestions */}
-            <Card className="h-[600px] flex flex-col border-l-4 border-l-purple-500 bg-slate-50/50">
-                <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2">
-                        <Wand2 className="h-5 w-5 text-purple-600" /> AI Suggestions
-                    </CardTitle>
-                    <CardDescription>Review and confirm matches</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto space-y-4 pr-2">
-                    {suggestions.length === 0 ? (
-                        <div className="text-center py-20 text-muted-foreground">
-                            {isLoading ? "AI is processing..." : "Click 'Auto-Reconcile' to start."}
-                        </div>
-                    ) : (
-                        suggestions.map((match, i) => {
-                            const bank = bankData.find(b => b.id === match.bankTransactionId);
-                            const ledger = ledgerData.find(l => l.id === match.internalTransactionId);
-                            if (!bank || !ledger) return null;
+            {/* RIGHT: Internal Ledger OR AI Suggestions */}
+            <Tabs defaultValue="suggestions" className="h-[600px] flex flex-col">
+                <TabsList className="grid w-full grid-cols-2 mb-2">
+                    <TabsTrigger value="suggestions"><Wand2 className="w-4 h-4 mr-2"/> AI Suggestions</TabsTrigger>
+                    <TabsTrigger value="ledger"><Link2 className="w-4 h-4 mr-2"/> Manual Match</TabsTrigger>
+                </TabsList>
 
-                            return (
-                                <div key={i} className="bg-white p-4 rounded-lg shadow-sm border border-indigo-100 space-y-3 animate-in slide-in-from-bottom-2 duration-300">
-                                    <div className="flex justify-between items-center">
-                                        <Badge variant={match.confidence === 'High' ? 'default' : 'secondary'} className={match.confidence === 'High' ? 'bg-green-600' : 'bg-yellow-600'}>
-                                            {match.confidence} Match
-                                        </Badge>
-                                        <Button size="sm" onClick={() => confirmMatch(match)} className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white">
-                                            <CheckCircle2 className="mr-1 h-4 w-4" /> Confirm
-                                        </Button>
-                                    </div>
-                                    
-                                    <div className="flex items-center justify-between text-sm gap-2">
-                                        <div className="flex-1 p-2 bg-slate-50 rounded border border-slate-100">
-                                            <p className="text-[10px] text-slate-400 uppercase font-bold mb-1">Bank Statement</p>
-                                            <p className="font-bold text-slate-700 truncate" title={bank.description}>{bank.description}</p>
-                                            <p className="text-xs text-slate-500">{bank.date} • ${bank.amount}</p>
-                                        </div>
-                                        <ArrowRight className="text-indigo-300 h-4 w-4" />
-                                        <div className="flex-1 p-2 bg-indigo-50 rounded border border-indigo-100">
-                                            <p className="text-[10px] text-indigo-400 uppercase font-bold mb-1">Internal Ledger</p>
-                                            <p className="font-bold text-indigo-900 truncate" title={ledger.description}>{ledger.description}</p>
-                                            <p className="text-xs text-indigo-600">{ledger.date} • ${ledger.amount}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="text-xs text-slate-500 bg-slate-50 p-2 rounded italic">
-                                        "{match.reasoning}"
-                                    </div>
+                {/* 1. AI VIEW */}
+                <TabsContent value="suggestions" className="flex-1 overflow-hidden">
+                    <Card className="h-full flex flex-col border-l-4 border-l-purple-500 bg-slate-50/30">
+                        <CardContent className="flex-1 overflow-y-auto space-y-4 p-4">
+                            {suggestions.length === 0 ? (
+                                <div className="text-center py-20 text-muted-foreground">
+                                    {isLoading ? "Thinking..." : "No suggestions yet. Try 'Manual Match' tab."}
                                 </div>
-                            );
-                        })
-                    )}
-                </CardContent>
-            </Card>
+                            ) : (
+                                suggestions.map((match, i) => {
+                                    const bank = bankData.find(b => b.id === match.bankTransactionId);
+                                    const ledger = ledgerData.find(l => l.id === match.internalTransactionId);
+                                    if (!bank || !ledger) return null;
+
+                                    return (
+                                        <div key={i} className="bg-white p-4 rounded-lg shadow-sm border border-indigo-100 space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <Badge variant={match.confidence === 'High' ? 'default' : 'secondary'} className={match.confidence === 'High' ? 'bg-green-600' : 'bg-yellow-600'}>
+                                                    {match.confidence} Match
+                                                </Badge>
+                                                <Button size="sm" onClick={() => executeMatch(match.bankTransactionId, match.internalTransactionId)}>
+                                                    <CheckCircle2 className="mr-1 h-4 w-4" /> Accept
+                                                </Button>
+                                            </div>
+                                            <div className="flex justify-between text-xs gap-2">
+                                                <div className="flex-1 bg-slate-50 p-2 rounded"><p className="font-bold">{bank.description}</p><p>${bank.amount}</p></div>
+                                                <div className="flex-1 bg-indigo-50 p-2 rounded"><p className="font-bold">{ledger.description}</p><p>${ledger.amount}</p></div>
+                                            </div>
+                                            <p className="text-xs text-slate-400 italic">"{match.reasoning}"</p>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* 2. MANUAL LEDGER VIEW */}
+                <TabsContent value="ledger" className="flex-1 overflow-hidden">
+                    <Card className="h-full flex flex-col border-t-4 border-t-indigo-500">
+                        <CardHeader className="pb-2 bg-slate-50">
+                            <CardTitle className="text-sm uppercase tracking-wide text-slate-500 flex items-center gap-2">
+                                <MousePointerClick className="h-4 w-4"/> Internal Ledger
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-1 overflow-y-auto space-y-2 p-2">
+                            {ledgerData.map(tx => (
+                                <div 
+                                    key={tx.id} 
+                                    onClick={() => setSelectedLedgerId(selectedLedgerId === tx.id ? null : tx.id)}
+                                    className={cn(
+                                        "p-3 border rounded-lg flex justify-between items-center text-sm cursor-pointer transition-all",
+                                        selectedLedgerId === tx.id 
+                                            ? "bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500 shadow-md" 
+                                            : "hover:bg-slate-50 hover:border-slate-300"
+                                    )}
+                                >
+                                    <div>
+                                        <p className="font-semibold text-slate-800">{tx.description}</p>
+                                        <p className="text-xs text-muted-foreground">{tx.date}</p>
+                                    </div>
+                                    <span className="font-mono font-bold text-slate-700">${tx.amount.toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     </div>
   );
 }
-
-    
