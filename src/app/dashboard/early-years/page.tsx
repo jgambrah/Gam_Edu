@@ -231,13 +231,13 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
 // --- 2. PHONICS FOREST ---
 function PhonicsForest() {
     const soundGroups = [
-        { name: "Vowels", color: "bg-red-100 text-red-600 border-red-200", sounds: ["a", "e", "i", "o", "u", "ay", "ee", "igh", "ow", "oo"] },
-        { name: "Digraphs", color: "bg-green-100 text-green-600 border-green-200", sounds: ["ch", "sh", "th", "wh", "ph", "ck", "ng", "qu"] },
-        { name: "Blends", color: "bg-blue-100 text-blue-600 border-blue-200", sounds: ["bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "sl", "sm", "sn", "sp", "st", "sw", "tr"] },
+        { name: "Vowels", color: "bg-red-100 text-red-600 border-red-200", sounds: ["a", "e", "i", "o", "u", "ay", "ee"] },
+        { name: "Digraphs", color: "bg-green-100 text-green-600 border-green-200", sounds: ["ch", "sh", "th", "wh", "ph", "ck"] },
+        { name: "Blends", color: "bg-blue-100 text-blue-600 border-blue-200", sounds: ["bl", "br", "cl", "fl", "gl", "pl", "sl"] },
     ];
     return (
         <div className="space-y-8">
-            <div className="text-center space-y-2"><h2 className="text-3xl font-bold text-green-800">Phonics Forest 🌳</h2><p className="text-green-600">Tap a sound to hear it!</p></div>
+            <div className="text-center space-y-2"><h2 className="text-3xl font-bold text-green-800">Phonics Forest 🌳</h2><p className="text-green-600">Tap a sound!</p></div>
             {soundGroups.map((group) => (
                 <div key={group.name} className="space-y-3">
                     <h3 className="font-bold text-slate-500 uppercase text-sm tracking-wider ml-2">{group.name}</h3>
@@ -260,7 +260,7 @@ function ABCKingdom() {
             {alphabet.map(letter => (
                 <button 
                     key={letter}
-                    onClick={() => speak(letter)}
+                    onClick={() => speak(`${letter}`)}
                     className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center"
                 >
                     {letter}
@@ -362,8 +362,15 @@ function MathPlayground() {
 
 // --- 5. STORY SPARK ---
 function StorySpark({ canEdit }: { canEdit: boolean }) {
-    const { user } = useUser(); const firestore = useFirestore(); const {toast} = useToast(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
-    const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const { user } = useUser(); 
+    const firestore = useFirestore(); 
+    const {toast} = useToast(); 
+    const [story, setStory] = useState<any>(null); 
+    const [topic, setTopic] = useState(''); 
+    const [loading, setLoading] = useState(false);
+    
+    // FIX: Only query when user is logged in
+    const storiesQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
     const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorStory(topic); if(res.success) setStory(res.data); setLoading(false); };
@@ -386,8 +393,15 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
 // --- 6. SCIENCE WORLD (SEPARATED) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore(); const { user } = useUser(); const { toast } = useToast(); const [topic, setTopic] = useState(''); const [fact, setFact] = useState<any>(null); const [loading, setLoading] = useState(false);
-    const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const firestore = useFirestore(); 
+    const { user } = useUser(); 
+    const { toast } = useToast();
+    const [topic, setTopic] = useState(''); 
+    const [fact, setFact] = useState<any>(null); 
+    const [loading, setLoading] = useState(false);
+    
+    // FIX: Only query when user is logged in
+    const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
     const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorScience(topic); if(res.success) setFact(res.data); setLoading(false); };
@@ -516,4 +530,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
