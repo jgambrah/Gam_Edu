@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -227,7 +227,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 2. PHONICS FOREST (SOUNDBOARD) ---
+// --- 2. PHONICS FOREST (UNCHANGED) ---
 function PhonicsForest() {
     const soundGroups = [
         { name: "Vowels", color: "bg-red-100 text-red-600 border-red-200", sounds: ["a", "e", "i", "o", "u", "ay", "ee", "igh", "ow", "oo"] },
@@ -251,7 +251,7 @@ function PhonicsForest() {
     );
 }
 
-// --- 3. ABC KINGDOM (UPDATED) ---
+// --- 3. ABC KINGDOM (UNCHANGED) ---
 function ABCKingdom() {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     return (
@@ -540,6 +540,7 @@ function StickerBook() {
         </div>
     );
 }
+
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
