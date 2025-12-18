@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
 
 // UI Components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -446,56 +446,96 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
     );
 }
 
+// --- The New Science Lab Tab ---
+function ScienceLabTab() {
+    const firestore = useFirestore();
+    const router = useRouter();
+
+    const [selectedTopic, setSelectedTopic] = useState('');
+    const [selectedDifficulty, setSelectedDifficulty] = useState('');
+
+    const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore])
+    );
+    const { data: facts, isLoading: isLoadingFacts } = useCollection<DailyFact>(
+        useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')) : null, [firestore])
+    );
+
+    const uniqueTopics = useMemo(() => {
+        if (!problems) return [];
+        return Array.from(new Set(problems.map(p => p.topic)));
+    }, [problems]);
+
+    const handleStartPractice = () => {
+        if (selectedTopic && selectedDifficulty) {
+            router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
+        }
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><PencilRuler/> Practice Hub</CardTitle>
+                        <CardDescription>Select a topic and difficulty to begin a practice quiz.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {(isLoadingProblems) ? (
+                            <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <Select onValueChange={setSelectedTopic} value={selectedTopic}>
+                                        <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
+                                        <SelectContent>
+                                            {uniqueTopics.map(topic => (
+                                                <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <Select onValueChange={setSelectedDifficulty} value={selectedDifficulty}>
+                                        <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Easy">Easy</SelectItem>
+                                            <SelectItem value="Medium">Medium</SelectItem>
+                                            <SelectItem value="Hard">Hard</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
+                                    Start Practice
+                                </Button>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+                 <Card className="h-full">
+                    <CardHeader>
+                        <CardTitle className="text-md flex items-center gap-2"><Lightbulb/> Recent Facts</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {isLoadingFacts ? <Skeleton className="h-20" /> : (
+                            <ul className="space-y-3">
+                                {facts?.slice(0, 5).map(fact => (
+                                    <li key={fact.id} className="text-sm border-l-2 pl-3 italic text-muted-foreground">{fact.factText}</li>
+                                ))}
+                            </ul>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
 // --- MAIN PAGE ---
 export default function ScienceClubPage() {
-  const router = useRouter();
-  const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();
-  const { user, isUserLoading } = useUser();
-
-  const [selectedTopic, setSelectedTopic] = useState('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('');
-
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
-  
-  const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
-    useMemoFirebase(() => {
-        if (!user || !firestore || role !== 'Student') return null;
-        return query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    }, [firestore, user, role])
-  );
-  
-  const studentClassId = studentData?.[0]?.classId;
-  
-  const problemsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    if (isTeacherOrAdmin) {
-      return query(collection(firestore, 'science_problems'));
-    }
-    if (role === 'Student') {
-        if (studentClassId) {
-             return query(collection(firestore, 'science_problems'), where('classId', '==', studentClassId));
-        }
-        return null;
-    }
-    return null;
-  }, [firestore, isTeacherOrAdmin, role, studentClassId]);
-
-  const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(problemsQuery);
-
-  const uniqueTopics = useMemo(() => {
-    if (!problems) return [];
-    const topics = new Set(problems.map(p => p.topic));
-    return Array.from(topics);
-  }, [problems]);
-
-  const handleStartPractice = () => {
-    if (selectedTopic && selectedDifficulty) {
-      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
-    }
-  };
-
-  const isLoading = isUserLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
+  const isLoading = isRoleLoading;
 
   return (
     <div className="space-y-6">
@@ -509,83 +549,43 @@ export default function ScienceClubPage() {
             Welcome to the Science Club! Explore topics, practice problems, and climb the leaderboard.
           </CardDescription>
         </CardHeader>
-         <CardContent>
-            <FactOfTheDay isStaff={isTeacherOrAdmin} />
-        </CardContent>
       </Card>
-      <Tabs defaultValue="practice">
-        <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
-          <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
-          <TabsTrigger value="learn">Science Explorer</TabsTrigger>
-          <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
-          {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Problems</TabsTrigger>}
-        </TabsList>
-        <TabsContent value="practice">
-          <Card>
-            <CardHeader>
-                <CardTitle>Start a New Practice Session</CardTitle>
-                <CardDescription>Select a topic and difficulty to begin.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {(isLoading) ? (
-                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
-                ) : 
-                (role === 'Student' && !studentClassId) ? (
-                    <div className="text-center space-y-2">
-                        <p className="text-muted-foreground">We could not find your class assignment.</p>
-                        <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
-                    </div>
-                ) : 
-                (
-                    <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Select onValueChange={setSelectedTopic}>
-                                <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
-                                <SelectContent>
-                                    {uniqueTopics.map(topic => (
-                                        <SelectItem key={topic} value={topic}>{topic}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <Select onValueChange={setSelectedDifficulty}>
-                                <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Easy">Easy</SelectItem>
-                                    <SelectItem value="Medium">Medium</SelectItem>
-                                    <SelectItem value="Hard">Hard</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
-                            Start Practice
-                        </Button>
-                    </>
-                )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="learn" className="mt-6">
-          <ScienceExplorerTab />
-        </TabsContent>
-        <TabsContent value="leaderboard">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Science Leaderboard</CardTitle>
-                    <CardDescription>See how you rank against other students in science.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Leaderboard />
-                </CardContent>
-            </Card>
-        </TabsContent>
-         {isTeacherOrAdmin && (
-            <TabsContent value="manage">
-                <ManageProblems />
+      
+      {isLoading ? <Loader2 className="mx-auto my-10 h-8 w-8 animate-spin"/> : (
+        <Tabs defaultValue="lab" className="w-full">
+            <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
+            <TabsTrigger value="lab"><Atom className="mr-2 h-4 w-4"/> The Science Lab</TabsTrigger>
+            <TabsTrigger value="learn"><Microscope className="mr-2 h-4 w-4"/> Science Explorer</TabsTrigger>
+            <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
+            {isTeacherOrAdmin && <TabsTrigger value="manage"><Database className="mr-2 h-4 w-4"/>Manage Content</TabsTrigger>}
+            </TabsList>
+            
+            <TabsContent value="lab" className="mt-6">
+                <ScienceLabTab />
             </TabsContent>
-        )}
-      </Tabs>
+            
+            <TabsContent value="learn" className="mt-6">
+                <ScienceExplorerTab />
+            </TabsContent>
+
+            <TabsContent value="leaderboard">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Science Leaderboard</CardTitle>
+                        <CardDescription>See how you rank against other students in science.</CardDescription>
+                    </CardHeader>
+                    <CardContent><Leaderboard /></CardContent>
+                </Card>
+            </TabsContent>
+
+            {isTeacherOrAdmin && (
+                <TabsContent value="manage">
+                    <ManageProblems />
+                </TabsContent>
+            )}
+        </Tabs>
+      )}
     </div>
   );
 }
 
-    
