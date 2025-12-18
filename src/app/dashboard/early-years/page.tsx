@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -303,7 +304,7 @@ function MathPlayground() {
       confetti({ particleCount: 150 });
       speak("Great Job!");
 
-      if (newStreak > 0 && newStreak % 3 === 0 && user && firestore) {
+      if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
           const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
           const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
           
@@ -333,7 +334,7 @@ function MathPlayground() {
           <Button variant={mode === 'div' ? 'default' : 'ghost'} onClick={() => setMode('div')} className="rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold">÷</Button>
       </div>
 
-      <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-5xl my-4">
+       <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-5xl my-4">
         {Array.from({ length: question.a }).map((_, i) => <span key={i}>{question.icon}</span>)}
         <span className="text-slate-400 mx-2 font-bold">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span>
         {Array.from({ length: question.b }).map((_, i) => <span key={i}>{question.icon}</span>)}
@@ -361,12 +362,12 @@ function MathPlayground() {
 
 // --- 5. STORY SPARK ---
 function StorySpark({ canEdit }: { canEdit: boolean }) {
-    const { user } = useUser(); const firestore = useFirestore(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
+    const { user } = useUser(); const firestore = useFirestore(); const {toast} = useToast(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
     const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorStory(topic); if(res.success) setStory(res.data); setLoading(false); };
-    const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); forceRefetch(); };
+    const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); forceRefetch(); toast({title: "Story Saved!"}); };
     const handleDelete = async (id: string) => { if(!firestore) return; if(confirm("Delete story?")) { await deleteDoc(doc(firestore, 'junior_stories', id)); forceRefetch(); } };
 
     return (
@@ -397,8 +398,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> Discovery Lab</h3>
                 <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Volcanoes)" className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600">{loading?<Loader2 className="animate-spin"/>:"Discover"}</Button></div>
             </div>
-            {fact && <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-8 rounded-3xl text-white text-center shadow-xl animate-in zoom-in"><div className="text-8xl mb-4 animate-bounce">{fact.emojiIcon}</div><h2 className="text-3xl font-extrabold mb-4">{fact.title}</h2><p className="text-xl font-medium">{fact.fact}</p>{canEdit && <Button onClick={handleSave} variant="secondary" className="mt-6 font-bold">Save Card</Button>}</div>}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{savedScience?.map((s:any)=>(<div key={s.id} className="relative group bg-white p-4 rounded-2xl shadow border-b-4 border-blue-200 flex flex-col items-center text-center"><div className="text-4xl mb-2">{s.emojiIcon}</div><h4 className="font-bold text-slate-800 leading-tight">{s.title}</h4>{canEdit && <Button size="icon" variant="ghost" className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={() => handleDelete(s.id)}><Trash2 className="w-3 h-3"/></Button>}</div>))}</div>
+            {fact && <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-8 rounded-3xl text-white text-center shadow-xl animate-in zoom-in cursor-pointer hover:scale-105 transition-transform" onClick={() => speak(`${fact.title}. ${fact.fact}`)}><div className="text-8xl mb-4 animate-bounce">{fact.emojiIcon}</div><h2 className="text-3xl font-extrabold mb-4">{fact.title}</h2><p className="text-xl font-medium">{fact.fact}</p>{canEdit && <Button onClick={(e) => { e.stopPropagation(); handleSave(); }} variant="secondary" className="mt-6 font-bold">Save Card</Button>}</div>}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{savedScience?.map((s:any)=>(<div key={s.id} className="relative group bg-white p-4 rounded-2xl shadow border-b-4 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-md" onClick={() => { setFact(s); speak(`${s.title}. ${s.fact}`); }}><div className="text-4xl mb-2">{s.emojiIcon}</div><h4 className="font-bold text-slate-800 leading-tight">{s.title}</h4>{canEdit && <Button size="icon" variant="ghost" className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}><Trash2 className="w-3 h-3"/></Button>}</div>))}</div>
         </div>
     );
 }
@@ -490,7 +491,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md-text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
+                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
