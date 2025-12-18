@@ -1,11 +1,10 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, increment } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, increment, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -311,8 +310,8 @@ function MathPlayground() {
       confetti({ particleCount: 150 });
       speak("Great Job!");
 
-      // REWARD LOGIC: Every 5 correct answers, give a sticker
-      if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
+      // REWARD LOGIC: Every 3 correct answers, give a sticker
+      if (newStreak > 0 && newStreak % 3 === 0 && user && firestore) {
           const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
           const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
           
@@ -370,12 +369,12 @@ function MathPlayground() {
 
 // --- 5. STORY SPARK ---
 function StorySpark({ canEdit }: { canEdit: boolean }) {
-    const { user } = useUser(); const firestore = useFirestore(); const { toast } = useToast(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
+    const { user } = useUser(); const firestore = useFirestore(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
     const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorStory(topic); if(res.success) setStory(res.data); setLoading(false); };
-    const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); forceRefetch(); toast({ title: "Story Saved!" }); };
+    const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); forceRefetch(); };
     const handleDelete = async (id: string) => { if(!firestore) return; if(confirm("Delete story?")) { await deleteDoc(doc(firestore, 'junior_stories', id)); forceRefetch(); } };
 
     return (
@@ -445,6 +444,7 @@ function ArtStudio() {
         const x = (e.clientX || e.touches[0].clientX) - rect.left; const y = (e.clientY || e.touches[0].clientY) - rect.top;
         ctx.lineTo(x, y); ctx.stroke();
     };
+    const stopDrawing = () => setIsDrawing(false);
     const clearCanvas = () => { const canvas = canvasRef.current; if(canvas){ const ctx=canvas.getContext('2d'); if(ctx){ctx.fillStyle="white";ctx.fillRect(0,0,canvas.width,canvas.height);} } };
 
     return (
@@ -456,7 +456,7 @@ function ArtStudio() {
                 <Button variant="outline" onClick={clearCanvas} className="text-red-500 hover:text-red-700">Clear</Button>
             </div>
             <div className="relative h-[400px] w-full bg-white rounded-3xl shadow-xl border-4 border-slate-200 overflow-hidden cursor-crosshair touch-none">
-                <canvas ref={canvasRef} className="w-full h-full" onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={() => setIsDrawing(false)} onMouseLeave={() => setIsDrawing(false)} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={() => setIsDrawing(false)} />
+                <canvas ref={canvasRef} className="w-full h-full" onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} />
             </div>
         </div>
     );
@@ -501,7 +501,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
+                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md-text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
             </TabsList>
             
