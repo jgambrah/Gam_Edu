@@ -53,6 +53,7 @@ import {
   Building2,
   ListOrdered,
   RefreshCcw,
+  Rabbit,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -210,6 +211,12 @@ export const navItems: NavItem[] = [
     icon: Activity,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
+        {
+            path: '/dashboard/early-years',
+            title: 'Junior Campus',
+            icon: Rabbit,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
         {
             path: '/dashboard/study-club',
             title: 'Study Club (AI Tutor)',
@@ -594,6 +601,7 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
 
 
     
+
 
 
 
