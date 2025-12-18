@@ -135,7 +135,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/my-children',
             title: 'My Children',
             icon: ListOrdered,
-            roles: ['Parent'],
+            roles: ['Parent', 'Student'],
         },
         {
             path: '/dashboard/academics/subjects',
@@ -171,7 +171,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/academics/gradebook',
             title: 'Gradebook',
             icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
         },
         {
             path: '/dashboard/academics/analytics',
