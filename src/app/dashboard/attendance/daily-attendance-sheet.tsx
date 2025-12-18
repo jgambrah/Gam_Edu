@@ -16,8 +16,8 @@ import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { type Student, type AttendanceRecord, type Class } from '@/lib/types';
+import { collection, query, where, getDocs, writeBatch, doc, getDoc, serverTimestamp, addDoc } from 'firebase/firestore';
+import { type Student, type AttendanceRecord, type Class, type Parent } from '@/lib/types';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useRole } from '@/context/role-context';
@@ -147,15 +147,21 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }, { merge: true });
         });
 
-        // 2. Billing
+        // 2. Billing and Notifications
         try {
             // Get Rates
             const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
             const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
             const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
             const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
+            
+            // Get all parents to search locally for better performance
+            const parentsSnap = await getDocs(collection(firestore, 'parents'));
+            const allParents = parentsSnap.docs.map(d => ({ ...d.data(), id: d.id })) as (Parent & {id: string})[];
+
 
             let billsCount = 0;
+            let absenceNotificationsCount = 0;
             const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
             // Re-fetch students to be safe
@@ -163,12 +169,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const studentMap = new Map(studentDocs.docs.map(d => [d.id, d.data() as Student]));
 
             for (const record of data.records) {
+                
+                const studentInfo = studentMap.get(record.studentId);
+                if (!studentInfo) continue;
+                
                 // BILLING RULE: Only if Present or Late
                 if (record.status === 'Present' || record.status === 'Late') {
                     
-                    const studentInfo = studentMap.get(record.studentId);
-                    if (!studentInfo) continue;
-
                     // A. Canteen Bill (Default: Everyone, unless usesCanteen is false)
                     if (canteenRate > 0 && studentInfo.usesCanteen !== false) {
                         const billRef = doc(firestore, 'financialRecords', `canteen-${record.studentId}-${dateStr}`);
@@ -205,13 +212,31 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                         billsCount++;
                     }
                 }
+
+                // NOTIFICATION RULE: Only if Absent
+                if (record.status === 'Absent') {
+                    // Find parent(s) linked to this student
+                    const parentsToNotify = allParents.filter(p => p.studentIds?.includes(record.studentId));
+
+                    for (const parent of parentsToNotify) {
+                         const notificationRef = doc(collection(firestore, 'notifications'));
+                         batch.set(notificationRef, {
+                            userId: parent.id, // The parent's UID
+                            title: "Student Absence Notification",
+                            message: `Dear Parent, please be advised that ${record.studentName} was marked absent from school today, ${format(selectedDate, 'PPP')}. If this is unexpected, please contact the school office.`,
+                            read: false,
+                            createdAt: serverTimestamp()
+                         });
+                         absenceNotificationsCount++;
+                    }
+                }
             }
 
             await batch.commit();
-            toast({ title: 'Success', description: `Attendance saved. ${billsCount} daily bills generated.` });
+            toast({ title: 'Success', description: `Attendance saved. ${billsCount} bills generated. ${absenceNotificationsCount} absence notifications sent.` });
 
         } catch (error: any) {
-            console.error("Billing Error:", error);
+            console.error("Billing/Notification Error:", error);
             toast({ variant: 'destructive', title: 'Error', description: error.message });
         } finally {
             setIsLoading(false);
@@ -244,7 +269,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                     {selectedDate ? format(selectedDate, 'PPP') : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus /></PopoverContent>
+                            <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setDate(d)} initialFocus /></PopoverContent>
                         </Popover>
                     </div>
                 </div>
