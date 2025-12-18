@@ -76,3 +76,44 @@ export async function generateJuniorScience(topic: string) {
     return { success: false, error: "Science lab is closed." };
   }
 }
+
+
+// --- NEW: PHONICS CHALLENGE GENERATOR ---
+const PhonicsChallengeSchema = z.object({
+    word: z.string().describe("The target word (e.g. Splash)"),
+    phonetic: z.string().describe("How it sounds (e.g. s-p-l-a-sh)"),
+    sentence: z.string().describe("A simple sentence using the word."),
+    emoji: z.string().describe("A visual icon")
+});
+
+export async function generatePhonicsChallenge(level: 'easy' | 'medium' | 'hard') {
+  try {
+    const prompt = `
+      Generate a Phonics/Pronunciation challenge for a child (Level: ${level}).
+      Return JSON:
+      {
+        "word": "The target word (e.g. Splash)",
+        "phonetic": "How it sounds (e.g. s-p-l-a-sh)",
+        "sentence": "A simple sentence using the word.",
+        "emoji": "A visual icon"
+      }
+    `;
+
+    const { output } = await ai.generate({
+      prompt: prompt,
+      output: {
+        schema: PhonicsChallengeSchema
+      }
+    });
+
+    if (!output) {
+        throw new Error("AI did not return a valid phonics challenge object.");
+    }
+
+    return { success: true, data: output };
+  } catch (error) {
+    console.error("Phonics Generation Error:", error);
+    return { success: false, error: "Phonics engine offline." };
+  }
+}
+
