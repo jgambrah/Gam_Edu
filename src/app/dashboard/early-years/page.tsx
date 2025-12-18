@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Plus, Brain, Calculator, BookOpen, Atom, Mic, ArrowRight, Save, Trash2, Library, Palette, Gift, Trophy, Music } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails } from '@/ai/flows/junior-actions';
+import { useToast } from '@/hooks/use-toast';
+
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -37,7 +39,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
 
     // Fetch Saved Phonics Words
     const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: wordLibrary, forceRefetch, isLoading: libraryLoading } = useCollection<any>(phonicsQuery);
+    const { data: wordLibrary, isLoading: libraryLoading, forceRefetch } = useCollection<any>(phonicsQuery);
 
     // Initial Load: Pick random word from library
     useEffect(() => { 
@@ -271,8 +273,9 @@ function ABCKingdom() {
 
 // --- 4. MATH PLAYGROUND (WITH STICKER REWARD) ---
 function MathPlayground() {
-    const firestore = useFirestore();
     const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
     const [mode, setMode] = useState<'add' | 'sub' | 'mul' | 'div'>('add');
     const [question, setQuestion] = useState({ a: 2, b: 3, icon: '🍎', ans: 5 });
     const [options, setOptions] = useState<number[]>([]);
@@ -296,38 +299,31 @@ function MathPlayground() {
 
     useEffect(() => { generateQuestion(); }, [mode]);
     
-    const awardSticker = async (stickerName: string, emoji: string) => {
-        if (!user || !firestore) return;
-        try {
-            await addDoc(collection(firestore, 'junior_stickers'), {
-                userId: user.uid,
-                name: stickerName,
-                emoji: emoji,
-                earnedAt: serverTimestamp()
-            });
-        } catch (e) {
-            console.error("Failed to award sticker:", e);
-        }
-    };
-
-    const checkAnswer = (val: number) => {
+    const checkAnswer = async (val: number) => {
         if (val === question.ans) {
+            const newStreak = streak + 1;
+            setStreak(newStreak);
             setFeedback("CORRECT! 🎉");
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             speak("Great Job!");
-            const newStreak = streak + 1;
-            setStreak(newStreak);
 
-            if (newStreak > 0 && newStreak % 3 === 0) {
-                const stickerName = `${question.icon} Master`;
-                awardSticker(stickerName, question.icon);
-                speak(`Wow, ${newStreak} in a row! You earned a ${stickerName} sticker!`);
+            if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
+                const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
+                const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
+                
+                await addDoc(collection(firestore, 'junior_stickers'), {
+                    userId: user.uid,
+                    emoji: randomSticker,
+                    name: 'Math Whiz',
+                    earnedAt: serverTimestamp()
+                });
+                toast({ title: "New Sticker!", description: `You earned a ${randomSticker}!` });
             }
 
             setTimeout(generateQuestion, 2000);
         } else {
-            setFeedback("Try Again! 🤔");
             setStreak(0);
+            setFeedback("Try Again! 🤔");
             speak("Try again.");
         }
     };
@@ -541,7 +537,6 @@ function StickerBook() {
     );
 }
 
-
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
@@ -564,7 +559,6 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1"><Palette className="w-4 h-4"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1"><Trophy className="w-4 h-4"/> Rewards</TabsTrigger>
             </TabsList>
-
             <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
             <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
             <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
