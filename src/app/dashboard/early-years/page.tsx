@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -9,11 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Plus, Brain, Calculator, BookOpen, Atom, Mic, ArrowRight, Save, Trash2, Library, Palette, Trophy, Gift, Music } from 'lucide-react';
+import { 
+  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift 
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
-
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -263,7 +266,7 @@ function ABCKingdom() {
             {alphabet.map(letter => (
                 <button 
                     key={letter}
-                    onClick={() => speak(`${letter}. ${letter} is for...`)}
+                    onClick={() => speak(`${letter}.`)}
                     className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center"
                 >
                     {letter}
@@ -273,99 +276,105 @@ function ABCKingdom() {
     );
 }
 
-// --- 4. MATH PLAYGROUND (WITH STICKER REWARD) ---
+// --- 4. MATH PLAYGROUND (WITH REWARDS) ---
 function MathPlayground() {
-    const { user } = useUser();
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [mode, setMode] = useState<'add' | 'sub' | 'mul' | 'div'>('add');
-    const [question, setQuestion] = useState({ a: 2, b: 3, icon: '🍎', ans: 5 });
-    const [options, setOptions] = useState<number[]>([]);
-    const [feedback, setFeedback] = useState("");
-    const [streak, setStreak] = useState(0);
+  const [mode, setMode] = useState<'add' | 'sub' | 'mul' | 'div'>('add');
+  const [question, setQuestion] = useState({ a: 2, b: 3, icon: '🍎', ans: 5 });
+  const [options, setOptions] = useState<number[]>([]);
+  const [feedback, setFeedback] = useState("");
+  const { user } = useUser(); 
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [streak, setStreak] = useState(0); 
 
-    const generateQuestion = () => {
-        const icons = ['🍎', '🍌', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪', '🎈', '⚽️'];
-        const icon = icons[Math.floor(Math.random() * icons.length)];
-        let a = 0, b = 0, ans = 0;
-        if (mode === 'add') { a = Math.floor(Math.random() * 9) + 1; b = Math.floor(Math.random() * 9) + 1; ans = a + b; }
-        else if (mode === 'sub') { a = Math.floor(Math.random() * 10) + 2; b = Math.floor(Math.random() * (a - 1)) + 1; ans = a - b; }
-        else if (mode === 'mul') { a = Math.floor(Math.random() * 5) + 1; b = Math.floor(Math.random() * 5) + 1; ans = a * b; }
-        else if (mode === 'div') { b = Math.floor(Math.random() * 4) + 2; ans = Math.floor(Math.random() * 5) + 1; a = b * ans; }
-        setQuestion({ a, b, icon, ans });
-        setFeedback("");
-        const wrong1 = ans + 1;
-        const wrong2 = Math.max(0, ans - (Math.floor(Math.random() * 2) + 1));
-        setOptions([ans, wrong1, wrong2].sort(() => Math.random() - 0.5));
-    };
+  const generateQuestion = useCallback(() => {
+    const icons = ['🍎', '🍌', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪', '🎈', '⚽️'];
+    const icon = icons[Math.floor(Math.random() * icons.length)];
+    let a = 0, b = 0, ans = 0;
+    if (mode === 'add') { a = Math.floor(Math.random() * 9) + 1; b = Math.floor(Math.random() * 9) + 1; ans = a + b; } 
+    else if (mode === 'sub') { a = Math.floor(Math.random() * 10) + 2; b = Math.floor(Math.random() * (a - 1)) + 1; ans = a - b; } 
+    else if (mode === 'mul') { a = Math.floor(Math.random() * 5) + 1; b = Math.floor(Math.random() * 5) + 1; ans = a * b; } 
+    else if (mode === 'div') { b = Math.floor(Math.random() * 4) + 2; ans = Math.floor(Math.random() * 5) + 1; a = b * ans; }
+    setQuestion({ a, b, icon, ans });
+    setFeedback("");
+    setOptions([ans, ans + 1, Math.max(0, ans - (Math.floor(Math.random() * 2) + 1))].sort(() => Math.random() - 0.5));
+  }, [mode]);
 
-    useEffect(() => { generateQuestion(); }, [mode]);
-    
-    const checkAnswer = async (val: number) => {
-        if (val === question.ans) {
-            const newStreak = streak + 1;
-            setStreak(newStreak);
-            setFeedback("CORRECT! 🎉");
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            speak("Great Job!");
+  useEffect(() => { generateQuestion(); }, [mode, generateQuestion]);
 
-            if (newStreak > 0 && newStreak % 3 === 0 && user && firestore) {
-                const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
-                const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
-                
-                await addDoc(collection(firestore, 'junior_stickers'), {
-                    userId: user.uid,
-                    emoji: randomSticker,
-                    name: 'Math Whiz',
-                    earnedAt: serverTimestamp()
-                });
-                toast({ title: "New Sticker!", description: `You earned a ${randomSticker}!` });
-            }
+  const checkAnswer = async (val: number) => {
+    if (val === question.ans) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      setFeedback("CORRECT! 🎉");
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      speak("Correct!");
 
-            setTimeout(generateQuestion, 2000);
-        } else {
-            setStreak(0);
-            setFeedback("Try Again! 🤔");
-            speak("Try again.");
-        }
-    };
+      if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
+          const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
+          const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
+          
+          await addDoc(collection(firestore, 'junior_stickers'), {
+              userId: user.uid,
+              emoji: randomSticker,
+              name: 'Math Whiz',
+              earnedAt: serverTimestamp()
+          });
+          toast({ title: "New Sticker!", description: `You earned a ${randomSticker}!` });
+      }
 
-    return (
-        <div className="flex flex-col items-center space-y-6">
-            <div className="flex gap-2 mb-4 bg-white p-2 rounded-full shadow-sm">
-                <Button variant={mode === 'add' ? 'default' : 'ghost'} onClick={() => setMode('add')} className="rounded-full bg-green-500 hover:bg-green-600 text-white font-bold">+</Button>
-                <Button variant={mode === 'sub' ? 'default' : 'ghost'} onClick={() => setMode('sub')} className="rounded-full bg-red-500 hover:bg-red-600 text-white font-bold">-</Button>
-                <Button variant={mode === 'mul' ? 'default' : 'ghost'} onClick={() => setMode('mul')} className="rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">×</Button>
-                <Button variant={mode === 'div' ? 'default' : 'ghost'} onClick={() => setMode('div')} className="rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold">÷</Button>
-            </div>
-            <div className="flex items-center gap-4 text-6xl font-bold text-slate-700 animate-in zoom-in">
-                <span>{question.a}</span>
-                <span className="text-slate-400">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span>
-                <span>{question.b}</span>
-                <span className="text-slate-400">=</span>
-                <span className="text-blue-600">?</span>
-            </div>
-            <div className="flex gap-6 mt-8">
-                {options.map((opt, i) => (
-                    <button key={i} onClick={() => checkAnswer(opt)} className="w-24 h-24 bg-yellow-400 hover:bg-yellow-300 text-white text-5xl font-bold rounded-3xl shadow-[0_8px_0_rgb(202,138,4)] active:shadow-none active:translate-y-2 transition-all">
-                        {opt}
-                    </button>
-                ))}
-            </div>
-            <div className="h-10 text-3xl font-bold text-green-600 mt-4">{feedback}</div>
-        </div>
-    );
+      setTimeout(generateQuestion, 1500);
+    } else {
+      setStreak(0);
+      setFeedback("Try Again! 🤔");
+      speak("Try again.");
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center space-y-6">
+      <div className="flex gap-2 mb-4 bg-white p-2 rounded-full shadow-sm">
+          <Button variant={mode === 'add' ? 'default' : 'ghost'} onClick={() => setMode('add')} className="rounded-full bg-green-500 hover:bg-green-600 text-white font-bold">+</Button>
+          <Button variant={mode === 'sub' ? 'default' : 'ghost'} onClick={() => setMode('sub')} className="rounded-full bg-red-500 hover:bg-red-600 text-white font-bold">-</Button>
+          <Button variant={mode === 'mul' ? 'default' : 'ghost'} onClick={() => setMode('mul')} className="rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">×</Button>
+          <Button variant={mode === 'div' ? 'default' : 'ghost'} onClick={() => setMode('div')} className="rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold">÷</Button>
+      </div>
+
+      <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-5xl my-4">
+        {Array.from({ length: question.a }).map((_, i) => <span key={i}>{question.icon}</span>)}
+        <span className="text-slate-400 mx-2 font-bold">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span>
+        {Array.from({ length: question.b }).map((_, i) => <span key={i}>{question.icon}</span>)}
+      </div>
+      
+      <div className="flex items-center gap-4 text-6xl font-bold text-slate-700">
+        <span>{question.a}</span>
+        <span className="text-slate-400">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span>
+        <span>{question.b}</span>
+        <span className="text-slate-400">=</span>
+        <span className="text-blue-600">?</span>
+      </div>
+
+      <div className="flex gap-6 mt-8">
+        {options.map((opt, i) => (
+          <button key={i} onClick={() => checkAnswer(opt)} className="w-24 h-24 bg-yellow-400 hover:bg-yellow-300 text-white text-5xl font-bold rounded-3xl shadow-[0_8px_0_rgb(202,138,4)] active:shadow-none active:translate-y-2 transition-all">
+            {opt}
+          </button>
+        ))}
+      </div>
+      <div className="h-10 text-3xl font-bold text-green-600 mt-4">{feedback}</div>
+    </div>
+  );
 }
 
 // --- 5. STORY SPARK ---
 function StorySpark({ canEdit }: { canEdit: boolean }) {
-    const { user } = useUser(); const firestore = useFirestore(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
+    const { user } = useUser(); const firestore = useFirestore(); const { toast } = useToast(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
     const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: savedStories } = useCollection<any>(storiesQuery);
+    const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorStory(topic); if(res.success) setStory(res.data); setLoading(false); };
-    const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); };
-    const handleDelete = async (id: string) => { if(confirm("Delete story?")) await deleteDoc(doc(firestore, 'junior_stories', id)); };
+    const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); forceRefetch(); toast({ title: "Story Saved!" }); };
+    const handleDelete = async (id: string) => { if(confirm("Delete story?")) { await deleteDoc(doc(firestore, 'junior_stories', id)); forceRefetch(); } };
 
     return (
         <div className="space-y-8">
@@ -381,13 +390,13 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
 // --- 6. SCIENCE WORLD (SEPARATED) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore(); const { user } = useUser(); const [topic, setTopic] = useState(''); const [fact, setFact] = useState<any>(null); const [loading, setLoading] = useState(false);
+    const firestore = useFirestore(); const { user } = useUser(); const { toast } = useToast(); const [topic, setTopic] = useState(''); const [fact, setFact] = useState<any>(null); const [loading, setLoading] = useState(false);
     const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: savedScience } = useCollection<any>(scienceQuery);
+    const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorScience(topic); if(res.success) setFact(res.data); setLoading(false); };
-    const handleSave = async () => { if(!user||!fact||!firestore)return; await addDoc(collection(firestore,'junior_science'),{...fact,createdAt:serverTimestamp(),createdBy:user.uid}); setFact(null); };
-    const handleDelete = async (id: string) => { if(confirm("Delete fact?")) await deleteDoc(doc(firestore, 'junior_science', id)); };
+    const handleSave = async () => { if(!user||!fact||!firestore)return; await addDoc(collection(firestore,'junior_science'),{...fact,createdAt:serverTimestamp(),createdBy:user.uid}); setFact(null); forceRefetch(); toast({title: "Fact Saved!"}) };
+    const handleDelete = async (id: string) => { if(confirm("Delete fact?")) { await deleteDoc(doc(firestore, 'junior_science', id)); forceRefetch(); }};
 
     return (
         <div className="space-y-8">
@@ -494,6 +503,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
             </TabsList>
             
+            {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
                 <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
                 <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
@@ -508,3 +518,4 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
