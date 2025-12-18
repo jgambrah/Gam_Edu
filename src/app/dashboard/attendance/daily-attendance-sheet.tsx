@@ -359,7 +359,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 </div>
                              </ScrollArea>
                             {fields.length > 0 && (
-                                <div className="pt-4 border-t mt-4 sticky bottom-0 bg-white p-4 shadow-up rounded-t-xl">
+                                <div className="pt-4 border-t mt-4">
                                     <Button type="submit" className="w-full h-12 text-lg font-bold bg-indigo-600 hover:bg-indigo-700" disabled={isLoading}>
                                         {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <Check className="mr-2 h-5 w-5"/>}
                                         Confirm Attendance & Generate Bills
