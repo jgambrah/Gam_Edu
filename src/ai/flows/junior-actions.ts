@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -111,7 +110,7 @@ export async function generatePhonicsChallenge(level: 'easy' | 'medium' | 'hard'
     }
 
     return { success: true, data: output };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Phonics Generation Error:", error);
     return { success: false, error: "Phonics engine offline." };
   }
