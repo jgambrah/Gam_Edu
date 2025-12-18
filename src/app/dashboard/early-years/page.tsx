@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,21 +22,24 @@ const speak = (text: string, rate = 0.9) => {
     window.speechSynthesis.speak(u);
 };
 
-// --- 1. VOICE COACH (UNCHANGED) ---
+// --- 1. VOICE COACH (UPGRADED) ---
 function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const [challenge, setChallenge] = useState<any>(null);
     const [isListening, setIsListening] = useState(false);
     const [feedback, setFeedback] = useState("Tap the Mic and say the word!");
     
+    // Teacher State
     const [newWord, setNewWord] = useState("");
     const [generatedPreview, setGeneratedPreview] = useState<any>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [viewMode, setViewMode] = useState<'practice' | 'library'>('practice');
 
+    // Fetch Saved Phonics Words
     const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: wordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
+    const { data: wordLibrary, forceRefetch, isLoading: libraryLoading } = useCollection<any>(phonicsQuery);
 
+    // Initial Load: Pick random word from library
     useEffect(() => { 
         if (wordLibrary && wordLibrary.length > 0 && !challenge) {
             pickRandomWord();
@@ -50,6 +53,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         setFeedback("Tap the Mic and say the word!");
     };
 
+    // --- TEACHER ACTIONS ---
     const handlePreview = async () => {
         if (!newWord) return;
         setIsGenerating(true);
@@ -77,6 +81,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         }
     };
 
+    // --- STUDENT ACTIONS ---
     const startListening = () => {
         if (!('webkitSpeechRecognition' in window)) {
             alert("Please use Google Chrome for Speech features.");
@@ -97,7 +102,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                 setFeedback(`PERFECT! You said "${spoken}" 🎉`);
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#4f46e5', '#16a34a'] });
                 speak(`Great job! ${challenge.word}`);
-                setTimeout(pickRandomWord, 3000);
+                setTimeout(pickRandomWord, 3000); // Auto next
             } else {
                 setFeedback(`I heard "${spoken}". Try again!`);
                 speak(`Almost! Try saying ${challenge.word}`);
@@ -108,6 +113,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-6">
+            {/* VIEW TOGGLE FOR TEACHERS */}
             {canEdit && (
                 <div className="flex justify-end mb-4">
                     <div className="bg-pink-100 p-1 rounded-lg flex gap-1">
@@ -121,12 +127,13 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+            {/* MODE: PRACTICE (STUDENT VIEW) */}
             {viewMode === 'practice' && (
                 <div className="flex flex-col items-center text-center space-y-6">
-                    {(!wordLibrary || wordLibrary.length === 0) ? (
+                    {(libraryLoading || (!wordLibrary || wordLibrary.length === 0)) ? (
                         <div className="text-center p-8 bg-slate-50 rounded-xl border-2 border-dashed">
-                            <p className="text-slate-500 mb-2">No words in the library yet.</p>
-                            {canEdit && <Button onClick={() => setViewMode('library')} variant="link">Go to Library to add words</Button>}
+                            {libraryLoading ? <Loader2 className="animate-spin h-6 w-6"/> : <p className="text-slate-500 mb-2">No words in the library yet.</p>}
+                            {canEdit && !libraryLoading && <Button onClick={() => setViewMode('library')} variant="link">Go to Library to add words</Button>}
                         </div>
                     ) : !challenge ? (
                         <Button onClick={pickRandomWord}>Start</Button>
@@ -169,6 +176,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+            {/* MODE: LIBRARY (TEACHER VIEW) */}
             {viewMode === 'library' && canEdit && (
                 <div className="space-y-8">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-pink-100">
@@ -219,7 +227,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 2. PHONICS FOREST (UNCHANGED) ---
+// --- 2. PHONICS FOREST (SOUNDBOARD) ---
 function PhonicsForest() {
     const soundGroups = [
         { name: "Vowels", color: "bg-red-100 text-red-600 border-red-200", sounds: ["a", "e", "i", "o", "u", "ay", "ee", "igh", "ow", "oo"] },
@@ -243,13 +251,19 @@ function PhonicsForest() {
     );
 }
 
-// --- 3. ABC KINGDOM (UNCHANGED) ---
+// --- 3. ABC KINGDOM (UPDATED) ---
 function ABCKingdom() {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     return (
         <div className="grid grid-cols-4 md:grid-cols-6 gap-4 max-w-4xl mx-auto">
             {alphabet.map(letter => (
-                <button key={letter} onClick={() => speak(`${letter}. ${letter} is for...`)} className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center">{letter}</button>
+                <button 
+                    key={letter}
+                    onClick={() => speak(`${letter}. ${letter} is for...`)}
+                    className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center"
+                >
+                    {letter}
+                </button>
             ))}
         </div>
     );
@@ -281,7 +295,7 @@ function MathPlayground() {
     };
 
     useEffect(() => { generateQuestion(); }, [mode]);
-
+    
     const awardSticker = async (stickerName: string, emoji: string) => {
         if (!user || !firestore) return;
         try {
@@ -304,7 +318,7 @@ function MathPlayground() {
             const newStreak = streak + 1;
             setStreak(newStreak);
 
-            if (newStreak % 3 === 0) {
+            if (newStreak > 0 && newStreak % 3 === 0) {
                 const stickerName = `${question.icon} Master`;
                 awardSticker(stickerName, question.icon);
                 speak(`Wow, ${newStreak} in a row! You earned a ${stickerName} sticker!`);
@@ -313,7 +327,7 @@ function MathPlayground() {
             setTimeout(generateQuestion, 2000);
         } else {
             setFeedback("Try Again! 🤔");
-            setStreak(0); // Reset streak
+            setStreak(0);
             speak("Try again.");
         }
     };
@@ -335,7 +349,7 @@ function MathPlayground() {
             </div>
             <div className="flex gap-6 mt-8">
                 {options.map((opt, i) => (
-                    <button key={i} onClick={() => checkAnswer(opt)} className="w-24 h-24 bg-yellow-400 text-white text-5xl font-bold rounded-3xl shadow-[0_8px_0_rgb(202,138,4)] active:shadow-none active:translate-y-2 transition-all">
+                    <button key={i} onClick={() => checkAnswer(opt)} className="w-24 h-24 bg-yellow-400 hover:bg-yellow-300 text-white text-5xl font-bold rounded-3xl shadow-[0_8px_0_rgb(202,138,4)] active:shadow-none active:translate-y-2 transition-all">
                         {opt}
                     </button>
                 ))}
@@ -382,7 +396,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. ART STUDIO ---
+// --- 6. ART STUDIO (CREATIVITY) ---
 function ArtStudio() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -392,8 +406,8 @@ function ArtStudio() {
     useEffect(() => {
         const canvas = canvasRef.current;
         if (canvas) {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            canvas.width = canvas.parentElement?.clientWidth || 800;
+            canvas.height = canvas.parentElement?.clientHeight || 600;
             const ctx = canvas.getContext('2d');
             if (ctx) {
                 ctx.lineCap = 'round';
@@ -410,6 +424,7 @@ function ArtStudio() {
         if (!ctx) return;
         
         const rect = canvas.getBoundingClientRect();
+        // Handle both Mouse and Touch events
         const x = (e.clientX || e.touches[0].clientX) - rect.left;
         const y = (e.clientY || e.touches[0].clientY) - rect.top;
 
@@ -435,7 +450,10 @@ function ArtStudio() {
         ctx.stroke();
     };
 
-    const stopDrawing = () => setIsDrawing(false);
+    const stopDrawing = () => {
+        setIsDrawing(false);
+    };
+
     const clearCanvas = () => {
         const canvas = canvasRef.current;
         if (canvas) {
@@ -446,16 +464,40 @@ function ArtStudio() {
             }
         }
     };
+
     const colors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#800080', '#FFC0CB', '#FFFFFF'];
+
     return (
         <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-100">
-                <div className="flex gap-2">{colors.map(c => <button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-slate-800 scale-110' : 'border-slate-200'}`} style={{ backgroundColor: c }}/>)}</div>
-                <div className="flex items-center gap-2"><span className="text-xs font-bold text-slate-500">Size</span><input type="range" min="1" max="20" value={brushSize} onChange={(e) => setBrushSize(Number(e.target.value))} className="w-24"/></div>
+                <div className="flex gap-2">{colors.map(c => (
+                    <button 
+                        key={c} 
+                        onClick={() => setColor(c)}
+                        className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-slate-800 scale-110' : 'border-slate-200'}`}
+                        style={{ backgroundColor: c }}
+                    />
+                ))}</div>
+                <div className="flex items-center gap-2"><span className="text-xs font-bold text-slate-500">Size</span><input 
+                    type="range" min="1" max="20" 
+                    value={brushSize} onChange={(e) => setBrushSize(Number(e.target.value))}
+                    className="w-24"
+                /></div>
                 <Button variant="outline" onClick={clearCanvas} className="text-red-500 hover:text-red-700">Clear</Button>
             </div>
+
             <div className="relative h-[400px] w-full bg-white rounded-3xl shadow-xl border-4 border-slate-200 overflow-hidden cursor-crosshair touch-none">
-                <canvas ref={canvasRef} className="w-full h-full" onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing}/>
+                <canvas
+                    ref={canvasRef}
+                    className="w-full h-full"
+                    onMouseDown={startDrawing}
+                    onMouseMove={draw}
+                    onMouseUp={stopDrawing}
+                    onMouseLeave={stopDrawing}
+                    onTouchStart={startDrawing}
+                    onTouchMove={draw}
+                    onTouchEnd={stopDrawing}
+                />
             </div>
             <p className="text-center text-slate-400 text-sm">Draw what you learned today!</p>
         </div>
@@ -466,22 +508,38 @@ function ArtStudio() {
 function StickerBook() {
     const { user } = useUser();
     const firestore = useFirestore();
-    const stickerQuery = useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'junior_stickers'), where('userId', '==', user.uid), orderBy('earnedAt', 'desc')) : null, [firestore, user]);
+    
+    // Fetch Stickers earned by this user
+    const stickerQuery = useMemoFirebase(
+        () => (user && firestore) ? query(collection(firestore, 'junior_stickers'), where('userId', '==', user.uid), orderBy('earnedAt', 'desc')) : null, 
+        [firestore, user]
+    );
     const { data: stickers } = useCollection<any>(stickerQuery);
+
     return (
         <div className="bg-yellow-50 p-6 rounded-3xl border-4 border-yellow-200 min-h-[300px]">
-            <h3 className="text-2xl font-bold text-yellow-800 mb-4 flex items-center gap-2"><Trophy className="text-yellow-600"/> My Sticker Book</h3>
+            <h3 className="text-2xl font-bold text-yellow-800 mb-4 flex items-center gap-2">
+                <Trophy className="text-yellow-600"/> My Sticker Book
+            </h3>
+            
             {!stickers || stickers.length === 0 ? (
-                <div className="text-center py-10 text-yellow-700 opacity-50"><Gift className="h-16 w-16 mx-auto mb-2"/><p>Keep learning to earn stickers!</p></div>
+                <div className="text-center py-10 text-yellow-700 opacity-50">
+                    <Gift className="h-16 w-16 mx-auto mb-2"/>
+                    <p>Keep learning to earn stickers!</p>
+                </div>
             ) : (
                 <div className="grid grid-cols-4 md:grid-cols-6 gap-4">
-                    {stickers.map(s => (<div key={s.id} className="aspect-square bg-white rounded-xl shadow-md flex flex-col items-center justify-center p-2 animate-in zoom-in"><span className="text-4xl">{s.emoji}</span><span className="text-[10px] text-slate-500 mt-1 font-bold">{s.name}</span></div>))}
+                    {stickers.map(s => (
+                        <div key={s.id} className="aspect-square bg-white rounded-xl shadow-md flex flex-col items-center justify-center p-2 animate-in zoom-in">
+                            <span className="text-4xl">{s.emoji}</span>
+                            <span className="text-[10px] text-slate-500 mt-1 font-bold">{s.name}</span>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>
     );
 }
-
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
@@ -489,29 +547,34 @@ export default function JuniorCampusPage() {
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
       <div className="max-w-6xl mx-auto mb-8 flex items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200">
         <div className="bg-yellow-400 p-3 rounded-2xl shadow-inner"><Rabbit className="h-10 w-10 text-white" /></div>
         <div><h1 className="text-4xl font-extrabold text-slate-800">Junior Campus</h1><p className="text-slate-500 font-medium">Learn, Play, and Grow!</p></div>
       </div>
       <div className="max-w-6xl mx-auto">
-        <Tabs defaultValue="math" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 h-20 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8">
-                <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold text-lg flex-col gap-1"><Calculator className="h-5 w-5"/> Math</TabsTrigger>
-                <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold text-lg flex-col gap-1"><Brain className="h-5 w-5"/> ABCs</TabsTrigger>
-                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold text-lg flex-col gap-1"><Mic className="h-5 w-5"/> Phonics</TabsTrigger>
-                <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold text-lg flex-col gap-1"><BookOpen className="h-5 w-5"/> Stories</TabsTrigger>
-                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-red-100 data-[state=active]:text-red-700 font-bold text-lg flex-col gap-1"><Palette className="h-5 w-5"/> Art</TabsTrigger>
-                <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold text-lg flex-col gap-1"><Trophy className="h-5 w-5"/> Rewards</TabsTrigger>
+        <Tabs defaultValue="coach" className="w-full">
+            <TabsList className="grid w-full grid-cols-7 h-20 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8">
+                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1"><Mic className="w-4 h-4"/> Voice Coach</TabsTrigger>
+                <TabsTrigger value="phonics" className="rounded-xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-bold flex flex-col items-center gap-1"><Music className="w-4 h-4"/> Phonics</TabsTrigger>
+                <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1"><Brain className="w-4 h-4"/> ABCs</TabsTrigger>
+                <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1"><Calculator className="w-4 h-4"/> Math</TabsTrigger>
+                <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1"><BookOpen className="w-4 h-4"/> Stories</TabsTrigger>
+                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1"><Palette className="w-4 h-4"/> Art</TabsTrigger>
+                <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1"><Trophy className="w-4 h-4"/> Rewards</TabsTrigger>
             </TabsList>
-            <TabsContent value="math"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200"><MathPlayground /></div></TabsContent>
-            <TabsContent value="abc"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
-            <TabsContent value="coach"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
-            <TabsContent value="stories"><div className="grid md:grid-cols-2 gap-6"><StorySpark canEdit={canEdit} /><ScienceWorld canEdit={canEdit} /></div></TabsContent>
-            <TabsContent value="art"><ArtStudio /></TabsContent>
-            <TabsContent value="rewards"><StickerBook /></TabsContent>
+
+            <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
+            <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
+            <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
+            <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200"><MathPlayground /></div></TabsContent>
+            <TabsContent value="stories" className="mt-0"><div className="grid md:grid-cols-2 gap-6"><StorySpark canEdit={canEdit} /><ScienceWorld canEdit={canEdit} /></div></TabsContent>
+            <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
+            <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
         </Tabs>
       </div>
     </div>
   );
 }
+
+    
