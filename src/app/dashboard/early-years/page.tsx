@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, increment, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,7 @@ const speak = (text: string, rate = 0.9) => {
     window.speechSynthesis.speak(u);
 };
 
-// --- 1. VOICE COACH (UPGRADED) ---
+// --- 1. VOICE COACH (PRONUNCIATION) ---
 function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -40,9 +40,8 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const [isGenerating, setIsGenerating] = useState(false);
     const [viewMode, setViewMode] = useState<'practice' | 'library'>('practice');
 
-    // Fetch Saved Phonics Words
     const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: wordLibrary, isLoading: libraryLoading, forceRefetch } = useCollection<any>(phonicsQuery);
+    const { data: wordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
 
     const pickRandomWord = useCallback(() => {
         if (!wordLibrary || wordLibrary.length === 0) return;
@@ -51,14 +50,12 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         setFeedback("Tap the Mic and say the word!");
     }, [wordLibrary]);
 
-    // Initial Load: Pick random word from library
     useEffect(() => { 
         if (wordLibrary && wordLibrary.length > 0 && !challenge) {
             pickRandomWord();
         }
     }, [wordLibrary, challenge, pickRandomWord]);
 
-    // --- TEACHER ACTIONS ---
     const handlePreview = async () => {
         if (!newWord) return;
         setIsGenerating(true);
@@ -88,7 +85,6 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         }
     };
 
-    // --- STUDENT ACTIONS ---
     const startListening = () => {
         if (!('webkitSpeechRecognition' in window)) {
             alert("Please use Google Chrome for Speech features.");
@@ -109,7 +105,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                 setFeedback(`PERFECT! You said "${spoken}" 🎉`);
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#4f46e5', '#16a34a'] });
                 speak(`Great job! ${challenge.word}`);
-                setTimeout(pickRandomWord, 3000); // Auto next
+                setTimeout(pickRandomWord, 3000);
             } else {
                 setFeedback(`I heard "${spoken}". Try again!`);
                 speak(`Almost! Try saying ${challenge.word}`);
@@ -120,7 +116,6 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-6">
-            {/* VIEW TOGGLE FOR TEACHERS */}
             {canEdit && (
                 <div className="flex justify-end mb-4">
                     <div className="bg-pink-100 p-1 rounded-lg flex gap-1">
@@ -134,13 +129,12 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-            {/* MODE: PRACTICE (STUDENT VIEW) */}
             {viewMode === 'practice' && (
                 <div className="flex flex-col items-center text-center space-y-6">
-                    {(libraryLoading || (!wordLibrary || wordLibrary.length === 0)) ? (
+                    {(!wordLibrary || wordLibrary.length === 0) ? (
                         <div className="text-center p-8 bg-slate-50 rounded-xl border-2 border-dashed">
-                            {libraryLoading ? <Loader2 className="animate-spin h-6 w-6"/> : <p className="text-slate-500 mb-2">No words in the library yet.</p>}
-                            {canEdit && !libraryLoading && <Button onClick={() => setViewMode('library')} variant="link">Go to Library to add words</Button>}
+                            <p className="text-slate-500 mb-2">No words in the library yet.</p>
+                            {canEdit && <Button onClick={() => setViewMode('library')} variant="link">Go to Library to add words</Button>}
                         </div>
                     ) : !challenge ? (
                         <Button onClick={pickRandomWord}>Start</Button>
@@ -183,7 +177,6 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-            {/* MODE: LIBRARY (TEACHER VIEW) */}
             {viewMode === 'library' && canEdit && (
                 <div className="space-y-8">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-pink-100">
@@ -310,7 +303,6 @@ function MathPlayground() {
       confetti({ particleCount: 150 });
       speak("Great Job!");
 
-      // REWARD LOGIC: Every 3 correct answers, give a sticker
       if (newStreak > 0 && newStreak % 3 === 0 && user && firestore) {
           const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
           const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
@@ -444,19 +436,16 @@ function ArtStudio() {
         const x = (e.clientX || e.touches[0].clientX) - rect.left; const y = (e.clientY || e.touches[0].clientY) - rect.top;
         ctx.lineTo(x, y); ctx.stroke();
     };
-    const stopDrawing = () => setIsDrawing(false);
     const clearCanvas = () => { const canvas = canvasRef.current; if(canvas){ const ctx=canvas.getContext('2d'); if(ctx){ctx.fillStyle="white";ctx.fillRect(0,0,canvas.width,canvas.height);} } };
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-100">
-                <div className="flex gap-2">
-                    {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB'].map(c => (<button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-slate-800 scale-110' : 'border-slate-200'}`} style={{ backgroundColor: c }} />))}
-                </div>
-                <Button variant="outline" onClick={clearCanvas} className="text-red-500 hover:text-red-700">Clear</Button>
+            <div className="flex gap-2 bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-100 justify-center">
+                {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB'].map(c => (<button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-slate-800 scale-110' : 'border-slate-200'}`} style={{ backgroundColor: c }} />))}
+                <Button variant="outline" onClick={clearCanvas} size="sm" className="ml-4 text-red-500">Clear</Button>
             </div>
             <div className="relative h-[400px] w-full bg-white rounded-3xl shadow-xl border-4 border-slate-200 overflow-hidden cursor-crosshair touch-none">
-                <canvas ref={canvasRef} className="w-full h-full" onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} />
+                <canvas ref={canvasRef} className="w-full h-full" onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={() => setIsDrawing(false)} onMouseLeave={() => setIsDrawing(false)} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={() => setIsDrawing(false)} />
             </div>
         </div>
     );
@@ -495,14 +484,15 @@ export default function JuniorCampusPage() {
       </div>
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
-            <TabsList className="grid w-full grid-cols-7 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto">
-                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Voice Coach</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto">
+                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
                 <TabsTrigger value="phonics" className="rounded-xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Music className="w-5 h-5"/> Phonics</TabsTrigger>
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
                 <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md-text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
+                <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
             
             {/* CONTENT AREAS */}
@@ -510,15 +500,14 @@ export default function JuniorCampusPage() {
                 <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
                 <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
-                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><div className="absolute top-4 right-4"><StickerBook /></div><MathPlayground /></div></TabsContent>
+                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
+                <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
         </Tabs>
       </div>
     </div>
   );
 }
-
-    
