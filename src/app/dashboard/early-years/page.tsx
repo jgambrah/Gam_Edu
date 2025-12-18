@@ -270,16 +270,16 @@ function ABCKingdom() {
     );
 }
 
-// --- 4. MATH PLAYGROUND (WITH REWARDS) ---
+// --- 4. MATH PLAYGROUND ---
 function MathPlayground() {
   const [mode, setMode] = useState<'add' | 'sub' | 'mul' | 'div'>('add');
   const [question, setQuestion] = useState({ a: 2, b: 3, icon: '🍎', ans: 5 });
   const [options, setOptions] = useState<number[]>([]);
   const [feedback, setFeedback] = useState("");
   const { user } = useUser(); 
-  const firestore = useFirestore();
-  const { toast } = useToast();
+  const firestore = useFirestore(); 
   const [streak, setStreak] = useState(0); 
+  const { toast } = useToast();
 
   const generateQuestion = useCallback(() => {
     const icons = ['🍎', '🍌', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪', '🎈', '⚽️'];
@@ -302,7 +302,7 @@ function MathPlayground() {
       setStreak(newStreak);
       setFeedback("CORRECT! 🎉");
       confetti({ particleCount: 150 });
-      speak("Great Job!");
+      speak("Correct!");
 
       if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
           const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
@@ -372,10 +372,12 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-8">
-            <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-purple-200">
-                <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> New Story</h3>
-                <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Space Cat)" className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600">{loading?<Loader2 className="animate-spin"/>:"Write"}</Button></div>
-            </div>
+            {canEdit && (
+                <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-purple-200">
+                    <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> New Story</h3>
+                    <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Space Cat)" className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600">{loading?<Loader2 className="animate-spin"/>:"Write"}</Button></div>
+                </div>
+            )}
             {story && <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in"><CardContent className="p-6 space-y-4"><h3 className="text-3xl text-center">{story.emojiIcon} {story.title}</h3><p className="text-xl leading-relaxed">{story.content}</p><div className="bg-white p-4 rounded-xl border border-yellow-200"><p className="font-bold text-orange-600">Quiz: {story.question}</p><p className="text-slate-400 text-sm mt-1 hover:text-green-600 cursor-pointer">Answer: {story.answer}</p></div><div className="flex gap-2"><Button onClick={()=>speak(story.content)} variant="outline" className="flex-1">Read</Button>{canEdit && <Button onClick={handleSave} className="flex-1 bg-green-600">Save</Button>}</div></CardContent></Card>}
             <div><h3 className="text-2xl font-bold text-slate-700 mb-4">📚 Library</h3><div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{savedStories?.map((s:any)=>(<Card key={s.id} className="cursor-pointer border-l-4 border-l-purple-500 hover:shadow-lg relative group"><CardContent className="p-4 flex items-center gap-4" onClick={()=>{setStory(s);speak(s.title);}}><div className="text-4xl">{s.emojiIcon}</div><div><h4 className="font-bold text-lg">{s.title}</h4></div></CardContent>{canEdit && <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}><Trash2 className="w-4 h-4"/></Button>}</Card>))}</div></div>
         </div>
@@ -394,10 +396,12 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-8">
-            <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> Discovery Lab</h3>
-                <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Volcanoes)" className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600">{loading?<Loader2 className="animate-spin"/>:"Discover"}</Button></div>
-            </div>
+            {canEdit && (
+                <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
+                    <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> Discovery Lab</h3>
+                    <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Volcanoes)" className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600">{loading?<Loader2 className="animate-spin"/>:"Discover"}</Button></div>
+                </div>
+            )}
             {fact && <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-8 rounded-3xl text-white text-center shadow-xl animate-in zoom-in cursor-pointer hover:scale-105 transition-transform" onClick={() => speak(`${fact.title}. ${fact.fact}`)}><div className="text-8xl mb-4 animate-bounce">{fact.emojiIcon}</div><h2 className="text-3xl font-extrabold mb-4">{fact.title}</h2><p className="text-xl font-medium">{fact.fact}</p>{canEdit && <Button onClick={(e) => { e.stopPropagation(); handleSave(); }} variant="secondary" className="mt-6 font-bold">Save Card</Button>}</div>}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{savedScience?.map((s:any)=>(<div key={s.id} className="relative group bg-white p-4 rounded-2xl shadow border-b-4 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-md" onClick={() => { setFact(s); speak(`${s.title}. ${s.fact}`); }}><div className="text-4xl mb-2">{s.emojiIcon}</div><h4 className="font-bold text-slate-800 leading-tight">{s.title}</h4>{canEdit && <Button size="icon" variant="ghost" className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}><Trash2 className="w-3 h-3"/></Button>}</div>))}</div>
         </div>
@@ -512,3 +516,4 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
