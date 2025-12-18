@@ -2,10 +2,10 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, increment } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,19 +45,19 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: wordLibrary, isLoading: libraryLoading, forceRefetch } = useCollection<any>(phonicsQuery);
 
+    const pickRandomWord = useCallback(() => {
+        if (!wordLibrary || wordLibrary.length === 0) return;
+        const random = wordLibrary[Math.floor(Math.random() * wordLibrary.length)];
+        setChallenge(random);
+        setFeedback("Tap the Mic and say the word!");
+    }, [wordLibrary]);
+
     // Initial Load: Pick random word from library
     useEffect(() => { 
         if (wordLibrary && wordLibrary.length > 0 && !challenge) {
             pickRandomWord();
         }
-    }, [wordLibrary, challenge]);
-
-    const pickRandomWord = () => {
-        if (!wordLibrary || wordLibrary.length === 0) return;
-        const random = wordLibrary[Math.floor(Math.random() * wordLibrary.length)];
-        setChallenge(random);
-        setFeedback("Tap the Mic and say the word!");
-    };
+    }, [wordLibrary, challenge, pickRandomWord]);
 
     // --- TEACHER ACTIONS ---
     const handlePreview = async () => {
@@ -81,6 +81,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleDelete = async (id: string) => {
+        if (!firestore) return;
         if (confirm("Remove this word?")) {
             await deleteDoc(doc(firestore, 'junior_phonics', id));
             toast({ title: "Removed", description: "Word deleted from the library." });
@@ -266,7 +267,7 @@ function ABCKingdom() {
             {alphabet.map(letter => (
                 <button 
                     key={letter}
-                    onClick={() => speak(`${letter}.`)}
+                    onClick={() => speak(letter)}
                     className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center"
                 >
                     {letter}
@@ -300,16 +301,17 @@ function MathPlayground() {
     setOptions([ans, ans + 1, Math.max(0, ans - (Math.floor(Math.random() * 2) + 1))].sort(() => Math.random() - 0.5));
   }, [mode]);
 
-  useEffect(() => { generateQuestion(); }, [mode, generateQuestion]);
+  useEffect(() => { generateQuestion(); }, [generateQuestion]);
 
   const checkAnswer = async (val: number) => {
     if (val === question.ans) {
       const newStreak = streak + 1;
       setStreak(newStreak);
       setFeedback("CORRECT! 🎉");
-      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-      speak("Correct!");
+      confetti({ particleCount: 150 });
+      speak("Great Job!");
 
+      // REWARD LOGIC: Every 5 correct answers, give a sticker
       if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
           const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
           const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
@@ -323,9 +325,9 @@ function MathPlayground() {
           toast({ title: "New Sticker!", description: `You earned a ${randomSticker}!` });
       }
 
-      setTimeout(generateQuestion, 1500);
+      setTimeout(generateQuestion, 2000);
     } else {
-      setStreak(0);
+      setStreak(0); // Reset streak on error
       setFeedback("Try Again! 🤔");
       speak("Try again.");
     }
@@ -374,7 +376,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorStory(topic); if(res.success) setStory(res.data); setLoading(false); };
     const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); forceRefetch(); toast({ title: "Story Saved!" }); };
-    const handleDelete = async (id: string) => { if(confirm("Delete story?")) { await deleteDoc(doc(firestore, 'junior_stories', id)); forceRefetch(); } };
+    const handleDelete = async (id: string) => { if(!firestore) return; if(confirm("Delete story?")) { await deleteDoc(doc(firestore, 'junior_stories', id)); forceRefetch(); } };
 
     return (
         <div className="space-y-8">
@@ -396,7 +398,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const handleGenerate = async () => { setLoading(true); const res = await generateJuniorScience(topic); if(res.success) setFact(res.data); setLoading(false); };
     const handleSave = async () => { if(!user||!fact||!firestore)return; await addDoc(collection(firestore,'junior_science'),{...fact,createdAt:serverTimestamp(),createdBy:user.uid}); setFact(null); forceRefetch(); toast({title: "Fact Saved!"}) };
-    const handleDelete = async (id: string) => { if(confirm("Delete fact?")) { await deleteDoc(doc(firestore, 'junior_science', id)); forceRefetch(); }};
+    const handleDelete = async (id: string) => { if(!firestore) return; if(confirm("Delete fact?")) { await deleteDoc(doc(firestore, 'junior_science', id)); forceRefetch(); }};
 
     return (
         <div className="space-y-8">
@@ -494,7 +496,7 @@ export default function JuniorCampusPage() {
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
             <TabsList className="grid w-full grid-cols-7 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto">
-                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
+                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Voice Coach</TabsTrigger>
                 <TabsTrigger value="phonics" className="rounded-xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Music className="w-5 h-5"/> Phonics</TabsTrigger>
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
@@ -519,3 +521,4 @@ export default function JuniorCampusPage() {
   );
 }
 
+    
