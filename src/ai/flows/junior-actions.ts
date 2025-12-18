@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -77,7 +78,7 @@ export async function generateJuniorScience(topic: string) {
 }
 
 
-// --- NEW: PHONICS CHALLENGE GENERATOR ---
+// --- PHONICS CHALLENGE GENERATOR ---
 const PhonicsChallengeSchema = z.object({
     word: z.string().describe("The target word (e.g. Splash)"),
     phonetic: z.string().describe("How it sounds (e.g. s-p-l-a-sh)"),
@@ -113,5 +114,46 @@ export async function generatePhonicsChallenge(level: 'easy' | 'medium' | 'hard'
   } catch (error) {
     console.error("Phonics Generation Error:", error);
     return { success: false, error: "Phonics engine offline." };
+  }
+}
+
+// --- NEW: GENERATE DATA FOR A SPECIFIC WORD ---
+const WordDetailsSchema = z.object({
+    word: z.string(),
+    phonetic: z.string(),
+    sentence: z.string(),
+    emoji: z.string()
+});
+
+export async function generateWordDetails(word: string) {
+  try {
+    const prompt = `
+      I need phonics data for the word: "${word}".
+      Target audience: 5-year-old child.
+      
+      Return JSON:
+      {
+        "word": "${word}",
+        "phonetic": "Simple phonetic spelling (e.g. 'el-e-fant')",
+        "sentence": "A very simple, fun sentence using the word.",
+        "emoji": "A single matching emoji"
+      }
+    `;
+
+    const { output } = await ai.generate({
+      prompt: prompt,
+      output: {
+        schema: WordDetailsSchema,
+      }
+    });
+
+    if (!output) {
+        throw new Error("AI did not return a valid word details object.");
+    }
+
+    return { success: true, data: output };
+  } catch (error) {
+    console.error("Word Details Generation Error:", error);
+    return { success: false, error: "Could not analyze word." };
   }
 }
