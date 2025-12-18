@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth, useFirestore, useUser } from '@/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -46,9 +46,20 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         console.log(`[RoleContext] Checking roles for ${user.uid}...`);
 
         // --- PRIORITY 1: STUDENTS ---
-        // Check if this is a student first.
+        // First attempt: Check doc with UID as ID
         const studentRef = doc(firestore, 'students', user.uid);
-        const studentSnap = await getDoc(studentRef);
+        let studentSnap = await getDoc(studentRef);
+        
+        // Second attempt: Query for the 'uid' field
+        if (!studentSnap.exists()) {
+            console.log("Student doc not found by ID, querying collection...");
+            const studentQuery = query(collection(firestore, 'students'), where('uid', '==', user.uid));
+            const studentQuerySnap = await getDocs(studentQuery);
+            if (!studentQuerySnap.empty) {
+                studentSnap = studentQuerySnap.docs[0];
+            }
+        }
+
         if (studentSnap.exists()) {
           console.log("Found in STUDENTS");
           setRole('Student');
@@ -56,6 +67,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
           return;
         }
+
 
         // --- PRIORITY 2: PARENTS ---
         const parentRef = doc(firestore, 'parents', user.uid);
@@ -188,5 +200,3 @@ export function RoleGuard({ children, allowedRoles }: { children: React.ReactNod
     </div>
   );
 }
-
-    
