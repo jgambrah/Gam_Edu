@@ -4,14 +4,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Plus, Brain, Calculator, BookOpen, Atom, Mic, Ear, Music, ArrowRight } from 'lucide-react';
+import { Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Plus, Brain, Calculator, BookOpen, Atom, Mic, ArrowRight, Save, Trash2, Library } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateJuniorScience, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateJuniorScience, generateWordDetails } from '@/ai/flows/junior-actions'; // Import the new action
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -21,30 +21,71 @@ const speak = (text: string, rate = 0.9) => {
     window.speechSynthesis.speak(u);
 };
 
-// --- 1. VOICE COACH (PRONUNCIATION) ---
-function VoiceCoach() {
+// --- 1. VOICE COACH (UPGRADED) ---
+function VoiceCoach({ canEdit }: { canEdit: boolean }) {
+    const firestore = useFirestore();
     const [challenge, setChallenge] = useState<any>(null);
     const [isListening, setIsListening] = useState(false);
     const [feedback, setFeedback] = useState("Tap the Mic and say the word!");
-    const [loading, setLoading] = useState(false);
+    
+    // Teacher State
+    const [newWord, setNewWord] = useState("");
+    const [generatedPreview, setGeneratedPreview] = useState<any>(null);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [viewMode, setViewMode] = useState<'practice' | 'library'>('practice');
 
-    // Initial Load
-    useEffect(() => { getNewWord(); }, []);
+    // Fetch Saved Phonics Words
+    const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const { data: wordLibrary, isLoading: libraryLoading, forceRefetch } = useCollection<any>(phonicsQuery);
 
-    const getNewWord = async () => {
-        setLoading(true);
+    // Initial Load: Pick random word from library
+    useEffect(() => { 
+        if (wordLibrary && wordLibrary.length > 0 && !challenge) {
+            pickRandomWord();
+        }
+    }, [wordLibrary, challenge]);
+
+    const pickRandomWord = () => {
+        if (!wordLibrary || wordLibrary.length === 0) return;
+        const random = wordLibrary[Math.floor(Math.random() * wordLibrary.length)];
+        setChallenge(random);
         setFeedback("Tap the Mic and say the word!");
-        const res = await generatePhonicsChallenge('easy');
-        if (res.success) setChallenge(res.data);
-        setLoading(false);
     };
 
+    // --- TEACHER ACTIONS ---
+    const handlePreview = async () => {
+        if (!newWord) return;
+        setIsGenerating(true);
+        const res = await generateWordDetails(newWord);
+        if (res.success) setGeneratedPreview(res.data);
+        setIsGenerating(false);
+    };
+
+    const handleSaveWord = async () => {
+        if (!generatedPreview || !firestore) return;
+        await addDoc(collection(firestore, 'junior_phonics'), {
+            ...generatedPreview,
+            createdAt: serverTimestamp()
+        });
+        setGeneratedPreview(null);
+        setNewWord("");
+        alert("Word added to Class Library!");
+        forceRefetch(); // Refresh library list
+    };
+
+    const handleDelete = async (id: string) => {
+        if (confirm("Remove this word?")) {
+            await deleteDoc(doc(firestore, 'junior_phonics', id));
+            forceRefetch(); // Refresh library list
+        }
+    };
+
+    // --- STUDENT ACTIONS ---
     const startListening = () => {
         if (!('webkitSpeechRecognition' in window)) {
-            alert("Your browser doesn't support speech recognition. Try Chrome!");
+            alert("Please use Google Chrome for Speech features.");
             return;
         }
-
         const recognition = new (window as any).webkitSpeechRecognition();
         recognition.lang = 'en-US';
         recognition.start();
@@ -54,96 +95,150 @@ function VoiceCoach() {
         recognition.onresult = (event: any) => {
             const spoken = event.results[0][0].transcript.toLowerCase();
             const target = challenge.word.toLowerCase();
-            
             setIsListening(false);
 
             if (spoken.includes(target) || target.includes(spoken)) {
                 setFeedback(`PERFECT! You said "${spoken}" 🎉`);
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#4f46e5', '#16a34a'] });
                 speak(`Great job! ${challenge.word}`);
+                setTimeout(pickRandomWord, 3000); // Auto next
             } else {
                 setFeedback(`I heard "${spoken}". Try again!`);
                 speak(`Almost! Try saying ${challenge.word}`);
             }
         };
-
-        recognition.onerror = () => {
-            setIsListening(false);
-            setFeedback("I didn't hear you. Try again!");
-        };
+        recognition.onerror = () => { setIsListening(false); setFeedback("I didn't hear you. Try again!"); };
     };
 
     return (
-        <div className="flex flex-col items-center space-y-6 text-center">
-            {loading || !challenge ? (
-                <Loader2 className="h-12 w-12 animate-spin text-pink-500"/>
-            ) : (
-                <div className="animate-in zoom-in space-y-6">
-                    <div className="text-8xl mb-2 hover:scale-110 transition-transform cursor-pointer" onClick={() => speak(challenge.word)}>
-                        {challenge.emoji}
-                    </div>
-                    
-                    <div>
-                        <h2 className="text-5xl font-black text-slate-800 tracking-wide mb-1">{challenge.word}</h2>
-                        <p className="text-xl text-slate-400 font-mono">/{challenge.phonetic}/</p>
-                    </div>
-
-                    <div className="bg-pink-50 p-4 rounded-xl border-2 border-pink-100">
-                        <p className="text-lg text-pink-800 font-medium">"{challenge.sentence}"</p>
-                        <Button variant="ghost" size="sm" onClick={() => speak(challenge.sentence)} className="mt-2 text-pink-500">
-                            <Volume2 className="w-4 h-4 mr-2"/> Hear Sentence
+        <div className="space-y-6">
+            {canEdit && (
+                <div className="flex justify-end mb-4">
+                    <div className="bg-pink-100 p-1 rounded-lg flex gap-1">
+                        <Button size="sm" variant={viewMode === 'practice' ? 'default' : 'ghost'} onClick={() => setViewMode('practice')} className={viewMode === 'practice' ? 'bg-pink-600' : 'text-pink-700'}>
+                            <Mic className="w-4 h-4 mr-2"/> Practice
+                        </Button>
+                        <Button size="sm" variant={viewMode === 'library' ? 'default' : 'ghost'} onClick={() => setViewMode('library')} className={viewMode === 'library' ? 'bg-pink-600' : 'text-pink-700'}>
+                            <Library className="w-4 h-4 mr-2"/> Library Manager
                         </Button>
                     </div>
+                </div>
+            )}
 
-                    <div className="flex flex-col items-center gap-4">
-                        <button 
-                            onClick={startListening}
-                            disabled={isListening}
-                            className={`h-24 w-24 rounded-full flex items-center justify-center shadow-xl transition-all transform hover:scale-105 ${isListening ? 'bg-red-500 animate-pulse' : 'bg-gradient-to-r from-pink-500 to-rose-500'}`}
-                        >
-                            <Mic className="h-10 w-10 text-white" />
-                        </button>
-                        <p className={`font-bold text-lg ${feedback.includes("PERFECT") ? "text-green-600" : "text-slate-600"}`}>
-                            {feedback}
-                        </p>
+            {viewMode === 'practice' && (
+                <div className="flex flex-col items-center text-center space-y-6">
+                    {(!wordLibrary || wordLibrary.length === 0) ? (
+                        <div className="text-center p-8 bg-slate-50 rounded-xl border-2 border-dashed">
+                            <p className="text-slate-500 mb-2">No words in the library yet.</p>
+                            {canEdit && <Button onClick={() => setViewMode('library')} variant="link">Go to Library to add words</Button>}
+                        </div>
+                    ) : !challenge ? (
+                        <Button onClick={pickRandomWord}>Start</Button>
+                    ) : (
+                        <div className="animate-in zoom-in space-y-6 max-w-md mx-auto">
+                            <div className="text-9xl mb-2 hover:scale-110 transition-transform cursor-pointer drop-shadow-xl" onClick={() => speak(challenge.word)}>
+                                {challenge.emoji}
+                            </div>
+                            
+                            <div>
+                                <h2 className="text-6xl font-black text-slate-800 tracking-wide mb-2">{challenge.word}</h2>
+                                <p className="text-2xl text-slate-400 font-mono tracking-widest">/{challenge.phonetic}/</p>
+                            </div>
+
+                            <div className="bg-pink-50 p-6 rounded-3xl border-4 border-pink-200 shadow-sm cursor-pointer hover:bg-pink-100 transition-colors" onClick={() => speak(challenge.sentence)}>
+                                <p className="text-xl text-pink-800 font-bold">"{challenge.sentence}"</p>
+                                <div className="flex items-center justify-center gap-2 mt-2 text-pink-400 text-sm font-bold uppercase tracking-wide">
+                                    <Volume2 className="w-4 h-4"/> Tap to Listen
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center gap-4 py-4">
+                                <button 
+                                    onClick={startListening}
+                                    disabled={isListening}
+                                    className={`h-28 w-28 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-105 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-4 ring-red-200' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-4 ring-pink-200'}`}
+                                >
+                                    <Mic className="h-12 w-12 text-white" />
+                                </button>
+                                <p className={`font-bold text-lg px-4 py-2 rounded-full ${feedback.includes("PERFECT") ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>
+                                    {feedback}
+                                </p>
+                            </div>
+
+                            <Button onClick={pickRandomWord} variant="ghost" className="mt-8 text-slate-400 hover:text-slate-600">
+                                Skip Word <ArrowRight className="ml-2 h-4 w-4"/>
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {viewMode === 'library' && canEdit && (
+                <div className="space-y-8">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-pink-100">
+                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Wand2 className="text-pink-500"/> Add New Word to Curriculum</h3>
+                        <div className="flex gap-2">
+                            <Input 
+                                placeholder="Type a word (e.g. Photosynthesis, Elephant, Run)" 
+                                value={newWord} 
+                                onChange={e => setNewWord(e.target.value)}
+                                className="text-lg"
+                            />
+                            <Button onClick={handlePreview} disabled={isGenerating} className="bg-pink-600 hover:bg-pink-700 min-w-[120px]">
+                                {isGenerating ? <Loader2 className="animate-spin"/> : "Generate"}
+                            </Button>
+                        </div>
+                        {generatedPreview && (
+                            <div className="mt-4 p-4 bg-pink-50 rounded-xl border border-pink-200 flex items-center justify-between animate-in slide-in-from-top-2">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-4xl">{generatedPreview.emoji}</span>
+                                    <div>
+                                        <p className="font-bold text-lg">{generatedPreview.word} <span className="text-sm font-normal text-slate-500">/{generatedPreview.phonetic}/</span></p>
+                                        <p className="text-sm text-slate-600">{generatedPreview.sentence}</p>
+                                    </div>
+                                </div>
+                                <Button onClick={handleSaveWord} className="bg-green-600 hover:bg-green-700"><Save className="w-4 h-4 mr-2"/> Save</Button>
+                            </div>
+                        )}
                     </div>
-
-                    <Button onClick={getNewWord} variant="outline" className="mt-8 border-slate-300">
-                        Next Word <ArrowRight className="ml-2 h-4 w-4"/>
-                    </Button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {wordLibrary?.map((item: any) => (
+                            <div key={item.id} className="flex items-center justify-between p-3 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl">{item.emoji}</span>
+                                    <div>
+                                        <p className="font-bold text-slate-800">{item.word}</p>
+                                        <p className="text-xs text-slate-400">/{item.phonetic}/</p>
+                                    </div>
+                                </div>
+                                <Button size="icon" variant="ghost" className="text-red-300 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(item.id)}>
+                                    <Trash2 className="w-4 h-4"/>
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
     );
 }
 
-// --- 2. PHONICS FOREST (SOUNDBOARD) ---
+// --- 2. PHONICS FOREST ---
 function PhonicsForest() {
     const soundGroups = [
-        { name: "Vowels", color: "bg-red-100 text-red-600 border-red-200", sounds: ["a", "e", "i", "o", "u"] },
-        { name: "Digraphs", color: "bg-green-100 text-green-600 border-green-200", sounds: ["ch", "sh", "th", "wh", "ph"] },
+        { name: "Vowels", color: "bg-red-100 text-red-600 border-red-200", sounds: ["a", "e", "i", "o", "u", "ay", "ee", "igh", "ow", "oo"] },
+        { name: "Digraphs", color: "bg-green-100 text-green-600 border-green-200", sounds: ["ch", "sh", "th", "wh", "ph", "ck", "ng", "qu"] },
         { name: "Blends", color: "bg-blue-100 text-blue-600 border-blue-200", sounds: ["bl", "br", "cl", "cr", "dr", "fl", "fr", "gl", "gr", "pl", "pr", "sl", "sm", "sn", "sp", "st", "sw", "tr"] },
     ];
-
     return (
         <div className="space-y-8">
-            <div className="text-center space-y-2">
-                <h2 className="text-3xl font-bold text-green-800">Phonics Forest 🌳</h2>
-                <p className="text-green-600">Tap a sound to hear it!</p>
-            </div>
-
+            <div className="text-center space-y-2"><h2 className="text-3xl font-bold text-green-800">Phonics Forest 🌳</h2><p className="text-green-600">Tap a sound to hear it!</p></div>
             {soundGroups.map((group) => (
                 <div key={group.name} className="space-y-3">
                     <h3 className="font-bold text-slate-500 uppercase text-sm tracking-wider ml-2">{group.name}</h3>
                     <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
                         {group.sounds.map((sound) => (
-                            <button
-                                key={sound}
-                                onClick={() => speak(sound)}
-                                className={`aspect-square rounded-2xl border-b-4 font-bold text-2xl shadow-sm hover:-translate-y-1 transition-all flex items-center justify-center ${group.color} bg-white`}
-                            >
-                                {sound}
-                            </button>
+                            <button key={sound} onClick={() => speak(sound)} className={`aspect-square rounded-2xl border-b-4 font-bold text-2xl shadow-sm hover:-translate-y-1 transition-all flex items-center justify-center ${group.color} bg-white`}>{sound}</button>
                         ))}
                     </div>
                 </div>
@@ -152,31 +247,24 @@ function PhonicsForest() {
     );
 }
 
-// --- 3. ABC KINGDOM (UPDATED) ---
+// --- 3. ABC KINGDOM ---
 function ABCKingdom() {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     return (
         <div className="grid grid-cols-4 md:grid-cols-6 gap-4 max-w-4xl mx-auto">
             {alphabet.map(letter => (
-                <button 
-                    key={letter}
-                    onClick={() => speak(`${letter}. ${letter} is for...`)}
-                    className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center"
-                >
-                    {letter}
-                </button>
+                <button key={letter} onClick={() => speak(`${letter}. ${letter} is for...`)} className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center">{letter}</button>
             ))}
         </div>
     );
 }
 
-// --- 4. MATH PLAYGROUND (EXISTING) ---
+// --- 4. MATH PLAYGROUND ---
 function MathPlayground() {
   const [mode, setMode] = useState<'add' | 'sub' | 'mul' | 'div'>('add');
   const [question, setQuestion] = useState({ a: 2, b: 3, icon: '🍎', ans: 5 });
   const [options, setOptions] = useState<number[]>([]);
   const [feedback, setFeedback] = useState("");
-
   const generateQuestion = () => {
     const icons = ['🍎', '🍌', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪'];
     const icon = icons[Math.floor(Math.random() * icons.length)];
@@ -190,7 +278,6 @@ function MathPlayground() {
     setOptions([ans, ans + 1, Math.max(0, ans - (Math.floor(Math.random() * 2) + 1))].sort(() => Math.random() - 0.5));
   };
   useEffect(() => { generateQuestion(); }, [mode]);
-
   const checkAnswer = (val: number) => {
     if (val === question.ans) {
       setFeedback("CORRECT! 🎉");
@@ -202,7 +289,6 @@ function MathPlayground() {
       speak("Try again.");
     }
   };
-
   return (
     <div className="flex flex-col items-center space-y-6">
       <div className="flex gap-2 mb-4 bg-white p-2 rounded-full shadow-sm">
@@ -212,20 +298,14 @@ function MathPlayground() {
           <Button variant={mode === 'div' ? 'default' : 'ghost'} onClick={() => setMode('div')} className="rounded-full bg-orange-500 text-white font-bold">÷</Button>
       </div>
       <div className="flex items-center gap-4 text-6xl font-bold text-slate-700">
-        <span>{question.a}</span>
-        <span className="text-slate-400">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span>
-        <span>{question.b}</span>
-        <span className="text-slate-400">=</span>
-        <span className="text-blue-600">?</span>
+        <span>{question.a}</span><span className="text-slate-400">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span><span>{question.b}</span><span className="text-slate-400">=</span><span className="text-blue-600">?</span>
       </div>
       <div className="flex gap-6 mt-8">
         {options.map((opt, i) => (
-          <button key={i} onClick={() => checkAnswer(opt)} className="w-24 h-24 bg-yellow-400 text-white text-5xl font-bold rounded-3xl shadow-[0_8px_0_rgb(202,138,4)] active:shadow-none active:translate-y-2 transition-all">
-            {opt}
-          </button>
+          <button key={i} onClick={() => checkAnswer(opt)} className="w-24 h-24 bg-yellow-400 text-white text-5xl font-bold rounded-3xl shadow-[0_8px_0_rgb(202,138,4)] active:shadow-none active:translate-y-2 transition-all">{opt}</button>
         ))}
       </div>
-      <div className="h-10 text-3xl font-bold text-green-600 mt-4">{feedback}</div>
+       <div className="h-10 text-3xl font-bold text-green-600 mt-4">{feedback}</div>
     </div>
   );
 }
@@ -239,152 +319,42 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
-
     const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: savedStories } = useCollection<any>(storiesQuery);
-
-    const handleGenerate = async () => {
-        if (!topic) return;
-        setLoading(true);
-        setStory(null);
-        setShowAnswer(false);
-        const result = await generateJuniorStory(topic);
-        if (result.success) {
-            setStory(result.data);
-            setTimeout(() => speak(result.data.title + ". " + result.data.content), 500);
-        }
-        setLoading(false);
-    };
-
-    const handleSave = async () => {
-        if (!user || !story || !firestore) return;
-        setSaving(true);
-        try {
-            await addDoc(collection(firestore, 'junior_stories'), { ...story, topic, createdAt: serverTimestamp(), createdBy: user.uid });
-            setStory(null);
-        } catch (e) { console.error(e); }
-        setSaving(false);
-    };
-
+    const handleGenerate = async () => { if (!topic) return; setLoading(true); setStory(null); setShowAnswer(false); const result = await generateJuniorStory(topic); if (result.success) { setStory(result.data); setTimeout(() => speak(result.data.title + ". " + result.data.content), 500); } setLoading(false); };
+    const handleSave = async () => { if (!user || !story || !firestore) return; setSaving(true); try { await addDoc(collection(firestore, 'junior_stories'), { ...story, topic, createdAt: serverTimestamp(), createdBy: user.uid }); setStory(null); } catch (e) { console.error(e); } setSaving(false); };
     return (
         <div className="space-y-4">
             <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-purple-200">
                 <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> Create a New Story</h3>
-                <div className="flex gap-2">
-                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. A dancing dinosaur" className="text-lg h-12 rounded-xl" />
-                    <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600 hover:bg-purple-700">{loading ? <Loader2 className="animate-spin"/> : "Go!"}</Button>
-                </div>
-                <div className="flex gap-2 mt-3 overflow-x-auto pb-2">
-                    {['🦄 Unicorn', '🚒 Fire Truck', '🧜‍♀️ Mermaid', '🦁 Lion'].map(t => (
-                        <button key={t} onClick={() => setTopic(t)} className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm font-bold hover:bg-purple-100 whitespace-nowrap">{t}</button>
-                    ))}
-                </div>
+                <div className="flex gap-2"><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. A dancing dinosaur" className="text-lg h-12 rounded-xl" /><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600 hover:bg-purple-700">{loading ? <Loader2 className="animate-spin" /> : "Go!"}</Button></div>
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-2">{['🦄 Unicorn', '🚒 Fire Truck', '🧜‍♀️ Mermaid', '🦁 Lion'].map(t => (<button key={t} onClick={() => setTopic(t)} className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm font-bold hover:bg-purple-100 whitespace-nowrap">{t}</button>))}</div>
             </div>
-
-            {story && (
-                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in">
-                    <CardHeader><CardTitle className="text-3xl text-center">{story.emojiIcon} {story.title}</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <p className="text-xl leading-relaxed font-medium text-slate-800">{story.content}</p>
-                        <div className="bg-white p-4 rounded-xl border border-yellow-200">
-                            <p className="font-bold text-orange-600">Question: {story.question}</p>
-                            <p className="text-slate-400 text-sm mt-1 hover:text-green-600 cursor-pointer transition-colors" onClick={() => setShowAnswer(!showAnswer)}>
-                                {showAnswer ? `Answer: ${story.answer}` : "Click to see answer"}
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                            <Button onClick={() => speak(story.content)} variant="outline" className="flex-1"><Volume2 className="mr-2"/> Read to Me</Button>
-                            {canEdit && (
-                                <Button onClick={handleSave} disabled={saving} className="flex-1 bg-green-600 hover:bg-green-700">
-                                    {saving ? <Loader2 className="animate-spin"/> : <Plus className="mr-2"/>} Save to Library
-                                </Button>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            <div>
-                <h3 className="text-2xl font-bold text-slate-700 mb-4 mt-8">📚 Class Library</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                    {savedStories?.map((s: any) => (
-                        <Card key={s.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-purple-500" onClick={() => { setStory(s); speak(s.title); }}>
-                            <CardContent className="p-4 flex items-center gap-4">
-                                <div className="text-4xl">{s.emojiIcon}</div>
-                                <div>
-                                    <h4 className="font-bold text-lg leading-tight">{s.title}</h4>
-                                    <p className="text-xs text-slate-500 mt-1">Tap to read</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </div>
+            {story && (<Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in"><CardHeader><CardTitle className="text-3xl text-center">{story.emojiIcon} {story.title}</CardTitle></CardHeader><CardContent className="space-y-4"><p className="text-xl leading-relaxed font-medium text-slate-800">{story.content}</p><div className="bg-white p-4 rounded-xl border border-yellow-200"><p className="font-bold text-orange-600">Question: {story.question}</p><p className="text-slate-400 text-sm mt-1 hover:text-green-600 cursor-pointer transition-colors" onClick={() => setShowAnswer(!showAnswer)}>{showAnswer ? `Answer: ${story.answer}` : "Click to see answer"}</p></div><div className="flex gap-2"><Button onClick={() => speak(story.content)} variant="outline" className="flex-1"><Volume2 className="mr-2" /> Read to Me</Button>{canEdit && (<Button onClick={handleSave} disabled={saving} className="flex-1 bg-green-600 hover:bg-green-700">{saving ? <Loader2 className="animate-spin" /> : <Plus className="mr-2" />} Save to Library</Button>)}</div></CardContent></Card>)}
+            <div><h3 className="text-2xl font-bold text-slate-700 mb-4 mt-8">📚 Class Library</h3><div className="grid md:grid-cols-2 gap-4">{savedStories?.map((s: any) => (<Card key={s.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-purple-500" onClick={() => { setStory(s); speak(s.title); }}><CardContent className="p-4 flex items-center gap-4"><div className="text-4xl">{s.emojiIcon}</div><div><h4 className="font-bold text-lg leading-tight">{s.title}</h4><p className="text-xs text-slate-500 mt-1">Tap to read</p></div></CardContent></Card>))}</div></div>
         </div>
     );
 }
 
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const [topic, setTopic] = useState('');
-    const [fact, setFact] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-
+    const firestore = useFirestore(); const { user } = useUser(); const [topic, setTopic] = useState(''); const [fact, setFact] = useState<any>(null); const [loading, setLoading] = useState(false);
     const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: savedScience } = useCollection<any>(scienceQuery);
-
-    const handleGenerate = async () => {
-        if (!topic) return;
-        setLoading(true);
-        const result = await generateJuniorScience(topic);
-        if (result.success) setFact(result.data);
-        setLoading(false);
-    };
-
-    const handleSave = async () => {
-        if (!user || !fact || !firestore) return;
-        try {
-            await addDoc(collection(firestore, 'junior_science'), { ...fact, createdAt: serverTimestamp() });
-            setFact(null);
-        } catch (e) { console.error(e); }
-    };
-
+    const handleGenerate = async () => { setLoading(true); const res = await generateJuniorScience(topic); if (res.success) setFact(res.data); setLoading(false); };
+    const handleSave = async () => { if (!user || !fact || !firestore) return; await addDoc(collection(firestore, 'junior_science'), { ...fact, createdAt: serverTimestamp() }); setFact(null); };
     return (
         <div className="space-y-4">
             <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
                 <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> Discover Something New</h3>
-                <div className="flex gap-2">
-                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Why is the sky blue?" className="text-lg h-12 rounded-xl" />
-                    <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 hover:bg-blue-700">{loading ? <Loader2 className="animate-spin"/> : "Discover"}</Button>
-                </div>
-                <div className="flex gap-2 mt-3 overflow-x-auto pb-2">
-                    {['🌈 Rainbows', '🌋 Volcanoes', '🦋 Butterflies', '🌕 The Moon'].map(t => (
-                        <button key={t} onClick={() => setTopic(t)} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-bold hover:bg-blue-100 whitespace-nowrap">{t}</button>
-                    ))}
-                </div>
+                <div className="flex gap-2"><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic..." className="text-lg h-12 rounded-xl" /><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600">{loading ? <Loader2 className="animate-spin" /> : "Discover"}</Button></div>
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-2">{['🌈 Rainbows', '🌋 Volcanoes', '🦋 Butterflies', '🌕 The Moon'].map(t => (<button key={t} onClick={() => setTopic(t)} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-bold hover:bg-blue-100 whitespace-nowrap">{t}</button>))}</div>
             </div>
-
-            {fact && (
-                <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-8 rounded-3xl text-white text-center shadow-xl animate-in zoom-in">
-                    <div className="text-8xl mb-4 animate-bounce">{fact.emojiIcon}</div>
-                    <h2 className="text-3xl font-extrabold mb-4">{fact.title}</h2>
-                    <p className="text-xl font-medium leading-relaxed">{fact.fact}</p>
-                    {canEdit && <Button onClick={handleSave} variant="secondary" className="mt-6 font-bold">Save Card</Button>}
-                </div>
-            )}
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {savedScience?.map((s: any) => (
-                    <div key={s.id} className="bg-white p-4 rounded-2xl shadow border-b-4 border-blue-200 flex flex-col items-center text-center">
-                        <div className="text-4xl mb-2">{s.emojiIcon}</div>
-                        <h4 className="font-bold text-slate-800 leading-tight">{s.title}</h4>
-                    </div>
-                ))}
-            </div>
+            {fact && <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-8 rounded-3xl text-white text-center shadow-xl"><div className="text-8xl mb-4 animate-bounce">{fact.emojiIcon}</div><h2 className="text-3xl font-extrabold mb-4">{fact.title}</h2><p className="text-xl font-medium">{fact.fact}</p>{canEdit && <Button onClick={handleSave} variant="secondary" className="mt-6 font-bold">Save Card</Button>}</div>}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">{savedScience?.map((s: any) => (<div key={s.id} className="bg-white p-4 rounded-2xl shadow border-b-4 border-blue-200 flex flex-col items-center text-center"><div className="text-4xl mb-2">{s.emojiIcon}</div><h4 className="font-bold text-slate-800 leading-tight">{s.title}</h4></div>))}</div>
         </div>
     );
 }
+
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
@@ -397,7 +367,6 @@ export default function JuniorCampusPage() {
         <div className="bg-yellow-400 p-3 rounded-2xl shadow-inner"><Rabbit className="h-10 w-10 text-white" /></div>
         <div><h1 className="text-4xl font-extrabold text-slate-800">Junior Campus</h1><p className="text-slate-500 font-medium">Learn, Play, and Grow!</p></div>
       </div>
-
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
             <TabsList className="grid w-full grid-cols-5 h-20 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8">
@@ -409,7 +378,7 @@ export default function JuniorCampusPage() {
             </TabsList>
 
             <TabsContent value="coach" className="mt-0">
-                <div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach /></div>
+                <div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div>
             </TabsContent>
             <TabsContent value="phonics" className="mt-0">
                 <div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div>
