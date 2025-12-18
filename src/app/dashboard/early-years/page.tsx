@@ -4,12 +4,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Plus, Brain, Calculator, BookOpen, Atom, Mic, ArrowRight, Save, Trash2, Library, Palette, Gift, Trophy } from 'lucide-react';
+import { Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Plus, Brain, Calculator, BookOpen, Atom, Mic, ArrowRight, Save, Trash2, Library, Palette, Gift, Trophy, Music } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails } from '@/ai/flows/junior-actions';
 
@@ -359,7 +359,7 @@ function MathPlayground() {
     );
 }
 
-// --- 5. STORY & SCIENCE (UNCHANGED) ---
+// --- 5. STORY & SCIENCE (UNCHANGED BUT CONDENSED) ---
 function StorySpark({ canEdit }: { canEdit: boolean }) {
     const { user } = useUser(); const firestore = useFirestore(); const [story, setStory] = useState<any>(null); const [topic, setTopic] = useState(''); const [loading, setLoading] = useState(false);
     const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
@@ -576,5 +576,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
-    
