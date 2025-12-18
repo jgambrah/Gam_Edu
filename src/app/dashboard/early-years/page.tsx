@@ -27,6 +27,7 @@ const speak = (text: string, rate = 0.9) => {
 // --- 1. VOICE COACH (UPGRADED) ---
 function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [challenge, setChallenge] = useState<any>(null);
     const [isListening, setIsListening] = useState(false);
     const [feedback, setFeedback] = useState("Tap the Mic and say the word!");
@@ -72,13 +73,14 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         });
         setGeneratedPreview(null);
         setNewWord("");
-        alert("Word added to Class Library!");
+        toast({ title: "Success", description: "Word added to Class Library!" });
         forceRefetch();
     };
 
     const handleDelete = async (id: string) => {
         if (confirm("Remove this word?")) {
             await deleteDoc(doc(firestore, 'junior_phonics', id));
+            toast({ title: "Removed", description: "Word deleted from the library." });
             forceRefetch();
         }
     };
@@ -307,7 +309,7 @@ function MathPlayground() {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             speak("Great Job!");
 
-            if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
+            if (newStreak > 0 && newStreak % 3 === 0 && user && firestore) {
                 const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
                 const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
                 
@@ -365,8 +367,8 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     return (
         <div className="space-y-8">
             <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-purple-200">
-                 <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> New Story</h3>
-                 <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic..." className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600">{loading?<Loader2 className="animate-spin"/>:"Write"}</Button></div>
+                <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> New Story</h3>
+                <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic..." className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600">{loading?<Loader2 className="animate-spin"/>:"Write"}</Button></div>
             </div>
             {story && <Card className="border-4 border-yellow-300 bg-yellow-50"><CardContent className="p-6 space-y-4"><h3 className="text-3xl text-center">{story.emojiIcon} {story.title}</h3><p className="text-xl">{story.content}</p><div className="bg-white p-4 rounded-xl border border-yellow-200"><p className="font-bold text-orange-600">Quiz: {story.question}</p><p className="text-slate-400 text-sm mt-1 hover:text-green-600 cursor-pointer">Answer: {story.answer}</p></div><div className="flex gap-2"><Button onClick={()=>speak(story.content)} variant="outline" className="flex-1">Read</Button>{canEdit && <Button onClick={handleSave} className="flex-1 bg-green-600">Save</Button>}</div></CardContent></Card>}
             <div><h3 className="text-2xl font-bold text-slate-700 mb-4">📚 Class Library</h3><div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{savedStories?.map((s:any)=>(<Card key={s.id} className="cursor-pointer border-l-4 border-l-purple-500 hover:shadow-lg" onClick={()=>{setStory(s);speak(s.title);}}><CardContent className="p-4 flex items-center gap-4"><div className="text-4xl">{s.emojiIcon}</div><div><h4 className="font-bold text-lg">{s.title}</h4></div></CardContent></Card>))}</div></div>
@@ -559,6 +561,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1"><Palette className="w-4 h-4"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1"><Trophy className="w-4 h-4"/> Rewards</TabsTrigger>
             </TabsList>
+
             <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
             <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
             <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
