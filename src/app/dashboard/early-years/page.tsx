@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift 
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -50,7 +50,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
         setChallenge(random);
         setFeedback("Tap the Mic and say the word!");
     }, [wordLibrary]);
-
+    
     useEffect(() => { 
         if (wordLibrary && wordLibrary.length > 0 && !challenge) {
             pickRandomWord();
@@ -254,18 +254,38 @@ function PhonicsForest() {
 
 // --- 3. ABC KINGDOM ---
 function ABCKingdom() {
+    const [mode, setMode] = useState<'upper' | 'lower' | 'both'>('upper');
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
+    const getDisplay = (letter: string) => {
+        if (mode === 'lower') return letter.toLowerCase();
+        if (mode === 'both') return `${letter}${letter.toLowerCase()}`;
+        return letter;
+    };
+    
+    const speakLetter = (letter: string) => {
+        if (mode === 'lower') speak(letter.toLowerCase());
+        else speak(letter);
+    }
+
     return (
-        <div className="grid grid-cols-4 md:grid-cols-6 gap-4 max-w-4xl mx-auto">
-            {alphabet.map(letter => (
-                <button 
-                    key={letter}
-                    onClick={() => speak(`${letter}`)}
-                    className="aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center"
-                >
-                    {letter}
-                </button>
-            ))}
+        <div className="space-y-6">
+            <div className="flex justify-center gap-2">
+                <Button onClick={() => setMode('upper')} variant={mode === 'upper' ? 'default' : 'outline'}>ABC</Button>
+                <Button onClick={() => setMode('lower')} variant={mode === 'lower' ? 'default' : 'outline'}>abc</Button>
+                <Button onClick={() => setMode('both')} variant={mode === 'both' ? 'default' : 'outline'}>A a</Button>
+            </div>
+            <div className="grid grid-cols-4 md:grid-cols-6 gap-4 max-w-4xl mx-auto">
+                {alphabet.map(letter => (
+                    <button 
+                        key={letter}
+                        onClick={() => speakLetter(letter)}
+                        className={`aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center ${mode === 'both' ? 'text-3xl' : 'text-4xl'}`}
+                    >
+                        {getDisplay(letter)}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
@@ -364,34 +384,129 @@ function MathPlayground() {
 function StorySpark({ canEdit }: { canEdit: boolean }) {
     const { user } = useUser(); 
     const firestore = useFirestore(); 
-    const {toast} = useToast(); 
+    const { toast } = useToast();
     const [story, setStory] = useState<any>(null); 
     const [topic, setTopic] = useState(''); 
     const [loading, setLoading] = useState(false);
     
-    // FIX: Only query when user is logged in
+    // Quiz State
+    const [userAnswer, setUserAnswer] = useState('');
+    const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
+    const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+    
     const storiesQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
     const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
     
-    const handleGenerate = async () => { setLoading(true); const res = await generateJuniorStory(topic); if(res.success) setStory(res.data); setLoading(false); };
-    const handleSave = async () => { if(!user||!story||!firestore)return; await addDoc(collection(firestore,'junior_stories'),{...story,topic,createdAt:serverTimestamp(),createdBy:user.uid}); setStory(null); forceRefetch(); toast({title: "Story Saved!"}); };
-    const handleDelete = async (id: string) => { if(!firestore) return; if(confirm("Delete story?")) { await deleteDoc(doc(firestore, 'junior_stories', id)); forceRefetch(); } };
+    const handleGenerate = async () => { 
+        setLoading(true); 
+        const res = await generateJuniorStory(topic); 
+        if (res.success) {
+            setStory(res.data);
+            // Reset quiz state when new story is loaded
+            setUserAnswer('');
+            setIsAnswerSubmitted(false);
+            setIsAnswerCorrect(false);
+        }
+        setLoading(false); 
+    };
+    
+    const handleSave = async () => { 
+        if (!user || !story || !firestore) return; 
+        await addDoc(collection(firestore, 'junior_stories'), { ...story, topic, createdAt: serverTimestamp(), createdBy: user.uid }); 
+        setStory(null); 
+        forceRefetch(); 
+        toast({ title: "Story Saved!" }); 
+    };
+
+    const handleDelete = async (id: string) => { 
+        if (!firestore) return;
+        if (confirm("Delete story?")) { 
+            await deleteDoc(doc(firestore, 'junior_stories', id)); 
+            forceRefetch(); 
+        } 
+    };
+    
+    const handleCheckAnswer = () => {
+        if (!userAnswer.trim() || !story) return;
+        const correct = userAnswer.toLowerCase().trim() === story.answer.toLowerCase().trim();
+        setIsAnswerCorrect(correct);
+        setIsAnswerSubmitted(true);
+        speak(correct ? 'Correct!' : 'Not quite, try again!');
+    };
+
+    const handleSelectStory = (s: any) => {
+        setStory(s);
+        speak(s.title);
+        setUserAnswer('');
+        setIsAnswerSubmitted(false);
+        setIsAnswerCorrect(false);
+    };
 
     return (
         <div className="space-y-8">
             {canEdit && (
                 <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-purple-200">
                     <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> New Story</h3>
-                    <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Space Cat)" className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600">{loading?<Loader2 className="animate-spin"/>:"Write"}</Button></div>
+                    <div className="flex gap-2">
+                        <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic (e.g. Space Cat)" className="text-lg h-12 rounded-xl"/>
+                        <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600">{loading ? <Loader2 className="animate-spin"/> : "Write"}</Button>
+                    </div>
                 </div>
             )}
-            {story && <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in"><CardContent className="p-6 space-y-4"><h3 className="text-3xl text-center">{story.emojiIcon} {story.title}</h3><p className="text-xl leading-relaxed">{story.content}</p><div className="bg-white p-4 rounded-xl border border-yellow-200"><p className="font-bold text-orange-600">Quiz: {story.question}</p><p className="text-slate-400 text-sm mt-1 hover:text-green-600 cursor-pointer">Answer: {story.answer}</p></div><div className="flex gap-2"><Button onClick={()=>speak(story.content)} variant="outline" className="flex-1">Read</Button>{canEdit && <Button onClick={handleSave} className="flex-1 bg-green-600">Save</Button>}</div></CardContent></Card>}
-            <div><h3 className="text-2xl font-bold text-slate-700 mb-4">📚 Library</h3><div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">{savedStories?.map((s:any)=>(<Card key={s.id} className="cursor-pointer border-l-4 border-l-purple-500 hover:shadow-lg relative group"><CardContent className="p-4 flex items-center gap-4" onClick={()=>{setStory(s);speak(s.title);}}><div className="text-4xl">{s.emojiIcon}</div><div><h4 className="font-bold text-lg">{s.title}</h4></div></CardContent>{canEdit && <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}><Trash2 className="w-4 h-4"/></Button>}</Card>))}</div></div>
+            {story && (
+                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in">
+                    <CardContent className="p-6 space-y-4">
+                        <h3 className="text-3xl text-center font-bold">{story.emojiIcon} {story.title}</h3>
+                        <p className="text-xl leading-relaxed">{story.content}</p>
+                        
+                        <div className="bg-white p-4 rounded-xl border border-yellow-200">
+                            <p className="font-bold text-orange-600 mb-2">Quiz: {story.question}</p>
+                            {!isAnswerSubmitted ? (
+                                <div className="flex gap-2">
+                                    <Input 
+                                        placeholder="Type your answer..." 
+                                        value={userAnswer}
+                                        onChange={(e) => setUserAnswer(e.target.value)}
+                                    />
+                                    <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()}>Check</Button>
+                                </div>
+                            ) : isAnswerCorrect ? (
+                                <div className="flex items-center gap-2 p-2 bg-green-100 text-green-700 rounded-md border border-green-200">
+                                    <CheckCircle2 className="h-5 w-5"/> Correct! The answer is {story.answer}.
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2 p-2 bg-red-100 text-red-700 rounded-md border border-red-200">
+                                   <XCircle className="h-5 w-5"/> Not quite. The correct answer is: {story.answer}.
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="flex gap-2">
+                            <Button onClick={() => speak(story.content)} variant="outline" className="flex-1">Read Story</Button>
+                            {canEdit && <Button onClick={handleSave} className="flex-1 bg-green-600">Save</Button>}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+            <div>
+                <h3 className="text-2xl font-bold text-slate-700 mb-4">📚 Library</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {savedStories?.map((s:any) => (
+                        <Card key={s.id} className="cursor-pointer border-l-4 border-l-purple-500 hover:shadow-lg relative group">
+                            <CardContent className="p-4 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
+                                <div className="text-4xl">{s.emojiIcon}</div>
+                                <div><h4 className="font-bold text-lg">{s.title}</h4></div>
+                            </CardContent>
+                            {canEdit && <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}><Trash2 className="w-4 h-4"/></Button>}
+                        </Card>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
 
-// --- 6. SCIENCE WORLD (SEPARATED) ---
+// --- 6. SCIENCE WORLD ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore(); 
     const { user } = useUser(); 
@@ -400,7 +515,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [fact, setFact] = useState<any>(null); 
     const [loading, setLoading] = useState(false);
     
-    // FIX: Only query when user is logged in
     const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
     const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
     
@@ -519,7 +633,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
                 <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
-                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200"><MathPlayground /></div></TabsContent>
+                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
@@ -530,3 +644,4 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
