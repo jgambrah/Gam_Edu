@@ -6,6 +6,7 @@ import Header from '@/components/navigation/header';
 import { Sidebar, SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import ClientBoundary from './client-boundary';
 import { AiChat } from '@/components/ai-chat';
+import { RoleGuard } from '@/context/role-context';
 
 export default function DashboardLayout({
   children,
@@ -18,11 +19,13 @@ export default function DashboardLayout({
           <AppSidebar />
         </Sidebar>
         <SidebarInset>
-          <Header />
-          <ClientBoundary>
-            <main className="p-4 lg:p-6">{children}</main>
-            <AiChat />
-          </ClientBoundary>
+          <RoleGuard allowedRoles={['all']}>
+            <Header />
+            <ClientBoundary>
+              <main className="p-4 lg:p-6">{children}</main>
+              <AiChat />
+            </ClientBoundary>
+          </RoleGuard>
         </SidebarInset>
       </SidebarProvider>
   );

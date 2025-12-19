@@ -8,6 +8,7 @@ import { Loader2, ShieldAlert } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import SystemRepair from '@/components/SystemRepair'; 
+import { User } from 'firebase/auth';
 
 type Role = 'Admin' | 'Teacher' | 'Student' | 'Parent' | 'Staff' | 'Director' | 'Administrator' | 'Accountant' | 'Librarian' | 'Transport Staff' | null;
 
@@ -45,21 +46,21 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log(`[RoleContext] Checking roles for ${user.uid}...`);
 
-        // --- PRIORITY 1: STUDENTS ---
-        // First attempt: Check doc with UID as ID
-        const studentRef = doc(firestore, 'students', user.uid);
-        let studentSnap = await getDoc(studentRef);
-        
-        // Second attempt: Query for the 'uid' field
-        if (!studentSnap.exists()) {
-            console.log("Student doc not found by ID, querying collection...");
-            const studentQuery = query(collection(firestore, 'students'), where('uid', '==', user.uid));
-            const studentQuerySnap = await getDocs(studentQuery);
-            if (!studentQuerySnap.empty) {
-                studentSnap = studentQuerySnap.docs[0];
-            }
+        // PRIORITY 1: STAFF (Teachers, Accountants, etc.)
+        const staffRef = doc(firestore, 'staff', user.uid);
+        const staffSnap = await getDoc(staffRef);
+        if (staffSnap.exists()) {
+          const data = staffSnap.data();
+          console.log(`Found in STAFF: ${data.role}`);
+          setRole(data.role as Role); 
+          setProfile(data);
+          setLoading(false);
+          return;
         }
-
+        
+        // PRIORITY 2: STUDENTS 
+        const studentRef = doc(firestore, 'students', user.uid);
+        const studentSnap = await getDoc(studentRef);
         if (studentSnap.exists()) {
           console.log("Found in STUDENTS");
           setRole('Student');
@@ -68,8 +69,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-
-        // --- PRIORITY 2: PARENTS ---
+        // PRIORITY 3: PARENTS
         const parentRef = doc(firestore, 'parents', user.uid);
         const parentSnap = await getDoc(parentRef);
         if (parentSnap.exists()) {
@@ -80,34 +80,39 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // --- PRIORITY 3: STAFF (Teachers, Accountants, etc.) ---
-        const staffRef = doc(firestore, 'staff', user.uid);
-        const staffSnap = await getDoc(staffRef);
-        if (staffSnap.exists()) {
-          const data = staffSnap.data();
-          console.log(`Found in STAFF: ${data.role}`);
-          setRole(data.role as Role); // e.g. "Teacher", "Accountant"
-          setProfile(data);
-          setLoading(false);
-          return;
+        console.warn("[RoleContext] No primary profile found by ID. Querying collections...");
+
+        // --- FALLBACK QUERIES (if ID-based lookup fails) ---
+        
+        // Query Students collection
+        const studentQuery = query(collection(firestore, 'students'), where('uid', '==', user.uid));
+        const studentQuerySnap = await getDocs(studentQuery);
+        if (!studentQuerySnap.empty) {
+            const studentDoc = studentQuerySnap.docs[0];
+            console.log("Found in STUDENTS via query");
+            setRole('Student');
+            setProfile(studentDoc.data());
+            setLoading(false);
+            return;
         }
 
-        // --- PRIORITY 4: USERS (The Admin Fallback) ---
-        // Only check this last. This is where the Repair Tool saved your Admin profile.
-        const userRef = doc(firestore, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const data = userSnap.data();
-          console.log(`Found in USERS: ${data.role}`);
-          setRole(data.role as Role); 
-          setProfile(data);
-          setLoading(false);
-          return;
+        // Query Parents collection
+        const parentQuery = query(collection(firestore, 'parents'), where('uid', '==', user.uid));
+        const parentQuerySnap = await getDocs(parentQuery);
+        if (!parentQuerySnap.empty) {
+            const parentDoc = parentQuerySnap.docs[0];
+            console.log("Found in PARENTS via query");
+            setRole('Parent');
+            setProfile(parentDoc.data());
+            setLoading(false);
+            return;
         }
-
-        // No profile found
-        console.warn("[RoleContext] No profile found in any collection.");
+        
+        // No profile found in any collection
+        console.warn("[RoleContext] No profile found in any collection after query.");
         setRole(null);
+        setProfile(null); // Explicitly clear profile if no role found
+
       } catch (error) {
         console.error("[RoleContext] Error:", error);
       } finally {
@@ -143,8 +148,6 @@ export function RoleGuard({ children, allowedRoles }: { children: React.ReactNod
 
   // Not Logged In
   if (!user) {
-    // router.push('/') would be ideal, but can cause render loops.
-    // A simple button is safer.
     return (
         <div className="flex h-screen items-center justify-center">
             <Button onClick={() => router.push('/')}>Go to Login</Button>
@@ -152,15 +155,12 @@ export function RoleGuard({ children, allowedRoles }: { children: React.ReactNod
     );
   }
 
-  // Map high-level roles to Admin for permission checking
   const effectiveRole = (role === 'Administrator' || role === 'Director') ? 'Admin' : role;
   
-  // Check Access
   if (role && (allowedRoles.includes('all') || allowedRoles.includes(role) || (effectiveRole === 'Admin' && allowedRoles.includes('Admin')))) {
     return <>{children}</>;
   }
 
-  // Access Denied View / No Profile View
   return (
     <div className="flex h-screen w-full items-center justify-center bg-red-50 p-6">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 border border-red-200">
@@ -178,7 +178,6 @@ export function RoleGuard({ children, allowedRoles }: { children: React.ReactNod
             )}
         </div>
 
-        {/* Show Repair Tool ONLY if role is completely missing */}
         {!role && (
             <div className="mb-4">
                 <p className="text-xs font-bold text-orange-600 mb-2">ADMIN RECOVERY TOOL:</p>
