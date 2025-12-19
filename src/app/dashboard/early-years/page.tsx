@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -290,56 +289,101 @@ function ABCKingdom() {
     );
 }
 
-// --- 4. MATH PLAYGROUND ---
+// --- 4. MATH PLAYGROUND (ENHANCED) ---
 function MathPlayground() {
-  const [mode, setMode] = useState<'add' | 'sub' | 'mul' | 'div'>('add');
-  const [question, setQuestion] = useState({ a: 2, b: 3, icon: '🍎', ans: 5 });
-  const [options, setOptions] = useState<number[]>([]);
+  // Extended modes: add, sub, mul, div, compare, patterns, shapes, time
+  type MathMode = 'add' | 'sub' | 'mul' | 'div' | 'compare' | 'patterns' | 'shapes' | 'time';
+  const [mode, setMode] = useState<MathMode>('add');
+  const [question, setQuestion] = useState<any>({ a: 0, b: 0, icon: '🍎', ans: '', options: [] });
   const [feedback, setFeedback] = useState("");
+  const [streak, setStreak] = useState(0);
   const { user } = useUser(); 
   const firestore = useFirestore(); 
-  const [streak, setStreak] = useState(0); 
   const { toast } = useToast();
 
   const generateQuestion = useCallback(() => {
     const icons = ['🍎', '🍌', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪', '🎈', '⚽️'];
     const icon = icons[Math.floor(Math.random() * icons.length)];
-    let a = 0, b = 0, ans = 0;
-    if (mode === 'add') { a = Math.floor(Math.random() * 9) + 1; b = Math.floor(Math.random() * 9) + 1; ans = a + b; } 
-    else if (mode === 'sub') { a = Math.floor(Math.random() * 10) + 2; b = Math.floor(Math.random() * (a - 1)) + 1; ans = a - b; } 
-    else if (mode === 'mul') { a = Math.floor(Math.random() * 5) + 1; b = Math.floor(Math.random() * 5) + 1; ans = a * b; } 
-    else if (mode === 'div') { b = Math.floor(Math.random() * 4) + 2; ans = Math.floor(Math.random() * 5) + 1; a = b * ans; }
-    setQuestion({ a, b, icon, ans });
+    let a, b, ans, options: any[] = [];
+    let displayPrompt = "";
+
+    switch (mode) {
+      case 'add':
+        a = Math.floor(Math.random() * 9) + 1; b = Math.floor(Math.random() * 9) + 1;
+        ans = a + b;
+        options = [ans, ans + 1, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
+        break;
+      case 'sub':
+        a = Math.floor(Math.random() * 10) + 5; b = Math.floor(Math.random() * a);
+        ans = a - b;
+        options = [ans, ans + 2, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
+        break;
+      case 'compare':
+        a = Math.floor(Math.random() * 20); b = Math.floor(Math.random() * 20);
+        ans = a > b ? '>' : a < b ? '<' : '=';
+        options = ['>', '<', '='];
+        displayPrompt = `${a} ___ ${b}`;
+        break;
+      case 'patterns':
+        const step = Math.floor(Math.random() * 3) + 1;
+        const start = Math.floor(Math.random() * 10);
+        a = [start, start + step, start + step * 2];
+        ans = start + step * 3;
+        options = [ans, ans + 1, ans + step + 1].sort(() => Math.random() - 0.5);
+        displayPrompt = `${a[0]}, ${a[1]}, ${a[2]}, ?`;
+        break;
+      case 'shapes':
+        const shapeList = [
+            { name: 'Triangle', sides: 3, icon: '▲' },
+            { name: 'Square', sides: 4, icon: '■' },
+            { name: 'Pentagon', sides: 5, icon: '⬠' },
+            { name: 'Circle', sides: 0, icon: '●' }
+        ];
+        const selected = shapeList[Math.floor(Math.random() * shapeList.length)];
+        a = selected.icon;
+        ans = selected.name;
+        options = shapeList.map(s => s.name).sort(() => Math.random() - 0.5);
+        displayPrompt = `What shape is this?`;
+        break;
+      case 'time':
+        const hour = Math.floor(Math.random() * 12) + 1;
+        a = `${hour}:00`;
+        ans = `${hour} o'clock`;
+        const wrong1 = `${(hour % 12) + 1} o'clock`;
+        const wrong2 = `${Math.max(1, hour - 1)} o'clock`;
+        options = [ans, wrong1, wrong2].sort(() => Math.random() - 0.5);
+        displayPrompt = `The clock says ${a}. It is...`;
+        break;
+      default:
+        a = 1; b = 1; ans = 2; options = [2,3,4];
+    }
+
+    setQuestion({ a, b, icon, ans, options, displayPrompt });
     setFeedback("");
-    setOptions([ans, ans + 1, Math.max(0, ans - (Math.floor(Math.random() * 2) + 1))].sort(() => Math.random() - 0.5));
   }, [mode]);
 
   useEffect(() => { generateQuestion(); }, [generateQuestion]);
 
-  const checkAnswer = async (val: number) => {
+  const checkAnswer = async (val: any) => {
     if (val === question.ans) {
-      const newStreak = streak + 1;
-      setStreak(newStreak);
+      setStreak(s => s + 1);
       setFeedback("CORRECT! 🎉");
-      confetti({ particleCount: 150 });
-      speak("Correct!");
+      confetti({ particleCount: 100, spread: 70 });
+      speak("Great job!");
 
-      if (newStreak > 0 && newStreak % 5 === 0 && user && firestore) {
-          const stickers = ['🦕','🚀','🦄','🦁','🍕','⭐','🌈','⚽'];
-          const randomSticker = stickers[Math.floor(Math.random() * stickers.length)];
-          
+      if ((streak + 1) % 5 === 0 && user && firestore) {
+          const sticker = '🎓';
           await addDoc(collection(firestore, 'junior_stickers'), {
               userId: user.uid,
-              emoji: randomSticker,
-              name: 'Math Whiz',
+              emoji: sticker,
+              name: `${mode.toUpperCase()} Master`,
               earnedAt: serverTimestamp()
           });
-          toast({ title: "New Sticker!", description: `You earned a ${randomSticker}!` });
+          toast({ title: "Achievement!", description: "You earned a Math Master sticker!" });
       }
-
-      setTimeout(generateQuestion, 2000);
+      setTimeout(generateQuestion, 1500);
     } else {
-      setStreak(0); // Reset streak on error
+      setStreak(0);
       setFeedback("Try Again! 🤔");
       speak("Try again.");
     }
@@ -347,35 +391,89 @@ function MathPlayground() {
 
   return (
     <div className="flex flex-col items-center space-y-6">
-      <div className="flex gap-2 mb-4 bg-white p-2 rounded-full shadow-sm">
-          <Button variant={mode === 'add' ? 'default' : 'ghost'} onClick={() => setMode('add')} className="rounded-full bg-green-500 hover:bg-green-600 text-white font-bold">+</Button>
-          <Button variant={mode === 'sub' ? 'default' : 'ghost'} onClick={() => setMode('sub')} className="rounded-full bg-red-500 hover:bg-red-600 text-white font-bold">-</Button>
-          <Button variant={mode === 'mul' ? 'default' : 'ghost'} onClick={() => setMode('mul')} className="rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold">×</Button>
-          <Button variant={mode === 'div' ? 'default' : 'ghost'} onClick={() => setMode('div')} className="rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold">÷</Button>
+      {/* Scrollable Mode Selector */}
+      <div className="flex gap-2 mb-4 bg-slate-100 p-2 rounded-3xl shadow-inner w-full overflow-x-auto no-scrollbar">
+          {(['add', 'sub', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
+            <Button 
+                key={m}
+                variant={mode === m ? 'default' : 'ghost'} 
+                onClick={() => setMode(m)} 
+                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500 shadow-md' : 'text-slate-500'}`}
+            >
+                {m}
+            </Button>
+          ))}
       </div>
 
-       <div className="flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-5xl my-4">
-        {Array.from({ length: question.a }).map((_, i) => <span key={i}>{question.icon}</span>)}
-        <span className="text-slate-400 mx-2 font-bold">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span>
-        {Array.from({ length: question.b }).map((_, i) => <span key={i}>{question.icon}</span>)}
-      </div>
-      
-      <div className="flex items-center gap-4 text-6xl font-bold text-slate-700">
-        <span>{question.a}</span>
-        <span className="text-slate-400">{mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}</span>
-        <span>{question.b}</span>
-        <span className="text-slate-400">=</span>
-        <span className="text-blue-600">?</span>
-      </div>
+      {/* Dynamic Question Display */}
+      <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px] overflow-hidden">
+        <CardContent className="p-8 flex flex-col items-center">
+            
+            {/* Logic for Visual Aids */}
+            {(mode === 'add' || mode === 'sub') && (
+                <div className="flex flex-wrap justify-center gap-2 mb-6 min-h-[60px]">
+                    {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl animate-bounce" style={{animationDelay: `${i * 0.1}s`}}>{question.icon}</span>)}
+                    <span className="text-3xl font-black text-orange-300 mx-2">{mode === 'add' ? '+' : '-'}</span>
+                    {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-80">{question.icon}</span>)}
+                </div>
+            )}
 
-      <div className="flex gap-6 mt-8">
-        {options.map((opt, i) => (
-          <button key={i} onClick={() => checkAnswer(opt)} className="w-24 h-24 bg-yellow-400 hover:bg-yellow-300 text-white text-5xl font-bold rounded-3xl shadow-[0_8px_0_rgb(202,138,4)] active:shadow-none active:translate-y-2 transition-all">
+            {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6 drop-shadow-md">{question.a}</div>}
+            
+            {mode === 'time' && (
+                <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
+                    <div className="text-2xl font-black">{question.a.split(':')[0]}</div>
+                    <div className="absolute top-2">12</div>
+                    <div className="absolute bottom-2">6</div>
+                    <div className="absolute left-2">9</div>
+                    <div className="absolute right-2">3</div>
+                </div>
+            )}
+
+            {/* The Main Question Text */}
+            <div className="text-center">
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'What is the answer?'}</p>
+                <div className="text-6xl font-black text-slate-800 tracking-tighter">
+                    {mode === 'add' || mode === 'sub' ? (
+                        <div className="flex items-center gap-3">
+                            <span>{question.a}</span>
+                            <span className="text-orange-400">{mode === 'add' ? '+' : '-'}</span>
+                            <span>{question.b}</span>
+                        </div>
+                    ) : (
+                        <span className="text-orange-600">{question.displayPrompt ? "" : question.a}</span>
+                    )}
+                    {(mode === 'patterns' || mode === 'compare') && <span className="text-orange-500">{question.displayPrompt}</span>}
+                </div>
+            </div>
+        </CardContent>
+      </Card>
+
+      {/* Answer Options */}
+      <div className="grid grid-cols-3 gap-4 w-full max-w-md">
+        {question.options.map((opt: any, i: number) => (
+          <button 
+            key={i} 
+            onClick={() => checkAnswer(opt)} 
+            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-2xl md:text-3xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
+          >
             {opt}
           </button>
         ))}
       </div>
-      <div className="h-10 text-3xl font-bold text-green-600 mt-4">{feedback}</div>
+
+      <div className="h-12 flex items-center">
+         {feedback && (
+             <p className={`text-2xl font-black animate-in zoom-in ${feedback.includes("CORRECT") ? "text-green-500" : "text-red-400"}`}>
+                {feedback}
+             </p>
+         )}
+      </div>
+
+      <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border shadow-sm">
+          <Star className="text-yellow-400 fill-yellow-400 w-5 h-5" />
+          <span className="font-bold text-slate-600">Streak: {streak}</span>
+      </div>
     </div>
   );
 }
@@ -418,8 +516,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
-        // Pass the target word count to the AI flow
-        // Note: Ensure your backend 'generateJuniorStory' is updated to handle (topic, wordCount)
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -452,7 +548,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
-        // Check against the current question in the questions array
+        
         const currentQ = story.questions[currentQuestionIndex];
         const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         
@@ -468,12 +564,13 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleNextQuestion = () => {
-        if (currentQuestionIndex < story.questions.length - 1) {
+        if (currentQuestionIndex < (story.questions?.length || 0) - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
             setUserAnswer('');
             setIsAnswerSubmitted(false);
         } else {
             setQuizFinished(true);
+            speak(`You finished the quiz! You got ${score + (isAnswerCorrect ? 1 : 0)} out of ${story.questions.length}`);
         }
     };
 
@@ -500,7 +597,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
-                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -543,7 +639,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             </p>
                         </div>
                         
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                             <Button onClick={() => speak(story.content)} variant="outline" className="flex-1 h-14 text-lg border-2 border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-100">
                                 <Volume2 className="mr-2" /> Read Aloud
                             </Button>
@@ -555,11 +651,11 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             {!quizFinished ? (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-xs font-black uppercase tracking-widest text-purple-400">
-                                            Question {currentQuestionIndex + 1} of 3
+                                        <span className="bg-purple-200 text-purple-700 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+                                            Question {currentQuestionIndex + 1} of {story.questions?.length || 3}
                                         </span>
                                         <div className="flex gap-1">
-                                            {[0, 1, 2].map(i => (
+                                            {[...Array(story.questions?.length || 0)].map((_, i) => (
                                                 <div key={i} className={`h-2 w-8 rounded-full ${i === currentQuestionIndex ? 'bg-purple-500' : i < currentQuestionIndex ? 'bg-green-400' : 'bg-slate-200'}`} />
                                             ))}
                                         </div>
@@ -572,36 +668,36 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                     {!isAnswerSubmitted ? (
                                         <div className="flex gap-2">
                                             <Input 
-                                                placeholder="Type your answer..." 
+                                                placeholder="Type your answer here..." 
                                                 value={userAnswer}
                                                 onChange={(e) => setUserAnswer(e.target.value)}
-                                                className="text-lg h-14 border-2 border-purple-100 focus:border-purple-400 rounded-2xl"
+                                                className="text-lg h-14 border-2 border-purple-100 focus:border-purple-500 rounded-xl"
                                                 onKeyDown={(e) => e.key === 'Enter' && handleCheckAnswer()}
                                             />
                                             <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="bg-purple-600 h-14 px-8 rounded-2xl font-bold">Check</Button>
                                         </div>
                                     ) : (
                                         <div className="animate-in slide-in-from-bottom-2 space-y-4">
-                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
                                                 {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
                                                 <div>
-                                                    <p className="font-bold">{isAnswerCorrect ? "Great Thinking!" : "Not Quite..."}</p>
-                                                    <p className="text-sm">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
+                                                    <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
+                                                    <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
                                                 </div>
                                             </div>
-                                            <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold rounded-xl">
-                                                {currentQuestionIndex < 2 ? "Next Question" : "See Final Score"} <ArrowRight className="ml-2 w-4 h-4" />
+                                            <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
+                                                {currentQuestionIndex < (story.questions?.length || 1) - 1 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-4 space-y-4">
+                                <div className="text-center py-6 space-y-4 animate-in zoom-in">
                                     <div className="inline-block p-4 bg-yellow-100 rounded-full mb-2">
                                         <Trophy className="w-12 h-12 text-yellow-600" />
                                     </div>
                                     <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
-                                    <p className="text-xl font-bold text-purple-600">You got {score} out of 3 correct!</p>
+                                    <p className="text-xl font-bold text-purple-600">You got {score} out of {story.questions?.length} correct!</p>
                                     <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
@@ -630,7 +726,12 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 </div>
                             </CardContent>
                             {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
+                                <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 hover:bg-red-50 transition-opacity" 
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}
+                                >
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
