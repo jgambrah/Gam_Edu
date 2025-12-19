@@ -26,199 +26,166 @@ const speak = (text: string, rate = 0.9) => {
     window.speechSynthesis.speak(u);
 };
 
-// --- 1. VOICE COACH (PRONUNCIATION) ---
-function VoiceCoach({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore();
+
+// --- 2. PHONICS FOREST (COMPREHENSIVE) ---
+function PhonicsForest() {
     const { toast } = useToast();
-    const [challenge, setChallenge] = useState<any>(null);
-    const [isListening, setIsListening] = useState(false);
-    const [feedback, setFeedback] = useState("Tap the Mic and say the word!");
+    const [activeTab, setActiveTab] = useState<'library' | 'blender' | 'families' | 'game'>('library');
     
-    // Teacher State
-    const [newWord, setNewWord] = useState("");
-    const [generatedPreview, setGeneratedPreview] = useState<any>(null);
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [viewMode, setViewMode] = useState<'practice' | 'library'>('practice');
+    // Comprehensive Sound Categories (SSP Structured)
+    const soundGroups = [
+        { name: "Short Vowels", color: "bg-rose-100 text-rose-600 border-rose-200", sounds: ["a", "e", "i", "o", "u"], example: ["apple", "egg", "ink", "octopus", "up"] },
+        { name: "Digraphs (2 letters, 1 sound)", color: "bg-teal-100 text-teal-600 border-teal-200", sounds: ["ch", "sh", "th", "ng", "qu", "wh"], example: ["chip", "ship", "thin", "ring", "queen", "whale"] },
+        { name: "Long Vowels", color: "bg-purple-100 text-purple-600 border-purple-200", sounds: ["ai", "ee", "igh", "oa", "oo"], example: ["rain", "tree", "light", "boat", "moon"] },
+        { name: "Trigraphs (3 letters, 1 sound)", color: "bg-orange-100 text-orange-600 border-orange-200", sounds: ["ear", "air", "ure", "igh"], example: ["near", "fair", "pure", "night"] },
+        { name: "R-Controlled", color: "bg-amber-100 text-amber-600 border-amber-200", sounds: ["ar", "or", "ur", "er", "ir"], example: ["car", "fork", "surf", "her", "bird"] },
+    ];
 
-    const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: wordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
-
-    const pickRandomWord = useCallback(() => {
-        if (!wordLibrary || wordLibrary.length === 0) return;
-        const random = wordLibrary[Math.floor(Math.random() * wordLibrary.length)];
-        setChallenge(random);
-        setFeedback("Tap the Mic and say the word!");
-    }, [wordLibrary]);
+    // Blending Station State
+    const [blendingWord, setBlendingWord] = useState(["c", "a", "t"]);
     
-    useEffect(() => { 
-        if (wordLibrary && wordLibrary.length > 0 && !challenge) {
-            pickRandomWord();
-        }
-    }, [wordLibrary, challenge, pickRandomWord]);
-
-    const handlePreview = async () => {
-        if (!newWord) return;
-        setIsGenerating(true);
-        const res = await generateWordDetails(newWord);
-        if (res.success) setGeneratedPreview(res.data);
-        setIsGenerating(false);
-    };
-
-    const handleSaveWord = async () => {
-        if (!generatedPreview || !firestore) return;
-        await addDoc(collection(firestore, 'junior_phonics'), {
-            ...generatedPreview,
-            createdAt: serverTimestamp()
-        });
-        setGeneratedPreview(null);
-        setNewWord("");
-        toast({ title: "Success", description: "Word added to Class Library!" });
-        forceRefetch();
-    };
-
-    const handleDelete = async (id: string) => {
-        if (!firestore) return;
-        if (confirm("Remove this word?")) {
-            await deleteDoc(doc(firestore, 'junior_phonics', id));
-            toast({ title: "Removed", description: "Word deleted from the library." });
-            forceRefetch();
-        }
-    };
-
-    const startListening = () => {
-        if (!('webkitSpeechRecognition' in window)) {
-            alert("Please use Google Chrome for Speech features.");
-            return;
-        }
-        const recognition = new (window as any).webkitSpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.start();
-        setIsListening(true);
-        setFeedback("Listening... 👂");
-
-        recognition.onresult = (event: any) => {
-            const spoken = event.results[0][0].transcript.toLowerCase();
-            const target = challenge.word.toLowerCase();
-            setIsListening(false);
-
-            if (spoken.includes(target) || target.includes(spoken)) {
-                setFeedback(`PERFECT! You said "${spoken}" 🎉`);
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#4f46e5', '#16a34a'] });
-                speak(`Great job! ${challenge.word}`);
-                setTimeout(pickRandomWord, 3000);
-            } else {
-                setFeedback(`I heard "${spoken}". Try again!`);
-                speak(`Almost! Try saying ${challenge.word}`);
-            }
-        };
-        recognition.onerror = () => { setIsListening(false); setFeedback("I didn't hear you. Try again!"); };
-    };
+    // Sound Match Game State
+    const [gameTarget, setGameTarget] = useState<any>(null);
+    const [gameOptions, setGameOptions] = useState<string[]>([]);
+    
+    const startNewGame = useCallback(() => {
+        const all = soundGroups.flatMap(g => g.sounds);
+        const target = all[Math.floor(Math.random() * all.length)];
+        const options = [target, ...all.filter(s => s !== target).sort(() => 0.5 - Math.random()).slice(0, 3)].sort();
+        setGameTarget(target);
+        setGameOptions(options);
+        speak(`Find the sound: ${target}`);
+    }, [soundGroups]);
 
     return (
         <div className="space-y-6">
-            {canEdit && (
-                <div className="flex justify-end mb-4">
-                    <div className="bg-pink-100 p-1 rounded-lg flex gap-1">
-                        <Button size="sm" variant={viewMode === 'practice' ? 'default' : 'ghost'} onClick={() => setViewMode('practice')} className={viewMode === 'practice' ? 'bg-pink-600' : 'text-pink-700'}>
-                            <Mic className="w-4 h-4 mr-2"/> Practice
-                        </Button>
-                        <Button size="sm" variant={viewMode === 'library' ? 'default' : 'ghost'} onClick={() => setViewMode('library')} className={viewMode === 'library' ? 'bg-pink-600' : 'text-pink-700'}>
-                            <Library className="w-4 h-4 mr-2"/> Library Manager
-                        </Button>
+            <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto">
+                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Library</Button>
+                <Button variant={activeTab === 'blender' ? 'default' : 'ghost'} onClick={() => setActiveTab('blender')} className="rounded-xl">Blending</Button>
+                <Button variant={activeTab === 'families' ? 'default' : 'ghost'} onClick={() => setActiveTab('families')} className="rounded-xl">Rhymes</Button>
+                <Button variant={activeTab === 'game' ? 'default' : 'ghost'} onClick={() => {setActiveTab('game'); startNewGame();}} className="rounded-xl">Game</Button>
+            </div>
+
+            {/* PILLAR 1: THE SOUND LIBRARY */}
+            {activeTab === 'library' && (
+                <div className="space-y-8 animate-in fade-in">
+                    {soundGroups.map((group) => (
+                        <div key={group.name} className="space-y-3">
+                            <h3 className="font-bold text-slate-500 uppercase text-xs tracking-widest ml-2">{group.name}</h3>
+                            <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                                {group.sounds.map((sound, idx) => (
+                                    <button 
+                                        key={sound} 
+                                        onClick={() => {
+                                            speak(sound);
+                                            toast({ title: `"${sound}" as in...`, description: group.example[idx].toUpperCase() });
+                                        }} 
+                                        className={`aspect-square rounded-3xl border-b-8 font-black text-3xl shadow-sm hover:-translate-y-1 transition-all flex flex-col items-center justify-center ${group.color} bg-white`}
+                                    >
+                                        {sound}
+                                        <span className="text-[10px] mt-1 opacity-60">{group.example[idx]}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* PILLAR 2: BLENDING STATION */}
+            {activeTab === 'blender' && (
+                <div className="bg-gradient-to-br from-teal-50 to-white p-8 rounded-[40px] border-4 border-teal-100 text-center space-y-8 animate-in zoom-in">
+                    <h2 className="text-2xl font-black text-teal-800">Blending Station 🚂</h2>
+                    <p className="text-teal-600 font-medium">Tap each sound, then pull the lever to read!</p>
+                    
+                    <div className="flex justify-center gap-4">
+                        {blendingWord.map((letter, i) => (
+                            <button 
+                                key={i}
+                                onClick={() => speak(letter)}
+                                className="w-24 h-32 bg-white rounded-3xl shadow-xl border-b-[12px] border-teal-200 text-5xl font-black text-teal-600 hover:scale-105 active:translate-y-2 transition-all flex items-center justify-center"
+                            >
+                                {letter}
+                            </button>
+                        ))}
                     </div>
-                </div>
-            )}
 
-            {viewMode === 'practice' && (
-                <div className="flex flex-col items-center text-center space-y-6">
-                    {(!wordLibrary || wordLibrary.length === 0) ? (
-                        <div className="text-center p-8 bg-slate-50 rounded-xl border-2 border-dashed">
-                            <p className="text-slate-500 mb-2">No words in the library yet.</p>
-                            {canEdit && <Button onClick={() => setViewMode('library')} variant="link">Go to Library to add words</Button>}
-                        </div>
-                    ) : !challenge ? (
-                        <Button onClick={pickRandomWord}>Start</Button>
-                    ) : (
-                        <div className="animate-in zoom-in space-y-6 max-w-md mx-auto">
-                            <div className="text-9xl mb-2 hover:scale-110 transition-transform cursor-pointer drop-shadow-xl" onClick={() => speak(challenge.word)}>
-                                {challenge.emoji}
-                            </div>
-                            
-                            <div>
-                                <h2 className="text-6xl font-black text-slate-800 tracking-wide mb-2">{challenge.word}</h2>
-                                <p className="text-2xl text-slate-400 font-mono tracking-widest">/{challenge.phonetic}/</p>
-                            </div>
-
-                            <div className="bg-pink-50 p-6 rounded-3xl border-4 border-pink-200 shadow-sm cursor-pointer hover:bg-pink-100 transition-colors" onClick={() => speak(challenge.sentence)}>
-                                <p className="text-xl text-pink-800 font-bold">"{challenge.sentence}"</p>
-                                <div className="flex items-center justify-center gap-2 mt-2 text-pink-400 text-sm font-bold uppercase tracking-wide">
-                                    <Volume2 className="w-4 h-4"/> Tap to Listen
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col items-center gap-4 py-4">
-                                <button 
-                                    onClick={startListening}
-                                    disabled={isListening}
-                                    className={`h-28 w-28 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-105 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-4 ring-red-200' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-4 ring-pink-200'}`}
-                                >
-                                    <Mic className="h-12 w-12 text-white" />
-                                </button>
-                                <p className={`font-bold text-lg px-4 py-2 rounded-full ${feedback.includes("PERFECT") ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>
-                                    {feedback}
-                                </p>
-                            </div>
-
-                            <Button onClick={pickRandomWord} variant="ghost" className="mt-8 text-slate-400 hover:text-slate-600">
-                                Skip Word <ArrowRight className="ml-2 h-4 w-4"/>
-                            </Button>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {viewMode === 'library' && canEdit && (
-                <div className="space-y-8">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border-2 border-pink-100">
-                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Wand2 className="text-pink-500"/> Add New Word to Curriculum</h3>
+                    <div className="flex flex-col items-center gap-4">
+                        <Button 
+                            onClick={() => {
+                                speak(blendingWord.join(''), 0.7);
+                                confetti({ colors: ['#2dd4bf'], particleCount: 50 });
+                            }}
+                            className="bg-teal-500 hover:bg-teal-600 h-16 px-12 rounded-full text-2xl font-black shadow-lg"
+                        >
+                            Read Word <ArrowRight className="ml-2" />
+                        </Button>
                         <div className="flex gap-2">
-                            <Input 
-                                placeholder="Type a word (e.g. Photosynthesis, Elephant, Run)" 
-                                value={newWord} 
-                                onChange={e => setNewWord(e.target.value)}
-                                className="text-lg"
-                            />
-                            <Button onClick={handlePreview} disabled={isGenerating} className="bg-pink-600 hover:bg-pink-700 min-w-[120px]">
-                                {isGenerating ? <Loader2 className="animate-spin"/> : "Generate"}
+                            {["cat", "dog", "ship", "fish", "rain"].map(w => (
+                                <button key={w} onClick={() => setBlendingWord(w.split(''))} className="px-4 py-2 bg-white border rounded-full text-sm font-bold text-teal-700 hover:bg-teal-50">
+                                    {w}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* PILLAR 3: WORD FAMILIES (RHYMES) */}
+            {activeTab === 'families' && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom-4">
+                    {[
+                        { family: "-at", words: ["cat", "hat", "mat", "sat"] },
+                        { family: "-ig", words: ["big", "dig", "pig", "wig"] },
+                        { family: "-op", words: ["hop", "mop", "pop", "top"] },
+                        { family: "-un", words: ["bun", "fun", "run", "sun"] }
+                    ].map(item => (
+                        <div key={item.family} className="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm text-center">
+                            <div className="bg-indigo-100 text-indigo-600 w-12 h-12 flex items-center justify-center rounded-2xl mx-auto mb-4 font-black text-xl">
+                                {item.family}
+                            </div>
+                            <div className="space-y-2">
+                                {item.words.map(w => (
+                                    <button key={w} onClick={() => speak(w)} className="block w-full py-1 text-slate-600 font-bold hover:text-indigo-500 capitalize">
+                                        {w}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* PILLAR 4: SOUND MATCH GAME */}
+            {activeTab === 'game' && gameTarget && (
+                <div className="text-center py-12 space-y-8 animate-in zoom-in">
+                    <div className="space-y-2">
+                        <h3 className="text-4xl font-black text-slate-800">Which one says...</h3>
+                        <div className="h-16 flex items-center justify-center">
+                            <Button size="lg" variant="outline" onClick={() => speak(gameTarget)} className="rounded-full border-2 border-indigo-200">
+                                <Volume2 className="mr-2 h-6 w-6 text-indigo-500" /> Hear it Again
                             </Button>
                         </div>
-                        {generatedPreview && (
-                            <div className="mt-4 p-4 bg-pink-50 rounded-xl border border-pink-200 flex items-center justify-between animate-in slide-in-from-top-2">
-                                <div className="flex items-center gap-4">
-                                    <span className="text-4xl">{generatedPreview.emoji}</span>
-                                    <div>
-                                        <p className="font-bold text-lg">{generatedPreview.word} <span className="text-sm font-normal text-slate-500">/{generatedPreview.phonetic}/</span></p>
-                                        <p className="text-sm text-slate-600">{generatedPreview.sentence}</p>
-                                    </div>
-                                </div>
-                                <Button onClick={handleSaveWord} className="bg-green-600 hover:bg-green-700"><Save className="w-4 h-4 mr-2"/> Save</Button>
-                            </div>
-                        )}
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        {wordLibrary?.map((item: any) => (
-                            <div key={item.id} className="flex items-center justify-between p-3 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-2xl">{item.emoji}</span>
-                                    <div>
-                                        <p className="font-bold text-slate-800">{item.word}</p>
-                                        <p className="text-xs text-slate-400">/{item.phonetic}/</p>
-                                    </div>
-                                </div>
-                                <Button size="icon" variant="ghost" className="text-red-300 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(item.id)}>
-                                    <Trash2 className="w-4 h-4"/>
-                                </Button>
-                            </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                        {gameOptions.map((opt) => (
+                            <button 
+                                key={opt} 
+                                onClick={() => {
+                                    if (opt === gameTarget) {
+                                        confetti();
+                                        speak("Great job!");
+                                        startNewGame();
+                                    } else {
+                                        speak("Try again");
+                                        toast({ title: "Oops!", description: "Keep trying, you can do it!", variant: "destructive" });
+                                    }
+                                }}
+                                className="h-24 bg-white border-4 border-slate-100 rounded-[30px] text-4xl font-black text-slate-700 hover:border-indigo-400 hover:bg-indigo-50 transition-all shadow-md"
+                            >
+                                {opt}
+                            </button>
                         ))}
                     </div>
                 </div>
@@ -227,61 +194,49 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 2. PHONICS FOREST ---
-function PhonicsForest() {
-    const soundGroups = [
-        { name: "Vowels", color: "bg-red-100 text-red-600 border-red-200", sounds: ["a", "e", "i", "o", "u", "ay", "ee"] },
-        { name: "Digraphs", color: "bg-green-100 text-green-600 border-green-200", sounds: ["ch", "sh", "th", "wh", "ph", "ck"] },
-        { name: "Blends", color: "bg-blue-100 text-blue-600 border-blue-200", sounds: ["bl", "br", "cl", "fl", "gl", "pl", "sl"] },
-    ];
-    return (
-        <div className="space-y-8">
-            <div className="text-center space-y-2"><h2 className="text-3xl font-bold text-green-800">Phonics Forest 🌳</h2><p className="text-green-600">Tap a sound!</p></div>
-            {soundGroups.map((group) => (
-                <div key={group.name} className="space-y-3">
-                    <h3 className="font-bold text-slate-500 uppercase text-sm tracking-wider ml-2">{group.name}</h3>
-                    <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
-                        {group.sounds.map((sound) => (
-                            <button key={sound} onClick={() => speak(sound)} className={`aspect-square rounded-2xl border-b-4 font-bold text-2xl shadow-sm hover:-translate-y-1 transition-all flex items-center justify-center ${group.color} bg-white`}>{sound}</button>
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-// --- 3. ABC KINGDOM ---
+// --- 3. ABC KINGDOM (ENHANCED) ---
 function ABCKingdom() {
     const [mode, setMode] = useState<'upper' | 'lower' | 'both'>('upper');
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
-    const getDisplay = (letter: string) => {
-        if (mode === 'lower') return letter.toLowerCase();
-        if (mode === 'both') return `${letter}${letter.toLowerCase()}`;
-        return letter;
+    // Mapping letters to keywords for "Phonic Awareness"
+    const keywords: Record<string, string> = {
+        A: "Apple", B: "Ball", C: "Cat", D: "Dog", E: "Egg", F: "Fish", G: "Goat", H: "Hat", 
+        I: "Igloo", J: "Jam", K: "Kite", L: "Lion", M: "Moon", N: "Net", O: "Octopus", P: "Pig", 
+        Q: "Queen", R: "Rabbit", S: "Sun", T: "Tiger", U: "Umbrella", V: "Van", W: "Watch", 
+        X: "Xylophone", Y: "Yo-yo", Z: "Zebra"
     };
-    
+
     const speakLetter = (letter: string) => {
-        if (mode === 'lower') speak(letter.toLowerCase());
-        else speak(letter);
+        // First say the letter, then the phonic sound, then the keyword
+        speak(letter);
+        setTimeout(() => speak(`as in ${keywords[letter]}`), 800);
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-center gap-2">
-                <Button onClick={() => setMode('upper')} variant={mode === 'upper' ? 'default' : 'outline'}>ABC</Button>
-                <Button onClick={() => setMode('lower')} variant={mode === 'lower' ? 'default' : 'outline'}>abc</Button>
-                <Button onClick={() => setMode('both')} variant={mode === 'both' ? 'default' : 'outline'}>Aa</Button>
+        <div className="space-y-8">
+            <div className="flex justify-center gap-2 bg-green-50 p-2 rounded-2xl w-fit mx-auto border border-green-100">
+                <Button onClick={() => setMode('upper')} variant={mode === 'upper' ? 'default' : 'ghost'} className="font-bold">ABC</Button>
+                <Button onClick={() => setMode('lower')} variant={mode === 'lower' ? 'default' : 'ghost'} className="font-bold">abc</Button>
+                <Button onClick={() => setMode('both')} variant={mode === 'both' ? 'default' : 'ghost'} className="font-bold">Aa</Button>
             </div>
-            <div className="grid grid-cols-4 md:grid-cols-6 gap-4 max-w-4xl mx-auto">
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 max-w-5xl mx-auto">
                 {alphabet.map(letter => (
                     <button 
                         key={letter}
                         onClick={() => speakLetter(letter)}
-                        className={`aspect-square bg-white rounded-2xl shadow-md border-b-4 border-slate-200 text-4xl font-extrabold text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 hover:-translate-y-1 transition-all flex items-center justify-center ${mode === 'both' ? 'text-3xl' : 'text-4xl'}`}
+                        className="group relative aspect-square bg-white rounded-[32px] shadow-sm border-b-8 border-green-200 text-green-600 hover:bg-green-50 hover:border-green-400 hover:-translate-y-2 transition-all flex flex-col items-center justify-center p-4"
                     >
-                        {getDisplay(letter)}
+                        <span className={`font-black tracking-tighter ${mode === 'both' ? 'text-2xl md:text-3xl' : 'text-4xl md:text-5xl'}`}>
+                            {mode === 'upper' ? letter : mode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-300 mt-1 uppercase group-hover:text-green-500 transition-colors">
+                            {keywords[letter]}
+                        </span>
+                        
+                        {/* Hidden decoration that appears on hover */}
+                        <Star className="absolute top-2 right-2 w-3 h-3 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                 ))}
             </div>
@@ -399,7 +354,7 @@ function MathPlayground() {
           ))}
       </div>
 
-      <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px]">
+      <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px] overflow-hidden">
         <CardContent className="p-8 flex flex-col items-center min-h-[300px] justify-center">
             
             {mode === 'mul' && (
@@ -445,7 +400,7 @@ function MathPlayground() {
             
             <div className="text-center">
                 <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
-                <div className="text-6xl font-black text-slate-800 tracking-tighter">
+                <div className="text-5xl font-black text-slate-800">
                     {mode === 'add' || mode === 'sub' || mode === 'mul' || mode === 'div' ? (
                         <div className="flex items-center gap-3">
                             <span>{mode === 'div' ? question.a : (mode === 'mul' ? question.a : question.a)}</span>
@@ -456,10 +411,8 @@ function MathPlayground() {
                             <span className="text-slate-300">=</span>
                             <span className="text-orange-500">?</span>
                         </div>
-                    ) : mode === 'compare' || mode === 'patterns' ? (
-                        <span className="text-orange-500">{question.displayPrompt}</span>
                     ) : (
-                        <span>{question.displayPrompt ? "" : question.a}</span>
+                        <span className="text-orange-500">{question.displayPrompt || question.a}</span>
                     )}
                 </div>
             </div>
@@ -471,7 +424,7 @@ function MathPlayground() {
           <button 
             key={i} 
             onClick={() => checkAnswer(opt)} 
-            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-2xl md:text-3xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
+            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
           >
             {opt}
           </button>
@@ -521,6 +474,8 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
+        // Pass the target word count to the AI flow
+        // Note: Ensure your backend 'generateJuniorStory' is updated to handle (topic, wordCount)
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -700,7 +655,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         <Trophy className="w-12 h-12 text-yellow-600" />
                                     </div>
                                     <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
-                                    <p className="text-xl text-purple-700 font-bold">You got {score} out of {story.questions?.length} correct!</p>
+                                    <p className="text-xl text-purple-700 font-bold">You got {score} out of {story.questions.length} correct!</p>
                                     <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
@@ -709,10 +664,9 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                 </Card>
             )}
 
-            {/* LIBRARY SECTION */}
             <div>
                 <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
-                    <BookOpen className="text-purple-500" /> Story Library
+                    <Library className="text-purple-500" /> Story Library
                 </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedStories?.map((s:any) => (
@@ -849,6 +803,7 @@ function StickerBook() {
 export default function JuniorCampusPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
+  const { toast } = useToast(); // Moved toast hook here for reuse
 
   return (
     <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
@@ -885,6 +840,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
-
-    
