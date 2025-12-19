@@ -11,11 +11,12 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, BookOpenCheck, FlaskConical, Sigma, Code, BrainCircuit, Gamepad2, Clapperboard, MessageSquare, ListOrdered, Users, Building2, Wrench, Boxes, Route as RouteIcon, Landmark, Plane, Shield, ShoppingBag, Truck, PenSquare, FilePen, UserCog, HeartHandshake, UserCheck, CalendarDays, ClipboardList, TrendingUp, BarChart, CalendarCheck, Megaphone, Banknote, Edit, Search, FileText, Swords
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -250,6 +251,7 @@ function PhonicsForest() {
 
 // --- 3. ABC KINGDOM (ENHANCED) ---
 function ABCKingdom() {
+    const { toast } = useToast();
     const [mode, setMode] = useState<'upper' | 'lower' | 'both'>('upper');
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
@@ -327,17 +329,19 @@ function MathPlayground() {
         options = [ans, ans + 2, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
         break;
       case 'mul':
-        a = Math.floor(Math.random() * 4) + 2; 
-        b = Math.floor(Math.random() * 4) + 2; 
+        // Juniors usually do up to 5x5 or 2x10
+        a = Math.floor(Math.random() * 4) + 2; // Rows
+        b = Math.floor(Math.random() * 4) + 2; // Columns
         ans = a * b;
         displayPrompt = `${a} groups of ${b}`;
         options = [ans, ans + b, ans - a].filter(n => n > 0).sort(() => Math.random() - 0.5);
         if (options.length < 3) options.push(ans + 1);
         break;
       case 'div':
-        b = Math.floor(Math.random() * 3) + 2; 
-        ans = Math.floor(Math.random() * 4) + 2; 
-        a = b * ans; 
+        // Ensure clean division (Inverse of multiplication)
+        b = Math.floor(Math.random() * 3) + 2; // Divisor (groups)
+        ans = Math.floor(Math.random() * 4) + 2; // Quotient (items per group)
+        a = b * ans; // Dividend (total)
         displayPrompt = `Share ${a} into ${b} groups`;
         options = [ans, ans + 1, Math.max(1, ans - 1)].sort(() => Math.random() - 0.5);
         break;
@@ -433,7 +437,7 @@ function MathPlayground() {
             )}
 
             {(mode === 'add' || mode === 'sub') && (
-                <div className="flex flex-wrap justify-center gap-2 mb-6">
+                <div className="flex flex-wrap justify-center gap-2 mb-6 min-h-[60px]">
                     {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
                     <span className="text-3xl font-black text-orange-300 mx-2">{mode === 'add' ? '+' : '-'}</span>
                     {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-50">{question.icon}</span>)}
@@ -466,7 +470,7 @@ function MathPlayground() {
                             <span className="text-orange-500">?</span>
                         </div>
                     ) : (
-                        <span className="text-6xl font-black text-slate-800 tracking-tighter">{question.displayPrompt}</span>
+                        <span className="text-6xl font-black text-slate-800 tracking-tighter">{question.displayPrompt || question.a}</span>
                     )}
                 </div>
             </div>
@@ -497,16 +501,13 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore(); 
     const { toast } = useToast();
     
-    // Core State
     const [story, setStory] = useState<any>(null); 
     const [topic, setTopic] = useState(''); 
     const [loading, setLoading] = useState(false);
     
-    // Admin Control: Word Count
-    const [targetWordCount, setTargetWordCount] = useState('100'); // Default to medium
+    const [targetWordCount, setTargetWordCount] = useState('100');
     const isAdminOrDirector = ['Admin', 'Administrator', 'Director'].includes(role || '');
 
-    // Quiz State (Enhanced for 3 Questions)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('');
     const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
@@ -528,8 +529,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
-        // Pass the target word count to the AI flow
-        // Note: Ensure your backend 'generateJuniorStory' is updated to handle (topic, wordCount)
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -596,7 +595,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         resetQuiz();
     };
 
-    // Calculate actual word count of generated story
     const actualWordCount = story?.content?.split(/\s+/).filter(Boolean).length || 0;
 
     return (
@@ -719,16 +717,18 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             )}
 
             <div>
-                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
-                    <Library className="text-purple-500" /> Story Library
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
+                        <Library className="text-purple-500" /> Story Library
+                    </h3>
+                </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedStories?.map((s:any) => (
                         <Card key={s.id} className="cursor-pointer border-b-8 border-purple-200 hover:border-purple-400 hover:-translate-y-1 transition-all relative group rounded-3xl overflow-hidden">
                             <CardContent className="p-6 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
                                 <div className="text-5xl bg-slate-50 p-3 rounded-2xl shadow-inner">{s.emojiIcon}</div>
                                 <div className="flex-1 overflow-hidden">
-                                    <h4 className="font-black text-lg text-slate-800 line-clamp-1">{s.title}</h4>
+                                    <h4 className="font-black text-lg text-slate-800 truncate">{s.title}</h4>
                                     <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                                         <span>{s.wordCount || '?'} Words</span>
                                         <span>•</span>
@@ -754,99 +754,203 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. SCIENCE WORLD ---
+// --- 6. SCIENCE WORLD (COMPREHENSIVE DISCOVERY CENTER) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore(); 
     const { user } = useUser(); 
     const { toast } = useToast();
+    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
+    
+    // AI Generation State
     const [topic, setTopic] = useState(''); 
     const [fact, setFact] = useState<any>(null); 
     const [loading, setLoading] = useState(false);
     
+    // Sorting Game State
+    const [sortItems, setSortItems] = useState([
+        { id: 1, name: 'Puppy', emoji: '🐶', type: 'living' },
+        { id: 2, name: 'Robot', emoji: '🤖', type: 'non-living' },
+        { id: 3, name: 'Flower', emoji: '🌻', type: 'living' },
+        { id: 4, name: 'Rock', emoji: '🪨', type: 'non-living' },
+    ].sort(() => Math.random() - 0.5));
+    
+    // States of Matter Simulator State
+    const [temp, setTemp] = useState(20); // Celsius
+
     const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
     const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
     
-    const handleGenerate = async () => { setLoading(true); const res = await generateJuniorScience(topic); if(res.success) setFact(res.data); setLoading(false); };
-    const handleSave = async () => { if(!user||!fact||!firestore)return; await addDoc(collection(firestore,'junior_science'),{...fact,createdAt:serverTimestamp(),createdBy:user.uid}); setFact(null); forceRefetch(); toast({title: "Fact Saved!"}) };
-    const handleDelete = async (id: string) => { if(!firestore) return; if(confirm("Delete fact?")) { await deleteDoc(doc(firestore, 'junior_science', id)); forceRefetch(); }};
+    const handleGenerate = async () => { 
+        setLoading(true); 
+        // Ensure your AI flow returns { title, emoji, fact, observation, experiment }
+        const res = await generateJuniorScience(topic); 
+        if(res.success) setFact(res.data); 
+        setLoading(false); 
+    };
+
+    const handleSave = async () => { 
+        if(!user || !fact || !firestore) return; 
+        await addDoc(collection(firestore,'junior_science'), {
+            ...fact,
+            createdAt: serverTimestamp(),
+            createdBy: user.uid
+        }); 
+        setFact(null); 
+        forceRefetch(); 
+        toast({title: "Discovery Saved!"});
+    };
+
+    const getWaterState = () => {
+        if (temp <= 0) return { emoji: '🧊', label: 'Solid (Ice)', desc: 'Brrr! The molecules are frozen tight.' };
+        if (temp >= 100) return { emoji: '💨', label: 'Gas (Steam)', desc: 'Whoosh! The molecules are flying fast.' };
+        return { emoji: '💧', label: 'Liquid (Water)', desc: 'Splish splash! The molecules are sliding around.' };
+    };
 
     return (
         <div className="space-y-8">
-            {canEdit && (
-                <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                    <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> Discovery Lab</h3>
-                    <div className="flex gap-2"><Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Volcanoes)" className="text-lg h-12 rounded-xl"/><Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600">{loading?<Loader2 className="animate-spin"/>:"Discover"}</Button></div>
+            {/* Science Navigation */}
+            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
+                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl">Discovery Lab</Button>
+                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl">The Sorter</Button>
+                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')} className="rounded-xl">Matter Lab</Button>
+                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Field Journal</Button>
+            </div>
+
+            {/* PILLAR 1: DISCOVERY LAB (AI) */}
+            {activeTab === 'lab' && (
+                <div className="space-y-6 animate-in fade-in">
+                    {canEdit && (
+                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
+                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
+                            <div className="flex gap-2">
+                                <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
+                                <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
+                                    {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {fact && (
+                        <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
+                            <div className="bg-blue-500 p-8 text-center text-white">
+                                <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
+                                <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
+                            </div>
+                            <CardContent className="p-8 space-y-6">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
+                                        <h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4>
+                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p>
+                                    </div>
+                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
+                                        <h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4>
+                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p>
+                                    </div>
+                                </div>
+                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200">
+                                    <h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4>
+                                    <p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
+                                    {canEdit && <Button onClick={handleSave} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             )}
-            {fact && <div className="bg-gradient-to-br from-blue-500 to-cyan-400 p-8 rounded-3xl text-white text-center shadow-xl animate-in zoom-in cursor-pointer hover:scale-105 transition-transform" onClick={() => speak(`${fact.title}. ${fact.fact}`)}><div className="text-8xl mb-4 animate-bounce">{fact.emojiIcon}</div><h2 className="text-3xl font-extrabold mb-4">{fact.title}</h2><p className="text-xl font-medium">{fact.fact}</p>{canEdit && <Button onClick={(e) => { e.stopPropagation(); handleSave(); }} variant="secondary" className="mt-6 font-bold">Save Card</Button>}</div>}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">{savedScience?.map((s:any)=>(<div key={s.id} className="relative group bg-white p-4 rounded-2xl shadow border-b-4 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-md" onClick={() => { setFact(s); speak(`${s.title}. ${s.fact}`); }}><div className="text-4xl mb-2">{s.emojiIcon}</div><h4 className="font-bold text-slate-800 leading-tight">{s.title}</h4>{canEdit && <Button size="icon" variant="ghost" className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}><Trash2 className="w-3 h-3"/></Button>}</div>))}</div>
-        </div>
-    );
-}
 
-// --- 7. ART STUDIO ---
-function ArtStudio() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [color, setColor] = useState('#000000');
-    
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (canvas) {
-            canvas.width = canvas.parentElement?.clientWidth || 800;
-            canvas.height = canvas.parentElement?.clientHeight || 600;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.lineCap = 'round';
-                ctx.lineWidth = 5;
-                ctx.fillStyle = "white";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-    }, []);
+            {/* PILLAR 2: THE SORTER (GAME) */}
+            {activeTab === 'sorter' && (
+                <div className="bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
+                    <div>
+                        <h2 className="text-3xl font-black text-slate-800">The Sorting Game</h2>
+                        <p className="text-slate-500">Is it Living or Non-Living?</p>
+                    </div>
+                    
+                    <div className="flex justify-center gap-6">
+                        {sortItems.length > 0 ? (
+                            <div className="bg-white p-10 rounded-full shadow-xl border-8 border-blue-100 animate-bounce">
+                                <div className="text-9xl">{sortItems[0].emoji}</div>
+                                <p className="text-2xl font-black text-slate-700 mt-4">{sortItems[0].name}</p>
+                            </div>
+                        ) : (
+                            <Button onClick={() => window.location.reload()} className="bg-green-500">Play Again!</Button>
+                        )}
+                    </div>
 
-    const startDrawing = (e: any) => {
-        const canvas = canvasRef.current; if (!canvas) return; const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches[0].clientX) - rect.left; const y = (e.clientY || e.touches[0].clientY) - rect.top;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = 5; setIsDrawing(true);
-    };
-    const draw = (e: any) => {
-        if (!isDrawing) return; const canvas = canvasRef.current; if (!canvas) return; const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches[0].clientX) - rect.left; const y = (e.clientY || e.touches[0].clientY) - rect.top;
-        ctx.lineTo(x, y); ctx.stroke();
-    };
-    const clearCanvas = () => { const canvas = canvasRef.current; if(canvas){ const ctx=canvas.getContext('2d'); if(ctx){ctx.fillStyle="white";ctx.fillRect(0,0,canvas.width,canvas.height);} } };
+                    <div className="flex justify-center gap-4">
+                        <Button 
+                            onClick={() => {
+                                if(sortItems[0].type === 'living') { confetti(); speak("Yes! It grows and breathes."); setSortItems(prev => prev.slice(1)); }
+                                else { speak("Not quite. That doesn't grow on its own."); }
+                            }}
+                            className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl"
+                        >
+                            🌳 Living
+                        </Button>
+                        <Button 
+                            onClick={() => {
+                                if(sortItems[0].type === 'non-living') { confetti(); speak("Correct! It is an object."); setSortItems(prev => prev.slice(1)); }
+                                else { speak("Think again! Living things grow."); }
+                            }}
+                            className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl"
+                        >
+                            🧸 Non-Living
+                        </Button>
+                    </div>
+                </div>
+            )}
 
-    return (
-        <div className="space-y-4">
-            <div className="flex gap-2 bg-white p-4 rounded-2xl shadow-sm border-2 border-slate-100 justify-center">
-                {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB'].map(c => (<button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-slate-800 scale-110' : 'border-slate-200'}`} style={{ backgroundColor: c }} />))}
-                <Button variant="outline" onClick={clearCanvas} size="sm" className="ml-4 text-red-500">Clear</Button>
-            </div>
-            <div className="relative h-[400px] w-full bg-white rounded-3xl shadow-xl border-4 border-slate-200 overflow-hidden cursor-crosshair touch-none">
-                <canvas ref={canvasRef} className="w-full h-full" onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={() => setIsDrawing(false)} onMouseLeave={() => setIsDrawing(false)} onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={() => setIsDrawing(false)} />
-            </div>
-        </div>
-    );
-}
+            {/* PILLAR 3: STATES OF MATTER (EXPERIMENT) */}
+            {activeTab === 'experiment' && (
+                <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4">
+                    <div className="text-center">
+                        <h2 className="text-3xl font-black text-cyan-800">States of Matter</h2>
+                        <p className="text-cyan-600">Change the temperature to see what happens to water!</p>
+                    </div>
 
-// --- 8. STICKER BOOK ---
-function StickerBook() {
-    const { user } = useUser(); 
-    const firestore = useFirestore();
-    const stickerQuery = useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'junior_stickers'), where('userId', '==', user.uid), orderBy('earnedAt', 'desc')) : null, [firestore, user]);
-    const { data: stickers } = useCollection<any>(stickerQuery);
+                    <div className="relative w-64 h-64 bg-cyan-50 rounded-full flex flex-col items-center justify-center border-8 border-white shadow-inner">
+                        <div className="text-9xl mb-2 transition-all duration-500 transform scale-125">
+                            {getWaterState().emoji}
+                        </div>
+                        <p className="text-2xl font-black text-cyan-700">{getWaterState().label}</p>
+                    </div>
 
-    return (
-        <div className="bg-yellow-50 p-6 rounded-3xl border-4 border-yellow-200 min-h-[300px]">
-            <h3 className="text-2xl font-bold text-yellow-800 mb-4 flex items-center gap-2">
-                <Trophy className="text-yellow-600"/> My Sticker Book
-            </h3>
-            {!stickers || stickers.length === 0 ? <div className="text-center py-10 text-yellow-700 opacity-50"><Gift className="h-16 w-16 mx-auto mb-2"/><p>Keep learning to earn stickers!</p></div> : (
-                <div className="grid grid-cols-4 md:grid-cols-6 gap-4">
-                    {stickers.map(s => (<div key={s.id} className="aspect-square bg-white rounded-xl shadow-md flex flex-col items-center justify-center p-2 animate-in zoom-in"><span className="text-4xl">{s.emoji}</span><span className="text-[10px] text-slate-500 mt-1 font-bold">{s.name}</span></div>))}
+                    <div className="w-full max-w-md space-y-4">
+                        <div className="flex justify-between font-black text-xl">
+                            <span className="text-blue-500">COLD</span>
+                            <span className="text-slate-700">{temp}°C</span>
+                            <span className="text-red-500">HOT</span>
+                        </div>
+                        <input 
+                            type="range" min="-20" max="120" value={temp} 
+                            onChange={(e) => setTemp(parseInt(e.target.value))}
+                            className="w-full h-4 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                        />
+                        <p className="text-center text-slate-500 font-medium italic">
+                            {getWaterState().desc}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* PILLAR 4: FIELD JOURNAL (LIBRARY) */}
+            {activeTab === 'library' && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
+                    {savedScience?.map((s:any)=>(
+                        <div 
+                            key={s.id} 
+                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all"
+                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
+                        >
+                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
+                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
+                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Saved Discovery</p>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>
