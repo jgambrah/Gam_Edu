@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -184,7 +185,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
                         >
-                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} />)}</div> : <Mic className="h-16 w-16 text-white" />}
+                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} ></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
                         </button>
                         
                         <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
@@ -568,14 +569,21 @@ function ABCKingdom() {
                                             }}
                                             onMouseUp={() => setIsTracing(false)}
                                             onTouchStart={startTracing}
+                                            onTouchEnd={() => setIsTracing(false)}
                                         />
                                         <Button 
                                             variant="ghost" size="sm" 
                                             className="absolute bottom-2 right-2 text-slate-300"
                                             onClick={() => {
                                                 const ctx = traceCanvasRef.current?.getContext('2d');
-                                                ctx?.clearRect(0,0,400,400);
-                                                handleLetterClick(selectedLetter);
+                                                if (ctx) {
+                                                  ctx.clearRect(0,0,400,400);
+                                                  ctx.font = "bold 300px sans-serif";
+                                                  ctx.fillStyle = "#f1f5f9";
+                                                  ctx.textAlign = "center";
+                                                  ctx.textBaseline = "middle";
+                                                  ctx.fillText(selectedLetter, 200, 220);
+                                                }
                                             }}
                                         >
                                             Reset
@@ -1135,6 +1143,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const handleGenerate = async () => { 
         setLoading(true); 
+        // Ensure your AI flow returns { title, emoji, fact, observation, experiment }
         const res = await generateJuniorScience(topic); 
         if(res.success) setFact(res.data); 
         setLoading(false); 
@@ -1466,7 +1475,7 @@ function ArtStudio() {
 
                     <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden cursor-crosshair touch-none">
                         <canvas 
-                            ref={traceCanvasRef} 
+                            ref={canvasRef} 
                             className="w-full touch-none"
                             onMouseDown={startDrawing} 
                             onMouseMove={draw} 
@@ -1474,7 +1483,7 @@ function ArtStudio() {
                             onMouseLeave={() => setIsDrawing(false)}
                             onTouchStart={startDrawing}
                             onTouchMove={draw}
-                            onTouchEnd={() => setIsTracing(false)}
+                            onTouchEnd={() => setIsDrawing(false)}
                         />
                         
                         {/* CANVAS WATERMARK/DECORATION */}
@@ -1494,7 +1503,7 @@ function ArtStudio() {
                         <Button onClick={() => {
                             const link = document.createElement('a');
                             link.download = 'my-masterpiece.png';
-                            link.href = traceCanvasRef.current!.toDataURL();
+                            link.href = canvasRef.current!.toDataURL();
                             link.click();
                             confetti();
                         }} className="bg-green-600 rounded-xl px-6">
@@ -1682,7 +1691,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
-                 <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></div></TabsContent>
+                <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></div></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
