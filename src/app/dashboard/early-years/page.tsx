@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -497,7 +497,7 @@ function ABCKingdom() {
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
         setIsTracing(true);
     };
-
+    
     const drawTracing = (e: any) => {
         if (!isTracing) return;
         const canvas = traceCanvasRef.current;
@@ -810,7 +810,8 @@ function MathPlayground() {
             
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="text-2xl font-black">{question.a.split(':')[0]}</div>
+                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(question.a.split(':')[0] % 12) * 30}deg)` }}></div>
+                    <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
                     <div className="absolute left-2">9</div>
@@ -821,19 +822,19 @@ function MathPlayground() {
             <div className="text-center">
                 <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
                  <div className="text-5xl font-black text-slate-800">
-                    {mode === 'add' || mode === 'sub' || mode === 'mul' || mode === 'div' ? (
+                    {(mode === 'add' || mode === 'sub') && (
                         <div className="flex items-center gap-3">
-                            <span>{mode === 'div' ? question.a : (mode === 'mul' ? question.a : question.a)}</span>
-                            <span className="text-orange-400">
-                                {mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}
-                            </span>
+                            <span>{question.a}</span>
+                            <span className="text-orange-400">{mode === 'add' ? '+' : '-'}</span>
                             <span>{question.b}</span>
                             <span className="text-slate-300">=</span>
                             <span className="text-orange-500">?</span>
                         </div>
-                    ) : (mode === 'compare' || mode === 'patterns') ? (
+                    )}
+                    {(mode === 'compare' || mode === 'patterns') && (
                         <span className="text-6xl tracking-tighter">{question.displayPrompt}</span>
-                    ) : (
+                    )}
+                    {(mode === 'mul' || mode === 'div' || mode === 'shapes' || mode === 'time') && (
                         <span>{question.displayPrompt ? "" : question.a}</span>
                     )}
                 </div>
@@ -1254,9 +1255,9 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                            <CardContent className="p-8 space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100"><h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4><p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p></div>
-                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100"><h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4><p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you!"}</p></div>
+                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100"><h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4><p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p></div>
                                 </div>
-                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200"><h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4><p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example?"}"</p></div>
+                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200"><h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4><p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p></div>
                                 <div className="flex gap-4">
                                     <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
                                     {canEdit && <Button onClick={handleSaveFact} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
@@ -1466,10 +1467,10 @@ function ArtStudio() {
                         </div>
                     )}
 
-                    <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden cursor-crosshair touch-none">
+                    <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden cursor-crosshair">
                         <canvas 
                             ref={canvasRef} 
-                            className="w-full"
+                            className="w-full touch-none"
                             onMouseDown={startDrawing} 
                             onMouseMove={draw} 
                             onMouseUp={() => setIsDrawing(false)} 
@@ -1479,6 +1480,7 @@ function ArtStudio() {
                             onTouchEnd={() => setIsDrawing(false)}
                         />
                         
+                        {/* CANVAS WATERMARK/DECORATION */}
                         <div className="absolute bottom-4 right-6 pointer-events-none opacity-20 flex items-center gap-2">
                             <Palette className="w-6 h-6" />
                             <span className="font-black italic">Junior Artist Studio</span>
@@ -1692,5 +1694,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
-```
