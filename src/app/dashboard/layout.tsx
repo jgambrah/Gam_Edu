@@ -14,19 +14,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
+    <RoleGuard allowedRoles={['all']}>
       <SidebarProvider>
         <Sidebar>
           <AppSidebar />
         </Sidebar>
         <SidebarInset>
-          <RoleGuard allowedRoles={['all']}>
             <Header />
             <ClientBoundary>
               <main className="p-4 lg:p-6">{children}</main>
               <AiChat />
             </ClientBoundary>
-          </RoleGuard>
         </SidebarInset>
       </SidebarProvider>
+    </RoleGuard>
   );
 }
