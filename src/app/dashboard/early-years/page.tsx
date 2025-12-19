@@ -271,13 +271,19 @@ function PhonicsForest() {
     const [gameOptions, setGameOptions] = useState<string[]>([]);
     
     const startNewGame = useCallback(() => {
-        const all = soundGroups.flatMap(g => g.sounds);
-        const target = all[Math.floor(Math.random() * all.length)];
-        const options = [target, ...all.filter(s => s !== target).sort(() => 0.5 - Math.random()).slice(0, 3)].sort();
+        const allSounds = soundGroups.flatMap(g => g.sounds);
+        const target = allSounds[Math.floor(Math.random() * allSounds.length)];
+        
+        // Ensure options don't include the target, then add it back to shuffle
+        const otherOptions = allSounds.filter(s => s !== target);
+        const shuffledOptions = otherOptions.sort(() => 0.5 - Math.random()).slice(0, 3);
+        shuffledOptions.push(target);
+        
         setGameTarget(target);
-        setGameOptions(options);
+        setGameOptions(shuffledOptions.sort(() => 0.5 - Math.random())); // Final shuffle
         speak(`Find the sound: ${target}`);
     }, [soundGroups]);
+
 
     return (
         <div className="space-y-6">
@@ -1368,10 +1374,6 @@ function ArtStudio() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopDrawing = () => {
-        setIsDrawing(false);
-    };
-
     const clearCanvas = () => { 
         const canvas = canvasRef.current; 
         if(canvas){ 
@@ -1691,7 +1693,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></div></TabsContent>
+                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
