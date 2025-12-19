@@ -289,12 +289,11 @@ function ABCKingdom() {
     );
 }
 
-// --- 4. MATH PLAYGROUND (ENHANCED) ---
+// --- 4. MATH PLAYGROUND (ULTIMATE VERSION) ---
 function MathPlayground() {
-  // Extended modes: add, sub, mul, div, compare, patterns, shapes, time
   type MathMode = 'add' | 'sub' | 'mul' | 'div' | 'compare' | 'patterns' | 'shapes' | 'time';
   const [mode, setMode] = useState<MathMode>('add');
-  const [question, setQuestion] = useState<any>({ a: 0, b: 0, icon: '🍎', ans: '', options: [] });
+  const [question, setQuestion] = useState<any>({ a: 0, b: 0, icon: '🍎', ans: '', options: [], displayPrompt: "" });
   const [feedback, setFeedback] = useState("");
   const [streak, setStreak] = useState(0);
   const { user } = useUser(); 
@@ -302,7 +301,7 @@ function MathPlayground() {
   const { toast } = useToast();
 
   const generateQuestion = useCallback(() => {
-    const icons = ['🍎', '🍌', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪', '🎈', '⚽️'];
+    const icons = ['🍎', '🍓', '🐶', '🐱', '⭐', '🚗', '🦖', '🍪', '🎈', '⚽️'];
     const icon = icons[Math.floor(Math.random() * icons.length)];
     let a, b, ans, options: any[] = [];
     let displayPrompt = "";
@@ -317,6 +316,23 @@ function MathPlayground() {
         a = Math.floor(Math.random() * 10) + 5; b = Math.floor(Math.random() * a);
         ans = a - b;
         options = [ans, ans + 2, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
+        break;
+      case 'mul':
+        // Juniors usually do up to 5x5 or 2x10
+        a = Math.floor(Math.random() * 4) + 2; // Rows
+        b = Math.floor(Math.random() * 4) + 2; // Columns
+        ans = a * b;
+        displayPrompt = `${a} groups of ${b}`;
+        options = [ans, ans + b, ans - a].filter(n => n > 0).sort(() => Math.random() - 0.5);
+        if (options.length < 3) options.push(ans + 1);
+        break;
+      case 'div':
+        // Ensure clean division (Inverse of multiplication)
+        b = Math.floor(Math.random() * 3) + 2; // Divisor (groups)
+        ans = Math.floor(Math.random() * 4) + 2; // Quotient (items per group)
+        a = b * ans; // Dividend (total)
+        displayPrompt = `Share ${a} into ${b} groups`;
+        options = [ans, ans + 1, Math.max(1, ans - 1)].sort(() => Math.random() - 0.5);
         break;
       case 'compare':
         a = Math.floor(Math.random() * 20); b = Math.floor(Math.random() * 20);
@@ -333,29 +349,21 @@ function MathPlayground() {
         displayPrompt = `${a[0]}, ${a[1]}, ${a[2]}, ?`;
         break;
       case 'shapes':
-        const shapeList = [
-            { name: 'Triangle', sides: 3, icon: '▲' },
-            { name: 'Square', sides: 4, icon: '■' },
-            { name: 'Pentagon', sides: 5, icon: '⬠' },
-            { name: 'Circle', sides: 0, icon: '●' }
+        const shapes = [
+            { name: 'Triangle', icon: '▲' }, { name: 'Square', icon: '■' },
+            { name: 'Pentagon', icon: '⬠' }, { name: 'Circle', icon: '●' }
         ];
-        const selected = shapeList[Math.floor(Math.random() * shapeList.length)];
-        a = selected.icon;
-        ans = selected.name;
-        options = shapeList.map(s => s.name).sort(() => Math.random() - 0.5);
+        const s = shapes[Math.floor(Math.random() * shapes.length)];
+        a = s.icon; ans = s.name;
+        options = shapes.map(sh => sh.name).sort(() => Math.random() - 0.5);
         displayPrompt = `What shape is this?`;
         break;
       case 'time':
-        const hour = Math.floor(Math.random() * 12) + 1;
-        a = `${hour}:00`;
-        ans = `${hour} o'clock`;
-        const wrong1 = `${(hour % 12) + 1} o'clock`;
-        const wrong2 = `${Math.max(1, hour - 1)} o'clock`;
-        options = [ans, wrong1, wrong2].sort(() => Math.random() - 0.5);
-        displayPrompt = `The clock says ${a}. It is...`;
+        const hr = Math.floor(Math.random() * 12) + 1;
+        a = `${hr}:00`; ans = `${hr} o'clock`;
+        options = [ans, `${(hr % 12) + 1} o'clock`, `${hr === 1 ? 12 : hr - 1} o'clock`].sort(() => Math.random() - 0.5);
+        displayPrompt = `The clock says ${a}...`;
         break;
-      default:
-        a = 1; b = 1; ans = 2; options = [2,3,4];
     }
 
     setQuestion({ a, b, icon, ans, options, displayPrompt });
@@ -369,111 +377,103 @@ function MathPlayground() {
       setStreak(s => s + 1);
       setFeedback("CORRECT! 🎉");
       confetti({ particleCount: 100, spread: 70 });
-      speak("Great job!");
-
-      if ((streak + 1) % 5 === 0 && user && firestore) {
-          const sticker = '🎓';
-          await addDoc(collection(firestore, 'junior_stickers'), {
-              userId: user.uid,
-              emoji: sticker,
-              name: `${mode.toUpperCase()} Master`,
-              earnedAt: serverTimestamp()
-          });
-          toast({ title: "Achievement!", description: "You earned a Math Master sticker!" });
-      }
+      speak("Correct!");
       setTimeout(generateQuestion, 1500);
     } else {
       setStreak(0);
       setFeedback("Try Again! 🤔");
-      speak("Try again.");
+      speak("Not quite.");
     }
   };
 
   return (
     <div className="flex flex-col items-center space-y-6">
-      {/* Scrollable Mode Selector */}
-      <div className="flex gap-2 mb-4 bg-slate-100 p-2 rounded-3xl shadow-inner w-full overflow-x-auto no-scrollbar">
-          {(['add', 'sub', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
+      {/* Mode Selector */}
+      <div className="flex gap-2 mb-4 bg-slate-100 p-2 rounded-3xl w-full overflow-x-auto no-scrollbar">
+          {(['add', 'sub', 'mul', 'div', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
             <Button 
                 key={m}
                 variant={mode === m ? 'default' : 'ghost'} 
                 onClick={() => setMode(m)} 
                 className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500 shadow-md' : 'text-slate-500'}`}
             >
-                {m}
+                {m === 'mul' ? '× Multi' : m === 'div' ? '÷ Divide' : m}
             </Button>
           ))}
       </div>
 
-      {/* Dynamic Question Display */}
-      <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px] overflow-hidden">
-        <CardContent className="p-8 flex flex-col items-center">
+      <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px]">
+        <CardContent className="p-8 flex flex-col items-center min-h-[300px] justify-center">
             
-            {/* Logic for Visual Aids */}
+            {/* MULTIPLICATION: Array Grid Visual */}
+            {mode === 'mul' && (
+                <div className="grid gap-2 mb-6" style={{ gridTemplateColumns: `repeat(${question.b}, minmax(0, 1fr))` }}>
+                    {Array.from({ length: question.a * question.b }).map((_, i) => (
+                        <span key={i} className="text-3xl animate-in zoom-in">{question.icon}</span>
+                    ))}
+                </div>
+            )}
+
+            {/* DIVISION: Sharing into Groups Visual */}
+            {mode === 'div' && (
+                <div className="space-y-4 mb-6">
+                    <div className="flex flex-wrap justify-center gap-1 border-b pb-4">
+                        {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-2xl">{question.icon}</span>)}
+                    </div>
+                    <div className="flex gap-2">
+                        {Array.from({ length: question.b }).map((_, i) => (
+                            <div key={i} className="w-12 h-12 border-2 border-dashed border-orange-200 rounded-xl flex items-center justify-center text-xs text-orange-300 font-bold">Group</div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Arithmetic & Comparison Visuals */}
             {(mode === 'add' || mode === 'sub') && (
-                <div className="flex flex-wrap justify-center gap-2 mb-6 min-h-[60px]">
-                    {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl animate-bounce" style={{animationDelay: `${i * 0.1}s`}}>{question.icon}</span>)}
+                <div className="flex flex-wrap justify-center gap-2 mb-6">
+                    {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
                     <span className="text-3xl font-black text-orange-300 mx-2">{mode === 'add' ? '+' : '-'}</span>
-                    {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-80">{question.icon}</span>)}
+                    {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-50">{question.icon}</span>)}
                 </div>
             )}
 
-            {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6 drop-shadow-md">{question.a}</div>}
+            {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6">{question.a}</div>}
             
-            {mode === 'time' && (
-                <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="text-2xl font-black">{question.a.split(':')[0]}</div>
-                    <div className="absolute top-2">12</div>
-                    <div className="absolute bottom-2">6</div>
-                    <div className="absolute left-2">9</div>
-                    <div className="absolute right-2">3</div>
-                </div>
-            )}
-
-            {/* The Main Question Text */}
             <div className="text-center">
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'What is the answer?'}</p>
-                <div className="text-6xl font-black text-slate-800 tracking-tighter">
-                    {mode === 'add' || mode === 'sub' ? (
+                <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
+                <div className="text-5xl font-black text-slate-800">
+                    {mode === 'add' || mode === 'sub' || mode === 'mul' || mode === 'div' ? (
                         <div className="flex items-center gap-3">
-                            <span>{question.a}</span>
-                            <span className="text-orange-400">{mode === 'add' ? '+' : '-'}</span>
+                            <span>{mode === 'div' ? question.a : (mode === 'mul' ? question.a : question.a)}</span>
+                            <span className="text-orange-400">
+                                {mode === 'add' ? '+' : mode === 'sub' ? '-' : mode === 'mul' ? '×' : '÷'}
+                            </span>
                             <span>{question.b}</span>
+                            <span className="text-slate-300">=</span>
+                            <span className="text-orange-500">?</span>
                         </div>
                     ) : (
-                        <span className="text-orange-600">{question.displayPrompt ? "" : question.a}</span>
+                        <span>{question.displayPrompt ? "" : question.a}</span>
                     )}
-                    {(mode === 'patterns' || mode === 'compare') && <span className="text-orange-500">{question.displayPrompt}</span>}
                 </div>
             </div>
         </CardContent>
       </Card>
 
-      {/* Answer Options */}
+      {/* Answer Grid */}
       <div className="grid grid-cols-3 gap-4 w-full max-w-md">
         {question.options.map((opt: any, i: number) => (
           <button 
             key={i} 
             onClick={() => checkAnswer(opt)} 
-            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-2xl md:text-3xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
+            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
           >
             {opt}
           </button>
         ))}
       </div>
 
-      <div className="h-12 flex items-center">
-         {feedback && (
-             <p className={`text-2xl font-black animate-in zoom-in ${feedback.includes("CORRECT") ? "text-green-500" : "text-red-400"}`}>
-                {feedback}
-             </p>
-         )}
-      </div>
-
-      <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border shadow-sm">
-          <Star className="text-yellow-400 fill-yellow-400 w-5 h-5" />
-          <span className="font-bold text-slate-600">Streak: {streak}</span>
-      </div>
+      <div className="h-10 text-2xl font-black text-green-500">{feedback}</div>
     </div>
   );
 }
@@ -516,6 +516,8 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
+        // Pass the target word count to the AI flow
+        // Note: Ensure your backend 'generateJuniorStory' is updated to handle (topic, wordCount)
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -550,27 +552,29 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         if (!userAnswer.trim() || !story) return;
         
         const currentQ = story.questions[currentQuestionIndex];
-        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
+        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) || 
+                        userAnswer.toLowerCase().trim().includes(currentQ.answer.toLowerCase().trim());
         
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
+        
         if (correct) {
-            setScore(s => s + 1);
-            confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
-            speak("Correct! Well done!");
+            setScore(prev => prev + 1);
+            speak('Great job! That is correct.');
+            confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
         } else {
-            speak("Not quite, let's keep trying!");
+            speak('Not quite, but good try!');
         }
     };
 
     const handleNextQuestion = () => {
-        if (currentQuestionIndex < (story.questions?.length || 0) - 1) {
+        if (currentQuestionIndex < story.questions.length - 1) {
             setCurrentQuestionIndex(prev => prev + 1);
             setUserAnswer('');
             setIsAnswerSubmitted(false);
         } else {
             setQuizFinished(true);
-            speak(`You finished the quiz! You got ${score + (isAnswerCorrect ? 1 : 0)} out of ${story.questions.length}`);
+            speak(`You finished the quiz! You got ${score + (isAnswerCorrect ? 0 : 0)} out of ${story.questions.length}`);
         }
     };
 
@@ -593,10 +597,11 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             <Input 
                                 value={topic} 
                                 onChange={e => setTopic(e.target.value)} 
-                                placeholder="What is the story about? (e.g. A dragon who loves cupcakes)" 
+                                placeholder="What should the story be about? (e.g. A brave robot in the ocean)" 
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
+                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -639,14 +644,14 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             </p>
                         </div>
                         
-                        <div className="flex gap-3">
+                        <div className="flex gap-4">
                             <Button onClick={() => speak(story.content)} variant="outline" className="flex-1 h-14 text-lg border-2 border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-100">
                                 <Volume2 className="mr-2" /> Read Aloud
                             </Button>
                             {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
                         </div>
 
-                        {/* 3-QUESTION CHALLENGE AREA */}
+                        {/* Multi-Question Quiz Section */}
                         <div className="bg-white p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
@@ -654,16 +659,12 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         <span className="bg-purple-200 text-purple-700 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
                                             Question {currentQuestionIndex + 1} of {story.questions?.length || 3}
                                         </span>
-                                        <div className="flex gap-1">
-                                            {[...Array(story.questions?.length || 0)].map((_, i) => (
-                                                <div key={i} className={`h-2 w-8 rounded-full ${i === currentQuestionIndex ? 'bg-purple-500' : i < currentQuestionIndex ? 'bg-green-400' : 'bg-slate-200'}`} />
-                                            ))}
-                                        </div>
+                                        <span className="text-purple-600 font-bold">Score: {score}</span>
                                     </div>
-
-                                    <h4 className="text-2xl font-bold text-purple-900 leading-tight">
-                                        {story.questions?.[currentQuestionIndex]?.question || "Look at the story and answer..."}
-                                    </h4>
+                                    
+                                    <p className="text-2xl font-bold text-purple-900">
+                                        {story.questions?.[currentQuestionIndex]?.question || story.question}
+                                    </p>
 
                                     {!isAnswerSubmitted ? (
                                         <div className="flex gap-2">
@@ -671,22 +672,22 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                                 placeholder="Type your answer here..." 
                                                 value={userAnswer}
                                                 onChange={(e) => setUserAnswer(e.target.value)}
-                                                className="text-lg h-14 border-2 border-purple-100 focus:border-purple-500 rounded-xl"
+                                                className="text-lg h-14 border-2 border-purple-200 focus:border-purple-500 rounded-xl"
                                                 onKeyDown={(e) => e.key === 'Enter' && handleCheckAnswer()}
                                             />
-                                            <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="bg-purple-600 h-14 px-8 rounded-2xl font-bold">Check</Button>
+                                            <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="h-14 px-8 bg-purple-600 text-lg font-bold rounded-xl">Check</Button>
                                         </div>
                                     ) : (
                                         <div className="animate-in slide-in-from-bottom-2 space-y-4">
-                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
-                                                {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
+                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
+                                                {isAnswerCorrect ? <CheckCircle2 className="h-8 w-8 text-green-600"/> : <XCircle className="h-8 w-8 text-red-600"/>}
                                                 <div>
                                                     <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
-                                                    <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
+                                                    <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer || story.answer}</span></p>
                                                 </div>
                                             </div>
                                             <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
-                                                {currentQuestionIndex < (story.questions?.length || 1) - 1 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
+                                                {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
@@ -697,8 +698,8 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         <Trophy className="w-12 h-12 text-yellow-600" />
                                     </div>
                                     <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
-                                    <p className="text-xl font-bold text-purple-600">You got {score} out of {story.questions?.length} correct!</p>
-                                    <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
+                                    <p className="text-xl text-purple-700 font-bold">You got {score} out of {story.questions?.length} correct!</p>
+                                    <Button onClick={resetQuiz} variant="outline" className="border-2 border-purple-300 text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
                         </div>
@@ -706,11 +707,12 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                 </Card>
             )}
 
-            {/* LIBRARY SECTION */}
             <div>
-                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
-                    <BookOpen className="text-purple-500" /> Story Library
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
+                        <Library className="text-purple-500" /> Story Library
+                    </h3>
+                </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedStories?.map((s:any) => (
                         <Card key={s.id} className="cursor-pointer border-b-8 border-purple-200 hover:border-purple-400 hover:-translate-y-1 transition-all relative group rounded-3xl overflow-hidden">
