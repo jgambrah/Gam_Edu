@@ -11,15 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, BookOpenCheck, Edit, PenSquare, Lightbulb, TrendingUp, AlertCircle, ShieldCheck, MessageSquare, Search, Gavel, Swords
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -399,13 +395,14 @@ function MathPlayground() {
 
   return (
     <div className="flex flex-col items-center space-y-6">
+      {/* Scrollable Mode Selector */}
       <div className="flex gap-2 mb-4 bg-slate-100 p-2 rounded-3xl w-full overflow-x-auto no-scrollbar">
           {(['add', 'sub', 'mul', 'div', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
             <Button 
                 key={m}
                 variant={mode === m ? 'default' : 'ghost'} 
                 onClick={() => setMode(m)} 
-                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500 shadow-md' : 'text-slate-500'}`}
+                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500' : 'text-slate-500'}`}
             >
                 {m === 'mul' ? '× Multi' : m === 'div' ? '÷ Divide' : m}
             </Button>
@@ -415,6 +412,7 @@ function MathPlayground() {
       <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px] overflow-hidden">
         <CardContent className="p-8 flex flex-col items-center min-h-[300px] justify-center">
             
+            {/* MULTIPLICATION: Array Grid Visual */}
             {mode === 'mul' && (
                 <div className="grid gap-2 mb-6" style={{ gridTemplateColumns: `repeat(${question.b}, minmax(0, 1fr))` }}>
                     {Array.from({ length: question.a * question.b }).map((_, i) => (
@@ -423,6 +421,7 @@ function MathPlayground() {
                 </div>
             )}
 
+            {/* DIVISION: Sharing into Groups Visual */}
             {mode === 'div' && (
                 <div className="space-y-4 mb-6">
                     <div className="flex flex-wrap justify-center gap-1 border-b pb-4">
@@ -436,6 +435,7 @@ function MathPlayground() {
                 </div>
             )}
 
+            {/* ADD/SUB Visuals */}
             {(mode === 'add' || mode === 'sub') && (
                 <div className="flex flex-wrap justify-center gap-2 mb-6 min-h-[60px]">
                     {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
@@ -444,8 +444,10 @@ function MathPlayground() {
                 </div>
             )}
 
+            {/* SHAPES Visual */}
             {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6">{question.a}</div>}
             
+            {/* TIME Visual */}
             {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
                     <div className="text-2xl font-black">{question.a.split(':')[0]}</div>
@@ -456,6 +458,7 @@ function MathPlayground() {
                 </div>
             )}
             
+            {/* The Main Question Text */}
             <div className="text-center">
                 <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
                  <div className="text-5xl font-black text-slate-800">
@@ -477,6 +480,7 @@ function MathPlayground() {
         </CardContent>
       </Card>
 
+      {/* Answer Grid */}
       <div className="grid grid-cols-3 gap-4 w-full max-w-md">
         {question.options.map((opt: any, i: number) => (
           <button 
@@ -493,6 +497,7 @@ function MathPlayground() {
     </div>
   );
 }
+
 
 // --- 5. STORY SPARK ---
 function StorySpark({ canEdit }: { canEdit: boolean }) {
@@ -567,14 +572,15 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         if (!userAnswer.trim() || !story) return;
         // Check against the current question in the questions array
         const currentQ = story.questions[currentQuestionIndex];
-        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
+        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) || 
+                        userAnswer.toLowerCase().trim().includes(currentQ.answer.toLowerCase().trim());
         
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
         if (correct) {
             setScore(s => s + 1);
             confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
-            speak("Correct! Well done!");
+            speak("Great job! That is correct.");
         } else {
             speak("Not quite, but good try!");
         }
@@ -587,6 +593,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             setIsAnswerSubmitted(false);
         } else {
             setQuizFinished(true);
+            speak(`You finished the quiz! You got ${score + (isAnswerCorrect ? 0 : 0)} out of ${story.questions.length}`);
         }
     };
 
@@ -609,7 +616,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             <Input 
                                 value={topic} 
                                 onChange={e => setTopic(e.target.value)} 
-                                placeholder="What should the story be about? (e.g. A brave robot in the ocean)" 
+                                placeholder="What is the story about? (e.g. A dragon who loves cupcakes)" 
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
@@ -639,7 +646,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             )}
 
             {story && (
-                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden shadow-2xl">
+                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden">
                     <CardHeader className="bg-yellow-300 py-4 flex flex-row justify-between items-center">
                         <CardTitle className="text-2xl font-black text-yellow-900">{story.emojiIcon} {story.title}</CardTitle>
                         {isAdminOrDirector && (
@@ -663,7 +670,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
                         </div>
 
-                        {/* 3-QUESTION CHALLENGE AREA */}
+                        {/* Multi-Question Quiz Section */}
                         <div className="bg-purple-50 p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
@@ -671,16 +678,12 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         <span className="bg-purple-200 text-purple-700 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
                                             Question {currentQuestionIndex + 1} of 3
                                         </span>
-                                        <div className="flex gap-1">
-                                            {[0, 1, 2].map(i => (
-                                                <div key={i} className={`h-2 w-8 rounded-full ${i === currentQuestionIndex ? 'bg-purple-500' : i < currentQuestionIndex ? 'bg-green-400' : 'bg-slate-200'}`} />
-                                            ))}
-                                        </div>
+                                        <span className="text-purple-600 font-bold">Score: {score}</span>
                                     </div>
-
-                                    <h4 className="text-2xl font-bold text-purple-900 leading-tight">
-                                        {story.questions?.[currentQuestionIndex]?.question || "Look at the story and answer..."}
-                                    </h4>
+                                    
+                                    <p className="text-2xl font-bold text-purple-900">
+                                        {story.questions?.[currentQuestionIndex]?.question || story.question}
+                                    </p>
 
                                     {!isAnswerSubmitted ? (
                                         <div className="flex gap-2">
@@ -688,34 +691,34 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                                 placeholder="Type your answer here..." 
                                                 value={userAnswer}
                                                 onChange={(e) => setUserAnswer(e.target.value)}
-                                                className="text-lg h-14 border-2 border-purple-100 focus:border-purple-400 rounded-2xl"
+                                                className="text-lg h-14 border-2 border-purple-200 focus:border-purple-500 rounded-xl"
                                                 onKeyDown={(e) => e.key === 'Enter' && handleCheckAnswer()}
                                             />
-                                            <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="bg-purple-600 h-14 px-8 rounded-2xl font-bold">Check</Button>
+                                            <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="h-14 px-8 bg-purple-600 text-lg font-bold rounded-xl">Check</Button>
                                         </div>
                                     ) : (
                                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
-                                                {isAnswerCorrect ? <CheckCircle2 className="h-8 w-8 text-green-600"/> : <XCircle className="h-8 w-8 text-red-600"/>}
+                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
+                                                {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
                                                 <div>
-                                                    <p className="font-bold">{isAnswerCorrect ? "Great Thinking!" : "Not Quite..."}</p>
-                                                    <p className="text-sm">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
+                                                    <p className="font-bold">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
+                                                    <p className="text-sm">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer || story.answer}</span></p>
                                                 </div>
                                             </div>
                                             <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold rounded-xl">
-                                                {currentQuestionIndex < 2 ? "Next Question" : "See Final Score"} <ArrowRight className="ml-2 w-4 h-4" />
+                                                {currentQuestionIndex < 2 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-4 space-y-4 animate-in zoom-in">
+                                <div className="text-center py-6 space-y-4 animate-in zoom-in">
                                     <div className="inline-block p-4 bg-yellow-100 rounded-full mb-2">
                                         <Trophy className="w-12 h-12 text-yellow-600" />
                                     </div>
-                                    <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
-                                    <p className="text-xl font-bold text-purple-600">You got {score} out of {story.questions.length} correct!</p>
-                                    <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
+                                    <h4 className="text-3xl font-black text-purple-900">Quiz Complete!</h4>
+                                    <p className="text-xl text-purple-700 font-bold">You got {score} out of 3 correct!</p>
+                                    <Button onClick={resetQuiz} variant="outline" className="border-2 border-purple-300 text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
                         </div>
@@ -723,27 +726,29 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                 </Card>
             )}
 
-            {/* LIBRARY SECTION */}
             <div>
-                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
-                    <BookOpen className="text-purple-500" /> Story Library
-                </h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
+                        <Library className="text-purple-500" /> Story Library
+                    </h3>
+                </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {savedStories?.map((s:any) => (
-                        <Card key={s.id} className="cursor-pointer border-b-8 border-purple-200 hover:border-purple-400 hover:-translate-y-1 transition-all relative group rounded-3xl overflow-hidden">
-                            <CardContent className="p-6 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
-                                <div className="text-5xl bg-slate-50 p-3 rounded-2xl shadow-inner">{s.emojiIcon}</div>
-                                <div className="flex-1 overflow-hidden">
-                                    <h4 className="font-black text-lg text-slate-800 truncate">{s.title}</h4>
-                                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                                        <span>{s.wordCount || '?'} Words</span>
-                                        <span>•</span>
-                                        <span className="text-purple-400">{s.topic || 'General'}</span>
-                                    </div>
+                        <Card key={s.id} className="cursor-pointer border-b-4 border-purple-200 hover:border-purple-400 hover:shadow-xl transition-all relative group overflow-hidden">
+                            <CardContent className="p-4 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
+                                <div className="text-5xl bg-slate-50 p-2 rounded-2xl">{s.emojiIcon}</div>
+                                <div className="pr-6">
+                                    <h4 className="font-bold text-lg text-slate-800 line-clamp-1">{s.title}</h4>
+                                    <p className="text-xs text-slate-400 font-bold uppercase">{s.topic || 'Fun Story'}</p>
                                 </div>
                             </CardContent>
                             {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
+                                <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" 
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}
+                                >
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
@@ -755,217 +760,200 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. SCIENCE WORLD (COMPREHENSIVE DISCOVERY CENTER) ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore(); 
-    const { user } = useUser(); 
-    const { toast } = useToast();
-    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
+// --- 7. ART STUDIO (CREATIVE ACADEMY) ---
+function ArtStudio() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [color, setColor] = useState('#4f46e5');
+    const [brushSize, setBrushSize] = useState(8);
     
-    // AI Generation State
-    const [topic, setTopic] = useState(''); 
-    const [fact, setFact] = useState<any>(null); 
-    const [loading, setLoading] = useState(false);
-    
-    // Sorting Game State
-    const [sortItems, setSortItems] = useState([
-        { id: 1, name: 'Puppy', emoji: '🐶', type: 'living' },
-        { id: 2, name: 'Robot', emoji: '🤖', type: 'non-living' },
-        { id: 3, name: 'Flower', emoji: '🌻', type: 'living' },
-        { id: 4, name: 'Rock', emoji: '🪨', type: 'non-living' },
-    ].sort(() => Math.random() - 0.5));
-    
-    // States of Matter Simulator State
-    const [temp, setTemp] = useState(20); // Celsius
+    // Color Lab State
+    const [mix1, setMix1] = useState<string | null>(null);
+    const [mix2, setMix2] = useState<string | null>(null);
 
-    const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
-    const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
-    
-    const handleGenerate = async () => { 
-        setLoading(true); 
-        // Ensure your AI flow returns { title, emoji, fact, observation, experiment }
-        const res = await generateJuniorScience(topic); 
-        if(res.success) setFact(res.data); 
-        setLoading(false); 
+    // Challenges State
+    const [challenge, setChallenge] = useState("Can you draw a house using 1 Square and 1 Triangle?");
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (canvas) {
+            canvas.width = canvas.parentElement?.clientWidth || 800;
+            canvas.height = 500;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+    }, [activeTab]);
+
+    const startDrawing = (e: any) => {
+        const canvas = canvasRef.current; if (!canvas) return; 
+        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = brushSize; 
+        setIsDrawing(true);
     };
 
-    const handleSave = async () => { 
-        if(!user || !fact || !firestore) return; 
-        await addDoc(collection(firestore,'junior_science'), {
-            ...fact,
-            createdAt: serverTimestamp(),
-            createdBy: user.uid
-        }); 
-        setFact(null); 
-        forceRefetch(); 
-        toast({title: "Discovery Saved!"});
+    const draw = (e: any) => {
+        if (!isDrawing) return; 
+        const canvas = canvasRef.current; if (!canvas) return; 
+        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const getWaterState = () => {
-        if (temp <= 0) return { emoji: '🧊', label: 'Solid (Ice)', desc: 'Brrr! The molecules are frozen tight.' };
-        if (temp >= 100) return { emoji: '💨', label: 'Gas (Steam)', desc: 'Whoosh! The molecules are flying fast.' };
-        return { emoji: '💧', label: 'Liquid (Water)', desc: 'Splish splash! The molecules are sliding around.' };
+    const clearCanvas = () => { 
+        const canvas = canvasRef.current; 
+        if(canvas){ 
+            const ctx=canvas.getContext('2d'); 
+            if(ctx){ctx.fillStyle="white"; ctx.fillRect(0,0,canvas.width,canvas.height);} 
+        } 
+    };
+
+    const handleMix = (c: string) => {
+        if (!mix1) setMix1(c);
+        else if (!mix2) setMix2(c);
+        else { setMix1(c); setMix2(null); }
+    };
+
+    const getMixedColor = () => {
+        const colors = [mix1, mix2].sort().join('+');
+        if (colors === '#FF0000+#FFFF00') return { name: 'Orange', hex: '#FFA500' };
+        if (colors === '#0000FF+#FF0000') return { name: 'Purple', hex: '#800080' };
+        if (colors === '#0000FF+#FFFF00') return { name: 'Green', hex: '#008000' };
+        return null;
     };
 
     return (
-        <div className="space-y-8">
-            {/* Science Navigation */}
-            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
-                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl">Discovery Lab</Button>
-                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl">The Sorter</Button>
-                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')} className="rounded-xl">Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Field Journal</Button>
+        <div className="space-y-6">
+            {/* Art Academy Navigation */}
+            <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
+                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
+                <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
+                <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
 
-            {/* PILLAR 1: DISCOVERY LAB (AI) */}
-            {activeTab === 'lab' && (
-                <div className="space-y-6 animate-in fade-in">
-                    {canEdit && (
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
-                            <div className="flex gap-2">
-                                <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
-                                <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
-                                    {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
+            <div className="grid lg:grid-cols-4 gap-6">
+                {/* TOOLBAR */}
+                <Card className="lg:col-span-1 border-2 border-slate-100 rounded-[32px] p-4 space-y-6 h-fit">
+                    {activeTab === 'color-lab' ? (
+                        <div className="space-y-4 text-center">
+                            <h4 className="font-bold text-slate-800 text-sm uppercase">Primary Colors</h4>
+                            <div className="flex justify-center gap-2">
+                                {['#FF0000', '#FFFF00', '#0000FF'].map(c => (
+                                    <button key={c} onClick={() => handleMix(c)} className="w-10 h-10 rounded-full border-4 border-white shadow-md" style={{backgroundColor: c}} />
+                                ))}
+                            </div>
+                            <div className="p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                                <div className="flex justify-center items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix1 || '#eee'}} />
+                                    <span className="font-bold">+</span>
+                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix2 || '#eee'}} />
+                                </div>
+                                {getMixedColor() && (
+                                    <div className="animate-in zoom-in text-center">
+                                        <p className="text-xs font-bold text-slate-500 mb-1">Result:</p>
+                                        <button 
+                                            onClick={() => setColor(getMixedColor()!.hex)}
+                                            className="w-full py-2 rounded-xl text-white font-bold" 
+                                            style={{backgroundColor: getMixedColor()!.hex}}
+                                        >
+                                            Use {getMixedColor()!.name}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Color</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#8B4513'].map(c => (
+                                        <button 
+                                            key={c} onClick={() => setColor(c)} 
+                                            className={`aspect-square rounded-full border-2 transition-transform ${color === c ? 'border-slate-800 scale-110 shadow-lg' : 'border-transparent'}`} 
+                                            style={{ backgroundColor: c }} 
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Size</label>
+                                <input type="range" min="2" max="40" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500" />
+                            </div>
+                            <div className="pt-4 border-t border-slate-100">
+                                <Button variant="outline" onClick={clearCanvas} className="w-full text-red-500 border-red-100 hover:bg-red-50 rounded-xl">
+                                    <Trash2 className="w-4 h-4 mr-2" /> Clear All
                                 </Button>
                             </div>
                         </div>
                     )}
-                    
-                    {fact && (
-                        <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
-                            <div className="bg-blue-500 p-8 text-center text-white">
-                                <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
-                                <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
+                </Card>
+
+                {/* CANVAS AREA */}
+                <div className="lg:col-span-3 space-y-4">
+                    {activeTab === 'shapes' && (
+                        <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg animate-in slide-in-from-top-4">
+                            <div className="flex items-center gap-3">
+                                <Star className="text-yellow-400 fill-yellow-400" />
+                                <span className="font-bold text-lg">{challenge}</span>
                             </div>
-                            <CardContent className="p-8 space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
-                                        <h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p>
-                                    </div>
-                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
-                                        <h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200">
-                                    <h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4>
-                                    <p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
-                                    {canEdit && <Button onClick={handleSave} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <Button size="sm" variant="secondary" onClick={() => setChallenge("Now draw a 🌲 using 3 Triangles!")}>Next Quest</Button>
+                        </div>
                     )}
-                </div>
-            )}
 
-            {/* PILLAR 2: THE SORTER (GAME) */}
-            {activeTab === 'sorter' && (
-                <div className="bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
-                    <div>
-                        <h2 className="text-3xl font-black text-slate-800">The Sorting Game</h2>
-                        <p className="text-slate-500">Is it Living or Non-Living?</p>
-                    </div>
-                    
-                    <div className="flex justify-center gap-6">
-                        {sortItems.length > 0 ? (
-                            <div className="bg-white p-10 rounded-full shadow-xl border-8 border-blue-100 animate-bounce">
-                                <div className="text-9xl">{sortItems[0].emoji}</div>
-                                <p className="text-2xl font-black text-slate-700 mt-4">{sortItems[0].name}</p>
-                            </div>
-                        ) : (
-                            <Button onClick={() => window.location.reload()} className="bg-green-500">Play Again!</Button>
-                        )}
-                    </div>
-
-                    <div className="flex justify-center gap-4">
-                        <Button 
-                            onClick={() => {
-                                if(sortItems[0].type === 'living') { confetti(); speak("Yes! It grows and breathes."); setSortItems(prev => prev.slice(1)); }
-                                else { speak("Not quite. That doesn't grow on its own."); }
-                            }}
-                            className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl"
-                        >
-                            🌳 Living
-                        </Button>
-                        <Button 
-                            onClick={() => {
-                                if(sortItems[0].type === 'non-living') { confetti(); speak("Correct! It is an object."); setSortItems(prev => prev.slice(1)); }
-                                else { speak("Think again! Living things grow."); }
-                            }}
-                            className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl"
-                        >
-                            🧸 Non-Living
-                        </Button>
-                    </div>
-                </div>
-            )}
-
-            {/* PILLAR 3: STATES OF MATTER (EXPERIMENT) */}
-            {activeTab === 'experiment' && (
-                <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-black text-cyan-800">States of Matter</h2>
-                        <p className="text-cyan-600">Change the temperature to see what happens to water!</p>
-                    </div>
-
-                    <div className="relative w-64 h-64 bg-cyan-50 rounded-full flex flex-col items-center justify-center border-8 border-white shadow-inner">
-                        <div className="text-9xl mb-2 transition-all duration-500 transform scale-125">
-                            {getWaterState().emoji}
-                        </div>
-                        <p className="text-2xl font-black text-cyan-700">{getWaterState().label}</p>
-                    </div>
-
-                    <div className="w-full max-w-md space-y-4">
-                        <div className="flex justify-between font-black text-xl">
-                            <span className="text-blue-500">COLD</span>
-                            <span className="text-slate-700">{temp}°C</span>
-                            <span className="text-red-500">HOT</span>
-                        </div>
-                        <input 
-                            type="range" min="-20" max="120" value={temp} 
-                            onChange={(e) => setTemp(parseInt(e.target.value))}
-                            className="w-full h-4 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                    <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden cursor-crosshair touch-none">
+                        <canvas 
+                            ref={canvasRef} 
+                            className="w-full touch-none"
+                            onMouseDown={startDrawing} 
+                            onMouseMove={draw} 
+                            onMouseUp={() => setIsDrawing(false)} 
+                            onMouseLeave={() => setIsDrawing(false)}
+                            onTouchStart={startDrawing}
+                            onTouchMove={draw}
+                            onTouchEnd={() => setIsDrawing(false)}
                         />
-                        <p className="text-center text-slate-500 font-medium italic">
-                            {getWaterState().desc}
-                        </p>
+                        
+                        {/* CANVAS WATERMARK/DECORATION */}
+                        <div className="absolute bottom-4 right-6 pointer-events-none opacity-20 flex items-center gap-2">
+                            <Palette className="w-6 h-6" />
+                            <span className="font-black italic">Junior Artist Studio</span>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                        <div className="flex items-center gap-4">
+                            <div className="flex -space-x-2">
+                                {['🎨', '🖌️', '🖍️', '✏️'].map((e, i) => <span key={i} className="text-2xl">{e}</span>)}
+                            </div>
+                            <span className="text-sm font-bold text-slate-500">Practice makes perfect!</span>
+                        </div>
+                        <Button onClick={() => {
+                            const link = document.createElement('a');
+                            link.download = 'my-masterpiece.png';
+                            link.href = canvasRef.current!.toDataURL();
+                            link.click();
+                            confetti();
+                        }} className="bg-green-600 rounded-xl px-6">
+                            <Save className="mr-2 h-4 w-4" /> Save Masterpiece
+                        </Button>
                     </div>
                 </div>
-            )}
-
-            {/* PILLAR 4: FIELD JOURNAL (LIBRARY) */}
-            {activeTab === 'library' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
-                    {savedScience?.map((s:any)=>(
-                        <div 
-                            key={s.id} 
-                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all"
-                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
-                        >
-                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
-                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
-                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Saved Discovery</p>
-                            {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); /* delete logic here */ }}>
-                                    <Trash2 className="w-4 h-4"/>
-                                </Button>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
+            </div>
         </div>
     );
 }
 
-function ArtStudio() {
-    return <div className="text-center p-8"><h3 className="text-2xl font-bold">Art Studio</h3><p className="text-muted-foreground">This feature is coming soon!</p></div>;
-}
 function StickerBook() {
     return <div className="text-center p-8"><h3 className="text-2xl font-bold">My Sticker Book</h3><p className="text-muted-foreground">This feature is coming soon!</p></div>;
 }
@@ -990,7 +978,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
+                <TabsTrigger value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
@@ -1002,7 +990,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
+                <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
@@ -1011,3 +999,5 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
+    
