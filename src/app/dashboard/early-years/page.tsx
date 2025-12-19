@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, Search, Lightbulb, PenSquare, MessageSquare, BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, Gamepad2, Users, UserCog, HeartHandshake, FilePen, UserCheck, Plane, Landmark, Boxes, Route, BookCopy, BarChart, CalendarCheck, Shield, Code, Sigma, FlaskConical, Activity, FolderKanban, TrendingUp, AlertCircle
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -184,7 +184,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
                         >
-                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} />}</div> : <Mic className="h-16 w-16 text-white" />}
+                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} />)}</div> : <Mic className="h-16 w-16 text-white" />}
                         </button>
                         
                         <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
@@ -417,6 +417,7 @@ function PhonicsForest() {
 
 // --- 3. ABC KINGDOM (ENHANCED) ---
 function ABCKingdom() {
+    const { toast } = useToast();
     const [mode, setMode] = useState<'upper' | 'lower' | 'both'>('upper');
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
@@ -892,7 +893,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                             <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
                                                 {isAnswerCorrect ? <CheckCircle2 className="h-8 w-8 text-green-600"/> : <XCircle className="h-8 w-8 text-red-600"/>}
                                                 <div>
-                                                    <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
+                                                    <p className="font-bold text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
                                                     <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
                                                 </div>
                                             </div>
@@ -980,7 +981,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const handleGenerate = async () => { 
         setLoading(true); 
-        // Ensure your AI flow returns { title, emoji, fact, observation, experiment }
         const res = await generateJuniorScience(topic); 
         if(res.success) setFact(res.data); 
         setLoading(false); 
@@ -1205,6 +1205,10 @@ function ArtStudio() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
+    const stopDrawing = () => {
+        setIsDrawing(false);
+    };
+
     const clearCanvas = () => { 
         const canvas = canvasRef.current; 
         if(canvas){ 
@@ -1231,7 +1235,7 @@ function ArtStudio() {
         <div className="space-y-6">
             {/* Art Academy Navigation */}
             <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
-                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={()={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
+                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
                 <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
                 <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
@@ -1533,5 +1537,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
-    
