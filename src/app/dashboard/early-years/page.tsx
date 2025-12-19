@@ -5,8 +5,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc } from 'firebase/firestore';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +20,9 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getAuth } from 'firebase/auth';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -284,7 +287,6 @@ function PhonicsForest() {
         speak(`Find the sound: ${target}`);
     }, [soundGroups]);
 
-
     return (
         <div className="space-y-6">
             <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto">
@@ -496,6 +498,19 @@ function ABCKingdom() {
         setIsTracing(true);
     };
 
+    const drawTracing = (e: any) => {
+        if (!isTracing) return;
+        const canvas = traceCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    };
+
     return (
         <div className="space-y-8">
             {/* 1. TOP NAVIGATION */}
@@ -565,16 +580,10 @@ function ABCKingdom() {
                                             ref={traceCanvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
                                             onMouseDown={startTracing}
-                                            onMouseMove={(e) => {
-                                                if (!isTracing) return;
-                                                const ctx = traceCanvasRef.current?.getContext('2d');
-                                                const rect = traceCanvasRef.current!.getBoundingClientRect();
-                                                const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-                                                const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-                                                ctx?.lineTo(x, y); ctx?.stroke();
-                                            }}
+                                            onMouseMove={drawTracing}
                                             onMouseUp={() => setIsTracing(false)}
                                             onTouchStart={startTracing}
+                                            onTouchMove={drawTracing}
                                             onTouchEnd={() => setIsTracing(false)}
                                         />
                                         <Button 
@@ -1134,28 +1143,45 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [loading, setLoading] = useState(false);
     
     // Sorting Game State
-    const [sortItems, setSortItems] = useState([
-        { id: 1, name: 'Puppy', emoji: '🐶', type: 'living' },
-        { id: 2, name: 'Robot', emoji: '🤖', type: 'non-living' },
-        { id: 3, name: 'Flower', emoji: '🌻', type: 'living' },
-        { id: 4, name: 'Rock', emoji: '🪨', type: 'non-living' },
-    ].sort(() => Math.random() - 0.5));
+    const [sortItems, setSortItems] = useState<{ id: number, name: string, emoji: string, type: 'living' | 'non-living' }[]>([]);
+    
+    // Sorter Admin State
+    const [newSorterName, setNewSorterName] = useState('');
+    const [newSorterEmoji, setNewSorterEmoji] = useState('');
+    const [newSorterType, setNewSorterType] = useState<'living' | 'non-living'>('living');
     
     // States of Matter Simulator State
     const [temp, setTemp] = useState(20); // Celsius
 
+    // Data Fetching for AI facts
     const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
-    const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
+    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
+    
+    // NEW: Data Fetching for Sorter Items
+    const sorterQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_sorter_items')) : null, [firestore]);
+    const { data: sorterLibrary, isLoading: isLoadingSorter, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
+
+    // Initialize the sorting game when data is loaded
+    useEffect(() => {
+        if (sorterLibrary && sorterLibrary.length > 0) {
+            setSortItems([...sorterLibrary].sort(() => 0.5 - Math.random()));
+        } else if (!isLoadingSorter) {
+            // If library is empty, use a default set
+            setSortItems([
+                { id: 1, name: 'Puppy', emoji: '🐶', type: 'living' },
+                { id: 2, name: 'Robot', emoji: '🤖', type: 'non-living' },
+            ].sort(() => 0.5 - Math.random()));
+        }
+    }, [sorterLibrary, isLoadingSorter]);
     
     const handleGenerate = async () => { 
         setLoading(true); 
-        // Ensure your AI flow returns { title, emoji, fact, observation, experiment }
         const res = await generateJuniorScience(topic); 
         if(res.success) setFact(res.data); 
         setLoading(false); 
     };
 
-    const handleSave = async () => { 
+    const handleSaveFact = async () => { 
         if(!user || !fact || !firestore) return; 
         await addDoc(collection(firestore,'junior_science'), {
             ...fact,
@@ -1163,8 +1189,31 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             createdBy: user.uid
         }); 
         setFact(null); 
-        forceRefetch(); 
+        refetchScience(); 
         toast({title: "Discovery Saved!"});
+    };
+
+    const handleAddSorterItem = async () => {
+        if (!newSorterName || !newSorterEmoji || !firestore) return;
+        try {
+            await addDoc(collection(firestore, 'junior_sorter_items'), {
+                name: newSorterName,
+                emoji: newSorterEmoji,
+                type: newSorterType
+            });
+            toast({ title: 'Sorter Item Added!' });
+            setNewSorterName('');
+            setNewSorterEmoji('');
+            refetchSorter();
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Error adding item.' });
+        }
+    };
+    
+    const handleDeleteSorterItem = async (id: string) => {
+        if (!firestore) return;
+        await deleteDoc(doc(firestore, 'junior_sorter_items', id));
+        refetchSorter();
     };
 
     const getWaterState = () => {
@@ -1175,7 +1224,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-8">
-            {/* Science Navigation */}
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
                 <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl">Discovery Lab</Button>
                 <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl">The Sorter</Button>
@@ -1183,45 +1231,35 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Field Journal</Button>
             </div>
 
-            {/* PILLAR 1: DISCOVERY LAB (AI) */}
             {activeTab === 'lab' && (
                 <div className="space-y-6 animate-in fade-in">
                     {canEdit && (
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
-                            <div className="flex gap-2">
-                                <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
-                                <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
-                                    {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
-                                </Button>
-                            </div>
-                        </div>
+                        <Card className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
+                            <CardHeader className="p-0 mb-4">
+                                <CardTitle className="text-xl font-bold text-blue-800 flex items-center gap-2"><Atom /> What should we investigate?</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <div className="flex gap-2">
+                                    <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
+                                    <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
+                                        {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
                     )}
-                    
                     {fact && (
                         <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
-                            <div className="bg-blue-500 p-8 text-center text-white">
-                                <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
-                                <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
-                            </div>
-                            <CardContent className="p-8 space-y-6">
+                           <div className="bg-blue-500 p-8 text-center text-white"><div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div><h2 className="text-4xl font-black mb-2">{fact.title}</h2></div>
+                           <CardContent className="p-8 space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
-                                        <h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p>
-                                    </div>
-                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
-                                        <h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p>
-                                    </div>
+                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100"><h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4><p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p></div>
+                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100"><h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4><p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you!"}</p></div>
                                 </div>
-                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200">
-                                    <h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4>
-                                    <p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p>
-                                </div>
+                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200"><h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4><p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example?"}"</p></div>
                                 <div className="flex gap-4">
                                     <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
-                                    {canEdit && <Button onClick={handleSave} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
+                                    {canEdit && <Button onClick={handleSaveFact} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
                                 </div>
                             </CardContent>
                         </Card>
@@ -1229,95 +1267,48 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-            {/* PILLAR 2: THE SORTER (GAME) */}
             {activeTab === 'sorter' && (
-                <div className="bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
-                    <div>
-                        <h2 className="text-3xl font-black text-slate-800">The Sorting Game</h2>
-                        <p className="text-slate-500">Is it Living or Non-Living?</p>
-                    </div>
-                    
-                    <div className="flex justify-center gap-6">
-                        {sortItems.length > 0 ? (
-                            <div className="bg-white p-10 rounded-full shadow-xl border-8 border-blue-100 animate-bounce">
-                                <div className="text-9xl">{sortItems[0].emoji}</div>
-                                <p className="text-2xl font-black text-slate-700 mt-4">{sortItems[0].name}</p>
-                            </div>
-                        ) : (
-                            <Button onClick={() => window.location.reload()} className="bg-green-500">Play Again!</Button>
-                        )}
-                    </div>
-
-                    <div className="flex justify-center gap-4">
-                        <Button 
-                            onClick={() => {
-                                if(sortItems[0].type === 'living') { confetti(); speak("Yes! It grows and breathes."); setSortItems(prev => prev.slice(1)); }
-                                else { speak("Not quite. That doesn't grow on its own."); }
-                            }}
-                            className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl"
-                        >
-                            🌳 Living
-                        </Button>
-                        <Button 
-                            onClick={() => {
-                                if(sortItems[0].type === 'non-living') { confetti(); speak("Correct! It is an object."); setSortItems(prev => prev.slice(1)); }
-                                else { speak("Think again! Living things grow."); }
-                            }}
-                            className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl"
-                        >
-                            🧸 Non-Living
-                        </Button>
-                    </div>
-                </div>
-            )}
-
-            {/* PILLAR 3: STATES OF MATTER (EXPERIMENT) */}
-            {activeTab === 'experiment' && (
-                <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-black text-cyan-800">States of Matter</h2>
-                        <p className="text-cyan-600">Change the temperature to see what happens to water!</p>
-                    </div>
-
-                    <div className="relative w-64 h-64 bg-cyan-50 rounded-full flex flex-col items-center justify-center border-8 border-white shadow-inner">
-                        <div className="text-9xl mb-2 transition-all duration-500 transform scale-125">
-                            {getWaterState().emoji}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
+                        <div><h2 className="text-3xl font-black text-slate-800">The Sorting Game</h2><p className="text-slate-500">Is it Living or Non-Living?</p></div>
+                        <div className="flex justify-center gap-6">
+                            {sortItems.length > 0 ? (
+                                <div className="bg-white p-10 rounded-full shadow-xl border-8 border-blue-100 animate-bounce"><div className="text-9xl">{sortItems[0].emoji}</div><p className="text-2xl font-black text-slate-700 mt-4">{sortItems[0].name}</p></div>
+                            ) : (<Button onClick={() => setSortItems([...(sorterLibrary || [])].sort(() => 0.5 - Math.random()))} className="bg-green-500 h-20 px-10 text-xl rounded-2xl">Play Again!</Button>)}
                         </div>
-                        <p className="text-2xl font-black text-cyan-700">{getWaterState().label}</p>
-                    </div>
-
-                    <div className="w-full max-w-md space-y-4">
-                        <div className="flex justify-between font-black text-xl">
-                            <span className="text-blue-500">COLD</span>
-                            <span className="text-slate-700">{temp}°C</span>
-                            <span className="text-red-500">HOT</span>
+                        <div className="flex justify-center gap-4">
+                            <Button onClick={() => {if(sortItems[0].type === 'living') { confetti(); speak("Yes!"); setSortItems(prev => prev.slice(1)); } else { speak("Try again."); }}} className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl">🌳 Living</Button>
+                            <Button onClick={() => {if(sortItems[0].type === 'non-living') { confetti(); speak("Correct!"); setSortItems(prev => prev.slice(1)); } else { speak("Think again."); }}} className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl">🧸 Non-Living</Button>
                         </div>
-                        <input 
-                            type="range" min="-20" max="120" value={temp} 
-                            onChange={(e) => setTemp(parseInt(e.target.value))}
-                            className="w-full h-4 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-                        />
-                        <p className="text-center text-slate-500 font-medium italic">
-                            {getWaterState().desc}
-                        </p>
                     </div>
+                    {canEdit && (
+                        <Card className="h-fit">
+                            <CardHeader><CardTitle>Manage Sorter Items</CardTitle></CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label>Item Name</Label><Input value={newSorterName} onChange={e => setNewSorterName(e.target.value)} />
+                                    <Label>Emoji</Label><Input value={newSorterEmoji} onChange={e => setNewSorterEmoji(e.target.value)} />
+                                    <Label>Type</Label>
+                                    <Select value={newSorterType} onValueChange={(v) => setNewSorterType(v as 'living' | 'non-living')}>
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
+                                    </Select>
+                                </div>
+                                <Button onClick={handleAddSorterItem} className="w-full">Add Item</Button>
+                                <div className="max-h-40 overflow-y-auto space-y-1">
+                                    {sorterLibrary?.map((item: any) => <div key={item.id} className="flex justify-between items-center text-sm p-1"><span>{item.emoji} {item.name}</span><Button variant="ghost" size="sm" onClick={() => handleDeleteSorterItem(item.id)}><Trash2 className="h-4 w-4 text-red-400"/></Button></div>)}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             )}
             
-            {/* PILLAR 4: FIELD JOURNAL (LIBRARY) */}
+            {activeTab === 'experiment' && (<div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4"><div className="text-center"><h2 className="text-3xl font-black text-cyan-800">States of Matter</h2><p className="text-cyan-600">Change the temperature to see what happens to water!</p></div><div className="relative w-64 h-64 bg-cyan-50 rounded-full flex flex-col items-center justify-center border-8 border-white shadow-inner"><div className="text-9xl mb-2 transition-all duration-500 transform scale-125">{getWaterState().emoji}</div><p className="text-2xl font-black text-cyan-700">{getWaterState().label}</p></div><div className="w-full max-w-md space-y-4"><div className="flex justify-between font-black text-xl"><span className="text-blue-500">COLD</span><span className="text-slate-700">{temp}°C</span><span className="text-red-500">HOT</span></div><input type="range" min="-20" max="120" value={temp} onChange={(e) => setTemp(parseInt(e.target.value))} className="w-full h-4 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"/><p className="text-center text-slate-500 font-medium italic">{getWaterState().desc}</p></div></div>)}
+            
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
-                    {savedScience?.map((s:any)=>(
-                        <div 
-                            key={s.id} 
-                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all"
-                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
-                        >
-                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
-                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
-                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Saved Discovery</p>
-                        </div>
-                    ))}
+                    {savedScience?.map((s:any)=>(<div key={s.id} className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all" onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}><div className="text-5xl mb-4">{s.emojiIcon}</div><h4 className="font-black text-slate-800 leading-tight">{s.title}</h4><p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Saved Discovery</p></div>))}
                 </div>
             )}
         </div>
@@ -1478,7 +1469,7 @@ function ArtStudio() {
                     <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden cursor-crosshair touch-none">
                         <canvas 
                             ref={canvasRef} 
-                            className="w-full touch-none"
+                            className="w-full"
                             onMouseDown={startDrawing} 
                             onMouseMove={draw} 
                             onMouseUp={() => setIsDrawing(false)} 
@@ -1488,7 +1479,6 @@ function ArtStudio() {
                             onTouchEnd={() => setIsDrawing(false)}
                         />
                         
-                        {/* CANVAS WATERMARK/DECORATION */}
                         <div className="absolute bottom-4 right-6 pointer-events-none opacity-20 flex items-center gap-2">
                             <Palette className="w-6 h-6" />
                             <span className="font-black italic">Junior Artist Studio</span>
@@ -1702,3 +1692,5 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
+```
