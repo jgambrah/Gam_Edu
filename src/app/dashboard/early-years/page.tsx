@@ -11,13 +11,14 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, Search, Lightbulb, PenSquare, MessageSquare
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, Search, Lightbulb, PenSquare, MessageSquare, BookOpenCheck, Edit, FileText, ChevronRight, PlusCircle, Gamepad2, Users, UserCog, HeartHandshake, FilePen, UserCheck, Plane, Landmark, Boxes, Route, BookCopy, BarChart, CalendarCheck, Shield, Code, Sigma, FlaskConical, Activity, FolderKanban, TrendingUp, AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { getAuth } from 'firebase/auth';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -28,55 +29,219 @@ const speak = (text: string, rate = 0.9) => {
     window.speechSynthesis.speak(u);
 };
 
-// --- 1. VoiceCoach Component ---
-function VoiceCoach({ canEdit }: { canEdit: boolean }) {
-    const [word, setWord] = useState('Apple');
-    const [details, setDetails] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-    const { toast } = useToast();
 
-    const handleGenerate = async (targetWord: string) => {
-        if (!targetWord.trim()) return;
-        setLoading(true);
-        setDetails(null);
-        try {
-            const res = await generateWordDetails(targetWord);
-            if(res.success) {
-                setDetails(res.data);
-                speak(res.data.word);
-                setTimeout(() => speak(res.data.phonetic), 800);
-                setTimeout(() => speak(res.data.sentence), 2000);
-            } else {
-                toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch word details.' });
-            }
-        } catch (e) {
-            toast({ variant: 'destructive', title: 'AI Error' });
+// --- 1. VOICE COACH (THE SPEAKING ACADEMY) ---
+function VoiceCoach({ canEdit }: { canEdit: boolean }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [challenge, setChallenge] = useState<any>(null);
+    const [isListening, setIsListening] = useState(false);
+    const [feedback, setFeedback] = useState({ text: "Tap the Mic and say the word!", color: "text-slate-600" });
+    const [activeMode, setActiveMode] = useState<'word' | 'syllable' | 'fluency'>('word');
+    
+    // Teacher/Admin State
+    const [newWord, setNewWord] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [viewMode, setViewMode] = useState<'practice' | 'library'>('practice');
+
+    const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const { data: wordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
+
+    const pickRandomWord = useCallback(() => {
+        if (!wordLibrary || wordLibrary.length === 0) return;
+        const random = wordLibrary[Math.floor(Math.random() * wordLibrary.length)];
+        setChallenge(random);
+        setFeedback({ text: "Ready when you are!", color: "text-slate-600" });
+    }, [wordLibrary]);
+    
+    useEffect(() => { 
+        if (wordLibrary && wordLibrary.length > 0 && !challenge) pickRandomWord();
+    }, [wordLibrary, challenge, pickRandomWord]);
+
+    const startListening = () => {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Please use Chrome browser for voice features.");
+            return;
         }
-        setLoading(false);
+        const recognition = new (window as any).webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.start();
+        setIsListening(true);
+        setFeedback({ text: "Listening... 👂", color: "text-blue-500" });
+
+        recognition.onresult = (event: any) => {
+            const spoken = event.results[0][0].transcript.toLowerCase();
+            const targetWord = challenge.word.toLowerCase();
+            const targetSentence = challenge.sentence.toLowerCase();
+            setIsListening(false);
+
+            if (activeMode === 'fluency') {
+                // Check if they got the gist of the sentence
+                const matchCount = targetSentence.split(' ').filter(word => spoken.includes(word.replace(/[.,!]/g, ''))).length;
+                if (matchCount >= targetSentence.split(' ').length / 2) {
+                    onSuccess(spoken);
+                } else {
+                    onFailure(spoken);
+                }
+            } else {
+                // Word or Syllable check
+                if (spoken.includes(targetWord) || targetWord.includes(spoken)) {
+                    onSuccess(spoken);
+                } else {
+                    onFailure(spoken);
+                }
+            }
+        };
+
+        recognition.onerror = () => {
+            setIsListening(false);
+            setFeedback({ text: "I didn't catch that. Try again!", color: "text-orange-500" });
+        };
     };
 
-    // Load initial word
-    useEffect(() => {
-        handleGenerate('Apple');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const onSuccess = (spoken: string) => {
+        setFeedback({ text: `FANTASTIC! I heard "${spoken}"! 🎉`, color: "text-green-600" });
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        speak(`Excellent! ${challenge.word}`);
+        setTimeout(pickRandomWord, 3000);
+    };
+
+    const onFailure = (spoken: string) => {
+        setFeedback({ text: `I heard "${spoken}". Let's try once more!`, color: "text-red-500" });
+        speak(`Close! Try saying ${activeMode === 'fluency' ? 'the whole sentence' : challenge.word}`);
+    };
+
+    // Helper to split word into syllables (Simple logic for Junior level)
+    const getSyllables = (word: string) => {
+        // This is a simplified visual breakdown
+        return word.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy](?![aeiouy]))*/gi) || [word];
+    };
 
     return (
         <div className="space-y-6">
-             <div className="flex gap-2">
-                <Input value={word} onChange={e => setWord(e.target.value)} placeholder="Enter a word to practice..." className="text-lg h-12" onKeyDown={(e) => e.key === 'Enter' && handleGenerate(word)} />
-                <Button onClick={() => handleGenerate(word)} disabled={loading} className="h-12 text-lg px-6 bg-pink-500 hover:bg-pink-600">
-                    {loading ? <Loader2 className="animate-spin" /> : 'Practice'}
-                </Button>
+            {/* Mode Switcher */}
+            <div className="flex justify-between items-center bg-white p-2 rounded-2xl shadow-sm border border-pink-100">
+                <div className="flex gap-1">
+                    <Button size="sm" variant={activeMode === 'word' ? 'default' : 'ghost'} onClick={() => setActiveMode('word')} className="rounded-xl">Word</Button>
+                    <Button size="sm" variant={activeMode === 'syllable' ? 'default' : 'ghost'} onClick={() => setActiveMode('syllable')} className="rounded-xl">Syllables</Button>
+                    <Button size="sm" variant={activeMode === 'fluency' ? 'default' : 'ghost'} onClick={() => setActiveMode('fluency')} className="rounded-xl">Fluency</Button>
+                </div>
+                {canEdit && (
+                    <Button size="sm" variant="outline" onClick={() => setViewMode(viewMode === 'practice' ? 'library' : 'practice')} className="border-pink-200 text-pink-600">
+                        {viewMode === 'practice' ? <Library className="w-4 h-4 mr-2"/> : <Mic className="w-4 h-4 mr-2"/>}
+                        {viewMode === 'practice' ? 'Manage' : 'Back'}
+                    </Button>
+                )}
             </div>
 
-            {details && (
-                <div className="text-center space-y-6 p-8 bg-pink-50 rounded-2xl border-2 border-pink-100 animate-in fade-in zoom-in-95">
-                    <div className="text-8xl">{details.emoji}</div>
-                    <h2 className="text-6xl font-black text-slate-800 capitalize">{details.word}</h2>
-                    <h3 className="text-3xl font-bold text-pink-500 tracking-widest">{details.phonetic}</h3>
-                    <p className="text-xl text-slate-600 italic">"{details.sentence}"</p>
-                    <Button onClick={() => speak(details.sentence)} variant="secondary" size="lg" className="rounded-full"><Volume2 className="mr-2"/> Read Sentence</Button>
+            {viewMode === 'practice' && challenge && (
+                <div className="flex flex-col items-center text-center space-y-8 animate-in fade-in">
+                    
+                    {/* Visual Area */}
+                    <div className="relative">
+                        <div className="text-9xl mb-4 hover:scale-110 transition-transform cursor-pointer drop-shadow-2xl" onClick={() => speak(challenge.word)}>
+                            {challenge.emoji}
+                        </div>
+                        <div className="absolute -top-4 -right-4 bg-yellow-400 text-white p-2 rounded-full animate-bounce">
+                            <Star className="w-6 h-6 fill-current" />
+                        </div>
+                    </div>
+
+                    {/* Word Display Logic based on Mode */}
+                    <div className="space-y-2">
+                        {activeMode === 'syllable' ? (
+                            <div className="flex gap-4 justify-center">
+                                {getSyllables(challenge.word).map((syl, i) => (
+                                    <span key={i} className="text-5xl font-black text-pink-600 bg-pink-50 px-4 py-2 rounded-2xl border-b-4 border-pink-200">
+                                        {syl.toLowerCase()}
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <h2 className="text-7xl font-black text-slate-800 tracking-tight capitalize">{challenge.word}</h2>
+                        )}
+                        <p className="text-2xl text-slate-400 font-mono">/{challenge.phonetic}/</p>
+                    </div>
+
+                    {/* Context/Fluency Area */}
+                    <div 
+                        className={`p-6 rounded-[32px] border-4 transition-all max-w-lg cursor-pointer ${activeMode === 'fluency' ? 'bg-indigo-50 border-indigo-200 scale-105 shadow-lg' : 'bg-slate-50 border-slate-100 opacity-60'}`}
+                        onClick={() => speak(challenge.sentence)}
+                    >
+                        <p className={`text-xl font-bold ${activeMode === 'fluency' ? 'text-indigo-700' : 'text-slate-500'}`}>
+                            "{challenge.sentence}"
+                        </p>
+                        <div className="flex items-center justify-center gap-2 mt-2 text-xs font-black uppercase opacity-60">
+                            <Volume2 className="w-4 h-4"/> Listen to full sentence
+                        </div>
+                    </div>
+
+                    {/* Mic Interaction */}
+                    <div className="flex flex-col items-center gap-6">
+                        <button 
+                            onClick={startListening}
+                            disabled={isListening}
+                            className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
+                        >
+                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} />)}</div> : <Mic className="h-16 w-16 text-white" />}
+                        </button>
+                        
+                        <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
+                            {feedback.text}
+                        </div>
+                    </div>
+
+                    <Button onClick={pickRandomWord} variant="ghost" className="text-slate-400 hover:text-slate-600 font-bold">
+                        Try Another Word <ArrowRight className="ml-2 h-4 w-4"/>
+                    </Button>
+                </div>
+            )}
+
+            {viewMode === 'library' && canEdit && (
+                <div className="space-y-6 animate-in slide-in-from-right-4">
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-pink-100">
+                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-pink-600"><Wand2 className="w-5 h-5"/> AI Curriculum Generator</h3>
+                        <p className="text-sm text-slate-500 mb-4">Add a word and the AI will generate the phonetics, a junior-friendly sentence, and an emoji!</p>
+                        <div className="flex gap-2">
+                            <Input 
+                                placeholder="Enter word (e.g. Caterpillar)" 
+                                value={newWord} 
+                                onChange={e => setNewWord(e.target.value)}
+                                className="text-lg h-12 rounded-xl"
+                            />
+                            <Button onClick={async () => {
+                                setIsGenerating(true);
+                                const res = await generateWordDetails(newWord);
+                                if (res.success) {
+                                    await addDoc(collection(firestore!, 'junior_phonics'), { ...res.data, createdAt: serverTimestamp() });
+                                    setNewWord("");
+                                    forceRefetch();
+                                    toast({ title: "Word Added!" });
+                                }
+                                setIsGenerating(false);
+                            }} disabled={isGenerating || !newWord} className="bg-pink-600 h-12 px-8 rounded-xl">
+                                {isGenerating ? <Loader2 className="animate-spin"/> : "Add Word"}
+                            </Button>
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {wordLibrary?.map((item: any) => (
+                            <div key={item.id} className="flex items-center justify-between p-4 bg-white border-2 border-slate-50 rounded-2xl hover:border-pink-200 transition-colors group">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-3xl">{item.emoji}</span>
+                                    <div>
+                                        <p className="font-black text-slate-700 leading-tight">{item.word}</p>
+                                        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{item.phonetic}</p>
+                                    </div>
+                                </div>
+                                <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 transition-opacity" onClick={() => deleteDoc(doc(firestore!, 'junior_phonics', item.id))}>
+                                    <Trash2 className="w-4 h-4"/>
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
@@ -397,7 +562,6 @@ function MathPlayground() {
 
   return (
     <div className="flex flex-col items-center space-y-6">
-      {/* Scrollable Mode Selector */}
       <div className="flex gap-2 mb-4 bg-slate-100 p-2 rounded-3xl w-full overflow-x-auto no-scrollbar">
           {(['add', 'sub', 'mul', 'div', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
             <Button 
@@ -437,7 +601,6 @@ function MathPlayground() {
                 </div>
             )}
 
-            {/* ADD/SUB Visuals */}
             {(mode === 'add' || mode === 'sub') && (
                 <div className="flex flex-wrap justify-center gap-2 mb-6">
                     {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
@@ -578,16 +741,18 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
         const currentQ = story.questions[currentQuestionIndex];
-        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
+        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) || 
+                        userAnswer.toLowerCase().trim().includes(currentQ.answer.toLowerCase().trim());
         
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
+        
         if (correct) {
-            setScore(s => s + 1);
-            confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
-            speak("Correct! Well done!");
+            setScore(prev => prev + 1);
+            speak('Great job! That is correct.');
+            confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
         } else {
-            speak("Not quite, let's keep trying!");
+            speak('Not quite, but good try!');
         }
     };
 
@@ -703,7 +868,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         </div>
                                     ) : (
                                         <div className="animate-in slide-in-from-bottom-2 space-y-4">
-                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
                                                 {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
                                                 <div>
                                                     <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
@@ -711,7 +876,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                                 </div>
                                             </div>
                                             <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
-                                                {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Final Score"} <ArrowRight className="ml-2 w-4 h-4" />
+                                                {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
@@ -720,7 +885,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 <div className="text-center py-4 space-y-4">
                                     <Trophy className="h-16 w-16 text-yellow-500 mx-auto" />
                                     <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
-                                    <p className="text-xl font-bold text-purple-600">You got {score} out of {story.questions?.length} correct!</p>
+                                    <p className="text-xl font-bold text-purple-600">You got {score} out of {story.questions.length} correct!</p>
                                     <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
@@ -746,7 +911,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 </div>
                             </CardContent>
                             {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
+                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
@@ -758,7 +923,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. SCIENCE WORLD ---
+// --- 6. SCIENCE WORLD (COMPREHENSIVE DISCOVERY CENTER) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore(); 
     const { user } = useUser(); 
@@ -946,6 +1111,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         >
                             <div className="text-5xl mb-4">{s.emojiIcon}</div>
                             <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
+                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Saved Discovery</p>
                         </div>
                     ))}
                 </div>
@@ -1151,6 +1317,7 @@ function ArtStudio() {
 function StickerBook() {
     return <div className="text-center p-8"><h3 className="text-2xl font-bold">My Sticker Book</h3><p className="text-muted-foreground">This feature is coming soon!</p></div>;
 }
+
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
