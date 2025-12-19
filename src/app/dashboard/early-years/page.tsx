@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, BookOpenCheck, FlaskConical, Sigma, Code, BrainCircuit, Gamepad2, Clapperboard, MessageSquare, ListOrdered, Users, Building2, Wrench, Boxes, Route as RouteIcon, Landmark, Plane, Shield, ShoppingBag, Truck, PenSquare, FilePen, UserCog, HeartHandshake, UserCheck, CalendarDays, ClipboardList, TrendingUp, BarChart, CalendarCheck, Megaphone, Banknote, Edit, Search, FileText, Swords
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -251,7 +251,6 @@ function PhonicsForest() {
 
 // --- 3. ABC KINGDOM (ENHANCED) ---
 function ABCKingdom() {
-    const { toast } = useToast();
     const [mode, setMode] = useState<'upper' | 'lower' | 'both'>('upper');
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
@@ -329,7 +328,6 @@ function MathPlayground() {
         options = [ans, ans + 2, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
         break;
       case 'mul':
-        // Juniors usually do up to 5x5 or 2x10
         a = Math.floor(Math.random() * 4) + 2; // Rows
         b = Math.floor(Math.random() * 4) + 2; // Columns
         ans = a * b;
@@ -338,7 +336,6 @@ function MathPlayground() {
         if (options.length < 3) options.push(ans + 1);
         break;
       case 'div':
-        // Ensure clean division (Inverse of multiplication)
         b = Math.floor(Math.random() * 3) + 2; // Divisor (groups)
         ans = Math.floor(Math.random() * 4) + 2; // Quotient (items per group)
         a = b * ans; // Dividend (total)
@@ -482,7 +479,7 @@ function MathPlayground() {
           <button 
             key={i} 
             onClick={() => checkAnswer(opt)} 
-            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
+            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-2xl md:text-3xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
           >
             {opt}
           </button>
@@ -563,8 +560,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         if (!userAnswer.trim() || !story) return;
         
         const currentQ = story.questions[currentQuestionIndex];
-        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) || 
-                        userAnswer.toLowerCase().trim().includes(currentQ.answer.toLowerCase().trim());
+        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
@@ -583,6 +579,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             setCurrentQuestionIndex(prev => prev + 1);
             setUserAnswer('');
             setIsAnswerSubmitted(false);
+            setIsAnswerCorrect(false);
         } else {
             setQuizFinished(true);
             speak(`You finished the quiz! You got ${score + (isAnswerCorrect ? 0 : 0)} out of ${story.questions.length}`);
@@ -607,7 +604,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             <Input 
                                 value={topic} 
                                 onChange={e => setTopic(e.target.value)} 
-                                placeholder="What is the story about? (e.g. A dragon who loves cupcakes)" 
+                                placeholder="What is the story about? (e.g. A brave robot in the ocean)" 
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
@@ -646,21 +643,23 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                         )}
                     </CardHeader>
                     <CardContent className="p-8 space-y-8">
-                        {/* THE STORY TEXT */}
                         <div className="prose prose-slate max-w-none">
                             <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
                         
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                             <Button onClick={() => speak(story.content)} variant="outline" className="flex-1 h-14 text-lg border-2 border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-100">
-                                <Volume2 className="mr-2" /> Read Aloud
+                                <Volume2 className="mr-2" /> Read to Me
                             </Button>
-                            {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
+                            {canEdit && (
+                                <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold">
+                                    <Save className="mr-2" /> Save to Library
+                                </Button>
+                            )}
                         </div>
 
-                        {/* Multi-Question Quiz Section */}
                         <div className="bg-white p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
@@ -687,8 +686,8 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                             <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="h-14 px-8 bg-purple-600 text-lg font-bold rounded-xl">Check</Button>
                                         </div>
                                     ) : (
-                                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-50 border-green-300 text-green-800' : 'bg-red-50 border-red-300 text-red-800'}`}>
+                                        <div className="animate-in slide-in-from-bottom-2 space-y-4">
+                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
                                                 {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
                                                 <div>
                                                     <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
@@ -717,16 +716,14 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             )}
 
             <div>
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
-                        <Library className="text-purple-500" /> Story Library
-                    </h3>
-                </div>
+                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
+                    <Library className="text-purple-500" /> Story Library
+                </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedStories?.map((s:any) => (
                         <Card key={s.id} className="cursor-pointer border-b-8 border-purple-200 hover:border-purple-400 hover:-translate-y-1 transition-all relative group rounded-3xl overflow-hidden">
                             <CardContent className="p-6 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
-                                <div className="text-5xl bg-slate-50 p-3 rounded-2xl shadow-inner">{s.emojiIcon}</div>
+                                <div className="text-5xl bg-slate-50 p-3 rounded-2xl">{s.emojiIcon}</div>
                                 <div className="flex-1 overflow-hidden">
                                     <h4 className="font-black text-lg text-slate-800 truncate">{s.title}</h4>
                                     <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -753,210 +750,13 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
-
-// --- 6. SCIENCE WORLD (COMPREHENSIVE DISCOVERY CENTER) ---
-function ScienceWorld({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore(); 
-    const { user } = useUser(); 
-    const { toast } = useToast();
-    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
-    
-    // AI Generation State
-    const [topic, setTopic] = useState(''); 
-    const [fact, setFact] = useState<any>(null); 
-    const [loading, setLoading] = useState(false);
-    
-    // Sorting Game State
-    const [sortItems, setSortItems] = useState([
-        { id: 1, name: 'Puppy', emoji: '🐶', type: 'living' },
-        { id: 2, name: 'Robot', emoji: '🤖', type: 'non-living' },
-        { id: 3, name: 'Flower', emoji: '🌻', type: 'living' },
-        { id: 4, name: 'Rock', emoji: '🪨', type: 'non-living' },
-    ].sort(() => Math.random() - 0.5));
-    
-    // States of Matter Simulator State
-    const [temp, setTemp] = useState(20); // Celsius
-
-    const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
-    const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
-    
-    const handleGenerate = async () => { 
-        setLoading(true); 
-        // Ensure your AI flow returns { title, emoji, fact, observation, experiment }
-        const res = await generateJuniorScience(topic); 
-        if(res.success) setFact(res.data); 
-        setLoading(false); 
-    };
-
-    const handleSave = async () => { 
-        if(!user || !fact || !firestore) return; 
-        await addDoc(collection(firestore,'junior_science'), {
-            ...fact,
-            createdAt: serverTimestamp(),
-            createdBy: user.uid
-        }); 
-        setFact(null); 
-        forceRefetch(); 
-        toast({title: "Discovery Saved!"});
-    };
-
-    const getWaterState = () => {
-        if (temp <= 0) return { emoji: '🧊', label: 'Solid (Ice)', desc: 'Brrr! The molecules are frozen tight.' };
-        if (temp >= 100) return { emoji: '💨', label: 'Gas (Steam)', desc: 'Whoosh! The molecules are flying fast.' };
-        return { emoji: '💧', label: 'Liquid (Water)', desc: 'Splish splash! The molecules are sliding around.' };
-    };
-
-    return (
-        <div className="space-y-8">
-            {/* Science Navigation */}
-            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
-                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl">Discovery Lab</Button>
-                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl">The Sorter</Button>
-                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')} className="rounded-xl">Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Field Journal</Button>
-            </div>
-
-            {/* PILLAR 1: DISCOVERY LAB (AI) */}
-            {activeTab === 'lab' && (
-                <div className="space-y-6 animate-in fade-in">
-                    {canEdit && (
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
-                            <div className="flex gap-2">
-                                <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
-                                <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
-                                    {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                    
-                    {fact && (
-                        <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
-                            <div className="bg-blue-500 p-8 text-center text-white">
-                                <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
-                                <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
-                            </div>
-                            <CardContent className="p-8 space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
-                                        <h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p>
-                                    </div>
-                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
-                                        <h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4>
-                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200">
-                                    <h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4>
-                                    <p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
-                                    {canEdit && <Button onClick={handleSave} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-            )}
-
-            {/* PILLAR 2: THE SORTER (GAME) */}
-            {activeTab === 'sorter' && (
-                <div className="bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
-                    <div>
-                        <h2 className="text-3xl font-black text-slate-800">The Sorting Game</h2>
-                        <p className="text-slate-500">Is it Living or Non-Living?</p>
-                    </div>
-                    
-                    <div className="flex justify-center gap-6">
-                        {sortItems.length > 0 ? (
-                            <div className="bg-white p-10 rounded-full shadow-xl border-8 border-blue-100 animate-bounce">
-                                <div className="text-9xl">{sortItems[0].emoji}</div>
-                                <p className="text-2xl font-black text-slate-700 mt-4">{sortItems[0].name}</p>
-                            </div>
-                        ) : (
-                            <Button onClick={() => window.location.reload()} className="bg-green-500">Play Again!</Button>
-                        )}
-                    </div>
-
-                    <div className="flex justify-center gap-4">
-                        <Button 
-                            onClick={() => {
-                                if(sortItems[0].type === 'living') { confetti(); speak("Yes! It grows and breathes."); setSortItems(prev => prev.slice(1)); }
-                                else { speak("Not quite. That doesn't grow on its own."); }
-                            }}
-                            className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl"
-                        >
-                            🌳 Living
-                        </Button>
-                        <Button 
-                            onClick={() => {
-                                if(sortItems[0].type === 'non-living') { confetti(); speak("Correct! It is an object."); setSortItems(prev => prev.slice(1)); }
-                                else { speak("Think again! Living things grow."); }
-                            }}
-                            className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl"
-                        >
-                            🧸 Non-Living
-                        </Button>
-                    </div>
-                </div>
-            )}
-
-            {/* PILLAR 3: STATES OF MATTER (EXPERIMENT) */}
-            {activeTab === 'experiment' && (
-                <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-black text-cyan-800">States of Matter</h2>
-                        <p className="text-cyan-600">Change the temperature to see what happens to water!</p>
-                    </div>
-
-                    <div className="relative w-64 h-64 bg-cyan-50 rounded-full flex flex-col items-center justify-center border-8 border-white shadow-inner">
-                        <div className="text-9xl mb-2 transition-all duration-500 transform scale-125">
-                            {getWaterState().emoji}
-                        </div>
-                        <p className="text-2xl font-black text-cyan-700">{getWaterState().label}</p>
-                    </div>
-
-                    <div className="w-full max-w-md space-y-4">
-                        <div className="flex justify-between font-black text-xl">
-                            <span className="text-blue-500">COLD</span>
-                            <span className="text-slate-700">{temp}°C</span>
-                            <span className="text-red-500">HOT</span>
-                        </div>
-                        <input 
-                            type="range" min="-20" max="120" value={temp} 
-                            onChange={(e) => setTemp(parseInt(e.target.value))}
-                            className="w-full h-4 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-                        />
-                        <p className="text-center text-slate-500 font-medium italic">
-                            {getWaterState().desc}
-                        </p>
-                    </div>
-                </div>
-            )}
-
-            {/* PILLAR 4: FIELD JOURNAL (LIBRARY) */}
-            {activeTab === 'library' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
-                    {savedScience?.map((s:any)=>(
-                        <div 
-                            key={s.id} 
-                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all"
-                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
-                        >
-                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
-                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
-                            <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Saved Discovery</p>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
+// Placeholder for ArtStudio and StickerBook
+function ArtStudio() {
+    return <div className="text-center p-8"><h3 className="text-2xl font-bold">Art Studio</h3><p className="text-muted-foreground">This feature is coming soon!</p></div>;
 }
-
+function StickerBook() {
+    return <div className="text-center p-8"><h3 className="text-2xl font-bold">My Sticker Book</h3><p className="text-muted-foreground">This feature is coming soon!</p></div>;
+}
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
