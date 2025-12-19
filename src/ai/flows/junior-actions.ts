@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -6,21 +7,27 @@ import { z } from 'zod';
 // --- STORY GENERATOR ---
 const StorySchema = z.object({
   title: z.string(),
-  content: z.string(),
-  question: z.string(),
-  answer: z.string(),
-  emojiIcon: z.string()
+  content: z.string().describe("A story for a 5-year-old that is at least 4-5 paragraphs long."),
+  questions: z.array(
+    z.object({
+      question: z.string().describe("A simple comprehension question about the story."),
+      answer: z.string().describe("The answer to the question.")
+    })
+  ).length(3).describe("An array containing exactly 3 question-answer objects."),
+  emojiIcon: z.string().describe("A single emoji representing the story (e.g., 🦖).")
 });
+
 
 export async function generateJuniorStory(topic: string) {
   try {
     const prompt = `
-      You are a kindergarten teacher. Write a short, educational story (max 4 sentences) for a 5-year-old about: ${topic}.
-      Rules:
-      1. Use simple words.
-      2. Include emojis.
-      3. Return JSON: { title, content, question, answer, emojiIcon }
-      4. 'emojiIcon' should be a single emoji representing the story (e.g., 🦖).
+      You are a kindergarten teacher. Write an educational story for a 5-year-old about: ${topic}.
+      
+      RULES:
+      1. The story must be engaging and at least 4-5 paragraphs long.
+      2. Use simple, age-appropriate words.
+      3. The output MUST be a JSON object that strictly follows the provided schema.
+      4. The 'questions' array must contain exactly 3 comprehension questions about the story.
     `;
 
     const { output } = await ai.generate({
