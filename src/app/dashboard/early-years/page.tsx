@@ -26,6 +26,60 @@ const speak = (text: string, rate = 0.9) => {
     window.speechSynthesis.speak(u);
 };
 
+// --- NEW VoiceCoach Component ---
+function VoiceCoach({ canEdit }: { canEdit: boolean }) {
+    const [word, setWord] = useState('Apple');
+    const [details, setDetails] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const { toast } = useToast();
+
+    const handleGenerate = async (targetWord: string) => {
+        if (!targetWord.trim()) return;
+        setLoading(true);
+        setDetails(null);
+        try {
+            const res = await generateWordDetails(targetWord);
+            if(res.success) {
+                setDetails(res.data);
+                speak(res.data.word);
+                setTimeout(() => speak(res.data.phonetic), 800);
+                setTimeout(() => speak(res.data.sentence), 2000);
+            } else {
+                toast({ variant: 'destructive', title: 'Error', description: 'Could not fetch word details.' });
+            }
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'AI Error' });
+        }
+        setLoading(false);
+    };
+
+    // Load initial word
+    useEffect(() => {
+        handleGenerate('Apple');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return (
+        <div className="space-y-6">
+             <div className="flex gap-2">
+                <Input value={word} onChange={e => setWord(e.target.value)} placeholder="Enter a word to practice..." className="text-lg h-12" onKeyDown={(e) => e.key === 'Enter' && handleGenerate(word)} />
+                <Button onClick={() => handleGenerate(word)} disabled={loading} className="h-12 text-lg px-6 bg-pink-500 hover:bg-pink-600">
+                    {loading ? <Loader2 className="animate-spin" /> : 'Practice'}
+                </Button>
+            </div>
+
+            {details && (
+                <div className="text-center space-y-6 p-8 bg-pink-50 rounded-2xl border-2 border-pink-100 animate-in fade-in zoom-in-95">
+                    <div className="text-8xl">{details.emoji}</div>
+                    <h2 className="text-6xl font-black text-slate-800 capitalize">{details.word}</h2>
+                    <h3 className="text-3xl font-bold text-pink-500 tracking-widest">{details.phonetic}</h3>
+                    <p className="text-xl text-slate-600 italic">"{details.sentence}"</p>
+                    <Button onClick={() => speak(details.sentence)} variant="secondary" size="lg" className="rounded-full"><Volume2 className="mr-2"/> Read Sentence</Button>
+                </div>
+            )}
+        </div>
+    );
+}
 
 // --- 2. PHONICS FOREST (COMPREHENSIVE) ---
 function PhonicsForest() {
@@ -400,7 +454,7 @@ function MathPlayground() {
             
             <div className="text-center">
                 <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
-                <div className="text-5xl font-black text-slate-800">
+                 <div className="text-5xl font-black text-slate-800">
                     {mode === 'add' || mode === 'sub' || mode === 'mul' || mode === 'div' ? (
                         <div className="flex items-center gap-3">
                             <span>{mode === 'div' ? question.a : (mode === 'mul' ? question.a : question.a)}</span>
@@ -412,7 +466,7 @@ function MathPlayground() {
                             <span className="text-orange-500">?</span>
                         </div>
                     ) : (
-                        <span className="text-orange-500">{question.displayPrompt || question.a}</span>
+                        <span className="text-6xl font-black text-slate-800 tracking-tighter">{question.displayPrompt}</span>
                     )}
                 </div>
             </div>
@@ -803,7 +857,7 @@ function StickerBook() {
 export default function JuniorCampusPage() {
   const { role } = useRole();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
-  const { toast } = useToast(); // Moved toast hook here for reuse
+  const { toast } = useToast(); 
 
   return (
     <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
