@@ -273,7 +273,7 @@ function ABCKingdom() {
             <div className="flex justify-center gap-2">
                 <Button onClick={() => setMode('upper')} variant={mode === 'upper' ? 'default' : 'outline'}>ABC</Button>
                 <Button onClick={() => setMode('lower')} variant={mode === 'lower' ? 'default' : 'outline'}>abc</Button>
-                <Button onClick={() => setMode('both')} variant={mode === 'both' ? 'default' : 'outline'}>A a</Button>
+                <Button onClick={() => setMode('both')} variant={mode === 'both' ? 'default' : 'outline'}>Aa</Button>
             </div>
             <div className="grid grid-cols-4 md:grid-cols-6 gap-4 max-w-4xl mx-auto">
                 {alphabet.map(letter => (
@@ -402,7 +402,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         const res = await generateJuniorStory(topic); 
         if (res.success) {
             setStory(res.data);
-            // Reset quiz state when new story is loaded
             setUserAnswer('');
             setIsAnswerSubmitted(false);
             setIsAnswerCorrect(false);
@@ -428,7 +427,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
-        const correct = userAnswer.toLowerCase().trim() === story.answer.toLowerCase().trim();
+        const correct = story.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
         speak(correct ? 'Correct!' : 'Not quite, try again!');
@@ -586,7 +585,8 @@ function ArtStudio() {
 
 // --- 8. STICKER BOOK ---
 function StickerBook() {
-    const { user } = useUser(); const firestore = useFirestore();
+    const { user } = useUser(); 
+    const firestore = useFirestore();
     const stickerQuery = useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'junior_stickers'), where('userId', '==', user.uid), orderBy('earnedAt', 'desc')) : null, [firestore, user]);
     const { data: stickers } = useCollection<any>(stickerQuery);
 
