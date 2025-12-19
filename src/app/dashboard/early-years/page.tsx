@@ -318,19 +318,17 @@ function MathPlayground() {
         options = [ans, ans + 2, Math.max(0, ans - 1)].sort(() => Math.random() - 0.5);
         break;
       case 'mul':
-        // Juniors usually do up to 5x5 or 2x10
-        a = Math.floor(Math.random() * 4) + 2; // Rows
-        b = Math.floor(Math.random() * 4) + 2; // Columns
+        a = Math.floor(Math.random() * 4) + 2; 
+        b = Math.floor(Math.random() * 4) + 2; 
         ans = a * b;
         displayPrompt = `${a} groups of ${b}`;
         options = [ans, ans + b, ans - a].filter(n => n > 0).sort(() => Math.random() - 0.5);
         if (options.length < 3) options.push(ans + 1);
         break;
       case 'div':
-        // Ensure clean division (Inverse of multiplication)
-        b = Math.floor(Math.random() * 3) + 2; // Divisor (groups)
-        ans = Math.floor(Math.random() * 4) + 2; // Quotient (items per group)
-        a = b * ans; // Dividend (total)
+        b = Math.floor(Math.random() * 3) + 2; 
+        ans = Math.floor(Math.random() * 4) + 2; 
+        a = b * ans; 
         displayPrompt = `Share ${a} into ${b} groups`;
         options = [ans, ans + 1, Math.max(1, ans - 1)].sort(() => Math.random() - 0.5);
         break;
@@ -388,7 +386,6 @@ function MathPlayground() {
 
   return (
     <div className="flex flex-col items-center space-y-6">
-      {/* Mode Selector */}
       <div className="flex gap-2 mb-4 bg-slate-100 p-2 rounded-3xl w-full overflow-x-auto no-scrollbar">
           {(['add', 'sub', 'mul', 'div', 'compare', 'patterns', 'shapes', 'time'] as MathMode[]).map((m) => (
             <Button 
@@ -405,7 +402,6 @@ function MathPlayground() {
       <Card className="w-full max-w-md bg-white border-4 border-orange-100 shadow-xl rounded-[40px]">
         <CardContent className="p-8 flex flex-col items-center min-h-[300px] justify-center">
             
-            {/* MULTIPLICATION: Array Grid Visual */}
             {mode === 'mul' && (
                 <div className="grid gap-2 mb-6" style={{ gridTemplateColumns: `repeat(${question.b}, minmax(0, 1fr))` }}>
                     {Array.from({ length: question.a * question.b }).map((_, i) => (
@@ -414,7 +410,6 @@ function MathPlayground() {
                 </div>
             )}
 
-            {/* DIVISION: Sharing into Groups Visual */}
             {mode === 'div' && (
                 <div className="space-y-4 mb-6">
                     <div className="flex flex-wrap justify-center gap-1 border-b pb-4">
@@ -428,7 +423,6 @@ function MathPlayground() {
                 </div>
             )}
 
-            {/* Arithmetic & Comparison Visuals */}
             {(mode === 'add' || mode === 'sub') && (
                 <div className="flex flex-wrap justify-center gap-2 mb-6">
                     {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
@@ -439,9 +433,19 @@ function MathPlayground() {
 
             {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6">{question.a}</div>}
             
+            {mode === 'time' && (
+                <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
+                    <div className="text-2xl font-black">{question.a.split(':')[0]}</div>
+                    <div className="absolute top-2">12</div>
+                    <div className="absolute bottom-2">6</div>
+                    <div className="absolute left-2">9</div>
+                    <div className="absolute right-2">3</div>
+                </div>
+            )}
+            
             <div className="text-center">
                 <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
-                <div className="text-5xl font-black text-slate-800">
+                <div className="text-6xl font-black text-slate-800 tracking-tighter">
                     {mode === 'add' || mode === 'sub' || mode === 'mul' || mode === 'div' ? (
                         <div className="flex items-center gap-3">
                             <span>{mode === 'div' ? question.a : (mode === 'mul' ? question.a : question.a)}</span>
@@ -452,6 +456,8 @@ function MathPlayground() {
                             <span className="text-slate-300">=</span>
                             <span className="text-orange-500">?</span>
                         </div>
+                    ) : mode === 'compare' || mode === 'patterns' ? (
+                        <span className="text-orange-500">{question.displayPrompt}</span>
                     ) : (
                         <span>{question.displayPrompt ? "" : question.a}</span>
                     )}
@@ -460,13 +466,12 @@ function MathPlayground() {
         </CardContent>
       </Card>
 
-      {/* Answer Grid */}
       <div className="grid grid-cols-3 gap-4 w-full max-w-md">
         {question.options.map((opt: any, i: number) => (
           <button 
             key={i} 
             onClick={() => checkAnswer(opt)} 
-            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
+            className="h-20 bg-white border-b-8 border-orange-200 hover:border-orange-400 hover:bg-orange-50 text-orange-600 text-2xl md:text-3xl font-black rounded-3xl transition-all active:translate-y-2 active:border-b-0"
           >
             {opt}
           </button>
@@ -516,8 +521,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
-        // Pass the target word count to the AI flow
-        // Note: Ensure your backend 'generateJuniorStory' is updated to handle (topic, wordCount)
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -597,11 +600,10 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             <Input 
                                 value={topic} 
                                 onChange={e => setTopic(e.target.value)} 
-                                placeholder="What should the story be about? (e.g. A brave robot in the ocean)" 
+                                placeholder="What is the story about? (e.g. A dragon who loves cupcakes)" 
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
-                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -662,7 +664,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         <span className="text-purple-600 font-bold">Score: {score}</span>
                                     </div>
                                     
-                                    <p className="text-2xl font-bold text-purple-900">
+                                    <p className="text-2xl font-bold text-purple-900 leading-tight">
                                         {story.questions?.[currentQuestionIndex]?.question || story.question}
                                     </p>
 
@@ -678,16 +680,16 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                             <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="h-14 px-8 bg-purple-600 text-lg font-bold rounded-xl">Check</Button>
                                         </div>
                                     ) : (
-                                        <div className="animate-in slide-in-from-bottom-2 space-y-4">
-                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
-                                                {isAnswerCorrect ? <CheckCircle2 className="h-8 w-8 text-green-600"/> : <XCircle className="h-8 w-8 text-red-600"/>}
+                                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-50 border-green-300 text-green-800' : 'bg-red-50 border-red-300 text-red-800'}`}>
+                                                {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
                                                 <div>
                                                     <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
                                                     <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer || story.answer}</span></p>
                                                 </div>
                                             </div>
                                             <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
-                                                {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
+                                                {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Final Score"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
@@ -699,7 +701,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                     </div>
                                     <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
                                     <p className="text-xl text-purple-700 font-bold">You got {score} out of {story.questions?.length} correct!</p>
-                                    <Button onClick={resetQuiz} variant="outline" className="border-2 border-purple-300 text-purple-600 font-bold">Try Quiz Again</Button>
+                                    <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
                         </div>
@@ -707,19 +709,18 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                 </Card>
             )}
 
+            {/* LIBRARY SECTION */}
             <div>
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
-                        <Library className="text-purple-500" /> Story Library
-                    </h3>
-                </div>
+                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
+                    <BookOpen className="text-purple-500" /> Story Library
+                </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedStories?.map((s:any) => (
                         <Card key={s.id} className="cursor-pointer border-b-8 border-purple-200 hover:border-purple-400 hover:-translate-y-1 transition-all relative group rounded-3xl overflow-hidden">
                             <CardContent className="p-6 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
                                 <div className="text-5xl bg-slate-50 p-3 rounded-2xl shadow-inner">{s.emojiIcon}</div>
                                 <div className="flex-1 overflow-hidden">
-                                    <h4 className="font-black text-lg text-slate-800 truncate">{s.title}</h4>
+                                    <h4 className="font-black text-lg text-slate-800 line-clamp-1">{s.title}</h4>
                                     <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                                         <span>{s.wordCount || '?'} Words</span>
                                         <span>•</span>
@@ -884,3 +885,6 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
+
+    
