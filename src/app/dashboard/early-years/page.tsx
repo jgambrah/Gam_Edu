@@ -11,11 +11,13 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, Search, Lightbulb, PenSquare, MessageSquare
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -26,7 +28,7 @@ const speak = (text: string, rate = 0.9) => {
     window.speechSynthesis.speak(u);
 };
 
-// --- NEW VoiceCoach Component ---
+// --- 1. VoiceCoach Component ---
 function VoiceCoach({ canEdit }: { canEdit: boolean }) {
     const [word, setWord] = useState('Apple');
     const [details, setDetails] = useState<any>(null);
@@ -369,7 +371,7 @@ function MathPlayground() {
         const hr = Math.floor(Math.random() * 12) + 1;
         a = `${hr}:00`; ans = `${hr} o'clock`;
         options = [ans, `${(hr % 12) + 1} o'clock`, `${hr === 1 ? 12 : hr - 1} o'clock`].sort(() => Math.random() - 0.5);
-        displayPrompt = `The clock says ${a}...`;
+        displayPrompt = `The clock says...`;
         break;
     }
 
@@ -402,7 +404,7 @@ function MathPlayground() {
                 key={m}
                 variant={mode === m ? 'default' : 'ghost'} 
                 onClick={() => setMode(m)} 
-                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500' : 'text-slate-500'}`}
+                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500 shadow-md' : 'text-slate-500'}`}
             >
                 {m === 'mul' ? '× Multi' : m === 'div' ? '÷ Divide' : m}
             </Button>
@@ -437,18 +439,16 @@ function MathPlayground() {
 
             {/* ADD/SUB Visuals */}
             {(mode === 'add' || mode === 'sub') && (
-                <div className="flex flex-wrap justify-center gap-2 mb-6 min-h-[60px]">
+                <div className="flex flex-wrap justify-center gap-2 mb-6">
                     {Array.from({ length: question.a }).map((_, i) => <span key={i} className="text-3xl">{question.icon}</span>)}
                     <span className="text-3xl font-black text-orange-300 mx-2">{mode === 'add' ? '+' : '-'}</span>
                     {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-50">{question.icon}</span>)}
                 </div>
             )}
 
-            {/* SHAPES Visual */}
-            {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6">{question.a}</div>}
+            {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6 drop-shadow-md">{question.a}</div>}
             
-            {/* TIME Visual */}
-            {mode === 'time' && (
+             {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
                     <div className="text-2xl font-black">{question.a.split(':')[0]}</div>
                     <div className="absolute top-2">12</div>
@@ -458,10 +458,9 @@ function MathPlayground() {
                 </div>
             )}
             
-            {/* The Main Question Text */}
             <div className="text-center">
                 <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
-                 <div className="text-5xl font-black text-slate-800">
+                 <div className="text-6xl font-black text-slate-800 tracking-tighter">
                     {mode === 'add' || mode === 'sub' || mode === 'mul' || mode === 'div' ? (
                         <div className="flex items-center gap-3">
                             <span>{mode === 'div' ? question.a : (mode === 'mul' ? question.a : question.a)}</span>
@@ -473,14 +472,13 @@ function MathPlayground() {
                             <span className="text-orange-500">?</span>
                         </div>
                     ) : (
-                        <span className="text-6xl font-black text-slate-800 tracking-tighter">{question.displayPrompt || question.a}</span>
+                        <span>{question.a}</span>
                     )}
                 </div>
             </div>
         </CardContent>
       </Card>
 
-      {/* Answer Grid */}
       <div className="grid grid-cols-3 gap-4 w-full max-w-md">
         {question.options.map((opt: any, i: number) => (
           <button 
@@ -493,11 +491,21 @@ function MathPlayground() {
         ))}
       </div>
 
-      <div className="h-10 text-2xl font-black text-green-500">{feedback}</div>
+      <div className="h-12 flex items-center">
+         {feedback && (
+             <p className={`text-2xl font-black animate-in zoom-in ${feedback.includes("CORRECT") ? "text-green-500" : "text-red-400"}`}>
+                {feedback}
+             </p>
+         )}
+      </div>
+
+      <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border shadow-sm">
+          <Star className="text-yellow-400 fill-yellow-400 w-5 h-5" />
+          <span className="font-bold text-slate-600">Streak: {streak}</span>
+      </div>
     </div>
   );
 }
-
 
 // --- 5. STORY SPARK ---
 function StorySpark({ canEdit }: { canEdit: boolean }) {
@@ -537,7 +545,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
-        // Pass the target word count to the AI flow
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -570,19 +577,17 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
-        // Check against the current question in the questions array
         const currentQ = story.questions[currentQuestionIndex];
-        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) || 
-                        userAnswer.toLowerCase().trim().includes(currentQ.answer.toLowerCase().trim());
+        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
         if (correct) {
             setScore(s => s + 1);
             confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
-            speak("Great job! That is correct.");
+            speak("Correct! Well done!");
         } else {
-            speak("Not quite, but good try!");
+            speak("Not quite, let's keep trying!");
         }
     };
 
@@ -603,7 +608,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         resetQuiz();
     };
 
-    // Calculate actual word count of generated story
     const actualWordCount = story?.content?.split(/\s+/).filter(Boolean).length || 0;
 
     return (
@@ -620,7 +624,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
-                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -646,8 +649,8 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             )}
 
             {story && (
-                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden">
-                    <CardHeader className="bg-yellow-300 py-4 flex flex-row justify-between items-center">
+                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden shadow-2xl">
+                     <CardHeader className="bg-yellow-300 py-4 flex flex-row justify-between items-center">
                         <CardTitle className="text-2xl font-black text-yellow-900">{story.emojiIcon} {story.title}</CardTitle>
                         {isAdminOrDirector && (
                             <span className="bg-white/50 px-3 py-1 rounded-full text-xs font-bold text-yellow-800">
@@ -656,34 +659,36 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                         )}
                     </CardHeader>
                     <CardContent className="p-8 space-y-8">
-                        {/* THE STORY TEXT */}
-                        <div className="prose prose-slate max-w-none">
+                        <div className="bg-white/50 p-6 rounded-2xl border-2 border-yellow-100">
                             <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
                         
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                             <Button onClick={() => speak(story.content)} variant="outline" className="flex-1 h-14 text-lg border-2 border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-100">
                                 <Volume2 className="mr-2" /> Read Aloud
                             </Button>
                             {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
                         </div>
 
-                        {/* Multi-Question Quiz Section */}
                         <div className="bg-purple-50 p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="bg-purple-200 text-purple-700 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
-                                            Question {currentQuestionIndex + 1} of 3
+                                        <span className="text-xs font-black uppercase tracking-widest text-purple-400">
+                                            Question {currentQuestionIndex + 1} of {story.questions?.length || 3}
                                         </span>
-                                        <span className="text-purple-600 font-bold">Score: {score}</span>
+                                        <div className="flex gap-1">
+                                            {[0, 1, 2].map(i => (
+                                                <div key={i} className={`h-2 w-8 rounded-full ${i === currentQuestionIndex ? 'bg-purple-500' : i < currentQuestionIndex ? 'bg-green-400' : 'bg-slate-200'}`} />
+                                            ))}
+                                        </div>
                                     </div>
-                                    
-                                    <p className="text-2xl font-bold text-purple-900">
-                                        {story.questions?.[currentQuestionIndex]?.question || story.question}
-                                    </p>
+
+                                    <h4 className="text-2xl font-bold text-purple-900 leading-tight">
+                                        {story.questions?.[currentQuestionIndex]?.question || "Look at the story and answer..."}
+                                    </h4>
 
                                     {!isAnswerSubmitted ? (
                                         <div className="flex gap-2">
@@ -691,34 +696,32 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                                 placeholder="Type your answer here..." 
                                                 value={userAnswer}
                                                 onChange={(e) => setUserAnswer(e.target.value)}
-                                                className="text-lg h-14 border-2 border-purple-200 focus:border-purple-500 rounded-xl"
+                                                className="text-lg h-14 border-2 border-purple-100 focus:border-purple-400 rounded-2xl"
                                                 onKeyDown={(e) => e.key === 'Enter' && handleCheckAnswer()}
                                             />
-                                            <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="h-14 px-8 bg-purple-600 text-lg font-bold rounded-xl">Check</Button>
+                                            <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="bg-purple-600 h-14 px-8 rounded-2xl font-bold">Check</Button>
                                         </div>
                                     ) : (
-                                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
-                                                {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
+                                        <div className="animate-in slide-in-from-bottom-2 space-y-4">
+                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                                                {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
                                                 <div>
-                                                    <p className="font-bold">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
-                                                    <p className="text-sm">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer || story.answer}</span></p>
+                                                    <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
+                                                    <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
                                                 </div>
                                             </div>
-                                            <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold rounded-xl">
-                                                {currentQuestionIndex < 2 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
+                                            <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
+                                                {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Final Score"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-6 space-y-4 animate-in zoom-in">
-                                    <div className="inline-block p-4 bg-yellow-100 rounded-full mb-2">
-                                        <Trophy className="w-12 h-12 text-yellow-600" />
-                                    </div>
-                                    <h4 className="text-3xl font-black text-purple-900">Quiz Complete!</h4>
-                                    <p className="text-xl text-purple-700 font-bold">You got {score} out of 3 correct!</p>
-                                    <Button onClick={resetQuiz} variant="outline" className="border-2 border-purple-300 text-purple-600 font-bold">Try Quiz Again</Button>
+                                <div className="text-center py-4 space-y-4">
+                                    <Trophy className="h-16 w-16 text-yellow-500 mx-auto" />
+                                    <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
+                                    <p className="text-xl font-bold text-purple-600">You got {score} out of {story.questions?.length} correct!</p>
+                                    <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
                         </div>
@@ -727,28 +730,23 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             )}
 
             <div>
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
-                        <Library className="text-purple-500" /> Story Library
-                    </h3>
-                </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2"><BookOpen className="text-purple-500" /> Story Library</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedStories?.map((s:any) => (
-                        <Card key={s.id} className="cursor-pointer border-b-4 border-purple-200 hover:border-purple-400 hover:shadow-xl transition-all relative group overflow-hidden">
-                            <CardContent className="p-4 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
-                                <div className="text-5xl bg-slate-50 p-2 rounded-2xl">{s.emojiIcon}</div>
-                                <div className="pr-6">
-                                    <h4 className="font-bold text-lg text-slate-800 line-clamp-1">{s.title}</h4>
-                                    <p className="text-xs text-slate-400 font-bold uppercase">{s.topic || 'Fun Story'}</p>
+                        <Card key={s.id} className="cursor-pointer border-b-8 border-purple-200 hover:border-purple-400 hover:-translate-y-1 transition-all relative group rounded-3xl overflow-hidden">
+                            <CardContent className="p-6 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
+                                <div className="text-5xl bg-slate-50 p-3 rounded-2xl shadow-inner">{s.emojiIcon}</div>
+                                <div className="flex-1 overflow-hidden">
+                                    <h4 className="font-black text-lg text-slate-800 truncate">{s.title}</h4>
+                                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                        <span>{s.wordCount || '?'} Words</span>
+                                        <span>•</span>
+                                        <span className="text-purple-400">{s.topic || 'General'}</span>
+                                    </div>
                                 </div>
                             </CardContent>
                             {canEdit && (
-                                <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" 
-                                    onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}
-                                >
+                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
@@ -756,6 +754,202 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                     ))}
                 </div>
             </div>
+        </div>
+    );
+}
+
+// --- 6. SCIENCE WORLD ---
+function ScienceWorld({ canEdit }: { canEdit: boolean }) {
+    const firestore = useFirestore(); 
+    const { user } = useUser(); 
+    const { toast } = useToast();
+    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
+    
+    // AI Generation State
+    const [topic, setTopic] = useState(''); 
+    const [fact, setFact] = useState<any>(null); 
+    const [loading, setLoading] = useState(false);
+    
+    // Sorting Game State
+    const [sortItems, setSortItems] = useState([
+        { id: 1, name: 'Puppy', emoji: '🐶', type: 'living' },
+        { id: 2, name: 'Robot', emoji: '🤖', type: 'non-living' },
+        { id: 3, name: 'Flower', emoji: '🌻', type: 'living' },
+        { id: 4, name: 'Rock', emoji: '🪨', type: 'non-living' },
+    ].sort(() => Math.random() - 0.5));
+    
+    // States of Matter Simulator State
+    const [temp, setTemp] = useState(20); // Celsius
+
+    const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
+    const { data: savedScience, forceRefetch } = useCollection<any>(scienceQuery);
+    
+    const handleGenerate = async () => { 
+        setLoading(true); 
+        const res = await generateJuniorScience(topic); 
+        if(res.success) setFact(res.data); 
+        setLoading(false); 
+    };
+
+    const handleSave = async () => { 
+        if(!user || !fact || !firestore) return; 
+        await addDoc(collection(firestore,'junior_science'), {
+            ...fact,
+            createdAt: serverTimestamp(),
+            createdBy: user.uid
+        }); 
+        setFact(null); 
+        forceRefetch(); 
+        toast({title: "Discovery Saved!"});
+    };
+
+    const getWaterState = () => {
+        if (temp <= 0) return { emoji: '🧊', label: 'Solid (Ice)', desc: 'Brrr! The molecules are frozen tight.' };
+        if (temp >= 100) return { emoji: '💨', label: 'Gas (Steam)', desc: 'Whoosh! The molecules are flying fast.' };
+        return { emoji: '💧', label: 'Liquid (Water)', desc: 'Splish splash! The molecules are sliding around.' };
+    };
+
+    return (
+        <div className="space-y-8">
+            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
+                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl">Discovery Lab</Button>
+                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl">The Sorter</Button>
+                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')} className="rounded-xl">Matter Lab</Button>
+                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Field Journal</Button>
+            </div>
+
+            {activeTab === 'lab' && (
+                <div className="space-y-6 animate-in fade-in">
+                    {canEdit && (
+                        <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
+                            <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
+                            <div className="flex gap-2">
+                                <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
+                                <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
+                                    {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {fact && (
+                        <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
+                            <div className="bg-blue-500 p-8 text-center text-white">
+                                <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
+                                <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
+                            </div>
+                            <CardContent className="p-8 space-y-6">
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100">
+                                        <h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4>
+                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p>
+                                    </div>
+                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100">
+                                        <h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4>
+                                        <p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p>
+                                    </div>
+                                </div>
+                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200">
+                                    <h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4>
+                                    <p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
+                                    {canEdit && <Button onClick={handleSave} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
+            )}
+
+            {activeTab === 'sorter' && (
+                <div className="bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
+                    <div>
+                        <h2 className="text-3xl font-black text-slate-800">The Sorting Game</h2>
+                        <p className="text-slate-500">Is it Living or Non-Living?</p>
+                    </div>
+                    
+                    <div className="flex justify-center gap-6">
+                        {sortItems.length > 0 ? (
+                            <div className="bg-white p-10 rounded-full shadow-xl border-8 border-blue-100 animate-bounce">
+                                <div className="text-9xl">{sortItems[0].emoji}</div>
+                                <p className="text-2xl font-black text-slate-700 mt-4">{sortItems[0].name}</p>
+                            </div>
+                        ) : (
+                            <Button onClick={() => window.location.reload()} className="bg-green-500">Play Again!</Button>
+                        )}
+                    </div>
+
+                    <div className="flex justify-center gap-4">
+                        <Button 
+                            onClick={() => {
+                                if(sortItems[0].type === 'living') { confetti(); speak("Yes! It grows and breathes."); setSortItems(prev => prev.slice(1)); }
+                                else { speak("Not quite. That doesn't grow on its own."); }
+                            }}
+                            className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl"
+                        >
+                            🌳 Living
+                        </Button>
+                        <Button 
+                            onClick={() => {
+                                if(sortItems[0].type === 'non-living') { confetti(); speak("Correct! It is an object."); setSortItems(prev => prev.slice(1)); }
+                                else { speak("Think again! Living things grow."); }
+                            }}
+                            className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl"
+                        >
+                            🧸 Non-Living
+                        </Button>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'experiment' && (
+                <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4">
+                    <div className="text-center">
+                        <h2 className="text-3xl font-black text-cyan-800">States of Matter</h2>
+                        <p className="text-cyan-600">Change the temperature to see what happens to water!</p>
+                    </div>
+
+                    <div className="relative w-64 h-64 bg-cyan-50 rounded-full flex flex-col items-center justify-center border-8 border-white shadow-inner">
+                        <div className="text-9xl mb-2 transition-all duration-500 transform scale-125">
+                            {getWaterState().emoji}
+                        </div>
+                        <p className="text-2xl font-black text-cyan-700">{getWaterState().label}</p>
+                    </div>
+
+                    <div className="w-full max-w-md space-y-4">
+                        <div className="flex justify-between font-black text-xl">
+                            <span className="text-blue-500">COLD</span>
+                            <span className="text-slate-700">{temp}°C</span>
+                            <span className="text-red-500">HOT</span>
+                        </div>
+                        <input 
+                            type="range" min="-20" max="120" value={temp} 
+                            onChange={(e) => setTemp(parseInt(e.target.value))}
+                            className="w-full h-4 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                        />
+                        <p className="text-center text-slate-500 font-medium italic">
+                            {getWaterState().desc}
+                        </p>
+                    </div>
+                </div>
+            )}
+            
+            {activeTab === 'library' && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
+                    {savedScience?.map((s:any)=>(
+                        <div 
+                            key={s.id} 
+                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all"
+                            onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
+                        >
+                            <div className="text-5xl mb-4">{s.emojiIcon}</div>
+                            <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -978,7 +1172,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                <TabsTrigger value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
+                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
@@ -990,7 +1184,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></TabsContent>
+                <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></div></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
@@ -999,5 +1193,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
-    
