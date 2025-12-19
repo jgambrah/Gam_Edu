@@ -415,52 +415,213 @@ function PhonicsForest() {
     );
 }
 
-// --- 3. ABC KINGDOM (ENHANCED) ---
+// --- 3. ABC KINGDOM (ALPHABET ACADEMY) ---
 function ABCKingdom() {
-    const { toast } = useToast();
-    const [mode, setMode] = useState<'upper' | 'lower' | 'both'>('upper');
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+    const [activeTab, setActiveTab] = useState<'explorer' | 'tracing' | 'matcher'>('explorer');
+    const [selectedLetter, setSelectedLetter] = useState('A');
+    const [caseMode, setCaseMode] = useState<'upper' | 'lower' | 'both'>('upper');
+    
+    // Tracing Canvas Refs
+    const traceCanvasRef = useRef<HTMLCanvasElement>(null);
+    const [isTracing, setIsTracing] = useState(false);
 
-    // Mapping letters to keywords for "Phonic Awareness"
-    const keywords: Record<string, string> = {
-        A: "Apple", B: "Ball", C: "Cat", D: "Dog", E: "Egg", F: "Fish", G: "Goat", H: "Hat", 
-        I: "Igloo", J: "Jam", K: "Kite", L: "Lion", M: "Moon", N: "Net", O: "Octopus", P: "Pig", 
-        Q: "Queen", R: "Rabbit", S: "Sun", T: "Tiger", U: "Umbrella", V: "Van", W: "Watch", 
-        X: "Xylophone", Y: "Yo-yo", Z: "Zebra"
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+    const dict: Record<string, { word: string, emoji: string, phonic: string }> = {
+        A: { word: "Apple", emoji: "🍎", phonic: "ah" },
+        B: { word: "Ball", emoji: "⚽", phonic: "buh" },
+        C: { word: "Cat", emoji: "🐱", phonic: "cuh" },
+        D: { word: "Dog", emoji: "🐶", phonic: "duh" },
+        E: { word: "Egg", emoji: "🥚", phonic: "eh" },
+        F: { word: "Fish", emoji: "🐟", phonic: "fuh" },
+        G: { word: "Goat", emoji: "🐐", phonic: "guh" },
+        H: { word: "Hat", emoji: "👒", phonic: "huh" },
+        I: { word: "Igloo", emoji: "❄️", phonic: "ih" },
+        J: { word: "Jam", emoji: "🍓", phonic: "juh" },
+        K: { word: "Kite", emoji: "🪁", phonic: "kuh" },
+        L: { word: "Lion", emoji: "🦁", phonic: "luh" },
+        M: { word: "Moon", emoji: "🌙", phonic: "muh" },
+        N: { word: "Net", emoji: "🕸️", phonic: "nuh" },
+        O: { word: "Octopus", emoji: "🐙", phonic: "oh" },
+        P: { word: "Pig", emoji: "🐷", phonic: "puh" },
+        Q: { word: "Queen", emoji: "👑", phonic: "quuh" },
+        R: { word: "Rabbit", emoji: "🐰", phonic: "ruh" },
+        S: { word: "Sun", emoji: "☀️", phonic: "suh" },
+        T: { word: "Tiger", emoji: "🐯", phonic: "tuh" },
+        U: { word: "Umbrella", emoji: "☔", phonic: "uh" },
+        V: { word: "Van", emoji: "🚐", phonic: "vuh" },
+        W: { word: "Watch", emoji: "⌚", phonic: "wuh" },
+        X: { word: "Xylophone", emoji: "🎹", phonic: "ks" },
+        Y: { word: "Yo-yo", emoji: "🪀", phonic: "yuh" },
+        Z: { word: "Zebra", emoji: "🦓", phonic: "zuh" }
     };
 
-    const speakLetter = (letter: string) => {
-        // First say the letter, then the phonic sound, then the keyword
-        speak(letter);
-        setTimeout(() => speak(`as in ${keywords[letter]}`), 800);
-    }
+    const handleLetterClick = (letter: string) => {
+        setSelectedLetter(letter);
+        if (activeTab === 'explorer') {
+            const data = dict[letter];
+            speak(letter); // Say Letter Name
+            setTimeout(() => speak(`${data.phonic}, as in, ${data.word}`), 800);
+        }
+    };
+
+    // Tracing Logic
+    useEffect(() => {
+        if (activeTab === 'tracing' && traceCanvasRef.current) {
+            const ctx = traceCanvasRef.current.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, 400, 400);
+                ctx.font = "bold 300px sans-serif";
+                ctx.fillStyle = "#f1f5f9"; // Ghost letter
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(selectedLetter, 200, 220);
+            }
+        }
+    }, [selectedLetter, activeTab]);
+
+    const startTracing = (e: any) => {
+        const ctx = traceCanvasRef.current?.getContext('2d');
+        if (!ctx) return;
+        const rect = traceCanvasRef.current!.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
+        setIsTracing(true);
+    };
 
     return (
         <div className="space-y-8">
-            <div className="flex justify-center gap-2 bg-green-50 p-2 rounded-2xl w-fit mx-auto border border-green-100">
-                <Button onClick={() => setMode('upper')} variant={mode === 'upper' ? 'default' : 'ghost'} className="font-bold">ABC</Button>
-                <Button onClick={() => setMode('lower')} variant={mode === 'lower' ? 'default' : 'ghost'} className="font-bold">abc</Button>
-                <Button onClick={() => setMode('both')} variant={mode === 'both' ? 'default' : 'ghost'} className="font-bold">Aa</Button>
+            {/* 1. TOP NAVIGATION */}
+            <div className="flex gap-2 p-1 bg-green-50 rounded-2xl w-fit mx-auto border border-green-100">
+                <Button variant={activeTab === 'explorer' ? 'default' : 'ghost'} onClick={() => setActiveTab('explorer')} className="rounded-xl font-bold">Explorer</Button>
+                <Button variant={activeTab === 'tracing' ? 'default' : 'ghost'} onClick={() => setActiveTab('tracing')} className="rounded-xl font-bold">Tracing Lab</Button>
+                <Button variant={activeTab === 'matcher' ? 'default' : 'ghost'} onClick={() => setActiveTab('matcher')} className="rounded-xl font-bold">Matcher Game</Button>
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 max-w-5xl mx-auto">
-                {alphabet.map(letter => (
-                    <button 
-                        key={letter}
-                        onClick={() => speakLetter(letter)}
-                        className="group relative aspect-square bg-white rounded-[32px] shadow-sm border-b-8 border-green-200 text-green-600 hover:bg-green-50 hover:border-green-400 hover:-translate-y-2 transition-all flex flex-col items-center justify-center p-4"
-                    >
-                        <span className={`font-black tracking-tighter ${mode === 'both' ? 'text-2xl md:text-3xl' : 'text-4xl md:text-5xl'}`}>
-                            {mode === 'upper' ? letter : mode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
-                        </span>
-                        <span className="text-[10px] font-bold text-slate-300 mt-1 uppercase group-hover:text-green-500 transition-colors">
-                            {keywords[letter]}
-                        </span>
-                        
-                        {/* Hidden decoration that appears on hover */}
-                        <Star className="absolute top-2 right-2 w-3 h-3 text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
-                ))}
+            <div className="grid lg:grid-cols-5 gap-8">
+                {/* 2. LETTER GRID (SIDEBAR ON DESKTOP) */}
+                <div className="lg:col-span-2 order-2 lg:order-1">
+                    <div className="flex justify-center gap-2 mb-4">
+                        <Button size="sm" variant={caseMode === 'upper' ? 'secondary' : 'outline'} onClick={() => setCaseMode('upper')}>ABC</Button>
+                        <Button size="sm" variant={caseMode === 'lower' ? 'secondary' : 'outline'} onClick={() => setCaseMode('lower')}>abc</Button>
+                        <Button size="sm" variant={caseMode === 'both' ? 'secondary' : 'outline'} onClick={() => setCaseMode('both')}>Aa</Button>
+                    </div>
+                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2">
+                        {alphabet.map(letter => (
+                            <button 
+                                key={letter}
+                                onClick={() => handleLetterClick(letter)}
+                                className={`aspect-square rounded-2xl font-black text-xl transition-all border-b-4 ${
+                                    selectedLetter === letter 
+                                    ? 'bg-green-500 text-white border-green-700 scale-105 shadow-lg' 
+                                    : 'bg-white text-slate-400 border-slate-100 hover:bg-green-50'
+                                }`}
+                            >
+                                {caseMode === 'upper' ? letter : caseMode === 'lower' ? letter.toLowerCase() : `${letter}${letter.toLowerCase()}`}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* 3. INTERACTIVE STAGE */}
+                <div className="lg:col-span-3 order-1 lg:order-2">
+                    <Card className="rounded-[40px] border-4 border-green-100 shadow-xl overflow-hidden h-full">
+                        <CardContent className="p-0">
+                            
+                            {/* EXPLORER MODE */}
+                            {activeTab === 'explorer' && (
+                                <div className="p-8 text-center space-y-8 animate-in zoom-in">
+                                    <div className="flex justify-center gap-4 items-end">
+                                        <h1 className="text-[180px] font-black text-green-600 leading-none">{selectedLetter}</h1>
+                                        <h2 className="text-[100px] font-black text-green-300 leading-none">{selectedLetter.toLowerCase()}</h2>
+                                    </div>
+                                    <div className="bg-green-50 p-8 rounded-[40px] border-2 border-dashed border-green-200">
+                                        <div className="text-9xl mb-4">{dict[selectedLetter].emoji}</div>
+                                        <h3 className="text-5xl font-black text-slate-800">{dict[selectedLetter].word}</h3>
+                                        <p className="text-2xl font-bold text-green-500 mt-2 italic">Sound: "{dict[selectedLetter].phonic}"</p>
+                                    </div>
+                                    <Button onClick={() => handleLetterClick(selectedLetter)} className="h-16 px-12 rounded-full text-xl bg-green-600 hover:bg-green-700">
+                                        <Volume2 className="mr-3" /> Listen Again
+                                    </Button>
+                                </div>
+                            )}
+
+                            {/* TRACING MODE */}
+                            {activeTab === 'tracing' && (
+                                <div className="p-8 flex flex-col items-center space-y-6 animate-in slide-in-from-right-4">
+                                    <div className="text-center">
+                                        <h3 className="text-2xl font-black text-slate-800">Can you trace the letter {selectedLetter}?</h3>
+                                        <p className="text-slate-500">Use your finger or mouse to draw!</p>
+                                    </div>
+                                    <div className="relative bg-white border-4 border-slate-100 rounded-3xl shadow-inner">
+                                        <canvas 
+                                            ref={traceCanvasRef} width={400} height={400} 
+                                            className="touch-none cursor-crosshair"
+                                            onMouseDown={startTracing}
+                                            onMouseMove={(e) => {
+                                                if (!isTracing) return;
+                                                const ctx = traceCanvasRef.current?.getContext('2d');
+                                                const rect = traceCanvasRef.current!.getBoundingClientRect();
+                                                const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+                                                const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+                                                ctx?.lineTo(x, y); ctx?.stroke();
+                                            }}
+                                            onMouseUp={() => setIsTracing(false)}
+                                            onTouchStart={startTracing}
+                                        />
+                                        <Button 
+                                            variant="ghost" size="sm" 
+                                            className="absolute bottom-2 right-2 text-slate-300"
+                                            onClick={() => {
+                                                const ctx = traceCanvasRef.current?.getContext('2d');
+                                                ctx?.clearRect(0,0,400,400);
+                                                handleLetterClick(selectedLetter);
+                                            }}
+                                        >
+                                            Reset
+                                        </Button>
+                                    </div>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Start at the top!</p>
+                                </div>
+                            )}
+
+                            {/* MATCHER GAME */}
+                            {activeTab === 'matcher' && (
+                                <div className="p-8 text-center space-y-8 animate-in fade-in">
+                                    <h3 className="text-3xl font-black text-slate-800">Find the Lower Case!</h3>
+                                    <div className="text-[120px] font-black text-green-600 mb-8 bg-green-50 w-40 h-40 flex items-center justify-center rounded-3xl mx-auto shadow-sm">
+                                        {selectedLetter}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+                                        {[
+                                            selectedLetter.toLowerCase(), 
+                                            alphabet[Math.floor(Math.random()*26)].toLowerCase(),
+                                            alphabet[Math.floor(Math.random()*26)].toLowerCase(),
+                                            alphabet[Math.floor(Math.random()*26)].toLowerCase(),
+                                        ].sort(() => Math.random() - 0.5).map((char, i) => (
+                                            <button 
+                                                key={i}
+                                                onClick={() => {
+                                                    if (char === selectedLetter.toLowerCase()) {
+                                                        confetti();
+                                                        speak("Correct!");
+                                                        setSelectedLetter(alphabet[Math.floor(Math.random()*26)]);
+                                                    } else {
+                                                        speak("Try again");
+                                                    }
+                                                }}
+                                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-green-400 hover:bg-green-50 transition-all"
+                                            >
+                                                {char}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
@@ -622,12 +783,6 @@ function MathPlayground() {
                 </div>
             )}
             
-            {(mode === 'compare' || mode === 'patterns') && (
-                <div className="text-6xl font-black text-slate-800 tracking-tighter mb-4">
-                    {question.displayPrompt}
-                </div>
-            )}
-            
             {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6 drop-shadow-md">{question.a}</div>}
             
              {mode === 'time' && (
@@ -653,6 +808,8 @@ function MathPlayground() {
                             <span className="text-slate-300">=</span>
                             <span className="text-orange-500">?</span>
                         </div>
+                    ) : (mode === 'compare' || mode === 'patterns') ? (
+                        <span className="text-6xl tracking-tighter">{question.displayPrompt}</span>
                     ) : (
                         <span>{question.displayPrompt ? "" : question.a}</span>
                     )}
@@ -757,7 +914,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             forceRefetch(); 
         } 
     };
-    
+
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
         // Check against the current question in the questions array
@@ -834,7 +991,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             )}
 
             {story && (
-                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden">
+                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden shadow-2xl">
                     <CardHeader className="bg-yellow-300 py-4 flex flex-row justify-between items-center">
                         <CardTitle className="text-2xl font-black text-yellow-900">{story.emojiIcon} {story.title}</CardTitle>
                         {isAdminOrDirector && (
@@ -846,7 +1003,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                     <CardContent className="p-8 space-y-8">
                         {/* THE STORY TEXT */}
                         <div className="prose prose-slate max-w-none">
-                            <p className="text-xl md:text-2xl leading-relaxed text-slate-800 whitespace-pre-wrap">
+                            <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
@@ -859,7 +1016,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                         </div>
 
                         {/* 3-QUESTION CHALLENGE AREA */}
-                        <div className="bg-purple-50 p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
+                        <div className="bg-white p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center mb-2">
@@ -890,25 +1047,27 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         </div>
                                     ) : (
                                         <div className="animate-in slide-in-from-bottom-2 space-y-4">
-                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
-                                                {isAnswerCorrect ? <CheckCircle2 className="h-8 w-8 text-green-600"/> : <XCircle className="h-8 w-8 text-red-600"/>}
+                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
+                                                {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
                                                 <div>
-                                                    <p className="font-bold text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
-                                                    <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
+                                                    <p className="font-bold">{isAnswerCorrect ? "Great Thinking!" : "Not Quite..."}</p>
+                                                    <p className="text-sm">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
                                                 </div>
                                             </div>
-                                            <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
-                                                {currentQuestionIndex < 2 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
+                                            <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold rounded-xl">
+                                                {currentQuestionIndex < 2 ? "Next Question" : "See Final Score"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-6 space-y-4 animate-in zoom-in">
-                                    <Trophy className="h-16 w-16 text-yellow-500 mx-auto" />
+                                <div className="text-center py-4 space-y-4 animate-in zoom-in">
+                                    <div className="inline-block p-4 bg-yellow-100 rounded-full mb-2">
+                                        <Trophy className="w-12 h-12 text-yellow-600" />
+                                    </div>
                                     <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
                                     <p className="text-xl font-bold text-purple-600">You got {score} out of 3 correct!</p>
-                                    <Button onClick={resetQuiz} variant="outline" className="border-2 border-purple-300 text-purple-600 font-bold">Try Quiz Again</Button>
+                                    <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
                         </div>
@@ -936,12 +1095,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 </div>
                             </CardContent>
                             {canEdit && (
-                                <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" 
-                                    onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}
-                                >
+                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
@@ -1312,7 +1466,7 @@ function ArtStudio() {
 
                     <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden cursor-crosshair touch-none">
                         <canvas 
-                            ref={canvasRef} 
+                            ref={traceCanvasRef} 
                             className="w-full touch-none"
                             onMouseDown={startDrawing} 
                             onMouseMove={draw} 
@@ -1320,7 +1474,7 @@ function ArtStudio() {
                             onMouseLeave={() => setIsDrawing(false)}
                             onTouchStart={startDrawing}
                             onTouchMove={draw}
-                            onTouchEnd={() => setIsDrawing(false)}
+                            onTouchEnd={() => setIsTracing(false)}
                         />
                         
                         {/* CANVAS WATERMARK/DECORATION */}
@@ -1340,7 +1494,7 @@ function ArtStudio() {
                         <Button onClick={() => {
                             const link = document.createElement('a');
                             link.download = 'my-masterpiece.png';
-                            link.href = canvasRef.current!.toDataURL();
+                            link.href = traceCanvasRef.current!.toDataURL();
                             link.click();
                             confetti();
                         }} className="bg-green-600 rounded-xl px-6">
@@ -1516,7 +1670,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                 <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
+                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
@@ -1528,7 +1682,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
-                <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></div></TabsContent>
+                 <TabsContent value="science" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200"><ScienceWorld canEdit={canEdit} /></div></TabsContent>
                 <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
