@@ -18,13 +18,13 @@ const StorySchema = z.object({
 });
 
 
-export async function generateJuniorStory(topic: string) {
+export async function generateJuniorStory(topic: string, wordCount: number = 100) {
   try {
     const prompt = `
       You are a kindergarten teacher. Write an educational story for a 5-year-old about: ${topic}.
       
       RULES:
-      1. The story must be engaging and at least 4-5 paragraphs long.
+      1. The story must be engaging and approximately ${wordCount} words long.
       2. Use simple, age-appropriate words.
       3. The output MUST be a JSON object that strictly follows the provided schema.
       4. The 'questions' array must contain exactly 3 comprehension questions about the story.
