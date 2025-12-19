@@ -390,21 +390,33 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     const [loading, setLoading] = useState(false);
     
     // Quiz State
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [userAnswer, setUserAnswer] = useState('');
     const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+    const [score, setScore] = useState(0);
+    const [quizFinished, setQuizFinished] = useState(false);
     
     const storiesQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
     const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
     
+    const resetQuiz = () => {
+        setCurrentQuestionIndex(0);
+        setUserAnswer('');
+        setIsAnswerSubmitted(false);
+        setIsAnswerCorrect(false);
+        setScore(0);
+        setQuizFinished(false);
+    };
+
     const handleGenerate = async () => { 
         setLoading(true); 
+        // Note: Ensure your backend prompt for generateJuniorStory is updated 
+        // to return a longer story and a 'questions' array with 3 items.
         const res = await generateJuniorStory(topic); 
         if (res.success) {
             setStory(res.data);
-            setUserAnswer('');
-            setIsAnswerSubmitted(false);
-            setIsAnswerCorrect(false);
+            resetQuiz();
         }
         setLoading(false); 
     };
@@ -414,7 +426,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         await addDoc(collection(firestore, 'junior_stories'), { ...story, topic, createdAt: serverTimestamp(), createdBy: user.uid }); 
         setStory(null); 
         forceRefetch(); 
-        toast({ title: "Story Saved!" }); 
+        toast({ title: "Story Saved to Library!" }); 
     };
 
     const handleDelete = async (id: string) => { 
@@ -427,76 +439,164 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
-        const correct = story.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
+        
+        const currentQ = story.questions[currentQuestionIndex];
+        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) || 
+                        userAnswer.toLowerCase().trim().includes(currentQ.answer.toLowerCase().trim());
+        
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
-        speak(correct ? 'Correct!' : 'Not quite, try again!');
+        
+        if (correct) {
+            setScore(prev => prev + 1);
+            speak('Great job! That is correct.');
+            confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+        } else {
+            speak('Not quite, but good try!');
+        }
+    };
+
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex < story.questions.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+            setUserAnswer('');
+            setIsAnswerSubmitted(false);
+            setIsAnswerCorrect(false);
+        } else {
+            setQuizFinished(true);
+            speak(`You finished the quiz! You got ${score + (isAnswerCorrect ? 0 : 0)} out of ${story.questions.length}`);
+        }
     };
 
     const handleSelectStory = (s: any) => {
         setStory(s);
         speak(s.title);
-        setUserAnswer('');
-        setIsAnswerSubmitted(false);
-        setIsAnswerCorrect(false);
+        resetQuiz();
     };
 
     return (
         <div className="space-y-8">
             {canEdit && (
                 <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-purple-200">
-                    <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> New Story</h3>
+                    <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2"><Wand2 /> Create a Long Story</h3>
                     <div className="flex gap-2">
-                        <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic (e.g. Space Cat)" className="text-lg h-12 rounded-xl"/>
-                        <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600">{loading ? <Loader2 className="animate-spin"/> : "Write"}</Button>
+                        <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="What should the story be about? (e.g. A brave robot in the ocean)" className="text-lg h-12 rounded-xl"/>
+                        <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-purple-600 px-8">
+                            {loading ? <Loader2 className="animate-spin"/> : "Write Story"}
+                        </Button>
                     </div>
+                    <p className="text-xs text-purple-400 mt-2 ml-1 italic">* This will generate a long story with 3 challenge questions.</p>
                 </div>
             )}
+
             {story && (
-                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in">
-                    <CardContent className="p-6 space-y-4">
-                        <h3 className="text-3xl text-center font-bold">{story.emojiIcon} {story.title}</h3>
-                        <p className="text-xl leading-relaxed">{story.content}</p>
-                        
-                        <div className="bg-white p-4 rounded-xl border border-yellow-200">
-                            <p className="font-bold text-orange-600 mb-2">Quiz: {story.question}</p>
-                            {!isAnswerSubmitted ? (
-                                <div className="flex gap-2">
-                                    <Input 
-                                        placeholder="Type your answer..." 
-                                        value={userAnswer}
-                                        onChange={(e) => setUserAnswer(e.target.value)}
-                                    />
-                                    <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()}>Check</Button>
-                                </div>
-                            ) : isAnswerCorrect ? (
-                                <div className="flex items-center gap-2 p-2 bg-green-100 text-green-700 rounded-md border border-green-200">
-                                    <CheckCircle2 className="h-5 w-5"/> Correct! The answer is {story.answer}.
-                                </div>
-                            ) : (
-                                <div className="flex items-center gap-2 p-2 bg-red-100 text-red-700 rounded-md border border-red-200">
-                                   <XCircle className="h-5 w-5"/> Not quite. The correct answer is: {story.answer}.
-                                </div>
-                            )}
+                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden">
+                    <CardContent className="p-0">
+                        {/* Story Header */}
+                        <div className="bg-yellow-300 p-4 text-center">
+                            <h3 className="text-3xl font-black text-yellow-900">{story.emojiIcon} {story.title}</h3>
                         </div>
-                        
-                        <div className="flex gap-2">
-                            <Button onClick={() => speak(story.content)} variant="outline" className="flex-1">Read Story</Button>
-                            {canEdit && <Button onClick={handleSave} className="flex-1 bg-green-600">Save</Button>}
+
+                        <div className="p-8 space-y-6">
+                            {/* Story Body - Optimized for length */}
+                            <div className="bg-white/50 p-6 rounded-2xl border-2 border-yellow-100">
+                                <p className="text-xl md:text-2xl leading-relaxed text-slate-800 whitespace-pre-wrap">
+                                    {story.content}
+                                </p>
+                            </div>
+                            
+                            <div className="flex gap-3">
+                                <Button onClick={() => speak(story.content)} variant="secondary" className="flex-1 h-12 text-lg font-bold">
+                                    <Volume2 className="mr-2" /> Read to Me
+                                </Button>
+                                {canEdit && (
+                                    <Button onClick={handleSave} className="flex-1 h-12 bg-green-600 hover:bg-green-700 text-lg font-bold">
+                                        <Save className="mr-2" /> Save to Library
+                                    </Button>
+                                )}
+                            </div>
+
+                            {/* Multi-Question Quiz Section */}
+                            <div className="bg-purple-50 p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
+                                {!quizFinished ? (
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <span className="bg-purple-200 text-purple-700 px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wider">
+                                                Question {currentQuestionIndex + 1} of {story.questions?.length || 3}
+                                            </span>
+                                            <span className="text-purple-600 font-bold">Score: {score}</span>
+                                        </div>
+                                        
+                                        <p className="text-2xl font-bold text-purple-900">
+                                            {story.questions?.[currentQuestionIndex]?.question || story.question}
+                                        </p>
+
+                                        {!isAnswerSubmitted ? (
+                                            <div className="flex gap-2">
+                                                <Input 
+                                                    placeholder="Type your answer here..." 
+                                                    value={userAnswer}
+                                                    onChange={(e) => setUserAnswer(e.target.value)}
+                                                    className="text-lg h-14 border-2 border-purple-200 focus:border-purple-500 rounded-xl"
+                                                    onKeyDown={(e) => e.key === 'Enter' && handleCheckAnswer()}
+                                                />
+                                                <Button onClick={handleCheckAnswer} disabled={!userAnswer.trim()} className="h-14 px-8 bg-purple-600 text-lg font-bold rounded-xl">Check</Button>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                                                <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
+                                                    {isAnswerCorrect ? <CheckCircle2 className="h-8 w-8 text-green-600"/> : <XCircle className="h-8 w-8 text-red-600"/>}
+                                                    <div>
+                                                        <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
+                                                        <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer || story.answer}</span></p>
+                                                    </div>
+                                                </div>
+                                                <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
+                                                    {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Results"} <ArrowRight className="ml-2" />
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-6 space-y-4 animate-in zoom-in">
+                                        <Trophy className="h-16 w-16 text-yellow-500 mx-auto" />
+                                        <h4 className="text-3xl font-black text-purple-900">Quiz Complete!</h4>
+                                        <p className="text-xl text-purple-700 font-bold">You got {score} out of {story.questions?.length} correct!</p>
+                                        <Button onClick={resetQuiz} variant="outline" className="border-2 border-purple-300 text-purple-600 font-bold">Try Quiz Again</Button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
             )}
+
             <div>
-                <h3 className="text-2xl font-bold text-slate-700 mb-4">📚 Library</h3>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
+                        <Library className="text-purple-500" /> Story Library
+                    </h3>
+                </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {savedStories?.map((s:any) => (
-                        <Card key={s.id} className="cursor-pointer border-l-4 border-l-purple-500 hover:shadow-lg relative group">
+                        <Card key={s.id} className="cursor-pointer border-b-4 border-purple-200 hover:border-purple-400 hover:shadow-xl transition-all relative group overflow-hidden">
                             <CardContent className="p-4 flex items-center gap-4" onClick={() => handleSelectStory(s)}>
-                                <div className="text-4xl">{s.emojiIcon}</div>
-                                <div><h4 className="font-bold text-lg">{s.title}</h4></div>
+                                <div className="text-5xl bg-slate-50 p-2 rounded-2xl">{s.emojiIcon}</div>
+                                <div className="pr-6">
+                                    <h4 className="font-bold text-lg text-slate-800 line-clamp-1">{s.title}</h4>
+                                    <p className="text-xs text-slate-400 font-bold uppercase">{s.topic || 'Fun Story'}</p>
+                                </div>
                             </CardContent>
-                            {canEdit && <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}><Trash2 className="w-4 h-4"/></Button>}
+                            {canEdit && (
+                                <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 transition-opacity" 
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}
+                                >
+                                    <Trash2 className="w-4 h-4"/>
+                                </Button>
+                            )}
                         </Card>
                     ))}
                 </div>
@@ -644,4 +744,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
