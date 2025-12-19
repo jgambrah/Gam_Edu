@@ -184,7 +184,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
                         >
-                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} />)}</div> : <Mic className="h-16 w-16 text-white" />}
+                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} />}</div> : <Mic className="h-16 w-16 text-white" />}
                         </button>
                         
                         <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
@@ -552,6 +552,18 @@ function MathPlayground() {
       setFeedback("CORRECT! 🎉");
       confetti({ particleCount: 100, spread: 70 });
       speak("Correct!");
+
+      if ((streak + 1) % 5 === 0 && user && firestore) {
+          const sticker = '🎓';
+          await addDoc(collection(firestore, 'junior_stickers'), {
+              userId: user.uid,
+              emoji: sticker,
+              name: `${mode.toUpperCase()} Master`,
+              category: 'math',
+              earnedAt: serverTimestamp()
+          });
+          toast({ title: "Achievement!", description: "You earned a Math Master sticker!" });
+      }
       setTimeout(generateQuestion, 1500);
     } else {
       setStreak(0);
@@ -568,7 +580,7 @@ function MathPlayground() {
                 key={m}
                 variant={mode === m ? 'default' : 'ghost'} 
                 onClick={() => setMode(m)} 
-                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500 shadow-md' : 'text-slate-500'}`}
+                className={`rounded-2xl capitalize font-bold min-w-[100px] ${mode === m ? 'bg-orange-500' : 'text-slate-500'}`}
             >
                 {m === 'mul' ? '× Multi' : m === 'div' ? '÷ Divide' : m}
             </Button>
@@ -608,7 +620,13 @@ function MathPlayground() {
                     {Array.from({ length: question.b }).map((_, i) => <span key={i} className="text-3xl opacity-50">{question.icon}</span>)}
                 </div>
             )}
-
+            
+            {(mode === 'compare' || mode === 'patterns') && (
+                <div className="text-6xl font-black text-slate-800 tracking-tighter mb-4">
+                    {question.displayPrompt}
+                </div>
+            )}
+            
             {mode === 'shapes' && <div className="text-9xl text-blue-500 mb-6 drop-shadow-md">{question.a}</div>}
             
              {mode === 'time' && (
@@ -623,7 +641,7 @@ function MathPlayground() {
             
             <div className="text-center">
                 <p className="text-orange-400 font-bold uppercase tracking-widest text-xs mb-2">{question.displayPrompt || 'Solve'}</p>
-                 <div className="text-6xl font-black text-slate-800 tracking-tighter">
+                 <div className="text-5xl font-black text-slate-800">
                     {mode === 'add' || mode === 'sub' || mode === 'mul' || mode === 'div' ? (
                         <div className="flex items-center gap-3">
                             <span>{mode === 'div' ? question.a : (mode === 'mul' ? question.a : question.a)}</span>
@@ -635,7 +653,7 @@ function MathPlayground() {
                             <span className="text-orange-500">?</span>
                         </div>
                     ) : (
-                        <span>{question.a}</span>
+                        <span>{question.displayPrompt ? "" : question.a}</span>
                     )}
                 </div>
             </div>
@@ -708,6 +726,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
 
     const handleGenerate = async () => { 
         setLoading(true); 
+        // Pass the target word count to the AI flow
         const res = await generateJuniorStory(topic, parseInt(targetWordCount)); 
         if (res.success) {
             setStory(res.data);
@@ -740,19 +759,18 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     
     const handleCheckAnswer = () => {
         if (!userAnswer.trim() || !story) return;
+        // Check against the current question in the questions array
         const currentQ = story.questions[currentQuestionIndex];
-        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim()) || 
-                        userAnswer.toLowerCase().trim().includes(currentQ.answer.toLowerCase().trim());
+        const correct = currentQ.answer.toLowerCase().trim().includes(userAnswer.toLowerCase().trim());
         
         setIsAnswerCorrect(correct);
         setIsAnswerSubmitted(true);
-        
         if (correct) {
-            setScore(prev => prev + 1);
-            speak('Great job! That is correct.');
-            confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+            setScore(s => s + 1);
+            confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+            speak("Correct! Well done!");
         } else {
-            speak('Not quite, but good try!');
+            speak("Not quite, but good try!");
         }
     };
 
@@ -763,7 +781,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             setIsAnswerSubmitted(false);
         } else {
             setQuizFinished(true);
-            speak(`You finished the quiz! You got ${score + (isAnswerCorrect ? 0 : 0)} out of ${story.questions.length}`);
         }
     };
 
@@ -773,6 +790,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
         resetQuiz();
     };
 
+    // Calculate actual word count of generated story
     const actualWordCount = story?.content?.split(/\s+/).filter(Boolean).length || 0;
 
     return (
@@ -789,6 +807,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
+                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -814,8 +833,8 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
             )}
 
             {story && (
-                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden shadow-2xl">
-                     <CardHeader className="bg-yellow-300 py-4 flex flex-row justify-between items-center">
+                <Card className="border-4 border-yellow-300 bg-yellow-50 animate-in zoom-in overflow-hidden">
+                    <CardHeader className="bg-yellow-300 py-4 flex flex-row justify-between items-center">
                         <CardTitle className="text-2xl font-black text-yellow-900">{story.emojiIcon} {story.title}</CardTitle>
                         {isAdminOrDirector && (
                             <span className="bg-white/50 px-3 py-1 rounded-full text-xs font-bold text-yellow-800">
@@ -824,25 +843,27 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                         )}
                     </CardHeader>
                     <CardContent className="p-8 space-y-8">
-                        <div className="bg-white/50 p-6 rounded-2xl border-2 border-yellow-100">
-                            <p className="text-xl md:text-2xl leading-relaxed text-slate-800 font-medium whitespace-pre-wrap">
+                        {/* THE STORY TEXT */}
+                        <div className="prose prose-slate max-w-none">
+                            <p className="text-xl md:text-2xl leading-relaxed text-slate-800 whitespace-pre-wrap">
                                 {story.content}
                             </p>
                         </div>
                         
-                        <div className="flex gap-3">
+                        <div className="flex gap-4">
                             <Button onClick={() => speak(story.content)} variant="outline" className="flex-1 h-14 text-lg border-2 border-yellow-400 text-yellow-700 font-bold hover:bg-yellow-100">
                                 <Volume2 className="mr-2" /> Read Aloud
                             </Button>
                             {canEdit && <Button onClick={handleSave} className="flex-1 h-14 text-lg bg-green-600 hover:bg-green-700 font-bold"><Save className="mr-2" /> Save to Library</Button>}
                         </div>
 
+                        {/* 3-QUESTION CHALLENGE AREA */}
                         <div className="bg-purple-50 p-6 rounded-3xl border-4 border-purple-200 shadow-inner">
                             {!quizFinished ? (
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center mb-2">
                                         <span className="text-xs font-black uppercase tracking-widest text-purple-400">
-                                            Question {currentQuestionIndex + 1} of {story.questions?.length || 3}
+                                            Question {currentQuestionIndex + 1} of 3
                                         </span>
                                         <div className="flex gap-1">
                                             {[0, 1, 2].map(i => (
@@ -868,25 +889,25 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                         </div>
                                     ) : (
                                         <div className="animate-in slide-in-from-bottom-2 space-y-4">
-                                            <div className={`p-4 rounded-2xl border-2 flex items-start gap-3 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
-                                                {isAnswerCorrect ? <CheckCircle2 className="w-6 h-6 mt-1" /> : <XCircle className="w-6 h-6 mt-1" />}
+                                            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 ${isAnswerCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'}`}>
+                                                {isAnswerCorrect ? <CheckCircle2 className="h-8 w-8 text-green-600"/> : <XCircle className="h-8 w-8 text-red-600"/>}
                                                 <div>
                                                     <p className="font-black text-lg">{isAnswerCorrect ? "AWESOME!" : "SO CLOSE!"}</p>
                                                     <p className="font-medium">The answer is: <span className="font-bold underline">{story.questions?.[currentQuestionIndex]?.answer}</span></p>
                                                 </div>
                                             </div>
                                             <Button onClick={handleNextQuestion} className="w-full h-12 bg-purple-600 text-white font-bold text-lg rounded-xl">
-                                                {currentQuestionIndex < (story.questions?.length || 3) - 1 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
+                                                {currentQuestionIndex < 2 ? "Next Question" : "See Results"} <ArrowRight className="ml-2 w-4 h-4" />
                                             </Button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-4 space-y-4">
+                                <div className="text-center py-6 space-y-4 animate-in zoom-in">
                                     <Trophy className="h-16 w-16 text-yellow-500 mx-auto" />
                                     <h3 className="text-3xl font-black text-purple-900">Quiz Complete!</h3>
-                                    <p className="text-xl font-bold text-purple-600">You got {score} out of {story.questions.length} correct!</p>
-                                    <Button onClick={resetQuiz} variant="ghost" className="text-purple-400 hover:text-purple-600 font-bold">Try Quiz Again</Button>
+                                    <p className="text-xl font-bold text-purple-600">You got {score} out of 3 correct!</p>
+                                    <Button onClick={resetQuiz} variant="outline" className="border-2 border-purple-300 text-purple-600 font-bold">Try Quiz Again</Button>
                                 </div>
                             )}
                         </div>
@@ -894,8 +915,11 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                 </Card>
             )}
 
+            {/* LIBRARY SECTION */}
             <div>
-                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2"><BookOpen className="text-purple-500" /> Story Library</h3>
+                <h3 className="text-2xl font-bold text-slate-700 mb-6 flex items-center gap-2">
+                    <BookOpen className="text-purple-500" /> Story Library
+                </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {savedStories?.map((s:any) => (
                         <Card key={s.id} className="cursor-pointer border-b-8 border-purple-200 hover:border-purple-400 hover:-translate-y-1 transition-all relative group rounded-3xl overflow-hidden">
@@ -911,7 +935,12 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 </div>
                             </CardContent>
                             {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
+                                <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" 
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}
+                                >
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
@@ -951,6 +980,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const handleGenerate = async () => { 
         setLoading(true); 
+        // Ensure your AI flow returns { title, emoji, fact, observation, experiment }
         const res = await generateJuniorScience(topic); 
         if(res.success) setFact(res.data); 
         setLoading(false); 
@@ -976,6 +1006,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-8">
+            {/* Science Navigation */}
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
                 <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl">Discovery Lab</Button>
                 <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl">The Sorter</Button>
@@ -983,6 +1014,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Field Journal</Button>
             </div>
 
+            {/* PILLAR 1: DISCOVERY LAB (AI) */}
             {activeTab === 'lab' && (
                 <div className="space-y-6 animate-in fade-in">
                     {canEdit && (
@@ -1028,6 +1060,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+            {/* PILLAR 2: THE SORTER (GAME) */}
             {activeTab === 'sorter' && (
                 <div className="bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
                     <div>
@@ -1069,6 +1102,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+            {/* PILLAR 3: STATES OF MATTER (EXPERIMENT) */}
             {activeTab === 'experiment' && (
                 <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4">
                     <div className="text-center">
@@ -1101,6 +1135,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
             
+            {/* PILLAR 4: FIELD JOURNAL (LIBRARY) */}
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
@@ -1196,7 +1231,7 @@ function ArtStudio() {
         <div className="space-y-6">
             {/* Art Academy Navigation */}
             <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
-                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
+                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={()={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
                 <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
                 <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
@@ -1314,10 +1349,148 @@ function ArtStudio() {
     );
 }
 
+// --- 8. REWARDS (THE HALL OF FAME) ---
 function StickerBook() {
-    return <div className="text-center p-8"><h3 className="text-2xl font-bold">My Sticker Book</h3><p className="text-muted-foreground">This feature is coming soon!</p></div>;
-}
+    const { user } = useUser(); 
+    const firestore = useFirestore();
+    const [activeFilter, setActiveFilter] = useState<'all' | 'math' | 'literacy' | 'science' | 'art'>('all');
 
+    const stickerQuery = useMemoFirebase(() => 
+        (user && firestore) ? query(
+            collection(firestore, 'junior_stickers'), 
+            where('userId', '==', user.uid), 
+            orderBy('earnedAt', 'desc')
+        ) : null, [firestore, user]
+    );
+    const { data: stickers } = useCollection<any>(stickerQuery);
+
+    // Calculate progress stats
+    const stats = {
+        total: stickers?.length || 0,
+        math: stickers?.filter(s => s.category === 'math').length || 0,
+        literacy: stickers?.filter(s => s.category === 'literacy' || s.name.includes('ABC') || s.name.includes('Word')).length || 0,
+        science: stickers?.filter(s => s.category === 'science').length || 0,
+        art: stickers?.filter(s => s.category === 'art').length || 0,
+    };
+
+    const filteredStickers = activeFilter === 'all' 
+        ? stickers 
+        : stickers?.filter(s => {
+            if (activeFilter === 'math') return s.category === 'math';
+            if (activeFilter === 'literacy') return s.category === 'literacy' || s.name.includes('ABC') || s.name.includes('Word');
+            if (activeFilter === 'science') return s.category === 'science';
+            if (activeFilter === 'art') return s.category === 'art';
+            return true;
+        });
+
+    const getTier = (count: number) => {
+        if (count >= 20) return { label: 'Grand Master', color: 'text-purple-600', icon: '👑' };
+        if (count >= 10) return { label: 'Gold Tier', color: 'text-yellow-600', icon: '🥇' };
+        if (count >= 5) return { label: 'Silver Tier', color: 'text-slate-400', icon: '🥈' };
+        return { label: 'Bronze Tier', color: 'text-orange-600', icon: '🥉' };
+    };
+
+    return (
+        <div className="space-y-8 animate-in fade-in">
+            {/* 1. ACHIEVEMENT HEADER */}
+            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-[40px] p-8 text-white shadow-xl relative overflow-hidden">
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="text-center md:text-left">
+                        <h3 className="text-4xl font-black mb-1">Hall of Fame</h3>
+                        <p className="font-bold opacity-90 text-lg">You have earned {stats.total} total stickers!</p>
+                        <div className="mt-4 flex items-center gap-2 bg-white/20 w-fit px-4 py-2 rounded-full backdrop-blur-sm">
+                            <span className="text-2xl">{getTier(stats.total).icon}</span>
+                            <span className="font-black uppercase tracking-widest">{getTier(stats.total).label}</span>
+                        </div>
+                    </div>
+                    <div className="flex gap-4">
+                        <div className="bg-white/10 p-4 rounded-3xl text-center backdrop-blur-md border border-white/20 min-w-[100px]">
+                            <div className="text-3xl font-black">{stats.math}</div>
+                            <div className="text-[10px] font-bold uppercase opacity-80">Math</div>
+                        </div>
+                        <div className="bg-white/10 p-4 rounded-3xl text-center backdrop-blur-md border border-white/20 min-w-[100px]">
+                            <div className="text-3xl font-black">{stats.literacy}</div>
+                            <div className="text-[10px] font-bold uppercase opacity-80">Reading</div>
+                        </div>
+                        <div className="bg-white/10 p-4 rounded-3xl text-center backdrop-blur-md border border-white/20 min-w-[100px]">
+                            <div className="text-3xl font-black">{stats.science}</div>
+                            <div className="text-[10px] font-bold uppercase opacity-80">Science</div>
+                        </div>
+                    </div>
+                </div>
+                {/* Decorative background icons */}
+                <Trophy className="absolute -bottom-4 -right-4 w-48 h-48 opacity-10 rotate-12" />
+            </div>
+
+            {/* 2. SUBJECT PROGRESS TRACKER */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                    { label: 'Math Whiz', count: stats.math, color: 'bg-orange-500', icon: <Calculator className="w-4 h-4" /> },
+                    { label: 'Reading Hero', count: stats.literacy, color: 'bg-purple-500', icon: <BookOpen className="w-4 h-4" /> },
+                    { label: 'Science Pro', count: stats.science, color: 'bg-blue-500', icon: <Atom className="w-4 h-4" /> },
+                    { label: 'Art Legend', count: stats.art, color: 'bg-pink-500', icon: <Palette className="w-4 h-4" /> },
+                ].map((p) => (
+                    <div key={p.label} className="bg-white p-5 rounded-3xl border-2 border-slate-50 shadow-sm">
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="flex items-center gap-2 font-black text-slate-700">
+                                {p.icon} {p.label}
+                            </div>
+                            <span className="text-xs font-bold text-slate-400">{p.count} / 10 to next Level</span>
+                        </div>
+                        <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                                className={`h-full ${p.color} transition-all duration-1000`} 
+                                style={{ width: `${Math.min((p.count / 10) * 100, 100)}%` }} 
+                            />
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* 3. FILTER & STICKER GRID */}
+            <div className="space-y-6">
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                    {['all', 'math', 'literacy', 'science', 'art'].map((f) => (
+                        <Button 
+                            key={f} 
+                            variant={activeFilter === f ? 'default' : 'outline'} 
+                            onClick={() => setActiveFilter(f as any)}
+                            className={`rounded-2xl capitalize font-bold px-6 ${activeFilter === f ? 'bg-slate-800' : 'bg-white text-slate-500'}`}
+                        >
+                            {f}
+                        </Button>
+                    ))}
+                </div>
+
+                {!filteredStickers || filteredStickers.length === 0 ? (
+                    <div className="text-center py-20 bg-white rounded-[40px] border-4 border-dashed border-slate-100">
+                        <Gift className="h-16 w-16 mx-auto mb-4 text-slate-200" />
+                        <p className="text-slate-400 font-bold">No stickers here yet. Keep learning to earn some!</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                        {filteredStickers.map((s, idx) => (
+                            <div 
+                                key={s.id} 
+                                onClick={() => speak(`You earned the ${s.name} sticker!`)}
+                                className="group relative aspect-square bg-white rounded-3xl shadow-md border-b-4 border-slate-200 flex flex-col items-center justify-center p-2 hover:-translate-y-2 transition-all cursor-pointer hover:border-yellow-400"
+                                style={{ animationDelay: `${idx * 0.05}s` }}
+                            >
+                                <div className="text-4xl mb-1 group-hover:scale-125 transition-transform">{s.emoji}</div>
+                                <span className="text-[9px] text-center leading-tight font-black text-slate-500 uppercase">{s.name}</span>
+                                
+                                {/* Date earned - small badge */}
+                                <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                    NEW
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
 
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
@@ -1339,7 +1512,7 @@ export default function JuniorCampusPage() {
                 <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
                 <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
                 <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
-                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
+                 <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
                 <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
                 <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
@@ -1360,3 +1533,5 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
+    
