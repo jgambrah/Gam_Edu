@@ -23,7 +23,8 @@ import { getAuth } from 'firebase/auth';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -1188,7 +1189,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleAnswer = (choice: string) => {
-        if(!dbSorterItems || dbSorterItems.length === 0) return;
+        if (!dbSorterItems) return;
         const currentItem = dbSorterItems[currentIndex];
         if (choice === currentItem.type) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -1219,6 +1220,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             toast({title: "Item removed."});
         }
     }
+
 
     // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
@@ -1332,9 +1334,9 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             {activeTab === 'sorter' && (
                 <div className="space-y-6">
                     {canEdit && (
-                        <Dialog>
+                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700"><PlusCircle className="mr-2 h-4 w-4"/> Add or Manage Items</Button>
+                                <Button className="w-full bg-blue-600 hover:bg-blue-700"><PlusCircle className="mr-2 h-4 w-4"/> Add or Manage Sorter Items</Button>
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader><DialogTitle>Manage Sorter Library</DialogTitle></DialogHeader>
@@ -1363,7 +1365,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
                         {!dbSorterItems || dbSorterItems.length === 0 ? (
-                            <div className="py-10 text-slate-400 font-bold">Add items to start the game!</div>
+                            <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
                         ) : (
                             <div className="animate-in zoom-in space-y-8">
                                 <div className="flex justify-center gap-1">
@@ -1375,14 +1377,27 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     ))}
                                 </div>
                                 <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
-                                    {dbSorterItems[currentIndex].emoji}
+                                    {dbSorterItems[currentIndex]?.emoji}
                                 </div>
-                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex].name}</h3>
+                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex]?.name}</h3>
+                                
                                 <div className="flex justify-center gap-6">
-                                    <Button onClick={() => handleAnswer('living')} className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all">🌳 Living</Button>
-                                    <Button onClick={() => handleAnswer('non-living')} className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all">🧸 Non-Living</Button>
+                                    <Button 
+                                        onClick={() => handleAnswer('living')}
+                                        className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
+                                    >
+                                        🌳 Living
+                                    </Button>
+                                    <Button 
+                                        onClick={() => handleAnswer('non-living')}
+                                        className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
+                                    >
+                                        🧸 Non-Living
+                                    </Button>
                                 </div>
-                                <p className="text-slate-400 font-bold">Item {currentIndex + 1} of {dbSorterItems.length}</p>
+                                <p className="text-slate-400 font-bold">
+                                    Item {currentIndex + 1} of {dbSorterItems.length}
+                                </p>
                             </div>
                         )}
                     </div>
@@ -1405,7 +1420,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     {m.name}
                                 </Button>
                             ))}
-                            {canEdit && <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">{showAddMatForm ? 'Close Creator' : '+ Add New Material'}</Button>}
+                            {canEdit && <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">{showAddMatForm ? 'Close' : '+ Add'}</Button>}
                         </div>
                     </div>
                     {showAddMatForm && canEdit && (
@@ -1459,9 +1474,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </div>
             )}
-             
-            {/* JOURNAL TAB */}
-            {activeTab === 'library' && (
+             {/* JOURNAL TAB */}
+             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
                         <div 
@@ -1527,8 +1541,10 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     }, [activeTab]);
 
     const startDrawing = (e: any) => {
-        const canvas = canvasRef.current; if (!canvas) return;
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
@@ -1543,8 +1559,10 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
     const draw = (e: any) => {
         if (!isDrawing) return;
-        const canvas = canvasRef.current; if (!canvas) return;
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
@@ -1636,14 +1654,12 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-6">
-            {/* Art Academy Navigation */}
             <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
                  <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
                 <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
                 <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
 
-             {/* Dynamic Quest Display */}
              <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg">
                 <div className="flex items-center gap-3">
                     <Star className="text-yellow-400 fill-yellow-400" />
@@ -1654,7 +1670,6 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
 
             <div className="grid lg:grid-cols-4 gap-6">
-                {/* TOOLBAR */}
                 <Card className="lg:col-span-1 border-2 border-slate-100 rounded-[32px] p-4 space-y-6 h-fit">
                     {activeTab === 'color-lab' ? (
                         <div className="space-y-4 text-center">
@@ -1735,8 +1750,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                     )}
                 </Card>
 
-                {/* CANVAS AREA */}
-                <div className="lg:col-span-3 space-y-4">
+                <div className="lg:col-span-3 flex flex-col items-center gap-4">
                     <canvas 
                         ref={canvasRef} 
                         onClick={handleCanvasClick} 
@@ -1749,7 +1763,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                         onTouchEnd={stopDrawing}
                         className="bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 w-full h-[500px] cursor-crosshair touch-none"
                     />
-                     <p className="text-center text-xs text-slate-400 font-bold uppercase tracking-widest">
+                    <p className="text-center text-xs text-slate-400 font-bold uppercase tracking-widest">
                         Practice makes perfect!
                     </p>
                 </div>
@@ -1757,7 +1771,6 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
-
 
 // --- 8. REWARDS (THE HALL OF FAME) ---
 function StickerBook() {
@@ -1962,4 +1975,3 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
-
