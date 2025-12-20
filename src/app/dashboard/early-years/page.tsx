@@ -498,7 +498,7 @@ function ABCKingdom() {
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
         setIsTracing(true);
     };
-    
+
     const draw = (e: any) => {
         if (!isTracing) return;
         const canvas = traceCanvasRef.current; if (!canvas) return;
@@ -1146,10 +1146,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
     // --- Dynamic Data Fetching ---
-    const sorterQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_sorter_items')) : null, [firestore]);
+    const sorterQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: dbSorterItems, forceRefetch: refetchSorters } = useCollection<any>(sorterQuery);
     
-    const materialsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science_materials')) : null, [firestore]);
+    const materialsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: dbMaterials } = useCollection<any>(materialsQuery);
 
     const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
@@ -1165,9 +1165,47 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [temp, setTemp] = useState(20);
     const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
 
+    // --- Sorter Game State ---
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const [gameFeedback, setGameFeedback] = useState<'' | 'correct' | 'wrong'>('');
+
+    const currentSorterItem = dbSorterItems?.[currentItemIndex];
+
+    const handleSorterAnswer = (answer: 'living' | 'non-living') => {
+        if (currentSorterItem.type === answer) {
+            setGameFeedback('correct');
+            confetti({ particleCount: 50, angle: 90, origin: { x: 0.5, y: 1 }});
+            speak("Correct!");
+        } else {
+            setGameFeedback('wrong');
+            speak("Try again.");
+        }
+        setTimeout(() => {
+            setGameFeedback('');
+            setCurrentItemIndex(prev => (prev + 1) % (dbSorterItems?.length || 1));
+        }, 1500);
+    };
+
+    // --- Add Sorter Item Logic ---
+    const handleAddItem = async () => {
+        if (!newItem.name || !newItem.emoji || !firestore) {
+            toast({ title: "Missing Info", description: "Please enter name and emoji" });
+            return;
+        }
+        await addDoc(collection(firestore, 'junior_sorter_items'), {
+            ...newItem,
+            createdAt: serverTimestamp()
+        });
+        setNewItem({ name: '', emoji: '', type: 'living' });
+        refetchSorters();
+        toast({ title: "Success", description: "Item added to the Sorter library!" });
+    };
+
     // Logic for Matter Lab (Testing different materials)
     const getCurrentState = () => {
-        if (!selectedMaterial) return { emoji: '❓', label: 'Select Material', desc: 'Pick something to test!' };
+        if (!selectedMaterial || !selectedMaterial.states) {
+            return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
+        }
         const state = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp).find(s => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
@@ -1190,17 +1228,24 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         refetchScience(); 
         toast({title: "Discovery Saved!"});
     };
+    
+    const handleDeleteDiscovery = async (id: string) => {
+        if (!firestore) return;
+        await deleteDoc(doc(firestore, 'junior_science', id));
+        refetchScience();
+        toast({ title: "Deleted discovery" });
+    };
 
     return (
         <div className="space-y-8">
-            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto">
-                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery Lab</Button>
-                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>The Sorter</Button>
+            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
+                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery</Button>
+                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>Sorter</Button>
                 <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Field Journal</Button>
             </div>
 
-            {/* PILLAR 1: DISCOVERY LAB (AI) */}
+            {/* DISCOVERY LAB */}
             {activeTab === 'lab' && (
                 <div className="space-y-6 animate-in fade-in">
                      {canEdit && (
@@ -1214,10 +1259,9 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
                     )}
-                    
                     {fact && (
                         <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
-                            <div className="bg-blue-500 p-8 text-center text-white">
+                           <div className="bg-blue-500 p-8 text-center text-white">
                                 <div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div>
                                 <h2 className="text-4xl font-black mb-2">{fact.title}</h2>
                             </div>
@@ -1246,66 +1290,116 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-            {/* PILLAR 2: SORTER (GAME) */}
+            {/* SORTER SECTION */}
             {activeTab === 'sorter' && (
-                <div className="space-y-6 animate-in fade-in">
-                     {canEdit && (
-                        <div className="bg-white p-4 rounded-2xl border-2 border-blue-100 flex gap-2 items-center">
-                            <Input placeholder="Item Name" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} />
-                            <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20" />
-                            <select className="border p-2 rounded-xl" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value})}>
-                                <option value="living">Living</option>
-                                <option value="non-living">Non-Living</option>
-                            </select>
-                            <Button onClick={async () => {
-                                await addDoc(collection(firestore!, 'junior_sorter_items'), newItem);
-                                toast({title: "Item Added!"});
-                                refetchSorters();
-                            }}>Add Item</Button>
+                <div className="space-y-6">
+                    {canEdit && (
+                        <div className="bg-white p-6 rounded-3xl border-4 border-blue-100 space-y-4">
+                            <h4 className="font-black text-blue-800">Add to Sorter Library</h4>
+                            <div className="flex flex-wrap gap-2">
+                                <Input placeholder="Name (e.g. Dog)" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="flex-1" />
+                                <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20" />
+                                <select className="border p-2 rounded-xl bg-white font-bold" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value})}>
+                                    <option value="living">Living 🌳</option>
+                                    <option value="non-living">Non-Living 🧸</option>
+                                </select>
+                                <Button onClick={handleAddItem} className="bg-blue-600">Save Item</Button>
+                            </div>
                         </div>
                     )}
-                    <div className="text-center py-10 bg-blue-50 rounded-[40px] border-4 border-blue-100">
-                        <p className="text-blue-400 font-bold mb-4 uppercase">Items in Library: {dbSorterItems?.length || 0}</p>
-                        <div className="text-8xl animate-bounce">{dbSorterItems?.[0]?.emoji || '🔍'}</div>
+
+                    <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
+                        {!currentSorterItem ? (
+                            <div className="text-slate-400 font-bold py-10">Add items to start the game!</div>
+                        ) : (
+                            <div className="animate-in zoom-in space-y-8">
+                                <div className={`text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 transition-all duration-300 
+                                    ${gameFeedback === 'correct' ? 'border-green-400' : gameFeedback === 'wrong' ? 'border-red-400' : 'border-blue-50'}`
+                                }>
+                                    {currentSorterItem.emoji}
+                                </div>
+                                <h3 className="text-3xl font-black text-slate-800 capitalize">{currentSorterItem.name}</h3>
+                                
+                                <div className="flex justify-center gap-6">
+                                    <Button 
+                                        onClick={() => handleSorterAnswer('living')}
+                                        className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_8px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
+                                    >
+                                        🌳 Living
+                                    </Button>
+                                    <Button 
+                                        onClick={() => handleSorterAnswer('non-living')}
+                                        className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_8px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
+                                    >
+                                        🧸 Non-Living
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
 
-            {/* PILLAR 3: MATTER LAB (EXPERIMENT) */}
+            {/* MATTER LAB SECTION */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                        {dbMaterials?.map(m => (
-                            <Button key={m.id} variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} onClick={() => setSelectedMaterial(m)}>
-                                {m.name}
-                            </Button>
-                        ))}
-                        {canEdit && <Button variant="ghost" className="border-dashed border-2 text-blue-400">+ Add Material</Button>}
+                    <div className="space-y-3">
+                        <p className="text-xs font-black text-blue-400 uppercase tracking-widest text-center">Step 1: Choose something to test</p>
+                        <div className="flex gap-2 overflow-x-auto pb-4 justify-center">
+                            {dbMaterials?.map(m => (
+                                <Button 
+                                    key={m.id} 
+                                    variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} 
+                                    onClick={() => setSelectedMaterial(m)}
+                                    className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}
+                                >
+                                    {m.name}
+                                </Button>
+                            ))}
+                            {dbMaterials?.length === 0 && <p className="text-slate-400 italic">No materials in laboratory...</p>}
+                            {canEdit && <Button variant="ghost" className="border-dashed border-2 text-cyan-400">+ Add Material</Button>}
+                        </div>
                     </div>
 
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
-                        <div className="text-9xl transition-all duration-500">{getCurrentState().emoji}</div>
-                        <h2 className="text-3xl font-black text-cyan-800">{getCurrentState().label}</h2>
-                        <input type="range" min="-50" max="150" value={temp} onChange={e => setTemp(parseInt(e.target.value))} className="w-full max-w-md accent-cyan-500" />
-                        <p className="text-slate-500 italic">At {temp}°C, {selectedMaterial?.name || 'this item'} is {getCurrentState().label}.</p>
+                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full">
+                            {getCurrentState().emoji}
+                        </div>
+                        <div className="text-center">
+                            <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
+                            <p className="text-cyan-600 font-bold mt-2">{getCurrentState().desc}</p>
+                        </div>
+                        
+                        <div className="w-full max-w-md space-y-4">
+                            <div className="flex justify-between font-black text-xl text-slate-400">
+                                <span>COLD</span>
+                                <span className="text-cyan-600">{temp}°C</span>
+                                <span>HOT</span>
+                            </div>
+                            <input 
+                                type="range" min="-50" max="150" value={temp} 
+                                onChange={e => setTemp(parseInt(e.target.value))} 
+                                className="w-full h-4 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
+                            />
+                        </div>
                     </div>
                 </div>
             )}
             
-            {/* PILLAR 4: FIELD JOURNAL */}
+            {/* FIELD JOURNAL */}
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
                         <div 
                             key={s.id} 
-                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all"
+                            className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all hover:-translate-y-1"
                             onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}
                         >
                             <div className="text-5xl mb-4">{s.emojiIcon}</div>
                             <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
                             <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Discovery</p>
                             {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); deleteDoc(doc(firestore!, 'junior_science', s.id)); refetchScience(); }}>
+                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
                             )}
@@ -1318,22 +1412,87 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 }
 
 
-// --- 7. ART STUDIO (CREATIVE ACADEMY) ---
+// --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
 function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [color, setColor] = useState('#4f46e5');
+    const [brushSize, setBrushSize] = useState(8);
     const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp'>('brush');
     const [selectedShape, setSelectedShape] = useState<'circle' | 'square' | 'star'>('circle');
-    const [color, setColor] = useState('#4f46e5');
-    const [isDrawing, setIsDrawing] = useState(false);
-    const [brushSize, setBrushSize] = useState(8);
     
-    // Fetch Dynamic Quests
+    // Color Lab State
+    const [mix1, setMix1] = useState<string | null>(null);
+    const [mix2, setMix2] = useState<string | null>(null);
+
+    // Challenges State
+    const [challenge, setChallenge] = useState("Can you draw a house using 1 Square and 1 Triangle?");
+    
     const firestore = useFirestore();
     const questsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_art_quests')) : null, [firestore]);
     const { data: dbQuests } = useCollection<any>(questsQuery);
     const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
 
-    // --- FLOOD FILL ALGORITHM (Paint Bucket) ---
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (canvas) {
+            canvas.width = canvas.parentElement?.clientWidth || 800;
+            canvas.height = 500;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+    }, [activeTab]);
+
+    const startDrawing = (e: any) => {
+        const canvas = canvasRef.current; if (!canvas) return; 
+        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = brushSize; 
+        setIsDrawing(true);
+    };
+
+    const draw = (e: any) => {
+        if (!isDrawing || tool !== 'brush') return;
+        const canvas = canvasRef.current; if (!canvas) return;
+        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
+        ctx.lineTo(x, y); ctx.stroke();
+    };
+    
+    const stopDrawing = () => { setIsDrawing(false); };
+
+    const clearCanvas = () => { 
+        const canvas = canvasRef.current; 
+        if(canvas){ 
+            const ctx=canvas.getContext('2d'); 
+            if(ctx){ctx.fillStyle="white"; ctx.fillRect(0,0,canvas.width,canvas.height);} 
+        } 
+    };
+
+    const handleMix = (c: string) => {
+        if (!mix1) setMix1(c);
+        else if (!mix2) setMix2(c);
+        else { setMix1(c); setMix2(null); }
+    };
+
+    const getMixedColor = () => {
+        const colors = [mix1, mix2].sort().join('+');
+        if (colors === '#FF0000+#FFFF00') return { name: 'Orange', hex: '#FFA500' };
+        if (colors === '#0000FF+#FF0000') return { name: 'Purple', hex: '#800080' };
+        if (colors === '#0000FF+#FFFF00') return { name: 'Green', hex: '#008000' };
+        return null;
+    };
+    
     const getPixelColor = (data: Uint8ClampedArray, x: number, y: number, width: number) => {
         const i = (y * width + x) * 4;
         return [data[i], data[i+1], data[i+2], data[i+3]];
@@ -1370,8 +1529,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         const pixels = [{ x: startX, y: startY }];
         while (pixels.length > 0) {
             const { x, y } = pixels.pop()!;
-            if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) continue;
-            
+             if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) continue;
             const currentColor = getPixelColor(data, x, y, canvas.width);
             
             if (colorsMatch(currentColor, targetColor)) {
@@ -1385,7 +1543,6 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         ctx.putImageData(imageData, 0, 0);
     };
 
-    // Helper: Draw Shape Stamp
     const drawStamp = (x: number, y: number) => {
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
@@ -1394,10 +1551,10 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         if (selectedShape === 'circle') ctx.arc(x, y, 30, 0, Math.PI * 2);
         if (selectedShape === 'square') ctx.rect(x - 30, y - 30, 60, 60);
         if (selectedShape === 'star') { 
-            ctx.moveTo(x, y-30);
-            for(let i=0; i<5; i++){
-                ctx.lineTo(x + Math.cos((18+i*72)/180*Math.PI)*30, y - Math.sin((18+i*72)/180*Math.PI)*30);
-                ctx.lineTo(x + Math.cos((54+i*72)/180*Math.PI)*15, y - Math.sin((54+i*72)/180*Math.PI)*15);
+            ctx.moveTo(x, y - 30);
+            for (let i = 0; i < 5; i++) {
+                ctx.lineTo(x + Math.cos((18 + i * 72) / 180 * Math.PI) * 30, y - Math.sin((18 + i * 72) / 180 * Math.PI) * 30);
+                ctx.lineTo(x + Math.cos((54 + i * 72) / 180 * Math.PI) * 15, y - Math.sin((54 + i * 72) / 180 * Math.PI) * 15);
             }
             ctx.closePath();
         }
@@ -1412,113 +1569,119 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         if (tool === 'bucket') floodFill(x, y, color);
         if (tool === 'stamp') drawStamp(x, y);
     };
-    
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (canvas) {
-            canvas.width = canvas.parentElement?.clientWidth || 800;
-            canvas.height = 500;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.fillStyle = "white";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-    }, []);
-
-    const startDrawing = (e: any) => {
-        const canvas = canvasRef.current; if (!canvas) return; 
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = brushSize; 
-        setIsDrawing(true);
-    };
-
-    const draw = (e: any) => {
-        if (!isDrawing) return; 
-        const canvas = canvasRef.current; if (!canvas) return; 
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.lineTo(x, y); ctx.stroke();
-    };
-
-    const clearCanvas = () => { 
-        const canvas = canvasRef.current; 
-        if(canvas){ 
-            const ctx=canvas.getContext('2d'); 
-            if(ctx){ctx.fillStyle="white"; ctx.fillRect(0,0,canvas.width,canvas.height);} 
-        } 
-    };
 
     return (
         <div className="space-y-6">
-             <div className="bg-indigo-600 p-6 rounded-3xl text-white shadow-lg flex justify-between items-center">
-                <div>
-                    <h3 className="text-xl font-bold">Quest: {dbQuests?.[currentQuestIdx]?.title || 'Free Draw!'}</h3>
-                    <p className="opacity-80">{dbQuests?.[currentQuestIdx]?.instruction}</p>
-                </div>
-                <Button variant="secondary" onClick={() => setCurrentQuestIdx((prev) => (prev + 1) % (dbQuests?.length || 1))}>Next Quest</Button>
+            <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
+                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
+                <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
+                <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
-            <div className="grid lg:grid-cols-4 gap-6">
-                <Card className="p-4 space-y-4 rounded-3xl border-2 border-slate-100">
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-400">TOOLS</label>
-                        <div className="flex gap-2">
-                            <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')}><Palette/></Button>
-                            <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')}><Type/></Button>
-                            <Button size="icon" variant={tool === 'stamp' ? 'default' : 'outline'} onClick={() => setTool('stamp')}><Star/></Button>
-                        </div>
+
+             {/* Dynamic Quest Display */}
+             {activeTab === 'shapes' && (
+                 <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg animate-in slide-in-from-top-4">
+                    <div className="flex items-center gap-3">
+                        <Star className="text-yellow-400 fill-yellow-400" />
+                        <span className="font-bold text-lg">{dbQuests?.[currentQuestIdx]?.instruction || challenge}</span>
                     </div>
-                    {tool === 'stamp' && (
-                        <div className="flex gap-2">
-                            {['circle', 'square', 'star'].map(s => (
-                                <button key={s} onClick={() => setSelectedShape(s as any)} className={`p-2 border-2 rounded-xl ${selectedShape === s ? 'border-indigo-500' : 'border-slate-100'}`}>
-                                    {s === 'circle' ? '●' : s === 'square' ? '■' : '★'}
-                                </button>
-                            ))}
+                    <Button size="sm" variant="secondary" onClick={() => setCurrentQuestIdx((prev) => (prev + 1) % (dbQuests?.length || 1))}>Next Quest</Button>
+                </div>
+            )}
+
+            <div className="grid lg:grid-cols-4 gap-6">
+                <Card className="lg:col-span-1 border-2 border-slate-100 rounded-[32px] p-4 space-y-6 h-fit">
+                    {activeTab === 'color-lab' ? (
+                        <div className="space-y-4 text-center">
+                            <h4 className="font-bold text-slate-800 text-sm uppercase">Primary Colors</h4>
+                            <div className="flex justify-center gap-2">
+                                {['#FF0000', '#FFFF00', '#0000FF'].map(c => (
+                                    <button key={c} onClick={() => handleMix(c)} className="w-10 h-10 rounded-full border-4 border-white shadow-md" style={{backgroundColor: c}} />
+                                ))}
+                            </div>
+                            <div className="p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                                <div className="flex justify-center items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix1 || '#eee'}} />
+                                    <span className="font-bold">+</span>
+                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix2 || '#eee'}} />
+                                </div>
+                                {getMixedColor() && (
+                                    <div className="animate-in zoom-in text-center">
+                                        <p className="text-xs font-bold text-slate-500 mb-1">Result:</p>
+                                        <button 
+                                            onClick={() => setColor(getMixedColor()!.hex)}
+                                            className="w-full py-2 rounded-xl text-white font-bold" 
+                                            style={{backgroundColor: getMixedColor()!.hex}}
+                                        >
+                                            Use {getMixedColor()!.name}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                             <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-400">TOOLS</label>
+                                <div className="flex gap-2">
+                                    <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')}><Palette/></Button>
+                                    <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')}><Type/></Button>
+                                    <Button size="icon" variant={tool === 'stamp' ? 'default' : 'outline'} onClick={() => setTool('stamp')}><Star/></Button>
+                                </div>
+                            </div>
+                            {tool === 'stamp' && (
+                                <div className="flex gap-2">
+                                    {['circle', 'square', 'star'].map(s => (
+                                        <button key={s} onClick={() => setSelectedShape(s as any)} className={`p-2 border-2 rounded-xl ${selectedShape === s ? 'border-indigo-500' : 'border-slate-100'}`}>
+                                            {s === 'circle' ? '●' : s === 'square' ? '■' : '★'}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Color</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#8B4513'].map(c => (
+                                        <button 
+                                            key={c} onClick={() => setColor(c)} 
+                                            className={`aspect-square rounded-full border-2 transition-transform ${color === c ? 'border-slate-800 scale-110 shadow-lg' : 'border-transparent'}`} 
+                                            style={{ backgroundColor: c }} 
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Size</label>
+                                <input type="range" min="2" max="40" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500" />
+                            </div>
+                            <div className="pt-4 border-t border-slate-100">
+                                <Button variant="outline" onClick={clearCanvas} className="w-full text-red-500 border-red-100 hover:bg-red-50 rounded-xl">
+                                    <Trash2 className="w-4 h-4 mr-2" /> Clear All
+                                </Button>
+                            </div>
                         </div>
                     )}
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Brush Color</label>
-                        <div className="grid grid-cols-4 gap-2">
-                            {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#8B4513'].map(c => (
-                                <button 
-                                    key={c} onClick={() => setColor(c)} 
-                                    className={`aspect-square rounded-full border-2 transition-transform ${color === c ? 'border-slate-800 scale-110 shadow-lg' : 'border-transparent'}`} 
-                                    style={{ backgroundColor: c }} 
-                                />
-                            ))}
+                </Card>
+
+                <div className="lg:col-span-3">
+                     <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden touch-none">
+                        <canvas 
+                            ref={canvasRef} 
+                            onClick={handleCanvasClick}
+                            onMouseDown={startDrawing}
+                            onMouseMove={draw}
+                            onMouseUp={stopDrawing}
+                            onMouseLeave={stopDrawing}
+                            onTouchStart={startDrawing}
+                            onTouchMove={draw}
+                            onTouchEnd={stopDrawing}
+                            className="w-full h-full cursor-crosshair"
+                        />
+                        <div className="absolute bottom-4 right-6 pointer-events-none opacity-20 flex items-center gap-2">
+                            <Palette className="w-6 h-6" />
+                            <span className="font-black italic">Junior Artist Studio</span>
                         </div>
                     </div>
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Brush Size</label>
-                        <input type="range" min="2" max="40" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500" />
-                    </div>
-                    <div className="pt-4 border-t border-slate-100">
-                        <Button variant="outline" onClick={clearCanvas} className="w-full text-red-500 border-red-100 hover:bg-red-50 rounded-xl">
-                            <Trash2 className="w-4 h-4 mr-2" /> Clear All
-                        </Button>
-                    </div>
-                </Card>
-                <div className="lg:col-span-3">
-                    <canvas 
-                        ref={canvasRef} 
-                        onClick={handleCanvasClick} 
-                        onMouseDown={startDrawing} 
-                        onMouseMove={draw} 
-                        onMouseUp={() => setIsDrawing(false)}
-                        onMouseLeave={() => setIsDrawing(false)}
-                        onTouchStart={startDrawing}
-                        onTouchMove={draw}
-                        onTouchEnd={() => setIsDrawing(false)}
-                        className="bg-white rounded-[40px] shadow-xl border-8 border-slate-50 w-full h-[500px] cursor-crosshair touch-none"
-                    />
                 </div>
             </div>
         </div>
@@ -1540,7 +1703,6 @@ function StickerBook() {
     );
     const { data: stickers } = useCollection<any>(stickerQuery);
 
-    // Calculate progress stats
     const stats = {
         total: stickers?.length || 0,
         math: stickers?.filter(s => s.category === 'math').length || 0,
@@ -1568,7 +1730,6 @@ function StickerBook() {
 
     return (
         <div className="space-y-8 animate-in fade-in">
-            {/* 1. ACHIEVEMENT HEADER */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-[40px] p-8 text-white shadow-xl relative overflow-hidden">
                 <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="text-center md:text-left">
@@ -1594,11 +1755,9 @@ function StickerBook() {
                         </div>
                     </div>
                 </div>
-                {/* Decorative background icons */}
                 <Trophy className="absolute -bottom-4 -right-4 w-48 h-48 opacity-10 rotate-12" />
             </div>
 
-            {/* 2. SUBJECT PROGRESS TRACKER */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                     { label: 'Math Whiz', count: stats.math, color: 'bg-orange-500', icon: <Calculator className="w-4 h-4" /> },
@@ -1622,8 +1781,7 @@ function StickerBook() {
                     </div>
                 ))}
             </div>
-
-            {/* 3. FILTER & STICKER GRID */}
+            
             <div className="space-y-6">
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                     {['all', 'math', 'literacy', 'science', 'art'].map((f) => (
@@ -1654,8 +1812,6 @@ function StickerBook() {
                             >
                                 <div className="text-4xl mb-1 group-hover:scale-125 transition-transform">{s.emoji}</div>
                                 <span className="text-[9px] text-center leading-tight font-black text-slate-500 uppercase">{s.name}</span>
-                                
-                                {/* Date earned - small badge */}
                                 <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                     NEW
                                 </div>
