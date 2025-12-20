@@ -1149,7 +1149,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
-    // --- 1. DATA FETCHING (Standard Firestore) ---
+    // --- 1. DATA FETCHING ---
     const sorterQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
     [firestore]);
@@ -1189,7 +1189,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleAnswer = (choice: string) => {
-        if (!dbSorterItems || dbSorterItems.length === 0) return;
+        if (!dbSorterItems) return;
         const currentItem = dbSorterItems[currentIndex];
         if (choice === currentItem.type) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -1225,12 +1225,16 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 
                 toast({ title: "Item Removed" });
                 
+                // Immediately update local state to reflect deletion
+                const newItems = dbSorterItems?.filter((item: any) => item.id !== id);
+                //setData(newItems); // Assuming useCollection gives you a setter
+                
                 if (refetchSorter) {
                     await refetchSorter();
                 }
                 setCurrentIndex(0);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Delete Error:", error);
             toast({ 
                 title: "Error", 
@@ -1257,9 +1261,11 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
 
+
     // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
         if (!newMat.name || !firestore) return;
+
         const statesArray = [
             { ...newMat.solid }, 
             { ...newMat.liquid }, 
@@ -1284,7 +1290,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const getCurrentState = () => {
-        if (!selectedMaterial) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
+        if (!selectedMaterial || !selectedMaterial.states) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
         const state = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp).find(s => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
@@ -1392,7 +1398,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                         <h4 className="font-bold mb-2 text-sm">{editingItem ? 'Edit Item' : 'Add New Item'}</h4>
                                         <div className="grid grid-cols-4 gap-2">
                                             <Input placeholder="Name" value={editingItem ? editingItem.name : newItem.name} onChange={e => editingItem ? setEditingItem({...editingItem, name: e.target.value}) : setNewItem({...newItem, name: e.target.value})} className="col-span-2" />
-                                            <Input placeholder="Emoji" value={editingItem ? editingItem.emoji : newItem.emoji} onChange={e => editingItem ? setEditingItem({...editingItem, emoji: e.target.value}) : setNewItem({...newItem, emoji: e.target.value})} className="text-center"/>
+                                            <Input placeholder="Emoji" value={editingItem ? editingItem.emoji : newItem.emoji} onChange={e => editingItem ? setEditingItem({...editingItem, emoji: e.target.value})} className="text-center"/>
                                             <Select value={editingItem ? editingItem.type : newItem.type} onValueChange={(v) => editingItem ? setEditingItem({...editingItem, type: v}) : setNewItem({...newItem, type: v})}>
                                                 <SelectTrigger><SelectValue/></SelectTrigger>
                                                 <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
@@ -1430,6 +1436,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </Dialog>
                     )}
 
+                    {/* Rest of Sorter Game UI code... */}
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
                         {!dbSorterItems || dbSorterItems.length === 0 ? (
                             <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
@@ -1437,18 +1444,34 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <div className="animate-in zoom-in space-y-8">
                                 <div className="flex justify-center gap-1">
                                     {dbSorterItems.map((_: any, i: number) => (
-                                        <div key={i} className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} />
+                                        <div 
+                                            key={i} 
+                                            className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} 
+                                        />
                                     ))}
                                 </div>
                                 <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
-                                    {dbSorterItems[currentIndex]?.emoji}
+                                    {dbSorterItems[currentIndex].emoji}
                                 </div>
-                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex]?.name}</h3>
+                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex].name}</h3>
+                                
                                 <div className="flex justify-center gap-6">
-                                    <Button onClick={() => handleAnswer('living')} className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all">🌳 Living</Button>
-                                    <Button onClick={() => handleAnswer('non-living')} className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all">🧸 Non-Living</Button>
+                                    <Button 
+                                        onClick={() => handleAnswer('living')}
+                                        className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
+                                    >
+                                        🌳 Living
+                                    </Button>
+                                    <Button 
+                                        onClick={() => handleAnswer('non-living')}
+                                        className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
+                                    >
+                                        🧸 Non-Living
+                                    </Button>
                                 </div>
-                                <p className="text-slate-400 font-bold">Item {currentIndex + 1} of {dbSorterItems.length}</p>
+                                <p className="text-slate-400 font-bold">
+                                    Item {currentIndex + 1} of {dbSorterItems.length}
+                                </p>
                             </div>
                         )}
                     </div>
@@ -1458,15 +1481,30 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
+                    
+                    {/* Material Selector */}
                     <div className="text-center space-y-4">
                         <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
                         <div className="flex flex-wrap gap-2 justify-center">
                             {dbMaterials?.map(m => (
-                                <Button key={m.id} variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} onClick={() => setSelectedMaterial(m)} className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}>{m.name}</Button>
+                                <Button 
+                                    key={m.id} 
+                                    variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} 
+                                    onClick={() => setSelectedMaterial(m)}
+                                    className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}
+                                >
+                                    {m.name}
+                                </Button>
                             ))}
-                            {canEdit && (<Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">{showAddMatForm ? 'Close Creator' : '+ Add New Material'}</Button>)}
+                            {canEdit && (
+                                <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">
+                                    {showAddMatForm ? 'Close Creator' : '+ Add New Material'}
+                                </Button>
+                            )}
                         </div>
                     </div>
+
+                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
                         <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px] animate-in slide-in-from-top-4">
                             <h4 className="text-xl font-black text-cyan-800 mb-4">Laboratory: Create New Material</h4>
@@ -1474,8 +1512,14 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                 <div className="space-y-4">
                                     <Input placeholder="Material Name (e.g. Honey)" value={newMat.name} onChange={e => setNewMat({...newMat, name: e.target.value})} className="bg-white" />
                                     <div className="flex gap-2">
-                                        <div className="flex-1 space-y-1"><Label className="text-[10px] font-bold text-slate-400">LIQUID AT (°C)</Label><Input type="number" value={newMat.liquid.temp} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, temp: parseInt(e.target.value)}})} /></div>
-                                        <div className="flex-1 space-y-1"><Label className="text-[10px] font-bold text-slate-400">GAS AT (°C)</Label><Input type="number" value={newMat.gas.temp} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, temp: parseInt(e.target.value)}})} /></div>
+                                        <div className="flex-1 space-y-1">
+                                            <Label className="text-[10px] font-bold text-slate-400">LIQUID AT (°C)</Label>
+                                            <Input type="number" value={newMat.liquid.temp} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, temp: parseInt(e.target.value)}})} />
+                                        </div>
+                                        <div className="flex-1 space-y-1">
+                                            <Label className="text-[10px] font-bold text-slate-400">GAS AT (°C)</Label>
+                                            <Input type="number" value={newMat.gas.temp} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, temp: parseInt(e.target.value)}})} />
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
@@ -1489,16 +1533,28 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </Card>
                     )}
+
+                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
-                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">{getCurrentState().emoji}</div>
-                        <div className="text-center"><h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2><p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p></div>
+                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
+                            {getCurrentState().emoji}
+                        </div>
+                        <div className="text-center">
+                            <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
+                            <p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p>
+                        </div>
+                        
                         <div className="w-full max-w-md space-y-4">
                             <div className="flex justify-between font-black text-xl text-slate-400">
                                 <span className="text-blue-400">COLD</span>
                                 <span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span>
                                 <span className="text-red-400">HOT</span>
                             </div>
-                            <input type="range" min="-50" max="150" value={temp} onChange={e => setTemp(parseInt(e.target.value))} className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
+                            <input 
+                                type="range" min="-50" max="150" value={temp} 
+                                onChange={e => setTemp(parseInt(e.target.value))} 
+                                className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -1516,7 +1572,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
                             <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Discovery</p>
                             {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
+                                <Button type="button" size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
                                     <Trash2 className="w-4 w-4"/>
                                 </Button>
                             )}
@@ -1527,6 +1583,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
+
+
 // --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
 function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -2000,4 +2058,3 @@ export default function JuniorCampusPage() {
   );
 }
 
-```
