@@ -1130,7 +1130,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                             </CardContent>
                             {canEdit && (
                                 <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500 transition-opacity" onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }}>
-                                    <Trash2 className="w-4 h-4"/>
+                                    <Trash2 className="w-4 w-4"/>
                                 </Button>
                             )}
                         </Card>
@@ -1188,7 +1188,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleAnswer = (choice: string) => {
-        if (!dbSorterItems) return;
+        if(!dbSorterItems || dbSorterItems.length === 0) return;
         const currentItem = dbSorterItems[currentIndex];
         if (choice === currentItem.type) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -1213,9 +1213,11 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
     const handleDeleteSorterItem = async (id: string) => {
         if(!firestore) return;
-        await deleteDoc(doc(firestore, 'junior_sorter_items', id));
-        refetchSorter();
-        toast({ title: 'Item Removed' });
+        if(confirm("Are you sure?")) {
+            await deleteDoc(doc(firestore, 'junior_sorter_items', id));
+            refetchSorter();
+            toast({title: "Item removed."});
+        }
     }
 
     // --- 5. MATTER LAB LOGIC ---
@@ -1342,7 +1344,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                         <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20"/>
                                         <Select value={newItem.type} onValueChange={(v) => setNewItem({...newItem, type: v})}>
                                             <SelectTrigger><SelectValue/></SelectTrigger>
-                                            <SelectContent><option value="living">Living</option><option value="non-living">Non-Living</option></SelectContent>
+                                            <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
                                         </Select>
                                         <Button onClick={handleSaveSorterItem}>Save</Button>
                                     </div>
@@ -1361,12 +1363,15 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
                         {!dbSorterItems || dbSorterItems.length === 0 ? (
-                            <div className="py-10 text-slate-400 font-bold">Add items in 'Manage Items' to start!</div>
+                            <div className="py-10 text-slate-400 font-bold">Add items to start the game!</div>
                         ) : (
                             <div className="animate-in zoom-in space-y-8">
                                 <div className="flex justify-center gap-1">
                                     {dbSorterItems.map((_, i) => (
-                                        <div key={i} className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} />
+                                        <div 
+                                            key={i} 
+                                            className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} 
+                                        />
                                     ))}
                                 </div>
                                 <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
@@ -1391,7 +1396,12 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
                         <div className="flex flex-wrap gap-2 justify-center">
                             {dbMaterials?.map(m => (
-                                <Button key={m.id} variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} onClick={() => setSelectedMaterial(m)} className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}>
+                                <Button 
+                                    key={m.id} 
+                                    variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} 
+                                    onClick={() => setSelectedMaterial(m)}
+                                    className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}
+                                >
                                     {m.name}
                                 </Button>
                             ))}
@@ -1440,7 +1450,11 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                 <span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span>
                                 <span className="text-red-400">HOT</span>
                             </div>
-                            <input type="range" min="-50" max="150" value={temp} onChange={e => setTemp(parseInt(e.target.value))} className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
+                            <input 
+                                type="range" min="-50" max="150" value={temp} 
+                                onChange={e => setTemp(parseInt(e.target.value))} 
+                                className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -1478,7 +1492,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const [isDrawing, setIsDrawing] = useState(false);
     const [color, setColor] = useState('#4f46e5');
     const [brushSize, setBrushSize] = useState(8);
-    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp'>('brush');
+    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp' | 'pencil' | 'crayon' | 'paint_brush' | 'marker'>('brush');
     const [selectedShape, setSelectedShape] = useState<'circle' | 'square' | 'star'>('circle');
     
     // Color Lab State
@@ -1493,6 +1507,8 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const questsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_art_quests')) : null, [firestore]);
     const { data: dbQuests } = useCollection<any>(questsQuery);
     const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
+
+    const { toast } = useToast();
 
 
     useEffect(() => {
@@ -1516,24 +1532,28 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        if(tool === 'brush') {
-          ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = brushSize; 
+        if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
+          ctx.beginPath(); 
+          ctx.moveTo(x, y); 
+          ctx.strokeStyle = color; 
+          ctx.lineWidth = brushSize; 
           setIsDrawing(true);
         }
     };
 
     const draw = (e: any) => {
-        if (!isDrawing || tool !== 'brush') return; 
-        const canvas = canvasRef.current; if (!canvas) return; 
+        if (!isDrawing) return;
+        const canvas = canvasRef.current; if (!canvas) return;
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.lineTo(x, y); ctx.stroke();
+        ctx.lineTo(x, y);
+        ctx.stroke();
     };
 
     const stopDrawing = () => { setIsDrawing(false); };
-
+    
     const clearCanvas = () => { 
         const canvas = canvasRef.current; 
         if(canvas){ 
@@ -1672,10 +1692,10 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                                     <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')} title="Brush"><PenTool/></Button>
                                     <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')} title="Paint Bucket"><Database/></Button>
                                     <Button size="icon" variant={tool === 'stamp' ? 'default' : 'outline'} onClick={() => setTool('stamp')} title="Stamp"><Star/></Button>
-                                    <button onClick={() => {}} title="Pencil" className="h-10 w-10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground">✏️</button>
-                                    <button onClick={() => {}} title="Crayon" className="h-10 w-10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground">🖍️</button>
-                                    <button onClick={() => {}} title="Paint Brush" className="h-10 w-10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground">🖌️</button>
-                                    <button onClick={() => {}} title="Marker" className="h-10 w-10 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground">🎨</button>
+                                    <Button size="icon" variant={tool === 'pencil' ? 'default' : 'outline'} onClick={() => setTool('pencil')} title="Pencil">✏️</Button>
+                                    <Button size="icon" variant={tool === 'crayon' ? 'default' : 'outline'} onClick={() => setTool('crayon')} title="Crayon">🖍️</Button>
+                                    <Button size="icon" variant={tool === 'paint_brush' ? 'default' : 'outline'} onClick={() => setTool('paint_brush')} title="Paint Brush">🖌️</Button>
+                                    <Button size="icon" variant={tool === 'marker' ? 'default' : 'outline'} onClick={() => setTool('marker')} title="Marker">🎨</Button>
                                 </div>
                             </div>
                             {tool === 'stamp' && (
@@ -1737,6 +1757,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
+
 
 // --- 8. REWARDS (THE HALL OF FAME) ---
 function StickerBook() {
@@ -1881,6 +1902,25 @@ function StickerBook() {
     );
 }
 
+// Utility Helpers for Flood Fill
+function getPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number) {
+    const i = (y * width + x) * 4;
+    return [data[i], data[i+1], data[i+2], data[i+3]];
+}
+function setPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number, color: number[]) {
+    const i = (y * width + x) * 4;
+    data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = 255;
+}
+function colorsMatch(c1: number[], c2: number[]) {
+    return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
+}
+function hexToRgb(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return [r, g, b];
+}
+
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
@@ -1923,4 +1963,3 @@ export default function JuniorCampusPage() {
   );
 }
 
-```
