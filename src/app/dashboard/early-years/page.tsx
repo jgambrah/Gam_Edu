@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
@@ -826,7 +826,7 @@ function MathPlayground() {
             
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(question.a.split(':')[0] % 12) * 30}deg)` }}></div>
+                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) % 12 * 30}deg)` }}></div>
                     <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
@@ -1222,6 +1222,23 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
 
+    const handleUpdateSorterItem = async () => {
+        if (!editingItem || !firestore) return;
+        try {
+            const itemDoc = doc(firestore, 'junior_sorter_items', editingItem.id);
+            await updateDoc(itemDoc, {
+                name: editingItem.name,
+                emoji: editingItem.emoji,
+                type: editingItem.type,
+            });
+            toast({ title: "Item Updated" });
+            setEditingItem(null);
+            if (refetchSorter) refetchSorter();
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to update item.", variant: "destructive" });
+        }
+    };
+    
     const handleDeleteSorterItem = async (id: string) => {
         if (!firestore) return;
         try {
@@ -1246,24 +1263,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             });
         }
     };
-
-    const handleUpdateSorterItem = async () => {
-        if (!editingItem || !firestore) return;
-        try {
-            const itemDoc = doc(firestore, 'junior_sorter_items', editingItem.id);
-            await updateDoc(itemDoc, {
-                name: editingItem.name,
-                emoji: editingItem.emoji,
-                type: editingItem.type,
-            });
-            toast({ title: "Item Updated" });
-            setEditingItem(null);
-            if (refetchSorter) refetchSorter();
-        } catch (error) {
-            toast({ title: "Error", description: "Failed to update item.", variant: "destructive" });
-        }
-    };
-
 
     // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
@@ -1398,7 +1397,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     <DialogTitle>Manage Sorter Library</DialogTitle>
                                 </DialogHeader>
                                 <div className="space-y-4 py-4">
-                                    {/* Add/Edit Form */}
                                     <div className="p-4 border rounded-2xl bg-slate-50">
                                         <h4 className="font-bold mb-2 text-sm">{editingItem ? 'Edit Item' : 'Add New Item'}</h4>
                                         <div className="grid grid-cols-4 gap-2">
@@ -1415,7 +1413,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                         {editingItem && <Button onClick={() => setEditingItem(null)} size="sm" variant="ghost" className="w-full mt-1">Cancel Edit</Button>}
                                     </div>
                                     
-                                    {/* Item List */}
                                     <ScrollArea className="h-64 pr-4">
                                         <div className="space-y-2">
                                             {dbSorterItems?.map((item: any) => (
@@ -1481,7 +1478,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </div>
             )}
-            
+
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
@@ -1585,6 +1582,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
+
 // --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
 function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
