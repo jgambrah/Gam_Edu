@@ -189,7 +189,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
                         >
-                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}}></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
+                             {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}}></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
                         </button>
                         
                         <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
@@ -412,7 +412,7 @@ function PhonicsForest() {
                                         toast({ title: "Oops!", description: "Keep trying, you can do it!", variant: "destructive" });
                                     }
                                 }}
-                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-4xl font-black text-slate-700 hover:border-indigo-400 hover:bg-indigo-50 transition-all shadow-md"
+                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-indigo-400 hover:bg-indigo-50 transition-all shadow-md"
                             >
                                 {opt}
                             </button>
@@ -1138,55 +1138,55 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. SCIENCE WORLD (DYNAMIC DISCOVERY) ---
+// --- 6. SCIENCE WORLD (CYCLING GAME LOGIC) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
-    const { user } = useUser();
     const { toast } = useToast();
+    
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
-    // --- Dynamic Data Fetching ---
-    const sorterQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    // --- 1. FIXED QUERIES (Non-SaaS: No schoolId filters) ---
+    const sorterQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
+    [firestore]);
     const { data: dbSorterItems, forceRefetch: refetchSorters } = useCollection<any>(sorterQuery);
     
-    const materialsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const materialsQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'desc')) : null, 
+    [firestore]);
     const { data: dbMaterials } = useCollection<any>(materialsQuery);
 
-    const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
+    const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
-
-    // AI Generation State
-    const [topic, setTopic] = useState(''); 
-    const [fact, setFact] = useState<any>(null); 
-    const [loading, setLoading] = useState(false);
     
-    // Administrative States
+    // --- 2. STATES ---
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
     const [temp, setTemp] = useState(20);
     const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
+    const [topic, setTopic] = useState(''); 
+    const [fact, setFact] = useState<any>(null); 
+    const [loading, setLoading] = useState(false);
+    const { user } = useUser(); 
 
-    // --- Sorter Game State ---
-    const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [gameFeedback, setGameFeedback] = useState<'' | 'correct' | 'wrong'>('');
-
-    const currentSorterItem = dbSorterItems?.[currentItemIndex];
-
-    const handleSorterAnswer = (answer: 'living' | 'non-living') => {
-        if (currentSorterItem.type === answer) {
-            setGameFeedback('correct');
-            confetti({ particleCount: 50, angle: 90, origin: { x: 0.5, y: 1 }});
-            speak("Correct!");
-        } else {
-            setGameFeedback('wrong');
-            speak("Try again.");
-        }
-        setTimeout(() => {
-            setGameFeedback('');
-            setCurrentItemIndex(prev => (prev + 1) % (dbSorterItems?.length || 1));
-        }, 1500);
+    // --- 3. GAME LOGIC ---
+    const handleNext = () => {
+        if (!dbSorterItems || dbSorterItems.length === 0) return;
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % dbSorterItems.length);
     };
 
-    // --- Add Sorter Item Logic ---
+    const handleAnswer = (choice: string) => {
+        const currentItem = dbSorterItems[currentIndex];
+        if (choice === currentItem.type) {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            speak(`Correct! ${currentItem.name} is ${currentItem.type}!`);
+            setTimeout(handleNext, 1500);
+        } else {
+            speak(`Not quite! Try again.`);
+            toast({ title: "Try again!", description: `Is it really ${choice}?`, variant: "destructive" });
+        }
+    };
+    
     const handleAddItem = async () => {
         if (!newItem.name || !newItem.emoji || !firestore) {
             toast({ title: "Missing Info", description: "Please enter name and emoji" });
@@ -1201,7 +1201,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         toast({ title: "Success", description: "Item added to the Sorter library!" });
     };
 
-    // Logic for Matter Lab (Testing different materials)
     const getCurrentState = () => {
         if (!selectedMaterial || !selectedMaterial.states) {
             return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
@@ -1236,13 +1235,14 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         toast({ title: "Deleted discovery" });
     };
 
+
     return (
         <div className="space-y-8">
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
                 <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery</Button>
                 <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>Sorter</Button>
                 <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Field Journal</Button>
+                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
 
             {/* DISCOVERY LAB */}
@@ -1290,12 +1290,13 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+
             {/* SORTER SECTION */}
             {activeTab === 'sorter' && (
                 <div className="space-y-6">
                     {canEdit && (
                         <div className="bg-white p-6 rounded-3xl border-4 border-blue-100 space-y-4">
-                            <h4 className="font-black text-blue-800">Add to Sorter Library</h4>
+                            <h4 className="font-black text-blue-800">Add to Game Cycle</h4>
                             <div className="flex flex-wrap gap-2">
                                 <Input placeholder="Name (e.g. Dog)" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="flex-1" />
                                 <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20" />
@@ -1309,31 +1310,45 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     )}
 
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
-                        {!currentSorterItem ? (
+                        {!dbSorterItems || dbSorterItems.length === 0 ? (
                             <div className="text-slate-400 font-bold py-10">Add items to start the game!</div>
                         ) : (
                             <div className="animate-in zoom-in space-y-8">
-                                <div className={`text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 transition-all duration-300 
-                                    ${gameFeedback === 'correct' ? 'border-green-400' : gameFeedback === 'wrong' ? 'border-red-400' : 'border-blue-50'}`
-                                }>
-                                    {currentSorterItem.emoji}
+                                <div className="flex justify-center gap-1">
+                                    {dbSorterItems.map((_, i) => (
+                                        <div 
+                                            key={i} 
+                                            className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} 
+                                        />
+                                    ))}
                                 </div>
-                                <h3 className="text-3xl font-black text-slate-800 capitalize">{currentSorterItem.name}</h3>
+
+                                <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
+                                    {dbSorterItems[currentIndex].emoji}
+                                </div>
+                                
+                                <h3 className="text-3xl font-black text-slate-800 capitalize">
+                                    {dbSorterItems[currentIndex].name}
+                                </h3>
                                 
                                 <div className="flex justify-center gap-6">
                                     <Button 
-                                        onClick={() => handleSorterAnswer('living')}
+                                        onClick={() => handleAnswer('living')}
                                         className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_8px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
                                     >
                                         🌳 Living
                                     </Button>
                                     <Button 
-                                        onClick={() => handleSorterAnswer('non-living')}
+                                        onClick={() => handleAnswer('non-living')}
                                         className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_8px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
                                     >
                                         🧸 Non-Living
                                     </Button>
                                 </div>
+                                
+                                <p className="text-slate-400 font-bold">
+                                    Item {currentIndex + 1} of {dbSorterItems.length}
+                                </p>
                             </div>
                         )}
                     </div>
@@ -1411,8 +1426,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-
-// --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
+// --- 7. ART STUDIO (CREATIVE ACADEMY) ---
 function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
@@ -1428,7 +1442,8 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
     // Challenges State
     const [challenge, setChallenge] = useState("Can you draw a house using 1 Square and 1 Triangle?");
-    
+
+    // Fetch Dynamic Quests
     const firestore = useFirestore();
     const questsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_art_quests')) : null, [firestore]);
     const { data: dbQuests } = useCollection<any>(questsQuery);
@@ -1455,21 +1470,32 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = brushSize; 
-        setIsDrawing(true);
+        if(tool === 'brush') {
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = brushSize; 
+          setIsDrawing(true);
+        }
     };
 
     const draw = (e: any) => {
-        if (!isDrawing || tool !== 'brush') return;
-        const canvas = canvasRef.current; if (!canvas) return;
+        if (!isDrawing || tool !== 'brush') return; 
+        const canvas = canvasRef.current; if (!canvas) return; 
         const ctx = canvas.getContext('2d'); if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         ctx.lineTo(x, y); ctx.stroke();
     };
-    
+
     const stopDrawing = () => { setIsDrawing(false); };
+    
+    const handleCanvasClick = (e: any) => {
+        const rect = canvasRef.current!.getBoundingClientRect();
+        const x = Math.floor(e.clientX - rect.left);
+        const y = Math.floor(e.clientY - rect.top);
+        
+        if (tool === 'bucket') floodFill(x, y, color);
+        if (tool === 'stamp') drawStamp(x, y);
+    };
 
     const clearCanvas = () => { 
         const canvas = canvasRef.current; 
@@ -1493,11 +1519,18 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         return null;
     };
     
+    const hexToRgb = (hex: string) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return [r, g, b];
+    };
+    
     const getPixelColor = (data: Uint8ClampedArray, x: number, y: number, width: number) => {
         const i = (y * width + x) * 4;
         return [data[i], data[i+1], data[i+2], data[i+3]];
     };
-
+    
     const setPixelColor = (data: Uint8ClampedArray, x: number, y: number, width: number, color: number[]) => {
         const i = (y * width + x) * 4;
         data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = 255;
@@ -1505,13 +1538,6 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
     const colorsMatch = (c1: number[], c2: number[]) => {
         return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
-    };
-
-    const hexToRgb = (hex: string) => {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return [r, g, b];
     };
 
     const floodFill = (startX: number, startY: number, fillColor: string) => {
@@ -1561,24 +1587,16 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         ctx.fill();
     };
 
-    const handleCanvasClick = (e: any) => {
-        const rect = canvasRef.current!.getBoundingClientRect();
-        const x = Math.floor(e.clientX - rect.left);
-        const y = Math.floor(e.clientY - rect.top);
-        
-        if (tool === 'bucket') floodFill(x, y, color);
-        if (tool === 'stamp') drawStamp(x, y);
-    };
-
     return (
         <div className="space-y-6">
+            {/* Art Academy Navigation */}
             <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
                 <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
                 <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
                 <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
 
-             {/* Dynamic Quest Display */}
+            {/* Dynamic Quest Display */}
              {activeTab === 'shapes' && (
                  <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg animate-in slide-in-from-top-4">
                     <div className="flex items-center gap-3">
@@ -1589,7 +1607,9 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
+
             <div className="grid lg:grid-cols-4 gap-6">
+                {/* TOOLBAR */}
                 <Card className="lg:col-span-1 border-2 border-slate-100 rounded-[32px] p-4 space-y-6 h-fit">
                     {activeTab === 'color-lab' ? (
                         <div className="space-y-4 text-center">
@@ -1663,30 +1683,26 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                     )}
                 </Card>
 
+                {/* CANVAS AREA */}
                 <div className="lg:col-span-3">
-                     <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden touch-none">
-                        <canvas 
-                            ref={canvasRef} 
-                            onClick={handleCanvasClick}
-                            onMouseDown={startDrawing}
-                            onMouseMove={draw}
-                            onMouseUp={stopDrawing}
-                            onMouseLeave={stopDrawing}
-                            onTouchStart={startDrawing}
-                            onTouchMove={draw}
-                            onTouchEnd={stopDrawing}
-                            className="w-full h-full cursor-crosshair"
-                        />
-                        <div className="absolute bottom-4 right-6 pointer-events-none opacity-20 flex items-center gap-2">
-                            <Palette className="w-6 h-6" />
-                            <span className="font-black italic">Junior Artist Studio</span>
-                        </div>
-                    </div>
+                    <canvas 
+                        ref={canvasRef} 
+                        onClick={handleCanvasClick} 
+                        onMouseDown={startDrawing}
+                        onMouseMove={draw}
+                        onMouseUp={stopDrawing}
+                        onMouseLeave={stopDrawing}
+                        onTouchStart={startDrawing}
+                        onTouchMove={draw}
+                        onTouchEnd={stopDrawing}
+                        className="bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 w-full h-[500px] cursor-crosshair touch-none"
+                    />
                 </div>
             </div>
         </div>
     );
 }
+
 
 // --- 8. REWARDS (THE HALL OF FAME) ---
 function StickerBook() {
@@ -1703,6 +1719,7 @@ function StickerBook() {
     );
     const { data: stickers } = useCollection<any>(stickerQuery);
 
+    // Calculate progress stats
     const stats = {
         total: stickers?.length || 0,
         math: stickers?.filter(s => s.category === 'math').length || 0,
@@ -1730,6 +1747,7 @@ function StickerBook() {
 
     return (
         <div className="space-y-8 animate-in fade-in">
+            {/* 1. ACHIEVEMENT HEADER */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-[40px] p-8 text-white shadow-xl relative overflow-hidden">
                 <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="text-center md:text-left">
@@ -1755,9 +1773,11 @@ function StickerBook() {
                         </div>
                     </div>
                 </div>
+                {/* Decorative background icons */}
                 <Trophy className="absolute -bottom-4 -right-4 w-48 h-48 opacity-10 rotate-12" />
             </div>
 
+            {/* 2. SUBJECT PROGRESS TRACKER */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                     { label: 'Math Whiz', count: stats.math, color: 'bg-orange-500', icon: <Calculator className="w-4 h-4" /> },
@@ -1781,7 +1801,8 @@ function StickerBook() {
                     </div>
                 ))}
             </div>
-            
+
+            {/* 3. FILTER & STICKER GRID */}
             <div className="space-y-6">
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                     {['all', 'math', 'literacy', 'science', 'art'].map((f) => (
@@ -1812,6 +1833,8 @@ function StickerBook() {
                             >
                                 <div className="text-4xl mb-1 group-hover:scale-125 transition-transform">{s.emoji}</div>
                                 <span className="text-[9px] text-center leading-tight font-black text-slate-500 uppercase">{s.name}</span>
+                                
+                                {/* Date earned - small badge */}
                                 <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                     NEW
                                 </div>
