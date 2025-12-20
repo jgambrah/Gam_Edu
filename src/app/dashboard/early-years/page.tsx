@@ -157,7 +157,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                     <div className="space-y-2">
                         {activeMode === 'syllable' ? (
                             <div className="flex gap-4 justify-center">
-                                {getSyllables(challenge.word).map((syl, i) => (
+                                {getSyllables(challenge.word).map((syl: string, i: number) => (
                                     <span key={i} className="text-5xl font-black text-pink-600 bg-pink-50 px-4 py-2 rounded-2xl border-b-4 border-pink-200">
                                         {syl.toLowerCase()}
                                     </span>
@@ -218,8 +218,8 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             <Button onClick={async () => {
                                 setIsGenerating(true);
                                 const res = await generateWordDetails(newWord);
-                                if (res.success) {
-                                    await addDoc(collection(firestore!, 'junior_phonics'), { ...res.data, createdAt: serverTimestamp() });
+                                if (res.success && firestore) {
+                                    await addDoc(collection(firestore, 'junior_phonics'), { ...res.data, createdAt: serverTimestamp() });
                                     setNewWord("");
                                     forceRefetch();
                                     toast({ title: "Word Added!" });
@@ -1138,41 +1138,50 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. SCIENCE WORLD (CYCLING GAME LOGIC) ---
+// --- 6. SCIENCE WORLD (NON-SAAS DYNAMIC & CYCLING) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
+    const { user } = useUser();
     const { toast } = useToast();
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
-    // --- 1. FIXED QUERIES (Non-SaaS: No schoolId filters) ---
+    // --- 1. DATA FETCHING (Standard Firestore) ---
     const sorterQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
     [firestore]);
-    const { data: dbSorterItems, forceRefetch: refetchSorters } = useCollection<any>(sorterQuery);
+    const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
     
     const materialsQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'desc')) : null, 
+        firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'asc')) : null, 
     [firestore]);
-    const { data: dbMaterials } = useCollection<any>(materialsQuery);
+    const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
 
     const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
     
-    // --- 2. STATES ---
+    // --- 2. GAME & ADMIN STATES ---
     const [currentIndex, setCurrentIndex] = useState(0);
     const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
     const [temp, setTemp] = useState(20);
     const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
+    const [showAddMatForm, setShowAddMatForm] = useState(false);
     const [topic, setTopic] = useState(''); 
     const [fact, setFact] = useState<any>(null); 
     const [loading, setLoading] = useState(false);
-    const { user } = useUser(); 
 
-    // --- 3. GAME LOGIC ---
-    const handleNext = () => {
+    // --- 3. NEW MATERIAL FORM STATE (Matter Lab) ---
+    const [newMat, setNewMat] = useState({
+        name: '',
+        solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
+        liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' },
+        gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
+    });
+
+    // --- 4. SORTER LOGIC (Cycling Loop) ---
+    const handleNextSorter = () => {
         if (!dbSorterItems || dbSorterItems.length === 0) return;
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % dbSorterItems.length);
+        setCurrentIndex((prev) => (prev + 1) % dbSorterItems.length);
     };
 
     const handleAnswer = (choice: string) => {
@@ -1180,35 +1189,50 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         if (choice === currentItem.type) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             speak(`Correct! ${currentItem.name} is ${currentItem.type}!`);
-            setTimeout(handleNext, 1500);
+            setTimeout(handleNextSorter, 1500);
         } else {
             speak(`Not quite! Try again.`);
             toast({ title: "Try again!", description: `Is it really ${choice}?`, variant: "destructive" });
         }
     };
-    
-    const handleAddItem = async () => {
-        if (!newItem.name || !newItem.emoji || !firestore) {
-            toast({ title: "Missing Info", description: "Please enter name and emoji" });
-            return;
-        }
+
+    const handleSaveSorterItem = async () => {
+        if (!newItem.name || !newItem.emoji || !firestore) return;
         await addDoc(collection(firestore, 'junior_sorter_items'), {
             ...newItem,
             createdAt: serverTimestamp()
         });
         setNewItem({ name: '', emoji: '', type: 'living' });
-        refetchSorters();
-        toast({ title: "Success", description: "Item added to the Sorter library!" });
+        refetchSorter();
+        toast({ title: "Item Added!" });
+    };
+
+    // --- 5. MATTER LAB LOGIC ---
+    const handleSaveMaterial = async () => {
+        if (!newMat.name || !firestore) return;
+        const statesArray = [
+            { ...newMat.solid }, 
+            { ...newMat.liquid }, 
+            { ...newMat.gas }
+        ];
+        await addDoc(collection(firestore, 'junior_science_materials'), {
+            name: newMat.name,
+            states: statesArray,
+            createdAt: serverTimestamp()
+        });
+        setShowAddMatForm(false);
+        setNewMat({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
+        refetchMaterials();
+        toast({ title: "Material Created!" });
     };
 
     const getCurrentState = () => {
-        if (!selectedMaterial || !selectedMaterial.states) {
-            return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
-        }
+        if (!selectedMaterial) return { emoji: '❓', label: 'Select Material', desc: 'Pick something to test!' };
         const state = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp).find(s => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
-    
+
+    // --- 6. DISCOVERY LAB LOGIC ---
     const handleGenerate = async () => { 
         setLoading(true); 
         const res = await generateJuniorScience(topic); 
@@ -1235,7 +1259,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         toast({ title: "Deleted discovery" });
     };
 
-
     return (
         <div className="space-y-8">
             <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
@@ -1247,7 +1270,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
 
             {/* DISCOVERY LAB */}
             {activeTab === 'lab' && (
-                <div className="space-y-6 animate-in fade-in">
+                 <div className="space-y-6 animate-in fade-in">
                      {canEdit && (
                         <div className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
                             <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center gap-2"><Atom /> What should we investigate?</h3>
@@ -1290,28 +1313,27 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-
-            {/* SORTER SECTION */}
+            {/* SORTER TAB */}
             {activeTab === 'sorter' && (
                 <div className="space-y-6">
                     {canEdit && (
                         <div className="bg-white p-6 rounded-3xl border-4 border-blue-100 space-y-4">
-                            <h4 className="font-black text-blue-800">Add to Game Cycle</h4>
+                            <h4 className="font-black text-blue-800">Add Sorter Items</h4>
                             <div className="flex flex-wrap gap-2">
-                                <Input placeholder="Name (e.g. Dog)" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="flex-1" />
-                                <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20" />
-                                <select className="border p-2 rounded-xl bg-white font-bold" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value})}>
+                                <Input placeholder="Item Name" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} className="flex-1" />
+                                <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20 text-center text-xl" />
+                                <select className="border p-2 rounded-xl font-bold" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value})}>
                                     <option value="living">Living 🌳</option>
                                     <option value="non-living">Non-Living 🧸</option>
                                 </select>
-                                <Button onClick={handleAddItem} className="bg-blue-600">Save Item</Button>
+                                <Button onClick={handleSaveSorterItem} className="bg-blue-600">Save Item</Button>
                             </div>
                         </div>
                     )}
 
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
                         {!dbSorterItems || dbSorterItems.length === 0 ? (
-                            <div className="text-slate-400 font-bold py-10">Add items to start the game!</div>
+                            <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
                         ) : (
                             <div className="animate-in zoom-in space-y-8">
                                 <div className="flex justify-center gap-1">
@@ -1327,20 +1349,20 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     {dbSorterItems[currentIndex].emoji}
                                 </div>
                                 
-                                <h3 className="text-3xl font-black text-slate-800 capitalize">
+                                <h3 className="text-4xl font-black text-slate-800 capitalize">
                                     {dbSorterItems[currentIndex].name}
                                 </h3>
                                 
                                 <div className="flex justify-center gap-6">
                                     <Button 
                                         onClick={() => handleAnswer('living')}
-                                        className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_8px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
+                                        className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
                                     >
                                         🌳 Living
                                     </Button>
                                     <Button 
                                         onClick={() => handleAnswer('non-living')}
-                                        className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_8px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
+                                        className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
                                     >
                                         🧸 Non-Living
                                     </Button>
@@ -1355,12 +1377,14 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 </div>
             )}
 
-            {/* MATTER LAB SECTION */}
+            {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
-                    <div className="space-y-3">
-                        <p className="text-xs font-black text-blue-400 uppercase tracking-widest text-center">Step 1: Choose something to test</p>
-                        <div className="flex gap-2 overflow-x-auto pb-4 justify-center">
+                    
+                    {/* Material Selector */}
+                    <div className="text-center space-y-4">
+                        <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
+                        <div className="flex flex-wrap gap-2 justify-center">
                             {dbMaterials?.map(m => (
                                 <Button 
                                     key={m.id} 
@@ -1371,38 +1395,72 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     {m.name}
                                 </Button>
                             ))}
-                            {dbMaterials?.length === 0 && <p className="text-slate-400 italic">No materials in laboratory...</p>}
-                            {canEdit && <Button variant="ghost" className="border-dashed border-2 text-cyan-400">+ Add Material</Button>}
+                            {canEdit && (
+                                <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">
+                                    {showAddMatForm ? 'Close Creator' : '+ Add New Material'}
+                                </Button>
+                            )}
                         </div>
                     </div>
 
+                    {/* Material Creator Form */}
+                    {showAddMatForm && canEdit && (
+                        <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px] animate-in slide-in-from-top-4">
+                            <h4 className="text-xl font-black text-cyan-800 mb-4">Laboratory: Create New Material</h4>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-4">
+                                    <Input placeholder="Material Name (e.g. Honey)" value={newMat.name} onChange={e => setNewMat({...newMat, name: e.target.value})} className="bg-white" />
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400">LIQUID AT (°C)</label>
+                                            <Input type="number" value={newMat.liquid.temp} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, temp: parseInt(e.target.value)}})} />
+                                        </div>
+                                        <div className="flex-1 space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400">GAS AT (°C)</label>
+                                            <Input type="number" value={newMat.gas.temp} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, temp: parseInt(e.target.value)}})} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex gap-2">
+                                        <Input placeholder="Solid Emoji" value={newMat.solid.emoji} onChange={e => setNewMat({...newMat, solid: {...newMat.solid, emoji: e.target.value}})} />
+                                        <Input placeholder="Liquid Emoji" value={newMat.liquid.emoji} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, emoji: e.target.value}})} />
+                                        <Input placeholder="Gas Emoji" value={newMat.gas.emoji} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, emoji: e.target.value}})} />
+                                    </div>
+                                    <Button onClick={handleSaveMaterial} className="w-full h-12 bg-cyan-600 text-white font-black rounded-xl">Save to Lab</Button>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
+                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
-                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full">
+                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
                             {getCurrentState().emoji}
                         </div>
                         <div className="text-center">
                             <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
-                            <p className="text-cyan-600 font-bold mt-2">{getCurrentState().desc}</p>
+                            <p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p>
                         </div>
                         
                         <div className="w-full max-w-md space-y-4">
                             <div className="flex justify-between font-black text-xl text-slate-400">
-                                <span>COLD</span>
-                                <span className="text-cyan-600">{temp}°C</span>
-                                <span>HOT</span>
+                                <span className="text-blue-400">COLD</span>
+                                <span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span>
+                                <span className="text-red-400">HOT</span>
                             </div>
                             <input 
                                 type="range" min="-50" max="150" value={temp} 
                                 onChange={e => setTemp(parseInt(e.target.value))} 
-                                className="w-full h-4 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
+                                className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
                             />
                         </div>
                     </div>
                 </div>
             )}
             
-            {/* FIELD JOURNAL */}
-            {activeTab === 'library' && (
+             {/* JOURNAL TAB */}
+             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
                         <div 
@@ -1426,7 +1484,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 7. ART STUDIO (CREATIVE ACADEMY) ---
+// --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
 function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
@@ -1442,12 +1500,13 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
     // Challenges State
     const [challenge, setChallenge] = useState("Can you draw a house using 1 Square and 1 Triangle?");
-
+    
     // Fetch Dynamic Quests
     const firestore = useFirestore();
     const questsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_art_quests')) : null, [firestore]);
     const { data: dbQuests } = useCollection<any>(questsQuery);
     const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
+
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -1487,15 +1546,6 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     };
 
     const stopDrawing = () => { setIsDrawing(false); };
-    
-    const handleCanvasClick = (e: any) => {
-        const rect = canvasRef.current!.getBoundingClientRect();
-        const x = Math.floor(e.clientX - rect.left);
-        const y = Math.floor(e.clientY - rect.top);
-        
-        if (tool === 'bucket') floodFill(x, y, color);
-        if (tool === 'stamp') drawStamp(x, y);
-    };
 
     const clearCanvas = () => { 
         const canvas = canvasRef.current; 
@@ -1519,27 +1569,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         return null;
     };
     
-    const hexToRgb = (hex: string) => {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        return [r, g, b];
-    };
-    
-    const getPixelColor = (data: Uint8ClampedArray, x: number, y: number, width: number) => {
-        const i = (y * width + x) * 4;
-        return [data[i], data[i+1], data[i+2], data[i+3]];
-    };
-    
-    const setPixelColor = (data: Uint8ClampedArray, x: number, y: number, width: number, color: number[]) => {
-        const i = (y * width + x) * 4;
-        data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = 255;
-    };
-
-    const colorsMatch = (c1: number[], c2: number[]) => {
-        return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
-    };
-
+    // --- FLOOD FILL ALGORITHM (Paint Bucket) ---
     const floodFill = (startX: number, startY: number, fillColor: string) => {
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
@@ -1555,7 +1585,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         const pixels = [{ x: startX, y: startY }];
         while (pixels.length > 0) {
             const { x, y } = pixels.pop()!;
-             if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) continue;
+            if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) continue;
             const currentColor = getPixelColor(data, x, y, canvas.width);
             
             if (colorsMatch(currentColor, targetColor)) {
@@ -1569,6 +1599,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         ctx.putImageData(imageData, 0, 0);
     };
 
+    // Helper: Draw Shape Stamp
     const drawStamp = (x: number, y: number) => {
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
@@ -1587,6 +1618,15 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
         ctx.fill();
     };
 
+    const handleCanvasClick = (e: any) => {
+        const rect = canvasRef.current!.getBoundingClientRect();
+        const x = Math.floor(e.clientX - rect.left);
+        const y = Math.floor(e.clientY - rect.top);
+        
+        if (tool === 'bucket') floodFill(x, y, color);
+        if (tool === 'stamp') drawStamp(x, y);
+    };
+
     return (
         <div className="space-y-6">
             {/* Art Academy Navigation */}
@@ -1595,18 +1635,6 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
                 <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
-
-            {/* Dynamic Quest Display */}
-             {activeTab === 'shapes' && (
-                 <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg animate-in slide-in-from-top-4">
-                    <div className="flex items-center gap-3">
-                        <Star className="text-yellow-400 fill-yellow-400" />
-                        <span className="font-bold text-lg">{dbQuests?.[currentQuestIdx]?.instruction || challenge}</span>
-                    </div>
-                    <Button size="sm" variant="secondary" onClick={() => setCurrentQuestIdx((prev) => (prev + 1) % (dbQuests?.length || 1))}>Next Quest</Button>
-                </div>
-            )}
-
 
             <div className="grid lg:grid-cols-4 gap-6">
                 {/* TOOLBAR */}
@@ -1684,7 +1712,16 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                 </Card>
 
                 {/* CANVAS AREA */}
-                <div className="lg:col-span-3">
+                <div className="lg:col-span-3 space-y-4">
+                     {activeTab === 'shapes' && (
+                        <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg animate-in slide-in-from-top-4">
+                            <div className="flex items-center gap-3">
+                                <Star className="text-yellow-400 fill-yellow-400" />
+                                <span className="font-bold text-lg">{dbQuests?.[currentQuestIdx]?.instruction || challenge}</span>
+                            </div>
+                            <Button size="sm" variant="secondary" onClick={() => setCurrentQuestIdx((prev) => (prev + 1) % (dbQuests?.length || 1))}>Next Quest</Button>
+                        </div>
+                    )}
                     <canvas 
                         ref={canvasRef} 
                         onClick={handleCanvasClick} 
@@ -1703,6 +1740,24 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     );
 }
 
+// Utility Helpers for Flood Fill
+function getPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number) {
+    const i = (y * width + x) * 4;
+    return [data[i], data[i+1], data[i+2], data[i+3]];
+}
+function setPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number, color: number[]) {
+    const i = (y * width + x) * 4;
+    data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = 255;
+}
+function colorsMatch(c1: number[], c2: number[]) {
+    return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
+}
+function hexToRgb(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return [r, g, b];
+}
 
 // --- 8. REWARDS (THE HALL OF FAME) ---
 function StickerBook() {
