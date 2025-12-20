@@ -25,6 +25,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
+import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
+import { format, isSameDay } from 'date-fns';
+import { generateDebateTopic, generateDetectiveCase, generateDailyParadox } from '@/ai/flows/think-tank';
+import type { Paradox, DebateTopic, Student } from '@/lib/types';
+import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -492,7 +498,7 @@ function ABCKingdom() {
         }
     }, [selectedLetter, activeTab]);
 
-    const startTracing = (e: any) => {
+    const startDrawing = (e: any) => {
         const ctx = traceCanvasRef.current?.getContext('2d');
         if (!ctx) return;
         const rect = traceCanvasRef.current!.getBoundingClientRect();
@@ -598,11 +604,11 @@ function ABCKingdom() {
                                         <canvas 
                                             ref={traceCanvasRef} width={400} height={400} 
                                             className="touch-none cursor-crosshair"
-                                            onMouseDown={startTracing}
+                                            onMouseDown={startDrawing}
                                             onMouseMove={draw}
                                             onMouseUp={stopDrawing}
                                             onMouseLeave={stopDrawing}
-                                            onTouchStart={startTracing}
+                                            onTouchStart={startDrawing}
                                             onTouchMove={draw}
                                             onTouchEnd={stopDrawing}
                                         />
@@ -1225,13 +1231,10 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 
                 toast({ title: "Item Removed" });
                 
-                // Immediately update local state to reflect deletion
-                const newItems = dbSorterItems?.filter((item: any) => item.id !== id);
-                //setData(newItems); // Assuming useCollection gives you a setter
-                
                 if (refetchSorter) {
-                    await refetchSorter();
+                    refetchSorter();
                 }
+                
                 setCurrentIndex(0);
             }
         } catch (error: any) {
@@ -1290,7 +1293,9 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const getCurrentState = () => {
-        if (!selectedMaterial || !selectedMaterial.states) return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
+        if (!selectedMaterial || !selectedMaterial.states) {
+            return { emoji: '🔍', label: 'Pick a Material', desc: 'Select one from the list above!' };
+        }
         const state = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp).find(s => temp >= s.temp);
         return state || selectedMaterial.states[0];
     };
@@ -1332,7 +1337,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
-            
+
             {/* DISCOVERY LAB */}
             {activeTab === 'lab' && (
                  <div className="space-y-6 animate-in fade-in">
@@ -1398,7 +1403,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                         <h4 className="font-bold mb-2 text-sm">{editingItem ? 'Edit Item' : 'Add New Item'}</h4>
                                         <div className="grid grid-cols-4 gap-2">
                                             <Input placeholder="Name" value={editingItem ? editingItem.name : newItem.name} onChange={e => editingItem ? setEditingItem({...editingItem, name: e.target.value}) : setNewItem({...newItem, name: e.target.value})} className="col-span-2" />
-                                            <Input placeholder="Emoji" value={editingItem ? editingItem.emoji : newItem.emoji} onChange={e => editingItem ? setEditingItem({...editingItem, emoji: e.target.value})} className="text-center"/>
+                                            <Input placeholder="Emoji" value={editingItem ? editingItem.emoji : newItem.emoji} onChange={e => editingItem ? setEditingItem({...editingItem, emoji: e.target.value}) : setNewItem({...newItem, emoji: e.target.value})} className="text-center"/>
                                             <Select value={editingItem ? editingItem.type : newItem.type} onValueChange={(v) => editingItem ? setEditingItem({...editingItem, type: v}) : setNewItem({...newItem, type: v})}>
                                                 <SelectTrigger><SelectValue/></SelectTrigger>
                                                 <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
@@ -1436,7 +1441,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </Dialog>
                     )}
 
-                    {/* Rest of Sorter Game UI code... */}
                     <div className="bg-slate-50 p-10 rounded-[40px] border-4 border-slate-200 text-center space-y-8">
                         {!dbSorterItems || dbSorterItems.length === 0 ? (
                             <div className="py-10 text-slate-400 font-bold">Your library is empty. Please add items above!</div>
@@ -1482,7 +1486,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
                     
-                    {/* Material Selector */}
                     <div className="text-center space-y-4">
                         <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
                         <div className="flex flex-wrap gap-2 justify-center">
@@ -1504,7 +1507,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </div>
                     </div>
 
-                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
                         <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px] animate-in slide-in-from-top-4">
                             <h4 className="text-xl font-black text-cyan-800 mb-4">Laboratory: Create New Material</h4>
@@ -1534,7 +1536,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                         </Card>
                     )}
 
-                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
                         <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
                             {getCurrentState().emoji}
@@ -1559,7 +1560,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </div>
             )}
-             {/* JOURNAL TAB */}
+            
+            {/* JOURNAL TAB */}
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
@@ -1583,8 +1585,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
-
-
 // --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
 function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1784,7 +1784,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                     ) : (
                         <div className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400">TOOLS</label>
+                                <Label className="text-xs font-bold text-slate-400">TOOLS</Label>
                                 <div className="grid grid-cols-4 gap-2">
                                     <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')} title="Brush"><PenTool/></Button>
                                     <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')} title="Paint Bucket"><Database/></Button>
@@ -1805,7 +1805,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                                 </div>
                             )}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Color</label>
+                                <Label className="text-xs font-bold text-slate-400 uppercase">Brush Color</Label>
                                 <div className="grid grid-cols-4 gap-2">
                                     {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#8B4513'].map(c => (
                                         <button 
@@ -1817,7 +1817,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Size</label>
+                                <Label className="text-xs font-bold text-slate-400 uppercase">Brush Size</Label>
                                 <input type="range" min="2" max="40" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500" />
                             </div>
                              <div className="space-y-2 pt-4 border-t">
