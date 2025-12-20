@@ -5,14 +5,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Edit
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -282,12 +282,11 @@ function PhonicsForest() {
         const allSounds = soundGroups.flatMap(g => g.sounds);
         const targetSound = allSounds[Math.floor(Math.random() * allSounds.length)];
         
-        // Ensure options don't include the target, then add it back to shuffle
         let shuffledOptions = allSounds.filter(s => s !== targetSound).sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledOptions.push(targetSound);
         
         setGameTarget(targetSound);
-        setGameOptions(shuffledOptions.sort(() => Math.random() - 0.5)); // Final shuffle
+        setGameOptions(shuffledOptions.sort(() => Math.random() - 0.5));
         speak(`Find the sound: ${targetSound}`);
     }, [soundGroups]);
 
@@ -513,7 +512,7 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopTracing = () => {
+    const stopDrawing = () => {
         setIsTracing(false);
     };
 
@@ -601,11 +600,11 @@ function ABCKingdom() {
                                             className="touch-none cursor-crosshair"
                                             onMouseDown={startTracing}
                                             onMouseMove={draw}
-                                            onMouseUp={stopTracing}
-                                            onMouseLeave={stopTracing}
+                                            onMouseUp={stopDrawing}
+                                            onMouseLeave={stopDrawing}
                                             onTouchStart={startTracing}
                                             onTouchMove={draw}
-                                            onTouchEnd={stopTracing}
+                                            onTouchEnd={stopDrawing}
                                         />
                                         <Button 
                                             variant="ghost" size="sm" 
@@ -1150,7 +1149,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
     
-    // --- 1. DATA FETCHING ---
+    // --- 1. DATA FETCHING (Standard Firestore) ---
     const sorterQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
     [firestore]);
@@ -1173,8 +1172,9 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     const [topic, setTopic] = useState(''); 
     const [fact, setFact] = useState<any>(null); 
     const [loading, setLoading] = useState(false);
+    const [editingItem, setEditingItem] = useState<any | null>(null);
 
-    // --- 3. NEW MATERIAL FORM STATE ---
+    // --- 3. NEW MATERIAL FORM STATE (Matter Lab) ---
     const [newMat, setNewMat] = useState({
         name: '',
         solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
@@ -1182,14 +1182,14 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
     });
 
-    // --- 4. SORTER LOGIC ---
+    // --- 4. SORTER LOGIC (Cycling Loop) ---
     const handleNextSorter = () => {
         if (!dbSorterItems || dbSorterItems.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % dbSorterItems.length);
     };
 
     const handleAnswer = (choice: string) => {
-        if (!dbSorterItems) return;
+        if (!dbSorterItems || dbSorterItems.length === 0) return;
         const currentItem = dbSorterItems[currentIndex];
         if (choice === currentItem.type) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -1228,7 +1228,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 if (refetchSorter) {
                     await refetchSorter();
                 }
-                
                 setCurrentIndex(0);
             }
         } catch (error) {
@@ -1241,6 +1240,22 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         }
     };
 
+    const handleUpdateSorterItem = async () => {
+        if (!editingItem || !firestore) return;
+        try {
+            const itemDoc = doc(firestore, 'junior_sorter_items', editingItem.id);
+            await updateDoc(itemDoc, {
+                name: editingItem.name,
+                emoji: editingItem.emoji,
+                type: editingItem.type,
+            });
+            toast({ title: "Item Updated" });
+            setEditingItem(null);
+            if (refetchSorter) refetchSorter();
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to update item.", variant: "destructive" });
+        }
+    };
 
     // --- 5. MATTER LAB LOGIC ---
     const handleSaveMaterial = async () => {
@@ -1258,7 +1273,12 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         });
 
         setShowAddMatForm(false);
-        setNewMat({ name: '', solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' }, liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' }, gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' } });
+        setNewMat({
+            name: '',
+            solid: { temp: -100, emoji: '🧊', label: 'Solid', desc: 'Frozen tight!' },
+            liquid: { temp: 1, emoji: '💧', label: 'Liquid', desc: 'Flowing around!' },
+            gas: { temp: 100, emoji: '💨', label: 'Gas', desc: 'Flying fast!' }
+        });
         if (refetchMaterials) refetchMaterials();
         toast({ title: "Material Created!" });
     };
@@ -1306,7 +1326,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
                 <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')}>Journal</Button>
             </div>
-
+            
             {/* DISCOVERY LAB */}
             {activeTab === 'lab' && (
                  <div className="space-y-6 animate-in fade-in">
@@ -1367,63 +1387,42 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     <DialogTitle>Manage Sorter Library</DialogTitle>
                                 </DialogHeader>
                                 <div className="space-y-4 py-4">
-                                    <div className="grid grid-cols-4 gap-2 p-4 border rounded-2xl bg-slate-50">
-                                        <Input 
-                                            placeholder="Name" 
-                                            value={newItem.name} 
-                                            onChange={e => setNewItem({...newItem, name: e.target.value})} 
-                                            className="col-span-2"
-                                        />
-                                        <Input 
-                                            placeholder="Emoji" 
-                                            value={newItem.emoji} 
-                                            onChange={e => setNewItem({...newItem, emoji: e.target.value})} 
-                                            className="text-center"
-                                        />
-                                        <Button onClick={handleSaveSorterItem} size="icon" className="bg-green-600 hover:bg-green-700">
-                                            <Check className="h-4 w-4"/>
-                                        </Button>
-                                        <div className="col-span-4">
-                                            <Select value={newItem.type} onValueChange={(v) => setNewItem({...newItem, type: v})}>
-                                                <SelectTrigger><SelectValue placeholder="Select Type"/></SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="living">Living 🌳</SelectItem>
-                                                    <SelectItem value="non-living">Non-Living 🧸</SelectItem>
-                                                </SelectContent>
+                                    {/* Add/Edit Form */}
+                                    <div className="p-4 border rounded-2xl bg-slate-50">
+                                        <h4 className="font-bold mb-2 text-sm">{editingItem ? 'Edit Item' : 'Add New Item'}</h4>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            <Input placeholder="Name" value={editingItem ? editingItem.name : newItem.name} onChange={e => editingItem ? setEditingItem({...editingItem, name: e.target.value}) : setNewItem({...newItem, name: e.target.value})} className="col-span-2" />
+                                            <Input placeholder="Emoji" value={editingItem ? editingItem.emoji : newItem.emoji} onChange={e => editingItem ? setEditingItem({...editingItem, emoji: e.target.value}) : setNewItem({...newItem, emoji: e.target.value})} className="text-center"/>
+                                            <Select value={editingItem ? editingItem.type : newItem.type} onValueChange={(v) => editingItem ? setEditingItem({...editingItem, type: v}) : setNewItem({...newItem, type: v})}>
+                                                <SelectTrigger><SelectValue/></SelectTrigger>
+                                                <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
                                             </Select>
                                         </div>
+                                        <Button onClick={editingItem ? handleUpdateSorterItem : handleSaveSorterItem} size="sm" className="mt-2 w-full bg-green-600 hover:bg-green-700">
+                                            {editingItem ? 'Update Item' : 'Save Item'}
+                                        </Button>
+                                        {editingItem && <Button onClick={() => setEditingItem(null)} size="sm" variant="ghost" className="w-full mt-1">Cancel Edit</Button>}
                                     </div>
                                     
+                                    {/* Item List */}
                                     <ScrollArea className="h-64 pr-4">
                                         <div className="space-y-2">
                                             {dbSorterItems?.map((item: any) => (
-                                                <div key={item.id} className="flex justify-between items-center p-3 border rounded-xl hover:bg-slate-50 transition-colors">
+                                                <div key={item.id} className="flex justify-between items-center p-2 border rounded-xl hover:bg-slate-50 transition-colors">
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-2xl">{item.emoji}</span>
                                                         <div>
                                                             <p className="font-bold text-sm leading-none">{item.name}</p>
-                                                            <Badge variant="outline" className="mt-1 text-[10px] uppercase">
-                                                                {item.type}
-                                                            </Badge>
+                                                            <Badge variant="outline" className="mt-1 text-[10px] uppercase">{item.type}</Badge>
                                                         </div>
                                                     </div>
-                                                    <Button 
-                                                        type="button" 
-                                                        size="icon" 
-                                                        variant="ghost" 
-                                                        className="text-red-400 hover:text-red-600 hover:bg-red-50" 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteSorterItem(item.id);
-                                                        }}
-                                                    >
-                                                        <Trash2 className="h-4 w-4"/>
-                                                    </Button>
+                                                    <div className="flex gap-1">
+                                                        <Button type="button" size="icon" variant="ghost" className="text-blue-400 hover:text-blue-600" onClick={() => setEditingItem(item)}><Edit className="h-4 w-4"/></Button>
+                                                        <Button type="button" size="icon" variant="ghost" className="text-red-400 hover:text-red-600" onClick={(e) => { e.stopPropagation(); handleDeleteSorterItem(item.id);}}><Trash2 className="h-4 w-4"/></Button>
+                                                    </div>
                                                 </div>
                                             ))}
-                                            {(!dbSorterItems || dbSorterItems.length === 0) && (
-                                                <p className="text-center text-slate-400 py-10">No items found.</p>
-                                            )}
+                                            {(!dbSorterItems || dbSorterItems.length === 0) && <p className="text-center text-slate-400 py-10">No items found.</p>}
                                         </div>
                                     </ScrollArea>
                                 </div>
@@ -1438,67 +1437,36 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <div className="animate-in zoom-in space-y-8">
                                 <div className="flex justify-center gap-1">
                                     {dbSorterItems.map((_: any, i: number) => (
-                                        <div 
-                                            key={i} 
-                                            className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} 
-                                        />
+                                        <div key={i} className={`h-2 w-8 rounded-full transition-all ${i === currentIndex ? 'bg-blue-500 w-12' : i < currentIndex ? 'bg-green-400' : 'bg-slate-200'}`} />
                                     ))}
                                 </div>
                                 <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
-                                    {dbSorterItems[currentIndex].emoji}
+                                    {dbSorterItems[currentIndex]?.emoji}
                                 </div>
-                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex].name}</h3>
-                                
+                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex]?.name}</h3>
                                 <div className="flex justify-center gap-6">
-                                    <Button 
-                                        onClick={() => handleAnswer('living')}
-                                        className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all"
-                                    >
-                                        🌳 Living
-                                    </Button>
-                                    <Button 
-                                        onClick={() => handleAnswer('non-living')}
-                                        className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all"
-                                    >
-                                        🧸 Non-Living
-                                    </Button>
+                                    <Button onClick={() => handleAnswer('living')} className="h-24 px-12 bg-green-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#15803d] active:shadow-none active:translate-y-2 transition-all">🌳 Living</Button>
+                                    <Button onClick={() => handleAnswer('non-living')} className="h-24 px-12 bg-slate-500 text-2xl font-black rounded-3xl shadow-[0_10px_0_#334155] active:shadow-none active:translate-y-2 transition-all">🧸 Non-Living</Button>
                                 </div>
-                                <p className="text-slate-400 font-bold">
-                                    Item {currentIndex + 1} of {dbSorterItems.length}
-                                </p>
+                                <p className="text-slate-400 font-bold">Item {currentIndex + 1} of {dbSorterItems.length}</p>
                             </div>
                         )}
                     </div>
                 </div>
             )}
-
+            
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
-                    
-                    {/* Material Selector */}
                     <div className="text-center space-y-4">
                         <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
                         <div className="flex flex-wrap gap-2 justify-center">
                             {dbMaterials?.map(m => (
-                                <Button 
-                                    key={m.id} 
-                                    variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} 
-                                    onClick={() => setSelectedMaterial(m)}
-                                    className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}
-                                >
-                                    {m.name}
-                                </Button>
+                                <Button key={m.id} variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} onClick={() => setSelectedMaterial(m)} className={`rounded-full px-6 font-bold ${selectedMaterial?.id === m.id ? 'bg-cyan-600' : 'border-cyan-200 text-cyan-700'}`}>{m.name}</Button>
                             ))}
-                            {canEdit && (
-                                <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">
-                                    {showAddMatForm ? 'Close Creator' : '+ Add New Material'}
-                                </Button>
-                            )}
+                            {canEdit && (<Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">{showAddMatForm ? 'Close Creator' : '+ Add New Material'}</Button>)}
                         </div>
                     </div>
-
-                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
                         <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px] animate-in slide-in-from-top-4">
                             <h4 className="text-xl font-black text-cyan-800 mb-4">Laboratory: Create New Material</h4>
@@ -1506,14 +1474,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                 <div className="space-y-4">
                                     <Input placeholder="Material Name (e.g. Honey)" value={newMat.name} onChange={e => setNewMat({...newMat, name: e.target.value})} className="bg-white" />
                                     <div className="flex gap-2">
-                                        <div className="flex-1 space-y-1">
-                                            <label className="text-[10px] font-bold text-slate-400">LIQUID AT (°C)</label>
-                                            <Input type="number" value={newMat.liquid.temp} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, temp: parseInt(e.target.value)}})} />
-                                        </div>
-                                        <div className="flex-1 space-y-1">
-                                            <label className="text-[10px] font-bold text-slate-400">GAS AT (°C)</label>
-                                            <Input type="number" value={newMat.gas.temp} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, temp: parseInt(e.target.value)}})} />
-                                        </div>
+                                        <div className="flex-1 space-y-1"><Label className="text-[10px] font-bold text-slate-400">LIQUID AT (°C)</Label><Input type="number" value={newMat.liquid.temp} onChange={e => setNewMat({...newMat, liquid: {...newMat.liquid, temp: parseInt(e.target.value)}})} /></div>
+                                        <div className="flex-1 space-y-1"><Label className="text-[10px] font-bold text-slate-400">GAS AT (°C)</Label><Input type="number" value={newMat.gas.temp} onChange={e => setNewMat({...newMat, gas: {...newMat.gas, temp: parseInt(e.target.value)}})} /></div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
@@ -1527,34 +1489,21 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </Card>
                     )}
-
-                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
-                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
-                            {getCurrentState().emoji}
-                        </div>
-                        <div className="text-center">
-                            <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
-                            <p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p>
-                        </div>
-                        
+                        <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">{getCurrentState().emoji}</div>
+                        <div className="text-center"><h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2><p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p></div>
                         <div className="w-full max-w-md space-y-4">
                             <div className="flex justify-between font-black text-xl text-slate-400">
                                 <span className="text-blue-400">COLD</span>
                                 <span className="text-cyan-600 bg-cyan-50 px-4 py-1 rounded-full border border-cyan-100">{temp}°C</span>
                                 <span className="text-red-400">HOT</span>
                             </div>
-                            <input 
-                                type="range" min="-50" max="150" value={temp} 
-                                onChange={e => setTemp(parseInt(e.target.value))} 
-                                className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" 
-                            />
+                            <input type="range" min="-50" max="150" value={temp} onChange={e => setTemp(parseInt(e.target.value))} className="w-full h-6 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
                         </div>
                     </div>
                 </div>
             )}
-
-            {/* JOURNAL TAB */}
+             {/* JOURNAL TAB */}
             {activeTab === 'library' && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
                     {savedScience?.map((s:any)=>(
@@ -1578,7 +1527,6 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
-
 // --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
 function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1777,7 +1725,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                         </div>
                     ) : (
                         <div className="space-y-6">
-                             <div className="space-y-2">
+                            <div className="space-y-2">
                                 <label className="text-xs font-bold text-slate-400">TOOLS</label>
                                 <div className="grid grid-cols-4 gap-2">
                                     <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')} title="Brush"><PenTool/></Button>
@@ -2051,3 +1999,5 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
+```
