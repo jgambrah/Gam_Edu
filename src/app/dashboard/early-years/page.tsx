@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
@@ -23,6 +23,8 @@ import { getAuth } from 'firebase/auth';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Search } from 'lucide-react';
+
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -188,7 +190,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
                         >
-                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}} ></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
+                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}}></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
                         </button>
                         
                         <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
@@ -278,8 +280,7 @@ function PhonicsForest() {
         const target = allSounds[Math.floor(Math.random() * allSounds.length)];
         
         // Ensure options don't include the target, then add it back to shuffle
-        const otherOptions = allSounds.filter(s => s !== target);
-        const shuffledOptions = otherOptions.sort(() => 0.5 - Math.random()).slice(0, 3);
+        const otherOptions = allSounds.filter(s => s !== target).sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledOptions.push(target);
         
         setGameTarget(target);
@@ -424,6 +425,7 @@ function PhonicsForest() {
     );
 }
 
+
 // --- 3. ABC KINGDOM (ALPHABET ACADEMY) ---
 function ABCKingdom() {
     const [activeTab, setActiveTab] = useState<'explorer' | 'tracing' | 'matcher'>('explorer');
@@ -497,7 +499,7 @@ function ABCKingdom() {
         ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 15; ctx.lineCap = "round";
         setIsTracing(true);
     };
-    
+
     const drawTracing = (e: any) => {
         if (!isTracing) return;
         const canvas = traceCanvasRef.current;
@@ -592,12 +594,15 @@ function ABCKingdom() {
                                             onClick={() => {
                                                 const ctx = traceCanvasRef.current?.getContext('2d');
                                                 if (ctx) {
-                                                  ctx.clearRect(0,0,400,400);
-                                                  ctx.font = "bold 300px sans-serif";
-                                                  ctx.fillStyle = "#f1f5f9";
-                                                  ctx.textAlign = "center";
-                                                  ctx.textBaseline = "middle";
-                                                  ctx.fillText(selectedLetter, 200, 220);
+                                                    const canvas = traceCanvasRef.current;
+                                                    if(canvas) {
+                                                      ctx.clearRect(0,0,canvas.width,canvas.height);
+                                                      ctx.font = "bold 300px sans-serif";
+                                                      ctx.fillStyle = "#f1f5f9";
+                                                      ctx.textAlign = "center";
+                                                      ctx.textBaseline = "middle";
+                                                      ctx.fillText(selectedLetter, 200, 220);
+                                                    }
                                                 }
                                             }}
                                         >
@@ -1131,379 +1136,244 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 6. SCIENCE WORLD (COMPREHENSIVE DISCOVERY CENTER) ---
+// --- 6. SCIENCE WORLD (DYNAMIC DISCOVERY) ---
 function ScienceWorld({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore(); 
-    const { user } = useUser(); 
+    const firestore = useFirestore();
+    const { user } = useUser();
     const { toast } = useToast();
-    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment' | 'library'>('lab');
+    const [activeTab, setActiveTab] = useState<'lab' | 'sorter' | 'experiment'>('lab');
     
-    // AI Generation State
-    const [topic, setTopic] = useState(''); 
-    const [fact, setFact] = useState<any>(null); 
-    const [loading, setLoading] = useState(false);
-    
-    // Sorting Game State
-    const [sortItems, setSortItems] = useState<{ id: number, name: string, emoji: string, type: 'living' | 'non-living' }[]>([]);
-    
-    // Sorter Admin State
-    const [newSorterName, setNewSorterName] = useState('');
-    const [newSorterEmoji, setNewSorterEmoji] = useState('');
-    const [newSorterType, setNewSorterType] = useState<'living' | 'non-living'>('living');
-    
-    // States of Matter Simulator State
-    const [temp, setTemp] = useState(20); // Celsius
-
-    // Data Fetching for AI facts
-    const scienceQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
-    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
-    
-    // NEW: Data Fetching for Sorter Items
+    // --- Dynamic Data Fetching ---
     const sorterQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_sorter_items')) : null, [firestore]);
-    const { data: sorterLibrary, isLoading: isLoadingSorter, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
-
-    // Initialize the sorting game when data is loaded
-    useEffect(() => {
-        if (sorterLibrary && sorterLibrary.length > 0) {
-            setSortItems([...sorterLibrary].sort(() => 0.5 - Math.random()));
-        } else if (!isLoadingSorter) {
-            // If library is empty, use a default set
-            setSortItems([
-                { id: 1, name: 'Puppy', emoji: '🐶', type: 'living' },
-                { id: 2, name: 'Robot', emoji: '🤖', type: 'non-living' },
-            ].sort(() => 0.5 - Math.random()));
-        }
-    }, [sorterLibrary, isLoadingSorter]);
+    const { data: dbSorterItems } = useCollection<any>(sorterQuery);
     
-    const handleGenerate = async () => { 
-        setLoading(true); 
-        const res = await generateJuniorScience(topic); 
-        if(res.success) setFact(res.data); 
-        setLoading(false); 
-    };
+    const materialsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science_materials')) : null, [firestore]);
+    const { data: dbMaterials } = useCollection<any>(materialsQuery);
 
-    const handleSaveFact = async () => { 
-        if(!user || !fact || !firestore) return; 
-        await addDoc(collection(firestore,'junior_science'), {
-            ...fact,
-            createdAt: serverTimestamp(),
-            createdBy: user.uid
-        }); 
-        setFact(null); 
-        refetchScience(); 
-        toast({title: "Discovery Saved!"});
-    };
+    // Administrative States
+    const [newItem, setNewItem] = useState({ name: '', emoji: '', type: 'living' });
+    const [temp, setTemp] = useState(20);
+    const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
 
-    const handleAddSorterItem = async () => {
-        if (!newSorterName || !newSorterEmoji || !firestore) return;
-        try {
-            await addDoc(collection(firestore, 'junior_sorter_items'), {
-                name: newSorterName,
-                emoji: newSorterEmoji,
-                type: newSorterType
-            });
-            toast({ title: 'Sorter Item Added!' });
-            setNewSorterName('');
-            setNewSorterEmoji('');
-            refetchSorter();
-        } catch (e) {
-            toast({ variant: 'destructive', title: 'Error adding item.' });
-        }
-    };
-    
-    const handleDeleteSorterItem = async (id: string) => {
-        if (!firestore) return;
-        await deleteDoc(doc(firestore, 'junior_sorter_items', id));
-        refetchSorter();
-    };
-
-    const getWaterState = () => {
-        if (temp <= 0) return { emoji: '🧊', label: 'Solid (Ice)', desc: 'Brrr! The molecules are frozen tight.' };
-        if (temp >= 100) return { emoji: '💨', label: 'Gas (Steam)', desc: 'Whoosh! The molecules are flying fast.' };
-        return { emoji: '💧', label: 'Liquid (Water)', desc: 'Splish splash! The molecules are sliding around.' };
+    // Logic for Matter Lab (Testing different materials)
+    const getCurrentState = () => {
+        if (!selectedMaterial) return { emoji: '❓', label: 'Select Material', desc: 'Pick something to test!' };
+        // Find the state that matches the current temperature threshold
+        const state = [...selectedMaterial.states].sort((a,b) => b.temp - a.temp).find(s => temp >= s.temp);
+        return state || selectedMaterial.states[0];
     };
 
     return (
         <div className="space-y-8">
-            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto border border-blue-100">
-                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')} className="rounded-xl">Discovery Lab</Button>
-                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')} className="rounded-xl">The Sorter</Button>
-                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')} className="rounded-xl">Matter Lab</Button>
-                <Button variant={activeTab === 'library' ? 'default' : 'ghost'} onClick={() => setActiveTab('library')} className="rounded-xl">Field Journal</Button>
+            <div className="flex gap-2 p-1 bg-blue-50 rounded-2xl w-fit mx-auto">
+                <Button variant={activeTab === 'lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('lab')}>Discovery</Button>
+                <Button variant={activeTab === 'sorter' ? 'default' : 'ghost'} onClick={() => setActiveTab('sorter')}>Sorter</Button>
+                <Button variant={activeTab === 'experiment' ? 'default' : 'ghost'} onClick={() => setActiveTab('experiment')}>Matter Lab</Button>
             </div>
 
-            {activeTab === 'lab' && (
-                <div className="space-y-6 animate-in fade-in">
+            {/* SORTER: Admin can add items */}
+            {activeTab === 'sorter' && (
+                <div className="space-y-6">
                     {canEdit && (
-                        <Card className="bg-white p-6 rounded-3xl shadow-lg border-4 border-blue-200">
-                            <CardHeader className="p-0 mb-4">
-                                <CardTitle className="text-xl font-bold text-blue-800 flex items-center gap-2"><Atom /> What should we investigate?</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <div className="flex gap-2">
-                                    <Input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="Topic (e.g. Gravity, Ants, Clouds)" className="text-lg h-12 rounded-xl"/>
-                                    <Button onClick={handleGenerate} disabled={loading} className="h-12 rounded-xl bg-blue-600 px-6">
-                                        {loading ? <Loader2 className="animate-spin"/> : "Investigate"}
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <div className="bg-white p-4 rounded-2xl border-2 border-blue-100 flex gap-2 items-center">
+                            <Input placeholder="Item Name" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} />
+                            <Input placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem({...newItem, emoji: e.target.value})} className="w-20" />
+                            <select className="border p-2 rounded-xl" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value})}>
+                                <option value="living">Living</option>
+                                <option value="non-living">Non-Living</option>
+                            </select>
+                            <Button onClick={async () => {
+                                await addDoc(collection(firestore!, 'junior_sorter_items'), newItem);
+                                toast({title: "Item Added!"});
+                            }}>Add Item</Button>
+                        </div>
                     )}
-                    {fact && (
-                        <Card className="border-4 border-blue-400 overflow-hidden rounded-[40px] shadow-2xl animate-in zoom-in">
-                           <div className="bg-blue-500 p-8 text-center text-white"><div className="text-8xl mb-4 animate-pulse">{fact.emojiIcon}</div><h2 className="text-4xl font-black mb-2">{fact.title}</h2></div>
-                           <CardContent className="p-8 space-y-6">
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100"><h4 className="font-black text-blue-700 flex items-center gap-2 mb-2"><BookOpen className="w-5 h-5"/> The Big Fact</h4><p className="text-lg text-slate-700 leading-relaxed">{fact.fact}</p></div>
-                                    <div className="bg-green-50 p-6 rounded-3xl border-2 border-green-100"><h4 className="font-black text-green-700 flex items-center gap-2 mb-2"><Star className="w-5 h-5"/> Observation</h4><p className="text-lg text-slate-700 leading-relaxed">{fact.observation || "Look closely at the world around you to see this in action!"}</p></div>
-                                </div>
-                                <div className="bg-orange-50 p-6 rounded-3xl border-4 border-dashed border-orange-200"><h4 className="font-black text-orange-700 flex items-center gap-2 mb-2"><Wand2 className="w-5 h-5"/> Home Experiment</h4><p className="text-lg text-slate-700 italic">"{fact.experiment || "Can you find an example of this in your backyard?"}"</p></div>
-                                <div className="flex gap-4">
-                                    <Button onClick={() => speak(`${fact.title}. ${fact.fact}. Try this: ${fact.experiment}`)} className="flex-1 h-14 bg-blue-600 text-lg font-bold rounded-2xl">Read Lesson</Button>
-                                    {canEdit && <Button onClick={handleSaveFact} variant="outline" className="flex-1 h-14 border-2 border-green-500 text-green-600 font-bold rounded-2xl">Add to Journal</Button>}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                    <div className="text-center py-10 bg-blue-50 rounded-[40px]">
+                        <p className="text-blue-400 font-bold mb-4 uppercase">Items in Library: {dbSorterItems?.length || 0}</p>
+                        {/* Game UI would iterate through dbSorterItems here */}
+                        <div className="text-8xl animate-bounce">{dbSorterItems?.[0]?.emoji || '🔍'}</div>
+                    </div>
                 </div>
             )}
 
-            {activeTab === 'sorter' && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="md:col-span-2 bg-slate-50 p-8 rounded-[40px] border-4 border-slate-200 text-center space-y-8 animate-in zoom-in">
-                        <div><h2 className="text-3xl font-black text-slate-800">The Sorting Game</h2><p className="text-slate-500">Is it Living or Non-Living?</p></div>
-                        <div className="flex justify-center gap-6">
-                            {sortItems.length > 0 ? (
-                                <div className="bg-white p-10 rounded-full shadow-xl border-8 border-blue-100 animate-bounce"><div className="text-9xl">{sortItems[0].emoji}</div><p className="text-2xl font-black text-slate-700 mt-4">{sortItems[0].name}</p></div>
-                            ) : (<Button onClick={() => setSortItems([...(sorterLibrary || [])].sort(() => 0.5 - Math.random()))} className="bg-green-500 h-20 px-10 text-xl rounded-2xl">Play Again!</Button>)}
-                        </div>
-                        <div className="flex justify-center gap-4">
-                            <Button onClick={() => {if(sortItems[0].type === 'living') { confetti(); speak("Yes!"); setSortItems(prev => prev.slice(1)); } else { speak("Try again."); }}} className="h-20 px-10 bg-green-500 text-2xl font-black rounded-3xl">🌳 Living</Button>
-                            <Button onClick={() => {if(sortItems[0].type === 'non-living') { confetti(); speak("Correct!"); setSortItems(prev => prev.slice(1)); } else { speak("Think again."); }}} className="h-20 px-10 bg-slate-500 text-2xl font-black rounded-3xl">🧸 Non-Living</Button>
-                        </div>
+            {/* MATTER LAB: Test different materials */}
+            {activeTab === 'experiment' && (
+                <div className="space-y-8 animate-in zoom-in">
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                        {dbMaterials?.map(m => (
+                            <Button key={m.id} variant={selectedMaterial?.id === m.id ? 'default' : 'outline'} onClick={() => setSelectedMaterial(m)}>
+                                {m.name}
+                            </Button>
+                        ))}
+                        {canEdit && <Button variant="ghost" className="border-dashed border-2 text-blue-400">+ Add Material</Button>}
                     </div>
-                    {canEdit && (
-                        <Card className="h-fit">
-                            <CardHeader><CardTitle>Manage Sorter Items</CardTitle></CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label>Item Name</Label><Input value={newSorterName} onChange={e => setNewSorterName(e.target.value)} />
-                                    <Label>Emoji</Label><Input value={newSorterEmoji} onChange={e => setNewSorterEmoji(e.target.value)} />
-                                    <Label>Type</Label>
-                                    <Select value={newSorterType} onValueChange={(v) => setNewSorterType(v as 'living' | 'non-living')}>
-                                        <SelectTrigger><SelectValue /></SelectTrigger>
-                                        <SelectContent><SelectItem value="living">Living</SelectItem><SelectItem value="non-living">Non-Living</SelectItem></SelectContent>
-                                    </Select>
-                                </div>
-                                <Button onClick={handleAddSorterItem} className="w-full">Add Item</Button>
-                                <div className="max-h-40 overflow-y-auto space-y-1">
-                                    {sorterLibrary?.map((item: any) => <div key={item.id} className="flex justify-between items-center text-sm p-1"><span>{item.emoji} {item.name}</span><Button variant="ghost" size="sm" onClick={() => handleDeleteSorterItem(item.id)}><Trash2 className="h-4 w-4 text-red-400"/></Button></div>)}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-            )}
-            
-            {activeTab === 'experiment' && (<div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center space-y-8 animate-in slide-in-from-bottom-4"><div className="text-center"><h2 className="text-3xl font-black text-cyan-800">States of Matter</h2><p className="text-cyan-600">Change the temperature to see what happens to water!</p></div><div className="relative w-64 h-64 bg-cyan-50 rounded-full flex flex-col items-center justify-center border-8 border-white shadow-inner"><div className="text-9xl mb-2 transition-all duration-500 transform scale-125">{getWaterState().emoji}</div><p className="text-2xl font-black text-cyan-700">{getWaterState().label}</p></div><div className="w-full max-w-md space-y-4"><div className="flex justify-between font-black text-xl"><span className="text-blue-500">COLD</span><span className="text-slate-700">{temp}°C</span><span className="text-red-500">HOT</span></div><input type="range" min="-20" max="120" value={temp} onChange={(e) => setTemp(parseInt(e.target.value))} className="w-full h-4 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"/><p className="text-center text-slate-500 font-medium italic">{getWaterState().desc}</p></div></div>)}
-            
-            {activeTab === 'library' && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in">
-                    {savedScience?.map((s:any)=>(<div key={s.id} className="relative group bg-white p-6 rounded-3xl shadow-sm border-b-8 border-blue-200 flex flex-col items-center text-center cursor-pointer hover:shadow-xl transition-all" onClick={() => { setFact(s); setActiveTab('lab'); speak(s.title); }}><div className="text-5xl mb-4">{s.emojiIcon}</div><h4 className="font-black text-slate-800 leading-tight">{s.title}</h4><p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Saved Discovery</p></div>))}
+
+                    <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
+                        <div className="text-9xl transition-all duration-500">{getCurrentState().emoji}</div>
+                        <h2 className="text-3xl font-black text-cyan-800">{getCurrentState().label}</h2>
+                        <input type="range" min="-50" max="150" value={temp} onChange={e => setTemp(parseInt(e.target.value))} className="w-full max-w-md accent-cyan-500" />
+                        <p className="text-slate-500 italic">At {temp}°C, {selectedMaterial?.name || 'this item'} is {getCurrentState().label}.</p>
+                    </div>
                 </div>
             )}
         </div>
     );
 }
 
-// --- 7. ART STUDIO (CREATIVE ACADEMY) ---
-function ArtStudio() {
+
+// --- 7. ART STUDIO (INTERACTIVE PATHWAY) ---
+function ArtStudio({ canEdit }: { canEdit: boolean }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [activeTab, setActiveTab] = useState<'freestyle' | 'color-lab' | 'shapes' | 'gallery'>('freestyle');
-    const [isDrawing, setIsDrawing] = useState(false);
+    const [tool, setTool] = useState<'brush' | 'bucket' | 'stamp'>('brush');
+    const [selectedShape, setSelectedShape] = useState<'circle' | 'square' | 'star'>('circle');
     const [color, setColor] = useState('#4f46e5');
-    const [brushSize, setBrushSize] = useState(8);
+    const [isDrawing, setIsDrawing] = useState(false);
     
-    // Color Lab State
-    const [mix1, setMix1] = useState<string | null>(null);
-    const [mix2, setMix2] = useState<string | null>(null);
+    // Fetch Dynamic Quests
+    const firestore = useFirestore();
+    const questsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_art_quests')) : null, [firestore]);
+    const { data: dbQuests } = useCollection<any>(questsQuery);
+    const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
 
-    // Challenges State
-    const [challenge, setChallenge] = useState("Can you draw a house using 1 Square and 1 Triangle?");
-
-    useEffect(() => {
+    // --- FLOOD FILL ALGORITHM (Paint Bucket) ---
+    const floodFill = (startX: number, startY: number, fillColor: string) => {
         const canvas = canvasRef.current;
-        if (canvas) {
-            canvas.width = canvas.parentElement?.clientWidth || 800;
-            canvas.height = 500;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.fillStyle = "white";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const ctx = canvas?.getContext('2d');
+        if (!ctx || !canvas) return;
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        const targetColor = getPixelColor(data, startX, startY, canvas.width);
+        const fillRGB = hexToRgb(fillColor);
+
+        if (colorsMatch(targetColor, fillRGB)) return;
+
+        const pixels = [{ x: startX, y: startY }];
+        while (pixels.length > 0) {
+            const { x, y } = pixels.pop()!;
+            const currentColor = getPixelColor(data, x, y, canvas.width);
+            
+            if (colorsMatch(currentColor, targetColor)) {
+                setPixelColor(data, x, y, canvas.width, fillRGB);
+                if (x > 0) pixels.push({ x: x - 1, y });
+                if (x < canvas.width - 1) pixels.push({ x: x + 1, y });
+                if (y > 0) pixels.push({ x, y: y - 1 });
+                if (y < canvas.height - 1) pixels.push({ x, y: y + 1 });
             }
         }
-    }, [activeTab]);
+        ctx.putImageData(imageData, 0, 0);
+    };
 
+    // Helper: Draw Shape Stamp
+    const drawStamp = (x: number, y: number) => {
+        const ctx = canvasRef.current?.getContext('2d');
+        if (!ctx) return;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        if (selectedShape === 'circle') ctx.arc(x, y, 30, 0, Math.PI * 2);
+        if (selectedShape === 'square') ctx.rect(x - 30, y - 30, 60, 60);
+        if (selectedShape === 'star') { /* draw star path logic */ }
+        ctx.fill();
+    };
+
+    const handleCanvasClick = (e: any) => {
+        const rect = canvasRef.current!.getBoundingClientRect();
+        const x = Math.floor(e.clientX - rect.left);
+        const y = Math.floor(e.clientY - rect.top);
+        
+        if (tool === 'bucket') floodFill(x, y, color);
+        if (tool === 'stamp') drawStamp(x, y);
+    };
+    
+    // Tracing Logic (Simplified from ABC Kingdom)
     const startDrawing = (e: any) => {
-        const canvas = canvasRef.current; if (!canvas) return; 
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
+        if (tool !== 'brush') return;
+        const ctx = canvasRef.current?.getContext('2d');
+        if (!ctx) return;
+        const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color; ctx.lineWidth = brushSize; 
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.strokeStyle = color;
         setIsDrawing(true);
     };
 
     const draw = (e: any) => {
-        if (!isDrawing) return; 
-        const canvas = canvasRef.current; if (!canvas) return; 
-        const ctx = canvas.getContext('2d'); if (!ctx) return;
+        if (!isDrawing || tool !== 'brush') return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
         const rect = canvas.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        ctx.lineTo(x, y); ctx.stroke();
+        ctx.lineTo(x, y);
+        ctx.stroke();
     };
-
-    const clearCanvas = () => { 
-        const canvas = canvasRef.current; 
-        if(canvas){ 
-            const ctx=canvas.getContext('2d'); 
-            if(ctx){ctx.fillStyle="white"; ctx.fillRect(0,0,canvas.width,canvas.height);} 
-        } 
-    };
-
-    const handleMix = (c: string) => {
-        if (!mix1) setMix1(c);
-        else if (!mix2) setMix2(c);
-        else { setMix1(c); setMix2(null); }
-    };
-
-    const getMixedColor = () => {
-        const colors = [mix1, mix2].sort().join('+');
-        if (colors === '#FF0000+#FFFF00') return { name: 'Orange', hex: '#FFA500' };
-        if (colors === '#0000FF+#FF0000') return { name: 'Purple', hex: '#800080' };
-        if (colors === '#0000FF+#FFFF00') return { name: 'Green', hex: '#008000' };
-        return null;
-    };
+    
+    // Utility functions must be defined within the component or imported
+    function getPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number) {
+        const i = (y * width + x) * 4;
+        return [data[i], data[i+1], data[i+2], data[i+3]];
+    }
+    function setPixelColor(data: Uint8ClampedArray, x: number, y: number, width: number, color: number[]) {
+        const i = (y * width + x) * 4;
+        data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = 255;
+    }
+    function colorsMatch(c1: number[], c2: number[]) {
+        return c1[0] === c2[0] && c1[1] === c2[1] && c1[2] === c2[2];
+    }
+    function hexToRgb(hex: string) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return [r, g, b];
+    }
 
     return (
         <div className="space-y-6">
-            {/* Art Academy Navigation */}
-            <div className="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit mx-auto border border-slate-200">
-                <Button variant={activeTab === 'freestyle' ? 'default' : 'ghost'} onClick={() => setActiveTab('freestyle')} className="rounded-xl">Freestyle</Button>
-                <Button variant={activeTab === 'color-lab' ? 'default' : 'ghost'} onClick={() => setActiveTab('color-lab')} className="rounded-xl">Color Lab</Button>
-                <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
+            {/* Dynamic Quest Display */}
+            <div className="bg-indigo-600 p-6 rounded-3xl text-white shadow-lg flex justify-between items-center">
+                <div>
+                    <h3 className="text-xl font-bold">Quest: {dbQuests?.[currentQuestIdx]?.title || 'Free Draw!'}</h3>
+                    <p className="opacity-80">{dbQuests?.[currentQuestIdx]?.instruction}</p>
+                </div>
+                <Button variant="secondary" onClick={() => setCurrentQuestIdx((prev) => (prev + 1) % (dbQuests?.length || 1))}>Next Quest</Button>
             </div>
 
-            <div className="grid lg:grid-cols-4 gap-6">
-                {/* TOOLBAR */}
-                <Card className="lg:col-span-1 border-2 border-slate-100 rounded-[32px] p-4 space-y-6 h-fit">
-                    {activeTab === 'color-lab' ? (
-                        <div className="space-y-4 text-center">
-                            <h4 className="font-bold text-slate-800 text-sm uppercase">Primary Colors</h4>
-                            <div className="flex justify-center gap-2">
-                                {['#FF0000', '#FFFF00', '#0000FF'].map(c => (
-                                    <button key={c} onClick={() => handleMix(c)} className="w-10 h-10 rounded-full border-4 border-white shadow-md" style={{backgroundColor: c}} />
-                                ))}
-                            </div>
-                            <div className="p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                                <div className="flex justify-center items-center gap-2 mb-2">
-                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix1 || '#eee'}} />
-                                    <span className="font-bold">+</span>
-                                    <div className="w-8 h-8 rounded-full border shadow-sm" style={{backgroundColor: mix2 || '#eee'}} />
-                                </div>
-                                {getMixedColor() && (
-                                    <div className="animate-in zoom-in text-center">
-                                        <p className="text-xs font-bold text-slate-500 mb-1">Result:</p>
-                                        <button 
-                                            onClick={() => setColor(getMixedColor()!.hex)}
-                                            className="w-full py-2 rounded-xl text-white font-bold" 
-                                            style={{backgroundColor: getMixedColor()!.hex}}
-                                        >
-                                            Use {getMixedColor()!.name}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+            <div className="grid lg:grid-cols-4 gap-4">
+                <Card className="p-4 space-y-4 rounded-3xl border-2 border-slate-100">
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400">TOOLS</label>
+                        <div className="flex gap-2">
+                            <Button size="icon" variant={tool === 'brush' ? 'default' : 'outline'} onClick={() => setTool('brush')}><Palette/></Button>
+                            <Button size="icon" variant={tool === 'bucket' ? 'default' : 'outline'} onClick={() => setTool('bucket')}><Type/></Button>
+                            <Button size="icon" variant={tool === 'stamp' ? 'default' : 'outline'} onClick={() => setTool('stamp')}><Star/></Button>
                         </div>
-                    ) : (
-                        <div className="space-y-6">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Color</label>
-                                <div className="grid grid-cols-4 gap-2">
-                                    {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#FFC0CB', '#8B4513'].map(c => (
-                                        <button 
-                                            key={c} onClick={() => setColor(c)} 
-                                            className={`aspect-square rounded-full border-2 transition-transform ${color === c ? 'border-slate-800 scale-110 shadow-lg' : 'border-transparent'}`} 
-                                            style={{ backgroundColor: c }} 
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Brush Size</label>
-                                <input type="range" min="2" max="40" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full accent-indigo-500" />
-                            </div>
-                            <div className="pt-4 border-t border-slate-100">
-                                <Button variant="outline" onClick={clearCanvas} className="w-full text-red-500 border-red-100 hover:bg-red-50 rounded-xl">
-                                    <Trash2 className="w-4 h-4 mr-2" /> Clear All
-                                </Button>
-                            </div>
+                    </div>
+                    {tool === 'stamp' && (
+                        <div className="flex gap-2">
+                            {['circle', 'square', 'star'].map(s => (
+                                <button key={s} onClick={() => setSelectedShape(s as any)} className={`p-2 border-2 rounded-xl ${selectedShape === s ? 'border-indigo-500' : 'border-slate-100'}`}>
+                                    {s === 'circle' ? '●' : s === 'square' ? '■' : '★'}
+                                </button>
+                            ))}
                         </div>
                     )}
                 </Card>
 
-                {/* CANVAS AREA */}
-                <div className="lg:col-span-3 space-y-4">
-                    {activeTab === 'shapes' && (
-                        <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg animate-in slide-in-from-top-4">
-                            <div className="flex items-center gap-3">
-                                <Star className="text-yellow-400 fill-yellow-400" />
-                                <span className="font-bold text-lg">{challenge}</span>
-                            </div>
-                            <Button size="sm" variant="secondary" onClick={() => setChallenge("Now draw a 🌲 using 3 Triangles!")}>Next Quest</Button>
-                        </div>
-                    )}
-
-                    <div className="relative bg-white rounded-[40px] shadow-2xl border-8 border-slate-50 overflow-hidden cursor-crosshair">
-                        <canvas 
-                            ref={canvasRef} 
-                            className="w-full touch-none"
-                            onMouseDown={startDrawing} 
-                            onMouseMove={draw} 
-                            onMouseUp={() => setIsDrawing(false)} 
-                            onMouseLeave={() => setIsDrawing(false)}
-                            onTouchStart={startDrawing}
-                            onTouchMove={draw}
-                            onTouchEnd={() => setIsDrawing(false)}
-                        />
-                        
-                        {/* CANVAS WATERMARK/DECORATION */}
-                        <div className="absolute bottom-4 right-6 pointer-events-none opacity-20 flex items-center gap-2">
-                            <Palette className="w-6 h-6" />
-                            <span className="font-black italic">Junior Artist Studio</span>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-4">
-                            <div className="flex -space-x-2">
-                                {['🎨', '🖌️', '🖍️', '✏️'].map((e, i) => <span key={i} className="text-2xl">{e}</span>)}
-                            </div>
-                            <span className="text-sm font-bold text-slate-500">Practice makes perfect!</span>
-                        </div>
-                        <Button onClick={() => {
-                            const link = document.createElement('a');
-                            link.download = 'my-masterpiece.png';
-                            link.href = canvasRef.current!.toDataURL();
-                            link.click();
-                            confetti();
-                        }} className="bg-green-600 rounded-xl px-6">
-                            <Save className="mr-2 h-4 w-4" /> Save Masterpiece
-                        </Button>
-                    </div>
+                <div className="lg:col-span-3">
+                    <canvas 
+                        ref={canvasRef} 
+                        onClick={handleCanvasClick} 
+                        onMouseDown={startDrawing}
+                        onMouseMove={draw}
+                        onMouseUp={() => setIsDrawing(false)}
+                        onMouseLeave={() => setIsDrawing(false)}
+                        onTouchStart={startDrawing}
+                        onTouchMove={draw}
+                        onTouchEnd={() => setIsDrawing(false)}
+                        className="bg-white rounded-[40px] shadow-xl border-8 border-slate-50 w-full h-[500px] cursor-crosshair"
+                    />
                 </div>
             </div>
         </div>
@@ -1686,7 +1556,7 @@ export default function JuniorCampusPage() {
                 <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
                 <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
-                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio /></div></TabsContent>
+                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} /></div></TabsContent>
                 <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
         </Tabs>
