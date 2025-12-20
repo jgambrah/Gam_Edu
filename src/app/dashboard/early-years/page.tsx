@@ -185,7 +185,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
 
                     {/* Mic Interaction */}
                     <div className="flex flex-col items-center gap-6">
-                        <button 
+                         <button 
                             onClick={startListening}
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
@@ -280,15 +280,15 @@ function PhonicsForest() {
     
     const startNewGame = useCallback(() => {
         const allSounds = soundGroups.flatMap(g => g.sounds);
-        const target = allSounds[Math.floor(Math.random() * allSounds.length)];
+        const targetSound = allSounds[Math.floor(Math.random() * allSounds.length)];
         
         // Ensure options don't include the target, then add it back to shuffle
-        let shuffledOptions = allSounds.filter(s => s !== target).sort(() => 0.5 - Math.random()).slice(0, 3);
-        shuffledOptions.push(target);
+        let shuffledOptions = allSounds.filter(s => s !== targetSound).sort(() => 0.5 - Math.random()).slice(0, 3);
+        shuffledOptions.push(targetSound);
         
-        setGameTarget(target);
+        setGameTarget(targetSound);
         setGameOptions(shuffledOptions.sort(() => Math.random() - 0.5)); // Final shuffle
-        speak(`Find the sound: ${target}`);
+        speak(`Find the sound: ${targetSound}`);
     }, [soundGroups]);
 
     return (
@@ -1213,13 +1213,13 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     };
 
     const handleDeleteSorterItem = async (id: string) => {
-        if(!firestore) return;
-        if(confirm("Are you sure?")) {
+        if (!firestore) return;
+        if (window.confirm("Are you sure you want to delete this item?")) {
             await deleteDoc(doc(firestore, 'junior_sorter_items', id));
+            toast({ title: "Item Removed" });
             refetchSorter();
-            toast({title: "Item removed."});
         }
-    }
+    };
 
 
     // --- 5. MATTER LAB LOGIC ---
@@ -1271,9 +1271,11 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
     
     const handleDeleteDiscovery = async (id: string) => {
         if (!firestore) return;
-        await deleteDoc(doc(firestore, 'junior_science', id));
-        refetchScience();
-        toast({ title: "Deleted discovery" });
+        if(window.confirm("Are you sure?")){
+            await deleteDoc(doc(firestore, 'junior_science', id));
+            refetchScience();
+            toast({ title: "Deleted discovery" });
+        }
     };
 
     return (
@@ -1377,9 +1379,9 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     ))}
                                 </div>
                                 <div className="text-9xl mb-4 p-8 bg-white rounded-full shadow-xl w-48 h-48 mx-auto flex items-center justify-center border-8 border-blue-50">
-                                    {dbSorterItems[currentIndex]?.emoji}
+                                    {dbSorterItems[currentIndex].emoji}
                                 </div>
-                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex]?.name}</h3>
+                                <h3 className="text-4xl font-black text-slate-800 capitalize">{dbSorterItems[currentIndex].name}</h3>
                                 
                                 <div className="flex justify-center gap-6">
                                     <Button 
@@ -1407,6 +1409,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
             {/* MATTER LAB TAB */}
             {activeTab === 'experiment' && (
                 <div className="space-y-8 animate-in zoom-in">
+                    
+                    {/* Material Selector */}
                     <div className="text-center space-y-4">
                         <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Science Laboratory</p>
                         <div className="flex flex-wrap gap-2 justify-center">
@@ -1420,9 +1424,15 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                                     {m.name}
                                 </Button>
                             ))}
-                            {canEdit && <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">{showAddMatForm ? 'Close' : '+ Add'}</Button>}
+                            {canEdit && (
+                                <Button variant="ghost" onClick={() => setShowAddMatForm(!showAddMatForm)} className="border-dashed border-2 border-cyan-200 text-cyan-500 rounded-full font-bold">
+                                    {showAddMatForm ? 'Close Creator' : '+ Add New Material'}
+                                </Button>
+                            )}
                         </div>
                     </div>
+
+                    {/* Material Creator Form */}
                     {showAddMatForm && canEdit && (
                         <Card className="p-6 border-4 border-cyan-400 bg-cyan-50 rounded-[32px] animate-in slide-in-from-top-4">
                             <h4 className="text-xl font-black text-cyan-800 mb-4">Laboratory: Create New Material</h4>
@@ -1451,6 +1461,8 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </Card>
                     )}
+
+                    {/* Simulator Display */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border-4 border-cyan-100 flex flex-col items-center gap-6">
                         <div className="text-9xl transition-all duration-500 p-8 bg-cyan-50 rounded-full border-4 border-white shadow-inner">
                             {getCurrentState().emoji}
@@ -1459,6 +1471,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <h2 className="text-4xl font-black text-cyan-800">{getCurrentState().label}</h2>
                             <p className="text-cyan-600 font-bold text-lg mt-2">{getCurrentState().desc}</p>
                         </div>
+                        
                         <div className="w-full max-w-md space-y-4">
                             <div className="flex justify-between font-black text-xl text-slate-400">
                                 <span className="text-blue-400">COLD</span>
@@ -1541,11 +1554,9 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
     }, [activeTab]);
 
     const startDrawing = (e: any) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
+        const rect = canvasRef.current!.getBoundingClientRect();
         const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
         const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
         if(tool === 'brush' || tool === 'pencil' || tool === 'crayon' || tool === 'paint_brush' || tool === 'marker') {
