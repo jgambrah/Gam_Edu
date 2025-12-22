@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -21,6 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -315,9 +315,25 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                         <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
                     )}/>
                 </div>
-                <FormField control={form.control} name="question_text" render={({ field }) => (
-                    <FormItem><FormLabel>Question Text</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
-                )}/>
+                <FormField 
+                    control={form.control} 
+                    name="question_text" 
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Question Text</FormLabel>
+                            <FormControl>
+                                <Textarea placeholder="Enter text or LaTeX (e.g. \frac{1}{2})" {...field}/>
+                            </FormControl>
+                            {field.value && (
+                                <div className="mt-2 p-4 bg-slate-900 rounded-xl text-emerald-400">
+                                    <p className="text-[10px] uppercase font-black mb-2 text-slate-500">Live LaTeX Preview</p>
+                                    <SafeMath formula={field.value} />
+                                </div>
+                            )}
+                            <FormMessage/>
+                        </FormItem>
+                    )}
+                />
                 <div className="grid grid-cols-2 gap-4">
                     {form.getValues('options').map((_, index) => (
                         <FormField key={index} control={form.control} name={`options.${index}`} render={({ field }) => (
@@ -369,9 +385,13 @@ function ManageProblems() {
                     <TableBody>
                         {problems?.map(p => (
                             <TableRow key={p.id}>
-                                <TableCell>{p.topic}</TableCell>
-                                <TableCell>{p.difficulty}</TableCell>
-                                <TableCell className="max-w-md truncate">{p.question_text}</TableCell>
+                                <TableCell className="font-bold">{p.topic}</TableCell>
+                                <TableCell><Badge variant="outline">{p.difficulty}</Badge></TableCell>
+                                <TableCell className="max-w-md">
+                                    <div className="text-xs">
+                                        <SafeMath formula={p.question_text} block={false} />
+                                    </div>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
