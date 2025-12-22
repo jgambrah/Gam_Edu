@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -13,13 +12,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
@@ -68,6 +75,183 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
     console.error("LaTeX Error:", error);
     return <code className="text-red-500">{formula}</code>;
   }
+}
+
+// --- SENIOR ACADEMY: CURRICULUM PATHWAY ---
+function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+
+    // Navigation State
+    const [selection, setSelection] = useState({ grade: '', unit: '', lesson: '' });
+    const [activeLesson, setActiveLesson] = useState<any>(null);
+
+    // 1. Fetch Grades
+    const gradesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'curriculum'), orderBy('level', 'asc')) : null, [firestore]);
+    const { data: grades } = useCollection<any>(gradesQuery);
+
+    // 2. Fetch Units (when grade is selected)
+    const unitsQuery = useMemoFirebase(() => 
+        (firestore && selection.grade) ? query(collection(firestore, `curriculum/${selection.grade}/units`), orderBy('number', 'asc')) : null, 
+    [firestore, selection.grade]);
+    const { data: units } = useCollection<any>(unitsQuery);
+
+    // 3. Fetch Lessons (when unit is selected)
+    const lessonsQuery = useMemoFirebase(() => 
+        (firestore && selection.grade && selection.unit) ? query(collection(firestore, `curriculum/${selection.grade}/units/${selection.unit}/lessons`), orderBy('order', 'asc')) : null, 
+    [firestore, selection.grade, selection.unit]);
+    const { data: lessons } = useCollection<any>(lessonsQuery);
+
+    const handleStartLesson = (lesson: any) => {
+        setActiveLesson(lesson);
+        speak(`Starting lesson: ${lesson.title}`);
+    };
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-700">
+            {/* --- BREADCRUMB SELECTOR --- */}
+            {!activeLesson && (
+                <div className="grid md:grid-cols-3 gap-4 bg-white p-6 rounded-[32px] shadow-xl border-b-8 border-slate-100">
+                    {/* Grade Selector */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2">1. Select Grade</label>
+                        <Select onValueChange={(v) => setSelection({ grade: v, unit: '', lesson: '' })}>
+                            <SelectTrigger className="rounded-2xl h-14 border-2"><SelectValue placeholder="Pick a Grade" /></SelectTrigger>
+                            <SelectContent>
+                                {grades?.map(g => <SelectItem key={g.id} value={g.id}>{g.title}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Unit Selector */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2">2. Select Unit</label>
+                        <Select disabled={!selection.grade} onValueChange={(v) => setSelection({ ...selection, unit: v, lesson: '' })}>
+                            <SelectTrigger className="rounded-2xl h-14 border-2"><SelectValue placeholder="Pick a Unit" /></SelectTrigger>
+                            <SelectContent>
+                                {units?.map(u => <SelectItem key={u.id} value={u.id}>Unit {u.number}: {u.title}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Lesson List Display */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2">3. Available Lessons</label>
+                        <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                            {lessons?.map(l => (
+                                <button 
+                                    key={l.id} 
+                                    onClick={() => handleStartLesson(l)}
+                                    className="w-full text-left p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 border-2 border-transparent hover:border-indigo-200 transition-all flex justify-between items-center group"
+                                >
+                                    <span className="font-bold text-slate-700 group-hover:text-indigo-600">{l.title}</span>
+                                    <Play className="w-4 h-4 text-indigo-400" />
+                                </button>
+                            ))}
+                            {!selection.unit && <p className="text-center text-slate-300 text-sm py-4">Select a unit to see lessons</p>}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* --- THE LESSON VIEWER (THE "GO" PHASE) --- */}
+            {activeLesson ? (
+                <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in duration-500">
+                    <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                            <Button variant="ghost" onClick={() => setActiveLesson(null)} className="text-white hover:bg-white/10 rounded-full">
+                                <ArrowRight className="rotate-180 mr-2" /> Exit
+                            </Button>
+                            <div>
+                                <h2 className="text-3xl font-black tracking-tight">{activeLesson.title}</h2>
+                                <p className="text-indigo-400 text-xs font-bold uppercase tracking-widest">{activeLesson.attribution || 'Open Curriculum'}</p>
+                            </div>
+                        </div>
+                        <div className="hidden md:block">
+                            <Badge className="bg-green-500 px-4 py-1">In Progress</Badge>
+                        </div>
+                    </div>
+
+                    <CardContent className="p-10 space-y-12 max-w-4xl mx-auto">
+                        {/* 1. Introduction Block */}
+                        <section className="prose prose-slate max-w-none">
+                            <p className="text-2xl leading-relaxed text-slate-600 first-letter:text-5xl first-letter:font-bold first-letter:mr-2">
+                                {activeLesson.introduction}
+                            </p>
+                        </section>
+
+                        {/* 2. Teaching Blocks (Text + LaTeX) */}
+                        <div className="space-y-8">
+                            {activeLesson.content_blocks?.map((block: any, i: number) => (
+                                <div key={i} className="animate-in fade-in" style={{ animationDelay: `${i * 0.2}s` }}>
+                                    {block.type === 'text' && (
+                                        <p className="text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
+                                    )}
+                                    {block.type === 'latex' && (
+                                        <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center overflow-x-auto">
+                                            <div className="text-4xl text-emerald-400">
+                                                <SafeMath formula={block.formula} />
+                                            </div>
+                                        </div>
+                                    )}
+                                    {block.type === 'concept' && (
+                                        <div className="bg-amber-50 p-6 rounded-3xl border-2 border-amber-100 flex gap-4">
+                                            <Lightbulb className="w-8 h-8 text-amber-500 shrink-0" />
+                                            <p className="text-lg text-amber-900 font-bold italic">{block.body}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* 3. Guided Practice Block */}
+                        <div className="pt-12 border-t border-slate-100 space-y-8">
+                            <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
+                                <PencilRuler className="text-indigo-500 w-8 h-8" /> Practice Arena
+                            </h3>
+                            {activeLesson.practice_problems?.map((prob: any, i: number) => (
+                                <div key={i} className="p-8 bg-slate-50 rounded-[32px] border-2 border-slate-100 space-y-6">
+                                    <div className="text-xl font-bold text-slate-700">
+                                        <SafeMath formula={prob.question} />
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <Input placeholder="Your answer..." className="h-14 rounded-2xl text-xl font-mono border-2 focus:border-indigo-500 shadow-sm" />
+                                        <Button className="h-14 px-10 bg-indigo-600 rounded-2xl font-bold shadow-lg">Check</Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+
+                    <CardFooter className="bg-slate-50 p-10 border-t flex justify-between items-center">
+                        <div className="flex gap-2">
+                             {['📚', '🧬', '📐'].map((emoji, i) => <span key={i} className="text-2xl">{emoji}</span>)}
+                        </div>
+                        <Button 
+                            onClick={() => {
+                                confetti();
+                                toast({ title: "Lesson Complete!", description: "Progress saved to your transcript." });
+                                setActiveLesson(null);
+                            }}
+                            className="bg-green-600 hover:bg-green-700 px-12 h-16 rounded-2xl text-xl font-black shadow-xl"
+                        >
+                            Complete & Next <ArrowRight className="ml-2" />
+                        </Button>
+                    </CardFooter>
+                </Card>
+            ) : (
+                /* --- IF NO SELECTION: WELCOME STATE --- */
+                <div className="py-20 text-center space-y-4">
+                    <div className="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto shadow-xl mb-6">
+                        <BookOpen className="w-10 h-10 text-indigo-500" />
+                    </div>
+                    <h2 className="text-4xl font-black text-slate-800">Your Learning Path</h2>
+                    <p className="text-slate-400 font-medium max-w-md mx-auto">Select a Grade and Unit above to begin your professional academy curriculum.</p>
+                </div>
+            )}
+        </div>
+    );
 }
 
 // --- 1. ENGLISH MASTERY (COMPREHENSION) ---
@@ -595,19 +779,20 @@ export default function SeniorAcademyPage() {
                     </div>
                 </div>
 
-                <Tabs defaultValue="english" className="w-full">
+                <Tabs defaultValue="curriculum" className="w-full">
                     <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
+                        <TabsTrigger value="curriculum" className="rounded-2xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-black flex flex-col items-center justify-center gap-1"><Play className="w-5 h-5"/> Open & Go</TabsTrigger>
                         <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center justify-center gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
                         <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
                         <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
-                        <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex flex-col items-center justify-center gap-1"><PlusCircle className="w-5 h-5"/> Creator</TabsTrigger>
                     </TabsList>
                     
                     <div className="min-h-[700px]">
+                        <TabsContent value="curriculum" className="mt-0"><CurriculumPathway canEdit={canEdit} /></TabsContent>
                         <TabsContent value="english" className="mt-0"><EnglishMastery canEdit={canEdit} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
                         <TabsContent value="science" className="mt-0"><DiscoveryLab canEdit={canEdit} /></TabsContent>
-                        <TabsContent value="admin" className="mt-0"><AdminConsole /></TabsContent>
+                        {/* The AdminConsole is no longer needed as a separate tab */}
                     </div>
                 </Tabs>
             </div>
