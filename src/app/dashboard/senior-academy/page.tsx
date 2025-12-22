@@ -18,19 +18,10 @@ import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
-import { BlockMath, InlineMath } from 'react-katex';
+import { BlockMath } from 'react-katex';
 
-// Import the AI actions
+// Import the new AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
-
-// --- HELPER: TEXT TO SPEECH ---
-const speak = (text: string) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.95; 
-    window.speechSynthesis.speak(u);
-};
 
 // Helper to strip dollar signs or LaTeX wrappers added by AI or copy-pasting
 const cleanLatex = (formula: string = "") => {
@@ -351,6 +342,7 @@ function AdminConsole() {
         if (!topic) return;
         setLoading(true);
         
+        // Construct the context object to send to your AI flow
         const context = {
             topic,
             difficulty,
@@ -359,6 +351,7 @@ function AdminConsole() {
         };
 
         let res;
+        // Ensure your senior-actions functions are updated to receive (context) instead of just (topic)
         if (subject === 'english') res = await generateSeniorEnglish(context);
         else if (subject === 'math') res = await generateSeniorMath(context);
         else res = await generateSeniorLab(context);
@@ -485,17 +478,15 @@ function AdminConsole() {
                         </div>
                     )}
 
-                    {/* MANUAL MODE */}
                     {creationMode === 'manual' && subject === 'math' && (
                         <div className="space-y-6 animate-in fade-in">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-4">
                                     <Input placeholder="Problem Title" value={previewData?.title || ''} onChange={e => setPreviewData({...previewData, title: e.target.value})} className="rounded-xl border-2" />
-                                    <Input placeholder="Category (e.g. Algebra)" value={previewData?.category || 'Algebra'} onChange={e => setPreviewData({...previewData, category: e.target.value})} className="rounded-xl border-2" />
                                     <textarea 
-                                        placeholder="Paste LaTeX Formula here... (e.g. \frac{1}{2})" 
+                                        placeholder="Paste LaTeX Formula here... (e.g. \frac{x}{y})" 
                                         value={previewData?.latexFormula || ''}
-                                        onChange={e => setPreviewData({...previewData, latexFormula: e.target.value})}
+                                        onChange={e => setPreviewData({...previewData, latexFormula: e.target.value, category: 'Algebra'})}
                                         className="w-full h-32 p-4 border-2 rounded-xl font-mono text-sm outline-none"
                                     />
                                 </div>
@@ -505,12 +496,12 @@ function AdminConsole() {
                                     
                                     <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[100px] flex items-center justify-center">
                                         <div className="text-2xl text-center">
-                                            {previewData?.latexFormula ? <BlockMath math={cleanLatex(previewData.latexFormula)} /> : "Preview here..."}
+                                            {previewData?.latexFormula ? <BlockMath math={cleanLatex(previewData.latexFormula)} /> : <span className="text-slate-300">Preview here...</span>}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <Button onClick={() => handlePublish(previewData)} disabled={!previewData?.title || !previewData?.latexFormula} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black">PUBLISH MANUAL ENTRY</Button>
+                            <Button onClick={() => handlePublish(previewData)} disabled={!previewData?.title || !previewData?.latexFormula} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black">PUBLISH MANUAL PROBLEM</Button>
                         </div>
                     )}
 
@@ -536,10 +527,8 @@ export default function SeniorAcademyPage() {
                 <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                            <div className="bg-slate-900 p-3 rounded-2xl shadow-xl rotate-3">
-                                <Rocket className="h-8 w-8 text-white" />
-                            </div>
-                            <h1 className="text-6xl font-black text-slate-900 tracking-tighter">Senior Academy</h1>
+                            <div className="bg-slate-900 p-3 rounded-2xl shadow-xl"><Rocket className="h-8 w-8 text-white" /></div>
+                            <h1 className="text-6xl font-black text-slate-900 tracking-tight">Senior Academy</h1>
                         </div>
                         <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] ml-1">Academic Excellence & Logic</p>
                     </div>
@@ -567,100 +556,6 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-// Helper to strip dollar signs or LaTeX wrappers added by AI or copy-pasting
-const cleanLatex = (formula: string = "") => {
-    return formula
-        .replace(/\$\$/g, '')      // Remove double dollar signs
-        .replace(/\$/g, '')        // Remove single dollar signs
-        .replace(/\\\[/g, '')      // Remove \[
-        .replace(/\\\]/g, '')      // Remove \]
-        .trim();
-};
 
-function EnglishMastery({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore();
-    const [activeStory, setActiveStory] = useState<any>(null);
-    const [answers, setAnswers] = useState<string[]>([]);
-    
-    const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: library } = useCollection<any>(storiesQuery);
-
-    const checkAnswers = () => {
-        let correct = 0;
-        activeStory.quiz.forEach((q: any, i: number) => {
-            if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
-        });
-        if (correct === activeStory.quiz.length) {
-            confetti();
-            speak("Excellent analysis! You mastered this passage.");
-        } else {
-            speak(`Keep investigating. You have ${correct} correct answers.`);
-        }
-    };
-
-    return (
-        <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
-            <div className="lg:col-span-2 space-y-6">
-                {!activeStory ? (
-                    <div className="h-96 flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
-                        <BookOpen className="w-16 h-16 text-slate-200 mb-4" />
-                        <p className="text-slate-400 font-bold text-xl">Select a Literary Work</p>
-                    </div>
-                ) : (
-                    <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden">
-                        <div className="bg-indigo-600 p-8 text-white">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <Badge className="mb-4 bg-white/20 text-white border-none">{activeStory.genre}</Badge>
-                                    <CardTitle className="text-4xl font-black">{activeStory.title}</CardTitle>
-                                </div>
-                                <Button onClick={() => speak(activeStory.content)} variant="secondary" size="icon" className="rounded-full h-12 w-12"><Volume2/></Button>
-                            </div>
-                        </div>
-                        <CardContent className="p-10 space-y-10">
-                            <p className="text-2xl leading-relaxed text-slate-700 font-serif whitespace-pre-wrap">
-                                {activeStory.content}
-                            </p>
-                            <div className="bg-slate-50 p-8 rounded-[32px] space-y-8 border-2 border-slate-100">
-                                <h3 className="text-2xl font-black text-indigo-900 flex items-center gap-2">
-                                    <Brain className="text-indigo-500"/> Critical Analysis
-                                </h3>
-                                {activeStory.quiz.map((q: any, i: number) => (
-                                    <div key={i} className="space-y-3">
-                                        <p className="font-bold text-slate-800 text-lg">{i + 1}. {q.question}</p>
-                                        <Input 
-                                            placeholder="Analyze and answer..." 
-                                            value={answers[i] || ""} 
-                                            onChange={e => {
-                                                const newAns = [...answers];
-                                                newAns[i] = e.target.value;
-                                                setAnswers(newAns);
-                                            }}
-                                            className="h-14 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 bg-white"
-                                        />
-                                    </div>
-                                ))}
-                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-[20px] shadow-xl">
-                                    Submit for Review
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
-            <div className="space-y-4">
-                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Archive</h3>
-                <div className="space-y-3">
-                    {library?.map((s: any) => (
-                        <button key={s.id} onClick={() => { setActiveStory(s); setAnswers([]); }} className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all group ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500 shadow-md scale-105' : 'bg-white border-slate-100 hover:border-indigo-200'}`}>
-                            <h4 className="font-bold text-slate-800">{s.title}</h4>
-                            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">{s.genre} • {s.difficulty}</p>
-                        </button>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ... include your existing DiscoveryLab component here ...
+// ... DiscoveryLab is not included but assumed to exist ...
+function DiscoveryLab({ canEdit }: { canEdit: boolean }) { return <div>Discovery Lab Content</div> }
