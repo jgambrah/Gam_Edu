@@ -230,7 +230,9 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                     )}
                                     {block.type === 'latex' && (
                                         <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center">
-                                            <SafeMath formula={block.formula} />
+                                            <div className="text-4xl text-emerald-400">
+                                                <SafeMath formula={block.formula} />
+                                            </div>
                                         </div>
                                     )}
                                     {block.type === 'interactive' && (
@@ -319,8 +321,18 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const [manualFormula, setManualFormula] = useState('');
     const [manualInstruction, setManualInstruction] = useState('');
     const [manualAnswer, setManualAnswer] = useState('');
-    const [manualLoading, setManualLoading] = useState(false);
+    
+    // Science Manual State
+    const [manualLab, setManualLab] = useState({
+        background: '',
+        question: '',
+        hypothesisPrompt: '',
+        hypothesisOptions: ['', '', ''],
+        conclusion: '',
+        explanation: ''
+    });
 
+    const [manualLoading, setManualLoading] = useState(false);
 
     const handleAiGenerate = async () => {
         if (!topic.trim()) {
@@ -376,10 +388,10 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
             return;
         }
         setManualLoading(true);
-
+    
         let collectionName = '';
         let dataToSave: any = { title: manualTitle, createdAt: serverTimestamp() };
-
+    
         if (manualType === 'math') {
             collectionName = 'senior_math';
             dataToSave = {
@@ -389,16 +401,24 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                 instruction: manualInstruction,
                 answer: manualAnswer,
             };
-        } else { // Simplified for English/Science for now
+        } else if (manualType === 'english') {
             collectionName = 'senior_stories';
             dataToSave = {
                 ...dataToSave,
                 content: manualContent,
                 genre: manualCategory,
-                quiz: [], // Manual quiz creation can be complex, add later if needed
+                quiz: [], // Manual quiz is complex, keep simple
+            };
+        } else if (manualType === 'science') {
+            collectionName = 'senior_labs';
+            dataToSave = {
+                ...dataToSave,
+                category: manualCategory,
+                icon: '🔬', // Default icon
+                ...manualLab,
             };
         }
-
+    
         try {
             await addDoc(collection(firestore, collectionName), dataToSave);
             toast({ title: "Manual Content Saved!" });
@@ -426,6 +446,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[600px]">
                         <DialogHeader><DialogTitle>Manual Content Creator</DialogTitle></DialogHeader>
+                        <ScrollArea className="max-h-[70vh] pr-4">
                         <div className="space-y-4 py-2">
                              <Label>Content Type</Label>
                             <Select value={manualType} onValueChange={setManualType}>
@@ -433,6 +454,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                                 <SelectContent>
                                     <SelectItem value="math">Math Problem</SelectItem>
                                     <SelectItem value="english">English Passage</SelectItem>
+                                    <SelectItem value="science">Science Lab</SelectItem>
                                 </SelectContent>
                             </Select>
 
@@ -447,11 +469,24 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                                     <Input placeholder="Instruction (e.g. Solve for x)" value={manualInstruction} onChange={e => setManualInstruction(e.target.value)} />
                                     <Input placeholder="Final Answer" value={manualAnswer} onChange={e => setManualAnswer(e.target.value)} />
                                 </div>
-                            ) : (
+                            ) : manualType === 'english' ? (
                                 <div className="space-y-4 p-4 border rounded-md bg-slate-50">
                                     <Label>English Details</Label>
                                     <Input placeholder="Genre (e.g. Poetry)" value={manualCategory} onChange={e => setManualCategory(e.target.value)} />
                                     <Textarea placeholder="Full text of the passage..." value={manualContent} onChange={e => setManualContent(e.target.value)} rows={6}/>
+                                </div>
+                            ) : (
+                                <div className="space-y-4 p-4 border rounded-md bg-slate-50">
+                                    <Label>Science Lab Details</Label>
+                                    <Input placeholder="Category (e.g. Physics)" value={manualCategory} onChange={e => setManualCategory(e.target.value)} />
+                                    <Textarea placeholder="Background Info" value={manualLab.background} onChange={e => setManualLab({...manualLab, background: e.target.value})}/>
+                                    <Textarea placeholder="Research Question" value={manualLab.question} onChange={e => setManualLab({...manualLab, question: e.target.value})}/>
+                                    <Textarea placeholder="Hypothesis Prompt" value={manualLab.hypothesisPrompt} onChange={e => setManualLab({...manualLab, hypothesisPrompt: e.target.value})}/>
+                                    <Input placeholder="Hypothesis Option 1" value={manualLab.hypothesisOptions[0]} onChange={e => { const o = [...manualLab.hypothesisOptions]; o[0] = e.target.value; setManualLab({...manualLab, hypothesisOptions: o}); }} />
+                                    <Input placeholder="Hypothesis Option 2" value={manualLab.hypothesisOptions[1]} onChange={e => { const o = [...manualLab.hypothesisOptions]; o[1] = e.target.value; setManualLab({...manualLab, hypothesisOptions: o}); }} />
+                                    <Input placeholder="Hypothesis Option 3" value={manualLab.hypothesisOptions[2]} onChange={e => { const o = [...manualLab.hypothesisOptions]; o[2] = e.target.value; setManualLab({...manualLab, hypothesisOptions: o}); }} />
+                                    <Textarea placeholder="Conclusion" value={manualLab.conclusion} onChange={e => setManualLab({...manualLab, conclusion: e.target.value})}/>
+                                    <Textarea placeholder="Detailed Explanation" value={manualLab.explanation} onChange={e => setManualLab({...manualLab, explanation: e.target.value})}/>
                                 </div>
                             )}
 
@@ -459,6 +494,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                                 {manualLoading ? <Loader2 className="animate-spin"/> : "Save Manual Content"}
                             </Button>
                         </div>
+                        </ScrollArea>
                     </DialogContent>
                 </Dialog>
             </CardHeader>
@@ -490,7 +526,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
         </Card>
     );
 }
-
 
 // --- 1. ENGLISH MASTERY (COMPREHENSION) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
