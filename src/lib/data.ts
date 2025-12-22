@@ -54,6 +54,7 @@ import {
   ListOrdered,
   RefreshCcw,
   Rabbit,
+  Rocket
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -215,6 +216,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/early-years',
             title: 'Junior Campus',
             icon: Rabbit,
+            roles: ['Student', 'Parent', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/senior-academy',
+            title: 'Senior Academy',
+            icon: Rocket,
             roles: ['Student', 'Parent', 'Teacher', 'Administrator', 'Director'],
         },
         {

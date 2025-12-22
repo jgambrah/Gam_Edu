@@ -1,10 +1,11 @@
+
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -300,8 +301,8 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </Card>
             ) : (
-                <div className="text-center py-20 bg-slate-50 rounded-[40px] border-4 border-dashed border-slate-200">
-                    <Microscope className="w-20 h-20 text-slate-200 mx-auto mb-4" />
+                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed">
+                    <Microscope className="w-16 h-16 text-slate-200 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-slate-400">Select an Experiment</h2>
                 </div>
             )}
