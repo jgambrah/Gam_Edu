@@ -820,8 +820,8 @@ return (
           
            {mode === 'time' && (
               <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                  <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) % 12 * 30}deg)` }}></div>
-                  <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
+                  <div className="absolute top-1/2 left-1/2 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(typeof question.a === 'string' ? parseInt(question.a.split(':')[0], 10) : 12) * 30}deg)` }}></div>
+                  <div className="absolute top-1/2 left-1/2 w-1 h-12 bg-slate-400 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${((typeof question.a === 'string' ? parseInt(question.a.split(':')[1], 10) : 0) / 60) * 360}deg)` }}></div>
                   <div className="absolute top-2">12</div>
                   <div className="absolute bottom-2">6</div>
                   <div className="absolute left-2">9</div>
