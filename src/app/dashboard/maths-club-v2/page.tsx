@@ -11,7 +11,7 @@ import {
   Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { generateMathLessonAction } from '@/ai/flows/generate-math-lesson';
+import { generateMathLessonAction, GeneratedMathLesson } from '@/ai/flows/generate-math-lesson';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 
@@ -38,16 +38,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 
+// Helper to strip dollar signs or LaTeX wrappers
+const cleanLatex = (formula: string = "") => {
+    return formula
+        .replace(/\$\$/g, '')      // Remove double dollar signs
+        .replace(/\$/g, '')        // Remove single dollar signs
+        .replace(/\\\[/g, '')      // Remove \[
+        .replace(/\\\]/g, '')      // Remove \]
+        .trim();
+};
 
-interface LessonCard {
+interface LessonCard extends GeneratedMathLesson {
     id?: string;
-    title: string;
-    explanation: string;
-    example: string;
-    keyTerms: string[];
-    quizQuestion: string;
-    quizAnswer: string;
     timestamp?: any;
+    latexFormula?: string;
 }
 
 // --- SUB-COMPONENT: MATH EXPLORER ---
@@ -96,7 +100,6 @@ function MathExplorerTab() {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left: Input & Active Lesson */}
             <div className="lg:col-span-2 space-y-6">
                 <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
                     <CardHeader>
@@ -132,7 +135,9 @@ function MathExplorerTab() {
                                 <h4 className="font-semibold text-slate-700 mb-2">Key Terms / Formulas</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {currentLesson.keyTerms.map((term, i) => (
-                                        <Badge key={i} variant="secondary" className="bg-slate-100">{term}</Badge>
+                                        <div key={i} className="text-sm p-2 bg-slate-100 rounded-md border">
+                                            <BlockMath math={cleanLatex(term)} />
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -151,7 +156,6 @@ function MathExplorerTab() {
                     </Card>
                 )}
             </div>
-            {/* Right: History */}
             <div>
                  <Card className="h-full max-h-[600px] flex flex-col">
                     <CardHeader className="pb-3"><CardTitle className="text-md">Your Learning History</CardTitle></CardHeader>
