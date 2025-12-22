@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -36,7 +37,7 @@ import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 
 // Helper to strip dollar signs or LaTeX wrappers added by AI or copy-pasting
 const cleanLatex = (formula: string = "") => {
@@ -47,6 +48,7 @@ const cleanLatex = (formula: string = "") => {
         .replace(/\\\]/g, '')      // Remove \]
         .trim();
 };
+
 
 interface LessonCard extends GeneratedMathLesson {
     id?: string;
