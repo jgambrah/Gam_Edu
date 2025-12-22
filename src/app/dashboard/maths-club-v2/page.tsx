@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -37,15 +36,18 @@ import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 
-// Helper to strip dollar signs or LaTeX wrappers added by AI or copy-pasting
+// HELPER: Strips all "noise" from AI or Manual LaTeX inputs
 const cleanLatex = (formula: string = "") => {
+    if (!formula) return "";
     return formula
-        .replace(/\$\$/g, '')      // Remove double dollar signs
-        .replace(/\$/g, '')        // Remove single dollar signs
+        .replace(/\$\$/g, '')      // Remove $$
+        .replace(/\$/g, '')        // Remove $
         .replace(/\\\[/g, '')      // Remove \[
         .replace(/\\\]/g, '')      // Remove \]
+        .replace(/\\begin\{equation\}/g, '') // Remove equation blocks
+        .replace(/\\end\{equation\}/g, '')
         .trim();
 };
 
