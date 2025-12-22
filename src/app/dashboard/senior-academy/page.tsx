@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
@@ -229,7 +229,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                         <p className="text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
                                     )}
                                     {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center overflow-x-auto">
+                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-indigo-500 flex justify-center overflow-x-auto">
                                             <div className="text-4xl text-emerald-400">
                                                 <SafeMath formula={block.formula} />
                                             </div>
@@ -602,7 +602,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             <p className="text-[10px] font-black text-slate-400 mt-1 uppercase">{s.genre} • {s.difficulty}</p>
                         </button>
                         {canEdit && (
-                            <button onClick={() => handleDelete(s.id)} className="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4"/></button>
+                            <button onClick={() => handleDelete(s.id)} className="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100 z-10"><Trash2 className="w-4 h-4"/></button>
                         )}
                     </div>
                 ))}
@@ -704,7 +704,6 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                             className={`w-full text-left p-4 rounded-[24px] border-b-4 transition-all ${problem?.id === p.id ? 'bg-emerald-50 border-emerald-500' : 'bg-white border-slate-100 hover:border-emerald-200'}`}
                                         >
                                             <p className="font-bold text-slate-800">{p.title}</p>
-                                            <p className="text-[10px] text-slate-400 mt-1 uppercase">Difficulty: {p.difficulty || 'N/A'}</p>
                                         </button>
                                          {canEdit && (
                                             <button onClick={() => handleDelete(p.id)} className="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100 z-10"><Trash2 className="w-4 h-4"/></button>
