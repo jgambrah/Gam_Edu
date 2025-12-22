@@ -229,7 +229,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                         <p className="text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
                                     )}
                                     {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center">
+                                        <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center overflow-x-auto">
                                             <div className="text-4xl text-emerald-400">
                                                 <SafeMath formula={block.formula} />
                                             </div>
@@ -640,62 +640,82 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
         setProblem(null);
         forceRefetch();
     };
+    
+    const groupedProblems = useMemo(() => {
+        if (!dbProblems) return {};
+        return dbProblems.reduce((acc, p) => {
+            const category = p.category || 'General';
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(p);
+            return acc;
+        }, {} as Record<string, any[]>);
+    }, [dbProblems]);
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
-            <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar justify-center">
-                {isLoadingProblems ? (
-                    <Skeleton className="h-10 w-full" />
-                ) : (dbProblems || []).map((p: any) => (
-                    <div key={p.id} className="relative group">
-                        <Button 
-                            variant={problem?.id === p.id ? 'default' : 'outline'} 
-                            onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }} 
-                            className="rounded-full border-2 font-bold uppercase text-[10px] tracking-widest px-6 h-10"
-                        >
-                            {p.title}
-                        </Button>
-                        {canEdit && (
-                            <button onClick={() => handleDelete(p.id)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Trash2 className="w-3 h-3"/>
-                            </button>
-                        )}
+        <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in">
+            <div className="lg:col-span-2 order-2 lg:order-1">
+                {problem ? (
+                    <Card className="rounded-[50px] border-none shadow-2xl overflow-hidden bg-white">
+                        <div className="bg-emerald-600 p-10 text-center text-white">
+                            <Badge className="bg-emerald-400 mb-4">{problem.category}</Badge>
+                            <CardTitle className="text-4xl font-black">{problem.title}</CardTitle>
+                        </div>
+                        <CardContent className="p-12 space-y-10">
+                            <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl relative border-t-8 border-emerald-500">
+                                <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
+                                    <SafeMath formula={problem.latexFormula} />
+                                </div>
+                            </div>
+                            <div className="text-center space-y-8">
+                                <p className="text-2xl font-medium text-slate-600 italic">{problem.instruction}</p>
+                                <div className="flex flex-col items-center gap-4">
+                                    <Input value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Enter Solution..." className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm"/>
+                                    <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">VERIFY ANSWER</Button>
+                                </div>
+                            </div>
+                            {feedback && (
+                                <div className={`p-6 rounded-[24px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                                    <p className="text-xl font-black">{feedback.msg}</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
+                        <Sigma className="w-20 h-20 text-slate-200 mb-4" />
+                        <p className="text-slate-400 font-bold text-2xl">Select a Math Mission</p>
                     </div>
-                ))}
+                )}
             </div>
 
-            {problem ? (
-                <Card className="rounded-[50px] border-none shadow-2xl overflow-hidden bg-white">
-                    <div className="bg-emerald-600 p-10 text-center text-white">
-                        <Badge className="bg-emerald-400 mb-4">{problem.category}</Badge>
-                        <CardTitle className="text-4xl font-black">{problem.title}</CardTitle>
-                    </div>
-                    <CardContent className="p-12 space-y-10">
-                        <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl relative border-t-8 border-emerald-500">
-                            <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
-                                <SafeMath formula={problem.latexFormula} />
+            <div className="lg:col-span-1 order-1 lg:order-2 space-y-4">
+                 <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Problem Archive</h3>
+                 <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                    {isLoadingProblems ? (
+                        <Skeleton className="h-40 w-full"/>
+                    ) : Object.entries(groupedProblems).map(([category, problems]) => (
+                        <div key={category}>
+                            <h4 className="font-bold text-slate-600 mb-2">{category}</h4>
+                            <div className="space-y-2">
+                                {problems.map((p: any) => (
+                                    <div key={p.id} className="relative group">
+                                        <button 
+                                            onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }} 
+                                            className={`w-full text-left p-4 rounded-[24px] border-b-4 transition-all ${problem?.id === p.id ? 'bg-emerald-50 border-emerald-500' : 'bg-white border-slate-100 hover:border-emerald-200'}`}
+                                        >
+                                            <p className="font-bold text-slate-800">{p.title}</p>
+                                            <p className="text-[10px] text-slate-400 mt-1 uppercase">Difficulty: {p.difficulty || 'N/A'}</p>
+                                        </button>
+                                         {canEdit && (
+                                            <button onClick={() => handleDelete(p.id)} className="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100 z-10"><Trash2 className="w-4 h-4"/></button>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                        <div className="text-center space-y-8">
-                            <p className="text-2xl font-medium text-slate-600 italic">{problem.instruction}</p>
-                            <div className="flex flex-col items-center gap-4">
-                                <Input value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Enter Solution..." className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm"/>
-                                <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">VERIFY ANSWER</Button>
-                            </div>
-                        </div>
-                        {feedback && (
-                            <div className={`p-6 rounded-[24px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
-                                <p className="text-xl font-black">{feedback.msg}</p>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="text-center py-32 bg-white rounded-[50px] border-4 border-dashed border-slate-50">
-                    <Sigma className="w-20 h-20 text-slate-100 mx-auto mb-4" />
-                    <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest">Awaiting Computation</h2>
-                </div>
-            )}
+                    ))}
+                 </div>
+            </div>
         </div>
     );
 }
