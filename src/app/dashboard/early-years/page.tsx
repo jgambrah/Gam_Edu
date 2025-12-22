@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input'; 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'; 
 import { 
-  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Edit 
+  Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, Edit, Plus
 } from 'lucide-react'; 
 import confetti from 'canvas-confetti'; 
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions'; 
@@ -249,7 +249,7 @@ return (
                             <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 transition-opacity" onClick={async () => {
                                 if(firestore) await deleteDoc(doc(firestore, 'junior_phonics', item.id));
                             }}>
-                                <Trash2 className="w-4 w-4"/>
+                                <Trash2 className="w-4 h-4"/>
                             </Button>
                         </div>
                     ))}
@@ -292,7 +292,7 @@ const startNewGame = useCallback(() => {
     setGameTarget(targetSound);
     setGameOptions(shuffledOptions.sort(() => Math.random() - 0.5));
     speak(`Find the sound: ${targetSound}`);
-}, [soundGroups]);
+}, []);
 
 return (
     <div className="space-y-6">
@@ -2070,5 +2070,3 @@ return (
 
 ); 
 }
-
-    
