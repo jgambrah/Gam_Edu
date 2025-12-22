@@ -38,7 +38,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 
-// Helper to strip dollar signs or LaTeX wrappers
+// Helper to strip dollar signs or LaTeX wrappers added by AI or copy-pasting
 const cleanLatex = (formula: string = "") => {
     return formula
         .replace(/\$\$/g, '')      // Remove double dollar signs
