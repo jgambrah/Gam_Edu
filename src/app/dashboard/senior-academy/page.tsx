@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -19,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
 
-// Import the new AI actions
+// Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
 
 // --- HELPER: TEXT TO SPEECH ---
@@ -34,10 +35,10 @@ const speak = (text: string) => {
 // --- HELPER: LATEX CLEANER ---
 const cleanLatex = (formula: string = "") => {
     return formula
-        .replace(/\$\$/g, '')      
-        .replace(/\$/g, '')        
-        .replace(/\\\[/g, '')      
-        .replace(/\\\]/g, '')      
+        .replace(/\$\$/g, '')      // Remove double dollar signs
+        .replace(/\$/g, '')        // Remove single dollar signs
+        .replace(/\\\[/g, '')      // Remove \[
+        .replace(/\\\]/g, '')      // Remove \]
         .trim();
 };
 
@@ -92,7 +93,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                         <Input placeholder="Type response..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-14 rounded-2xl border-2"/>
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-2xl shadow-xl">Submit for Review</Button>
+                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-[20px] shadow-xl">Submit for Review</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -100,14 +101,12 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             </div>
             <div className="space-y-4">
                 <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Archive</h3>
-                <div className="space-y-3">
-                    {library?.map((s: any) => (
-                        <button key={s.id} onClick={() => { setActiveStory(s); setAnswers([]); }} className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500 shadow-md' : 'bg-white border-slate-100'}`}>
-                            <h4 className="font-bold text-slate-800">{s.title}</h4>
-                            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase">{s.genre} • {s.difficulty}</p>
-                        </button>
-                    ))}
-                </div>
+                {library?.map((s: any) => (
+                    <button key={s.id} onClick={() => { setActiveStory(s); setAnswers([]); }} className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500' : 'bg-white border-slate-100'}`}>
+                        <h4 className="font-bold text-slate-800">{s.title}</h4>
+                        <p className="text-[10px] font-black text-slate-400 mt-1 uppercase">{s.genre} • {s.difficulty}</p>
+                    </button>
+                ))}
             </div>
         </div>
     );
@@ -144,7 +143,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
+        <div className="max-w-5xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
             <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar justify-center">
                 {dbProblems?.map((p: any) => (
                     <div key={p.id} className="relative group">
@@ -166,7 +165,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 
             {problem ? (
                 <Card className="rounded-[50px] border-none shadow-2xl overflow-hidden bg-white">
-                    <div className="bg-emerald-600 p-10 text-center text-white">
+                    <div className="bg-emerald-600 p-10 text-center text-white relative">
                         <Badge className="bg-emerald-400 mb-4">{problem.category}</Badge>
                         <CardTitle className="text-4xl font-black">{problem.title}</CardTitle>
                     </div>
@@ -175,12 +174,20 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
                                 <BlockMath math={cleanLatex(problem.latexFormula)} />
                             </div>
+                            <div className="absolute top-4 right-6 text-slate-700 font-mono text-[10px] uppercase tracking-tighter">Mathematical Logic Engine</div>
                         </div>
                         <div className="text-center space-y-8">
                             <p className="text-2xl font-medium text-slate-600 italic">"{problem.instruction}"</p>
                             <div className="flex flex-col items-center gap-4">
-                                <Input value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Enter Solution..." className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm"/>
-                                <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">VERIFY ANSWER</Button>
+                                <Input 
+                                    value={userInput} 
+                                    onChange={e => setUserInput(e.target.value)} 
+                                    placeholder="Enter Solution..." 
+                                    className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm focus:border-emerald-500 transition-all shadow-inner"
+                                />
+                                <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">
+                                    VERIFY ANSWER
+                                </Button>
                             </div>
                         </div>
                         {feedback && (
@@ -223,7 +230,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                 ))}
             </div>
 
-            {lab ? (
+            {lab && (
                 <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden animate-in slide-in-from-right-4">
                     <div className="grid md:grid-cols-3">
                         <div className="bg-slate-900 text-white p-10 space-y-8">
@@ -235,11 +242,6 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                     </div>
                                 ))}
                             </div>
-                            <hr className="opacity-10"/>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold text-blue-400 tracking-widest uppercase">Field Notes</label>
-                                <p className="text-sm opacity-60 leading-relaxed">{lab.background}</p>
-                            </div>
                         </div>
                         <div className="md:col-span-2 p-10 bg-white">
                             {stage === 'hypothesis' && (
@@ -247,30 +249,22 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                     <h2 className="text-3xl font-black text-slate-800">Research Question</h2>
                                     <p className="text-xl text-slate-600 italic">"{lab.question}"</p>
                                     <div className="p-8 bg-blue-50 rounded-3xl border-2 border-blue-100">
-                                        <h4 className="font-bold text-blue-800 mb-2">Form your Hypothesis</h4>
                                         <p className="text-slate-600 mb-4">{lab.hypothesisPrompt}</p>
                                         <div className="grid grid-cols-2 gap-3">
                                             {lab.hypothesisOptions.map((opt: string) => (
-                                                <Button key={opt} variant="outline" className="bg-white border-2 hover:bg-blue-50" onClick={() => { speak(`Selected hypothesis: ${opt}`); setStage('experiment'); }}>{opt}</Button>
+                                                <Button key={opt} variant="outline" className="bg-white border-2 hover:bg-blue-50 font-bold" onClick={() => setStage('experiment')}>{opt}</Button>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
                             )}
-
                             {stage === 'experiment' && (
                                 <div className="space-y-6 text-center">
-                                    <h2 className="text-3xl font-black text-slate-800">Observation Phase</h2>
-                                    <div className="aspect-video bg-slate-100 rounded-[32px] flex items-center justify-center border-4 border-dashed border-slate-200">
-                                        <div className="text-center space-y-4">
-                                            <div className="text-9xl animate-bounce my-10">{lab.icon}</div>
-                                            <Button onClick={() => setStage('conclusion')} className="bg-orange-500 hover:bg-orange-600 px-10 rounded-full font-bold">Collect Data</Button>
-                                        </div>
-                                    </div>
-                                    <p className="text-center text-slate-400 font-bold uppercase tracking-widest">Watching the simulation...</p>
+                                    <h2 className="text-3xl font-black text-slate-800">Experimentation</h2>
+                                    <div className="text-9xl animate-bounce my-10">{lab.icon}</div>
+                                    <Button onClick={() => setStage('conclusion')} className="bg-orange-500 hover:bg-orange-600 px-10 rounded-full font-bold">Collect Data</Button>
                                 </div>
                             )}
-
                             {stage === 'conclusion' && (
                                 <div className="space-y-6">
                                     <h2 className="text-3xl font-black text-green-800">Findings</h2>
@@ -284,33 +278,45 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                         </div>
                     </div>
                 </Card>
-            ) : (
-                <div className="text-center py-20 bg-slate-50 rounded-[40px] border-4 border-dashed border-slate-200">
-                    <Microscope className="w-20 h-20 text-slate-200 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-slate-400">Select an Experiment</h2>
-                </div>
             )}
         </div>
     );
 }
 
-// --- 4. ADMIN CONSOLE (AI & MANUAL HYBRID) ---
+// --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
 function AdminConsole() {
     const firestore = useFirestore();
     const { toast } = useToast();
+    
+    // Creation State
     const [subject, setSubject] = useState<'english' | 'math' | 'science'>('math');
     const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
+    const [loading, setLoading] = useState(false);
     
-    // AI Controls
+    // AI Generation States
     const [topic, setTopic] = useState("");
     const [difficulty, setDifficulty] = useState("Intermediate");
     const [gradeLevel, setGradeLevel] = useState("Grade 6");
     const [extraInstructions, setExtraInstructions] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [previewData, setPreviewData] = useState<any>(null);
-
-    // Manual Math state
-    const [manualMath, setManualMath] = useState({ title: '', category: 'Algebra', latexFormula: '', instruction: '', answer: '' });
+    
+    // Shared Data State (for both AI preview and Manual entry)
+    const [payload, setPayload] = useState<any>({
+        title: '',
+        category: 'Algebra',
+        latexFormula: '',
+        instruction: '',
+        answer: '',
+        content: '',
+        genre: 'Narrative',
+        quiz: [{ question: '', answer: '' }],
+        background: '',
+        question: '',
+        hypothesisPrompt: '',
+        hypothesisOptions: ['Option A', 'Option B'],
+        conclusion: '',
+        explanation: '',
+        icon: '🔬'
+    });
 
     const handleAIAction = async () => {
         if (!topic) return;
@@ -322,74 +328,141 @@ function AdminConsole() {
         else res = await generateSeniorLab(context);
 
         if (res.success) {
-            setPreviewData(res.data);
-            toast({ title: "AI Generation Complete" });
+            setPayload(res.data);
+            toast({ title: "AI Magic Complete!", description: "Review and publish below." });
         }
         setLoading(false);
     };
 
-    const handlePublish = async (dataToPublish: any) => {
-        if (!firestore || !dataToPublish) return;
-        const colMap: any = { english: 'senior_stories', math: 'senior_math', science: 'senior_labs' };
-        await addDoc(collection(firestore, colMap[subject]), { ...dataToPublish, createdAt: serverTimestamp() });
-        setPreviewData(null);
+    const handlePublish = async () => {
+        if (!firestore || !payload.title) {
+            toast({ title: "Error", description: "Title is required to publish.", variant: "destructive" });
+            return;
+        };
+        const colMap: any = { 
+            english: 'senior_stories', 
+            math: 'senior_math', 
+            science: 'senior_labs' 
+        };
+        
+        await addDoc(collection(firestore, colMap[subject]), { 
+            ...payload, 
+            createdAt: serverTimestamp() 
+        });
+        
+        // Reset
+        setPayload({ title: '', category: 'Algebra', latexFormula: '', instruction: '', answer: '', content: '', genre: 'Narrative', quiz: [{ question: '', answer: '' }], background: '', question: '', hypothesisPrompt: '', hypothesisOptions: ['Option A', 'Option B'], conclusion: '', explanation: '', icon: '🔬' });
         setTopic("");
-        setExtraInstructions("");
-        setManualMath({ title: '', category: 'Algebra', latexFormula: '', instruction: 'Simplify.', answer: '' });
-        toast({ title: "Published Successfully!" });
+        toast({ title: "Success!", description: "Module is now live for students." });
     };
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in">
-            <Card className="rounded-[40px] border-4 border-slate-900 bg-white shadow-2xl">
+        <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in">
+            <Card className="rounded-[40px] border-4 border-slate-900 bg-white overflow-hidden shadow-2xl">
+                {/* Header with Mode Toggles */}
                 <div className="bg-slate-900 p-8 text-white flex flex-col md:flex-row justify-between items-center gap-6">
-                    <h2 className="text-2xl font-black flex items-center gap-2"><Sparkles className="text-yellow-400" /> Professor's Creator Suite</h2>
-                    <div className="flex bg-slate-800 p-1 rounded-2xl">
-                        <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => { setCreationMode('ai'); setPreviewData(null); }} className="rounded-xl font-bold text-xs"><Wand2 className="w-3 h-3 mr-2"/>AI Magic</Button>
-                        <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => { setCreationMode('manual'); setPreviewData(null); }} className="rounded-xl font-bold text-xs"><PenTool className="w-3 h-3 mr-2"/>Manual Entry</Button>
+                    <h2 className="text-2xl font-black flex items-center gap-2">
+                        <PenTool className="text-yellow-400 w-6 h-6" /> Professor's Desk
+                    </h2>
+                    
+                    <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
+                        <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => {setCreationMode('ai'); setPayload({});}} className="rounded-xl font-bold text-xs h-9">
+                            <Sparkles className="w-3 h-3 mr-2 text-blue-400"/> AI Magic
+                        </Button>
+                        <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => {setCreationMode('manual'); setPayload({});}} className="rounded-xl font-bold text-xs h-9">
+                            <PenTool className="w-3 h-3 mr-2 text-emerald-400"/> Manual Entry
+                        </Button>
+                    </div>
+
+                    <div className="flex gap-2 bg-slate-800 p-1 rounded-xl">
+                        {['english', 'math', 'science'].map((m: any) => (
+                            <Button key={m} variant={subject === m ? 'secondary' : 'ghost'} onClick={() => setSubject(m)} className="capitalize font-black text-[10px] px-4 h-8">{m}</Button>
+                        ))}
                     </div>
                 </div>
+
                 <CardContent className="p-10 space-y-8">
+                    {/* UI FOR AI MODE */}
                     {creationMode === 'ai' && (
-                         <div className="space-y-6">
-                            <div className="grid md:grid-cols-3 gap-4 bg-slate-50 p-6 rounded-3xl border-2 border-slate-100">
-                                <Input placeholder="Topic..." value={topic} onChange={e => setTopic(e.target.value)} className="rounded-xl"/>
-                                <select value={difficulty} onChange={e => setDifficulty(e.target.value)} className="rounded-xl px-3 font-medium text-sm outline-none">
-                                    <option>Introductory</option><option>Intermediate</option><option>Advanced</option>
-                                </select>
-                                <select value={gradeLevel} onChange={e => setGradeLevel(e.target.value)} className="rounded-xl px-3 font-medium text-sm outline-none">
-                                    <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Junior High</option>
-                                </select>
-                                <textarea placeholder="Specific instructions for AI..." value={extraInstructions} onChange={e => setExtraInstructions(e.target.value)} className="md:col-span-3 w-full h-20 rounded-2xl p-4 text-sm"/>
-                            </div>
-                            <div className="flex gap-2 justify-center">
-                                {['english', 'math', 'science'].map((m: any) => <Button key={m} variant={subject === m ? 'default' : 'outline'} onClick={() => setSubject(m)} className="capitalize rounded-full font-black">{m}</Button>)}
-                            </div>
-                            <Button onClick={handleAIAction} disabled={loading || !topic} className="w-full h-16 bg-indigo-600 rounded-2xl text-xl font-black">
-                                {loading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} GENERATE MODULE
-                            </Button>
-                            {previewData && (
-                                <div className="space-y-6 border-t pt-8">
-                                    <Button onClick={() => handlePublish(previewData)} className="w-full bg-green-600">Publish Preview</Button>
-                                    <div className="p-8 bg-slate-900 rounded-3xl"><BlockMath math={cleanLatex(previewData.latexFormula)} /></div>
+                        <div className="space-y-6">
+                            <div className="grid md:grid-cols-3 gap-4 bg-slate-50 p-6 rounded-[32px] border-2 border-slate-100">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Topic</label>
+                                    <Input placeholder="e.g. Fractions, Gravity..." value={topic} onChange={e => setTopic(e.target.value)} className="rounded-xl"/>
                                 </div>
-                            )}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Difficulty</label>
+                                    <select className="w-full h-10 rounded-xl px-3 font-bold text-sm bg-white border border-slate-200 outline-none" value={difficulty} onChange={e => setDifficulty(e.target.value)}>
+                                        <option value="Introductory">Introductory</option>
+                                        <option value="Intermediate">Intermediate</option>
+                                        <option value="Advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Grade</label>
+                                    <select className="w-full h-10 rounded-xl px-3 font-bold text-sm bg-white border border-slate-200 outline-none" value={gradeLevel} onChange={e => setGradeLevel(e.target.value)}>
+                                        <option value="Grade 4">Grade 4</option>
+                                        <option value="Grade 5">Grade 5</option>
+                                        <option value="Grade 6">Grade 6</option>
+                                    </select>
+                                </div>
+                                <textarea placeholder="Specific AI instructions (Optional)..." className="md:col-span-3 w-full h-20 rounded-2xl p-4 text-sm bg-white border border-slate-200 outline-none shadow-inner" value={extraInstructions} onChange={e => setExtraInstructions(e.target.value)} />
+                            </div>
+                            <Button onClick={handleAIAction} disabled={loading || !topic} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 rounded-2xl text-xl font-black shadow-xl">
+                                {loading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} GENERATE WITH AI
+                            </Button>
                         </div>
                     )}
-                    {creationMode === 'manual' && subject === 'math' && (
-                        <div className="space-y-6">
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <Input placeholder="Title" value={manualMath.title} onChange={e => setManualMath({...manualMath, title: e.target.value})} />
-                                <Input placeholder="Instruction" value={manualMath.instruction} onChange={e => setManualMath({...manualMath, instruction: e.target.value})} />
-                                <textarea placeholder="LaTeX" value={manualMath.latexFormula} onChange={e => setManualMath({...manualMath, latexFormula: e.target.value})} className="md:col-span-2 h-24 p-2"/>
-                                <Input placeholder="Answer" value={manualMath.answer} onChange={e => setManualMath({...manualMath, answer: e.target.value})} />
+
+                    {/* UI FOR MANUAL MODE */}
+                    {creationMode === 'manual' && (
+                        <div className="space-y-6 animate-in slide-in-from-top-4">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {subject === 'math' && (
+                                    <>
+                                    <div className="space-y-4">
+                                        <Input placeholder="Problem Title" value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} className="h-12 rounded-xl font-bold" />
+                                        <Input placeholder="Category (e.g. Calculus)" value={payload.category} onChange={e => setPayload({...payload, category: e.target.value})} className="rounded-xl border-2" />
+                                        <textarea placeholder="Paste LaTeX Formula here (e.g. \frac{x}{y})" value={payload.latexFormula} onChange={e => setPayload({...payload, latexFormula: e.target.value})} className="w-full h-32 p-4 border-2 rounded-xl font-mono text-sm" />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <Input placeholder="Instruction for student" value={payload.instruction} onChange={e => setPayload({...payload, instruction: e.target.value})} className="rounded-xl border-2" />
+                                        <Input placeholder="Correct Answer" value={payload.answer} onChange={e => setPayload({...payload, answer: e.target.value})} className="rounded-xl border-2" />
+                                        <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[140px] flex items-center justify-center">
+                                            {payload.latexFormula ? <BlockMath math={cleanLatex(payload.latexFormula)} /> : <span className="text-slate-300 italic text-sm text-center">LaTeX Preview</span>}
+                                        </div>
+                                    </div>
+                                    </>
+                                )}
+                                {subject === 'english' && (
+                                     <>
+                                        <Input placeholder="Passage Title" value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} className="h-12 rounded-xl font-bold col-span-2" />
+                                        <textarea placeholder="Story/Passage Content..." value={payload.content} onChange={e => setPayload({...payload, content: e.target.value})} className="col-span-2 w-full h-40 p-4 border rounded-2xl" />
+                                        {/* Simplified quiz input for manual */}
+                                        <Input placeholder="Quiz Question 1" value={payload.quiz?.[0]?.question} onChange={e => setPayload({...payload, quiz: [{...payload.quiz?.[0], question: e.target.value}]})} />
+                                        <Input placeholder="Answer 1" value={payload.quiz?.[0]?.answer} onChange={e => setPayload({...payload, quiz: [{...payload.quiz?.[0], answer: e.target.value}]})} />
+                                     </>
+                                )}
                             </div>
-                             <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[100px] flex items-center justify-center">
-                                 <div className="text-2xl text-center">
-                                     {manualMath.latexFormula ? <BlockMath math={cleanLatex(manualMath.latexFormula)} /> : "Preview"}
-                                 </div>
-                             </div>
-                            <Button onClick={() => handlePublish(manualMath)} className="w-full">PUBLISH MANUAL</Button>
+                            <Button onClick={handlePublish} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:bg-black">
+                                PUBLISH MANUAL {subject.toUpperCase()} MODULE
+                            </Button>
+                        </div>
+                    )}
+                    
+                    {/* AI PREVIEW & PUBLISH BAR */}
+                    {creationMode === 'ai' && payload.title && (
+                        <div className="space-y-6 border-t pt-8 animate-in slide-in-from-bottom-4">
+                            <div className="flex justify-between items-center bg-indigo-50 p-4 rounded-2xl">
+                                <h3 className="text-xl font-black text-indigo-900">AI Preview: {payload.title}</h3>
+                                <div className="flex gap-2">
+                                    <Button onClick={() => setPayload({})} variant="ghost" className="text-red-500 font-bold">Discard</Button>
+                                    <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700 rounded-xl px-8 shadow-lg font-bold">Publish to Students</Button>
+                                </div>
+                            </div>
+                            <div className="p-8 bg-slate-900 rounded-[32px] border-4 border-slate-800">
+                                {subject === 'math' ? <div className="text-4xl text-emerald-400 text-center py-6"><BlockMath math={cleanLatex(payload.latexFormula)} /></div> : <p className="text-slate-300 italic line-clamp-3 leading-relaxed">{payload.content || payload.background}</p>}
+                            </div>
                         </div>
                     )}
                 </CardContent>
@@ -412,16 +485,15 @@ export default function SeniorAcademyPage() {
                             <div className="bg-slate-900 p-3 rounded-2xl shadow-xl"><Rocket className="h-8 w-8 text-white" /></div>
                             <h1 className="text-6xl font-black text-slate-900 tracking-tight">Senior Academy</h1>
                         </div>
-                        <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] ml-1">Excellence & Academic Rigor</p>
                     </div>
                 </div>
 
                 <Tabs defaultValue="english" className="w-full">
                     <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
-                        <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col gap-1"><Languages/>English</TabsTrigger>
-                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col gap-1"><Sigma/>Math</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col gap-1"><Microscope/>Discovery</TabsTrigger>
-                        <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex flex-col gap-1"><PlusCircle/>Creator</TabsTrigger>
+                        <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
+                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
+                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
+                        <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex flex-col gap-1"><PlusCircle className="w-5 h-5"/> Creator</TabsTrigger>
                     </TabsList>
                     
                     <div className="min-h-[700px]">
