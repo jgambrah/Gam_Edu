@@ -5,14 +5,14 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb, Atom
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb, Atom, Building2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -86,7 +86,6 @@ interface GeoGebraProps {
 
 function GeoGebraInteractive({ materialId, title, height = 500 }: GeoGebraProps) {
   // Constructing the URL with "Clean UI" parameters
-  // ai: false (hide menu), sbr: false (hide sidebar), stb: false (hide toolbar)
   const embedUrl = `https://www.geogebra.org/material/iframe/id/${materialId}/width/800/height/${height}/ai/false/asb/false/sbr/false/cd/false/ize/false/msb/false/stb/false/sts/false/sri/false`;
 
   return (
@@ -227,10 +226,8 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                     )}
                                     
                                     {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-emerald-500 flex justify-center overflow-x-auto">
-                                            <div className="text-4xl text-emerald-400">
-                                                <SafeMath formula={block.formula} />
-                                            </div>
+                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-indigo-500 flex justify-center">
+                                            <SafeMath formula={block.formula} />
                                         </div>
                                     )}
 
@@ -299,6 +296,104 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
     );
 }
 
+// --- TEACHER/ADMIN CONTENT GENERATOR ---
+function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    
+    // Form State
+    const [subject, setSubject] = useState('math');
+    const [topic, setTopic] = useState('');
+    const [gradeLevel, setGradeLevel] = useState('SHS');
+    const [difficulty, setDifficulty] = useState('University'); // Match existing labels
+    const [instructions, setInstructions] = useState('');
+    
+    const [loading, setLoading] = useState(false);
+
+    const handleGenerate = async () => {
+        if (!topic.trim()) {
+            toast({ variant: 'destructive', title: 'Topic is required' });
+            return;
+        }
+        setLoading(true);
+
+        const context = { topic, gradeLevel, difficulty, instructions };
+        let collectionName = '';
+        let aiAction;
+
+        switch (subject) {
+            case 'english':
+                collectionName = 'senior_stories';
+                aiAction = generateSeniorEnglish;
+                break;
+            case 'math':
+                collectionName = 'senior_math';
+                aiAction = generateSeniorMath;
+                break;
+            case 'science':
+                collectionName = 'senior_labs';
+                aiAction = generateSeniorLab;
+                break;
+            default:
+                setLoading(false);
+                return;
+        }
+
+        try {
+            const result = await aiAction(context);
+            if (result.success && result.data && firestore) {
+                await addDoc(collection(firestore, collectionName), {
+                    ...result.data,
+                    createdAt: serverTimestamp()
+                });
+                toast({ title: 'Content Created!', description: `${subject} module added successfully.` });
+                onContentAdded(); // Notify parent to refetch
+            } else {
+                throw new Error(result.error || "AI failed to generate content.");
+            }
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Error", description: e.message });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Card className="bg-slate-800 text-white shadow-2xl border-indigo-900">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-indigo-300"><Wand2 /> AI Admin Console</CardTitle>
+                <CardDescription className="text-slate-400">Generate advanced learning modules for students.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <Label className="text-slate-400 text-xs">Subject</Label>
+                        <Select value={subject} onValueChange={setSubject}>
+                            <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue/></SelectTrigger>
+                            <SelectContent><SelectItem value="math">Math</SelectItem><SelectItem value="english">English</SelectItem><SelectItem value="science">Science</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                     <div className="space-y-1">
+                        <Label className="text-slate-400 text-xs">Difficulty</Label>
+                        <Select value={difficulty} onValueChange={setDifficulty}>
+                            <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue/></SelectTrigger>
+                            <SelectContent><SelectItem value="JHS">JHS</SelectItem><SelectItem value="SHS">SHS</SelectItem><SelectItem value="University">University</SelectItem></SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div className="space-y-1">
+                    <Label className="text-slate-400 text-xs">Topic</Label>
+                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Quantum Physics, Shakespeare" className="bg-slate-700 border-slate-600 text-white" />
+                </div>
+                <Button onClick={handleGenerate} disabled={loading || !topic} className="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold h-12">
+                    {loading ? <Loader2 className="animate-spin"/> : "Generate Content"}
+                </Button>
+            </CardContent>
+        </Card>
+    );
+}
+
+
 // --- 1. ENGLISH MASTERY (COMPREHENSION) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
@@ -306,9 +401,10 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const [answers, setAnswers] = useState<string[]>([]);
     
     const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: library } = useCollection<any>(storiesQuery);
+    const { data: library, forceRefetch } = useCollection<any>(storiesQuery);
 
     const checkAnswers = () => {
+        if (!activeStory || !activeStory.quiz) return;
         let correct = 0;
         activeStory.quiz.forEach((q: any, i: number) => {
             if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
@@ -320,10 +416,19 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             speak(`You have ${correct} correct answers. Keep investigating.`);
         }
     };
+    
+    const handleDelete = async (id: string) => {
+        if (!firestore || !confirm("Delete this story?")) return;
+        await deleteDoc(doc(firestore, 'senior_stories', id));
+        setActiveStory(null); // Clear selection
+        forceRefetch();
+    };
 
     return (
         <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in">
             <div className="lg:col-span-2 space-y-6">
+                {canEdit && <AdminConsole onContentAdded={forceRefetch} />}
+                
                 {!activeStory ? (
                     <div className="h-96 flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
                         <BookOpen className="w-16 h-16 text-slate-200 mb-4" />
@@ -359,10 +464,15 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             <div className="space-y-4">
                 <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Archive</h3>
                 {library?.map((s: any) => (
-                    <button key={s.id} onClick={() => { setActiveStory(s); setAnswers([]); }} className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500' : 'bg-white border-slate-100'}`}>
-                        <h4 className="font-bold text-slate-800">{s.title}</h4>
-                        <p className="text-[10px] font-black text-slate-400 mt-1 uppercase">{s.genre} • {s.difficulty}</p>
-                    </button>
+                    <div key={s.id} className="relative group">
+                        <button onClick={() => { setActiveStory(s); setAnswers([]); }} className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500' : 'bg-white border-slate-100'}`}>
+                            <h4 className="font-bold text-slate-800">{s.title}</h4>
+                            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase">{s.genre} • {s.difficulty}</p>
+                        </button>
+                        {canEdit && (
+                            <button onClick={() => handleDelete(s.id)} className="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4"/></button>
+                        )}
+                    </div>
                 ))}
             </div>
         </div>
@@ -566,6 +676,11 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
 export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
+    
+    // This is a dummy function. In a real app, you'd fetch data or trigger a re-render.
+    const handleContentUpdate = () => {
+        console.log("Content updated. Re-fetching data...");
+    };
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-12 font-sans">
@@ -579,6 +694,9 @@ export default function SeniorAcademyPage() {
                         <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] ml-1">Excellence & Academic Rigor</p>
                     </div>
                 </div>
+
+                {/* This will render ONLY if user is a teacher or admin */}
+                {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
 
                 <Tabs defaultValue="curriculum" className="w-full">
                     <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
@@ -596,18 +714,17 @@ export default function SeniorAcademyPage() {
                     </div>
                 </Tabs>
             </div>
+             <style jsx global>{`
+              .math-container {
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+              }
+              .katex-display {
+                margin: 0 !important;
+                color: inherit;
+              }
+            `}</style>
         </div>
     );
 }
-
-<style jsx global>{`
-  .math-container {
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-  .katex-display {
-    margin: 0 !important;
-    color: inherit;
-  }
-`}</style>
