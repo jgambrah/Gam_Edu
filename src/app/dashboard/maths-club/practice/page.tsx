@@ -15,6 +15,48 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import 'katex/dist/katex.min.css';
+import { BlockMath, InlineMath } from 'react-katex';
+
+
+// HELPER: Strips all "noise" from AI or Manual LaTeX inputs
+const cleanLatex = (formula: string = "") => {
+  if (!formula) return "";
+  return formula
+    .replace(/\$\$/g, '')      // Remove $$
+    .replace(/\$/g, '')        // Remove $
+    .replace(/\\\[/g, '')      // Remove \[
+    .replace(/\\\]/g, '')      // Remove \]
+    .replace(/\\begin\{equation\}/g, '') // Remove equation blocks
+    .replace(/\\end\{equation\}/g, '')
+    .trim();
+};
+
+function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration errors by only rendering after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div className="h-10 w-full animate-pulse bg-slate-800/50 rounded" />;
+
+  const cleaned = cleanLatex(formula);
+
+  try {
+    return block ? (
+      <div className="math-container py-4 overflow-x-auto">
+        <BlockMath math={cleaned} />
+      </div>
+    ) : (
+      <InlineMath math={cleaned} />
+    );
+  } catch (error) {
+    console.error("LaTeX Error:", error);
+    return <code className="text-red-500">{formula}</code>;
+  }
+}
 
 function QuizComponent() {
   const searchParams = useSearchParams();
@@ -208,8 +250,22 @@ function QuizComponent() {
       </CardHeader>
       <CardContent className="space-y-6">
         <p className="font-semibold text-lg">{currentProblem.question_text}</p>
+        
+        {currentProblem.latexFormula && (
+            <div className="bg-slate-900 p-8 rounded-[32px] shadow-2xl border-t-8 border-emerald-500 my-6">
+                <div className="text-4xl text-emerald-400 flex justify-center items-center">
+                    <SafeMath formula={currentProblem.latexFormula} />
+                </div>
+                <div className="mt-4 text-center">
+                    <p className="text-slate-500 font-mono text-[10px] uppercase tracking-widest">
+                        Neural Math Engine Active
+                    </p>
+                </div>
+            </div>
+        )}
+
         <RadioGroup onValueChange={(value) => handleAnswerChange(currentQuestionIndex, value)} value={String(answers[currentQuestionIndex] || '')}>
-          {currentProblem.options?.map((option, i) => (
+          {(currentProblem.options || []).map((option, i) => (
             <div key={i} className="flex items-center space-x-3">
               <RadioGroupItem value={String(option)} id={`q${currentQuestionIndex}-o${i}`} />
               <Label htmlFor={`q${currentQuestionIndex}-o${i}`} className="font-normal">{option}</Label>
