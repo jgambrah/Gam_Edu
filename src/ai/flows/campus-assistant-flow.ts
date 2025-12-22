@@ -31,7 +31,7 @@ const CampusAssistantOutputSchema = z.object({
 
 export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 
-// --- 1. DEFINE THE INTELLIGENT PROMPT ---
+// --- 1. DEFINE THE INTELLIGENT PROMPT (UPGRADED) ---
 const promptTemplate = `
     You are **CampusBot**, the intelligent AI assistant for the **CampusConnect** school management platform.
     Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
@@ -45,9 +45,11 @@ const promptTemplate = `
 
     #### 1. 🎓 FOR STUDENTS (Study Helper)
     - If the user asks about an academic topic, act as a **Tutor**.
+
     {{#if contextDocument}}
-    - **Use the provided 'CONTEXT DOCUMENT' as your primary source of truth.** Explain the concepts based on these notes.
-    - Explain concepts simply. Use analogies. Quiz them if they ask for practice.
+    - **IMPORTANT: Use the provided 'CONTEXT DOCUMENT' as your SOLE and PRIMARY source of truth.** Do not use your general knowledge.
+    - Explain the concepts based *only* on these notes. Quote them if necessary.
+    - If the document is empty or doesn't answer the question, state that you couldn't find information in the provided learning materials and ask the user to clarify.
     
     CONTEXT DOCUMENT:
     ---
@@ -85,7 +87,7 @@ const promptTemplate = `
     CampusBot Response:
   `;
 
-// --- 2. DEFINE THE FLOW ---
+// --- 2. DEFINE THE FLOW (UPGRADED SEARCH LOGIC) ---
 const campusAssistantFlow = ai.defineFlow(
   {
     name: 'campusAssistantFlow',
@@ -101,21 +103,31 @@ const campusAssistantFlow = ai.defineFlow(
         try {
             const { firestore } = initializeFirebase()!;
             if (firestore) {
-                // Extract keywords from prompt (simple version)
+                // Extract keywords from prompt (simple version for now)
                 const keywords = input.prompt.toLowerCase().replace(/what|is|a|an|the|of|explain|about/g, '').trim().split(' ');
                 
-                // Search for learning materials that match the keywords
-                const q = query(collection(firestore, 'learning_materials'), where('topicTitle', '>=', keywords[0]), where('topicTitle', '<=', keywords[0] + '\uf8ff'), limit(1));
+                // More targeted query: looks for a topic title that CONTAINS the keyword
+                const q = query(
+                    collection(firestore, 'learning_materials'), 
+                    where('courseId', '==', 'bs7-integrated-science'),
+                    // This is a basic "contains" query in Firestore. For real full-text, you'd use Algolia/Typesense.
+                    where('topicTitle', '>=', keywords[0]),
+                    where('topicTitle', '<=', keywords[0] + '\uf8ff'),
+                    limit(1)
+                );
                 
                 const querySnapshot = await getDocs(q);
                 if (!querySnapshot.empty) {
                     const docData = querySnapshot.docs[0].data();
-                    contextDocument = docData.content || '';
+                    contextDocument = docData.content || ''; // Pass the full, detailed content
                     console.log(`[CampusBot] Found context document for topic: ${docData.topicTitle}`);
+                } else {
+                    console.log(`[CampusBot] No specific document found for query: "${keywords[0]}"`);
                 }
             }
         } catch (error) {
             console.error("[CampusBot] Error fetching context document:", error);
+            // Don't leak the error to the prompt, just log it.
         }
     }
 
