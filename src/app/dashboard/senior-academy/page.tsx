@@ -227,7 +227,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                     )}
                                     
                                     {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-emerald-500 flex justify-center">
+                                        <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center">
                                             <SafeMath formula={block.formula} />
                                         </div>
                                     )}
@@ -306,7 +306,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const [subject, setSubject] = useState('math');
     const [topic, setTopic] = useState('');
     const [gradeLevel, setGradeLevel] = useState('SHS');
-    const [difficulty, setDifficulty] = useState('University'); // Match existing labels
+    const [difficulty, setDifficulty] = useState('University');
     const [instructions, setInstructions] = useState('');
     
     const [loading, setLoading] = useState(false);
@@ -488,7 +488,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const [feedback, setFeedback] = useState<any>(null);
 
     const mathQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: dbProblems, forceRefetch } = useCollection<any>(mathQuery);
+    const { data: dbProblems, isLoading: isLoadingProblems, forceRefetch } = useCollection<any>(mathQuery);
 
     const checkAnswer = () => {
         if (userInput.trim().toLowerCase() === problem.answer.toLowerCase().trim()) {
@@ -512,7 +512,9 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
             <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar justify-center">
-                {dbProblems?.map((p: any) => (
+                {isLoadingProblems ? (
+                    <Skeleton className="h-10 w-full" />
+                ) : (dbProblems || []).map((p: any) => (
                     <div key={p.id} className="relative group">
                         <Button 
                             variant={problem?.id === p.id ? 'default' : 'outline'} 
@@ -728,3 +730,4 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
+
