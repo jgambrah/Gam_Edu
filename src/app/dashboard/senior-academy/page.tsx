@@ -23,6 +23,16 @@ import { BlockMath, InlineMath } from 'react-katex';
 // Import the new AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
 
+// Helper to strip dollar signs or LaTeX wrappers added by AI or copy-pasting
+const cleanLatex = (formula: string = "") => {
+    return formula
+        .replace(/\$\$/g, '')      // Remove double dollar signs $$
+        .replace(/\$/g, '')        // Remove single dollar signs $
+        .replace(/\\\[/g, '')      // Remove \[
+        .replace(/\\\]/g, '')      // Remove \]
+        .trim();
+};
+
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -74,10 +84,9 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
                         <CardContent className="p-10 space-y-10">
-                            <p className="text-xl leading-relaxed text-slate-700 first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
+                            <p className="text-2xl leading-relaxed text-slate-700 font-serif whitespace-pre-wrap">
                                 {activeStory.content}
                             </p>
-                            <hr />
                             <div className="bg-slate-50 p-8 rounded-[32px] space-y-8 border-2 border-slate-100">
                                 <h3 className="text-2xl font-black text-indigo-900 flex items-center gap-2">
                                     <Brain className="text-indigo-500"/> Critical Analysis
@@ -93,12 +102,12 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                                 newAns[i] = e.target.value;
                                                 setAnswers(newAns);
                                             }}
-                                            className="bg-slate-50 border-slate-200 h-12 rounded-xl"
+                                            className="h-14 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 bg-white"
                                         />
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-bold rounded-[20px] shadow-lg">
-                                    Submit Analysis
+                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-[20px] shadow-xl">
+                                    Submit for Review
                                 </Button>
                             </div>
                         </CardContent>
@@ -106,19 +115,15 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                 )}
             </div>
             <div className="space-y-4">
-                <h3 className="text-lg font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                    <Library className="w-4 h-4" /> Reading Library
-                </h3>
-                {library?.map((s: any) => (
-                    <button 
-                        key={s.id} 
-                        onClick={() => { setActiveStory(s); setAnswers([]); }}
-                        className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all group ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500 shadow-md scale-105' : 'bg-white border-slate-100 hover:border-indigo-200'}`}
-                    >
-                        <h4 className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{s.title}</h4>
-                        <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">{s.genre} • {s.wordCount || s.content?.split(' ').length} words</p>
-                    </button>
-                ))}
+                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Archive</h3>
+                <div className="space-y-3">
+                    {library?.map((s: any) => (
+                        <button key={s.id} onClick={() => { setActiveStory(s); setAnswers([]); }} className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all group ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500 shadow-md scale-105' : 'bg-white border-slate-100 hover:border-indigo-200'}`}>
+                            <h4 className="font-bold text-slate-800">{s.title}</h4>
+                            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">{s.genre} • {s.difficulty}</p>
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );
@@ -155,7 +160,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
+        <div className="max-w-5xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
             <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar justify-center">
                 {dbProblems?.map((p: any) => (
                     <div key={p.id} className="relative group">
@@ -184,7 +189,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                     <CardContent className="p-12 space-y-10">
                         <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl relative border-t-8 border-emerald-500">
                             <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
-                                <BlockMath math={problem.latexFormula} />
+                                <BlockMath math={cleanLatex(problem.latexFormula)} />
                             </div>
                             <div className="absolute top-4 right-6 text-slate-700 font-mono text-[10px] uppercase tracking-tighter">Mathematical Logic Engine</div>
                         </div>
@@ -315,7 +320,7 @@ function AdminConsole() {
                                     </div>
                                     <div className="p-8 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200">
                                         {subject === 'math' ? (
-                                            <div className="text-4xl text-center py-6 bg-white rounded-2xl shadow-sm"><BlockMath math={previewData.latexFormula} /></div>
+                                            <div className="text-4xl text-center py-6 bg-white rounded-2xl shadow-sm"><BlockMath math={cleanLatex(previewData.latexFormula)} /></div>
                                         ) : (
                                             <p className="text-slate-600 leading-relaxed italic line-clamp-3">{previewData.content || previewData.background}</p>
                                         )}
@@ -345,8 +350,12 @@ function AdminConsole() {
                                     
                                     <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[140px] flex flex-col justify-center items-center">
                                         <p className="text-[10px] font-black text-emerald-600 uppercase mb-2">Live LaTeX Preview</p>
-                                        <div className="text-2xl">
-                                            {manualMath.latexFormula ? <BlockMath math={manualMath.latexFormula} /> : <span className="text-slate-300">Formula will appear here...</span>}
+                                        <div className="text-2xl text-center">
+                                            {manualMath.latexFormula ? (
+                                                <BlockMath math={cleanLatex(manualMath.latexFormula)} />
+                                            ) : (
+                                                <span className="text-slate-300">Formula will appear here...</span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -367,9 +376,6 @@ function AdminConsole() {
         </div>
     );
 }
-
-// ... Main Page stays the same as previous version ...
-
 // --- DISCOVERY LAB (Scientific Method) ---
 function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
@@ -498,18 +504,20 @@ export default function SeniorAcademyPage() {
                     {canEdit && <Badge className="bg-slate-900 text-yellow-400 px-6 py-2 rounded-full text-sm">Professor Mode Enabled</Badge>}
                 </div>
 
-                <Tabs defaultValue="math" className="w-full">
+                <Tabs defaultValue="english" className="w-full">
                     <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
-                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
                         <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center justify-center gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
+                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
                         <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
                         <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex flex-col items-center justify-center gap-1"><PlusCircle className="w-5 h-5"/> Creator</TabsTrigger>
                     </TabsList>
                     
                     <div className="min-h-[700px]">
-                        <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
                         <TabsContent value="english" className="mt-0"><EnglishMastery canEdit={canEdit} /></TabsContent>
-                        <TabsContent value="science" className="mt-0"><DiscoveryLab canEdit={canEdit} /></TabsContent>
+                        <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
+                        <TabsContent value="science" className="mt-0">
+                            <DiscoveryLab canEdit={canEdit} />
+                        </TabsContent>
                         <TabsContent value="admin" className="mt-0"><AdminConsole /></TabsContent>
                     </div>
                 </Tabs>
