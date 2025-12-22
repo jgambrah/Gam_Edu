@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
@@ -35,7 +35,7 @@ import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription, FormLabel } from '@/components/ui/form';
 
 // --- HELPER FUNCTIONS & COMPONENTS (MOVED TO TOP LEVEL) ---
 
@@ -378,8 +378,8 @@ export default function MathsClubPage() {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const router = useRouter();
-  const { role } = useRole();
-  const { user, isUserLoading } = useUser();
+  const { role, isRoleLoading } = useRole();
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
@@ -423,7 +423,7 @@ export default function MathsClubPage() {
     }
   };
 
-  const isLoading = isUserLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
+  const isLoading = isAuthLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
     <div className="space-y-6">
