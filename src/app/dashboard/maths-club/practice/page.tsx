@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
@@ -63,6 +62,7 @@ function QuizComponent() {
   const router = useRouter();
   const topic = searchParams.get('topic');
   const difficulty = searchParams.get('difficulty');
+  const version = searchParams.get('version'); // To know which collection to query
 
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
@@ -73,15 +73,17 @@ function QuizComponent() {
   );
   const studentClassId = studentData?.[0]?.classId;
 
+  const problemCollection = version === '4' ? 'science_problems_v4' : 'math_problems';
+
   const problemsQuery = useMemoFirebase(
     () => (topic && difficulty)
       ? query(
-          collection(firestore, 'math_problems'),
+          collection(firestore, problemCollection),
           where('topic', '==', topic),
           where('difficulty', '==', difficulty),
         )
       : null,
-    [firestore, topic, difficulty]
+    [firestore, topic, difficulty, problemCollection]
   );
   const { data: problems, isLoading } = useCollection<MathProblem>(problemsQuery);
 
@@ -211,7 +213,7 @@ function QuizComponent() {
                         <div key={p.id} className={cn("p-4 rounded-lg border", isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')}>
                             <p className="font-semibold mb-2">{index + 1}. {p.question_text}</p>
                             <div className="space-y-2 mb-3">
-                                {p.options?.map((option, i) => (
+                                {(p.options || []).map((option, i) => (
                                     <div key={i} className="flex items-center gap-2">
                                         {userAnswer == option ? (
                                             isCorrect ? <CheckCircle2 className="h-4 w-4 text-green-600"/> : <XCircle className="h-4 w-4 text-red-600"/>
@@ -251,10 +253,10 @@ function QuizComponent() {
       <CardContent className="space-y-6">
         <p className="font-semibold text-lg">{currentProblem.question_text}</p>
         
-        {currentProblem.latexFormula && (
+        {(currentProblem as any).latexFormula && (
             <div className="bg-slate-900 p-8 rounded-[32px] shadow-2xl border-t-8 border-emerald-500 my-6">
                 <div className="text-4xl text-emerald-400 flex justify-center items-center">
-                    <SafeMath formula={currentProblem.latexFormula} />
+                    <SafeMath formula={(currentProblem as any).latexFormula} />
                 </div>
                 <div className="mt-4 text-center">
                     <p className="text-slate-500 font-mono text-[10px] uppercase tracking-widest">
