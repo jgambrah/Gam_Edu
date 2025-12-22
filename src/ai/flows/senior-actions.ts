@@ -75,4 +75,7 @@ export async function generateSeniorLab(topic: string) {
     if (!output) throw new Error("AI did not return a valid Science Lab object.");
     return { success: true, data: output };
   } catch (error: any) {
-    console.error("Science
+    console.error("Science AI Error:", error);
+    return { success: false, error: "Failed to generate Science module." };
+  }
+}
