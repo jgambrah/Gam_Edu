@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
@@ -225,20 +226,17 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                     {block.type === 'text' && (
                                         <p className="text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
                                     )}
-                                    
                                     {block.type === 'latex' && (
                                         <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center">
                                             <SafeMath formula={block.formula} />
                                         </div>
                                     )}
-
                                     {block.type === 'interactive' && (
                                         <GeoGebraInteractive 
                                             materialId={block.materialId} 
                                             title={block.label} 
                                         />
                                     )}
-
                                     {block.type === 'concept' && (
                                         <div className="bg-amber-50 p-6 rounded-3xl border-2 border-amber-100 flex gap-4">
                                             <Lightbulb className="w-8 h-8 text-amber-500 shrink-0" />
@@ -730,4 +728,3 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-
