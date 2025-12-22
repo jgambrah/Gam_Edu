@@ -8,9 +8,9 @@ import { z } from 'zod';
 
 const EnglishSchema = z.object({
   title: z.string().describe("An academic title for the passage."),
+  content: z.string().describe("A long multi-paragraph story about the topic."),
   genre: z.string().describe("The genre of the passage (e.g., Narrative, Historical Fiction, Sci-Fi)."),
   difficulty: z.enum(['JHS', 'SHS', 'University']),
-  content: z.string().describe("A ~200-300 word reading passage suitable for a senior student."),
   quiz: z.array(
     z.object({
       question: z.string().describe("A critical thinking question about the passage."),
@@ -18,6 +18,7 @@ const EnglishSchema = z.object({
     })
   ).length(3).describe("An array of exactly 3 comprehension questions."),
 });
+
 
 export async function generateSeniorEnglish(topic: string) {
   try {
@@ -63,14 +64,14 @@ const LabSchema = z.object({
     background: z.string().describe("A brief background or field notes for the experiment."),
     question: z.string().describe("The core scientific question being investigated."),
     hypothesisPrompt: z.string().describe("A prompt for the user to form their hypothesis."),
-    hypothesisOptions: z.array(z.string()).length(2).describe("Two opposing hypothesis options for the user."),
+    hypothesisOptions: z.array(z.string()).length(3).describe("Three opposing hypothesis options for the user."),
     conclusion: z.string().describe("The scientific conclusion or finding of the experiment."),
     explanation: z.string().describe("A detailed explanation of why the conclusion is correct."),
 });
 
 export async function generateSeniorLab(topic: string) {
   try {
-    const prompt = `Design a virtual science lab experiment for a senior student on the topic: "${topic}". Structure it according to the scientific method: Background, Research Question, Hypothesis (with two options), Conclusion, and Explanation. Include a title, category, and an emoji icon.`;
+    const prompt = `Design a virtual science lab experiment for a senior student on the topic: "${topic}". Structure it according to the scientific method: Background, Research Question, Hypothesis (with three options), Conclusion, and Explanation. Include a title, category, and an emoji icon.`;
     const { output } = await ai.generate({ prompt, output: { schema: LabSchema } });
     if (!output) throw new Error("AI did not return a valid Science Lab object.");
     return { success: true, data: output };
