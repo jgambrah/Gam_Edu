@@ -4,36 +4,37 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Loader2, Volume2, Star, Rocket, Wand2, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, 
-  Trophy, CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages
+  Loader2, Volume2, Rocket, Wand2, 
+  Save, Trash2, Library, Brain, BookOpen, 
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
-import { InlineMath, BlockMath } from 'react-katex';
+import { BlockMath } from 'react-katex';
 
-// --- HELPER: TEXT TO SPEECH (More natural for seniors) ---
+// Import the new AI actions
+import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
+
+// --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.0; 
-    u.pitch = 1.0;
+    u.rate = 0.95; 
     window.speechSynthesis.speak(u);
 };
 
 // --- 1. ENGLISH MASTERY (Comprehension & Grammar) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
-    const { toast } = useToast();
     const [activeStory, setActiveStory] = useState<any>(null);
     const [answers, setAnswers] = useState<string[]>([]);
     
@@ -49,83 +50,82 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             confetti();
             speak("Excellent analysis! You mastered this passage.");
         } else {
-            speak(`You got ${correct} correct. Review the text and try again.`);
+            speak(`Keep investigating. You have ${correct} correct answers.`);
         }
     };
 
     return (
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
             <div className="lg:col-span-2 space-y-6">
                 {!activeStory ? (
-                    <div className="h-64 flex flex-col items-center justify-center bg-slate-50 rounded-3xl border-2 border-dashed">
-                        <BookOpen className="w-12 h-12 text-slate-300 mb-2" />
-                        <p className="text-slate-500 font-medium">Select a passage to begin analysis</p>
+                    <div className="h-96 flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
+                        <BookOpen className="w-16 h-16 text-slate-200 mb-4" />
+                        <p className="text-slate-400 font-bold text-xl">Select a Literary Work</p>
                     </div>
                 ) : (
-                    <Card className="rounded-[32px] border-none shadow-xl overflow-hidden animate-in fade-in">
-                        <CardHeader className="bg-indigo-600 text-white p-8">
-                            <CardTitle className="text-3xl font-black">{activeStory.title}</CardTitle>
-                            <div className="flex gap-2 mt-2">
-                                <Badge className="bg-white/20">{activeStory.genre}</Badge>
-                                <Badge className="bg-white/20">Level: {activeStory.difficulty}</Badge>
+                    <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden">
+                        <div className="bg-indigo-600 p-8 text-white">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <Badge className="mb-4 bg-white/20 text-white border-none">{activeStory.genre}</Badge>
+                                    <CardTitle className="text-4xl font-black">{activeStory.title}</CardTitle>
+                                </div>
+                                <Button onClick={() => speak(activeStory.content)} variant="secondary" size="icon" className="rounded-full h-12 w-12"><Volume2/></Button>
                             </div>
-                        </CardHeader>
-                        <CardContent className="p-8 space-y-8">
-                            <p className="text-xl leading-relaxed text-slate-700 first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
+                        </div>
+                        <CardContent className="p-10 space-y-10">
+                            <p className="text-2xl leading-relaxed text-slate-700 font-serif whitespace-pre-wrap">
                                 {activeStory.content}
                             </p>
-                            <hr />
-                            <div className="space-y-6">
-                                <h3 className="text-2xl font-bold flex items-center gap-2 text-indigo-600">
-                                    <Brain className="w-6 h-6"/> Comprehension Check
+                            <div className="bg-slate-50 p-8 rounded-[32px] space-y-8 border-2 border-slate-100">
+                                <h3 className="text-2xl font-black text-indigo-900 flex items-center gap-2">
+                                    <Brain className="text-indigo-500"/> Critical Analysis
                                 </h3>
                                 {activeStory.quiz.map((q: any, i: number) => (
-                                    <div key={i} className="space-y-2">
-                                        <p className="font-bold text-slate-800">{i + 1}. {q.question}</p>
+                                    <div key={i} className="space-y-3">
+                                        <p className="font-bold text-slate-800 text-lg">{i + 1}. {q.question}</p>
                                         <Input 
-                                            placeholder="Analyze and answer..." 
+                                            placeholder="Type your analytical response..." 
                                             value={answers[i] || ""} 
                                             onChange={e => {
                                                 const newAns = [...answers];
                                                 newAns[i] = e.target.value;
                                                 setAnswers(newAns);
                                             }}
-                                            className="bg-slate-50 border-slate-200 h-12 rounded-xl"
+                                            className="h-14 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 bg-white"
                                         />
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-lg font-bold rounded-2xl shadow-lg">
-                                    Submit Analysis
+                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-[20px] shadow-xl">
+                                    Submit for Review
                                 </Button>
                             </div>
                         </CardContent>
                     </Card>
                 )}
             </div>
-
             <div className="space-y-4">
-                <h3 className="text-lg font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                    <Library className="w-4 h-4" /> Reading Library
-                </h3>
-                {library?.map((s: any) => (
-                    <button 
-                        key={s.id} 
-                        onClick={() => { setActiveStory(s); setAnswers([]); }}
-                        className={`w-full text-left p-4 rounded-2xl border-2 transition-all group ${activeStory?.id === s.id ? 'border-indigo-500 bg-indigo-50 shadow-md' : 'border-slate-100 hover:bg-slate-50 bg-white'}`}
-                    >
-                        <h4 className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{s.title}</h4>
-                        <p className="text-xs text-slate-400 mt-1 uppercase font-black">{s.genre} • {s.wordCount} words</p>
-                    </button>
-                ))}
+                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Archive</h3>
+                <div className="space-y-3">
+                    {library?.map((s: any) => (
+                        <button 
+                            key={s.id} 
+                            onClick={() => { setActiveStory(s); setAnswers([]); }}
+                            className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all group ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500 shadow-md scale-105' : 'bg-white border-slate-100 hover:border-indigo-200'}`}
+                        >
+                            <h4 className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{s.title}</h4>
+                            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-tighter">{s.genre} • {s.wordCount} words</p>
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );
 }
 
-// --- 2. ADVANCED MATH LAB (LaTeX & Logic) ---
+// --- 2. ADVANCED MATH LAB ---
 function MathLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
-    const { toast } = useToast();
     const [problem, setProblem] = useState<any>(null);
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
@@ -135,24 +135,24 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 
     const checkAnswer = () => {
         if (userInput.trim() === problem.answer) {
-            setFeedback({ ok: true, msg: "Correct! Your logical derivation is sound." });
+            setFeedback({ ok: true, msg: "Correct logical derivation." });
             confetti();
             speak("Correct.");
         } else {
-            setFeedback({ ok: false, msg: `Not quite. Expected: ${problem.answer}` });
-            speak("Review your formula and try again.");
+            setFeedback({ ok: false, msg: `Review calculation. Correct value: ${problem.answer}` });
+            speak("Incorrect. Please re-evaluate.");
         }
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+        <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
+            <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar justify-center">
                 {dbProblems?.map((p: any) => (
                     <Button 
                         key={p.id} 
                         variant={problem?.id === p.id ? 'default' : 'outline'}
                         onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }}
-                        className="rounded-full border-2 border-emerald-100 whitespace-nowrap"
+                        className="rounded-full border-2 font-bold uppercase text-[10px] tracking-widest px-6 h-10"
                     >
                         {p.title}
                     </Button>
@@ -160,41 +160,41 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
             </div>
 
             {problem ? (
-                <Card className="rounded-[40px] border-4 border-emerald-50 shadow-2xl overflow-hidden animate-in zoom-in">
-                    <CardHeader className="bg-emerald-600 text-white p-8 text-center">
-                        <CardTitle className="text-3xl font-black">{problem.title}</CardTitle>
-                        <p className="opacity-80 font-medium">{problem.category}</p>
-                    </CardHeader>
-                    <CardContent className="p-10 space-y-8">
-                        <div className="bg-slate-50 p-10 rounded-3xl border-2 border-slate-100 text-center shadow-inner">
-                            <div className="text-4xl text-slate-800 mb-4">
+                <Card className="rounded-[50px] border-none shadow-2xl overflow-hidden bg-white">
+                    <div className="bg-emerald-600 p-10 text-center text-white">
+                        <Badge className="bg-emerald-400 mb-4">{problem.category}</Badge>
+                        <CardTitle className="text-4xl font-black">{problem.title}</CardTitle>
+                    </div>
+                    <CardContent className="p-12 space-y-10">
+                        <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl relative">
+                            <div className="text-5xl text-emerald-400 overflow-x-auto py-4">
                                 <BlockMath math={problem.latexFormula} />
                             </div>
-                            <p className="text-xl text-slate-500 font-medium">{problem.instruction}</p>
+                            <div className="absolute top-4 right-6 text-slate-700 font-mono text-xs italic">LaTeX Engine Active</div>
                         </div>
-
-                        <div className="flex gap-4">
-                            <Input 
-                                value={userInput} 
-                                onChange={e => setUserInput(e.target.value)} 
-                                placeholder="Enter value for x..." 
-                                className="h-16 text-3xl font-mono text-center border-2 border-emerald-100 rounded-2xl"
-                            />
-                            <Button onClick={checkAnswer} className="h-16 px-10 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-2xl shadow-lg">
-                                Solve
-                            </Button>
+                        <div className="text-center space-y-8">
+                            <p className="text-2xl font-medium text-slate-600">{problem.instruction}</p>
+                            <div className="flex flex-col items-center gap-4">
+                                <Input 
+                                    value={userInput} 
+                                    onChange={e => setUserInput(e.target.value)} 
+                                    placeholder="Value of x..." 
+                                    className="h-20 text-5xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm focus:border-emerald-500 transition-all"
+                                />
+                                <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">
+                                    EXECUTE SOLUTION
+                                </Button>
+                            </div>
                         </div>
-
                         {feedback && (
-                            <div className={`p-6 rounded-2xl border-2 flex items-center gap-4 animate-in slide-in-from-bottom-2 ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
-                                {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
-                                <p className="text-lg font-bold">{feedback.msg}</p>
+                            <div className={`p-6 rounded-[24px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                                <p className="text-xl font-black">{feedback.msg}</p>
                             </div>
                         )}
                     </CardContent>
                 </Card>
             ) : (
-                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed">
+                <div className="text-center py-32 bg-white rounded-3xl border-2 border-dashed">
                     <Sigma className="w-16 h-16 text-slate-200 mx-auto mb-4" />
                     <h2 className="text-2xl font-bold text-slate-400">Select a Problem to Solve</h2>
                 </div>
@@ -310,92 +310,84 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 4. ADMIN CONSOLE (CREATOR SUITE) ---
+// --- 4. ADMIN CONSOLE (AI CREATOR SUITE) ---
 function AdminConsole() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [mode, setMode] = useState<'english' | 'math' | 'science'>('english');
-    const [payload, setPayload] = useState<any>({});
+    const [topic, setTopic] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [previewData, setPreviewData] = useState<any>(null);
 
-    const handleSave = async () => {
-        if (!firestore) return;
-        const collectionMap: any = { 
-            english: 'senior_stories', 
-            math: 'senior_math', 
-            science: 'senior_labs' 
-        };
-        await addDoc(collection(firestore, collectionMap[mode]), {
-            ...payload,
+    const handleAIAction = async () => {
+        if (!topic) return;
+        setLoading(true);
+        let res;
+        if (mode === 'english') res = await generateSeniorEnglish(topic);
+        else if (mode === 'math') res = await generateSeniorMath(topic);
+        else res = await generateSeniorLab(topic);
+
+        if (res.success) {
+            setPreviewData(res.data);
+            toast({ title: "AI Generation Complete", description: "Review the content below before publishing." });
+        }
+        setLoading(false);
+    };
+
+    const handlePublish = async () => {
+        if (!firestore || !previewData) return;
+        const colMap: any = { english: 'senior_stories', math: 'senior_math', science: 'senior_labs' };
+        await addDoc(collection(firestore, colMap[mode]), {
+            ...previewData,
             createdAt: serverTimestamp()
         });
-        toast({ title: "Module Published!", description: "Available now in the Academy Library." });
-        setPayload({});
+        setPreviewData(null);
+        setTopic("");
+        toast({ title: "Published!", description: "Module is now live for students." });
     };
 
     return (
         <Card className="rounded-[40px] border-4 border-slate-900 bg-white overflow-hidden shadow-2xl">
             <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
-                <h2 className="text-2xl font-black flex items-center gap-2"><Wand2 className="text-yellow-400" /> Professor's Curriculum Tool</h2>
-                <div className="flex gap-2">
+                <h2 className="text-2xl font-black flex items-center gap-2"><Sparkles className="text-yellow-400" /> Professor's AI Lab</h2>
+                <div className="flex gap-2 bg-slate-800 p-1 rounded-xl">
                     {['english', 'math', 'science'].map((m: any) => (
-                        <Button key={m} variant={mode === m ? 'secondary' : 'ghost'} onClick={() => {setMode(m); setPayload({});}} className="capitalize font-bold">{m}</Button>
+                        <Button key={m} variant={mode === m ? 'secondary' : 'ghost'} onClick={() => {setMode(m); setPreviewData(null);}} className="capitalize font-black text-xs">{m}</Button>
                     ))}
                 </div>
             </div>
-            <CardContent className="p-10 space-y-6">
-                {mode === 'math' && (
-                    <div className="grid gap-4">
-                        <Input placeholder="Problem Title (e.g. Quadratic Roots)" onChange={e => setPayload({...payload, title: e.target.value})} />
-                        <Input placeholder="Category (e.g. Algebra)" onChange={e => setPayload({...payload, category: e.target.value})} />
-                        <Input placeholder="LaTeX Formula (e.g. f(x) = x^2 + 4x + 4)" onChange={e => setPayload({...payload, latexFormula: e.target.value})} />
-                        <Input placeholder="Instruction (e.g. Solve for x when f(x) = 0)" onChange={e => setPayload({...payload, instruction: e.target.value})} />
-                        <Input placeholder="Correct Answer (String)" onChange={e => setPayload({...payload, answer: e.target.value})} />
-                        <div className="p-4 bg-slate-50 rounded-xl border-2 border-dashed">
-                            <p className="text-xs font-bold text-slate-400 mb-2 uppercase">Formula Preview</p>
-                            <div className="text-2xl"><BlockMath math={payload.latexFormula || "0"} /></div>
+            <CardContent className="p-10 space-y-8">
+                <div className="flex gap-3">
+                    <Input 
+                        placeholder={mode === 'math' ? "Enter Math Concept (e.g. Calculus Derivatives)" : "Enter Topic (e.g. Black Holes)"} 
+                        value={topic}
+                        onChange={e => setTopic(e.target.value)}
+                        className="h-16 rounded-2xl text-lg border-2 border-slate-100"
+                    />
+                    <Button onClick={handleAIAction} disabled={loading} className="h-16 px-10 bg-indigo-600 hover:bg-indigo-700 rounded-2xl">
+                        {loading ? <Loader2 className="animate-spin"/> : <Wand2/>}
+                    </Button>
+                </div>
+
+                {previewData && (
+                    <div className="space-y-6 border-t pt-8 animate-in slide-in-from-bottom-4">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-2xl font-black text-slate-800">Preview: {previewData.title}</h3>
+                            <div className="flex gap-2">
+                                <Button onClick={() => setPreviewData(null)} variant="ghost" className="text-red-500 font-bold">Discard</Button>
+                                <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700 rounded-xl px-8"><Save className="mr-2 h-4 w-4"/> Publish Now</Button>
+                            </div>
+                        </div>
+                        
+                        <div className="p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                            {mode === 'math' ? (
+                                <div className="text-3xl text-center"><BlockMath math={previewData.latexFormula} /></div>
+                            ) : (
+                                <p className="line-clamp-4 text-slate-500">{previewData.content || previewData.background}</p>
+                            )}
                         </div>
                     </div>
                 )}
-
-                {mode === 'english' && (
-                    <div className="grid gap-4">
-                        <Input placeholder="Passage Title" onChange={e => setPayload({...payload, title: e.target.value})} />
-                        <Input placeholder="Genre (e.g. Narrative, Historical)" onChange={e => setPayload({...payload, genre: e.target.value})} />
-                        <textarea 
-                            placeholder="Reading Passage Content..." 
-                            className="w-full h-40 p-4 border rounded-2xl"
-                            onChange={e => setPayload({...payload, content: e.target.value})}
-                        />
-                        <div className="space-y-2">
-                            <p className="text-xs font-bold text-slate-400 uppercase">Questions (JSON Format Required for multiple)</p>
-                            <textarea 
-                                placeholder='[{"question": "Why did the hero...", "answer": "Because..."}]' 
-                                className="w-full h-32 p-4 border rounded-2xl font-mono text-sm"
-                                onChange={e => {
-                                    try { setPayload({...payload, quiz: JSON.parse(e.target.value)}); } 
-                                    catch(err) { console.log("JSON error"); }
-                                }}
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {mode === 'science' && (
-                    <div className="grid gap-4">
-                        <Input placeholder="Lab Title (e.g. Photosynthesis)" onChange={e => setPayload({...payload, title: e.target.value})} />
-                        <Input placeholder="Emoji Icon (e.g. 🌿)" onChange={e => setPayload({...payload, icon: e.target.value})} />
-                        <textarea placeholder="Background Context" className="w-full h-24 p-4 border rounded-2xl" onChange={e => setPayload({...payload, background: e.target.value})} />
-                        <Input placeholder="Research Question" onChange={e => setPayload({...payload, question: e.target.value})} />
-                        <Input placeholder="Hypothesis Prompt" onChange={e => setPayload({...payload, hypothesisPrompt: e.target.value})} />
-                        <Input placeholder="Options (comma separated)" onChange={e => setPayload({...payload, hypothesisOptions: e.target.value.split(',')})} />
-                        <textarea placeholder="Scientific Conclusion" className="w-full h-24 p-4 border rounded-2xl" onChange={e => setPayload({...payload, conclusion: e.target.value})} />
-                        <textarea placeholder="Scientific Explanation" className="w-full h-24 p-4 border rounded-2xl" onChange={e => setPayload({...payload, explanation: e.target.value})} />
-                    </div>
-                )}
-
-                <Button onClick={handleSave} className="w-full h-16 bg-slate-900 hover:bg-black text-xl font-black rounded-2xl shadow-xl">
-                    Publish to Academy
-                </Button>
             </CardContent>
         </Card>
     );
@@ -407,7 +399,7 @@ export default function SeniorAcademyPage() {
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8 font-sans">
+        <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-12 font-sans">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex items-center gap-4">
@@ -422,17 +414,17 @@ export default function SeniorAcademyPage() {
                     {canEdit && <Badge className="bg-slate-900 text-yellow-400 px-6 py-2 rounded-full text-sm">Professor Mode Enabled</Badge>}
                 </div>
 
-                <Tabs defaultValue="math" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 h-20 bg-white p-2 rounded-3xl shadow-xl border border-slate-100 mb-12">
-                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex items-center gap-2"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
-                        <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex items-center gap-2"><Languages className="w-5 h-5"/> English</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex items-center gap-2"><Microscope className="w-5 h-5"/> Science</TabsTrigger>
-                        <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex items-center gap-2"><PlusCircle className="w-5 h-5"/> Admin</TabsTrigger>
+                <Tabs defaultValue="english" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
+                        <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex items-center justify-center gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
+                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
+                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
+                        <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex items-center justify-center gap-1"><PlusCircle className="w-5 h-5"/> Creator</TabsTrigger>
                     </TabsList>
                     
-                    <div className="min-h-[600px] animate-in slide-in-from-bottom-6 duration-700">
-                        <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
+                    <div className="min-h-[700px]">
                         <TabsContent value="english" className="mt-0"><EnglishMastery canEdit={canEdit} /></TabsContent>
+                        <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
                         <TabsContent value="science" className="mt-0"><DiscoveryLab canEdit={canEdit} /></TabsContent>
                         <TabsContent value="admin" className="mt-0"><AdminConsole /></TabsContent>
                     </div>
@@ -441,3 +433,5 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
+
+// ... include your existing DiscoveryLab component here ...
