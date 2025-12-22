@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb, Atom
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -76,6 +76,42 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
     return <code className="text-red-500">{formula}</code>;
   }
 }
+
+// --- NEW GEOGEBRA COMPONENT ---
+interface GeoGebraProps {
+  materialId: string;
+  title?: string;
+  height?: number;
+}
+
+function GeoGebraInteractive({ materialId, title, height = 500 }: GeoGebraProps) {
+  const embedUrl = `https://www.geogebra.org/material/iframe/id/${materialId}/width/800/height/${height}/ai/false/asb/false/sbr/false/cd/false/ize/false/msb/false/stb/false/sts/false/sri/false`;
+
+  return (
+    <div className="space-y-3 animate-in fade-in zoom-in duration-500">
+      {title && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 w-fit rounded-full">
+           <Atom className="w-3 h-3 text-indigo-500" />
+           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{title}</span>
+        </div>
+      )}
+      <div className="relative w-full rounded-[32px] overflow-hidden border-4 border-slate-100 shadow-2xl bg-white">
+        <iframe
+          src={embedUrl}
+          width="100%"
+          height={height}
+          style={{ border: 'none' }}
+          allowFullScreen
+          title={title || "GeoGebra Activity"}
+        />
+        <div className="absolute bottom-2 right-4 pointer-events-none">
+            <p className="text-[8px] font-bold text-slate-300">INTERACTIVE POWERED BY GEOGEBRA OER</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 // --- SENIOR ACADEMY: CURRICULUM PATHWAY ---
 function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
@@ -174,14 +210,12 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                     </div>
 
                     <CardContent className="p-10 space-y-12 max-w-4xl mx-auto">
-                        {/* 1. Introduction Block */}
                         <section className="prose prose-slate max-w-none">
                             <p className="text-2xl leading-relaxed text-slate-600 first-letter:text-5xl first-letter:font-bold first-letter:mr-2">
                                 {activeLesson.introduction}
                             </p>
                         </section>
 
-                        {/* 2. Teaching Blocks (Text + LaTeX) */}
                         <div className="space-y-8">
                             {activeLesson.content_blocks?.map((block: any, i: number) => (
                                 <div key={i} className="animate-in fade-in" style={{ animationDelay: `${i * 0.2}s` }}>
@@ -201,11 +235,13 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                             <p className="text-lg text-amber-900 font-bold italic">{block.body}</p>
                                         </div>
                                     )}
+                                    {block.type === 'geogebra' && (
+                                        <GeoGebraInteractive materialId={block.materialId} title={block.title} />
+                                    )}
                                 </div>
                             ))}
                         </div>
 
-                        {/* 3. Guided Practice Block */}
                         <div className="pt-12 border-t border-slate-100 space-y-8">
                             <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
                                 <PencilRuler className="text-indigo-500 w-8 h-8" /> Practice Arena
@@ -241,7 +277,6 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                     </CardFooter>
                 </Card>
             ) : (
-                /* --- IF NO SELECTION: WELCOME STATE --- */
                 <div className="py-20 text-center space-y-4">
                     <div className="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto shadow-xl mb-6">
                         <BookOpen className="w-10 h-10 text-indigo-500" />
@@ -517,250 +552,6 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
-function AdminConsole() {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    
-    // Creation State
-    const [subject, setSubject] = useState<'english' | 'math' | 'science'>('math');
-    const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
-    const [loading, setLoading] = useState(false);
-    
-    // AI Generation States
-    const [topic, setTopic] = useState("");
-    const [difficulty, setDifficulty] = useState("Intermediate");
-    const [gradeLevel, setGradeLevel] = useState("Grade 6");
-    const [extraInstructions, setExtraInstructions] = useState("");
-    
-    // Shared Data State (for both AI preview and Manual entry)
-    const [payload, setPayload] = useState<any>({
-        title: '',
-        category: 'Algebra',
-        latexFormula: '',
-        instruction: '',
-        answer: '',
-        content: '',
-        genre: 'Narrative',
-        quiz: [{ question: '', answer: '' }],
-        background: '',
-        question: '',
-        hypothesisPrompt: '',
-        hypothesisOptions: ['Option A', 'Option B'],
-        conclusion: '',
-        explanation: '',
-        icon: '🔬'
-    });
-
-    const handleAIAction = async () => {
-        if (!topic) return;
-        setLoading(true);
-        const context = { topic, difficulty, gradeLevel, instructions: extraInstructions };
-        let res;
-        if (subject === 'english') res = await generateSeniorEnglish(context);
-        else if (subject === 'math') res = await generateSeniorMath(context);
-        else res = await generateSeniorLab(context);
-
-        if (res.success) {
-            setPayload(res.data);
-            toast({ title: "AI Magic Complete!", description: "Review and publish below." });
-        }
-        setLoading(false);
-    };
-
-    const handlePublish = async () => {
-        if (!firestore || !payload.title) {
-            toast({ title: "Error", description: "Title is required to publish.", variant: "destructive" });
-            return;
-        };
-        const colMap: any = { 
-            english: 'senior_stories', 
-            math: 'senior_math', 
-            science: 'senior_labs' 
-        };
-        
-        await addDoc(collection(firestore, colMap[subject]), { 
-            ...payload, 
-            createdAt: serverTimestamp() 
-        });
-        
-        // Reset
-        setPayload({ title: '', category: 'Algebra', latexFormula: '', instruction: '', answer: '', content: '', genre: 'Narrative', quiz: [{ question: '', answer: '' }], background: '', question: '', hypothesisPrompt: '', hypothesisOptions: ['Option A', 'Option B'], conclusion: '', explanation: '', icon: '🔬' });
-        setTopic("");
-        toast({ title: "Success!", description: "Module is now live for students." });
-    };
-
-    return (
-        <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in">
-            <Card className="rounded-[40px] border-4 border-slate-900 bg-white overflow-hidden shadow-2xl">
-                {/* Header with Mode Toggles */}
-                <div className="bg-slate-900 p-8 text-white flex flex-col md:flex-row justify-between items-center gap-6">
-                    <h2 className="text-2xl font-black flex items-center gap-2">
-                        <PenTool className="text-yellow-400 w-6 h-6" /> Professor's Desk
-                    </h2>
-                    
-                    <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
-                        <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('ai')} className="rounded-xl font-bold text-xs h-9">
-                            <Sparkles className="w-3 h-3 mr-2 text-blue-400"/> AI Magic
-                        </Button>
-                        <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('manual')} className="rounded-xl font-bold text-xs h-9">
-                            <PenTool className="w-3 h-3 mr-2 text-emerald-400"/> Manual Entry
-                        </Button>
-                    </div>
-
-                    <div className="flex gap-2 bg-slate-800 p-1 rounded-xl">
-                        {['english', 'math', 'science'].map((m: any) => (
-                            <Button key={m} variant={subject === m ? 'secondary' : 'ghost'} onClick={() => setSubject(m)} className="capitalize font-black text-[10px] px-4 h-8">{m}</Button>
-                        ))}
-                    </div>
-                </div>
-
-                <CardContent className="p-10 space-y-8">
-                    {/* UI FOR AI MODE */}
-                    {creationMode === 'ai' && (
-                        <div className="space-y-6">
-                            <div className="grid md:grid-cols-3 gap-4 bg-slate-50 p-6 rounded-[32px] border-2 border-slate-100">
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Topic</label>
-                                    <Input placeholder="e.g. Fractions, Gravity..." value={topic} onChange={e => setTopic(e.target.value)} className="rounded-xl"/>
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Difficulty</label>
-                                    <select className="w-full h-10 rounded-xl px-3 font-bold text-sm bg-white border border-slate-200 outline-none" value={difficulty} onChange={e => setDifficulty(e.target.value)}>
-                                        <option value="Introductory">Introductory</option>
-                                        <option value="Intermediate">Intermediate</option>
-                                        <option value="Advanced">Advanced</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Grade</label>
-                                    <select className="w-full h-10 rounded-xl px-3 font-bold text-sm bg-white border border-slate-200 outline-none" value={gradeLevel} onChange={e => setGradeLevel(e.target.value)}>
-                                        <option value="Grade 4">Grade 4</option>
-                                        <option value="Grade 5">Grade 5</option>
-                                        <option value="Grade 6">Grade 6</option>
-                                    </select>
-                                </div>
-                                <textarea placeholder="Special instructions for AI (Optional)..." className="md:col-span-3 w-full h-20 rounded-2xl p-4 text-sm bg-white border border-slate-200 outline-none shadow-inner" value={extraInstructions} onChange={e => setExtraInstructions(e.target.value)} />
-                            </div>
-                            <Button onClick={handleAIAction} disabled={loading || !topic} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 rounded-2xl text-xl font-black shadow-xl">
-                                {loading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} GENERATE WITH AI
-                            </Button>
-                        </div>
-                    )}
-                    
-                    {/* UI FOR MANUAL MODE */}
-                    {creationMode === 'manual' && (
-                        <div className="space-y-6 animate-in slide-in-from-top-4">
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <Input placeholder="Module Title" value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} className="h-12 rounded-xl font-bold" />
-                                    
-                                    {subject === 'math' && (
-                                        <>
-                                            <Input placeholder="Category (e.g. Calculus)" value={payload.category} onChange={e => setPayload({...payload, category: e.target.value})} />
-                                            <textarea placeholder="Paste LaTeX Formula here (e.g. \frac{x}{y})" value={payload.latexFormula} onChange={e => setPayload({...payload, latexFormula: e.target.value})} className="w-full h-32 p-4 border rounded-2xl font-mono text-sm" />
-                                        </>
-                                    )}
-
-                                    {subject === 'english' && (
-                                        <>
-                                            <Input placeholder="Genre (e.g. Poetry)" value={payload.genre} onChange={e => setPayload({...payload, genre: e.target.value})} />
-                                            <textarea placeholder="Story/Passage Content" value={payload.content} onChange={e => setPayload({...payload, content: e.target.value})} className="w-full h-40 p-4 border rounded-2xl" />
-                                        </>
-                                    )}
-
-                                    {subject === 'science' && (
-                                        <>
-                                            <Input placeholder="Emoji Icon (e.g. 🌋)" value={payload.icon} onChange={e => setPayload({...payload, icon: e.target.value})} />
-                                            <textarea placeholder="Background Context" value={payload.background} onChange={e => setPayload({...payload, background: e.target.value})} className="w-full h-32 p-4 border rounded-2xl" />
-                                        </>
-                                    )}
-                                </div>
-
-                                <div className="space-y-4">
-                                    {subject === 'math' && (
-                                        <>
-                                            <Input placeholder="Instruction for Student" value={payload.instruction} onChange={e => setPayload({...payload, instruction: e.target.value})} />
-                                            <Input placeholder="Correct Answer" value={payload.answer} onChange={e => setPayload({...payload, answer: e.target.value})} />
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Live Preview</label>
-                                                <div className="p-6 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[120px] flex items-center justify-center">
-                                                    <div className="text-2xl text-emerald-800">
-                                                        {payload.latexFormula ? (
-                                                            <SafeMath formula={payload.latexFormula} />
-                                                        ) : (
-                                                            <span className="text-slate-300 italic text-sm">Formula will appear here...</span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {subject === 'english' && (
-                                        <div className="space-y-2">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase">Quiz Questions (3 required)</p>
-                                            {[0,1,2].map(i => (
-                                                <div key={i} className="p-3 bg-indigo-50 rounded-xl space-y-2 border border-indigo-100">
-                                                    <Input placeholder={`Question ${i+1}`} value={payload.quiz?.[i]?.question || ""} onChange={e => {
-                                                        const q = [...(payload.quiz || [])];
-                                                        q[i] = { ...q[i], question: e.target.value };
-                                                        setPayload({...payload, quiz: q});
-                                                    }} className="h-8 text-xs"/>
-                                                    <Input placeholder="Correct Answer" value={payload.quiz?.[i]?.answer || ""} onChange={e => {
-                                                        const q = [...(payload.quiz || [])];
-                                                        q[i] = { ...q[i], answer: e.target.value };
-                                                        setPayload({...payload, quiz: q});
-                                                    }} className="h-8 text-xs"/>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {subject === 'science' && (
-                                        <>
-                                            <Input placeholder="Research Question" value={payload.question} onChange={e => setPayload({...payload, question: e.target.value})} />
-                                            <Input placeholder="Hypothesis Prompt" value={payload.hypothesisPrompt} onChange={e => setPayload({...payload, hypothesisPrompt: e.target.value})} />
-                                            <Input placeholder="Options (comma separated)" value={payload.hypothesisOptions?.join(',')} onChange={e => setPayload({...payload, hypothesisOptions: e.target.value.split(',')})} />
-                                            <textarea placeholder="Conclusion" value={payload.conclusion} onChange={e => setPayload({...payload, conclusion: e.target.value})} className="w-full h-20 p-4 border rounded-2xl" />
-                                            <textarea placeholder="Conclusion Explanation" value={payload.explanation} onChange={e => setPayload({...payload, explanation: e.target.value})} className="w-full h-20 p-4 border rounded-2xl" />
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                            <Button onClick={handlePublish} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:bg-black">
-                                PUBLISH MANUAL {subject.toUpperCase()} MODULE
-                            </Button>
-                        </div>
-                    )}
-
-                    {/* AI PREVIEW & PUBLISH BAR */}
-                    {creationMode === 'ai' && payload.title && (
-                        <div className="space-y-6 border-t pt-8 animate-in slide-in-from-bottom-4">
-                            <div className="flex justify-between items-center bg-indigo-50 p-4 rounded-2xl">
-                                <h3 className="text-xl font-black text-indigo-900">AI Preview: {payload.title}</h3>
-                                <div className="flex gap-2">
-                                    <Button onClick={() => setPayload({})} variant="ghost" className="text-red-500 font-bold">Discard</Button>
-                                    <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700 rounded-xl px-8 shadow-lg font-bold">Save & Publish</Button>
-                                </div>
-                            </div>
-                            <div className="p-8 bg-slate-900 rounded-[32px] border-4 border-slate-800">
-                                {subject === 'math' ? (
-                                    <div className="text-4xl text-emerald-400 text-center py-6">
-                                        <BlockMath math={cleanLatex(payload.latexFormula)} />
-                                    </div>
-                                ) : (
-                                    <p className="text-slate-300 italic line-clamp-3 leading-relaxed">{payload.content || payload.background}</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-        </div>
-    );
-}
-
 // --- MAIN PAGE ---
 export default function SeniorAcademyPage() {
     const { role } = useRole();
@@ -792,7 +583,6 @@ export default function SeniorAcademyPage() {
                         <TabsContent value="english" className="mt-0"><EnglishMastery canEdit={canEdit} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
                         <TabsContent value="science" className="mt-0"><DiscoveryLab canEdit={canEdit} /></TabsContent>
-                        {/* The AdminConsole is no longer needed as a separate tab */}
                     </div>
                 </Tabs>
             </div>
