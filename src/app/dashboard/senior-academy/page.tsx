@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -77,14 +77,16 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
   }
 }
 
-// --- NEW GEOGEBRA COMPONENT ---
+// --- SENIOR ACADEMY: GEOGEBRA INTERACTIVE ---
 interface GeoGebraProps {
-  materialId: string;
+  materialId: string; // The code from the GeoGebra URL
   title?: string;
   height?: number;
 }
 
 function GeoGebraInteractive({ materialId, title, height = 500 }: GeoGebraProps) {
+  // Constructing the URL with "Clean UI" parameters
+  // ai: false (hide menu), sbr: false (hide sidebar), stb: false (hide toolbar)
   const embedUrl = `https://www.geogebra.org/material/iframe/id/${materialId}/width/800/height/${height}/ai/false/asb/false/sbr/false/cd/false/ize/false/msb/false/stb/false/sts/false/sri/false`;
 
   return (
@@ -104,6 +106,7 @@ function GeoGebraInteractive({ materialId, title, height = 500 }: GeoGebraProps)
           allowFullScreen
           title={title || "GeoGebra Activity"}
         />
+        {/* Attribution Watermark */}
         <div className="absolute bottom-2 right-4 pointer-events-none">
             <p className="text-[8px] font-bold text-slate-300">INTERACTIVE POWERED BY GEOGEBRA OER</p>
         </div>
@@ -222,21 +225,27 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                     {block.type === 'text' && (
                                         <p className="text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
                                     )}
+                                    
                                     {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[32px] shadow-inner border-t-8 border-indigo-500 flex justify-center overflow-x-auto">
+                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-emerald-500 flex justify-center overflow-x-auto">
                                             <div className="text-4xl text-emerald-400">
                                                 <SafeMath formula={block.formula} />
                                             </div>
                                         </div>
                                     )}
+
+                                    {block.type === 'interactive' && (
+                                        <GeoGebraInteractive 
+                                            materialId={block.materialId} 
+                                            title={block.label} 
+                                        />
+                                    )}
+
                                     {block.type === 'concept' && (
                                         <div className="bg-amber-50 p-6 rounded-3xl border-2 border-amber-100 flex gap-4">
                                             <Lightbulb className="w-8 h-8 text-amber-500 shrink-0" />
                                             <p className="text-lg text-amber-900 font-bold italic">{block.body}</p>
                                         </div>
-                                    )}
-                                    {block.type === 'geogebra' && (
-                                        <GeoGebraInteractive materialId={block.materialId} title={block.title} />
                                     )}
                                 </div>
                             ))}
@@ -277,6 +286,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                     </CardFooter>
                 </Card>
             ) : (
+                /* --- IF NO SELECTION: WELCOME STATE --- */
                 <div className="py-20 text-center space-y-4">
                     <div className="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto shadow-xl mb-6">
                         <BookOpen className="w-10 h-10 text-indigo-500" />
@@ -589,3 +599,15 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
+
+<style jsx global>{`
+  .math-container {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .katex-display {
+    margin: 0 !important;
+    color: inherit;
+  }
+`}</style>
