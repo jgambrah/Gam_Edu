@@ -76,7 +76,7 @@ function MaterialForm({
   const [isUploadingResource, setIsUploadingResource] = useState(false);
 
   const [topicTitle, setTopicTitle] = useState(materialToEdit?.topicTitle || '');
-  const [description, setDescription] = useState(materialToEdit?.description || '');
+  const [description, setDescription] = useState(materialToEdit?.content || '');
   const [classId, setClassId] = useState(materialToEdit?.classId || preSelectedClassId || '');
   const [subject, setSubject] = useState(materialToEdit?.subject || preSelectedSubject || ''); 
   const [videos, setVideos] = useState<VideoLink[]>(materialToEdit?.videoLinks || []);
@@ -95,7 +95,8 @@ function MaterialForm({
         setIsUploadingResource(false);
     }
   });
-
+  const [newVideoUrl, setNewVideoUrl] = useState('');
+  const [newVideoTitle, setNewVideoTitle] = useState('');
   const handleAddVideo = () => {
     if (!newVideoUrl) return;
     setVideos([...videos, { title: newVideoTitle || 'Video Resource', url: newVideoUrl }]);
@@ -159,7 +160,7 @@ function MaterialForm({
         strand,
         subStrand,
         topicTitle,
-        description,
+        content: description,
         classId,
         subject,
         videoLinks: videos,
@@ -400,13 +401,13 @@ export default function LearningMaterialsPage() {
   };
 
   const handleEdit = (mat: LearningMaterial) => {
-      setSelectedMaterial(mat);
+      setEditingMaterial(mat);
       setEditorMode('edit');
       setIsFormOpen(true);
   };
 
   const handleCreate = () => {
-      setSelectedMaterial(null);
+      setEditingMaterial(null);
       setEditorMode('create');
       setIsFormOpen(true);
   };
@@ -515,7 +516,7 @@ export default function LearningMaterialsPage() {
                 <Card key={mat.id} className="flex flex-col shadow-sm border-l-4 border-l-blue-500">
                     <CardHeader className="pb-2">
                         <div className="flex justify-between items-start">
-                            <div><CardTitle className="text-lg">{mat.topicTitle || (mat as any).title}</CardTitle>{mat.description && <p className="text-sm text-slate-600 mt-1">{mat.description}</p>}</div>
+                            <div><CardTitle className="text-lg">{mat.topicTitle || (mat as any).title}</CardTitle>{mat.content && <p className="text-sm text-slate-600 mt-1">{mat.content.substring(0, 100)}...</p>}</div>
                             {canManage && (<div className="flex gap-1"><Button variant="ghost" size="sm" onClick={() => handleEdit(mat)}><Edit className="h-4 w-4 text-slate-500" /></Button><Button variant="ghost" size="sm" onClick={() => handleDelete(mat.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button></div>)}
                         </div>
                     </CardHeader>
@@ -574,3 +575,7 @@ export default function LearningMaterialsPage() {
     </div>
   );
 }
+
+    
+
+    
