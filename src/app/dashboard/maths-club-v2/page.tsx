@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateMathLessonAction } from '@/ai/flows/generate-math-lesson';
+import 'katex/dist/katex.min.css';
+import { BlockMath } from 'react-katex';
+
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -478,7 +481,3 @@ export default function MathsClubPage() {
     </div>
   );
 }
-
-    
-
-    

@@ -4,6 +4,7 @@ import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from "@/components/ui/toaster";
 import { RoleProvider } from '@/context/role-context';
+import 'katex/dist/katex.min.css';
 
 
 export const metadata: Metadata = {

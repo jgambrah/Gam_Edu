@@ -63,7 +63,7 @@ export async function generateSeniorMath(context: z.infer<typeof AIContextSchema
     Topic: ${context.topic}. 
     Grade Level: ${context.gradeLevel}. 
     Difficulty: ${context.difficulty}. 
-    Additional Rules: ${context.instructions}. 
+    Additional Rules: ${context.instructions || 'None'}. 
     Return a LaTeX formula without dollar signs and a clear solution.`;
     const { output } = await ai.generate({ prompt, output: { schema: MathSchema } });
     if (!output) throw new Error("AI did not return a valid Math problem object.");
