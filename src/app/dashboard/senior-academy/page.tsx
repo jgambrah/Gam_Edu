@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,10 +35,10 @@ const speak = (text: string) => {
 // --- HELPER: LATEX CLEANER ---
 const cleanLatex = (formula: string = "") => {
     return formula
-        .replace(/\$\$/g, '')      // Remove double dollar signs
-        .replace(/\$/g, '')        // Remove single dollar signs
-        .replace(/\\\[/g, '')      // Remove \[
-        .replace(/\\\]/g, '')      // Remove \]
+        .replace(/\$\$/g, '')      
+        .replace(/\$/g, '')        
+        .replace(/\\\[/g, '')      
+        .replace(/\\\]/g, '')      
         .trim();
 };
 
@@ -80,7 +80,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                     <Badge className="mb-4 bg-white/20 text-white border-none">{activeStory.genre}</Badge>
                                     <CardTitle className="text-4xl font-black">{activeStory.title}</CardTitle>
                                 </div>
-                                <Button onClick={() => speak(activeStory.content)} variant="secondary" size="icon" className="rounded-full h-12 w-12"><Volume2/></Button>
+                                <Button onClick={() => speak(activeStory.content)} variant="secondary" size="icon" className="rounded-full"><Volume2/></Button>
                             </div>
                         </div>
                         <CardContent className="p-10 space-y-10">
@@ -93,7 +93,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                         <Input placeholder="Type response..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-14 rounded-2xl border-2"/>
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-[20px] shadow-xl">Submit for Review</Button>
+                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-2xl shadow-xl">Submit for Review</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -143,7 +143,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     };
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
+        <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
             <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar justify-center">
                 {dbProblems?.map((p: any) => (
                     <div key={p.id} className="relative group">
@@ -174,20 +174,12 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
                                 <BlockMath math={cleanLatex(problem.latexFormula)} />
                             </div>
-                            <div className="absolute top-4 right-6 text-slate-700 font-mono text-[10px] uppercase tracking-tighter">Mathematical Logic Engine</div>
                         </div>
                         <div className="text-center space-y-8">
-                            <p className="text-2xl font-medium text-slate-600 italic">"{problem.instruction}"</p>
+                            <p className="text-2xl font-medium text-slate-600 italic">{problem.instruction}</p>
                             <div className="flex flex-col items-center gap-4">
-                                <Input 
-                                    value={userInput} 
-                                    onChange={e => setUserInput(e.target.value)} 
-                                    placeholder="Enter Solution..." 
-                                    className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm focus:border-emerald-500 transition-all shadow-inner"
-                                />
-                                <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">
-                                    VERIFY ANSWER
-                                </Button>
+                                <Input value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Enter Solution..." className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm"/>
+                                <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">VERIFY ANSWER</Button>
                             </div>
                         </div>
                         {feedback && (
@@ -218,13 +210,12 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="space-y-8">
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {dbLabs?.map((l: any) => (
                     <Card key={l.id} onClick={() => { setLab(l); setStage('hypothesis'); }} className={`cursor-pointer hover:shadow-xl transition-all border-b-8 ${lab?.id === l.id ? 'border-blue-600 bg-blue-50' : 'border-slate-100'}`}>
                         <CardContent className="p-6 text-center space-y-3">
                             <div className="text-5xl">{l.icon}</div>
                             <h4 className="font-bold text-slate-800">{l.title}</h4>
-                            <Badge variant="secondary" className="uppercase text-[10px]">{l.category}</Badge>
                         </CardContent>
                     </Card>
                 ))}
@@ -329,7 +320,7 @@ function AdminConsole() {
 
         if (res.success) {
             setPayload(res.data);
-            toast({ title: "AI Magic Complete!", description: "Review and publish below." });
+            toast({ title: "AI Generation Complete!", description: "Review and publish below." });
         }
         setLoading(false);
     };
@@ -366,10 +357,10 @@ function AdminConsole() {
                     </h2>
                     
                     <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
-                        <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => {setCreationMode('ai'); setPayload({});}} className="rounded-xl font-bold text-xs h-9">
+                        <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('ai')} className="rounded-xl font-bold text-xs h-9">
                             <Sparkles className="w-3 h-3 mr-2 text-blue-400"/> AI Magic
                         </Button>
-                        <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => {setCreationMode('manual'); setPayload({});}} className="rounded-xl font-bold text-xs h-9">
+                        <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('manual')} className="rounded-xl font-bold text-xs h-9">
                             <PenTool className="w-3 h-3 mr-2 text-emerald-400"/> Manual Entry
                         </Button>
                     </div>
@@ -388,7 +379,7 @@ function AdminConsole() {
                             <div className="grid md:grid-cols-3 gap-4 bg-slate-50 p-6 rounded-[32px] border-2 border-slate-100">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Topic</label>
-                                    <Input placeholder="e.g. Fractions, Gravity..." value={topic} onChange={e => setTopic(e.target.value)} className="rounded-xl"/>
+                                    <Input placeholder="e.g. Fractions, Space, Poetry" value={topic} onChange={e => setTopic(e.target.value)} className="rounded-xl"/>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Difficulty</label>
@@ -399,14 +390,14 @@ function AdminConsole() {
                                     </select>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Grade</label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Level</label>
                                     <select className="w-full h-10 rounded-xl px-3 font-bold text-sm bg-white border border-slate-200 outline-none" value={gradeLevel} onChange={e => setGradeLevel(e.target.value)}>
                                         <option value="Grade 4">Grade 4</option>
                                         <option value="Grade 5">Grade 5</option>
                                         <option value="Grade 6">Grade 6</option>
                                     </select>
                                 </div>
-                                <textarea placeholder="Specific AI instructions (Optional)..." className="md:col-span-3 w-full h-20 rounded-2xl p-4 text-sm bg-white border border-slate-200 outline-none shadow-inner" value={extraInstructions} onChange={e => setExtraInstructions(e.target.value)} />
+                                <textarea placeholder="Specific AI instructions (Optional)..." className="md:col-span-3 w-full h-20 rounded-2xl p-4 text-sm outline-none shadow-inner" value={extraInstructions} onChange={e => setExtraInstructions(e.target.value)} />
                             </div>
                             <Button onClick={handleAIAction} disabled={loading || !topic} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 rounded-2xl text-xl font-black shadow-xl">
                                 {loading ? <Loader2 className="animate-spin mr-2"/> : <Wand2 className="mr-2"/>} GENERATE WITH AI
@@ -416,35 +407,74 @@ function AdminConsole() {
 
                     {/* UI FOR MANUAL MODE */}
                     {creationMode === 'manual' && (
-                        <div className="space-y-6 animate-in slide-in-from-top-4">
+                        <div className="space-y-6 animate-in fade-in">
                             <div className="grid md:grid-cols-2 gap-6">
-                                {subject === 'math' && (
-                                    <>
-                                    <div className="space-y-4">
-                                        <Input placeholder="Problem Title" value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} className="h-12 rounded-xl font-bold" />
-                                        <Input placeholder="Category (e.g. Calculus)" value={payload.category} onChange={e => setPayload({...payload, category: e.target.value})} className="rounded-xl border-2" />
-                                        <textarea placeholder="Paste LaTeX Formula here (e.g. \frac{x}{y})" value={payload.latexFormula} onChange={e => setPayload({...payload, latexFormula: e.target.value})} className="w-full h-32 p-4 border-2 rounded-xl font-mono text-sm" />
-                                    </div>
-                                    <div className="space-y-4">
-                                        <Input placeholder="Instruction for student" value={payload.instruction} onChange={e => setPayload({...payload, instruction: e.target.value})} className="rounded-xl border-2" />
-                                        <Input placeholder="Correct Answer" value={payload.answer} onChange={e => setPayload({...payload, answer: e.target.value})} className="rounded-xl border-2" />
-                                        <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[140px] flex items-center justify-center">
-                                            {payload.latexFormula ? <BlockMath math={cleanLatex(payload.latexFormula)} /> : <span className="text-slate-300 italic text-sm text-center">LaTeX Preview</span>}
+                                <div className="space-y-4">
+                                    <Input placeholder="Module Title" value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} className="h-12 rounded-xl font-bold" />
+                                    
+                                    {subject === 'math' && (
+                                        <>
+                                            <Input placeholder="Category (e.g. Calculus)" value={payload.category} onChange={e => setPayload({...payload, category: e.target.value})} />
+                                            <textarea placeholder="Paste LaTeX Formula here (e.g. \frac{x}{y})" value={payload.latexFormula} onChange={e => setPayload({...payload, latexFormula: e.target.value})} className="w-full h-32 p-4 border rounded-2xl font-mono text-sm" />
+                                        </>
+                                    )}
+
+                                    {subject === 'english' && (
+                                        <>
+                                            <Input placeholder="Genre (e.g. Poetry)" value={payload.genre} onChange={e => setPayload({...payload, genre: e.target.value})} />
+                                            <textarea placeholder="Story/Passage Content" value={payload.content} onChange={e => setPayload({...payload, content: e.target.value})} className="w-full h-40 p-4 border rounded-2xl" />
+                                        </>
+                                    )}
+
+                                    {subject === 'science' && (
+                                        <>
+                                            <Input placeholder="Emoji Icon (e.g. 🌋)" value={payload.icon} onChange={e => setPayload({...payload, icon: e.target.value})} />
+                                            <textarea placeholder="Background Context" value={payload.background} onChange={e => setPayload({...payload, background: e.target.value})} className="w-full h-32 p-4 border rounded-2xl" />
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className="space-y-4">
+                                    {subject === 'math' && (
+                                        <>
+                                            <Input placeholder="Instruction for Student" value={payload.instruction} onChange={e => setPayload({...payload, instruction: e.target.value})} />
+                                            <Input placeholder="Correct Answer" value={payload.answer} onChange={e => setPayload({...payload, answer: e.target.value})} />
+                                            <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[120px] flex items-center justify-center">
+                                                <div className="text-2xl text-center">
+                                                    {payload.latexFormula ? <BlockMath math={cleanLatex(payload.latexFormula)} /> : <span className="text-slate-300 italic text-sm text-center">LaTeX Preview will appear here</span>}
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {subject === 'english' && (
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase">Quiz Questions (3 required)</p>
+                                            {[0,1,2].map(i => (
+                                                <div key={i} className="p-3 bg-indigo-50 rounded-xl space-y-2 border border-indigo-100">
+                                                    <Input placeholder={`Question ${i+1}`} value={payload.quiz?.[i]?.question || ""} onChange={e => {
+                                                        const q = [...(payload.quiz || [])]; q[i] = { ...q[i], question: e.target.value }; setPayload({...payload, quiz: q});
+                                                    }} className="h-8 text-xs"/>
+                                                    <Input placeholder="Correct Answer" value={payload.quiz?.[i]?.answer || ""} onChange={e => {
+                                                        const q = [...(payload.quiz || [])]; q[i] = { ...q[i], answer: e.target.value }; setPayload({...payload, quiz: q});
+                                                    }} className="h-8 text-xs"/>
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
-                                    </>
-                                )}
-                                {subject === 'english' && (
-                                     <>
-                                        <Input placeholder="Passage Title" value={payload.title} onChange={e => setPayload({...payload, title: e.target.value})} className="h-12 rounded-xl font-bold col-span-2" />
-                                        <textarea placeholder="Story/Passage Content..." value={payload.content} onChange={e => setPayload({...payload, content: e.target.value})} className="col-span-2 w-full h-40 p-4 border rounded-2xl" />
-                                        {/* Simplified quiz input for manual */}
-                                        <Input placeholder="Quiz Question 1" value={payload.quiz?.[0]?.question} onChange={e => setPayload({...payload, quiz: [{...payload.quiz?.[0], question: e.target.value}]})} />
-                                        <Input placeholder="Answer 1" value={payload.quiz?.[0]?.answer} onChange={e => setPayload({...payload, quiz: [{...payload.quiz?.[0], answer: e.target.value}]})} />
-                                     </>
-                                )}
+                                    )}
+
+                                    {subject === 'science' && (
+                                        <>
+                                            <Input placeholder="Research Question" value={payload.question} onChange={e => setPayload({...payload, question: e.target.value})} />
+                                            <Input placeholder="Hypothesis Prompt" value={payload.hypothesisPrompt} onChange={e => setPayload({...payload, hypothesisPrompt: e.target.value})} />
+                                            <Input placeholder="Options (comma separated)" value={payload.hypothesisOptions?.join(',')} onChange={e => setPayload({...payload, hypothesisOptions: e.target.value.split(',')})} />
+                                            <textarea placeholder="Conclusion (The 'Aha!' moment)" value={payload.conclusion} onChange={e => setPayload({...payload, conclusion: e.target.value})} className="w-full h-20 p-4 border rounded-2xl" />
+                                            <textarea placeholder="Explanation (Why it works)" value={payload.explanation} onChange={e => setPayload({...payload, explanation: e.target.value})} className="w-full h-20 p-4 border rounded-2xl" />
+                                        </>
+                                    )}
+                                </div>
                             </div>
-                            <Button onClick={handlePublish} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:bg-black">
+                            <Button onClick={() => handlePublish(payload)} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:bg-black">
                                 PUBLISH MANUAL {subject.toUpperCase()} MODULE
                             </Button>
                         </div>
@@ -456,12 +486,18 @@ function AdminConsole() {
                             <div className="flex justify-between items-center bg-indigo-50 p-4 rounded-2xl">
                                 <h3 className="text-xl font-black text-indigo-900">AI Preview: {payload.title}</h3>
                                 <div className="flex gap-2">
-                                    <Button onClick={() => setPayload({})} variant="ghost" className="text-red-500 font-bold">Discard</Button>
-                                    <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700 rounded-xl px-8 shadow-lg font-bold">Publish to Students</Button>
+                                    <Button onClick={() => setPreviewData(null)} variant="ghost" className="text-red-500 font-bold">Discard</Button>
+                                    <Button onClick={() => handlePublish(payload)} className="bg-green-600 hover:bg-green-700 rounded-xl px-8 shadow-lg font-bold">Save & Publish</Button>
                                 </div>
                             </div>
                             <div className="p-8 bg-slate-900 rounded-[32px] border-4 border-slate-800">
-                                {subject === 'math' ? <div className="text-4xl text-emerald-400 text-center py-6"><BlockMath math={cleanLatex(payload.latexFormula)} /></div> : <p className="text-slate-300 italic line-clamp-3 leading-relaxed">{payload.content || payload.background}</p>}
+                                {subject === 'math' ? (
+                                    <div className="text-4xl text-emerald-400 text-center py-6">
+                                        <BlockMath math={cleanLatex(payload.latexFormula)} />
+                                    </div>
+                                ) : (
+                                    <p className="text-slate-300 italic line-clamp-3 leading-relaxed">{payload.content || payload.background}</p>
+                                )}
                             </div>
                         </div>
                     )}
@@ -485,15 +521,16 @@ export default function SeniorAcademyPage() {
                             <div className="bg-slate-900 p-3 rounded-2xl shadow-xl"><Rocket className="h-8 w-8 text-white" /></div>
                             <h1 className="text-6xl font-black text-slate-900 tracking-tight">Senior Academy</h1>
                         </div>
+                        <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] ml-1">Excellence & Academic Rigor</p>
                     </div>
                 </div>
 
                 <Tabs defaultValue="english" className="w-full">
                     <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
-                        <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
-                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
-                        <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex flex-col gap-1"><PlusCircle className="w-5 h-5"/> Creator</TabsTrigger>
+                        <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center justify-center gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
+                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
+                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
+                        <TabsTrigger value="admin" className="rounded-2xl data-[state=active]:bg-slate-900 data-[state=active]:text-white font-black flex flex-col items-center justify-center gap-1"><PlusCircle className="w-5 h-5"/> Creator</TabsTrigger>
                     </TabsList>
                     
                     <div className="min-h-[700px]">
