@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
 
 // Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
@@ -226,7 +227,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                     )}
                                     
                                     {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-indigo-500 flex justify-center">
+                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-emerald-500 flex justify-center">
                                             <SafeMath formula={block.formula} />
                                         </div>
                                     )}
@@ -427,7 +428,6 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     return (
         <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in">
             <div className="lg:col-span-2 space-y-6">
-                {canEdit && <AdminConsole onContentAdded={forceRefetch} />}
                 
                 {!activeStory ? (
                     <div className="h-96 flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
