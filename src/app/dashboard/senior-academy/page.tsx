@@ -29,6 +29,8 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 // Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
@@ -300,16 +302,27 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     
-    // Form State
+    // AI Form State
     const [subject, setSubject] = useState('math');
     const [topic, setTopic] = useState('');
     const [gradeLevel, setGradeLevel] = useState('SHS');
     const [difficulty, setDifficulty] = useState('University');
     const [instructions, setInstructions] = useState('');
-    
     const [loading, setLoading] = useState(false);
 
-    const handleGenerate = async () => {
+    // Manual Form State
+    const [isManualFormOpen, setIsManualFormOpen] = useState(false);
+    const [manualType, setManualType] = useState('math');
+    const [manualTitle, setManualTitle] = useState('');
+    const [manualContent, setManualContent] = useState('');
+    const [manualCategory, setManualCategory] = useState('');
+    const [manualFormula, setManualFormula] = useState('');
+    const [manualInstruction, setManualInstruction] = useState('');
+    const [manualAnswer, setManualAnswer] = useState('');
+    const [manualLoading, setManualLoading] = useState(false);
+
+
+    const handleAiGenerate = async () => {
         if (!topic.trim()) {
             toast({ variant: 'destructive', title: 'Topic is required' });
             return;
@@ -356,12 +369,98 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
             setLoading(false);
         }
     };
+    
+    const handleManualSave = async () => {
+        if (!manualTitle || !firestore) {
+            toast({ variant: 'destructive', title: "Title is required" });
+            return;
+        }
+        setManualLoading(true);
+
+        let collectionName = '';
+        let dataToSave: any = { title: manualTitle, createdAt: serverTimestamp() };
+
+        if (manualType === 'math') {
+            collectionName = 'senior_math';
+            dataToSave = {
+                ...dataToSave,
+                category: manualCategory,
+                latexFormula: manualFormula,
+                instruction: manualInstruction,
+                answer: manualAnswer,
+            };
+        } else { // Simplified for English/Science for now
+            collectionName = 'senior_stories';
+            dataToSave = {
+                ...dataToSave,
+                content: manualContent,
+                genre: manualCategory,
+                quiz: [], // Manual quiz creation can be complex, add later if needed
+            };
+        }
+
+        try {
+            await addDoc(collection(firestore, collectionName), dataToSave);
+            toast({ title: "Manual Content Saved!" });
+            onContentAdded();
+            setIsManualFormOpen(false);
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: "Save Error", description: e.message });
+        } finally {
+            setManualLoading(false);
+        }
+    };
 
     return (
         <Card className="bg-slate-800 text-white shadow-2xl border-indigo-900">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-indigo-300"><Wand2 /> AI Admin Console</CardTitle>
-                <CardDescription className="text-slate-400">Generate advanced learning modules for students.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle className="flex items-center gap-2 text-indigo-300"><Wand2 /> Admin Console</CardTitle>
+                    <CardDescription className="text-slate-400">Generate or manually create learning modules.</CardDescription>
+                </div>
+                 <Dialog open={isManualFormOpen} onOpenChange={setIsManualFormOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="bg-slate-700 border-slate-600 hover:bg-slate-600">
+                           <PlusCircle className="mr-2 h-4 w-4"/> Manual Entry
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[600px]">
+                        <DialogHeader><DialogTitle>Manual Content Creator</DialogTitle></DialogHeader>
+                        <div className="space-y-4 py-2">
+                             <Label>Content Type</Label>
+                            <Select value={manualType} onValueChange={setManualType}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="math">Math Problem</SelectItem>
+                                    <SelectItem value="english">English Passage</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            <Label>Title</Label>
+                            <Input value={manualTitle} onChange={e => setManualTitle(e.target.value)} />
+                            
+                            {manualType === 'math' ? (
+                                <div className="space-y-4 p-4 border rounded-md bg-slate-50">
+                                    <Label>Math Details</Label>
+                                    <Input placeholder="Category (e.g. Calculus)" value={manualCategory} onChange={e => setManualCategory(e.target.value)} />
+                                    <Textarea placeholder="LaTeX Formula (e.g. \int_0^1 x^2 dx)" value={manualFormula} onChange={e => setManualFormula(e.target.value)} />
+                                    <Input placeholder="Instruction (e.g. Solve for x)" value={manualInstruction} onChange={e => setManualInstruction(e.target.value)} />
+                                    <Input placeholder="Final Answer" value={manualAnswer} onChange={e => setManualAnswer(e.target.value)} />
+                                </div>
+                            ) : (
+                                <div className="space-y-4 p-4 border rounded-md bg-slate-50">
+                                    <Label>English Details</Label>
+                                    <Input placeholder="Genre (e.g. Poetry)" value={manualCategory} onChange={e => setManualCategory(e.target.value)} />
+                                    <Textarea placeholder="Full text of the passage..." value={manualContent} onChange={e => setManualContent(e.target.value)} rows={6}/>
+                                </div>
+                            )}
+
+                            <Button onClick={handleManualSave} disabled={manualLoading} className="w-full">
+                                {manualLoading ? <Loader2 className="animate-spin"/> : "Save Manual Content"}
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -384,8 +483,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     <Label className="text-slate-400 text-xs">Topic</Label>
                     <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Quantum Physics, Shakespeare" className="bg-slate-700 border-slate-600 text-white" />
                 </div>
-                <Button onClick={handleGenerate} disabled={loading || !topic} className="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold h-12">
-                    {loading ? <Loader2 className="animate-spin"/> : "Generate Content"}
+                <Button onClick={handleAiGenerate} disabled={loading || !topic} className="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold h-12">
+                    {loading ? <Loader2 className="animate-spin"/> : "Generate Content with AI"}
                 </Button>
             </CardContent>
         </Card>
