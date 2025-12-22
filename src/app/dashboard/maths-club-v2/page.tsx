@@ -37,8 +37,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription, FormLabel } from '@/components/ui/form';
 
-// --- HELPER FUNCTIONS & COMPONENTS (MOVED TO TOP LEVEL) ---
-
+// HELPER: Strips all "noise" from AI or Manual LaTeX inputs
 const cleanLatex = (formula: string = "") => {
   if (!formula) return "";
   return formula
@@ -80,7 +79,6 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
 interface LessonCard extends GeneratedMathLesson {
     id?: string;
     timestamp?: any;
-    latexFormula?: string;
 }
 
 // --- SUB-COMPONENT: MATH EXPLORER ---
@@ -539,6 +537,16 @@ export default function MathsClubPage() {
             </TabsContent>
         )}
       </Tabs>
+      <style jsx global>{`
+          .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+          }
+          .katex-display {
+            margin: 0.5em 0 !important;
+          }
+        `}</style>
     </div>
   );
 }
