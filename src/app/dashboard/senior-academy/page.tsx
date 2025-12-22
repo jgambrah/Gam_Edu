@@ -5,20 +5,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import 'katex/dist/katex.min.css';
-import { BlockMath } from 'react-katex';
+import { BlockMath, InlineMath } from 'react-katex';
 
 // Import the new AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
@@ -42,7 +42,6 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const { data: library } = useCollection<any>(storiesQuery);
 
     const checkAnswers = () => {
-        if (!activeStory || !activeStory.quiz) return;
         let correct = 0;
         activeStory.quiz.forEach((q: any, i: number) => {
             if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
@@ -75,14 +74,15 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
                         <CardContent className="p-10 space-y-10">
-                            <p className="text-2xl leading-relaxed text-slate-700 font-serif whitespace-pre-wrap">
+                            <p className="text-xl leading-relaxed text-slate-700 first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:float-left">
                                 {activeStory.content}
                             </p>
+                            <hr />
                             <div className="bg-slate-50 p-8 rounded-[32px] space-y-8 border-2 border-slate-100">
                                 <h3 className="text-2xl font-black text-indigo-900 flex items-center gap-2">
                                     <Brain className="text-indigo-500"/> Critical Analysis
                                 </h3>
-                                {activeStory.quiz?.map((q: any, i: number) => (
+                                {activeStory.quiz.map((q: any, i: number) => (
                                     <div key={i} className="space-y-3">
                                         <p className="font-bold text-slate-800 text-lg">{i + 1}. {q.question}</p>
                                         <Input 
@@ -93,11 +93,11 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                                 newAns[i] = e.target.value;
                                                 setAnswers(newAns);
                                             }}
-                                            className="h-14 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 bg-white"
+                                            className="bg-slate-50 border-slate-200 h-12 rounded-xl"
                                         />
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-[20px] shadow-xl">
+                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-bold rounded-[20px] shadow-lg">
                                     Submit Analysis
                                 </Button>
                             </div>
@@ -127,63 +127,78 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
 // --- 2. ADVANCED MATH LAB ---
 function MathLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [problem, setProblem] = useState<any>(null);
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
 
     const mathQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: dbProblems } = useCollection<any>(mathQuery);
+    const { data: dbProblems, forceRefetch } = useCollection<any>(mathQuery);
 
     const checkAnswer = () => {
-        if (userInput.trim() === problem.answer) {
-            setFeedback({ ok: true, msg: "Correct! Your logical derivation is sound." });
+        if (userInput.trim().toLowerCase() === problem.answer.toLowerCase().trim()) {
+            setFeedback({ ok: true, msg: "Correct logical derivation." });
             confetti();
             speak("Correct.");
         } else {
-            setFeedback({ ok: false, msg: `Not quite. Expected: ${problem.answer}` });
-            speak("Review your formula and try again.");
+            setFeedback({ ok: false, msg: `Review calculation. Correct value: ${problem.answer}` });
+            speak("Incorrect. Please re-evaluate.");
         }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!firestore || !confirm("Remove this problem from curriculum?")) return;
+        await deleteDoc(doc(firestore, 'senior_math', id));
+        toast({ title: "Deleted" });
+        setProblem(null);
+        forceRefetch();
     };
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom-8">
             <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar justify-center">
                 {dbProblems?.map((p: any) => (
-                    <Button 
-                        key={p.id} 
-                        variant={problem?.id === p.id ? 'default' : 'outline'}
-                        onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }}
-                        className="rounded-full border-2 border-emerald-100 whitespace-nowrap"
-                    >
-                        {p.title}
-                    </Button>
+                    <div key={p.id} className="relative group">
+                        <Button 
+                            variant={problem?.id === p.id ? 'default' : 'outline'} 
+                            onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }} 
+                            className="rounded-full border-2 font-bold uppercase text-[10px] tracking-widest px-6 h-10"
+                        >
+                            {p.title}
+                        </Button>
+                        {canEdit && (
+                            <button onClick={() => handleDelete(p.id)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Trash2 className="w-3 h-3"/>
+                            </button>
+                        )}
+                    </div>
                 ))}
             </div>
 
             {problem ? (
                 <Card className="rounded-[50px] border-none shadow-2xl overflow-hidden bg-white">
-                    <div className="bg-emerald-600 p-10 text-center text-white">
+                    <div className="bg-emerald-600 p-10 text-center text-white relative">
                         <Badge className="bg-emerald-400 mb-4">{problem.category}</Badge>
                         <CardTitle className="text-4xl font-black">{problem.title}</CardTitle>
                     </div>
                     <CardContent className="p-12 space-y-10">
-                        <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl relative">
-                            <div className="text-5xl text-emerald-400 overflow-x-auto py-4">
+                        <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl relative border-t-8 border-emerald-500">
+                            <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
                                 <BlockMath math={problem.latexFormula} />
                             </div>
-                            <div className="absolute top-4 right-6 text-slate-700 font-mono text-xs italic">LaTeX Engine Active</div>
+                            <div className="absolute top-4 right-6 text-slate-700 font-mono text-[10px] uppercase tracking-tighter">Mathematical Logic Engine</div>
                         </div>
                         <div className="text-center space-y-8">
-                            <p className="text-2xl font-medium text-slate-600">{problem.instruction}</p>
+                            <p className="text-2xl font-medium text-slate-600 italic">"{problem.instruction}"</p>
                             <div className="flex flex-col items-center gap-4">
                                 <Input 
                                     value={userInput} 
                                     onChange={e => setUserInput(e.target.value)} 
-                                    placeholder="Value of x..." 
-                                    className="h-20 text-5xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm focus:border-emerald-500 transition-all"
+                                    placeholder="Enter Solution..." 
+                                    className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm focus:border-emerald-500 transition-all shadow-inner"
                                 />
                                 <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">
-                                    EXECUTE SOLUTION
+                                    VERIFY ANSWER
                                 </Button>
                             </div>
                         </div>
@@ -204,7 +219,158 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 3. DISCOVERY LAB ---
+// --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
+function AdminConsole() {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [subject, setSubject] = useState<'english' | 'math' | 'science'>('math');
+    const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
+    
+    // States for Generation
+    const [topic, setTopic] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [previewData, setPreviewData] = useState<any>(null);
+
+    // States for Manual Math Entry
+    const [manualMath, setManualMath] = useState({
+        title: '',
+        category: 'Algebra',
+        latexFormula: '',
+        instruction: 'Simplify the expression or solve for x.',
+        answer: ''
+    });
+
+    const handleAIAction = async () => {
+        if (!topic) return;
+        setLoading(true);
+        let res;
+        if (subject === 'english') res = await generateSeniorEnglish(topic);
+        else if (subject === 'math') res = await generateSeniorMath(topic);
+        else res = await generateSeniorLab(topic);
+
+        if (res.success) {
+            setPreviewData(res.data);
+            toast({ title: "AI Generation Complete" });
+        }
+        setLoading(false);
+    };
+
+    const handlePublish = async (dataToPublish: any) => {
+        if (!firestore || !dataToPublish) return;
+        const colMap: any = { english: 'senior_stories', math: 'senior_math', science: 'senior_labs' };
+        await addDoc(collection(firestore, colMap[subject]), {
+            ...dataToPublish,
+            createdAt: serverTimestamp()
+        });
+        setPreviewData(null);
+        setTopic("");
+        setManualMath({ title: '', category: 'Algebra', latexFormula: '', instruction: '', answer: '' });
+        toast({ title: "Published Successfully!" });
+    };
+
+    return (
+        <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in">
+            <Card className="rounded-[40px] border-4 border-slate-900 bg-white overflow-hidden shadow-2xl">
+                <div className="bg-slate-900 p-8 text-white flex flex-col md:flex-row justify-between items-center gap-6">
+                    <h2 className="text-2xl font-black flex items-center gap-2">
+                        <Sparkles className="text-yellow-400" /> Professor's Creator Suite
+                    </h2>
+                    
+                    <div className="flex bg-slate-800 p-1 rounded-2xl">
+                        <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => {setCreationMode('ai'); setPreviewData(null);}} className="rounded-xl font-bold text-xs"><Sparkles className="w-3 h-3 mr-2"/> AI Magic</Button>
+                        <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => {setCreationMode('manual'); setPreviewData(null);}} className="rounded-xl font-bold text-xs"><PenTool className="w-3 h-3 mr-2"/> Manual Entry</Button>
+                    </div>
+
+                    <div className="flex gap-2 bg-slate-800 p-1 rounded-xl">
+                        {['english', 'math', 'science'].map((m: any) => (
+                            <Button key={m} variant={subject === m ? 'secondary' : 'ghost'} onClick={() => {setSubject(m); setPreviewData(null);}} className="capitalize font-black text-[10px] px-4">{m}</Button>
+                        ))}
+                    </div>
+                </div>
+
+                <CardContent className="p-10 space-y-8">
+                    {/* AI MODE */}
+                    {creationMode === 'ai' && (
+                        <div className="space-y-6">
+                            <div className="flex gap-3">
+                                <Input 
+                                    placeholder={subject === 'math' ? "Enter Math Concept (e.g. Rational Expressions)" : "Enter Topic (e.g. Industrial Revolution)"} 
+                                    value={topic}
+                                    onChange={e => setTopic(e.target.value)}
+                                    className="h-16 rounded-2xl text-lg border-2 border-slate-100"
+                                />
+                                <Button onClick={handleAIAction} disabled={loading} className="h-16 px-10 bg-indigo-600 hover:bg-indigo-700 rounded-2xl">
+                                    {loading ? <Loader2 className="animate-spin"/> : <Wand2/>}
+                                </Button>
+                            </div>
+                            
+                            {previewData && (
+                                <div className="space-y-6 border-t pt-8 animate-in slide-in-from-bottom-4">
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="text-2xl font-black text-slate-800 tracking-tight">AI Preview: {previewData.title}</h3>
+                                        <div className="flex gap-2">
+                                            <Button onClick={() => setPreviewData(null)} variant="ghost" className="text-red-500 font-bold">Discard</Button>
+                                            <Button onClick={() => handlePublish(previewData)} className="bg-green-600 hover:bg-green-700 rounded-xl px-8 shadow-lg font-bold">Publish to Students</Button>
+                                        </div>
+                                    </div>
+                                    <div className="p-8 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200">
+                                        {subject === 'math' ? (
+                                            <div className="text-4xl text-center py-6 bg-white rounded-2xl shadow-sm"><BlockMath math={previewData.latexFormula} /></div>
+                                        ) : (
+                                            <p className="text-slate-600 leading-relaxed italic line-clamp-3">{previewData.content || previewData.background}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* MANUAL MODE (Example for Math) */}
+                    {creationMode === 'manual' && subject === 'math' && (
+                        <div className="space-y-6 animate-in fade-in">
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-4">
+                                    <Input placeholder="Problem Title" value={manualMath.title} onChange={e => setManualMath({...manualMath, title: e.target.value})} className="rounded-xl border-2" />
+                                    <Input placeholder="Category (e.g. Algebra)" value={manualMath.category} onChange={e => setManualMath({...manualMath, category: e.target.value})} className="rounded-xl border-2" />
+                                    <textarea 
+                                        placeholder="Enter KaTeX/LaTeX Formula here (e.g. \\frac{x}{y})" 
+                                        value={manualMath.latexFormula} 
+                                        onChange={e => setManualMath({...manualMath, latexFormula: e.target.value})}
+                                        className="w-full h-32 p-4 border-2 rounded-xl font-mono text-sm focus:border-indigo-500 outline-none"
+                                    />
+                                </div>
+                                <div className="space-y-4">
+                                    <Input placeholder="Instruction for student" value={manualMath.instruction} onChange={e => setManualMath({...manualMath, instruction: e.target.value})} className="rounded-xl border-2" />
+                                    <Input placeholder="Correct Answer" value={manualMath.answer} onChange={e => setManualMath({...manualMath, answer: e.target.value})} className="rounded-xl border-2" />
+                                    
+                                    <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[140px] flex flex-col justify-center items-center">
+                                        <p className="text-[10px] font-black text-emerald-600 uppercase mb-2">Live LaTeX Preview</p>
+                                        <div className="text-2xl">
+                                            {manualMath.latexFormula ? <BlockMath math={manualMath.latexFormula} /> : <span className="text-slate-300">Formula will appear here...</span>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <Button onClick={() => handlePublish(manualMath)} disabled={!manualMath.title || !manualMath.latexFormula} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black text-lg hover:bg-black shadow-2xl">
+                                PUBLISH MANUAL PROBLEM
+                            </Button>
+                        </div>
+                    )}
+
+                    {creationMode === 'manual' && subject !== 'math' && (
+                        <div className="text-center py-20 text-slate-400 font-bold border-2 border-dashed rounded-3xl">
+                            Manual entry for {subject} is coming soon. Use AI Magic for now!
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+// ... Main Page stays the same as previous version ...
+
+// --- DISCOVERY LAB (Scientific Method) ---
 function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const [lab, setLab] = useState<any>(null);
@@ -302,98 +468,11 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                     </div>
                 </Card>
             ) : (
-                <div className="text-center py-20 bg-white rounded-[40px] border-4 border-dashed border-slate-100">
+                <div className="text-center py-20 bg-slate-50 rounded-[40px] border-4 border-dashed border-slate-200">
                     <Microscope className="w-20 h-20 text-slate-200 mx-auto mb-4" />
-                    <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest">Select an Experiment</h2>
+                    <h2 className="text-2xl font-bold text-slate-400">Select an Experiment</h2>
                 </div>
             )}
-        </div>
-    );
-}
-
-// --- 4. ADMIN CONSOLE (AI CREATOR SUITE) ---
-function AdminConsole() {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [mode, setMode] = useState<'english' | 'math' | 'science'>('english');
-    const [topic, setTopic] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [previewData, setPreviewData] = useState<any>(null);
-
-    const handleAIAction = async () => {
-        if (!topic) return;
-        setLoading(true);
-        let res;
-        if (mode === 'english') res = await generateSeniorEnglish(topic);
-        else if (mode === 'math') res = await generateSeniorMath(topic);
-        else res = await generateSeniorLab(topic);
-
-        if (res.success) {
-            setPreviewData(res.data);
-            toast({ title: "AI Generation Complete", description: "Review the content below before publishing." });
-        } else {
-             toast({ variant: 'destructive', title: "AI Error", description: res.error });
-        }
-        setLoading(false);
-    };
-
-    const handlePublish = async () => {
-        if (!firestore || !previewData) return;
-        const colMap: any = { english: 'senior_stories', math: 'senior_math', science: 'senior_labs' };
-        await addDoc(collection(firestore, colMap[mode]), {
-            ...previewData,
-            createdAt: serverTimestamp()
-        });
-        setPreviewData(null);
-        setTopic("");
-        toast({ title: "Published!", description: "Module is now live for students." });
-    };
-
-    return (
-        <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in">
-            <Card className="rounded-[40px] border-4 border-slate-900 bg-white overflow-hidden shadow-2xl">
-                <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
-                    <h2 className="text-2xl font-black flex items-center gap-2"><Sparkles className="text-yellow-400" /> Professor's AI Lab</h2>
-                    <div className="flex gap-2 bg-slate-800 p-1 rounded-xl">
-                        {['english', 'math', 'science'].map((m: any) => (
-                            <Button key={m} variant={mode === m ? 'secondary' : 'ghost'} onClick={() => {setMode(m); setPreviewData(null);}} className="capitalize font-black text-xs">{m}</Button>
-                        ))}
-                    </div>
-                </div>
-                <CardContent className="p-10 space-y-8">
-                    <div className="flex gap-3">
-                        <Input 
-                            placeholder={mode === 'math' ? "Enter Math Concept (e.g. Calculus Derivatives)" : "Enter Topic (e.g. Black Holes)"} 
-                            value={topic}
-                            onChange={e => setTopic(e.target.value)}
-                            className="h-16 rounded-2xl text-lg border-2 border-slate-100"
-                        />
-                        <Button onClick={handleAIAction} disabled={loading} className="h-16 px-10 bg-indigo-600 hover:bg-indigo-700 rounded-2xl">
-                            {loading ? <Loader2 className="animate-spin"/> : <Wand2/>}
-                        </Button>
-                    </div>
-
-                    {previewData && (
-                        <div className="space-y-6 border-t pt-8 animate-in slide-in-from-bottom-4">
-                            <div className="flex justify-between items-center">
-                                <h3 className="text-2xl font-black text-slate-800">Preview: {previewData.title}</h3>
-                                <div className="flex gap-2">
-                                    <Button onClick={() => setPreviewData(null)} variant="ghost" className="text-red-500 font-bold">Discard</Button>
-                                    <Button onClick={handlePublish} className="bg-green-600 hover:bg-green-700 rounded-xl px-8"><Save className="mr-2 h-4 w-4"/> Publish Now</Button>
-                                </div>
-                            </div>
-                            
-                            <div className="p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-                                {mode === 'math' ? (
-                                    <div className="text-3xl text-center"><BlockMath math={previewData.latexFormula} /></div>
-                                ) : (
-                                    <p className="line-clamp-4 text-slate-500">{previewData.content || previewData.background}</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
         </div>
     );
 }
@@ -409,7 +488,9 @@ export default function SeniorAcademyPage() {
                 <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                            <div className="bg-slate-900 p-3 rounded-2xl shadow-xl"><Rocket className="h-8 w-8 text-white" /></div>
+                            <div className="bg-slate-900 p-3 rounded-2xl shadow-xl rotate-3">
+                                <Rocket className="h-8 w-8 text-white" />
+                            </div>
                             <h1 className="text-6xl font-black text-slate-900 tracking-tighter">Senior Academy</h1>
                         </div>
                         <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] ml-1">Academic Excellence & Logic</p>
