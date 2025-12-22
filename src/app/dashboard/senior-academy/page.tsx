@@ -31,9 +31,12 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import ReactMarkdown from 'react-markdown';
+
 
 // Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
+import CurriculumSeeder from '@/components/dashboard/senior-academy/CurriculumSeeder';
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string) => {
@@ -118,7 +121,6 @@ function GeoGebraInteractive({ materialId, title, height = 500 }: GeoGebraProps)
   );
 }
 
-
 // --- SENIOR ACADEMY: CURRICULUM PATHWAY ---
 function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
@@ -131,7 +133,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
 
     // 1. Fetch Grades
     const gradesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'curriculum'), orderBy('level', 'asc')) : null, [firestore]);
-    const { data: grades } = useCollection<any>(gradesQuery);
+    const { data: grades, forceRefetch: refetchGrades } = useCollection<any>(gradesQuery);
 
     // 2. Fetch Units (when grade is selected)
     const unitsQuery = useMemoFirebase(() => 
@@ -154,6 +156,8 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* --- BREADCRUMB SELECTOR --- */}
             {!activeLesson && (
+                <>
+                {canEdit && <CurriculumSeeder onSeedComplete={refetchGrades} />}
                 <div className="grid md:grid-cols-3 gap-4 bg-white p-6 rounded-[32px] shadow-xl border-b-8 border-slate-100">
                     {/* Grade Selector */}
                     <div className="space-y-2">
@@ -195,6 +199,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                         </div>
                     </div>
                 </div>
+                </>
             )}
 
             {/* --- THE LESSON VIEWER (THE "GO" PHASE) --- */}
@@ -567,7 +572,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                         <p className="text-slate-400 font-bold text-xl">Select a Literary Work</p>
                     </div>
                 ) : (
-                    <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden">
+                    <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden bg-white">
                         <div className="bg-indigo-600 p-8 text-white">
                             <div className="flex justify-between items-start">
                                 <div>
