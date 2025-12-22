@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -20,7 +21,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -42,11 +42,11 @@ import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription, F
 const cleanLatex = (formula: string = "") => {
   if (!formula) return "";
   return formula
-    .replace(/\$\$/g, '')
-    .replace(/\$/g, '')
-    .replace(/\\\[/g, '')
-    .replace(/\\\]/g, '')
-    .replace(/\\begin\{equation\}/g, '')
+    .replace(/\$\$/g, '')      // Remove $$
+    .replace(/\$/g, '')        // Remove $
+    .replace(/\\\[/g, '')      // Remove \[
+    .replace(/\\\]/g, '')      // Remove \]
+    .replace(/\\begin\{equation\}/g, '') // Remove equation blocks
     .replace(/\\end\{equation\}/g, '')
     .trim();
 };
@@ -54,6 +54,7 @@ const cleanLatex = (formula: string = "") => {
 function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
   const [mounted, setMounted] = useState(false);
 
+  // Prevent hydration errors by only rendering after mount
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -153,12 +154,18 @@ function MathExplorerTab() {
                         <CardContent className="space-y-6">
                             <div>
                                 <h4 className="font-semibold text-orange-700 mb-1">The Concept</h4>
-                                <p className="text-slate-700 leading-relaxed">{currentLesson.explanation}</p>
+                                <div className="text-slate-700 leading-relaxed">
+                                    <SafeMath formula={currentLesson.explanation} />
+                                </div>
                             </div>
+                            
                             <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
                                 <h4 className="font-semibold text-amber-800 mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4"/> Example</h4>
-                                <p className="text-slate-700 italic">"{currentLesson.example}"</p>
+                                <div className="text-slate-700 italic">
+                                    <SafeMath formula={currentLesson.example} />
+                                </div>
                             </div>
+
                             <div>
                                 <h4 className="font-semibold text-slate-700 mb-2">Key Terms / Formulas</h4>
                                 <div className="flex flex-wrap gap-2">
@@ -171,7 +178,9 @@ function MathExplorerTab() {
                             </div>
                             <div className="pt-4 border-t">
                                 <h4 className="font-semibold text-slate-700 mb-2">Quick Check</h4>
-                                <p className="mb-3">{currentLesson.quizQuestion}</p>
+                                <div className="mb-3">
+                                    <SafeMath formula={currentLesson.quizQuestion} />
+                                </div>
                                 {showAnswer ? (
                                     <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200">
                                         <strong>Answer:</strong> {currentLesson.quizAnswer}
