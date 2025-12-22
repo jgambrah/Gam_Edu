@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -131,15 +132,15 @@ function MathExplorerTab() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+                <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-orange-100">
                     <CardHeader>
-                        <CardTitle className="text-blue-800 flex items-center gap-2"><Microscope className="h-5 w-5"/> What do you want to learn today?</CardTitle>
+                        <CardTitle className="text-orange-800 flex items-center gap-2"><Microscope className="h-5 w-5"/> What do you want to learn today?</CardTitle>
                         <CardDescription>Type any math topic (e.g. "Pythagorean Theorem", "Fractions", "Algebra")</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex gap-2">
                             <Input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Enter a topic..." className="bg-white" onKeyDown={(e) => e.key === 'Enter' && handleLearn()}/>
-                            <Button onClick={handleLearn} disabled={isLearning || !topic} className="bg-blue-600 hover:bg-blue-700 w-32">
+                            <Button onClick={handleLearn} disabled={isLearning || !topic} className="bg-orange-600 hover:bg-orange-700 w-32">
                                 {isLearning ? <Loader2 className="h-4 w-4 animate-spin"/> : <><Sparkles className="h-4 w-4 mr-2"/> Learn</>}
                             </Button>
                         </div>
@@ -147,14 +148,14 @@ function MathExplorerTab() {
                 </Card>
 
                 {currentLesson && (
-                    <Card className="border-t-4 border-t-blue-500 shadow-md animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <Card className="border-t-4 border-t-orange-500 shadow-md animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <CardHeader>
                             <CardTitle className="text-2xl">{currentLesson.title}</CardTitle>
                             <CardDescription>Micro-Lesson</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div>
-                                <h4 className="font-semibold text-blue-700 mb-1">The Concept</h4>
+                                <h4 className="font-semibold text-orange-700 mb-1">The Concept</h4>
                                 <p className="text-slate-700 leading-relaxed">{currentLesson.explanation}</p>
                             </div>
                             <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
@@ -294,7 +295,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                  <FormField control={form.control} name="classId" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Assign to Class</FormLabel>
+                        <Label>Assign to Class</Label>
                         <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
                         <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select><FormMessage/>
@@ -302,24 +303,24 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                 )}/>
                 <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
-                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Algebra" {...field}/></FormControl><FormMessage/></FormItem>
+                        <FormItem><Label>Topic</Label><FormControl><Input placeholder="e.g. Algebra" {...field}/></FormControl><FormMessage/></FormItem>
                     )}/>
                     <FormField control={form.control} name="difficulty" render={({ field }) => (
-                        <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
+                        <FormItem><Label>Difficulty</Label><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
                     )}/>
                 </div>
                 <FormField control={form.control} name="question_text" render={({ field }) => (
-                    <FormItem><FormLabel>Question Text</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
+                    <FormItem><Label>Question Text</Label><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
                 )}/>
                 <div className="grid grid-cols-2 gap-4">
                     {form.getValues('options').map((_, index) => (
                         <FormField key={index} control={form.control} name={`options.${index}`} render={({ field }) => (
-                            <FormItem><FormLabel>Option {index + 1}</FormLabel><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
+                            <FormItem><Label>Option {index + 1}</Label><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
                     ))}
                 </div>
                  <FormField control={form.control} name="correct_answer" render={({ field }) => (
-                    <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
+                    <FormItem><Label>Correct Answer</Label><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
                 )}/>
                 <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Problem</Button>
             </form>

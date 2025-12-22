@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -34,6 +35,7 @@ const speak = (text: string) => {
 
 // --- HELPER: LATEX CLEANER ---
 const cleanLatex = (formula: string = "") => {
+    if (!formula) return "";
     return formula
         .replace(/\$\$/g, '')      
         .replace(/\$/g, '')        
@@ -60,7 +62,7 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
         <BlockMath math={cleaned} />
       </div>
     ) : (
-      <BlockMath math={cleaned} /> // Using BlockMath for inline as well for consistency
+      <BlockMath math={cleaned} />
     );
   } catch (error) {
     console.error("LaTeX Error:", error);
@@ -303,7 +305,9 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                     
                                     {isExperimentRunning ? (
                                         <div className="space-y-3">
-                                            <Progress value={progress} className="w-full h-4" />
+                                            <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
+                                                <div className="bg-orange-500 h-4 rounded-full transition-all duration-500" style={{width: `${progress}%`}}></div>
+                                            </div>
                                             <p className="text-sm font-medium text-orange-600">Running Simulation...</p>
                                         </div>
                                     ) : (
@@ -610,5 +614,3 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-
-    
