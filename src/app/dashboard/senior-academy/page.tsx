@@ -1,19 +1,14 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb, Atom, Building2
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb, Atom, Building2, ArrowDown
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +33,11 @@ import ReactMarkdown from 'react-markdown';
 // Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
 import CurriculumSeeder from '@/components/dashboard/senior-academy/CurriculumSeeder';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string) => {
@@ -121,6 +121,7 @@ function GeoGebraInteractive({ materialId, title, height = 500 }: GeoGebraProps)
     </div>
   );
 }
+
 
 // --- SENIOR ACADEMY: CURRICULUM PATHWAY ---
 function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
@@ -237,7 +238,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                                         <p className="text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
                                     )}
                                     {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-indigo-500 flex justify-center overflow-x-auto">
+                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-emerald-500 flex justify-center overflow-x-auto">
                                             <div className="text-4xl text-emerald-400">
                                                 <SafeMath formula={block.formula} />
                                             </div>
@@ -266,9 +267,9 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                             </h3>
                             {activeLesson.practice_problems?.map((prob: any, i: number) => (
                                 <div key={i} className="p-8 bg-slate-50 rounded-[32px] border-2 border-slate-100 space-y-6">
-                                    <div className="text-xl font-bold text-slate-700 whitespace-pre-wrap">
-                                        <SafeMath formula={prob.question} />
-                                    </div>
+                                    <p className="text-xl font-bold text-slate-700 whitespace-pre-wrap">
+                                        {prob.question}
+                                    </p>
                                     <div className="flex gap-4">
                                         <Input placeholder="Your answer..." className="h-14 rounded-2xl text-xl font-mono border-2 focus:border-indigo-500 shadow-sm" />
                                         <Button className="h-14 px-10 bg-indigo-600 rounded-2xl font-bold shadow-lg">Check</Button>
