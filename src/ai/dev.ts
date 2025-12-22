@@ -30,4 +30,4 @@ import '@/ai/flows/logic-lab-actions.ts';
 import '@/ai/flows/admission-actions.ts';
 import '@/ai/flows/reconciliation-flow.ts';
 import '@/ai/flows/junior-actions.ts';
-import '@/ai/flows/senior-actions.ts';
+import '@/ai/
