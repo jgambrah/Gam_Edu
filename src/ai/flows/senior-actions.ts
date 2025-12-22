@@ -52,20 +52,19 @@ export async function generateSeniorEnglish(context: z.infer<typeof AIContextSch
 const MathSchema = z.object({
     title: z.string().describe("The name of the math problem (e.g. 'Quadratic Roots')."),
     category: z.string().describe("The math category (e.g. Algebra, Calculus)."),
-    latexFormula: z.string().describe("A complex mathematical formula formatted in LaTeX."),
+    latexFormula: z.string().describe("A complex mathematical formula formatted in LaTeX, without dollar signs or other wrappers."),
     instruction: z.string().describe("A clear instruction for the student (e.g. 'Solve for x')."),
     answer: z.string().describe("The final, single correct answer to the problem."),
 });
 
 export async function generateSeniorMath(context: z.infer<typeof AIContextSchema>) {
   try {
-    const prompt = `Create an advanced math problem based on this context:
-    Concept: "${context.topic}"
-    Difficulty: ${context.difficulty}
-    Grade Level: ${context.gradeLevel}
-    Specific Instructions: ${context.instructions || 'None'}
-    
-    Provide a title, category, a complex LaTeX formula, an instruction, and a single, precise answer.`;
+    const prompt = `You are a math teacher. 
+    Topic: ${context.topic}. 
+    Grade Level: ${context.gradeLevel}. 
+    Difficulty: ${context.difficulty}. 
+    Additional Rules: ${context.instructions}. 
+    Return a LaTeX formula without dollar signs and a clear solution.`;
     const { output } = await ai.generate({ prompt, output: { schema: MathSchema } });
     if (!output) throw new Error("AI did not return a valid Math problem object.");
     return { success: true, data: output };
@@ -103,4 +102,7 @@ export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>
     if (!output) throw new Error("AI did not return a valid Science Lab object.");
     return { success: true, data: output };
   } catch (error: any) {
-    console.error("Science AI Error
+    console.error("Science AI Error:", error);
+    return { success: false, error: "Failed to generate Science module." };
+  }
+}
