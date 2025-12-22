@@ -13,7 +13,7 @@ import {
 import { format } from 'date-fns';
 import { generateMathLessonAction, GeneratedMathLesson } from '@/ai/flows/generate-math-lesson';
 import 'katex/dist/katex.min.css';
-import { BlockMath } from 'react-katex';
+import { BlockMath, InlineMath } from 'react-katex';
 
 
 // UI Components
@@ -40,16 +40,42 @@ import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } 
 
 // HELPER: Strips all "noise" from AI or Manual LaTeX inputs
 const cleanLatex = (formula: string = "") => {
-    if (!formula) return "";
-    return formula
-        .replace(/\$\$/g, '')      // Remove $$
-        .replace(/\$/g, '')        // Remove $
-        .replace(/\\\[/g, '')      // Remove \[
-        .replace(/\\\]/g, '')      // Remove \]
-        .replace(/\\begin\{equation\}/g, '') // Remove equation blocks
-        .replace(/\\end\{equation\}/g, '')
-        .trim();
+  if (!formula) return "";
+  return formula
+    .replace(/\$\$/g, '')      // Remove $$
+    .replace(/\$/g, '')        // Remove $
+    .replace(/\\\[/g, '')      // Remove \[
+    .replace(/\\\]/g, '')      // Remove \]
+    .replace(/\\begin\{equation\}/g, '') // Remove equation blocks
+    .replace(/\\end\{equation\}/g, '')
+    .trim();
 };
+
+function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration errors by only rendering after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div className="h-10 w-full animate-pulse bg-slate-100 rounded" />;
+
+  const cleaned = cleanLatex(formula);
+
+  try {
+    return block ? (
+      <div className="math-container py-2 overflow-x-auto">
+        <BlockMath math={cleaned} />
+      </div>
+    ) : (
+      <InlineMath math={cleaned} />
+    );
+  } catch (error) {
+    console.error("LaTeX Error:", error);
+    return <code className="text-red-500">{formula}</code>;
+  }
+}
 
 
 interface LessonCard extends GeneratedMathLesson {
@@ -140,7 +166,7 @@ function MathExplorerTab() {
                                 <div className="flex flex-wrap gap-2">
                                     {currentLesson.keyTerms.map((term, i) => (
                                         <div key={i} className="text-sm p-2 bg-slate-100 rounded-md border">
-                                            <BlockMath math={cleanLatex(term)} />
+                                            <SafeMath formula={term} />
                                         </div>
                                     ))}
                                 </div>
