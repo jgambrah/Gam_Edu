@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -15,7 +14,6 @@ import { format } from 'date-fns';
 import { generateMathLessonAction, GeneratedMathLesson } from '@/ai/flows/generate-math-lesson';
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
-
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -39,15 +37,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 
-// HELPER: Strips all "noise" from AI or Manual LaTeX inputs
+// --- HELPER FUNCTIONS & COMPONENTS (MOVED TO TOP LEVEL) ---
+
 const cleanLatex = (formula: string = "") => {
   if (!formula) return "";
   return formula
-    .replace(/\$\$/g, '')      // Remove $$
-    .replace(/\$/g, '')        // Remove $
-    .replace(/\\\[/g, '')      // Remove \[
-    .replace(/\\\]/g, '')      // Remove \]
-    .replace(/\\begin\{equation\}/g, '') // Remove equation blocks
+    .replace(/\$\$/g, '')
+    .replace(/\$/g, '')
+    .replace(/\\\[/g, '')
+    .replace(/\\\]/g, '')
+    .replace(/\\begin\{equation\}/g, '')
     .replace(/\\end\{equation\}/g, '')
     .trim();
 };
@@ -55,7 +54,6 @@ const cleanLatex = (formula: string = "") => {
 function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration errors by only rendering after mount
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -77,7 +75,6 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
     return <code className="text-red-500">{formula}</code>;
   }
 }
-
 
 interface LessonCard extends GeneratedMathLesson {
     id?: string;
@@ -295,7 +292,7 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                  <FormField control={form.control} name="classId" render={({ field }) => (
                     <FormItem>
-                        <Label>Assign to Class</Label>
+                        <FormLabel>Assign to Class</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a class"/></SelectTrigger></FormControl>
                         <SelectContent>{classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                         </Select><FormMessage/>
@@ -303,24 +300,24 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
                 )}/>
                 <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="topic" render={({ field }) => (
-                        <FormItem><Label>Topic</Label><FormControl><Input placeholder="e.g. Algebra" {...field}/></FormControl><FormMessage/></FormItem>
+                        <FormItem><FormLabel>Topic</FormLabel><FormControl><Input placeholder="e.g. Algebra" {...field}/></FormControl><FormMessage/></FormItem>
                     )}/>
                     <FormField control={form.control} name="difficulty" render={({ field }) => (
-                        <FormItem><Label>Difficulty</Label><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
+                        <FormItem><FormLabel>Difficulty</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent><SelectItem value="Easy">Easy</SelectItem><SelectItem value="Medium">Medium</SelectItem><SelectItem value="Hard">Hard</SelectItem></SelectContent></Select><FormMessage/></FormItem>
                     )}/>
                 </div>
                 <FormField control={form.control} name="question_text" render={({ field }) => (
-                    <FormItem><Label>Question Text</Label><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
+                    <FormItem><FormLabel>Question Text</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage/></FormItem>
                 )}/>
                 <div className="grid grid-cols-2 gap-4">
                     {form.getValues('options').map((_, index) => (
                         <FormField key={index} control={form.control} name={`options.${index}`} render={({ field }) => (
-                            <FormItem><Label>Option {index + 1}</Label><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
+                            <FormItem><FormLabel>Option {index + 1}</FormLabel><FormControl><Input {...field}/></FormControl><FormMessage/></FormItem>
                         )}/>
                     ))}
                 </div>
                  <FormField control={form.control} name="correct_answer" render={({ field }) => (
-                    <FormItem><Label>Correct Answer</Label><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
+                    <FormItem><FormLabel>Correct Answer</FormLabel><FormControl><Input {...field}/></FormControl><FormDescription>Must exactly match one of the options.</FormDescription><FormMessage/></FormItem>
                 )}/>
                 <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Add Problem</Button>
             </form>
