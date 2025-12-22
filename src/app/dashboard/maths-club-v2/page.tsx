@@ -8,12 +8,14 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, limit } from 'firebase/firestore';
 import { 
   Sigma, Trophy, PencilRuler, Plus, Loader2, 
-  Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle
+  Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle, PenSquare
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateMathLessonAction, GeneratedMathLesson } from '@/ai/flows/generate-math-lesson';
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
+import ReactMarkdown from 'react-markdown';
+
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -35,9 +37,8 @@ import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription, FormLabel } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
 
-// HELPER: Strips all "noise" from AI or Manual LaTeX inputs
 const cleanLatex = (formula: string = "") => {
   if (!formula) return "";
   return formula
@@ -53,7 +54,6 @@ const cleanLatex = (formula: string = "") => {
 function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration errors by only rendering after mount
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -149,35 +149,61 @@ function MathExplorerTab() {
                             <CardTitle className="text-2xl">{currentLesson.title}</CardTitle>
                             <CardDescription>Micro-Lesson</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-6 prose prose-slate max-w-none">
                             <div>
                                 <h4 className="font-semibold text-orange-700 mb-1">The Concept</h4>
-                                <div className="text-slate-700 leading-relaxed">
-                                    <SafeMath formula={currentLesson.explanation} />
-                                </div>
+                                <ReactMarkdown
+                                  components={{
+                                    p: ({node, ...props}) => <p className="text-slate-700 leading-relaxed" {...props} />,
+                                    code({node, inline, className, children, ...props}) {
+                                      if (!inline) {
+                                        return <SafeMath formula={String(children)} block={true}/>
+                                      }
+                                      return <SafeMath formula={String(children)} block={false} />
+                                    }
+                                  }}
+                                >
+                                    {currentLesson.explanation}
+                                </ReactMarkdown>
                             </div>
                             
                             <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
-                                <h4 className="font-semibold text-amber-800 mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4"/> Example</h4>
-                                <div className="text-slate-700 italic">
-                                    <SafeMath formula={currentLesson.example} />
-                                </div>
+                                <h4 className="font-semibold text-amber-800 mb-1 flex items-center gap-2 not-prose"><Lightbulb className="h-4 w-4"/> Example</h4>
+                                <ReactMarkdown
+                                  components={{
+                                    p: ({node, ...props}) => <p className="text-slate-700 italic" {...props} />,
+                                    code({node, inline, className, children, ...props}) {
+                                      return <SafeMath formula={String(children)} block={!inline} />
+                                    }
+                                  }}
+                                >
+                                    {currentLesson.example}
+                                </ReactMarkdown>
                             </div>
 
                             <div>
-                                <h4 className="font-semibold text-slate-700 mb-2">Key Terms / Formulas</h4>
+                                <h4 className="font-semibold text-slate-700 mb-2 not-prose">Key Terms / Formulas</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {currentLesson.keyTerms.map((term, i) => (
                                         <div key={i} className="text-sm p-2 bg-slate-100 rounded-md border">
-                                            <SafeMath formula={term} />
+                                            <SafeMath formula={term} block={false} />
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                            <div className="pt-4 border-t">
+                            <div className="pt-4 border-t not-prose">
                                 <h4 className="font-semibold text-slate-700 mb-2">Quick Check</h4>
                                 <div className="mb-3">
-                                    <SafeMath formula={currentLesson.quizQuestion} />
+                                   <ReactMarkdown
+                                      components={{
+                                        p: ({node, ...props}) => <p className="font-medium" {...props} />,
+                                        code({node, inline, className, children, ...props}) {
+                                          return <SafeMath formula={String(children)} block={!inline} />
+                                        }
+                                      }}
+                                    >
+                                        {currentLesson.quizQuestion}
+                                    </ReactMarkdown>
                                 </div>
                                 {showAnswer ? (
                                     <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200">
@@ -293,6 +319,8 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
             setIsSubmitting(false);
         }
     }
+
+    const questionText = form.watch('question_text');
 
     return (
         <Form {...form}>
