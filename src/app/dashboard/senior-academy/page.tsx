@@ -33,7 +33,16 @@ const cleanLatex = (formula: string = "") => {
         .trim();
 };
 
-// --- 1. ENGLISH MASTERY (Comprehension & Grammar) ---
+// --- HELPER: TEXT TO SPEECH ---
+const speak = (text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.95; 
+    window.speechSynthesis.speak(u);
+};
+
+// --- 1. ENGLISH MASTERY ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const [activeStory, setActiveStory] = useState<any>(null);
@@ -86,7 +95,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                     <div key={i} className="space-y-3">
                                         <p className="font-bold text-slate-800 text-lg">{i + 1}. {q.question}</p>
                                         <Input 
-                                            placeholder="Analyze and answer..." 
+                                            placeholder="Type your analytical response..." 
                                             value={answers[i] || ""} 
                                             onChange={e => {
                                                 const newAns = [...answers];
@@ -132,7 +141,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const { data: dbProblems, forceRefetch } = useCollection<any>(mathQuery);
 
     const checkAnswer = () => {
-        if (userInput.trim().toLowerCase() === problem.answer.toLowerCase().trim()) {
+        if (userInput.trim() === problem.answer) {
             setFeedback({ ok: true, msg: "Correct logical derivation." });
             confetti();
             speak("Correct.");
@@ -338,6 +347,15 @@ function AdminConsole() {
     const [loading, setLoading] = useState(false);
     const [previewData, setPreviewData] = useState<any>(null);
 
+    // --- MANUAL MATH STATE ---
+    const [manualMath, setManualMath] = useState({
+        title: '',
+        category: 'Algebra',
+        latexFormula: '',
+        instruction: 'Simplify the expression or solve for x.',
+        answer: ''
+    });
+
     const handleAIAction = async () => {
         if (!topic) return;
         setLoading(true);
@@ -373,6 +391,7 @@ function AdminConsole() {
         setPreviewData(null);
         setTopic("");
         setExtraInstructions("");
+        setManualMath({ title: '', category: 'Algebra', latexFormula: '', instruction: '', answer: '' });
         toast({ title: "Published Successfully!" });
     };
 
@@ -478,33 +497,34 @@ function AdminConsole() {
                         </div>
                     )}
 
+                    {/* MANUAL MODE (Math) */}
                     {creationMode === 'manual' && subject === 'math' && (
                         <div className="space-y-6 animate-in fade-in">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-4">
-                                    <Input placeholder="Problem Title" value={previewData?.title || ''} onChange={e => setPreviewData({...previewData, title: e.target.value})} className="rounded-xl border-2" />
+                                    <Input placeholder="Problem Title" value={manualMath.title} onChange={e => setManualMath({...manualMath, title: e.target.value})} className="rounded-xl border-2" />
                                     <textarea 
-                                        placeholder="Paste LaTeX Formula here... (e.g. \frac{x}{y})" 
-                                        value={previewData?.latexFormula || ''}
-                                        onChange={e => setPreviewData({...previewData, latexFormula: e.target.value, category: 'Algebra'})}
+                                        placeholder="Paste LaTeX Formula here... (e.g. \frac{1}{2})" 
+                                        value={manualMath.latexFormula} 
+                                        onChange={e => setManualMath({...manualMath, latexFormula: e.target.value})}
                                         className="w-full h-32 p-4 border-2 rounded-xl font-mono text-sm outline-none"
                                     />
                                 </div>
                                 <div className="space-y-4">
-                                    <Input placeholder="Instruction" value={previewData?.instruction || ''} onChange={e => setPreviewData({...previewData, instruction: e.target.value})} className="rounded-xl border-2" />
-                                    <Input placeholder="Answer" value={previewData?.answer || ''} onChange={e => setPreviewData({...previewData, answer: e.target.value})} className="rounded-xl border-2" />
+                                    <Input placeholder="Instruction" value={manualMath.instruction} onChange={e => setManualMath({...manualMath, instruction: e.target.value})} className="rounded-xl border-2" />
+                                    <Input placeholder="Answer" value={manualMath.answer} onChange={e => setManualMath({...manualMath, answer: e.target.value})} className="rounded-xl border-2" />
                                     
                                     <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-100 min-h-[100px] flex items-center justify-center">
                                         <div className="text-2xl text-center">
-                                            {previewData?.latexFormula ? <BlockMath math={cleanLatex(previewData.latexFormula)} /> : <span className="text-slate-300">Preview here...</span>}
+                                            {manualMath.latexFormula ? <BlockMath math={cleanLatex(manualMath.latexFormula)} /> : <span className="text-slate-300">Preview here...</span>}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <Button onClick={() => handlePublish(previewData)} disabled={!previewData?.title || !previewData?.latexFormula} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black">PUBLISH MANUAL PROBLEM</Button>
+                            <Button onClick={() => handlePublish(manualMath)} disabled={!manualMath.title || !manualMath.latexFormula} className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black">PUBLISH MANUAL ENTRY</Button>
                         </div>
                     )}
-
+                    
                     {creationMode === 'manual' && subject !== 'math' && (
                         <div className="text-center py-20 text-slate-400 font-bold border-2 border-dashed rounded-3xl">
                             Manual entry for {subject} is coming soon. Use AI Magic for now!
@@ -546,9 +566,7 @@ export default function SeniorAcademyPage() {
                     <div className="min-h-[700px]">
                         <TabsContent value="english" className="mt-0"><EnglishMastery canEdit={canEdit} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
-                        <TabsContent value="science" className="mt-0">
-                            <DiscoveryLab canEdit={canEdit} />
-                        </TabsContent>
+                        <TabsContent value="science" className="mt-0"><DiscoveryLab canEdit={canEdit} /></TabsContent>
                         <TabsContent value="admin" className="mt-0"><AdminConsole /></TabsContent>
                     </div>
                 </Tabs>
