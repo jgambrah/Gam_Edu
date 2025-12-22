@@ -82,3 +82,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix for KaTeX colors and spacing */
+.katex-display {
+  margin: 0 !important;
+  color: inherit;
+}
+
+.katex {
+  font-size: 1.2em; /* Makes it slightly more readable for students */
+}
+
+/* Ensure math doesn't overflow on small phone screens */
+.math-container::-webkit-scrollbar {
+  height: 4px;
+}
+.math-container::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.2);
+  border-radius: 10px;
+}
