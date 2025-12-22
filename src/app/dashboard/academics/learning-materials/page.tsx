@@ -19,11 +19,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileText, Video, Link as LinkIcon, FileSpreadsheet, File, 
-  Plus, Trash2, Edit, ExternalLink, Loader2, X, Folder, UploadCloud, Globe, ArrowLeft, BookOpen 
+  Plus, Trash2, Edit, ExternalLink, Loader2, X, Folder, UploadCloud, Globe, ArrowLeft, BookOpen, Paperclip, HelpCircle 
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAuth } from 'firebase/auth';
 import { Badge } from '@/components/ui/badge';
+import { LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
+import { updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+
 
 // --- DATA TYPES ---
 export type ResourceType = 'PDF' | 'Video' | 'Document' | 'Spreadsheet' | 'Link';
@@ -33,17 +36,6 @@ export interface ResourceItem {
   title: string;
   type: ResourceType;
   url: string;
-}
-
-export interface LearningMaterial {
-  id: string;
-  topicTitle: string;
-  description?: string;
-  classId: string;
-  subject: string; 
-  resources: ResourceItem[];
-  uploadedBy: string;
-  createdAt: any;
 }
 
 // --- HELPER ICONS ---
@@ -87,7 +79,9 @@ function MaterialForm({
   const [description, setDescription] = useState(materialToEdit?.description || '');
   const [classId, setClassId] = useState(materialToEdit?.classId || preSelectedClassId || '');
   const [subject, setSubject] = useState(materialToEdit?.subject || preSelectedSubject || ''); 
-  const [resources, setResources] = useState<ResourceItem[]>(materialToEdit?.resources || []);
+  const [videos, setVideos] = useState<VideoLink[]>(materialToEdit?.videoLinks || []);
+  const [attachments, setAttachments] = useState<Attachment[]>(materialToEdit?.attachments || []);
+  const [questions, setQuestions] = useState<RichQuizQuestion[]>(materialToEdit?.practiceQuestions || []);
 
   const [inputType, setInputType] = useState<'link' | 'file'>('link');
   const [tempType, setTempType] = useState<string>('PDF');
@@ -102,57 +96,44 @@ function MaterialForm({
     }
   });
 
-  const handleAddResource = async () => {
-    if (!tempTitle) {
-        toast({ variant: 'destructive', title: 'Missing Info', description: 'Please describe this item.' });
-        return;
+  const handleAddVideo = () => {
+    if (!newVideoUrl) return;
+    setVideos([...videos, { title: newVideoTitle || 'Video Resource', url: newVideoUrl }]);
+    setNewVideoUrl('');
+    setNewVideoTitle('');
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const fakeUrl = URL.createObjectURL(file); 
+      const type = file.type.includes('pdf') ? 'PDF' : file.type.includes('image') ? 'IMAGE' : 'DOC';
+      setAttachments([...attachments, { name: file.name, url: fakeUrl, type: type as any }]);
+      toast({ title: "File Selected", description: "In production, this would upload to Storage." });
     }
-    if (inputType === 'link' && !tempUrl) {
-        toast({ variant: 'destructive', title: 'Missing Link', description: 'Please enter the URL.' });
-        return;
-    }
-    if (inputType === 'file' && !tempFile) {
-        toast({ variant: 'destructive', title: 'Missing File', description: 'Please select a file.' });
-        return;
-    }
+  };
+  
+  const handleAddQuestion = () => {
+    setQuestions([...questions, { question: '', options: ['', '', '', ''], correctAnswer: '' }]);
+  };
 
-    setIsUploadingResource(true);
-    let finalUrl = tempUrl;
+  const updateQuestion = (index: number, field: keyof RichQuizQuestion, value: any) => {
+    const updated = [...questions];
+    updated[index] = { ...updated[index], [field]: value };
+    setQuestions(updated);
+  };
 
-    try {
-        if (inputType === 'file' && tempFile) {
-            const app = getApp(); 
-            const storage = getStorage(app, "gs://studio-525105839-159e4.firebasestorage.app");
-            const sanitizedName = tempFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
-            const storageRef = ref(storage, `materials/${Date.now()}_${sanitizedName}`);
-            const snapshot = await uploadBytes(storageRef, tempFile);
-            finalUrl = await getDownloadURL(snapshot.ref);
-        }
-
-        const newItem: ResourceItem = {
-            id: Date.now().toString(),
-            type: tempType as ResourceType,
-            title: tempTitle,
-            url: finalUrl
-        };
-
-        setResources([...resources, newItem]);
-        setTempTitle('');
-        setTempUrl('');
-        setTempFile(null);
-        toast({ title: "Success", description: "Item added to the list." });
-
-    } catch (error: any) {
-        console.error(error);
-        toast({ variant: 'destructive', title: "Upload Failed", description: error.message });
-    } finally {
-        setIsUploadingResource(false);
-    }
+  const updateOption = (qIndex: number, oIndex: number, value: string) => {
+    const updated = [...questions];
+    updated[qIndex].options[oIndex] = value;
+    setQuestions(updated);
   };
 
   const handleRemoveResource = (id: string) => {
       setResources(resources.filter(r => r.id !== id));
   };
+  
+    const [resources, setResources] = useState<ResourceItem[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,30 +152,30 @@ function MaterialForm({
         return;
     }
 
-    if (resources.length === 0) {
-        toast({ variant: 'destructive', title: 'Empty Topic', description: 'Please add at least one resource.' });
-        return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      const data = {
+      const dataToSave = {
+        strand,
+        subStrand,
         topicTitle,
         description,
         classId,
         subject,
-        resources,
+        videoLinks: videos,
+        attachments: attachments,
+        practiceQuestions: questions,
         uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
       };
 
       if (materialToEdit) {
-        await updateDoc(doc(firestore, 'learning_materials', materialToEdit.id), data);
+        await updateDocumentNonBlocking(doc(firestore, 'learning_materials', materialToEdit.id), dataToSave);
         toast({ title: 'Success', description: 'Topic updated successfully.' });
       } else {
-        await addDoc(collection(firestore, 'learning_materials'), {
-          ...data,
+        await addDocumentNonBlocking(collection(firestore, 'learning_materials'), {
+          ...dataToSave,
+          courseId: 'bs7-integrated-science',
           createdAt: serverTimestamp(),
         });
         toast({ title: 'Success', description: 'Topic created successfully.' });
@@ -205,6 +186,9 @@ function MaterialForm({
       setIsSubmitting(false); 
     }
   };
+
+  const strand = "STRAND 1: DIVERSITY OF MATTER";
+  const subStrand = "Sub-strand 1: Materials";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -223,8 +207,7 @@ function MaterialForm({
                     <Select value={subject} onValueChange={setSubject}>
                         <SelectTrigger><SelectValue placeholder="Select Subject" /></SelectTrigger>
                         <SelectContent>
-                            {/* USE DYNAMIC LIST */}
-                            {subjectsList.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                            {subjectsList.map((s, i) => <SelectItem key={`${s}-${i}`} value={s}>{s}</SelectItem>)}
                         </SelectContent>
                     </Select>
                 </div>
@@ -248,7 +231,6 @@ function MaterialForm({
               </div>
           </div>
 
-          {/* Resource Builder (Same as before) */}
           <div className="space-y-4 border p-4 rounded-md bg-slate-50">
              <h3 className="font-semibold text-sm text-slate-700">2. Add Resources</h3>
              <Tabs value={inputType} onValueChange={(v) => setInputType(v as 'link' | 'file')} className="w-full">
@@ -278,38 +260,72 @@ function MaterialForm({
                 <TabsContent value="link">
                     <div className="flex gap-2 items-end">
                         <div className="flex-1 space-y-1"><Label className="text-xs">URL</Label><Input value={tempUrl} onChange={e => setTempUrl(e.target.value)} placeholder="https://..." /></div>
-                        <Button type="button" onClick={handleAddResource} disabled={isUploadingResource}><Plus className="h-4 w-4"/></Button>
+                        <Button type="button" onClick={handleAddVideo} disabled={isUploadingResource}><Plus className="h-4 w-4"/></Button>
                     </div>
                 </TabsContent>
                 <TabsContent value="file">
                     <div className="flex gap-2 items-end">
-                        <div className="flex-1 space-y-1"><Label className="text-xs">Select File</Label><Input type="file" onChange={(e) => setTempFile(e.target.files ? e.target.files[0] : null)} className="cursor-pointer" /></div>
-                        <Button type="button" onClick={handleAddResource} disabled={isUploadingResource || !tempFile}>
-                            {isUploadingResource ? <Loader2 className="h-4 w-4 animate-spin"/> : <UploadCloud className="h-4 w-4"/>}
-                        </Button>
+                        <div className="flex-1 space-y-1"><Label className="text-xs">Select File</Label><Input type="file" onChange={handleFileUpload} className="cursor-pointer" /></div>
                     </div>
                 </TabsContent>
              </Tabs>
              <div className="space-y-2 mt-4 bg-white p-2 rounded border min-h-[100px]">
-                {resources.length === 0 && <p className="text-sm text-muted-foreground text-center italic py-8">No resources added yet.</p>}
-                {resources.map((res) => (
-                    <div key={res.id} className="flex items-center justify-between p-2 border rounded-md shadow-sm hover:bg-slate-50">
+                {videos.map((res, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 border rounded-md shadow-sm hover:bg-slate-50">
+                        <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="bg-slate-100 p-2 rounded"><MaterialIcon type={'Video'} /></div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-semibold truncate">{res.title}</span>
+                                <span className="text-xs text-muted-foreground truncate max-w-[200px] text-blue-500">Video</span>
+                            </div>
+                        </div>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setVideos(videos.filter((_, idx) => idx !== i))}><X className="h-4 w-4 text-red-500"/></Button>
+                    </div>
+                ))}
+                 {attachments.map((res, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 border rounded-md shadow-sm hover:bg-slate-50">
                         <div className="flex items-center gap-3 overflow-hidden">
                             <div className="bg-slate-100 p-2 rounded"><MaterialIcon type={res.type} /></div>
                             <div className="flex flex-col">
-                                <span className="text-sm font-semibold truncate">{res.title}</span>
+                                <span className="text-sm font-semibold truncate">{res.name}</span>
                                 <span className="text-xs text-muted-foreground truncate max-w-[200px] text-blue-500">{res.type}</span>
                             </div>
                         </div>
-                        <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveResource(res.id)}><X className="h-4 w-4 text-red-500"/></Button>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))}><X className="h-4 w-4 text-red-500"/></Button>
                     </div>
                 ))}
+                {videos.length === 0 && attachments.length === 0 && <p className="text-sm text-muted-foreground text-center italic py-8">No resources added yet.</p>}
              </div>
+          </div>
+          
+           <div className="space-y-4 border p-4 rounded-md bg-slate-50">
+             <h3 className="font-semibold text-sm text-slate-700">3. Practice Questions</h3>
+              <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
+                {questions.map((q, i) => (
+                    <div key={i} className="p-4 border rounded bg-white relative">
+                        <Button variant="ghost" size="sm" className="absolute top-2 right-2 text-red-500" onClick={() => setQuestions(questions.filter((_, idx) => idx !== i))}><Trash2 className="w-4 h-4"/></Button>
+                        <div className="space-y-2 mb-4">
+                            <Label>Question {i + 1}</Label>
+                            <Textarea value={q.question} onChange={(e) => updateQuestion(i, 'question', e.target.value)} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            {q.options.map((opt, optIdx) => (
+                                <Input key={optIdx} value={opt} onChange={(e) => updateOption(i, optIdx, e.target.value)} placeholder={`Option ${optIdx + 1}`} />
+                            ))}
+                        </div>
+                        <div className="mt-2">
+                            <Label>Correct Answer (Must match an option exactly)</Label>
+                            <Input value={q.correctAnswer} onChange={(e) => updateQuestion(i, 'correctAnswer', e.target.value)} />
+                        </div>
+                    </div>
+                ))}
+              </div>
+            <Button type="button" variant="outline" onClick={handleAddQuestion}><Plus className="w-4 h-4 mr-2"/> Add Question</Button>
           </div>
 
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : `Save Topic (${resources.length} items)`}
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : `Save Topic`}
             </Button>
           </DialogFooter>
         </form>
@@ -353,10 +369,9 @@ export default function LearningMaterialsPage() {
   const { data: subjectsData, isLoading: isLoadingSubjects } = useCollection<{id:string, name:string}>(subjectsQuery);
   
   const subjectsList = useMemo(() => {
-      if (subjectsData && subjectsData.length > 0) {
-          return subjectsData.map(s => s.name).sort();
-      }
-      return [ "Integrated Science", "Mathematics", "English Language", "Social Studies", "R.M.E", "I.C.T", "French", "Ghanaian Language" ];
+    const fallbackSubjects = [ "Integrated Science", "Mathematics", "English Language", "Social Studies", "R.M.E", "I.C.T", "French", "Ghanaian Language" ];
+    const dbSubjects = subjectsData ? subjectsData.map(s => s.name) : [];
+    return Array.from(new Set([...fallbackSubjects, ...dbSubjects])).sort();
   }, [subjectsData]);
 
   // 4. Materials Query (now depends on activeClassId)
@@ -385,16 +400,19 @@ export default function LearningMaterialsPage() {
   };
 
   const handleEdit = (mat: LearningMaterial) => {
-      setEditingMaterial(mat);
+      setSelectedMaterial(mat);
+      setEditorMode('edit');
       setIsFormOpen(true);
   };
 
   const handleCreate = () => {
-      setEditingMaterial(null);
+      setSelectedMaterial(null);
+      setEditorMode('create');
       setIsFormOpen(true);
   };
   
   const pageLoading = isUserLoading || (role === 'Student' && isStudentLoading) || isLoadingSubjects || (!!activeClassId && isLoadingMaterials);
+  const [editorMode, setEditorMode] = useState<'create' | 'edit'>('create');
 
   if (canManage && !activeClassId) {
       return (
@@ -444,10 +462,10 @@ export default function LearningMaterialsPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4">
-                    {subjectsData?.map((subject) => (
-                        <div key={subject.id} onClick={() => setCurrentSubject(subject.name)} className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-blue-300 cursor-pointer transition-all flex flex-col items-center justify-center gap-3 text-center group">
+                    {subjectsList.map((subject, i) => (
+                        <div key={`${subject}-${i}`} onClick={() => setCurrentSubject(subject)} className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md hover:border-blue-300 cursor-pointer transition-all flex flex-col items-center justify-center gap-3 text-center group">
                             <div className="bg-blue-50 p-4 rounded-full group-hover:bg-blue-100 transition-colors"><Folder className="h-8 w-8 text-blue-500 fill-blue-500/20" /></div>
-                            <h3 className="font-semibold text-slate-700 group-hover:text-blue-700">{subject.name}</h3>
+                            <h3 className="font-semibold text-slate-700 group-hover:text-blue-700">{subject}</h3>
                         </div>
                     ))}
                     {(subjectsData?.length || 0) === 0 && <p className="col-span-full text-center text-muted-foreground">No subjects defined.</p>}
@@ -460,13 +478,19 @@ export default function LearningMaterialsPage() {
                     setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
                     classes={classes}
                     materialToEdit={editingMaterial}
-                    subjectsList={subjectsList} // PASS DYNAMIC LIST
+                    subjectsList={subjectsList}
                     preSelectedClassId={activeClassId || ''}
                 />
             )}
         </div>
       );
   }
+
+  const getEmbedUrl = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+};
 
   return (
     <div className="space-y-6 p-6">
@@ -486,7 +510,7 @@ export default function LearningMaterialsPage() {
             {canManage && <Button variant="link" onClick={handleCreate}>Create the first topic</Button>}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6">
+        <div className="space-y-6">
             {sortedMaterials.map((mat) => (
                 <Card key={mat.id} className="flex flex-col shadow-sm border-l-4 border-l-blue-500">
                     <CardHeader className="pb-2">
@@ -496,17 +520,41 @@ export default function LearningMaterialsPage() {
                         </div>
                     </CardHeader>
                     <CardContent className="flex-1 pb-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-2">
-                            {mat.resources && mat.resources.map((res, i) => (
-                                <a key={i} href={res.url} target="_blank" rel="noopener noreferrer" className="flex items-center p-3 rounded-lg border bg-white hover:bg-blue-50 hover:border-blue-300 transition-all group shadow-sm">
-                                    <div className="mr-3 bg-slate-50 p-2 rounded-md group-hover:bg-white"><MaterialIcon type={res.type} /></div>
-                                    <div className="flex-1 overflow-hidden"><p className="text-sm font-medium text-slate-900 group-hover:text-blue-700 truncate">{res.title}</p><p className="text-xs text-slate-500">{res.type}</p></div>
-                                    <ExternalLink className="h-3 w-3 text-slate-300 group-hover:text-blue-400"/>
+                        <div className="prose prose-sm max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: mat.content }}/>
+                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 pt-4 border-t">
+                            {mat.attachments && mat.attachments.map((file, i) => (
+                                <a key={i} href={file.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 p-2 border rounded hover:bg-slate-100 transition-colors">
+                                    <Paperclip className="h-4 w-4 text-blue-500"/>
+                                    <span className="truncate text-sm font-medium">{file.name}</span>
                                 </a>
                             ))}
                         </div>
+                        <div className="space-y-4 pt-4 border-t">
+                             {mat.videoLinks && mat.videoLinks.length > 0 && <h5 className="font-semibold text-sm flex items-center gap-2"><Video className="h-4 w-4"/> Video Resources</h5>}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {mat.videoLinks && mat.videoLinks.map((vid, i) => {
+                                    const embed = getEmbedUrl(vid.url);
+                                    return (
+                                        <div key={i} className="space-y-1">
+                                            {embed ? (
+                                                <iframe src={embed} className="w-full aspect-video rounded border" allowFullScreen title={vid.title}/>
+                                            ) : (
+                                                <div className="h-40 bg-black text-white flex items-center justify-center rounded">Invalid Video URL</div>
+                                            )}
+                                            <p className="text-xs font-medium text-center">{vid.title}</p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                        {mat.practiceQuestions && mat.practiceQuestions.length > 0 && (
+                            <div className="pt-4 border-t flex justify-between items-center">
+                                <span className="text-sm font-medium flex items-center gap-2"><HelpCircle className="h-4 w-4 text-orange-500"/> {mat.practiceQuestions.length} Practice Questions Available</span>
+                                <Button variant="outline" size="sm">Start Practice Quiz</Button>
+                            </div>
+                        )}
                     </CardContent>
-                    <CardFooter className="pt-2 pb-3 bg-slate-50/50 border-t flex justify-between text-xs text-slate-400"><span>{mat.resources?.length || 0} resources</span><span>Added: {mat.createdAt ? new Date(mat.createdAt.seconds * 1000).toLocaleDateString() : 'Just now'}</span></CardFooter>
+                    <CardFooter className="pt-2 pb-3 bg-slate-50/50 border-t flex justify-between text-xs text-slate-400"><span>Added: {mat.createdAt ? new Date(mat.createdAt.seconds * 1000).toLocaleDateString() : 'Just now'}</span></CardFooter>
                 </Card>
             ))}
         </div>
@@ -518,7 +566,7 @@ export default function LearningMaterialsPage() {
             setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
             classes={classes}
             materialToEdit={editingMaterial}
-            subjectsList={subjectsList} // DYNAMIC LIST
+            subjectsList={subjectsList}
             preSelectedSubject={currentSubject || undefined}
             preSelectedClassId={activeClassId || ''}
         />
