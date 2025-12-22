@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -221,12 +222,14 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                     </div>
 
                     <CardContent className="p-10 space-y-12 max-w-4xl mx-auto">
+                        {/* 1. Introduction Block */}
                         <section className="prose prose-slate max-w-none">
                             <p className="text-2xl leading-relaxed text-slate-600 first-letter:text-5xl first-letter:font-bold first-letter:mr-2">
                                 {activeLesson.introduction}
                             </p>
                         </section>
 
+                        {/* 2. Teaching Blocks (Text + LaTeX + Interactive) */}
                         <div className="space-y-8">
                             {activeLesson.content_blocks?.map((block: any, i: number) => (
                                 <div key={i} className="animate-in fade-in" style={{ animationDelay: `${i * 0.2}s` }}>
@@ -256,13 +259,14 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                             ))}
                         </div>
 
+                        {/* 3. Guided Practice Block */}
                         <div className="pt-12 border-t border-slate-100 space-y-8">
                             <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
                                 <PencilRuler className="text-indigo-500 w-8 h-8" /> Practice Arena
                             </h3>
                             {activeLesson.practice_problems?.map((prob: any, i: number) => (
                                 <div key={i} className="p-8 bg-slate-50 rounded-[32px] border-2 border-slate-100 space-y-6">
-                                    <div className="text-xl font-bold text-slate-700">
+                                    <div className="text-xl font-bold text-slate-700 whitespace-pre-wrap">
                                         <SafeMath formula={prob.question} />
                                     </div>
                                     <div className="flex gap-4">
@@ -589,7 +593,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                 {activeStory.quiz.map((q: any, i: number) => (
                                     <div key={i} className="space-y-3">
                                         <p className="font-bold text-slate-800 text-lg">{i + 1}. {q.question}</p>
-                                        <Input placeholder="Type response..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-14 rounded-2xl border-2"/>
+                                        <Input placeholder="Type response..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-14 rounded-2xl border-2 focus:border-indigo-500 shadow-sm"/>
                                     </div>
                                 ))}
                                 <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-2xl shadow-xl">Submit for Review</Button>
