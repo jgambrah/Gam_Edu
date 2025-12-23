@@ -50,7 +50,7 @@ const MathSchema = z.object({
     title: z.string().describe("Name of problem"),
     category: z.string().describe("Broad area: Algebra, Geometry, Statistics, Number Theory, etc."),
     subTopic: z.string().describe("Specific area: Linear Equations, Fractions, Differentiation, etc."),
-    latexFormula: z.string().describe("LaTeX formula without dollar signs"),
+    latexFormula: z.string().describe("LaTeX formula without dollar signs").optional(),
     instruction: z.string(),
     answer: z.string(),
 });
