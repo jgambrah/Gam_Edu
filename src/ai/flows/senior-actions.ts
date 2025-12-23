@@ -4,102 +4,92 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
-// --- 0. AI CONTEXT SCHEMA (NEW) ---
+// --- SHARED STUDENT CATEGORIES ---
+const StudentCategory = z.enum([
+  'Early Childhood', 
+  'Lower Primary', 
+  'Upper Primary', 
+  'Junior Secondary (JHS)', 
+  'Senior Secondary (SHS)'
+]);
+
 const AIContextSchema = z.object({
   topic: z.string(),
-  gradeLevel: z.string().optional(),
+  gradeLevel: StudentCategory,
   instructions: z.string().optional(),
 });
 
-
 // --- 1. ENGLISH MASTERY ---
-
 const EnglishSchema = z.object({
-  title: z.string().describe("An academic title for the passage."),
-  content: z.string().describe("A long multi-paragraph story about the topic."),
-  genre: z.string().describe("The genre of the passage (e.g., Narrative, Historical Fiction, Sci-Fi)."),
-  difficulty: z.enum(['JHS', 'SHS', 'University']),
-  quiz: z.array(
-    z.object({
-      question: z.string().describe("A critical thinking question about the passage."),
-      answer: z.string().describe("A concise, correct answer to the question.")
-    })
-  ).length(3).describe("An array of exactly 3 comprehension questions."),
+  title: z.string(),
+  content: z.string(),
+  genre: z.string(),
+  difficulty: StudentCategory,
+  quiz: z.array(z.object({
+    question: z.string(),
+    answer: z.string()
+  })).length(3),
 });
-
 
 export async function generateSeniorEnglish(context: z.infer<typeof AIContextSchema>) {
   try {
-    const prompt = `Generate an advanced literary passage based on this context:
+    const prompt = `Generate a grade-appropriate literary passage for a student in ${context.gradeLevel}.
     Topic: "${context.topic}"
-    Grade Level: ${context.gradeLevel}
-    Specific Instructions: ${context.instructions || 'None'}
-    
-    Include a title, genre, difficulty, and exactly 3 critical thinking questions with answers.`;
+    Difficulty Level: ${context.gradeLevel}
+    Instructions: ${context.instructions || 'Standard academic level'}
+    Return a title, genre, and 3 comprehension questions.`;
     const { output } = await ai.generate({ prompt, output: { schema: EnglishSchema } });
-    if (!output) throw new Error("AI did not return a valid English passage object.");
     return { success: true, data: output };
-  } catch (error: any) {
-    console.error("English AI Error:", error);
+  } catch (error) {
     return { success: false, error: "Failed to generate English module." };
   }
 }
 
 // --- 2. ADVANCED MATH LAB ---
-
 const MathSchema = z.object({
-    title: z.string().describe("The name of the math problem (e.g. 'Quadratic Roots')."),
-    category: z.string().describe("The main math category (e.g. Algebra, Calculus)."),
-    subTopic: z.string().describe("A specific sub-topic (e.g. 'Linear Equations', 'Differentiation')."),
-    latexFormula: z.string().describe("A complex mathematical formula formatted in LaTeX, without dollar signs or other wrappers."),
-    instruction: z.string().describe("A clear instruction for the student (e.g. 'Solve for x')."),
-    answer: z.string().describe("The final, single correct answer to the problem."),
+    title: z.string().describe("Name of problem"),
+    category: z.string().describe("Broad area: Algebra, Geometry, Statistics, Number Theory, etc."),
+    subTopic: z.string().describe("Specific area: Linear Equations, Fractions, Differentiation, etc."),
+    latexFormula: z.string().describe("LaTeX formula without dollar signs"),
+    instruction: z.string(),
+    answer: z.string(),
 });
 
 export async function generateSeniorMath(context: z.infer<typeof AIContextSchema>) {
   try {
-    const prompt = `You are a math teacher. 
-    Topic: ${context.topic}. 
-    Grade Level: ${context.gradeLevel}. 
-    Additional Rules: ${context.instructions || 'None'}. 
-    Return a LaTeX formula without dollar signs and a clear solution.`;
+    const prompt = `Act as a Math Professor for ${context.gradeLevel} students.
+    Generate a question about: ${context.topic}.
+    Important: The math complexity MUST match ${context.gradeLevel} standards.
+    Instructions: ${context.instructions || 'None'}.
+    Provide a subTopic name and a LaTeX formula.`;
     const { output } = await ai.generate({ prompt, output: { schema: MathSchema } });
-    if (!output) throw new Error("AI did not return a valid Math problem object.");
-    return { success: true, data: output };
-  } catch (error: any) {
-    console.error("Math AI Error:", error);
+    return { success: true, data: { ...output, gradeLevel: context.gradeLevel } };
+  } catch (error) {
     return { success: false, error: "Failed to generate Math module." };
   }
 }
 
-
 // --- 3. DISCOVERY LAB ---
-
 const LabSchema = z.object({
-    title: z.string().describe("The title of the experiment (e.g. 'Testing Gravity')."),
-    category: z.string().describe("The field of science (e.g. Physics, Biology)."),
-    icon: z.string().describe("A single emoji representing the experiment (e.g., '🍎')."),
-    background: z.string().describe("A brief background or field notes for the experiment."),
-    question: z.string().describe("The core scientific question being investigated."),
-    hypothesisPrompt: z.string().describe("A prompt for the user to form their hypothesis."),
-    hypothesisOptions: z.array(z.string()).length(3).describe("Three opposing hypothesis options for the user."),
-    conclusion: z.string().describe("The scientific conclusion or finding of the experiment."),
-    explanation: z.string().describe("A detailed explanation of why the conclusion is correct."),
+    title: z.string(),
+    category: z.string(),
+    icon: z.string(),
+    background: z.string(),
+    question: z.string(),
+    hypothesisPrompt: z.string(),
+    hypothesisOptions: z.array(z.string()).length(3),
+    conclusion: z.string(),
+    explanation: z.string(),
 });
 
 export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>) {
   try {
-    const prompt = `Design a virtual science lab experiment based on this context:
+    const prompt = `Design a science lab for ${context.gradeLevel} students.
     Topic: "${context.topic}"
-    Grade Level: ${context.gradeLevel}
-    Specific Instructions: ${context.instructions || 'None'}
-    
-    Structure it according to the scientific method: Background, Research Question, Hypothesis (with three options), Conclusion, and Explanation. Include a title, category, and an emoji icon.`;
+    Ensure logic matches ${context.gradeLevel} cognitive development.`;
     const { output } = await ai.generate({ prompt, output: { schema: LabSchema } });
-    if (!output) throw new Error("AI did not return a valid Science Lab object.");
-    return { success: true, data: output };
-  } catch (error: any) {
-    console.error("Science AI Error:", error);
+    return { success: true, data: { ...output, gradeLevel: context.gradeLevel } };
+  } catch (error) {
     return { success: false, error: "Failed to generate Science module." };
   }
 }
