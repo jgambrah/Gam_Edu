@@ -15,33 +15,74 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import confetti from 'canvas-confetti';
+import { Badge } from '@/components/ui/badge';
 
-// --- DATA: THE STRUCTURED LEARNING PATH ---
-const CODING_PHASES = [
+const PYTHON_SYLLABUS = [
   {
-    id: "phase1",
-    title: "Phase 1: Python Fundamentals",
-    lessons: [
-      { id: "setup", title: "Environment Setup", task: "Print 'Ready to code' to confirm setup.", startingCode: "print('Ready to code')" },
-      { id: "vars", title: "Variables & I/O", task: "Create a variable named 'age' and set it to 10.", startingCode: "# Type your code here\nage = " },
-      { id: "logic", title: "Control Flow (If/Else)", task: "Write an if statement to check if age is > 5.", startingCode: "age = 10\nif age > 5:\n    print('Older than 5')" }
+    phase: "Phase 1",
+    title: "Python Fundamentals (Weeks 1-2)",
+    mainTopics: [
+      {
+        title: "Environment Setup",
+        lessons: [
+          { id: "p1-1-1", title: "Python & VS Code Install", task: "Print 'Ready to code' to confirm setup.", startingCode: "print('Ready to code')" },
+          { id: "p1-1-2", title: "Adding to PATH", task: "Run a simple calculation to check environment.", startingCode: "print(5 + 5)" }
+        ]
+      },
+      {
+        title: "The Basics",
+        lessons: [
+          { id: "p1-2-1", title: "Print & Comments", task: "Write a comment and print 'Hello World'.", startingCode: "# This is a comment\nprint('Hello World')" },
+          { id: "p1-2-2", title: "Variables & I/O", task: "Ask for user name using input() and print it.", startingCode: "name = input('What is your name? ')\nprint('Hi ' + name)" },
+          { id: "p1-2-3", title: "Operators", task: "Calculate 10 modulo 3.", startingCode: "print(10 % 3)" }
+        ]
+      },
+      {
+        title: "Data Structures (Basic)",
+        lessons: [
+          { id: "p1-3-1", title: "Lists", task: "Create a list of 3 fruits and print the second one.", startingCode: "fruits = ['Apple', 'Banana', 'Cherry']\nprint(fruits[1])" },
+          { id: "p1-3-2", title: "Dictionaries", task: "Create a dict for a car with 'brand' and 'year'.", startingCode: "car = {\n  'brand': 'Ford',\n  'year': 2020\n}\nprint(car)" }
+        ]
+      }
     ]
   },
   {
-    id: "phase2",
-    title: "Phase 2: Intermediate Python",
-    lessons: [
-      { id: "funcs", title: "Functions & Args", task: "Define a function that returns a greeting.", startingCode: "def greet(name):\n    return f'Hello {name}'" },
-      { id: "errors", title: "Error Handling", task: "Use try/except for a division by zero.", startingCode: "try:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print('Cannot divide by zero')" }
+    phase: "Phase 2",
+    title: "Intermediate Python (Weeks 3-4)",
+    mainTopics: [
+      {
+        title: "Functions",
+        lessons: [
+          { id: "p2-1-1", title: "Defining Functions", task: "Create a function that adds two numbers.", startingCode: "def add(a, b):\n    return a + b\n\nprint(add(5, 5))" },
+          { id: "p2-1-2", title: "Lambda Expressions", task: "Write a lambda that doubles a number.", startingCode: "double = lambda x: x * 2\nprint(double(10))" }
+        ]
+      },
+      {
+        title: "File Handling",
+        lessons: [
+          { id: "p2-2-1", title: "Reading Files", task: "Try to open a hypothetical file (simulated).", startingCode: "# In browser we simulate file text\nfile_content = 'Sample Data'\nprint(file_content)" }
+        ]
+      }
     ]
   },
-  { id: "phase3", title: "Phase 3: OOP & Beyond", lessons: [] },
-  { id: "phase4", title: "Phase 4: Specialization", lessons: [] }
+  {
+    phase: "Phase 3",
+    title: "OOP & Beyond (Weeks 5-6)",
+    mainTopics: [
+      {
+        title: "OOP Concepts",
+        lessons: [
+          { id: "p3-1-1", title: "Classes & Objects", task: "Create a Dog class with a bark method.", startingCode: "class Dog:\n    def bark(self):\n        print('Woof!')\n\nmy_dog = Dog()\nmy_dog.bark()" }
+        ]
+      }
+    ]
+  }
 ];
+
 
 // --- COMPONENT: PYTHON ACADEMY ---
 export default function PythonAcademy() {
-  const [activeLesson, setActiveLesson] = useState(CODING_PHASES[0].lessons[0]);
+  const [activeLesson, setActiveLesson] = useState(PYTHON_SYLLABUS[0].mainTopics[0].lessons[0]);
   const [code, setCode] = useState(activeLesson.startingCode);
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
@@ -136,22 +177,30 @@ export default function PythonAcademy() {
               <CardContent className="p-2">
                 <Accordion type="single" collapsible className="w-full">
                   {PYTHON_SYLLABUS.map((phase, idx) => (
-                    <AccordionItem key={phase.id} value={phase.id} className="border-none px-2">
+                    <AccordionItem key={phase.phase} value={phase.phase} className="border-none px-2">
                       <AccordionTrigger className="hover:no-underline hover:bg-slate-800 rounded-xl px-4 py-3">
                         <div className="flex items-center gap-3">
                           <span className="h-6 w-6 rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-yellow-500 font-bold border border-slate-700">{idx + 1}</span>
                           <span className="text-xs font-bold text-slate-200">{phase.title}</span>
                         </div>
                       </AccordionTrigger>
-                      <AccordionContent className="pt-2 pb-4 space-y-1">
-                        {phase.lessons.map(lesson => (
-                          <button
-                            key={lesson.id}
-                            onClick={() => { setActiveLesson(lesson); setCode(lesson.startingCode); setOutput([]); }}
-                            className={`w-full text-left px-12 py-2 text-xs font-medium rounded-lg transition-colors ${activeLesson.id === lesson.id ? 'text-yellow-500 bg-yellow-500/5' : 'text-slate-500 hover:text-slate-300'}`}
-                          >
-                            {lesson.title}
-                          </button>
+                      <AccordionContent className="pt-2 pb-4 space-y-4">
+                        {phase.mainTopics.map((topic) => (
+                          <div key={topic.title} className="space-y-2">
+                            <p className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-tighter">{topic.title}</p>
+                            <div className="space-y-1">
+                              {topic.lessons.map((lesson) => (
+                                <button
+                                  key={lesson.id}
+                                  onClick={() => { setActiveLesson(lesson); setCode(lesson.startingCode); setOutput([]); }}
+                                  className={`w-full text-left px-4 py-2 rounded-xl text-xs transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
+                                >
+                                  {lesson.title}
+                                  <ChevronRight className={`h-3 w-3 ${activeLesson.id === lesson.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         ))}
                       </AccordionContent>
                     </AccordionItem>
@@ -240,7 +289,7 @@ export default function PythonAcademy() {
                   </div>
                   <ScrollArea className="h-40">
                     {output.map((line, i) => (
-                      <div key={i} className="text-emerald-500/80 mb-1">{`>>> ${line}`}</div>
+                      <div key={i} className="text-emerald-500/80 mb-1">{`> ${line}`}</div>
                     ))}
                     {output.length === 0 && <div className="text-slate-800 italic">Console idle... Press "Run Script" to execute.</div>}
                   </ScrollArea>
@@ -290,18 +339,11 @@ export default function PythonAcademy() {
             </Card>
 
             {/* LEARNING TIPS */}
-            <div className="p-8 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl space-y-4">
-              <div className="flex items-center gap-2">
-                <HelpCircle className="text-yellow-400 h-5 w-5" />
-                <h3 className="text-lg font-black tracking-tight">Pro Tips</h3>
-              </div>
-              <ul className="space-y-3">
-                {["Practice Daily: Consistency is key.", "Build Projects: Apply what you learn.", "Read the Docs.", "GitHub is your friend."].map((tip, i) => (
-                  <li key={i} className="flex gap-2 text-xs font-medium opacity-80">
-                    <span className="text-yellow-400">★</span> {tip}
-                  </li>
-                ))}
-              </ul>
+            <div className="p-8 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl">
+              <Sparkles className="h-8 w-8 mb-4 text-yellow-300" />
+              <h3 className="text-xl font-black mb-2">Ready for a challenge?</h3>
+              <p className="text-sm opacity-80 mb-6">Build a simple calculator using the variables and input logic we just learned.</p>
+              <Button className="w-full bg-white text-indigo-600 font-black rounded-xl">Start Project</Button>
             </div>
           </aside>
 
@@ -311,7 +353,4 @@ export default function PythonAcademy() {
   );
 }
 
-// --- SUB-COMPONENTS (Simplified for standard UI) ---
-function Badge({ children, variant, className }: any) {
-  return <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${className}`}>{children}</span>;
-}
+    
