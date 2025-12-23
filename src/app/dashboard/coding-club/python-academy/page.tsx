@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -184,7 +185,7 @@ export default function PythonAcademy() {
 
           {/* CENTER: THE CODE WORKSTATION */}
           <main className="lg:col-span-6 space-y-4">
-            <Card className="bg-slate-900 border-slate-800 rounded-[40px] overflow-hidden flex flex-col h-[750px] shadow-2xl">
+            <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[750px]">
               <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
                 <div className="flex items-center gap-4">
                   <div className="flex gap-1.5 mr-4">
@@ -207,48 +208,49 @@ export default function PythonAcademy() {
               </div>
 
               {/* EDITOR AREA */}
-              <div className="flex-1 p-6 relative bg-[#0d1117]">
-                 <textarea
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  className="w-full h-full bg-transparent text-emerald-400 font-mono text-lg outline-none resize-none"
-                  spellCheck={false}
-                  placeholder="# Write your Python code here..."
-                />
-                
-                {/* FLOATING MISSION BOX */}
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="h-4 w-4 text-indigo-400" /></div>
-                      <div>
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Mission</p>
-                        <p className="text-sm font-bold text-white">{activeLesson.task}</p>
+              <div className="flex-1 flex flex-col bg-[#0d1117]">
+                <div className="flex-1 p-6 relative">
+                   <textarea
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    className="w-full h-full bg-transparent text-emerald-400 font-mono text-lg outline-none resize-none"
+                    spellCheck={false}
+                    placeholder="# Write your Python code here..."
+                  />
+                  
+                  {/* FLOATING MISSION BOX */}
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="h-4 w-4 text-indigo-400" /></div>
+                        <div>
+                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Mission</p>
+                          <p className="text-sm font-bold text-white">{activeLesson.task}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* TERMINAL */}
-              <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
-                <div className="flex items-center gap-2 mb-4 text-slate-600">
-                  <Terminal className="h-3 w-3" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">System Console</span>
+                {/* TERMINAL */}
+                <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
+                  <div className="flex items-center gap-2 mb-4 text-slate-600">
+                    <Terminal className="h-3 w-3" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">System Console Output</span>
+                  </div>
+                  <ScrollArea className="h-40">
+                    {output.map((line, i) => (
+                      <div key={i} className="text-emerald-500/80 mb-1">{`>>> ${line}`}</div>
+                    ))}
+                    {output.length === 0 && <div className="text-slate-800 italic">Console idle... Press "Run Script" to execute.</div>}
+                  </ScrollArea>
                 </div>
-                <ScrollArea className="h-40">
-                  {output.map((line, i) => (
-                    <div key={i} className="text-emerald-500/80 mb-1">{`>>> ${line}`}</div>
-                  ))}
-                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to see results.</div>}
-                </ScrollArea>
               </div>
-            </div>
+            </Card>
           </main>
 
           {/* RIGHT: CHEAT SHEET & TIPS */}
           <aside className="lg:col-span-3 space-y-6">
-            {/* CHEAT SHEET */}
             <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
               <CardHeader className="bg-slate-800/50">
                 <CardTitle className="text-xs font-black text-indigo-400 uppercase flex items-center gap-2">
@@ -288,7 +290,7 @@ export default function PythonAcademy() {
             </Card>
 
             {/* LEARNING TIPS */}
-            <div className="p-8 bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-[40px] text-white shadow-xl space-y-4">
+            <div className="p-8 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl space-y-4">
               <div className="flex items-center gap-2">
                 <HelpCircle className="text-yellow-400 h-5 w-5" />
                 <h3 className="text-lg font-black tracking-tight">Pro Tips</h3>
@@ -310,6 +312,6 @@ export default function PythonAcademy() {
 }
 
 // --- SUB-COMPONENTS (Simplified for standard UI) ---
-function Badge({ children, variant, className }: { children: React.ReactNode, variant?: string, className?: string }) {
+function Badge({ children, variant, className }: any) {
   return <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${className}`}>{children}</span>;
 }
