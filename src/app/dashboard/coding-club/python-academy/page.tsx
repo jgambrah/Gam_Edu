@@ -6,9 +6,9 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, BookCopy
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
@@ -132,7 +132,35 @@ const PYTHON_ACADEMY_CURRICULUM = [
   {
     phase: "Phase 3",
     title: "Object-Oriented Programming (OOP) & Beyond (Weeks 5-6)",
-    mainTopics: []
+    mainTopics: [
+      {
+        title: "1. OOP Concepts",
+        lessons: [
+          { id: "p3-1-1", title: "Classes & Objects", task: "Define a 'Robot' class and create an instance of it.", startingCode: "class Robot:\n    pass\n\nmy_bot = Robot()\nprint('Robot created!')" },
+          { id: "p3-1-2", title: "Attributes & Methods", task: "Add a 'greet' method to the Robot class.", startingCode: "class Robot:\n    def __init__(self, name):\n        self.name = name\n    \n    def greet(self):\n        print(f'Hello, I am {self.name}')\n\nbot = Robot('Dexter')\nbot.greet()" },
+          { id: "p3-1-3", title: "Inheritance", task: "Create a 'BattleBot' that inherits from 'Robot'.", startingCode: "class Robot:\n    def info(self): print('I am a robot')\n\nclass BattleBot(Robot):\n    def attack(self): print('Firing lasers!')\n\nhero = BattleBot()\nhero.info()\nhero.attack()" },
+          { id: "p3-1-4", title: "Encapsulation", task: "Use a double underscore (__) to make an attribute private.", startingCode: "class Bank:\n    def __init__(self):\n        self.__balance = 1000 # Private\n\n    def get_val(self): return self.__balance\n\nacc = Bank()\nprint(acc.get_val())" },
+          { id: "p3-1-5", title: "Polymorphism", task: "Override a parent method in a child class.", startingCode: "class Animal:\n    def speak(self): pass\n\nclass Dog(Animal):\n    def speak(self): print('Woof!')\n\nclass Cat(Animal):\n    def speak(self): print('Meow!')\n\nfor a in [Dog(), Cat()]: a.speak()" }
+        ]
+      },
+      {
+        title: "2. Advanced Topics",
+        lessons: [
+          { id: "p3-2-1", title: "Regular Expressions (RegEx)", task: "Use the 're' module to find all numbers in a string.", startingCode: "import re\ntext = 'Price is 100 dollars'\nnums = re.findall(r'\\d+', text)\nprint(nums)" },
+          { id: "p3-2-2", title: "Decorators", task: "Create a decorator that prints a message before a function runs.", startingCode: "def my_decorator(func):\n    def wrapper():\n        print('Starting...')\n        func()\n    return wrapper\n\n@my_decorator\ndef say_hi(): print('Hi!')\n\nsay_hi()" },
+          { id: "p3-2-3", title: "Generators", task: "Use 'yield' to create a simple number generator.", startingCode: "def count_up():\n    yield 1\n    yield 2\n\nfor n in count_up(): print(n)" },
+          { id: "p3-2-4", title: "Context Managers", task: "Use the 'with' statement for safe operations.", startingCode: "# Simulated context manager\nclass MySafeOpen:\n    def __enter__(self): print('Opened'); return self\n    def __exit__(self, *args): print('Closed')\n\nwith MySafeOpen():\n    print('Working...')" }
+        ]
+      },
+      {
+        title: "3. Standard Library Deep Dive",
+        lessons: [
+          { id: "p3-3-1", title: "JSON & Data", task: "Convert a Python dictionary into a JSON string.", startingCode: "import json\nuser = {'id': 1, 'active': True}\njson_data = json.dumps(user)\nprint(json_data)" },
+          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\nfor row in csv_data.split('\\n'):\n    print(row.split(','))" },
+          { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\nnow = datetime.now()\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
+        ]
+      }
+    ]
   },
   {
     phase: "Phase 4",
@@ -140,7 +168,6 @@ const PYTHON_ACADEMY_CURRICULUM = [
     mainTopics: []
   }
 ];
-
 
 // --- UPGRADE 4: STREAK COMPONENT ---
 function ContributionHeatmap() {
@@ -169,6 +196,7 @@ export default function PythonAcademy() {
   // --- STATE ---
   const [allMissions, setAllMissions] = useState<any[]>(PYTHON_ACADEMY_CURRICULUM);
   const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
+  const [completedMissions, setCompletedMissions] = useState<string[]>([]);
   const [code, setCode] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
@@ -182,7 +210,7 @@ export default function PythonAcademy() {
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   // --- PYODIDE INITIALIZATION ---
-  useEffect(() => {
+   useEffect(() => {
     async function initPyodide() {
       if (!pyodide.current) {
         // @ts-ignore
@@ -238,7 +266,7 @@ export default function PythonAcademy() {
       
       if (success) {
         setIsPassed(true);
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        confetti({ particleCount: 100 });
 
         // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
         if (user && firestore && activeLesson) {
@@ -277,7 +305,7 @@ export default function PythonAcademy() {
     setIsRunning(false);
   };
   
-   if (!activeLesson) {
+  if (!activeLesson) {
     return <div className="flex h-screen w-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
 
@@ -452,3 +480,5 @@ export default function PythonAcademy() {
     </div>
   );
 }
+
+    
