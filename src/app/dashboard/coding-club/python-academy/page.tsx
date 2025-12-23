@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, setDoc, doc } from 'firebase/firestore';
 import { 
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import confetti from 'canvas-confetti';
+import { Input } from '@/components/ui/input';
 
 // --- DATA: THE STRUCTURED LEARNING PATH ---
 const PYTHON_SYLLABUS = [
@@ -76,7 +77,7 @@ const PYTHON_SYLLABUS = [
           { id: "p2-1-1", title: "Defining & Calling", task: "Create a function named 'welcome' that prints a greeting.", startingCode: "def welcome():\n    print('Welcome to Phase 2!')\n\nwelcome()" },
           { id: "p2-1-2", title: "Arguments (Default & Keyword)", task: "Create a function with a default 'city' argument.", startingCode: "def travel(city='Accra'):\n    print('Visiting ' + city)\n\ntravel()\ntravel(city='Kumasi')" },
           { id: "p2-1-3", title: "Advanced Args (*args, **kwargs)", task: "Use *args to accept multiple numbers and sum them.", startingCode: "def sum_all(*args):\n    return sum(args)\n\nprint(sum_all(1, 2, 3, 4))" },
-          { id: "p2-1-4", title: "Lambda Expressions", task: "Write a lambda function to square a number.", startingCode: "square = lambda x: x * 2\nprint(square(5))" },
+          { id: "p2-1-4", title: "Lambda Expressions", task: "Write a lambda function to square a number.", startingCode: "square = lambda x: x * x\nprint(square(5))" },
           { id: "p2-1-5", title: "Docstrings", task: "Add a description to your function using triple quotes.", startingCode: "def power(a, b):\n    \"\"\"Calculates a to the power of b.\"\"\"\n    return a ** b\n\nprint(power.__doc__)" }
         ]
       },
@@ -110,9 +111,46 @@ const PYTHON_SYLLABUS = [
         ]
       }
     ]
+  },
+  {
+    phase: "Phase 3",
+    title: "Object-Oriented Programming (OOP) & Beyond (Weeks 5-6)",
+    mainTopics: [
+      {
+        title: "1. OOP Concepts",
+        lessons: [
+          { id: "p3-1-1", title: "Classes & Objects", task: "Define a 'Robot' class and create an instance of it.", startingCode: "class Robot:\n    pass\n\nmy_bot = Robot()\nprint('Robot created!')" },
+          { id: "p3-1-2", title: "Attributes & Methods", task: "Add a 'greet' method to the Robot class.", startingCode: "class Robot:\n    def __init__(self, name):\n        self.name = name\n    \n    def greet(self):\n        print(f'Hello, I am {self.name}')\n\nbot = Robot('Dexter')\nbot.greet()" },
+          { id: "p3-1-3", title: "Inheritance", task: "Create a 'BattleBot' that inherits from 'Robot'.", startingCode: "class Robot:\n    def info(self): print('I am a robot')\n\nclass BattleBot(Robot):\n    def attack(self): print('Firing lasers!')\n\nhero = BattleBot()\nhero.info()\nhero.attack()" },
+          { id: "p3-1-4", title: "Encapsulation", task: "Use a double underscore (__) to make an attribute private.", startingCode: "class Bank:\n    def __init__(self):\n        self.__balance = 1000 # Private\n\n    def get_val(self): return self.__balance\n\nacc = Bank()\nprint(acc.get_val())" },
+          { id: "p3-1-5", title: "Polymorphism", task: "Override a parent method in a child class.", startingCode: "class Animal:\n    def speak(self): pass\n\nclass Dog(Animal):\n    def speak(self): print('Woof!')\n\nclass Cat(Animal):\n    def speak(self): print('Meow!')\n\nfor a in [Dog(), Cat()]: a.speak()" }
+        ]
+      },
+      {
+        title: "2. Advanced Topics",
+        lessons: [
+          { id: "p3-2-1", title: "Regular Expressions (RegEx)", task: "Use the 're' module to find all numbers in a string.", startingCode: "import re\ntext = 'Price is 100 dollars'\nnums = re.findall(r'\\d+', text)\nprint(nums)" },
+          { id: "p3-2-2", title: "Decorators", task: "Create a decorator that prints a message before a function runs.", startingCode: "def my_decorator(func):\n    def wrapper():\n        print('Starting...')\n        func()\n    return wrapper\n\n@my_decorator\ndef say_hi(): print('Hi!')\n\nsay_hi()" },
+          { id: "p3-2-3", title: "Generators", task: "Use 'yield' to create a simple number generator.", startingCode: "def count_up():\n    yield 1\n    yield 2\n\nfor n in count_up(): print(n)" },
+          { id: "p3-2-4", title: "Context Managers", task: "Use the 'with' statement for safe operations.", startingCode: "# Simulated context manager\nclass MySafeOpen:\n    def __enter__(self): print('Opened'); return self\n    def __exit__(self, *args): print('Closed')\n\nwith MySafeOpen():\n    print('Working...')" }
+        ]
+      },
+      {
+        title: "3. Standard Library Deep Dive",
+        lessons: [
+          { id: "p3-3-1", title: "JSON & Data", task: "Convert a Python dictionary into a JSON string.", startingCode: "import json\nuser = {'id': 1, 'active': True}\njson_data = json.dumps(user)\nprint(json_data)" },
+          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\nfor row in csv_data.split('\\n'):\n    print(row.split(','))" },
+          { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\nnow = datetime.now()\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
+        ]
+      }
+    ]
+  },
+  {
+    phase: "Phase 4",
+    title: "Specialization (Weeks 7-8)",
+    mainTopics: []
   }
 ];
-
 
 // --- COMPONENT: PYTHON ACADEMY ---
 export default function PythonAcademy() {
@@ -121,6 +159,7 @@ export default function PythonAcademy() {
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
+  const [activeTab, setActiveTab] = useState('editor');
   const pyodide = useRef<any>(null);
 
   // Initialize Python in Browser
@@ -163,7 +202,7 @@ export default function PythonAcademy() {
     }
     setIsRunning(false);
   };
-  
+
   const saveProgress = async () => {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -176,9 +215,9 @@ export default function PythonAcademy() {
       updatedAt: serverTimestamp()
     });
   };
-  
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto flex flex-col gap-6">
         
         {/* HEADER */}
@@ -244,14 +283,36 @@ export default function PythonAcademy() {
                 </Accordion>
               </CardContent>
             </Card>
+
+            {/* CHEAT SHEET SECTION */}
+            <Card className="bg-indigo-900/20 border-indigo-500/20 rounded-[32px]">
+              <CardHeader className="flex flex-row items-center gap-2">
+                <FileJson className="h-4 w-4 text-indigo-400" />
+                <CardTitle className="text-xs font-black text-indigo-300 uppercase">Python Cheat Sheet</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-[11px]">
+                <div className="space-y-1">
+                  <p className="text-indigo-400 font-bold">Print Message</p>
+                  <code className="bg-slate-950 p-2 rounded block text-pink-400 font-mono">print("Hello")</code>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-indigo-400 font-bold">Variables</p>
+                  <code className="bg-slate-950 p-2 rounded block text-emerald-400 font-mono">x = 10</code>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-indigo-400 font-bold">Loops (Repeat)</p>
+                  <code className="bg-slate-950 p-2 rounded block text-blue-400 font-mono">for i in range(5):</code>
+                </div>
+              </CardContent>
+            </Card>
           </aside>
 
           {/* CENTER: THE CODE WORKSTATION */}
           <main className="lg:col-span-6 space-y-4">
             <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[750px]">
-              <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
+              <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
                 <div className="flex items-center gap-4">
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-1.5 mr-4">
                     <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40" />
                     <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40" />
                     <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40" />
@@ -263,92 +324,82 @@ export default function PythonAcademy() {
                   <Button 
                     onClick={runCode} 
                     disabled={isLoadingPy || isRunning}
-                    className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-8 rounded-xl shadow-lg shadow-yellow-900/20"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-6 rounded-xl shadow-lg shadow-emerald-900/20"
                   >
-                    {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Play className="h-4 w-4 mr-2 fill-current" /> Run</>}
+                    {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Play className="h-4 w-4 mr-2" /> Run Script</>}
                   </Button>
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col bg-[#0d1117]">
-                {/* CODE EDITOR */}
-                <div className="flex-1 p-6 relative">
-                   <textarea
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    className="w-full h-full bg-transparent text-emerald-400 font-mono text-lg outline-none resize-none"
-                    spellCheck={false}
-                    placeholder="# Write your Python code here..."
-                  />
-                  
-                  {/* FLOATING MISSION BOX */}
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="h-4 w-4 text-indigo-400" /></div>
-                        <div>
-                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Mission</p>
-                          <p className="text-sm font-bold text-white">{activeLesson.task}</p>
-                        </div>
+              {/* EDITOR AREA */}
+              <div className="flex-1 relative bg-[#0d1117] p-4">
+                <textarea
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  className="w-full h-full bg-transparent text-emerald-400 font-mono text-lg outline-none resize-none"
+                  spellCheck={false}
+                  placeholder="# Write your Python code here..."
+                />
+                
+                {/* FLOATING MISSION BOX */}
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="h-4 w-4 text-indigo-400" /></div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Mission</p>
+                        <p className="text-sm font-bold text-white">{activeLesson.task}</p>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* TERMINAL */}
-                <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
-                  <div className="flex items-center gap-2 mb-4 text-slate-600">
-                    <Terminal className="h-3 w-3" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">System Console</span>
-                  </div>
-                  <ScrollArea className="h-40">
-                    {output.map((line, i) => (
-                      <div key={i} className="text-emerald-500/80 mb-1">{`> ${line}`}</div>
-                    ))}
-                    {output.length === 0 && <div className="text-slate-700 italic">Console idle... Press "Run Script" to execute.</div>}
-                  </ScrollArea>
+              {/* TERMINAL / OUTPUT */}
+              <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
+                <div className="flex items-center gap-2 mb-4 text-slate-600">
+                  <Terminal className="h-3 w-3" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Python Console Output</span>
                 </div>
+                <ScrollArea className="h-40">
+                  {output.map((line, i) => (
+                    <div key={i} className="text-emerald-500/80 mb-1">{`>>> ${line}`}</div>
+                  ))}
+                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to see results.</div>}
+                </ScrollArea>
               </div>
             </Card>
           </main>
 
-          {/* RIGHT: CHEAT SHEET & TIPS */}
+          {/* RIGHT: PROGRESS & CHALLENGES */}
           <aside className="lg:col-span-3 space-y-6">
             <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
               <CardHeader className="bg-slate-800/50">
-                <CardTitle className="text-xs font-black text-indigo-400 uppercase flex items-center gap-2">
-                  <FileJson className="h-4 w-4" /> Python Cheat Sheet
+                <CardTitle className="text-sm font-black flex items-center gap-2">
+                  <Trophy className="text-yellow-500 h-4 w-4" /> Mastery Stats
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <ScrollArea className="h-[400px] pr-4">
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <p className="text-xs font-bold text-white">Variables</p>
-                      <code className="block bg-black p-3 rounded-xl text-emerald-500 text-[10px] border border-slate-800">
-                        name = "Kojo" <br/>
-                        age = 15 <br/>
-                        is_coding = True
-                      </code>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-xs font-bold text-white">Control Flow</p>
-                      <code className="block bg-black p-3 rounded-xl text-blue-400 text-[10px] border border-slate-800">
-                        if age {'>'} 10: <br/>
-                        &nbsp;&nbsp;print("Big kid") <br/>
-                        else: <br/>
-                        &nbsp;&nbsp;print("Junior")
-                      </code>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-xs font-bold text-white">Loops</p>
-                      <code className="block bg-black p-3 rounded-xl text-purple-400 text-[10px] border border-slate-800">
-                        for i in range(5): <br/>
-                        &nbsp;&nbsp;print(i)
-                      </code>
-                    </div>
+              <CardContent className="p-6 space-y-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-bold">
+                    <span className="text-slate-400">Phase 1 Progress</span>
+                    <span className="text-white">33%</span>
                   </div>
-                </ScrollArea>
+                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="bg-yellow-500 h-full w-1/3" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-800 text-center">
+                    <p className="text-2xl font-black text-white">0</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase">Lessons</p>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-800 text-center">
+                    <p className="text-2xl font-black text-white">0</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase">Commits</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -365,3 +416,5 @@ export default function PythonAcademy() {
     </div>
   );
 }
+
+    
