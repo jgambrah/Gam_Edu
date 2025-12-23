@@ -8,7 +8,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } f
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, FolderOpen, Play, PenTool
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, FolderOpen, Play, PenTool, Star
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -92,7 +92,6 @@ const CATEGORIES = [
     'Senior Secondary (SHS)'
 ];
 
-// --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
 const isJuniorLevel = (grade: string) => 
     grade === 'Early Childhood' || grade === 'Lower Primary';
 
@@ -104,6 +103,7 @@ const juniorTheme = {
     button: "h-20 px-12 bg-pink-500 hover:bg-pink-600 text-2xl font-black rounded-[30px] shadow-[0_10px_0_#be185d] active:translate-y-2 active:shadow-none transition-all"
 };
 
+// --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -121,7 +121,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     // Folder Logic for English
     const folderStructure = useMemo(() => {
         if (!library) return {};
-        const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+        const filtered = library.filter(s => s.gradeLevel === selectedGrade);
         return filtered.reduce((acc, s) => {
             const category = s.category || 'General Reading'; // Folder 1
             const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
@@ -438,11 +438,11 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const labQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: dbLabs, isLoading } = useCollection<any>(labQuery);
+    const { data: dbLabs } = useCollection<any>(labQuery);
 
     const folderStructure = useMemo(() => {
         if (!dbLabs) return {};
-        const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+        const filtered = dbLabs.filter(l => l.gradeLevel === selectedGrade);
         return filtered.reduce((acc, l) => {
             const category = l.category || 'Science Journal';
             const subTopic = l.subTopic || 'Research Mission';
@@ -469,7 +469,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
 
                 <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
                     <div className="p-2 space-y-2">
-                         {isLoading ? <Skeleton className="h-40 w-full"/> : Object.keys(folderStructure).length === 0 ? (
+                         {Object.keys(folderStructure).length === 0 ? (
                             <div className="text-center py-20 text-slate-300">
                                 <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
                                 <p className="text-xs font-bold">No labs in this category yet.</p>
@@ -529,7 +529,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             <div className="md:col-span-2 p-12 flex flex-col justify-center">
                                 {stage === 'hypothesis' && (
                                     <div className="space-y-8 animate-in slide-in-from-right-4">
-                                        <h2 className={`font-black leading-tight ${isJunior ? 'text-4xl' : 'text-3xl'} ${juniorTheme.text}`}>{isJunior && '🤔'} {lab.question}</h2>
+                                        <h2 className={`font-black leading-tight ${isJunior ? 'text-4xl' : 'text-3xl'} ${isJunior ? 'text-blue-900' : 'text-slate-800'}`}>{isJunior && '🤔'} {lab.question}</h2>
                                         <div className={`p-8 rounded-[32px] border-2 space-y-4 ${isJunior ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-100'}`}>
                                             <p className={`font-bold ${isJunior ? 'text-xl' : ''} ${isJunior ? 'text-yellow-900' : 'text-blue-800'}`}>{lab.hypothesisPrompt}</p>
                                             <div className="grid gap-3">
@@ -542,7 +542,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                 )}
                                 {stage === 'experiment' && (
                                     <div className="text-center space-y-8 animate-in zoom-in">
-                                        <h2 className={`font-black ${isJunior ? 'text-4xl' : 'text-3xl'} ${juniorTheme.text}`}>Mission: Data Collection</h2>
+                                        <h2 className={`font-black ${isJunior ? 'text-4xl' : 'text-3xl'} ${isJunior ? 'text-blue-800' : 'text-slate-800'}`}>Mission: Data Collection</h2>
                                         <div className="text-[180px] py-10 animate-pulse">{lab.icon}</div>
                                         <Button onClick={() => setStage('conclusion')} className={`h-16 px-12 text-xl font-black rounded-full shadow-xl ${isJunior ? juniorTheme.button : 'bg-orange-500 hover:bg-orange-600'}`}>Observe Outcome</Button>
                                     </div>
@@ -629,8 +629,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     };
 
     const handleManualSave = async () => {
-        if (!manualData.title || !manualData.category || !manualData.subTopic) {
-            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
+        if (!manualData.title || !manualData.category) {
+            toast({ title: "Filing Required", description: "You must provide a Category to place this in the correct folder.", variant: "destructive" });
             return;
         }
         setLoading(true);
@@ -667,7 +667,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     {['math', 'english', 'science'].map((s: any) => (
                         <button 
                             key={s} 
-                            onClick={()={() => setSubject(s)}
+                            onClick={() => setSubject(s)}
                             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subject === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                         >
                             {s}
@@ -754,16 +754,19 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                             )}
 
                             {subject === 'science' && (
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" />
-                                    <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" />
-                                    <div className="md:col-span-2 grid grid-cols-3 gap-2">
+                                <div className="space-y-4">
+                                    <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
+                                    <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
+                                     <div className="grid grid-cols-3 gap-2">
                                         {manualData.hypothesisOptions.map((opt: string, i: number) => (
                                             <Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {
                                                 const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});
                                             }} className="bg-slate-800 border-slate-700 text-white h-10 rounded-lg" />
                                         ))}
                                     </div>
+                                    <Input placeholder="Icon Emoji (e.g. 🔬)" value={manualData.icon} onChange={e => setManualData({...manualData, icon: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    <Textarea placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
+                                    <Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
                                 </div>
                             )}
                         </div>
@@ -808,7 +811,7 @@ export default function SeniorAcademyPage() {
                     <TabsList className="grid w-full grid-cols-3 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
                         <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center justify-center gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
                         <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
+                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-black flex flex-col items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
                     </TabsList>
                     
                     <div className="min-h-[700px]">
@@ -833,4 +836,4 @@ export default function SeniorAcademyPage() {
     );
 }
 
-    
+```
