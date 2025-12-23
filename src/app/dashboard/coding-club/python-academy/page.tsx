@@ -1,13 +1,12 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, setDoc, doc } from 'firebase/firestore';
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
   BookOpen, Code2, Terminal, Info, Layout, Cpu, 
-  Globe, Database, Github, HelpCircle, FileJson, Trophy, Sparkles
+  Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Sparkles, Trophy
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,7 @@ const CODING_PHASES = [
     id: "phase1",
     title: "Phase 1: Python Fundamentals",
     lessons: [
-      { id: "setup", title: "Environment Setup", task: "Print your name to the terminal.", startingCode: "print('Hello, Python!')" },
+      { id: "setup", title: "Environment Setup", task: "Print 'Ready to code' to confirm setup.", startingCode: "print('Ready to code')" },
       { id: "vars", title: "Variables & I/O", task: "Create a variable named 'age' and set it to 10.", startingCode: "# Type your code here\nage = " },
       { id: "logic", title: "Control Flow (If/Else)", task: "Write an if statement to check if age is > 5.", startingCode: "age = 10\nif age > 5:\n    print('Older than 5')" }
     ]
@@ -52,7 +51,11 @@ export default function PythonAcademy() {
   useEffect(() => {
     async function initPyodide() {
       // @ts-ignore
-      if (!window.loadPyodide) {
+      if (window.loadPyodide) {
+        // @ts-ignore
+        pyodide.current = await window.loadPyodide();
+        setIsLoadingPy(false);
+      } else {
         const script = document.createElement("script");
         script.src = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js";
         script.onload = async () => {
@@ -78,11 +81,26 @@ export default function PythonAcademy() {
 
     try {
       await pyodide.current.runPythonAsync(code);
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
     } catch (err: any) {
       setOutput(prev => [...prev, `❌ Error: ${err.message}`]);
     }
     setIsRunning(false);
   };
+  
+  const saveProgress = async () => {
+    if (!user || !firestore) return;
+    await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
+      userId: user.uid,
+      lessonId: activeLesson.id,
+      code: code,
+      completed: true,
+      updatedAt: serverTimestamp()
+    });
+  };
+  
+  const user = {}; // Placeholder
+  const firestore = {}; // Placeholder
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans">
@@ -116,7 +134,7 @@ export default function PythonAcademy() {
               </CardHeader>
               <CardContent className="p-2">
                 <Accordion type="single" collapsible className="w-full">
-                  {CODING_PHASES.map((phase, idx) => (
+                  {PYTHON_SYLLABUS.map((phase, idx) => (
                     <AccordionItem key={phase.id} value={phase.id} className="border-none px-2">
                       <AccordionTrigger className="hover:no-underline hover:bg-slate-800 rounded-xl px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -166,99 +184,122 @@ export default function PythonAcademy() {
 
           {/* CENTER: THE CODE WORKSTATION */}
           <main className="lg:col-span-6 space-y-4">
-            <Card className="bg-slate-900 border-slate-800 rounded-[40px] overflow-hidden flex flex-col h-[700px] shadow-2xl">
-              <div className="bg-slate-800 px-6 py-4 flex justify-between items-center border-b border-slate-700">
-                <div className="flex items-center gap-2">
+            <Card className="bg-slate-900 border-slate-800 rounded-[40px] overflow-hidden flex flex-col h-[750px] shadow-2xl">
+              <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
+                <div className="flex items-center gap-4">
                   <div className="flex gap-1.5 mr-4">
-                    <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                    <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40" />
+                    <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40" />
                   </div>
-                  <Badge variant="secondary" className="bg-slate-950 text-slate-400 text-[10px] border-slate-800">main.py</Badge>
+                  <Badge variant="outline" className="bg-slate-950 text-slate-500 border-slate-800 font-mono text-[10px]">main.py</Badge>
                 </div>
                 <div className="flex gap-2">
+                  <Button onClick={saveProgress} variant="ghost" className="text-slate-400 hover:text-white"><Save className="h-4 w-4 mr-2" /> Save</Button>
                   <Button 
                     onClick={runCode} 
                     disabled={isLoadingPy || isRunning}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-6 rounded-xl shadow-lg shadow-emerald-900/20"
+                    className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-8 rounded-xl shadow-lg shadow-yellow-900/20"
                   >
-                    {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Play className="h-4 w-4 mr-2" /> Run Script</>}
+                    {isRunning ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Play className="h-4 w-4 mr-2 fill-current" /> Run</>}
                   </Button>
                 </div>
               </div>
 
               {/* EDITOR AREA */}
-              <div className="flex-1 relative bg-[#0d1117] p-4">
-                <textarea
+              <div className="flex-1 p-6 relative bg-[#0d1117]">
+                 <textarea
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="w-full h-full bg-transparent text-emerald-400 font-mono text-lg outline-none resize-none spellcheck-false"
+                  className="w-full h-full bg-transparent text-emerald-400 font-mono text-lg outline-none resize-none"
                   spellCheck={false}
                   placeholder="# Write your Python code here..."
                 />
                 
-                {/* Task Overlay */}
-                <div className="absolute bottom-6 left-6 right-6 p-4 bg-slate-900/80 backdrop-blur border border-slate-700 rounded-2xl flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-500/20 p-2 rounded-lg"><Info className="h-4 w-4 text-blue-400" /></div>
-                    <p className="text-sm font-medium text-slate-300">Goal: {activeLesson.task}</p>
+                {/* FLOATING MISSION BOX */}
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="h-4 w-4 text-indigo-400" /></div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Mission</p>
+                        <p className="text-sm font-bold text-white">{activeLesson.task}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* TERMINAL / OUTPUT */}
-              <div className="h-48 bg-slate-950 border-t border-slate-800 p-4 font-mono text-sm">
-                <div className="flex items-center gap-2 mb-2 text-slate-500">
+              {/* TERMINAL */}
+              <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
+                <div className="flex items-center gap-2 mb-4 text-slate-600">
                   <Terminal className="h-3 w-3" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Python Console Output</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">System Console</span>
                 </div>
-                <ScrollArea className="h-32">
+                <ScrollArea className="h-40">
                   {output.map((line, i) => (
-                    <div key={i} className="text-emerald-500/90 py-0.5">{`> ${line}`}</div>
+                    <div key={i} className="text-emerald-500/80 mb-1">{`>>> ${line}`}</div>
                   ))}
-                  {output.length === 0 && <div className="text-slate-700 italic">Console idle... Press "Run Script" to execute.</div>}
+                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to see results.</div>}
                 </ScrollArea>
               </div>
-            </Card>
+            </div>
           </main>
 
-          {/* RIGHT: PROGRESS & CHALLENGES */}
+          {/* RIGHT: CHEAT SHEET & TIPS */}
           <aside className="lg:col-span-3 space-y-6">
+            {/* CHEAT SHEET */}
             <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
               <CardHeader className="bg-slate-800/50">
-                <CardTitle className="text-sm font-black flex items-center gap-2">
-                  <Trophy className="text-yellow-500 h-4 w-4" /> Mastery Stats
+                <CardTitle className="text-xs font-black text-indigo-400 uppercase flex items-center gap-2">
+                  <FileJson className="h-4 w-4" /> Python Cheat Sheet
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-400">Phase 1 Progress</span>
-                    <span className="text-white">33%</span>
+              <CardContent className="p-6">
+                <ScrollArea className="h-[400px] pr-4">
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <p className="text-xs font-bold text-white">Variables</p>
+                      <code className="block bg-black p-3 rounded-xl text-emerald-500 text-[10px] border border-slate-800">
+                        name = "Kojo" <br/>
+                        age = 15 <br/>
+                        is_coding = True
+                      </code>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-bold text-white">Control Flow</p>
+                      <code className="block bg-black p-3 rounded-xl text-blue-400 text-[10px] border border-slate-800">
+                        if age {'>'} 10: <br/>
+                        &nbsp;&nbsp;print("Big kid") <br/>
+                        else: <br/>
+                        &nbsp;&nbsp;print("Junior")
+                      </code>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-bold text-white">Loops</p>
+                      <code className="block bg-black p-3 rounded-xl text-purple-400 text-[10px] border border-slate-800">
+                        for i in range(5): <br/>
+                        &nbsp;&nbsp;print(i)
+                      </code>
+                    </div>
                   </div>
-                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="bg-yellow-500 h-full w-1/3" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-800 text-center">
-                    <p className="text-2xl font-black text-white">0</p>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase">Lessons</p>
-                  </div>
-                  <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-800 text-center">
-                    <p className="text-2xl font-black text-white">0</p>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase">Commits</p>
-                  </div>
-                </div>
+                </ScrollArea>
               </CardContent>
             </Card>
 
-            <div className="p-6 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl">
-              <Sparkles className="h-8 w-8 mb-4 text-yellow-300" />
-              <h3 className="text-xl font-black mb-2">Ready for a challenge?</h3>
-              <p className="text-sm opacity-80 mb-6">Build a simple calculator using the variables and input logic we just learned.</p>
-              <Button className="w-full bg-white text-indigo-600 font-black rounded-xl">Start Project</Button>
+            {/* LEARNING TIPS */}
+            <div className="p-8 bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-[40px] text-white shadow-xl space-y-4">
+              <div className="flex items-center gap-2">
+                <HelpCircle className="text-yellow-400 h-5 w-5" />
+                <h3 className="text-lg font-black tracking-tight">Pro Tips</h3>
+              </div>
+              <ul className="space-y-3">
+                {["Practice Daily: Consistency is key.", "Build Projects: Apply what you learn.", "Read the Docs.", "GitHub is your friend."].map((tip, i) => (
+                  <li key={i} className="flex gap-2 text-xs font-medium opacity-80">
+                    <span className="text-yellow-400">★</span> {tip}
+                  </li>
+                ))}
+              </ul>
             </div>
           </aside>
 
@@ -269,6 +310,6 @@ export default function PythonAcademy() {
 }
 
 // --- SUB-COMPONENTS (Simplified for standard UI) ---
-function Badge({ children, variant, className }: any) {
+function Badge({ children, variant, className }: { children: React.ReactNode, variant?: string, className?: string }) {
   return <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${className}`}>{children}</span>;
 }
