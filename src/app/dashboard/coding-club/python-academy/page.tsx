@@ -155,7 +155,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
         title: "3. Standard Library Deep Dive",
         lessons: [
           { id: "p3-3-1", title: "JSON & Data", task: "Convert a Python dictionary into a JSON string.", startingCode: "import json\nuser = {'id': 1, 'active': True}\njson_data = json.dumps(user)\nprint(json_data)" },
-          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\\nfor row in csv_data.split('\\n'):\\n    print(row.split(','))" },
+          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\nfor row in csv_data.split('\\n'):\n    print(row.split(','))" },
           { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\nnow = datetime.now()\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
         ]
       }
@@ -178,13 +178,13 @@ const PYTHON_ACADEMY_CURRICULUM = [
             id: "p4-1-2", 
             title: "Web Dev Logic (Routing)", 
             task: "Simulate a web router using a dictionary of functions.", 
-            startingCode: "def home(): return 'Home Page'\\ndef about(): return 'About Page'\\n\\nroutes = {'/': home, '/about': about}\\n\\n# Simulate a user visiting '/about'\\npath = '/about'\\nprint(routes[path]())" 
+            startingCode: "def home(): return 'Home Page'\ndef about(): return 'About Page'\n\nroutes = {'/': home, '/about': about}\n\n# Simulate a user visiting '/about'\npath = '/about'\nprint(routes[path]())" 
           },
           { 
             id: "p4-1-3", 
             title: "Automation (Requests)", 
             task: "Simulate an API request to fetch user data.", 
-            startingCode: "# In browser we simulate the request result\\napi_response = {'id': 1, 'status': 'online'}\\nif api_response['status'] == 'online':\\n    print('Server is active!')" 
+            startingCode: "# In browser we simulate the request result\napi_response = {'id': 1, 'status': 'online'}\nif api_response['status'] == 'online':\n    print('Server is active!')" 
           }
         ]
       },
@@ -195,13 +195,13 @@ const PYTHON_ACADEMY_CURRICULUM = [
             id: "p4-2-1", 
             title: "Project: Smart Calculator", 
             task: "Build a function that performs +, -, *, or / based on input.", 
-            startingCode: "def calc(a, b, op):\\n    if op == '+': return a + b\\n    # Add other operators here\\n\\nprint(calc(10, 5, '+'))" 
+            startingCode: "def calc(a, b, op):\n    if op == '+': return a + b\n    # Add other operators here\n\nprint(calc(10, 5, '+'))" 
           },
           { 
             id: "p4-2-2", 
             title: "Project: Text-Based Game", 
             task: "Create a simple 'Choose your Adventure' logic.", 
-            startingCode: "print('You are in a dark room.')\\nchoice = 'left' # Simulated input\\nif choice == 'left':\\n    print('You found a treasure!')\\nelse:\\n    print('A monster caught you!')" 
+            startingCode: "print('You are in a dark room.')\nchoice = 'left' # Simulated input\nif choice == 'left':\n    print('You found a treasure!')\nelse:\n    print('A monster caught you!')" 
           }
         ]
       },
@@ -212,20 +212,19 @@ const PYTHON_ACADEMY_CURRICULUM = [
             id: "p4-3-1", 
             title: "Git Fundamentals", 
             task: "Practice the string commands for a standard Git workflow.", 
-            startingCode: "commands = [\\n    'git init',\\n    'git add .',\\n    'git commit -m \"First commit\"',\\n    'git push origin main'\\n]\\nfor cmd in commands:\\n    print('Executing:', cmd)" 
+            startingCode: "commands = [\n    'git init',\n    'git add .',\n    'git commit -m \"First commit\"',\n    'git push origin main'\n]\nfor cmd in commands:\n    print('Executing:', cmd)" 
           },
           { 
             id: "p4-3-2", 
             title: "Collaboration on GitHub", 
             task: "Simulate a code 'Pull Request' logic.", 
-            startingCode: "repo = {'main': 'Code V1', 'branch': 'New Feature'}\\ndef merge():\\n    repo['main'] = repo['branch']\\n    print('Merged successfully!')\\n\\nmerge()\\nprint(repo['main'])" 
+            startingCode: "repo = {'main': 'Code V1', 'branch': 'New Feature'}\ndef merge():\n    repo['main'] = repo['branch']\n    print('Merged successfully!')\n\nmerge()\nprint(repo['main'])" 
           }
         ]
       }
     ]
   }
 ];
-
 
 interface Mission {
   id: string;
@@ -245,7 +244,7 @@ const REFERENCE_DATA = [
 ];
 
 export default function PythonAcademy() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
@@ -265,7 +264,6 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  const [isDataLoading, setIsDataLoading] = useState(true);
 
 
   // --- PYODIDE INITIALIZATION ---
@@ -368,7 +366,7 @@ export default function PythonAcademy() {
     setIsRunning(false);
   };
   
-  if (!activeLesson || isDataLoading) {
+  if (isUserLoading || isLoadingPy) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
