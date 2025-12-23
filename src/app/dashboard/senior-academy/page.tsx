@@ -92,6 +92,18 @@ const CATEGORIES = [
     'Senior Secondary (SHS)'
 ];
 
+// --- DYNAMIC THEME ENGINE ---
+const isJuniorLevel = (grade: string) => 
+    grade === 'Early Childhood' || grade === 'Lower Primary';
+
+const juniorTheme = {
+    card: "rounded-[60px] border-8 border-yellow-200 shadow-[0_20px_0_#FEF9C3] bg-white",
+    header: "bg-gradient-to-r from-pink-400 via-yellow-400 to-orange-400 p-10 text-white",
+    mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    text: "text-blue-900 font-bold tracking-tight",
+    button: "h-20 px-12 bg-pink-500 hover:bg-pink-600 text-2xl font-black rounded-[30px] shadow-[0_10px_0_#be185d] active:translate-y-2 active:shadow-none transition-all"
+};
+
 // --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
@@ -100,18 +112,19 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const [answers, setAnswers] = useState<string[]>([]);
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
 
+    const isJunior = isJuniorLevel(selectedGrade);
+
     const storiesQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
     const { data: library, isLoading, forceRefetch } = useCollection<any>(storiesQuery);
 
-    // Folder Logic for English
     const folderStructure = useMemo(() => {
         if (!library) return {};
         const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, s) => {
-            const category = s.category || 'General Reading'; // Folder 1
-            const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
+            const category = s.category || 'General Reading';
+            const subTopic = s.subTopic || 'Standard Comprehension';
             if (!acc[category]) acc[category] = {};
             if (!acc[category][subTopic]) acc[category][subTopic] = [];
             acc[category][subTopic].push(s);
@@ -128,13 +141,6 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         else { speak(`Keep investigating. You found ${correct} insights.`); }
     };
     
-    const handleDelete = async (id: string) => {
-        if (!firestore || !confirm("Delete this story?")) return;
-        await deleteDoc(doc(firestore, 'senior_stories', id));
-        setActiveStory(null); // Clear selection
-        forceRefetch();
-    };
-
     return (
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
             {/* SIDEBAR NAVIGATION */}
@@ -191,22 +197,22 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION */}
             <div className="lg:col-span-3">
                 {activeStory ? (
-                    <Card className="rounded-[48px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in">
-                        <div className="bg-indigo-600 p-10 text-white">
-                            <Badge className="bg-indigo-400 mb-4">{activeStory.genre || activeStory.category}</Badge>
-                            <CardTitle className="text-4xl font-black">{activeStory.title}</CardTitle>
+                    <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? juniorTheme.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
+                        <div className={isJunior ? juniorTheme.header : 'bg-indigo-600 p-10 text-white'}>
+                            <Badge className="bg-white/20 border-none mb-4">{activeStory.genre || activeStory.category}</Badge>
+                            <CardTitle className={`font-black ${isJunior ? 'text-5xl' : 'text-4xl'}`}>{isJunior && '📖'} {activeStory.title}</CardTitle>
                         </div>
                         <CardContent className="p-12 space-y-10">
-                            <p className="whitespace-pre-wrap text-2xl leading-relaxed text-slate-700 font-serif">{activeStory.content}</p>
-                            <div className="bg-slate-50 p-8 rounded-[32px] space-y-6 border-2 border-slate-100">
-                                <h3 className="text-2xl font-black text-indigo-900">Critical Analysis Questions</h3>
+                            <p className={`whitespace-pre-wrap font-serif ${isJunior ? 'text-3xl leading-relaxed text-slate-800' : 'text-2xl leading-relaxed text-slate-700'}`}>{activeStory.content}</p>
+                            <div className={`p-8 rounded-[32px] space-y-6 border-2 ${isJunior ? 'bg-yellow-50 border-yellow-200' : 'bg-slate-50 border-slate-100'}`}>
+                                <h3 className={`font-black ${isJunior ? 'text-4xl text-yellow-900' : 'text-2xl text-indigo-900'}`}>Critical Analysis Questions</h3>
                                 {activeStory.quiz.map((q: any, i: number) => (
                                     <div key={i} className="space-y-2">
-                                        <p className="font-bold text-slate-800">{i + 1}. {q.question}</p>
-                                        <Input placeholder="Type your analysis..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-14 rounded-2xl border-2" />
+                                        <p className={`font-bold ${isJunior ? 'text-xl' : 'text-base'} text-slate-800`}>{i + 1}. {q.question}</p>
+                                        <Input placeholder="Type your analysis..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className={`${isJunior ? 'h-20 text-xl rounded-3xl border-4' : 'h-14 rounded-2xl border-2'}`} />
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-full">Submit Analysis</Button>
+                                <Button onClick={checkAnswers} className={`w-full ${isJunior ? juniorTheme.button : 'h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-full'}`}>Submit Analysis</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -231,27 +237,21 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 
     // Navigation State
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+    const isJunior = isJuniorLevel(selectedGrade);
 
     const mathQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
     const { data: dbProblems, isLoading, forceRefetch } = useCollection<any>(mathQuery);
 
-    // BRILLIANT ORGANIZATION LOGIC: Grouping by Subject -> Sub-Topic
     const folderStructure = useMemo(() => {
         if (!dbProblems) return {};
-        
-        // 1. Filter by current Student Category
         const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
-
-        // 2. Group into Subjects (Algebra, Stats, etc.)
         return filtered.reduce((acc, p) => {
             const subject = p.category || 'General Mathematics';
             const sub = p.subTopic || 'Standard Practice';
-            
             if (!acc[subject]) acc[subject] = {};
             if (!acc[subject][sub]) acc[subject][sub] = [];
-            
             acc[subject][sub].push(p);
             return acc;
         }, {} as Record<string, Record<string, any[]>>);
@@ -267,18 +267,10 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
             speak("Review your derivation.");
         }
     };
-    
-    const handleDelete = async (id: string) => {
-        if (!firestore || !confirm("Remove this problem from curriculum?")) return;
-        await deleteDoc(doc(firestore, 'senior_math', id));
-        toast({ title: "Deleted" });
-        setProblem(null);
-        forceRefetch();
-    };
 
     return (
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
-            {/* SIDEBAR: THE BRILLIANT NAVIGATOR */}
+            {/* SIDEBAR */}
             <div className="lg:col-span-1 space-y-4">
                 <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-700">
                     <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">Student Category</Label>
@@ -289,12 +281,9 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
-
                 <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
                     <div className="space-y-2 p-2">
-                        {isLoading ? (
-                            <Skeleton className="h-40 w-full" />
-                        ) : Object.keys(folderStructure).length === 0 ? (
+                        {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
                             <div className="text-center py-20 text-slate-300">
                                 <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
                                 <p className="text-xs font-bold">No questions in this category yet.</p>
@@ -339,46 +328,46 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 </ScrollArea>
             </div>
 
-            {/* MAIN STAGE: THE WORKSTATION */}
+            {/* MAIN STAGE */}
             <div className="lg:col-span-3">
                 {problem ? (
-                    <Card className="rounded-[48px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in duration-500">
-                        <div className="bg-emerald-600 p-10 text-white relative">
+                    <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? juniorTheme.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
+                        <div className={isJunior ? juniorTheme.header : 'bg-emerald-600 p-10 text-white'}>
                             <div className="flex justify-between items-start">
                                 <div>
                                     <div className="flex gap-2 mb-4">
                                         <Badge className="bg-white/20 border-none">{problem.category}</Badge>
                                         <Badge className="bg-emerald-400 border-none">{problem.subTopic}</Badge>
                                     </div>
-                                    <CardTitle className="text-4xl font-black tracking-tight">{problem.title}</CardTitle>
+                                    <CardTitle className={`font-black tracking-tight ${isJunior ? 'text-5xl' : 'text-4xl'}`}>{isJunior && '🧮'} {problem.title}</CardTitle>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[10px] font-black uppercase opacity-60">Curriculum Level</p>
+                                    <p className={`text-[10px] font-black uppercase opacity-60 ${isJunior ? 'text-yellow-100' : ''}`}>Curriculum Level</p>
                                     <p className="font-bold">{problem.gradeLevel}</p>
                                 </div>
                             </div>
                         </div>
                         <CardContent className="p-12 space-y-10">
-                            {/* THE PROFESSIONAL LATEX BOX */}
-                            <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl border-t-8 border-emerald-500 relative">
-                                <div className="text-4xl text-emerald-400 overflow-x-auto py-6 text-center">
+                            {isJunior && (problem.latexFormula.includes('+') || problem.latexFormula.includes('-')) && (
+                                <div className="flex flex-wrap justify-center gap-4 text-5xl">
+                                    {Array.from({ length: parseInt(problem.latexFormula.split(/[-+]/)[0]) || 0 }).map((_, i) => <span key={i}>{problem.icon || '⭐'}</span>)}
+                                    <span className="text-6xl font-black text-slate-300">{problem.latexFormula.includes('+') ? '+' : '-'}</span>
+                                    {Array.from({ length: parseInt(problem.latexFormula.split(/[-+]/)[1]) || 0 }).map((_, i) => <span key={i} className="opacity-50">{problem.icon || '⭐'}</span>)}
+                                </div>
+                            )}
+                            <div className={isJunior ? juniorTheme.mathBox : 'bg-slate-900 p-12 rounded-[40px] shadow-2xl border-t-8 border-emerald-500'}>
+                                <div className={`text-center overflow-x-auto ${isJunior ? 'text-7xl text-blue-800' : 'text-4xl text-emerald-400'}`}>
                                     <SafeMath formula={problem.latexFormula} />
                                 </div>
-                                <div className="absolute top-4 right-6 text-slate-700 font-mono text-[10px] uppercase tracking-widest">Neural Math Engine v2.0</div>
                             </div>
 
                             <div className="max-w-2xl mx-auto text-center space-y-8">
-                                <p className="text-2xl font-medium text-slate-600 leading-relaxed italic">
+                                <p className={`font-medium leading-relaxed italic ${isJunior ? 'text-3xl text-slate-700' : 'text-2xl text-slate-600'}`}>
                                     "{problem.instruction}"
                                 </p>
                                 <div className="flex flex-col items-center gap-6">
-                                    <Input 
-                                        value={userInput} 
-                                        onChange={e => setUserInput(e.target.value)} 
-                                        placeholder="Enter final derived value..." 
-                                        className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[32px] focus:border-emerald-500 shadow-inner"
-                                    />
-                                    <Button onClick={checkAnswer} className="h-16 px-20 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-xl transition-all hover:-translate-y-1">
+                                    <Input value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Enter final derived value..." className={`font-mono text-center border-4 shadow-inner ${isJunior ? 'h-24 text-5xl rounded-[40px] border-sky-200' : 'h-20 text-4xl rounded-[32px] border-slate-100'}`} />
+                                    <Button onClick={checkAnswer} className={isJunior ? juniorTheme.button : 'h-16 px-20 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full'}>
                                         VERIFY DERIVATION
                                     </Button>
                                 </div>
@@ -394,9 +383,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                     </Card>
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
-                        <div className="p-8 bg-slate-50 rounded-full mb-6">
-                            <Sigma className="w-20 h-20 text-slate-200" />
-                        </div>
+                        <div className="p-8 bg-slate-50 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-200" /></div>
                         <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
                         </h2>
@@ -413,6 +400,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+    const isJunior = isJuniorLevel(selectedGrade);
 
     const labQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
@@ -488,8 +476,8 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION (Discovery View) */}
             <div className="lg:col-span-3">
                 {lab ? (
-                    <Card className="rounded-[48px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in">
-                        <div className="grid md:grid-cols-3 min-h-[600px]">
+                    <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? juniorTheme.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
+                        <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
                             <div className="bg-slate-900 text-white p-10 space-y-8">
                                 <div className="flex flex-col gap-6">
                                     {['hypothesis', 'experiment', 'conclusion'].map((s: any, i) => (
@@ -508,12 +496,12 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             <div className="md:col-span-2 p-12 flex flex-col justify-center">
                                 {stage === 'hypothesis' && (
                                     <div className="space-y-8 animate-in slide-in-from-right-4">
-                                        <h2 className="text-3xl font-black text-slate-800 leading-tight">{lab.question}</h2>
-                                        <div className="p-8 bg-blue-50 rounded-[32px] border-2 border-blue-100 space-y-4">
-                                            <p className="font-bold text-blue-800">{lab.hypothesisPrompt}</p>
+                                        <h2 className={`font-black leading-tight ${isJunior ? 'text-4xl' : 'text-3xl'} ${juniorTheme.text}`}>{isJunior && '🤔'} {lab.question}</h2>
+                                        <div className={`p-8 rounded-[32px] border-2 space-y-4 ${isJunior ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-100'}`}>
+                                            <p className={`font-bold ${isJunior ? 'text-xl' : ''} ${isJunior ? 'text-yellow-900' : 'text-blue-800'}`}>{lab.hypothesisPrompt}</p>
                                             <div className="grid gap-3">
                                                 {lab.hypothesisOptions.map((opt: string) => (
-                                                    <Button key={opt} variant="outline" className="bg-white border-2 h-auto py-4 font-bold rounded-2xl" onClick={() => setStage('experiment')}>{opt}</Button>
+                                                    <Button key={opt} variant="outline" className={`bg-white border-2 h-auto py-4 font-bold rounded-2xl ${isJunior ? 'text-lg' : ''}`} onClick={() => setStage('experiment')}>{opt}</Button>
                                                 ))}
                                             </div>
                                         </div>
@@ -521,19 +509,19 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                 )}
                                 {stage === 'experiment' && (
                                     <div className="text-center space-y-8 animate-in zoom-in">
-                                        <h2 className="text-3xl font-black text-slate-800">Mission: Data Collection</h2>
+                                        <h2 className={`font-black ${isJunior ? 'text-4xl' : 'text-3xl'} ${juniorTheme.text}`}>Mission: Data Collection</h2>
                                         <div className="text-[180px] py-10 animate-pulse">{lab.icon}</div>
-                                        <Button onClick={() => setStage('conclusion')} className="h-16 px-12 bg-orange-500 hover:bg-orange-600 text-xl font-black rounded-full shadow-xl">Observe Outcome</Button>
+                                        <Button onClick={() => setStage('conclusion')} className={`h-16 px-12 text-xl font-black rounded-full shadow-xl ${isJunior ? juniorTheme.button : 'bg-orange-500 hover:bg-orange-600'}`}>Observe Outcome</Button>
                                     </div>
                                 )}
                                 {stage === 'conclusion' && (
                                     <div className="space-y-6 animate-in slide-in-from-bottom-4">
-                                        <h2 className="text-4xl font-black text-green-700">Discovery Conclusion</h2>
-                                        <div className="p-8 bg-green-50 rounded-[40px] border-4 border-green-100 space-y-4">
-                                            <p className="text-2xl font-bold text-slate-800">{lab.conclusion}</p>
-                                            <p className="text-slate-600 leading-relaxed text-lg">{lab.explanation}</p>
+                                        <h2 className={`font-black ${isJunior ? 'text-5xl text-green-800' : 'text-4xl text-green-700'}`}>Discovery Conclusion</h2>
+                                        <div className={`p-8 rounded-[40px] border-4 space-y-4 ${isJunior ? 'bg-green-50 border-green-200' : 'bg-green-50 border-green-100'}`}>
+                                            <p className={`font-bold ${isJunior ? 'text-3xl' : 'text-2xl'} text-slate-800`}>{lab.conclusion}</p>
+                                            <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-lg text-slate-600'}`}>{lab.explanation}</p>
                                         </div>
-                                        <Button onClick={() => { setLab(null); confetti(); }} className="w-full h-16 bg-green-600 rounded-2xl font-black text-xl shadow-xl">Complete Mission</Button>
+                                        <Button onClick={() => { setLab(null); confetti(); }} className={`w-full h-16 text-xl font-black rounded-2xl shadow-xl ${isJunior ? juniorTheme.button : 'bg-green-600 hover:bg-green-700'}`}>Complete Mission</Button>
                                     </div>
                                 )}
                             </div>
@@ -550,7 +538,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
+// --- 4. ADMIN CONSOLE (Manual & AI Hybrid) ---
 function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -563,19 +551,19 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const [topic, setTopic] = useState("");
     const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
 
-    // Manual States (Shared across subjects where applicable)
+    // Manual States
     const [manualData, setManualData] = useState<any>({
         title: '',
-        category: '', // Broad Category (e.g. Algebra)
-        subTopic: '', // Sub Topic (e.g. Linear Equations)
+        category: '',
+        subTopic: '',
         gradeLevel: 'Junior Secondary (JHS)',
         latexFormula: '',
         instruction: '',
         answer: '',
-        content: '', // For English
-        genre: '',   // For English
+        content: '',
+        genre: '',
         quiz: [{ question: '', answer: '' }, { question: '', answer: '' }, { question: '', answer: '' }],
-        background: '', // For Science
+        background: '',
         question: '',
         hypothesisPrompt: '',
         hypothesisOptions: ['', '', ''],
@@ -609,7 +597,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
 
     const handleManualSave = async () => {
         if (!manualData.title || !manualData.category || !manualData.subTopic) {
-            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
+            toast({ title: "Filing Required", description: "Title, Category, and Sub-Topic are needed for folder organization.", variant: "destructive" });
             return;
         }
         setLoading(true);
@@ -621,7 +609,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
             });
             toast({ title: "Saved", description: "Manual entry added to the folders." });
             onContentAdded();
-            // Reset form
             setManualData({ ...manualData, title: '', latexFormula: '', content: '', background: '', answer: '' });
         } catch (e) {
             toast({ title: "Error", description: "Failed to save manually.", variant: "destructive" });
@@ -631,7 +618,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
 
     return (
         <Card className="bg-slate-900 border-none shadow-2xl overflow-hidden rounded-[40px] animate-in fade-in">
-            {/* Control Bar */}
             <div className="p-6 bg-slate-800/50 border-b border-slate-700 flex flex-wrap justify-between items-center gap-4">
                 <div className="flex bg-slate-900 p-1 rounded-2xl border border-slate-700">
                     <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('ai')} className="rounded-xl font-bold text-xs h-9">
@@ -641,14 +627,9 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                         <PenTool className="w-3 h-3 mr-2 text-emerald-400"/> Manual Entry
                     </Button>
                 </div>
-
                 <div className="flex gap-2">
                     {['math', 'english', 'science'].map((s: any) => (
-                        <button 
-                            key={s} 
-                            onClick={() => setSubject(s)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subject === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
-                        >
+                        <button key={s} onClick={() => setSubject(s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subject === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>
                             {s}
                         </button>
                     ))}
@@ -674,35 +655,18 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                         </Button>
                     </div>
                 ) : (
-                    /* --- MANUAL ENTRY FORM --- */
                     <div className="space-y-6 animate-in slide-in-from-top-4">
                         <div className="grid md:grid-cols-3 gap-4">
-                            {subject === 'math' ? (
-                                <>
-                                    <div className="space-y-2">
-                                        <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Main Subject (e.g. Algebra)</Label>
-                                        <Input value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (e.g. Differentiation)</Label>
-                                        <Input value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="grid md:grid-cols-2 gap-4 md:col-span-2">
-                                    <div className="space-y-2">
-                                        <Label className="text-slate-500 text-[10px] font-black uppercase">Broad Category (e.g. Narrative, Life Science)</Label>
-                                        <Input value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-slate-500 text-[10px] font-black uppercase">Sub-Topic (e.g. Short Stories, Plant Biology)</Label>
-                                        <Input value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                                    </div>
-                                </div>
-                            )}
-
                             <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Student Category</Label>
+                                <Label className="text-slate-500 text-[10px] font-black uppercase">Category (Main Folder)</Label>
+                                <Input placeholder={subject === 'math' ? 'e.g. Algebra' : 'e.g. Narrative'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-slate-500 text-[10px] font-black uppercase">Sub-Topic (Sub Folder)</Label>
+                                <Input placeholder={subject === 'math' ? 'e.g. Differentiation' : 'e.g. Short Stories'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-slate-500 text-[10px] font-black uppercase">Target Student Category</Label>
                                 <Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}>
                                     <SelectTrigger className="h-12 bg-slate-800 border-slate-700 text-white rounded-xl"><SelectValue /></SelectTrigger>
                                     <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
