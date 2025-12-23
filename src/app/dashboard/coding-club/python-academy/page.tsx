@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -258,7 +259,7 @@ export default function PythonAcademy() {
   const [isRunning, setIsRunning] = useState(false);
   const [isPassed, setIsPassed] = useState(false);
   const pyodide = useRef<any>(null);
-
+  
   // AI Tutor State
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
@@ -366,7 +367,7 @@ export default function PythonAcademy() {
     setIsRunning(false);
   };
   
-  if (isUserLoading || isLoadingPy) {
+  if (isUserLoading || isLoadingPy || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -482,7 +483,7 @@ export default function PythonAcademy() {
         
         <aside className="lg:col-span-3 space-y-6">
   
-          {/* 1. MASTER STATS (Existing Card) */}
+          {/* 1. MASTER STATS */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader className="bg-slate-800/50">
               <CardTitle className="text-sm font-black flex items-center gap-2">
@@ -502,7 +503,7 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
         
-          {/* 2. LEARNING TIPS (PRO MINDSET) */}
+          {/* 2. LEARNING TIPS */}
           <div className="p-6 bg-indigo-900/40 border border-indigo-500/20 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-indigo-400 h-5 w-5" />
@@ -530,7 +531,7 @@ export default function PythonAcademy() {
             </ul>
           </div>
         
-          {/* 3. EXTERNAL PORTALS (LINKS) */}
+          {/* 3. EXTERNAL PORTALS */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
