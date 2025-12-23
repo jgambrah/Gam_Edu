@@ -165,9 +165,68 @@ const PYTHON_ACADEMY_CURRICULUM = [
   {
     phase: "Phase 4",
     title: "Specialization & Projects (Weeks 7+)",
-    mainTopics: []
+    mainTopics: [
+      {
+        title: "1. Choose a Path",
+        lessons: [
+          { 
+            id: "p4-1-1", 
+            title: "Data Science (NumPy)", 
+            task: "Create a 1D array and calculate the mean (average).", 
+            startingCode: "import numpy as np\n\ndata = np.array([10, 20, 30, 40, 50])\nprint('Average:', np.mean(data))" 
+          },
+          { 
+            id: "p4-1-2", 
+            title: "Web Dev Logic (Routing)", 
+            task: "Simulate a web router using a dictionary of functions.", 
+            startingCode: "def home(): return 'Home Page'\ndef about(): return 'About Page'\n\nroutes = {'/': home, '/about': about}\n\n# Simulate a user visiting '/about'\npath = '/about'\nprint(routes[path]())" 
+          },
+          { 
+            id: "p4-1-3", 
+            title: "Automation (Requests)", 
+            task: "Simulate an API request to fetch user data.", 
+            startingCode: "# In browser we simulate the request result\napi_response = {'id': 1, 'status': 'online'}\nif api_response['status'] == 'online':\n    print('Server is active!')" 
+          }
+        ]
+      },
+      {
+        title: "2. Project-Based Learning",
+        lessons: [
+          { 
+            id: "p4-2-1", 
+            title: "Project: Smart Calculator", 
+            task: "Build a function that performs +, -, *, or / based on input.", 
+            startingCode: "def calc(a, b, op):\n    if op == '+': return a + b\n    # Add other operators here\n\nprint(calc(10, 5, '+'))" 
+          },
+          { 
+            id: "p4-2-2", 
+            title: "Project: Text-Based Game", 
+            task: "Create a simple 'Choose your Adventure' logic.", 
+            startingCode: "print('You are in a dark room.')\nchoice = 'left' # Simulated input\nif choice == 'left':\n    print('You found a treasure!')\nelse:\n    print('A monster caught you!')" 
+          }
+        ]
+      },
+      {
+        title: "3. Version Control (Git)",
+        lessons: [
+          { 
+            id: "p4-3-1", 
+            title: "Git Fundamentals", 
+            task: "Practice the string commands for a standard Git workflow.", 
+            startingCode: "commands = [\n    'git init',\n    'git add .',\n    'git commit -m \"First commit\"',\n    'git push origin main'\n]\nfor cmd in commands:\n    print('Executing:', cmd)" 
+          },
+          { 
+            id: "p4-3-2", 
+            title: "Collaboration on GitHub", 
+            task: "Simulate a code 'Pull Request' logic.", 
+            startingCode: "repo = {'main': 'Code V1', 'branch': 'New Feature'}\ndef merge():\n    repo['main'] = repo['branch']\n    print('Merged successfully!')\n\nmerge()\nprint(repo['main'])" 
+          }
+        ]
+      }
+    ]
   }
 ];
+
 
 // --- UPGRADE 4: STREAK COMPONENT ---
 function ContributionHeatmap() {
@@ -193,7 +252,6 @@ export default function PythonAcademy() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // --- STATE ---
   const [allMissions, setAllMissions] = useState<any[]>(PYTHON_ACADEMY_CURRICULUM);
   const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
   const [completedMissions, setCompletedMissions] = useState<string[]>([]);
@@ -209,8 +267,9 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
+
   // --- PYODIDE INITIALIZATION ---
-   useEffect(() => {
+  useEffect(() => {
     async function initPyodide() {
       if (!pyodide.current) {
         // @ts-ignore
@@ -233,7 +292,8 @@ export default function PythonAcademy() {
               if (lesson) return lesson;
           }
       }
-      return null;
+      // Fallback to the very first lesson if nothing is found
+      return allMissions[0]?.mainTopics[0]?.lessons[0];
   }, [allMissions, currentMissionId]);
   
   // Reset code when mission changes
@@ -256,6 +316,12 @@ export default function PythonAcademy() {
 
     // --- PART A: RUN PYTHON ---
     try {
+      // Clear previous plots
+      pyodide.current.runPython(`
+        import matplotlib.pyplot as plt
+        plt.clf()
+      `);
+      
       await pyodide.current.runPythonAsync(code);
       
       // Validation Logic
@@ -263,6 +329,7 @@ export default function PythonAcademy() {
       if (activeLesson?.id === "p1-2-2") {
         success = pyodide.current.runPython("globals().get('year') == 2025");
       }
+      // Add other validation logic here for other lessons...
       
       if (success) {
         setIsPassed(true);
@@ -283,13 +350,11 @@ export default function PythonAcademy() {
         }
       }
 
-      // 4. UPGRADE 3: RENDER MATPLOTLIB TO CANVAS
+      // RENDER MATPLOTLIB TO CANVAS
       const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
       if (hasPlot) {
-        // This targets an HTML div with id="plot-target"
         pyodide.current.runPython(`
             import io, base64
-            import matplotlib.pyplot as plt
             buf = io.BytesIO()
             plt.savefig(buf, format='png')
             buf.seek(0)
@@ -306,7 +371,12 @@ export default function PythonAcademy() {
   };
   
   if (!activeLesson) {
-    return <div className="flex h-screen w-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+      return (
+          <div className="flex h-screen w-screen items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p className="ml-4">Loading Curriculum...</p>
+          </div>
+      );
   }
 
   return (
@@ -404,7 +474,7 @@ export default function PythonAcademy() {
                 </TabsContent>
 
                 <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                    <img id="plot-output" className="max-h-full rounded-lg" alt="Science plot will appear here" src="https://placehold.co/400x200/000000/FFFFFF/png?text=Plot+Output" />
+                    <img id="plot-output" className="max-h-full rounded-lg" alt="Science plot will appear here" src="https://placehold.co/400x200/020617/FFFFFF/png?text=Plot+Output" />
                 </TabsContent>
               </Tabs>
             </div>
