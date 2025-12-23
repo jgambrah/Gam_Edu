@@ -1,13 +1,13 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useUser, useFirestore } from '@/firebase';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, setDoc, doc } from 'firebase/firestore';
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
   BookOpen, Code2, Terminal, Info, Layout, Cpu, 
-  Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Trophy, Sparkles
+  Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Trophy
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
-// --- DATA: THE STRUCTURED LEARNING PATH ---
+
+// --- FULL CURRICULUM DATA STRUCTURE ---
 const PYTHON_SYLLABUS = [
   {
     phase: "Phase 1",
@@ -112,7 +117,7 @@ const PYTHON_SYLLABUS = [
       }
     ]
   },
-  {
+    {
     phase: "Phase 3",
     title: "Object-Oriented Programming (OOP) & Beyond (Weeks 5-6)",
     mainTopics: [
@@ -139,13 +144,13 @@ const PYTHON_SYLLABUS = [
         title: "3. Standard Library Deep Dive",
         lessons: [
           { id: "p3-3-1", title: "JSON & Data", task: "Convert a Python dictionary into a JSON string.", startingCode: "import json\nuser = {'id': 1, 'active': True}\njson_data = json.dumps(user)\nprint(json_data)" },
-          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\nfor row in csv_data.split('\\n'):\n    print(row.split(','))" },
-          { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\nnow = datetime.now()\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
+          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\\nfor row in csv_data.split('\\n'):\\n    print(row.split(','))" },
+          { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\\nnow = datetime.now()\\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
         ]
       }
     ]
   },
-  {
+    {
     phase: "Phase 4",
     title: "Specialization & Projects (Weeks 7+)",
     mainTopics: [
@@ -210,9 +215,11 @@ const PYTHON_SYLLABUS = [
   }
 ];
 
-
-// --- COMPONENT: PYTHON ACADEMY ---
 export default function PythonAcademy() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+
   const [activeLesson, setActiveLesson] = useState(PYTHON_SYLLABUS[0].mainTopics[0].lessons[0]);
   const [code, setCode] = useState(activeLesson.startingCode);
   const [output, setOutput] = useState<string[]>([]);
@@ -220,9 +227,6 @@ export default function PythonAcademy() {
   const [isRunning, setIsRunning] = useState(false);
   const [activeTab, setActiveTab] = useState('editor');
   const pyodide = useRef<any>(null);
-  const { toast } = useToast();
-  const { user } = useUser();
-  const firestore = useFirestore();
 
   // Initialize Python in Browser
   useEffect(() => {
@@ -321,7 +325,7 @@ export default function PythonAcademy() {
                             <button
                               key={lesson.id}
                               onClick={() => { setActiveLesson(lesson); setCode(lesson.startingCode); setOutput([]); }}
-                              className={`w-full text-left px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
+                              className={`w-full text-left px-4 py-2 rounded-xl text-xs transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
                             >
                               {lesson.title}
                               <ChevronRight className={`h-3 w-3 ${activeLesson.id === lesson.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
@@ -338,9 +342,9 @@ export default function PythonAcademy() {
         </aside>
 
         {/* MAIN: EDITOR & WORKSTATION */}
-        <main className="lg:col-span-6 space-y-4">
-          <Card className="bg-slate-900 border-slate-800 rounded-[40px] overflow-hidden flex flex-col h-[750px] shadow-2xl">
-            <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
+        <main className="lg:col-span-6 space-y-6">
+          <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[750px]">
+            <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
               <div className="flex items-center gap-4">
                 <div className="flex gap-1.5 mr-4">
                   <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40" />
@@ -396,7 +400,7 @@ export default function PythonAcademy() {
                   {output.map((line, i) => (
                     <div key={i} className="text-emerald-500/90 mb-1">{`>>> ${line}`}</div>
                   ))}
-                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to see results.</div>}
+                  {output.length === 0 && <div className="text-slate-700 italic">No output yet. Run your code to see results.</div>}
                 </ScrollArea>
               </div>
             </div>
@@ -405,8 +409,7 @@ export default function PythonAcademy() {
 
         {/* RIGHT: PROGRESS, TIPS & EXTERNAL RESOURCES */}
         <aside className="lg:col-span-3 space-y-6">
-  
-          {/* 1. MASTER STATS (Existing Card) */}
+          
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader className="bg-slate-800/50">
               <CardTitle className="text-sm font-black flex items-center gap-2">
@@ -425,8 +428,7 @@ export default function PythonAcademy() {
               </div>
             </CardContent>
           </Card>
-
-          {/* 2. LEARNING TIPS (PRO MINDSET) */}
+        
           <div className="p-6 bg-indigo-900/40 border border-indigo-500/20 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-indigo-400 h-5 w-5" />
@@ -454,7 +456,6 @@ export default function PythonAcademy() {
             </ul>
           </div>
 
-          {/* 3. EXTERNAL PORTALS (LINKS) */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
@@ -504,4 +505,3 @@ export default function PythonAcademy() {
     </div>
   );
 }
-```)
