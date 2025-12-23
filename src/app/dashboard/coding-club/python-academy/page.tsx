@@ -83,7 +83,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
       }
     ]
   },
-    {
+  {
     phase: "Phase 2",
     title: "Intermediate Python (Weeks 3-4)",
     mainTopics: [
@@ -145,7 +145,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
       {
         title: "2. Advanced Topics",
         lessons: [
-          { id: "p3-2-1", title: "Regular Expressions (RegEx)", task: "Use the 're' module to find all numbers in a string.", startingCode: "import re\ntext = 'Price is 100 dollars'\nnums = re.findall(r'\\d+', text)\nprint(nums)" },
+          { id: "p3-2-1", title: "Regular Expressions (RegEx)", task: "Use the 're' module to find all numbers in a string.", startingCode: "import re\ntext = 'Price is 100 dollars'\nnums = re.findall(r'\\\\d+', text)\nprint(nums)" },
           { id: "p3-2-2", title: "Decorators", task: "Create a decorator that prints a message before a function runs.", startingCode: "def my_decorator(func):\n    def wrapper():\n        print('Starting...')\n        func()\n    return wrapper\n\n@my_decorator\ndef say_hi(): print('Hi!')\n\nsay_hi()" },
           { id: "p3-2-3", title: "Generators", task: "Use 'yield' to create a simple number generator.", startingCode: "def count_up():\n    yield 1\n    yield 2\n\nfor n in count_up(): print(n)" },
           { id: "p3-2-4", title: "Context Managers", task: "Use the 'with' statement for safe operations.", startingCode: "# Simulated context manager\nclass MySafeOpen:\n    def __enter__(self): print('Opened'); return self\n    def __exit__(self, *args): print('Closed')\n\nwith MySafeOpen():\n    print('Working...')" }
@@ -226,7 +226,6 @@ const PYTHON_ACADEMY_CURRICULUM = [
   }
 ];
 
-
 interface Mission {
   id: string;
   title: string;
@@ -246,257 +245,283 @@ const REFERENCE_DATA = [
   { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
 ];
 
-function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
-    const { user } = useUser();
-    const firestore = useFirestore();
-    const { toast } = useToast();
-  
-    // --- STATE ---
-    const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
-    const [completedMissions, setCompletedMissions] = useState<string[]>([]);
-    const [code, setCode] = useState('');
-    const [output, setOutput] = useState<string[]>([]);
-    const [isRunning, setIsRunning] = useState(false);
-    const [isPassed, setIsPassed] = useState(false);
-    const pyodide = useRef<any>(null);
-    const [isLoadingPy, setIsLoadingPy] = useState(true);
-    
-    // AI Tutor State
-    const [aiQuestion, setAiQuestion] = useState("");
-    const [tutorResponse, setTutorResponse] = useState<any>(null);
-    const [isAiLoading, setIsAiLoading] = useState(false);
-    const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  
-    // --- ACTIVE LESSON ---
-    const activeLesson = useMemo(() => {
-        return allMissions.find(m => m.id === currentMissionId) || allMissions[0];
-    }, [allMissions, currentMissionId]);
-  
-    // Reset code when mission changes
-    useEffect(() => {
-      if (activeLesson) {
-          setCode(activeLesson.startingCode || '');
-      }
-      setIsPassed(false);
-      setOutput([]);
-      setTutorResponse(null);
-    }, [activeLesson]);
-  
-    // --- PYODIDE INITIALIZATION ---
-    useEffect(() => {
-      async function initPyodide() {
-        if (!pyodide.current && (window as any).loadPyodide) {
-          try {
-            // @ts-ignore
-            pyodide.current = await window.loadPyodide();
-            toast({ title: "Python Ready!", description: "The coding environment has loaded." });
-          } catch(e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: "Pyodide Failed", description: "Could not load Python runtime." });
-          } finally {
-            setIsLoadingPy(false);
-          }
-        } else {
-            setIsLoadingPy(false);
-        }
-      }
-      initPyodide();
-    }, [toast]);
-  
-    // --- ACTIONS ---
-    const runAndValidate = async () => {
-      if (!pyodide.current) return;
-      setIsRunning(true);
-      setOutput([]);
-      setIsPassed(false);
-  
-      pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
-  
-      try {
-        if (code.includes("import numpy")) await pyodide.current.loadPackage("numpy");
-        if (code.includes("import pandas")) await pyodide.current.loadPackage("pandas");
-        await pyodide.current.runPythonAsync(code);
-        
-        let validationCheck = false;
-        
-        if (activeLesson.id === "p1-2-2") validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
-        else if (activeLesson.id === "p1-2-1") validationCheck = output.join("").includes("Hello World");
-  
-        if (validationCheck) {
-          setIsPassed(true);
-          confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-          speak("Mission accomplished! Great coding.");
-          
-          if (user && firestore && activeLesson) {
-              try {
-                  await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
-                      userId: user.uid, completed: true, timestamp: serverTimestamp(),
-                  }, { merge: true });
-              } catch (dbError) {
-                  console.error("Database save failed:", dbError);
-                  toast({ title: "Progress not saved", description: "Check your internet or database permissions." });
-              }
-          }
-        }
-  
-        const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
-        if (hasPlot) {
-          pyodide.current.runPython(`
-              import io, base64; import matplotlib.pyplot as plt;
-              buf = io.BytesIO(); plt.savefig(buf, format='png'); buf.seek(0);
-              img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8');
-              from js import document;
-              if document.getElementById('plot-output'): document.getElementById('plot-output').src = img_str;
-          `);
-        }
-  
-      } catch (pythonErr: any) {
-        setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
-      }
-      setIsRunning(false);
-    };
-    
-    const askTutor = async () => {
-      if (!aiQuestion.trim() || !activeLesson) return;
-      setIsAiLoading(true);
-      try {
-        const res = await getPythonTutorHelp({
-          phase: activeLesson.phase || "Fundamentals", lesson: activeLesson.title,
-          task: activeLesson.task, userCode: code, question: aiQuestion
-        });
-        if (res.success) { setTutorResponse(res.data); speak(res.data.explanation); }
-      } finally { setIsAiLoading(false); setAiQuestion(""); }
-    };
+export default function PythonAcademy() {
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
 
-    const groupedMissions = useMemo(() => {
-        const groups: Record<string, Mission[]> = {};
-        allMissions.forEach(m => {
-            const sectionKey = `${m.phase} - ${m.mainTopicTitle}`;
-            if (!groups[sectionKey]) groups[sectionKey] = [];
-            groups[sectionKey].push(m);
-        });
-        return groups;
-    }, [allMissions]);
-
-    const progressPercentage = Math.round((completedMissions.length / allMissions.length) * 100) || 0;
+  // --- STATE ---
+  const [allMissions, setAllMissions] = useState<Mission[]>([]);
+  const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
+  const [completedMissions, setCompletedMissions] = useState<string[]>([]);
+  const [code, setCode] = useState('');
+  const [output, setOutput] = useState<string[]>([]);
+  const [isLoadingPy, setIsLoadingPy] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPassed, setIsPassed] = useState(false);
+  const pyodide = useRef<any>(null);
   
-    if (isLoadingPy) {
-        return (
-            <div className="flex h-screen w-full items-center justify-center bg-slate-900 text-slate-300">
-                <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="ml-4">Initializing Python Environment...</p>
-            </div>
-        );
+  // AI Tutor State
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [tutorResponse, setTutorResponse] = useState<any>(null);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(true);
+
+  // --- PYODIDE INITIALIZATION ---
+  useEffect(() => {
+    async function initPyodide() {
+      if (!pyodide.current && (window as any).loadPyodide) {
+        // @ts-ignore
+        pyodide.current = await window.loadPyodide();
+        
+        // PRE-LOAD PROFESSIONAL PACKAGES
+        await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
+        
+        setIsLoadingPy(false);
+      }
     }
+    initPyodide();
+  }, []);
 
-    return (
-      <div className="flex flex-col h-[calc(100vh-2rem)] gap-4 p-4">
-        {/* TOP BAR */}
-        <div className="flex items-center justify-between bg-white p-3 rounded-lg border shadow-sm">
-          <div className="flex items-center gap-3">
-              <div className="bg-yellow-100 p-2 rounded-full"><Trophy className="h-5 w-5 text-yellow-600" /></div>
-              <div>
-                  <div className="text-xs text-slate-500 font-bold uppercase">Student Level</div>
-                  <div className="text-sm font-bold text-slate-800">
-                      {completedMissions.length < 5 ? "Novice Coder" : "Python Apprentice"}
-                  </div>
-              </div>
-          </div>
-          <div className="flex-1 mx-8">
-              <div className="flex justify-between text-xs mb-1"><span>Progress</span><span className="font-bold">{progressPercentage}%</span></div>
-              <div className="w-full bg-slate-100 rounded-full h-2.5"><div className="bg-green-600 h-2.5 rounded-full" style={{ width: `${progressPercentage}%` }}></div></div>
-          </div>
-          <Button variant="outline" size="sm" onClick={() => setIsReferenceOpen(true)}><Info className="h-4 w-4 mr-2 text-blue-600"/> Cheat Sheet</Button>
-        </div>
-  
-        <div className="flex flex-1 gap-4 overflow-hidden">
-          {/* SIDEBAR */}
-          <Card className="w-1/4 flex flex-col h-full bg-slate-50 border-r-0 rounded-r-none">
-              <div className="p-4 border-b bg-white"><h2 className="font-bold text-xl flex items-center gap-2 text-indigo-700"><Code2 className="h-6 w-6"/> Logic Lab</h2></div>
-              <ScrollArea className="flex-1 p-4">
-                {Object.entries(groupedMissions).map(([section, missions]) => (
-                    <div key={section} className="mb-4">
-                        <h3 className="text-xs font-bold uppercase text-slate-500 mb-2">{section}</h3>
-                        <div className="space-y-1">
-                            {missions.map(m => {
-                                const isCompleted = completedMissions.includes(m.id);
-                                const isActive = m.id === activeLesson.id;
-                                return (
-                                    <button key={m.id} onClick={() => setCurrentMissionId(m.id)}
-                                        className={`w-full text-left p-2 rounded text-sm flex items-center justify-between transition-colors ${isActive ? 'bg-indigo-100 text-indigo-800 font-medium' : 'hover:bg-slate-200'}`}>
-                                        <span className="flex items-center gap-2">
-                                            <span>{m.title}</span>
-                                        </span>
-                                        {isCompleted && <CheckCircle2 className="h-4 w-4 text-green-600"/>}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ))}
-            </ScrollArea>
-          </Card>
-  
-          {/* WORKSPACE */}
-          <div className="flex-1 flex flex-col gap-4 h-full overflow-hidden">
-              <Card className="shrink-0 bg-white border-l-4 border-l-indigo-500">
-                  <CardHeader className="py-4">
-                      <div className="flex justify-between items-start">
-                          <div>
-                              <CardTitle className="text-lg">{activeLesson.title}</CardTitle>
-                              <p className="text-sm text-slate-600 mt-1">Task: <span className="font-bold text-indigo-700">{activeLesson.task}</span></p>
-                          </div>
-                      </div>
-                  </CardHeader>
-              </Card>
-              <main className="lg:col-span-6 flex flex-col gap-4">
-                <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[600px]">
-                  <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
-                    <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">● System Online</Badge>
-                    <Button onClick={runAndValidate} disabled={isRunning} className="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black rounded-xl px-8 h-10 transition-all active:scale-95">
-                      {isRunning ? <Loader2 className="animate-spin" /> : <><Play className="mr-2 h-4 w-4 fill-current" /> Execute Code</>}
-                    </Button>
-                  </div>
+  // --- LOAD & FLATTEN MISSIONS ---
+  useEffect(() => {
+    if (!firestore) return;
+    const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const dbMissions: any[] = [];
+        snapshot.forEach((doc) => dbMissions.push(doc.data()));
+        
+        const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
+            phase.mainTopics.flatMap(mainTopic => 
+                mainTopic.lessons.map(lesson => ({
+                    ...lesson,
+                    phase: phase.title,
+                    mainTopicTitle: mainTopic.title
+                }))
+            )
+        );
+        
+        // Combine static and DB missions, ensuring unique IDs
+        const combined = [...flattenedSyllabus, ...dbMissions];
+        const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
+
+        setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
+        setIsDataLoading(false); // Data is ready
+    });
+    return () => unsubscribe();
+  }, [firestore]);
+
+
+  const activeLesson = useMemo(() => {
+    if (allMissions.length === 0) return null;
+    return allMissions.find(m => m.id === currentMissionId) || allMissions[0];
+  }, [allMissions, currentMissionId]);
+
+  // Reset code when mission changes
+  useEffect(() => {
+    if (activeLesson) {
+        setCode(activeLesson.startingCode || '');
+    }
+    setIsPassed(false);
+    setOutput([]);
+    setTutorResponse(null);
+  }, [activeLesson]);
+
+  const runAndValidate = async () => {
+    if (!pyodide.current) return;
+    setIsRunning(true);
+    setOutput([]);
+    setIsPassed(false);
+
+    pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
+
+    // --- PART A: RUN PYTHON ---
+    try {
+      if (code.includes("import numpy")) await pyodide.current.loadPackage("numpy");
+      if (code.includes("import pandas")) await pyodide.current.loadPackage("pandas");
+
+      await pyodide.current.runPythonAsync(code);
       
-                  <div className="flex-1 relative">
-                    <Editor
-                      height="100%"
-                      defaultLanguage="python"
-                      theme="vs-dark"
-                      value={code}
-                      onChange={(v) => setCode(v || "")}
-                      options={{ fontSize: 16, minimap: { enabled: false }, scrollBeyondLastLine: false, automaticLayout: true, padding: { top: 20 } }}
-                    />
-                    {isPassed && (
-                        <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
-                            <div className="bg-slate-900 border-2 border-emerald-500 p-6 rounded-[32px] shadow-2xl text-center">
-                                <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto mb-2" />
-                                <h3 className="text-xl font-black text-white">Mission Passed!</h3>
-                                <p className="text-xs text-slate-400 mb-4">+50 Python XP Earned</p>
-                                <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-xl">Continue Exploring</Button>
-                            </div>
-                        </div>
-                    )}
-                  </div>
+      let success = true; 
+      if (activeLesson?.id === "p1-2-2") {
+        success = pyodide.current.runPython("globals().get('year') == 2025");
+      } else if (activeLesson?.id === "p1-2-1") {
+        success = output.join("").includes("Hello World");
+      }
       
-                  <div className="h-40 bg-black border-t border-slate-800">
-                    <Tabs defaultValue="console" className="h-full flex flex-col">
-                      <TabsList className="bg-slate-900 w-fit mx-6 mt-4 rounded-lg">
-                        <TabsTrigger value="console" className="text-[10px] uppercase font-bold"><Terminal className="w-3 h-3 mr-2"/> Console</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
-                          {output.map((line, i) => <div key={i} className="text-emerald-400/80 mb-1">{`>>> ${line}`}</div>)}
-                          {output.length === 0 && <p className="text-slate-700 italic">Awaiting execution...</p>}
-                      </TabsContent>
-                    </Tabs>
-                  </div>
-                </Card>
-              </main>
-          </div>
-        </div>
+      if (success) {
+        setIsPassed(true);
+        confetti({ particleCount: 100 });
+
+        if (user && firestore && activeLesson) {
+            try {
+                await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
+                    userId: user.uid, 
+                    completed: true, 
+                    timestamp: serverTimestamp(),
+                }, { merge: true });
+            } catch (dbError) {
+                console.error("Database save failed:", dbError);
+                toast({ title: "Progress not saved", description: "Check your internet or database permissions." });
+            }
+        }
+      }
+
+      const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
+      if (hasPlot) {
+        pyodide.current.runPython(`
+            import io, base64
+            import matplotlib.pyplot as plt
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
+            from js import document
+            if document.getElementById('plot-output'):
+                document.getElementById('plot-output').src = img_str
+        `);
+      }
+
+    } catch (pythonErr: any) {
+      setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
+    }
+    setIsRunning(false);
+  };
   
-        {/* TUTOR MODAL */}
+  const askTutor = async () => {
+    if (!aiQuestion.trim() || !activeLesson) return;
+    setIsAiLoading(true);
+    try {
+      const res = await getPythonTutorHelp({
+        phase: activeLesson.phase || "Fundamentals",
+        lesson: activeLesson.title,
+        task: activeLesson.task,
+        userCode: code,
+        question: aiQuestion
+      });
+      if (res.success) {
+        setTutorResponse(res.data);
+      }
+    } finally {
+      setIsAiLoading(false);
+      setAiQuestion("");
+    }
+  };
+
+  if (isDataLoading || isLoadingPy || isUserLoading || !activeLesson) {
+      return (
+          <div className="flex h-screen w-screen items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p className="ml-4">Loading Curriculum...</p>
+          </div>
+      );
+  }
+  
+  return (
+    <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
+      <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
         <aside className="lg:col-span-3 space-y-6">
+          <div className="flex items-center gap-3 px-2">
+            <div className="bg-yellow-500 p-2 rounded-xl shadow-lg shadow-yellow-500/20"><Code2 className="text-slate-900" /></div>
+            <h2 className="text-xl font-black text-white">Python Pro Academy</h2>
+          </div>
+          
+          <ScrollArea className="h-[75vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
+            <div className="p-2 space-y-2">
+              {PYTHON_ACADEMY_CURRICULUM.map((phase) => (
+                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson.phase === phase.title ? phase.phase : ''}>
+                  <AccordionItem value={phase.phase} className="border-none">
+                    <AccordionTrigger className="hover:no-underline p-3 bg-slate-800/50 rounded-2xl mb-1 group">
+                      <span className="font-black text-slate-300 text-xs uppercase tracking-tight">{phase.title}</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-1 pl-4 space-y-1">
+                      {phase.mainTopics.map((mainTopic: any) => (
+                        <Accordion key={mainTopic.title} type="single" collapsible>
+                          <AccordionItem value={mainTopic.title} className="border-none">
+                            <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-emerald-400">
+                                {mainTopic.title}
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-1">
+                                {mainTopic.lessons.map((lesson: any) => (
+                                    <button
+                                        key={lesson.id}
+                                        onClick={() => setCurrentMissionId(lesson.id)}
+                                        className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeLesson?.id === lesson.id ? 'bg-yellow-500 text-slate-950 shadow-md' : 'hover:bg-slate-800 text-slate-400'}`}
+                                    >
+                                        {lesson.title}
+                                    </button>
+                                ))}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ))}
+            </div>
+          </ScrollArea>
+        </aside>
+
+        <main className="lg:col-span-6 flex flex-col gap-4">
+          <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[800px]">
+            <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
+              <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">● System Online</Badge>
+              <Button onClick={runAndValidate} disabled={isLoadingPy || isRunning} className="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black rounded-xl px-8 h-10 transition-all active:scale-95">
+                {isRunning ? <Loader2 className="animate-spin" /> : <><Play className="mr-2 h-4 w-4 fill-current" /> Execute Code</>}
+              </Button>
+            </div>
+
+            <div className="flex-1 relative">
+              <Editor
+                height="100%"
+                defaultLanguage="python"
+                theme="vs-dark"
+                value={code}
+                onChange={(v) => setCode(v || "")}
+                options={{ fontSize: 16, minimap: { enabled: false }, padding: { top: 20 }, automaticLayout: true }}
+              />
+              <div className="absolute bottom-6 left-6 right-6">
+                 <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
+                    <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="text-indigo-400 w-4 h-4" /></div>
+                    <p className="text-sm font-medium text-slate-200">{activeLesson.task}</p>
+                 </div>
+              </div>
+              {isPassed && (
+                <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
+                    <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
+                        <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
+                        <h3 className="text-3xl font-black text-white">Mission Complete!</h3>
+                        <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">Next Lesson</Button>
+                    </div>
+                </div>
+              )}
+            </div>
+
+            <div className="h-64 bg-black border-t border-slate-800">
+              <Tabs defaultValue="console" className="h-full flex flex-col">
+                <TabsList className="bg-slate-900 w-fit mx-6 mt-4 rounded-lg">
+                  <TabsTrigger value="console" className="text-[10px] uppercase font-bold"><Terminal className="w-3 h-3 mr-2"/> Console</TabsTrigger>
+                  <TabsTrigger value="visuals" className="text-[10px] uppercase font-bold"><BarChart3 className="w-3 h-3 mr-2"/> Visual Lab</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
+                    {output.map((line, i) => <div key={i} className="text-emerald-400/80 mb-1">{`>>> ${line}`}</div>)}
+                    {output.length === 0 && <p className="text-slate-700 italic">Awaiting execution...</p>}
+                </TabsContent>
+
+                <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
+                    <img id="plot-output" className="max-h-full rounded-lg" alt="Matplotlib plots will appear here" src="https://placehold.co/400x200/020617/FFFFFF/png?text=Plot+Output" />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </Card>
+        </main>
+        
+        <aside className="lg:col-span-3 space-y-6">
+          {/* 1. NEURAL TUTOR CARD */}
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
@@ -509,12 +534,12 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
               {tutorResponse ? (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                   <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                    <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
-                    <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
+                     <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
+                     <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
                   </div>
                   <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
-                    <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
-                    <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
+                     <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
+                     <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
                   </div>
                   <Button 
                     variant="ghost" 
@@ -548,6 +573,7 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
             </CardContent>
           </Card>
 
+          {/* 2. PRO TIPS (Moved below) */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
@@ -563,6 +589,7 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
             </ul>
           </div>
 
+          {/* 3. LEARNING PORTALS */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
@@ -605,62 +632,8 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
               </a>
             </CardContent>
           </Card>
-
         </aside>
       </div>
-    );
-  }
-
-export default function PythonAcademyPage() {
-    const firestore = useFirestore();
-    const { isUserLoading } = useUser();
-    const [allMissions, setAllMissions] = useState<Mission[]>([]);
-    const [isDataLoading, setIsDataLoading] = useState(true);
-
-    useEffect(() => {
-        if (!firestore) return;
-        
-        const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
-            phase.mainTopics.flatMap(mainTopic => 
-                mainTopic.lessons.map(lesson => ({
-                    ...lesson,
-                    phase: phase.title,
-                    mainTopicTitle: mainTopic.title
-                }))
-            )
-        );
-
-        const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const dbMissions: any[] = [];
-            snapshot.forEach((doc) => dbMissions.push(doc.data()));
-            
-            const combined = [...flattenedSyllabus, ...dbMissions];
-            const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
-
-            setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
-            setIsDataLoading(false);
-        }, (error) => {
-            console.error("Error fetching curriculum:", error);
-            // Fallback to static data if DB fails
-            setAllMissions(flattenedSyllabus);
-            setIsDataLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [firestore]);
-
-
-    if (isUserLoading || isDataLoading) {
-        return (
-            <div className="flex h-screen w-screen items-center justify-center bg-slate-900 text-slate-300">
-                <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="ml-4">Loading Python Academy...</p>
-            </div>
-        );
-    }
-    
-    return <AcademyInterface allMissions={allMissions} />;
+    </div>
+  );
 }
-
-    
