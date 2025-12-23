@@ -233,7 +233,6 @@ interface Mission {
   startingCode: string;
   phase: string;
   mainTopicTitle: string;
-  expectedOutput?: string;
 }
 
 // --- REFERENCE GUIDE DATA ---
@@ -247,6 +246,7 @@ const REFERENCE_DATA = [
 ];
 
 function ContributionHeatmap({ progressData }: { progressData: any[] }) {
+    // Generates 28 days (4 weeks) of activity
     const days = Array.from({ length: 28 }); 
     
     return (
@@ -258,8 +258,10 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
                     <div className="w-2 h-2 rounded-sm bg-emerald-500" />
                 </div>
             </div>
+            {/* GitHub style grid */}
             <div className="grid grid-flow-col grid-rows-7 gap-1 w-fit">
                 {days.map((_, i) => {
+                    // Logic to highlight squares based on progress (simulated here)
                     const isActive = i > 15 && i < 22 || i === 27; 
                     return (
                         <div 
@@ -277,7 +279,6 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
         </div>
     );
 }
-
 
 export default function PythonAcademy() {
   const { user, isUserLoading } = useUser();
@@ -363,73 +364,75 @@ export default function PythonAcademy() {
   }, [activeLesson]);
 
   const runAndValidate = async () => {
-      if (!pyodide.current) return;
-      setIsRunning(true);
-      setOutput([]);
-      setIsPassed(false);
+    if (!pyodide.current) return;
+    setIsRunning(true);
+    setOutput([]);
+    setIsPassed(false);
 
-      // Set output handling
-      pyodide.current.setStdout({ 
-          batched: (str: string) => setOutput(prev => [...prev, str]) 
-      });
+    // Set output handling
+    pyodide.current.setStdout({ 
+        batched: (str: string) => setOutput(prev => [...prev, str]) 
+    });
 
-      try {
-          // 1. Reset Matplotlib to prevent old charts from showing
-          pyodide.current.runPython(`
-              import matplotlib.pyplot as plt
-              plt.clf()
-              plt.close('all')
-          `);
+    try {
+        // 1. Reset Matplotlib to prevent old charts from showing
+        pyodide.current.runPython(`
+            import matplotlib.pyplot as plt
+            plt.clf()
+            plt.close('all')
+        `);
 
-          // 2. Load packages dynamically
-          if (code.includes("import numpy")) {
-              await pyodide.current.loadPackage("numpy");
-          }
-          if (code.includes("import pandas")) {
-              await pyodide.current.loadPackage("pandas");
-          }
-          
-          // 3. Execute Student Code
-          await pyodide.current.runPythonAsync(code);
+        // 2. Load packages dynamically
+        if (code.includes("import numpy")) {
+            await pyodide.current.loadPackage("numpy");
+        }
+        if (code.includes("import pandas")) {
+            await pyodide.current.loadPackage("pandas");
+        }
+        
+        // 3. Execute Student Code
+        await pyodide.current.runPythonAsync(code);
 
-          // 4. AUTO-VALIDATION: Check if goal was met
-          let validationCheck = false;
-          if (activeLesson) {
-              if (activeLesson.id === "p1-2-2") { // Variables lesson
-                  validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
-              } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
-                  const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
-                  const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
-                  if (normExpected) {
-                    validationCheck = normOutput.includes(normExpected);
-                  }
-              }
-          }
+        // 4. AUTO-VALIDATION: Check if goal was met
+        let validationCheck = false;
+        if (activeLesson) {
+            if (activeLesson.id === "p1-2-2") { // Variables lesson
+                validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
+            } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
+                const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
+                const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
+                if (normExpected) {
+                  validationCheck = normOutput.includes(normExpected);
+                }
+            }
+        }
 
-          if (validationCheck) {
-              setIsPassed(true);
-              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-          }
+        if (validationCheck) {
+            setIsPassed(true);
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        }
 
-          // 5. VISUAL LAB: Capture Matplotlib output
-          const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
-          if (hasPlotting) {
-              pyodide.current.runPython(`
-                  import io, base64
-                  buf = io.BytesIO()
-                  plt.savefig(buf, format='png', bbox_inches='tight')
-                  buf.seek(0)
-                  img_base64 = base64.b64encode(buf.read()).decode('utf-8')
-                  from js import document
-                  // Push image data to our Visual Lab tab
-                  document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
-              `);
-          }
+        // 5. VISUAL LAB: Capture Matplotlib output
+        const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
+        if (hasPlotting) {
+            pyodide.current.runPython(`
+                import io, base64
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', bbox_inches='tight')
+                buf.seek(0)
+                img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+                from js import document
+                // Push image data to our Visual Lab tab
+                if(document.getElementById('plot-output')) {
+                    document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
+                }
+            `);
+        }
 
-      } catch (err: any) {
-          setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
-      }
-      setIsRunning(false);
+    } catch (err: any) {
+        setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
+    }
+    setIsRunning(false);
   };
   
   const askTutor = async () => {
@@ -453,13 +456,21 @@ export default function PythonAcademy() {
     }
   };
 
-  if (isDataLoading || isLoadingPy || isUserLoading || !activeLesson) {
+  if (isDataLoading || isLoadingPy || isUserLoading) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <p className="ml-4">Loading Curriculum...</p>
+              <p className="ml-4">Loading Python Academy...</p>
           </div>
       );
+  }
+  
+  if(!activeLesson) {
+    return (
+        <div className="flex h-screen w-screen items-center justify-center">
+            <p className="ml-4">Could not load active lesson.</p>
+        </div>
+    );
   }
   
   return (
@@ -543,7 +554,7 @@ export default function PythonAcademy() {
                         <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(16,185,129,0.2)] text-center space-y-4">
                             <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
                             <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
-                            <p className="text-slate-400">Your logic is perfect. +50 XP earned.</p>
+                            <p className="text-slate-400">Your logic is perfect. +50 Python XP Earned.</p>
                             <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
                                 Next Lesson
                             </Button>
@@ -627,26 +638,14 @@ export default function PythonAcademy() {
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pro Mindsets</h3>
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
             </div>
             <ul className="space-y-3">
-              <li className="flex gap-3">
-                <div className="h-5 w-5 rounded-full bg-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-3 w-3 text-emerald-400"/>
-                </div>
-                <div>
-                    <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
-                    <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
-                </div>
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Consistency is key.
               </li>
-              <li className="flex gap-3">
-                 <div className="h-5 w-5 rounded-full bg-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <CheckCircle2 className="h-3 w-3 text-emerald-400"/>
-                </div>
-                <div>
-                    <p className="text-xs font-bold text-white leading-none">Build Projects</p>
-                    <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
-                </div>
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Build projects to apply logic.
               </li>
             </ul>
           </div>
@@ -693,9 +692,10 @@ export default function PythonAcademy() {
               </a>
             </CardContent>
           </Card>
-
         </aside>
       </div>
     </div>
   );
 }
+
+    
