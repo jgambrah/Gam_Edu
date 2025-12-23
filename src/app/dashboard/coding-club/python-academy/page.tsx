@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot, addDoc, increment } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
@@ -287,6 +288,7 @@ function PythonAcademy() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const [playSuccess] = useSound('/sounds/success.mp3');
 
   // --- STATE ---
   const [allMissions, setAllMissions] = useState<Mission[]>([]);
@@ -298,7 +300,6 @@ function PythonAcademy() {
   const [isRunning, setIsRunning] = useState(false);
   const [isPassed, setIsPassed] = useState(false);
   const pyodide = useRef<any>(null);
-  const [playSuccess] = useSound('/sounds/success.mp3'); 
   
   // AI Tutor State
   const [aiQuestion, setAiQuestion] = useState("");
@@ -307,13 +308,15 @@ function PythonAcademy() {
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any[]>([]);
-
+  
   const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.95; 
     window.speechSynthesis.speak(u);
   };
-  
+
   // --- PYODIDE INITIALIZATION ---
   useEffect(() => {
     async function initPyodide() {
@@ -374,8 +377,7 @@ function PythonAcademy() {
     setTutorResponse(null);
   }, [activeLesson]);
 
-  // --- SECTION: RUN & VALIDATE ENGINE ---
-  const runAndValidate = async () => {
+    const runAndValidate = async () => {
     if (!pyodide.current || !activeLesson) return;
     setIsRunning(true);
     setOutput([]);
@@ -421,7 +423,8 @@ function PythonAcademy() {
         if (hasPlotting) {
             pyodide.current.runPython(`
                 import io, base64
-                buf = io.BytesIO(); plt.savefig(buf, format='png', bbox_inches='tight')
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', bbox_inches='tight')
                 buf.seek(0)
                 img_base64 = base64.b64encode(buf.read()).decode('utf-8')
                 from js import document
@@ -435,7 +438,6 @@ function PythonAcademy() {
     }
     setIsRunning(false);
 };
-
   
   const askTutor = async () => {
     if (!aiQuestion.trim() || !activeLesson) return;
@@ -525,30 +527,31 @@ function PythonAcademy() {
               </Button>
             </div>
 
-            <div className="flex-1 border-b border-slate-800 relative">
+            <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e]">
                 <Editor
                     height="100%"
                     defaultLanguage="python"
                     theme="vs-dark"
                     value={code}
-                    onChange={(val) => setCode(val || "")}
+                    onChange={(v) => setCode(v || "")}
                     options={{
                         fontSize: 16,
                         minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
                         padding: { top: 20 },
+                        automaticLayout: true,
+                        scrollBeyondLastLine: false,
+                        lineNumbers: 'on',
                         fontFamily: 'JetBrains Mono, monospace'
                     }}
                 />
-                
+
                 {/* MISSION SUCCESS OVERLAY */}
                 {isPassed && (
                     <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
                         <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(16,185,129,0.2)] text-center space-y-4">
                             <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
                             <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
-                            <p className="text-slate-400">Your logic is perfect. +50 Python XP Earned.</p>
+                            <p className="text-slate-400">Your logic is perfect. +50 XP Earned.</p>
                             <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
                                 Next Lesson
                             </Button>
@@ -556,8 +559,8 @@ function PythonAcademy() {
                     </div>
                 )}
             </div>
-
-            <div className="h-64 bg-black border-t border-slate-800">
+            
+            <div className="h-64 bg-black">
                 <Tabs defaultValue="console" className="h-full flex flex-col">
                     <div className="px-6 py-2 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                         <TabsList className="bg-slate-950 p-1">
@@ -727,3 +730,5 @@ function Page() {
 }
 
 export default Page;
+
+    
