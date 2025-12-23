@@ -8,7 +8,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } f
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, FolderOpen, Play, PenTool, Star
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, FolderOpen, Play, PenTool, Star, Type
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -112,16 +112,17 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
 
     const isJunior = isJuniorLevel(selectedGrade);
+    const theme = isJunior ? juniorTheme : null;
 
     const storiesQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: library, isLoading, forceRefetch } = useCollection<any>(storiesQuery);
+    const { data: library, forceRefetch } = useCollection<any>(storiesQuery);
 
     // Folder Logic for English
     const folderStructure = useMemo(() => {
         if (!library) return {};
-        const filtered = library.filter(s => s.gradeLevel === selectedGrade);
+        const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, s) => {
             const category = s.category || 'General Reading'; // Folder 1
             const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
@@ -157,7 +158,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
 
                 <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
                     <div className="p-2 space-y-2">
-                        {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
+                        {Object.keys(folderStructure).length === 0 ? (
                             <div className="text-center py-20 text-slate-300">
                                 <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
                                 <p className="text-xs font-bold">No passages in this category yet.</p>
@@ -360,7 +361,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 {problem ? (
                     <Card className={isJunior ? theme?.card : "rounded-[50px] border-none shadow-2xl overflow-hidden bg-white"}>
                         <div className={isJunior ? theme?.header : "bg-emerald-600 p-10 text-white"}>
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-start">
                                 <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black"}>
                                     {isJunior && "🌈 "} {problem.title}
                                 </CardTitle>
@@ -375,7 +376,6 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                 <div className={isJunior ? "text-7xl text-blue-600 flex justify-center" : "text-5xl text-emerald-400"}>
                                     <SafeMath formula={problem.latexFormula} />
                                 </div>
-                                {/* NEW: VISUAL COUNTERS FOR JUNIORS */}
                                 {isJunior && !isNaN(parseInt(problem.answer)) && (
                                     <div className="mt-8 border-t border-sky-200 pt-6">
                                         <p className="text-center font-black text-sky-500 uppercase text-xs tracking-widest mb-2">Can you count them?</p>
@@ -384,7 +384,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                 )}
                             </div>
 
-                            <div className="text-center space-y-8">
+                            <div className="max-w-2xl mx-auto text-center space-y-8">
                                 <p className={isJunior ? "text-3xl font-black text-blue-800" : "text-2xl font-medium text-slate-600 italic"}>
                                     {isJunior ? "✨ " + problem.instruction : problem.instruction}
                                 </p>
@@ -434,6 +434,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
     const isJunior = isJuniorLevel(selectedGrade);
+    const theme = isJunior ? juniorTheme : null;
 
     const labQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
@@ -442,7 +443,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
 
     const folderStructure = useMemo(() => {
         if (!dbLabs) return {};
-        const filtered = dbLabs.filter(l => l.gradeLevel === selectedGrade);
+        const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, l) => {
             const category = l.category || 'Science Journal';
             const subTopic = l.subTopic || 'Research Mission';
@@ -480,7 +481,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                     <AccordionItem value={cat} className="border-none">
                                         <AccordionTrigger className="hover:no-underline p-3 bg-cyan-50 rounded-2xl mb-1">
                                             <div className="flex items-center gap-2">
-                                                <Microscope className="w-3 h-3 text-cyan-500" />
+                                                <div className="text-lg">{cat === 'Life Science' ? '🧬' : cat === 'Physical Science' ? '🔬' : '🌍'}</div>
                                                 <span className="font-black text-cyan-900 text-xs uppercase">{cat}</span>
                                             </div>
                                         </AccordionTrigger>
@@ -511,27 +512,27 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                 {lab ? (
                     <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? juniorTheme.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
                         <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
-                            <div className="bg-slate-900 text-white p-10 space-y-8">
+                            <div className={isJunior ? `bg-orange-500 p-10 text-white space-y-8` : `bg-slate-900 text-white p-10 space-y-8`}>
                                 <div className="flex flex-col gap-6">
                                     {['hypothesis', 'experiment', 'conclusion'].map((s: any, i) => (
                                         <div key={s} className={`flex items-center gap-4 transition-opacity ${stage === s ? 'opacity-100' : 'opacity-30'}`}>
                                             <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${i === 0 ? 'bg-blue-500' : i === 1 ? 'bg-orange-500' : 'bg-green-500'}`}>{i+1}</div>
-                                            <span className="font-black capitalize">{s}</span>
+                                            <span className="font-black capitalize">{isJunior ? (s === 'hypothesis' ? 'The Big Question' : s === 'experiment' ? 'Let\'s Explore!' : 'What Happened?') : s}</span>
                                         </div>
                                     ))}
                                 </div>
                                 <hr className="opacity-10" />
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Scientific Background</p>
-                                    <p className="text-sm opacity-60 leading-relaxed italic">{lab.background}</p>
+                                    <p className={`text-[10px] font-black uppercase tracking-widest ${isJunior ? 'text-orange-200' : 'text-blue-400'}`}>Scientific Background</p>
+                                    <p className={`text-sm leading-relaxed italic ${isJunior ? 'opacity-80' : 'opacity-60'}`}>{lab.background}</p>
                                 </div>
                             </div>
                             <div className="md:col-span-2 p-12 flex flex-col justify-center">
                                 {stage === 'hypothesis' && (
                                     <div className="space-y-8 animate-in slide-in-from-right-4">
-                                        <h2 className={`font-black leading-tight ${isJunior ? 'text-4xl' : 'text-3xl'} ${isJunior ? 'text-blue-900' : 'text-slate-800'}`}>{isJunior && '🤔'} {lab.question}</h2>
+                                        <h2 className={`font-black leading-tight ${isJunior ? 'text-4xl text-blue-900' : 'text-3xl text-slate-800'}`}>{isJunior ? '🤔 ' + lab.question : lab.question}</h2>
                                         <div className={`p-8 rounded-[32px] border-2 space-y-4 ${isJunior ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-100'}`}>
-                                            <p className={`font-bold ${isJunior ? 'text-xl' : ''} ${isJunior ? 'text-yellow-900' : 'text-blue-800'}`}>{lab.hypothesisPrompt}</p>
+                                            <p className={`font-bold ${isJunior ? 'text-xl text-yellow-900' : 'text-blue-800'}`}>{lab.hypothesisPrompt}</p>
                                             <div className="grid gap-3">
                                                 {lab.hypothesisOptions.map((opt: string) => (
                                                     <Button key={opt} variant="outline" className={`bg-white border-2 h-auto py-4 font-bold rounded-2xl ${isJunior ? 'text-lg' : ''}`} onClick={() => setStage('experiment')}>{opt}</Button>
@@ -542,7 +543,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                 )}
                                 {stage === 'experiment' && (
                                     <div className="text-center space-y-8 animate-in zoom-in">
-                                        <h2 className={`font-black ${isJunior ? 'text-4xl' : 'text-3xl'} ${isJunior ? 'text-blue-800' : 'text-slate-800'}`}>Mission: Data Collection</h2>
+                                        <h2 className={`font-black ${isJunior ? 'text-4xl text-blue-800' : 'text-3xl text-slate-800'}`}>Mission: Data Collection</h2>
                                         <div className="text-[180px] py-10 animate-pulse">{lab.icon}</div>
                                         <Button onClick={() => setStage('conclusion')} className={`h-16 px-12 text-xl font-black rounded-full shadow-xl ${isJunior ? juniorTheme.button : 'bg-orange-500 hover:bg-orange-600'}`}>Observe Outcome</Button>
                                     </div>
@@ -583,8 +584,9 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     // AI States
     const [topic, setTopic] = useState("");
     const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
+    const [instructions, setInstructions] = useState('');
 
-    // Manual States
+    // Manual States (Shared across subjects where applicable)
     const [manualData, setManualData] = useState<any>({
         title: '',
         category: '', // Broad Category (e.g. Algebra)
@@ -608,7 +610,16 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const handleAiGenerate = async () => {
         if (!topic.trim()) return;
         setLoading(true);
-        const context = { topic, gradeLevel: targetGrade as any };
+        
+        const juniorPrompt = isJuniorLevel(targetGrade) 
+            ? ". This is for a young child. Use very simple language, add many emojis in the text, and ensure the answer is a simple number or word that can be counted."
+            : "";
+
+        const context = { 
+            topic, 
+            gradeLevel: targetGrade as any,
+            instructions: instructions + juniorPrompt 
+        };
         let result;
 
         if (subject === 'math') result = await generateSeniorMath(context);
@@ -629,8 +640,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     };
 
     const handleManualSave = async () => {
-        if (!manualData.title || !manualData.category) {
-            toast({ title: "Filing Required", description: "You must provide a Category to place this in the correct folder.", variant: "destructive" });
+        if (!manualData.title || !manualData.category || !manualData.subTopic) {
+            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
             return;
         }
         setLoading(true);
@@ -754,10 +765,10 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                             )}
 
                             {subject === 'science' && (
-                                <div className="space-y-4">
+                                <div className="grid md:grid-cols-2 gap-4">
                                     <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
                                     <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
-                                     <div className="grid grid-cols-3 gap-2">
+                                     <div className="md:col-span-2 grid grid-cols-3 gap-2">
                                         {manualData.hypothesisOptions.map((opt: string, i: number) => (
                                             <Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {
                                                 const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});
@@ -765,8 +776,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                                         ))}
                                     </div>
                                     <Input placeholder="Icon Emoji (e.g. 🔬)" value={manualData.icon} onChange={e => setManualData({...manualData, icon: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                                    <Textarea placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
-                                    <Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
+                                    <Input placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    <Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="md:col-span-2 bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
                                 </div>
                             )}
                         </div>
@@ -780,60 +791,3 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
         </Card>
     );
 }
-
-// --- MAIN PAGE COMPONENT ---
-export default function SeniorAcademyPage() {
-    const { role } = useRole();
-    const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
-    
-    const handleContentUpdate = () => {
-        // This is a placeholder for a potential forceRefetch call if needed.
-        // Since useCollection is live, direct re-fetching isn't always necessary.
-        console.log("Content updated, UI will refresh automatically.");
-    };
-
-    return (
-        <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-12 font-sans">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-slate-900 p-3 rounded-2xl shadow-xl"><Rocket className="h-8 w-8 text-white" /></div>
-                            <h1 className="text-6xl font-black text-slate-900 tracking-tight">Senior Academy</h1>
-                        </div>
-                        <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] ml-1">Excellence & Academic Rigor</p>
-                    </div>
-                </div>
-
-                {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
-
-                <Tabs defaultValue="math" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
-                        <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center justify-center gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
-                        <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-black flex flex-col items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
-                    </TabsList>
-                    
-                    <div className="min-h-[700px]">
-                        <TabsContent value="english" className="mt-0"><EnglishMastery canEdit={canEdit} /></TabsContent>
-                        <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
-                        <TabsContent value="science" className="mt-0"><DiscoveryLab canEdit={canEdit} /></TabsContent>
-                    </div>
-                </Tabs>
-            </div>
-             <style jsx global>{`
-              .math-container {
-                max-width: 100%;
-                overflow-x: auto;
-                overflow-y: hidden;
-              }
-              .katex-display {
-                margin: 0 !important;
-                color: inherit;
-              }
-            `}</style>
-        </div>
-    );
-}
-
-```
