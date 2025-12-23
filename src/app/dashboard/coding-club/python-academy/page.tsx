@@ -3,10 +3,10 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot, addDoc } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, PenTool
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,6 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 });
 
 
-// --- UPDATED FULL PHASE 1 SYLLABUS ---
 const PYTHON_ACADEMY_CURRICULUM = [
   {
     phase: "Phase 1",
@@ -227,31 +226,29 @@ const PYTHON_ACADEMY_CURRICULUM = [
   }
 ];
 
-
-// --- UPGRADE 4: STREAK COMPONENT ---
-function ContributionHeatmap() {
-    const days = Array.from({ length: 28 }); // Mocking 4 weeks
-    return (
-        <div className="space-y-2 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Coding Activity</p>
-            <div className="grid grid-flow-col grid-rows-7 gap-1 w-fit">
-                {days.map((_, i) => (
-                    <div 
-                        key={i} 
-                        className={`w-3 h-3 rounded-sm ${i > 20 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : i > 10 ? 'bg-emerald-800' : 'bg-slate-900'}`} 
-                    />
-                ))}
-            </div>
-            <p className="text-[9px] text-slate-600 font-bold">12 day streak! 🔥</p>
-        </div>
-    );
+interface Mission {
+  id: string;
+  title: string;
+  task: string;
+  startingCode: string;
 }
+
+// --- REFERENCE GUIDE DATA ---
+const REFERENCE_DATA = [
+  { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
+  { title: "print()", desc: "Outputs text or numbers to the console.", example: "print('Hello')" },
+  { title: "if / else", desc: "Decides which code to run based on a condition.", example: "if x > 5: print('Big')" },
+  { title: "for loop", desc: "Repeats code for each item in a sequence.", example: "for i in range(3):" },
+  { title: "while loop", desc: "Repeats code as long as a condition is true.", example: "while x < 10:" },
+  { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
+];
 
 export default function PythonAcademy() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  // --- STATE ---
   const [allMissions, setAllMissions] = useState<any[]>(PYTHON_ACADEMY_CURRICULUM);
   const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
   const [completedMissions, setCompletedMissions] = useState<string[]>([]);
@@ -266,6 +263,8 @@ export default function PythonAcademy() {
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
 
   // --- PYODIDE INITIALIZATION ---
@@ -285,15 +284,14 @@ export default function PythonAcademy() {
     initPyodide();
   }, []);
 
-  const activeLesson = useMemo(() => {
+  const activeLesson: Mission | undefined = useMemo(() => {
       for (const phase of allMissions) {
           for (const topic of phase.mainTopics) {
               const lesson = topic.lessons.find((l: any) => l.id === currentMissionId);
               if (lesson) return lesson;
           }
       }
-      // Fallback to the very first lesson if nothing is found
-      return allMissions[0]?.mainTopics[0]?.lessons[0];
+      return undefined;
   }, [allMissions, currentMissionId]);
   
   // Reset code when mission changes
@@ -314,28 +312,27 @@ export default function PythonAcademy() {
 
     pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
 
-    // --- PART A: RUN PYTHON ---
     try {
-      // Clear previous plots
-      pyodide.current.runPython(`
-        import matplotlib.pyplot as plt
-        plt.clf()
-      `);
-      
+      if (code.includes("import numpy")) {
+          await pyodide.current.loadPackage("numpy");
+      }
+      if (code.includes("import pandas")) {
+          await pyodide.current.loadPackage("pandas");
+      }
+
       await pyodide.current.runPythonAsync(code);
       
-      // Validation Logic
       let success = false;
       if (activeLesson?.id === "p1-2-2") {
         success = pyodide.current.runPython("globals().get('year') == 2025");
+      } else {
+        success = true; // Default to success if no specific validation
       }
-      // Add other validation logic here for other lessons...
       
       if (success) {
         setIsPassed(true);
         confetti({ particleCount: 100 });
 
-        // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
         if (user && firestore && activeLesson) {
             try {
                 await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
@@ -350,7 +347,6 @@ export default function PythonAcademy() {
         }
       }
 
-      // RENDER MATPLOTLIB TO CANVAS
       const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
       if (hasPlot) {
         pyodide.current.runPython(`
@@ -370,7 +366,7 @@ export default function PythonAcademy() {
     setIsRunning(false);
   };
   
-  if (!activeLesson) {
+  if (!activeLesson || isDataLoading) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -378,7 +374,7 @@ export default function PythonAcademy() {
           </div>
       );
   }
-
+  
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -388,7 +384,10 @@ export default function PythonAcademy() {
             <div className="bg-yellow-500 p-2 rounded-xl shadow-lg shadow-yellow-500/20"><Code2 className="text-slate-900" /></div>
             <h2 className="text-xl font-black text-white">Python Pro Academy</h2>
           </div>
-          <ContributionHeatmap />
+          <div className="space-y-2 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Coding Activity</p>
+            <div className="text-[9px] text-slate-600 font-bold">Heatmap coming soon...</div>
+          </div>
           <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
               {allMissions.map((phase) => (
@@ -545,10 +544,25 @@ export default function PythonAcademy() {
               )}
             </CardContent>
           </Card>
+           <Button variant="outline" size="sm" onClick={() => setIsReferenceOpen(true)} className="w-full border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <Info className="h-4 w-4 mr-2"/> Python Cheat Sheet
+          </Button>
         </aside>
       </div>
+       <Dialog open={isReferenceOpen} onOpenChange={setIsReferenceOpen}>
+          <DialogContent className="max-w-2xl bg-slate-900 border-slate-700 text-white">
+              <DialogHeader><DialogTitle className="flex items-center gap-2 text-xl"><Info className="h-5 w-5 text-blue-400"/> Python Cheat Sheet</DialogTitle></DialogHeader>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                  {REFERENCE_DATA.map((item, i) => (
+                      <div key={i} className="p-3 border border-slate-800 rounded-xl bg-slate-950">
+                          <h4 className="font-bold text-sm text-indigo-400 font-mono mb-1">{item.title}</h4>
+                          <p className="text-xs text-slate-300 mb-2">{item.desc}</p>
+                          <code className="block bg-slate-800 text-green-400 text-xs p-2 rounded font-mono">{item.example}</code>
+                      </div>
+                  ))}
+              </div>
+          </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
-    
