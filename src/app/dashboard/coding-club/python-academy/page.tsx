@@ -1,22 +1,25 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, serverTimestamp, setDoc, doc, where, limit } from 'firebase/firestore';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useUser, useFirestore } from '@/firebase';
+import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
-  Code2, Terminal, Info, Target, BarChart3, Calendar, Sparkles, Trophy, HelpCircle, Github
+  Code2, Terminal, Info, Target, BarChart3, Calendar, Sparkles, Trophy, HelpCircle, Github, BookOpen, Lock
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import dynamic from 'next/dynamic';
-import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
+import dynamic from 'next/dynamic';
+import confetti from 'canvas-confetti';
+import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -24,7 +27,6 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 });
 
 
-// --- UPGRADE 4: STREAK COMPONENT ---
 function ContributionHeatmap() {
     const days = Array.from({ length: 28 }); // Mocking 4 weeks
     return (
@@ -46,35 +48,80 @@ function ContributionHeatmap() {
 export default function PythonAcademy() {
   const { user } = useUser();
   const firestore = useFirestore();
-  const [activeLesson, setActiveLesson] = useState({ id: "p1-2-2", phase: "Phase 1", title: "Variables", task: "Create a variable named 'year' and set it to 2025.", startingCode: "year = " });
-  const [code, setCode] = useState(activeLesson.startingCode);
+  const { toast } = useToast();
+
+  // --- STATE ---
+  const [allMissions, setAllMissions] = useState<Mission[]>(CURRICULUM);
+  const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
+  const [completedMissions, setCompletedMissions] = useState<number[]>([]);
+  const [code, setCode] = useState("");
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
   const [isPassed, setIsPassed] = useState(false);
-  const [activeTab, setActiveTab] = useState('editor');
   const pyodide = useRef<any>(null);
-  const { toast } = useToast();
-  
+
+  // AI Tutor State
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  const speak = (text: string) => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      const u = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(u);
-    }
-  };
-
+  // Pyodide Initialization
   useEffect(() => {
     async function initPyodide() {
       // @ts-ignore
       pyodide.current = await window.loadPyodide();
+      await pyodide.current.loadPackage(['numpy', 'matplotlib']);
       setIsLoadingPy(false);
     }
-    if (!pyodide.current) initPyodide();
+    if (typeof window !== 'undefined' && !pyodide.current) initPyodide();
   }, []);
+
+  // --- DATA LOADING & CURRICULUM MANAGEMENT ---
+  useEffect(() => {
+    if (!firestore) return;
+    const q = query(collection(firestore, 'logic_lab_curriculum'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const dbMissions: Mission[] = [];
+        snapshot.forEach((doc) => dbMissions.push(doc.data() as Mission));
+        const merged = [...CURRICULUM, ...dbMissions].sort((a, b) => a.id - b.id);
+        setAllMissions(merged);
+    });
+    return () => unsubscribe();
+  }, [firestore]);
+
+  const activeMission = allMissions[currentMissionIndex] || allMissions[0];
+
+  useEffect(() => {
+    if (activeMission) {
+      setCode(activeMission.startingCode || '');
+      setIsPassed(false);
+      setTutorResponse(null);
+    }
+  }, [activeMission]);
+
+  // Load user progress
+  useEffect(() => {
+    if(!user || !firestore) return;
+    const fetchProgress = async () => {
+        try {
+            const ref = doc(firestore, 'student_progress', user.uid);
+            const snap = await getDoc(ref);
+            if (snap.exists() && snap.data().logicLabCompleted) {
+                setCompletedMissions(snap.data().logicLabCompleted);
+            }
+        } catch(e) { console.error("Failed to fetch progress", e); }
+    };
+    fetchProgress();
+  }, [user, firestore]);
+  
+  const groupedMissions = useMemo(() => {
+    const groups: Record<string, Mission[]> = {};
+    allMissions.forEach(m => { if(!groups[m.section]) groups[m.section] = []; groups[m.section].push(m); });
+    return groups;
+  }, [allMissions]);
+
+  // --- ACTIONS ---
 
   const runAndValidate = async () => {
     if (!pyodide.current) return;
@@ -85,43 +132,32 @@ export default function PythonAcademy() {
     pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
 
     try {
-      if (code.includes("import numpy")) {
-          await pyodide.current.loadPackage("numpy");
-      }
-      if (code.includes("import pandas")) {
-          await pyodide.current.loadPackage("pandas");
-      }
-      if (code.includes("import matplotlib")) {
-          await pyodide.current.loadPackage("matplotlib");
-      }
-      
+      pyodide.current.runPython(`import matplotlib.pyplot as plt\nplt.clf()`);
       await pyodide.current.runPythonAsync(code);
 
       let validationCheck = false;
-      if (activeLesson.id === "p1-2-2") {
-        validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
-      } else if (activeLesson.id === "p1-2-1") {
-        validationCheck = output.join("").includes("Hello World");
+      // You can add validation logic for each mission ID here
+      if (activeMission.id === 0) { // Variables lesson from logic-lab
+        validationCheck = pyodide.current.runPython("globals().get('hero') == 'SuperBot'");
+      } else if (activeMission.id === 1) { // Print lesson
+        validationCheck = output.join("").includes("Hello Python");
       }
-
+      
       if (validationCheck) {
         setIsPassed(true);
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         speak("Mission accomplished! Great coding.");
-        if (user && firestore) {
-          await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
-              userId: user.uid, completed: true, timestamp: serverTimestamp()
-          });
+        if (user && firestore && !completedMissions.includes(activeMission.id)) {
+            const newCompleted = [...completedMissions, activeMission.id];
+            setCompletedMissions(newCompleted);
+            await setDoc(doc(firestore, 'student_progress', user.uid), { logicLabCompleted: newCompleted }, { merge: true });
         }
       }
 
-      const hasPlot = code.includes("plt.show") || code.includes("plt.plot");
+      const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
       if (hasPlot) {
         pyodide.current.runPython(`
             import io, base64
-            import matplotlib.pyplot as plt
-            plt.clf()
-            ${code}
             buf = io.BytesIO()
             plt.savefig(buf, format='png')
             buf.seek(0)
@@ -134,7 +170,7 @@ export default function PythonAcademy() {
       }
 
     } catch (err: any) {
-      setOutput(prev => [...prev, `❌ Syntax Error: ${err.message}`]);
+      setOutput(prev => [...prev, `❌ Error: ${err.message}`]);
     }
     setIsRunning(false);
   };
@@ -144,8 +180,8 @@ export default function PythonAcademy() {
     setIsAiLoading(true);
     try {
       const res = await getPythonTutorHelp({
-        phase: activeLesson.phase || "Fundamentals",
-        lesson: activeLesson.title,
+        phase: activeMission.section || "Fundamentals",
+        lesson: activeMission.title,
         task: activeLesson.task,
         userCode: code,
         question: aiQuestion
@@ -164,6 +200,17 @@ export default function PythonAcademy() {
     }
   };
 
+  const speak = (text: string) => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+    }
+  };
+  
+  const progressPercentage = Math.round((completedMissions.length / allMissions.length) * 100) || 0;
+
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -171,15 +218,50 @@ export default function PythonAcademy() {
         <aside className="lg:col-span-3 space-y-6">
           <div className="flex items-center gap-3 px-2">
             <div className="bg-yellow-500 p-2 rounded-xl shadow-lg shadow-yellow-500/20"><Code2 className="text-slate-900" /></div>
-            <h2 className="text-xl font-black text-white">Python Pro</h2>
+            <h2 className="text-xl font-black text-white">Python Pro Academy</h2>
           </div>
+          
           <ContributionHeatmap />
-          <div className="bg-slate-900/50 rounded-3xl p-4 border border-slate-800">
-             <p className="text-[10px] font-black text-slate-500 uppercase mb-4">Phase 1: Basics</p>
-             <button className="w-full text-left p-3 rounded-xl bg-yellow-500 text-slate-950 font-bold text-xs">
-                Current: Variables
-             </button>
-          </div>
+
+          <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
+            <div className="p-2 space-y-2">
+                {Object.entries(groupedMissions).map(([section, missions]) => (
+                    <Accordion key={section} type="single" collapsible className="w-full" defaultValue={activeMission?.section === section ? section : ''}>
+                        <AccordionItem value={section} className="border-none">
+                            <AccordionTrigger className="hover:no-underline p-3 bg-slate-800/50 rounded-2xl mb-1 group">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                                    <span className="font-black text-slate-300 text-xs uppercase tracking-tight">{section}</span>
+                                </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="pt-1 pl-4 space-y-1">
+                                {missions.map(m => {
+                                    const isLocked = m.id > 0 && !completedMissions.includes(m.id - 1) && !completedMissions.includes(m.id);
+                                    const isCompleted = completedMissions.includes(m.id);
+                                    const isActive = m.id === activeMission?.id;
+                                    return (
+                                        <button
+                                            key={m.id}
+                                            disabled={isLocked}
+                                            onClick={() => setCurrentMissionIndex(allMissions.findIndex(am => am.id === m.id))}
+                                            className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all flex justify-between items-center ${
+                                                isActive ? 'bg-yellow-500 text-slate-950 shadow-md' : 
+                                                isLocked ? 'text-slate-600' : 'hover:bg-slate-800 text-slate-400'
+                                            }`}
+                                        >
+                                            <span className="flex items-center gap-2">
+                                                {isLocked ? <Lock className="h-3 w-3"/> : isCompleted ? <CheckCircle2 className="h-3 w-3 text-green-400"/> : <div className="w-3 h-3"/>}
+                                                {m.title}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                ))}
+            </div>
+          </ScrollArea>
         </aside>
 
         <main className="lg:col-span-6 flex flex-col gap-4">
@@ -200,10 +282,11 @@ export default function PythonAcademy() {
                 onChange={(val) => setCode(val || "")}
                 options={{ fontSize: 16, minimap: { enabled: false }, padding: { top: 20 }, automaticLayout: true }}
               />
+              
               <div className="absolute bottom-6 left-6 right-6">
                  <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
                     <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="text-indigo-400 w-4 h-4" /></div>
-                    <p className="text-sm font-medium text-slate-200">{activeLesson.task}</p>
+                    <p className="text-sm font-medium text-slate-200">{activeMission?.task}</p>
                  </div>
               </div>
 
@@ -211,7 +294,7 @@ export default function PythonAcademy() {
                 <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
                     <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
                         <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                        <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
+                        <h3 className="text-3xl font-black text-white">Mission Complete!</h3>
                         <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">Next Lesson</Button>
                     </div>
                 </div>
@@ -231,14 +314,13 @@ export default function PythonAcademy() {
                 </TabsContent>
 
                 <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                    <img id="plot-output" className="max-h-full rounded-lg" alt="Matplotlib plot will appear here" src="https://picsum.photos/seed/plot/400/200" />
+                    <img id="plot-output" className="max-h-full rounded-lg bg-white" alt="Matplotlib plot will appear here" src="https://picsum.photos/seed/plot/400/200?blur=10" />
                 </TabsContent>
               </Tabs>
             </div>
           </Card>
         </main>
         
-        {/* RIGHT SIDEBAR (AI TUTOR & RESOURCES) */}
         <aside className="lg:col-span-3 space-y-6">
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
@@ -270,7 +352,7 @@ export default function PythonAcademy() {
               ) : (
                 <div className="space-y-4">
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
+                    Stuck on <span className="text-indigo-400 font-bold">{activeMission?.title}</span>? 
                     Describe your problem below and I'll guide you through the logic.
                   </p>
                   <Textarea 
@@ -290,7 +372,7 @@ export default function PythonAcademy() {
               )}
             </CardContent>
           </Card>
-        
+
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
@@ -353,7 +435,6 @@ export default function PythonAcademy() {
                 </CardContent>
             </Card>
         </aside>
-
       </div>
     </div>
   );
