@@ -27,6 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
+import useSound from 'use-sound';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -51,7 +52,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
           { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')", expectedOutput: "Hello World" },
           { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)", expectedOutput: "2025" },
           { id: "p1-2-3", title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
-          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)", expectedOutput: "25" },
+          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)", expectedOutput: "50" },
           { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)", expectedOutput: "True" }
         ]
       },
@@ -231,20 +232,12 @@ interface Mission {
   title: string;
   task: string;
   startingCode: string;
+  expectedOutput?: string;
   phase: string;
   mainTopicTitle: string;
 }
 
-// --- REFERENCE GUIDE DATA ---
-const REFERENCE_DATA = [
-  { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
-  { title: "print()", desc: "Outputs text or numbers to the console.", example: "print('Hello')" },
-  { title: "if / else", desc: "Decides which code to run based on a condition.", example: "if x > 5: print('Big')" },
-  { title: "for loop", desc: "Repeats code for each item in a sequence.", example: "for i in range(3):" },
-  { title: "while loop", desc: "Repeats code as long as a condition is true.", example: "while x < 10:" },
-  { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
-];
-
+// --- SECTION: CONTRIBUTION HEATMAP ---
 function ContributionHeatmap({ progressData }: { progressData: any[] }) {
     // Generates 28 days (4 weeks) of activity
     const days = Array.from({ length: 28 }); 
@@ -280,6 +273,7 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
     );
 }
 
+
 export default function PythonAcademy() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -301,13 +295,12 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  const [isDataLoading, setIsDataLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any[]>([]);
 
   // --- PYODIDE INITIALIZATION ---
   useEffect(() => {
     async function initPyodide() {
-      if (!pyodide.current && (window as any).loadPyodide) {
+      if (!pyodide.current) {
         // @ts-ignore
         pyodide.current = await window.loadPyodide();
         
@@ -321,31 +314,26 @@ export default function PythonAcademy() {
   }, []);
 
   // --- LOAD & FLATTEN MISSIONS ---
-  useEffect(() => {
-    if (!firestore) return;
-    const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const dbMissions: any[] = [];
-        snapshot.forEach((doc) => dbMissions.push(doc.data()));
-        
-        const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
-            phase.mainTopics.flatMap(mainTopic => 
-                mainTopic.lessons.map(lesson => ({
-                    ...lesson,
-                    phase: phase.title,
-                    mainTopicTitle: mainTopic.title
-                }))
-            )
-        );
-        
-        const combined = [...flattenedSyllabus, ...dbMissions];
-        const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
+  const { data: dbMissions, isLoading: isLoadingMissions } = useCollection<Mission>(
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'logic_lab_curriculum'), orderBy('id')) : null, [firestore])
+  );
 
-        setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
-        setIsDataLoading(false);
-    });
-    return () => unsubscribe();
-  }, [firestore]);
+  useEffect(() => {
+    const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
+        phase.mainTopics.flatMap(mainTopic => 
+            mainTopic.lessons.map(lesson => ({
+                ...lesson,
+                phase: phase.title,
+                mainTopicTitle: mainTopic.title
+            }))
+        )
+    );
+    
+    const combined = [...flattenedSyllabus, ...(dbMissions || [])];
+    const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
+
+    setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
+  }, [dbMissions]);
 
 
   const activeLesson = useMemo(() => {
@@ -363,77 +351,81 @@ export default function PythonAcademy() {
     setTutorResponse(null);
   }, [activeLesson]);
 
-  const runAndValidate = async () => {
-    if (!pyodide.current) return;
-    setIsRunning(true);
-    setOutput([]);
-    setIsPassed(false);
+  // --- SECTION: RUN & VALIDATE ENGINE ---
+    const runAndValidate = async () => {
+        if (!pyodide.current) return;
+        setIsRunning(true);
+        setOutput([]);
+        setIsPassed(false);
 
-    // Set output handling
-    pyodide.current.setStdout({ 
-        batched: (str: string) => setOutput(prev => [...prev, str]) 
-    });
+        // Set output handling
+        pyodide.current.setStdout({ 
+            batched: (str: string) => setOutput(prev => [...prev, str]) 
+        });
 
-    try {
-        // 1. Reset Matplotlib to prevent old charts from showing
-        pyodide.current.runPython(`
-            import matplotlib.pyplot as plt
-            plt.clf()
-            plt.close('all')
-        `);
+        try {
+            // 1. Reset Matplotlib to prevent old charts from showing
+            pyodide.current.runPython(`
+                import matplotlib.pyplot as plt
+                plt.clf()
+                plt.close('all')
+            `);
 
-        // 2. Load packages dynamically
-        if (code.includes("import numpy")) {
-            await pyodide.current.loadPackage("numpy");
-        }
-        if (code.includes("import pandas")) {
-            await pyodide.current.loadPackage("pandas");
-        }
-        
-        // 3. Execute Student Code
-        await pyodide.current.runPythonAsync(code);
+            // 2. Load packages dynamically
+            if (code.includes("import numpy")) {
+                await pyodide.current.loadPackage("numpy");
+            }
+            if (code.includes("import pandas")) {
+                await pyodide.current.loadPackage("pandas");
+            }
+            
+            // 3. Execute Student Code
+            await pyodide.current.runPythonAsync(code);
 
-        // 4. AUTO-VALIDATION: Check if goal was met
-        let validationCheck = false;
-        if (activeLesson) {
-            if (activeLesson.id === "p1-2-2") { // Variables lesson
-                validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
-            } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
-                const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
-                const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
-                if (normExpected) {
-                  validationCheck = normOutput.includes(normExpected);
+            // 4. AUTO-VALIDATION: Check if goal was met
+            let validationCheck = false;
+            if (activeLesson) {
+                if (activeLesson.id === "p1-2-2") { // Variables lesson
+                    const result = pyodide.current.runPython("globals().get('year') == 2025");
+                    validationCheck = !!result;
+                } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
+                    const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
+                    const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
+                    if (normExpected) {
+                      validationCheck = normOutput.includes(normExpected);
+                    }
                 }
             }
-        }
 
-        if (validationCheck) {
-            setIsPassed(true);
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        }
 
-        // 5. VISUAL LAB: Capture Matplotlib output
-        const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
-        if (hasPlotting) {
-            pyodide.current.runPython(`
-                import io, base64
-                buf = io.BytesIO()
-                plt.savefig(buf, format='png', bbox_inches='tight')
-                buf.seek(0)
-                img_base64 = base64.b64encode(buf.read()).decode('utf-8')
-                from js import document
-                // Push image data to our Visual Lab tab
-                if(document.getElementById('plot-output')) {
-                    document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
+            if (validationCheck) {
+                setIsPassed(true);
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            }
+
+            // 5. VISUAL LAB: Capture Matplotlib output
+            const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
+            if (hasPlotting) {
+                const imgStr = pyodide.current.runPython(`
+                    import io, base64
+                    buf = io.BytesIO()
+                    plt.savefig(buf, format='png', bbox_inches='tight')
+                    buf.seek(0)
+                    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+                    img_base64
+                `);
+                const imgEl = document.getElementById('plot-output') as HTMLImageElement;
+                if(imgEl) {
+                    imgEl.src = 'data:image/png;base64,' + imgStr;
                 }
-            `);
-        }
+            }
 
-    } catch (err: any) {
-        setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
-    }
-    setIsRunning(false);
-  };
+        } catch (err: any) {
+            setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
+        }
+        setIsRunning(false);
+    };
+
   
   const askTutor = async () => {
     if (!aiQuestion.trim() || !activeLesson) return;
@@ -448,7 +440,9 @@ export default function PythonAcademy() {
       });
       if (res.success) {
         setTutorResponse(res.data);
-        speak(res.data.explanation); 
+        if (res.data?.explanation) {
+            speak(res.data.explanation);
+        }
       }
     } finally {
       setIsAiLoading(false);
@@ -456,7 +450,7 @@ export default function PythonAcademy() {
     }
   };
 
-  if (isDataLoading || isLoadingPy || isUserLoading) {
+  if (isLoadingMissions || isLoadingPy || isUserLoading) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -488,7 +482,7 @@ export default function PythonAcademy() {
           <ScrollArea className="h-[calc(75vh-150px)] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
               {PYTHON_ACADEMY_CURRICULUM.map((phase) => (
-                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson.phase === phase.title ? phase.phase : ''}>
+                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson?.phase === phase.title ? phase.phase : ''}>
                   <AccordionItem value={phase.phase} className="border-none">
                     <AccordionTrigger className="hover:no-underline p-3 bg-slate-800/50 rounded-2xl mb-1 group">
                       <span className="font-black text-slate-300 text-xs uppercase tracking-tight">{phase.title}</span>
@@ -563,27 +557,45 @@ export default function PythonAcademy() {
                 )}
             </div>
 
-            <div className="h-64 bg-black border-t border-slate-800">
-              <Tabs defaultValue="console" className="h-full flex flex-col">
-                <TabsList className="bg-slate-900 w-fit mx-6 mt-4 rounded-lg">
-                  <TabsTrigger value="console" className="text-[10px] uppercase font-bold"><Terminal className="w-3 h-3 mr-2"/> Console</TabsTrigger>
-                  <TabsTrigger value="visuals" className="text-[10px] uppercase font-bold"><BarChart3 className="w-3 h-3 mr-2"/> Visual Lab</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
-                    {output.map((line, i) => <div key={i} className="text-emerald-400/80 mb-1">{`>>> ${line}`}</div>)}
-                    {output.length === 0 && <p className="text-slate-700 italic">Awaiting execution...</p>}
-                </TabsContent>
+            <div className="h-64 bg-black">
+                <Tabs defaultValue="console" className="h-full flex flex-col">
+                    <div className="px-6 py-2 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
+                        <TabsList className="bg-slate-950 p-1">
+                            <TabsTrigger value="console" className="text-[10px] font-black uppercase">
+                                <Terminal className="w-3 h-3 mr-2" /> Console
+                            </TabsTrigger>
+                            <TabsTrigger value="visuals" className="text-[10px] font-black uppercase">
+                                <BarChart3 className="w-3 h-3 mr-2" /> Visual Lab
+                            </TabsTrigger>
+                        </TabsList>
+                        <p className="text-[9px] font-mono text-slate-500">Python 3.11 (WASM)</p>
+                    </div>
+                    
+                    <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
+                        {output.map((line, i) => <div key={i} className="text-emerald-400/90 mb-1">{`>>> ${line}`}</div>)}
+                        {output.length === 0 && <span className="text-slate-700 italic">Terminal ready...</span>}
+                    </TabsContent>
 
-                <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                    <img id="plot-output" className="max-h-full rounded-lg" alt="Matplotlib plots will appear here" src="https://placehold.co/400x200/020617/FFFFFF/png?text=Plot+Output" />
-                </TabsContent>
-              </Tabs>
+                    <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4 bg-slate-50 relative">
+                        <img 
+                            id="plot-output" 
+                            className="max-h-full rounded shadow-lg border border-slate-200" 
+                            alt="Science Plot Output"
+                            src="https://placehold.co/600x400/0f172a/10b981?text=Awaiting+Plot+Data"
+                        />
+                        <div className="absolute top-2 right-2">
+                            <Badge variant="secondary" className="text-[8px]">Matplotlib Render</Badge>
+                        </div>
+                    </TabsContent>
+                </Tabs>
             </div>
           </Card>
         </main>
         
+        {/* RIGHT: PROGRESS, TIPS & EXTERNAL RESOURCES */}
         <aside className="lg:col-span-3 space-y-6">
+          
+          {/* 1. NEURAL TUTOR (Existing Card) */}
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
@@ -591,7 +603,6 @@ export default function PythonAcademy() {
               </CardTitle>
               <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
             </CardHeader>
-            
             <CardContent className="p-6 space-y-4">
               {tutorResponse ? (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
@@ -614,7 +625,7 @@ export default function PythonAcademy() {
               ) : (
                 <div className="space-y-4">
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
+                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson?.title || 'this lesson'}</span>? 
                     Describe your problem below and I'll guide you through the logic.
                   </p>
                   <Textarea 
@@ -634,7 +645,8 @@ export default function PythonAcademy() {
               )}
             </CardContent>
           </Card>
-
+        
+          {/* 2. PRO TIPS */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
@@ -649,7 +661,8 @@ export default function PythonAcademy() {
               </li>
             </ul>
           </div>
-          
+        
+          {/* 3. LEARNING PORTALS */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
@@ -693,6 +706,7 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
         </aside>
+
       </div>
     </div>
   );
