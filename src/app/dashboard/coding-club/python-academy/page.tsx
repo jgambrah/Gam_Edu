@@ -6,9 +6,9 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { PYTHON_ACADEMY_CURRICULUM, Mission } from '@/lib/logic-lab-data'; // Assuming curriculum is moved here
 import dynamic from 'next/dynamic';
@@ -73,7 +73,7 @@ export default function PythonAcademy() {
   const [allMissions, setAllMissions] = useState<Mission[]>(PYTHON_ACADEMY_CURRICULUM);
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<number[]>([]);
-  const [code, setCode] = useState(allMissions[0].startingCode);
+  const [code, setCode] = useState(''); // FIX: Initialize with empty string
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
@@ -102,15 +102,17 @@ export default function PythonAcademy() {
     initPyodide();
   }, []);
 
-  const activeMission = allMissions[currentMissionIndex] || allMissions[0];
+  const activeLesson = allMissions[currentMissionIndex] || allMissions[0];
   
   // Reset code when mission changes
   useEffect(() => {
-    setCode(activeMission.startingCode);
+    if (activeLesson) {
+        setCode(activeLesson.startingCode); // Set code here after activeLesson is guaranteed to exist
+    }
     setIsPassed(false);
     setOutput([]);
     setTutorResponse(null);
-  }, [activeMission]);
+  }, [activeLesson]);
 
 
   const runAndValidate = async () => {
@@ -172,8 +174,6 @@ export default function PythonAcademy() {
     setIsRunning(false);
   };
   
-  const activeLesson = allMissions[currentMissionIndex] || allMissions[0];
-  
   const groupedMissions = useMemo(() => {
     const groups: Record<string, Mission[]> = {};
     allMissions.forEach(m => { if(!groups[m.section]) groups[m.section] = []; groups[m.section].push(m); });
@@ -185,7 +185,7 @@ export default function PythonAcademy() {
     setIsAiLoading(true);
     try {
       const res = await getPythonTutorHelp({
-        phase: activeLesson.phase,
+        phase: activeLesson.phase || "Fundamentals",
         lesson: activeLesson.title,
         task: activeLesson.task,
         userCode: code,
@@ -193,7 +193,6 @@ export default function PythonAcademy() {
       });
       if (res.success && res.data) {
         setTutorResponse(res.data);
-        // speak(res.data.explanation); 
       } else {
         throw new Error(res.error || "AI failed to respond.");
       }
@@ -205,6 +204,10 @@ export default function PythonAcademy() {
     }
   };
 
+  if (!activeLesson) {
+    return <div className="flex h-screen w-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
+  
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
