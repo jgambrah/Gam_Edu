@@ -3,15 +3,15 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot, addDoc } from 'firebase/firestore';
+import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot, addDoc, increment } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, PenTool
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, PenTool, ChevronRight
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
@@ -155,7 +155,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
         title: "3. Standard Library Deep Dive",
         lessons: [
           { id: "p3-3-1", title: "JSON & Data", task: "Convert a Python dictionary into a JSON string.", startingCode: "import json\nuser = {'id': 1, 'active': True}\njson_data = json.dumps(user)\nprint(json_data)" },
-          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\nfor row in csv_data.split('\\n'):\n    print(row.split(','))" },
+          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\\nfor row in csv_data.split('\\n'):\\n    print(row.split(','))" },
           { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\nnow = datetime.now()\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
         ]
       }
@@ -178,13 +178,13 @@ const PYTHON_ACADEMY_CURRICULUM = [
             id: "p4-1-2", 
             title: "Web Dev Logic (Routing)", 
             task: "Simulate a web router using a dictionary of functions.", 
-            startingCode: "def home(): return 'Home Page'\ndef about(): return 'About Page'\n\nroutes = {'/': home, '/about': about}\n\n# Simulate a user visiting '/about'\npath = '/about'\nprint(routes[path]())" 
+            startingCode: "def home(): return 'Home Page'\\ndef about(): return 'About Page'\\n\\nroutes = {'/': home, '/about': about}\\n\\n# Simulate a user visiting '/about'\\npath = '/about'\\nprint(routes[path]())" 
           },
           { 
             id: "p4-1-3", 
             title: "Automation (Requests)", 
             task: "Simulate an API request to fetch user data.", 
-            startingCode: "# In browser we simulate the request result\napi_response = {'id': 1, 'status': 'online'}\nif api_response['status'] == 'online':\n    print('Server is active!')" 
+            startingCode: "# In browser we simulate the request result\\napi_response = {'id': 1, 'status': 'online'}\\nif api_response['status'] == 'online':\\n    print('Server is active!')" 
           }
         ]
       },
@@ -195,13 +195,13 @@ const PYTHON_ACADEMY_CURRICULUM = [
             id: "p4-2-1", 
             title: "Project: Smart Calculator", 
             task: "Build a function that performs +, -, *, or / based on input.", 
-            startingCode: "def calc(a, b, op):\n    if op == '+': return a + b\n    # Add other operators here\n\nprint(calc(10, 5, '+'))" 
+            startingCode: "def calc(a, b, op):\\n    if op == '+': return a + b\\n    # Add other operators here\\n\\nprint(calc(10, 5, '+'))" 
           },
           { 
             id: "p4-2-2", 
             title: "Project: Text-Based Game", 
             task: "Create a simple 'Choose your Adventure' logic.", 
-            startingCode: "print('You are in a dark room.')\nchoice = 'left' # Simulated input\nif choice == 'left':\n    print('You found a treasure!')\nelse:\n    print('A monster caught you!')" 
+            startingCode: "print('You are in a dark room.')\\nchoice = 'left' # Simulated input\\nif choice == 'left':\\n    print('You found a treasure!')\\nelse:\\n    print('A monster caught you!')" 
           }
         ]
       },
@@ -212,19 +212,20 @@ const PYTHON_ACADEMY_CURRICULUM = [
             id: "p4-3-1", 
             title: "Git Fundamentals", 
             task: "Practice the string commands for a standard Git workflow.", 
-            startingCode: "commands = [\n    'git init',\n    'git add .',\n    'git commit -m \"First commit\"',\n    'git push origin main'\n]\nfor cmd in commands:\n    print('Executing:', cmd)" 
+            startingCode: "commands = [\\n    'git init',\\n    'git add .',\\n    'git commit -m \"First commit\"',\\n    'git push origin main'\\n]\\nfor cmd in commands:\\n    print('Executing:', cmd)" 
           },
           { 
             id: "p4-3-2", 
             title: "Collaboration on GitHub", 
             task: "Simulate a code 'Pull Request' logic.", 
-            startingCode: "repo = {'main': 'Code V1', 'branch': 'New Feature'}\ndef merge():\n    repo['main'] = repo['branch']\n    print('Merged successfully!')\n\nmerge()\nprint(repo['main'])" 
+            startingCode: "repo = {'main': 'Code V1', 'branch': 'New Feature'}\\ndef merge():\\n    repo['main'] = repo['branch']\\n    print('Merged successfully!')\\n\\nmerge()\\nprint(repo['main'])" 
           }
         ]
       }
     ]
   }
 ];
+
 
 interface Mission {
   id: string;
@@ -312,6 +313,7 @@ export default function PythonAcademy() {
 
     pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
 
+    // --- PART A: RUN PYTHON ---
     try {
       if (code.includes("import numpy")) {
           await pyodide.current.loadPackage("numpy");
@@ -319,27 +321,26 @@ export default function PythonAcademy() {
       if (code.includes("import pandas")) {
           await pyodide.current.loadPackage("pandas");
       }
-
       await pyodide.current.runPythonAsync(code);
       
-      let success = false;
+      // Validation Logic
+      let success = true; // Default to success if no specific validation
       if (activeLesson?.id === "p1-2-2") {
         success = pyodide.current.runPython("globals().get('year') == 2025");
-      } else {
-        success = true; // Default to success if no specific validation
       }
       
       if (success) {
         setIsPassed(true);
         confetti({ particleCount: 100 });
 
+        // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
         if (user && firestore && activeLesson) {
             try {
                 await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
                     userId: user.uid, 
                     completed: true, 
                     timestamp: serverTimestamp(),
-                });
+                }, { merge: true });
             } catch (dbError) {
                 console.error("Database save failed:", dbError);
                 toast({ title: "Progress not saved", description: "Check your internet or database permissions." });
@@ -361,6 +362,7 @@ export default function PythonAcademy() {
       }
 
     } catch (pythonErr: any) {
+      // This is for actual Python typos (like prnt instead of print)
       setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
     }
     setIsRunning(false);
@@ -481,88 +483,101 @@ export default function PythonAcademy() {
         </main>
         
         <aside className="lg:col-span-3 space-y-6">
-            <Card className="bg-indigo-600 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
-            <CardHeader className="bg-indigo-600 p-6">
-              <CardTitle className="text-sm font-black text-white flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
+  
+          {/* 1. MASTER STATS (Existing Card) */}
+          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
+            <CardHeader className="bg-slate-800/50">
+              <CardTitle className="text-sm font-black flex items-center gap-2">
+                <Trophy className="text-yellow-500 h-4 w-4" /> Mastery Stats
               </CardTitle>
-              <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
             </CardHeader>
-            
-            <CardContent className="p-6 space-y-4">
-              {tutorResponse ? (
-                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                     <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
-                     <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
-                  </div>
-                  <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
-                     <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
-                     <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => setTutorResponse(null)} 
-                    className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
-                  >
-                    Ask another question
-                  </Button>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold">
+                  <span className="text-slate-400">Total Progress</span>
+                  <span className="text-white">Selected Lesson</span>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
-                    Describe your problem below and I'll guide you through the logic.
-                  </p>
-                  <Textarea 
-                    placeholder="e.g. Why am I getting a SyntaxError?" 
-                    value={aiQuestion}
-                    onChange={(e) => setAiQuestion(e.target.value)}
-                    className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
-                  />
-                  <Button 
-                    onClick={async () => {
-                      if (!aiQuestion.trim()) return;
-                      setIsAiLoading(true);
-                      const res = await getPythonTutorHelp({
-                        phase: "Phase 1",
-                        lesson: activeLesson.title,
-                        task: activeLesson.task,
-                        userCode: code,
-                        question: aiQuestion
-                      });
-                      if (res.success) setTutorResponse(res.data);
-                      setIsAiLoading(false);
-                      setAiQuestion("");
-                    }} 
-                    disabled={isAiLoading || !aiQuestion}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
-                  >
-                    {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
-                  </Button>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="bg-yellow-500 h-full w-1/4" />
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
-           <Button variant="outline" size="sm" onClick={() => setIsReferenceOpen(true)} className="w-full border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white">
-            <Info className="h-4 w-4 mr-2"/> Python Cheat Sheet
-          </Button>
+        
+          {/* 2. LEARNING TIPS (PRO MINDSET) */}
+          <div className="p-6 bg-indigo-900/40 border border-indigo-500/20 rounded-[32px] space-y-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="text-indigo-400 h-5 w-5" />
+              <h3 className="text-sm font-black text-indigo-100 uppercase tracking-tight">Learning Tips</h3>
+            </div>
+            <ul className="space-y-4">
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Build Projects</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        
+          {/* 3. EXTERNAL PORTALS (LINKS) */}
+          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-6 space-y-2">
+              <a 
+                href="https://docs.python.org/3/tutorial/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.w3schools.com/python/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.geeksforgeeks.org/python-programming-language/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://github.com/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <div className="flex items-center gap-2">
+                  <Github className="h-3 w-3 text-white" />
+                  <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
+                </div>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+            </CardContent>
+          </Card>
+        
         </aside>
       </div>
-       <Dialog open={isReferenceOpen} onOpenChange={setIsReferenceOpen}>
-          <DialogContent className="max-w-2xl bg-slate-900 border-slate-700 text-white">
-              <DialogHeader><DialogTitle className="flex items-center gap-2 text-xl"><Info className="h-5 w-5 text-blue-400"/> Python Cheat Sheet</DialogTitle></DialogHeader>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                  {REFERENCE_DATA.map((item, i) => (
-                      <div key={i} className="p-3 border border-slate-800 rounded-xl bg-slate-950">
-                          <h4 className="font-bold text-sm text-indigo-400 font-mono mb-1">{item.title}</h4>
-                          <p className="text-xs text-slate-300 mb-2">{item.desc}</p>
-                          <code className="block bg-slate-800 text-green-400 text-xs p-2 rounded font-mono">{item.example}</code>
-                      </div>
-                  ))}
-              </div>
-          </DialogContent>
-      </Dialog>
     </div>
   );
 }
