@@ -4,7 +4,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Code, MousePointerClick, Youtube, BrainCircuit } from 'lucide-react';
+import { Loader2, Code, MousePointerClick, Youtube, BrainCircuit, Cpu } from 'lucide-react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -108,8 +108,27 @@ export default function CodingClubPage() {
                     <BlocklyEditor />
                 </CardContent>
             </Card>
+
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Cpu className="text-emerald-500" /> Option 4: Python Pro Academy</CardTitle>
+                    <CardDescription>
+                        Transition from blocks to real-world code. Write and run Python directly in your browser.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button asChild>
+                        <Link href="/dashboard/coding-club/python-academy">
+                            Enter Python Academy
+                        </Link>
+                    </Button>
+                </CardContent>
+            </Card>
+
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    
