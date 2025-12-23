@@ -26,7 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { PYTHON_ACADEMY_CURRICULUM, Mission } from '@/lib/logic-lab-data'; // Assuming curriculum is moved here
+import { PYTHON_ACADEMY_CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import dynamic from 'next/dynamic';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
@@ -71,6 +71,7 @@ export default function PythonAcademy() {
 
   // --- STATE ---
   const [allMissions, setAllMissions] = useState<Mission[]>([]);
+  const [missionsLoaded, setMissionsLoaded] = useState(false);
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<number[]>([]);
   const [code, setCode] = useState('');
@@ -86,21 +87,21 @@ export default function PythonAcademy() {
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   // --- PYODIDE INITIALIZATION ---
-  useEffect(() => {
-    async function initPyodide() {
-      if (!pyodide.current) {
-        // @ts-ignore
-        pyodide.current = await window.loadPyodide();
-        
-        // PRE-LOAD PROFESSIONAL PACKAGES
-        // This ensures Phase 4 (Data Science) works instantly
-        await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
-        
-        setIsLoadingPy(false);
-      }
+useEffect(() => {
+  async function initPyodide() {
+    if (!pyodide.current) {
+      // @ts-ignore
+      pyodide.current = await window.loadPyodide();
+      
+      // PRE-LOAD PROFESSIONAL PACKAGES
+      // This ensures Phase 4 (Data Science) works instantly
+      await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
+      
+      setIsLoadingPy(false);
     }
-    initPyodide();
-  }, []);
+  }
+  initPyodide();
+}, []);
 
   // --- 1. LOAD MISSIONS FROM DB ---
   useEffect(() => {
@@ -109,13 +110,18 @@ export default function PythonAcademy() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const dbMissions: Mission[] = [];
         snapshot.forEach((doc) => dbMissions.push(doc.data() as Mission));
-        const merged = [...PYTHON_ACADEMY_CURRICULUM, ...dbMissions].sort((a, b) => a.id - b.id);
+        // Safe merge and sort
+        const merged = [...PYTHON_ACADEMY_CURRICULUM, ...dbMissions]
+            .filter((val, index, self) => self.findIndex(m => m.id === val.id) === index) // De-duplicate
+            .sort((a, b) => a.id - b.id);
+        
         setAllMissions(merged);
+        setMissionsLoaded(true);
     });
     return () => unsubscribe();
   }, [firestore]);
-
-  const activeLesson = allMissions[currentMissionIndex];
+  
+  const activeLesson = allMissions[currentMissionIndex] || PYTHON_ACADEMY_CURRICULUM[0];
   
   // Reset code when mission changes
   useEffect(() => {
@@ -128,6 +134,21 @@ export default function PythonAcademy() {
   }, [activeLesson]);
 
 
+  // --- 2. LOAD PROGRESS ---
+  useEffect(() => {
+    if(!user || !firestore) return;
+    const fetchProgress = async () => {
+        try {
+            const ref = doc(firestore, 'student_progress', user.uid);
+            const snap = await getDoc(ref);
+            if (snap.exists() && snap.data().logicLabCompleted) {
+                setCompletedMissions(snap.data().logicLabCompleted);
+            }
+        } catch(e) { console.error(e); }
+    };
+    fetchProgress();
+  }, [user, firestore]);
+
   const runAndValidate = async () => {
     if (!pyodide.current) return;
     setIsRunning(true);
@@ -136,54 +157,39 @@ export default function PythonAcademy() {
 
     pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
 
+    // --- PART A: RUN PYTHON ---
     try {
-      pyodide.current.runPython(`import matplotlib.pyplot as plt\nplt.clf()`);
       await pyodide.current.runPythonAsync(code);
-
-      let validationCheck = false;
-      const normalizedOutput = output.join("\n").trim();
       
-      if (activeLesson.expectedOutput === normalizedOutput) {
-          validationCheck = true;
-      }
+      // Validation Logic
+      const success = pyodide.current.runPython("globals().get('year') == 2025");
       
-      if (activeLesson.id === "p1-2-2") { 
-        validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
-      }
-
-      if (validationCheck) {
+      if (success) {
         setIsPassed(true);
-        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        confetti({ particleCount: 100 });
+
+        // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
         if (user && firestore) {
-            await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
-                userId: user.uid, completed: true, timestamp: serverTimestamp()
-            });
+            try {
+                await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
+                    userId: user.uid, 
+                    completed: true, 
+                    timestamp: serverTimestamp(),
+                    // schoolId: schoolId // Add this if using SaaS version
+                });
+            } catch (dbError) {
+                console.error("Database save failed:", dbError);
+                toast({ title: "Progress not saved", description: "Check your internet or database permissions." });
+            }
         }
-      } else {
-        toast({ variant: 'destructive', title: "Try Again", description: "The output doesn't match the mission goal."})
       }
-
-      const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
-      if (hasPlot) {
-        pyodide.current.runPython(`
-            import io, base64
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png')
-            buf.seek(0)
-            img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
-            from js import document
-            img_element = document.getElementById('plot-output')
-            if img_element:
-                img_element.src = img_str
-        `);
-      }
-
-    } catch (err: any) {
-      setOutput(prev => [...prev, `❌ Error: ${err.message}`]);
+    } catch (pythonErr: any) {
+      // This is for actual Python typos (like prnt instead of print)
+      setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
     }
     setIsRunning(false);
-  };
-  
+};
+
   const groupedMissions = useMemo(() => {
     const groups: Record<string, Mission[]> = {};
     allMissions.forEach(m => { if(!groups[m.section]) groups[m.section] = []; groups[m.section].push(m); });
@@ -214,7 +220,7 @@ export default function PythonAcademy() {
     }
   };
 
-  if (!activeLesson) {
+  if (!missionsLoaded) {
     return <div className="flex h-screen w-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
   
