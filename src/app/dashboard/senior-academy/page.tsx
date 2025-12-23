@@ -108,7 +108,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     // Folder Logic for English
     const folderStructure = useMemo(() => {
         if (!library) return {};
-        const filtered = library.filter(s => s.gradeLevel === selectedGrade);
+        const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, s) => {
             const category = s.category || 'General Reading'; // Folder 1
             const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
@@ -199,7 +199,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                         <CardContent className="p-12 space-y-10">
                             <p className="whitespace-pre-wrap text-2xl leading-relaxed text-slate-700 font-serif">{activeStory.content}</p>
                             <div className="bg-slate-50 p-8 rounded-[32px] space-y-6 border-2 border-slate-100">
-                                <h3 className="text-2xl font-black text-indigo-900 flex items-center gap-2"><Brain className="text-indigo-500"/> Critical Analysis</h3>
+                                <h3 className="text-2xl font-black text-indigo-900">Critical Analysis Questions</h3>
                                 {activeStory.quiz.map((q: any, i: number) => (
                                     <div key={i} className="space-y-2">
                                         <p className="font-bold text-slate-800">{i + 1}. {q.question}</p>
@@ -220,7 +220,6 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
-
 
 // --- 2. ADVANCED MATH LAB (FOLDER ORGANIZED) ---
 function MathLab({ canEdit }: { canEdit: boolean }) {
@@ -394,11 +393,11 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
                         <div className="p-8 bg-slate-50 rounded-full mb-6">
                             <Sigma className="w-20 h-20 text-slate-200" />
                         </div>
-                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">
+                        <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
                         </h2>
                     </div>
@@ -422,7 +421,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
 
     const folderStructure = useMemo(() => {
         if (!dbLabs) return {};
-        const filtered = dbLabs.filter(l => l.gradeLevel === selectedGrade);
+        const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, l) => {
             const category = l.category || 'Science Journal';
             const subTopic = l.subTopic || 'Research Mission';
@@ -551,8 +550,215 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// ... (Keep the rest of the page component as is) ...
+// --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
+function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    
+    const [subject, setSubject] = useState<'math' | 'english' | 'science'>('math');
+    const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
+    const [loading, setLoading] = useState(false);
 
+    // AI States
+    const [topic, setTopic] = useState("");
+    const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
+
+    // Manual States (Shared across subjects where applicable)
+    const [manualData, setManualData] = useState<any>({
+        title: '',
+        category: '', // Broad Category (e.g. Algebra)
+        subTopic: '', // Sub Topic (e.g. Linear Equations)
+        gradeLevel: 'Junior Secondary (JHS)',
+        latexFormula: '',
+        instruction: '',
+        answer: '',
+        content: '', // For English
+        genre: '',   // For English
+        quiz: [{ question: '', answer: '' }, { question: '', answer: '' }, { question: '', answer: '' }],
+        background: '', // For Science
+        question: '',
+        hypothesisPrompt: '',
+        hypothesisOptions: ['', '', ''],
+        conclusion: '',
+        explanation: '',
+        icon: '🔬'
+    });
+
+    const handleAiGenerate = async () => {
+        if (!topic.trim()) return;
+        setLoading(true);
+        const context = { topic, gradeLevel: targetGrade as any };
+        let result;
+
+        if (subject === 'math') result = await generateSeniorMath(context);
+        else if (subject === 'english') result = await generateSeniorEnglish(context);
+        else result = await generateSeniorLab(context);
+
+        if (result.success && result.data) {
+            await addDoc(collection(firestore!, subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs'), {
+                ...result.data,
+                gradeLevel: targetGrade, 
+                createdAt: serverTimestamp()
+            });
+            toast({ title: 'AI Success', description: `Added to ${targetGrade} library.` });
+            onContentAdded();
+            setTopic("");
+        }
+        setLoading(false);
+    };
+
+    const handleManualSave = async () => {
+        if (!manualData.title || !manualData.category) {
+            toast({ title: "Required Fields", description: "Title and Category are needed for folder organization.", variant: "destructive" });
+            return;
+        }
+        setLoading(true);
+        try {
+            const colName = subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs';
+            await addDoc(collection(firestore!, colName), {
+                ...manualData,
+                createdAt: serverTimestamp()
+            });
+            toast({ title: "Saved", description: "Manual entry added to the folders." });
+            onContentAdded();
+            // Reset form
+            setManualData({ ...manualData, title: '', latexFormula: '', content: '', background: '', answer: '' });
+        } catch (e) {
+            toast({ title: "Error", description: "Failed to save manually.", variant: "destructive" });
+        }
+        setLoading(false);
+    };
+
+    return (
+        <Card className="bg-slate-900 border-none shadow-2xl overflow-hidden rounded-[40px] animate-in fade-in">
+            {/* Control Bar */}
+            <div className="p-6 bg-slate-800/50 border-b border-slate-700 flex flex-wrap justify-between items-center gap-4">
+                <div className="flex bg-slate-900 p-1 rounded-2xl border border-slate-700">
+                    <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('ai')} className="rounded-xl font-bold text-xs h-9">
+                        <Sparkles className="w-3 h-3 mr-2 text-blue-400"/> AI Magic
+                    </Button>
+                    <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('manual')} className="rounded-xl font-bold text-xs h-9">
+                        <PenTool className="w-3 h-3 mr-2 text-emerald-400"/> Manual Entry
+                    </Button>
+                </div>
+
+                <div className="flex gap-2">
+                    {['math', 'english', 'science'].map((s: any) => (
+                        <button 
+                            key={s} 
+                            onClick={() => setSubject(s)}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subject === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                        >
+                            {s}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <CardContent className="p-8">
+                {creationMode === 'ai' ? (
+                    <div className="flex flex-col md:flex-row gap-4 items-end">
+                        <div className="flex-1 space-y-2 w-full">
+                            <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Topic for AI</Label>
+                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Simultaneous Equations, Plant Cells..." className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl" />
+                        </div>
+                        <div className="w-full md:w-64 space-y-2">
+                            <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Grade</Label>
+                            <Select value={targetGrade} onValueChange={setTargetGrade}>
+                                <SelectTrigger className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"><SelectValue /></SelectTrigger>
+                                <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                            </Select>
+                        </div>
+                        <Button onClick={handleAiGenerate} disabled={loading || !topic} className="h-14 px-8 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black min-w-[160px]">
+                            {loading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2 h-4 w-4"/> GENERATE</>}
+                        </Button>
+                    </div>
+                ) : (
+                    /* --- MANUAL ENTRY FORM --- */
+                    <div className="space-y-6 animate-in slide-in-from-top-4">
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Category (Main Folder)</Label>
+                                <Input placeholder="e.g. Algebra" value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (Sub Folder)</Label>
+                                <Input placeholder="e.g. Differentiation" value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Student Category</Label>
+                                <Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}>
+                                    <SelectTrigger className="h-12 bg-slate-800 border-slate-700 text-white rounded-xl"><SelectValue /></SelectTrigger>
+                                    <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl text-lg font-bold" />
+                            
+                            {subject === 'math' && (
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="space-y-4">
+                                        <Textarea placeholder="LaTeX Formula (e.g. \frac{x}{y})" value={manualData.latexFormula} onChange={e => setManualData({...manualData, latexFormula: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl font-mono" />
+                                        <Input placeholder="Instruction (e.g. Solve for x)" value={manualData.instruction} onChange={e => setManualData({...manualData, instruction: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                        <Input placeholder="Final Answer" value={manualData.answer} onChange={e => setManualData({...manualData, answer: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    </div>
+                                    <div className="bg-slate-950 rounded-2xl p-6 flex flex-col justify-center items-center border-2 border-dashed border-slate-800">
+                                        <p className="text-[10px] font-black text-slate-600 uppercase mb-4 tracking-widest">Live Math Preview</p>
+                                        <div className="text-2xl text-emerald-400">
+                                            {manualData.latexFormula ? <SafeMath formula={manualData.latexFormula} /> : <span className="opacity-20 italic text-sm">Formula will render here</span>}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {subject === 'english' && (
+                                <div className="space-y-4">
+                                    <Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-48 rounded-xl" />
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[0,1,2].map(i => (
+                                            <div key={i} className="p-3 bg-slate-800/50 rounded-xl space-y-2">
+                                                <Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label>
+                                                <Input placeholder="Question" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].question} onChange={e => {
+                                                    const n = [...manualData.quiz]; n[i].question = e.target.value; setManualData({...manualData, quiz: n});
+                                                }} />
+                                                <Input placeholder="Answer" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].answer} onChange={e => {
+                                                    const n = [...manualData.quiz]; n[i].answer = e.target.value; setManualData({...manualData, quiz: n});
+                                                }} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {subject === 'science' && (
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" />
+                                    <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" />
+                                    <div className="md:col-span-2 grid grid-cols-3 gap-2">
+                                        {manualData.hypothesisOptions.map((opt: string, i: number) => (
+                                            <Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {
+                                                const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});
+                                            }} className="bg-slate-800 border-slate-700 text-white h-10 rounded-lg" />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <Button onClick={handleManualSave} disabled={loading} className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black shadow-xl">
+                            {loading ? <Loader2 className="animate-spin" /> : <><Save className="mr-2" /> PUBLISH MANUAL MISSION</>}
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+// ... (Keep the rest of the file as is) ...
+// --- MAIN PAGE COMPONENT ---
 export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -606,4 +812,3 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-
