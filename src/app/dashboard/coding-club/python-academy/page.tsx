@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -29,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
 import useSound from 'use-sound';
+import { useRouter } from 'next/navigation';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -298,15 +300,15 @@ const REFERENCE_DATA = [
 ];
 
 function PythonAcademy() {
-  const { user, isUserLoading } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [playSuccess] = useSound('/sounds/success.mp3');
 
   // --- STATE ---
   const [allMissions, setAllMissions] = useState<Mission[]>([]);
-  const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
-  const [completedMissions, setCompletedMissions] = useState<string[]>([]);
+  const [currentMissionId, setCurrentMissionId] = useState("p1-2-1");
+  const [completedMissions, setCompletedMissions] = useState<number[]>([]);
   const [code, setCode] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
@@ -403,13 +405,11 @@ function PythonAcademy() {
         });
     
         try {
-            // 1. Reset Matplotlib to prevent old charts from showing
+            // 1. Reset Matplotlib and run code
             pyodide.current.runPython(`import matplotlib.pyplot as plt; plt.clf(); plt.close('all')`);
-    
-            // 2. Execute Student Code
             await pyodide.current.runPythonAsync(code);
     
-            // 3. AUTO-VALIDATION: Check if goal was met
+            // 2. AUTO-VALIDATION: Check if goal was met
             let isCorrect = false;
             
             if (activeLesson.validation) {
@@ -432,7 +432,7 @@ function PythonAcademy() {
                 speak("Mission accomplished! Well done.");
             }
     
-            // 4. VISUAL LAB: Capture Matplotlib output
+            // 3. VISUAL LAB: Capture Matplotlib output
             const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
             if (hasPlotting) {
                 pyodide.current.runPython(`
@@ -477,28 +477,35 @@ function PythonAcademy() {
   };
 
   const goToNextLesson = () => {
-    setIsPassed(false);
-    const allLessons = PYTHON_ACADEMY_CURRICULUM.flatMap(phase =>
-      phase.mainTopics.flatMap(topic => topic.lessons)
-    );
-    const currentIndex = allLessons.findIndex(l => l.id === activeLesson?.id);
-    if (currentIndex < allLessons.length - 1) {
-      const next = allLessons[currentIndex + 1];
+    // 1. Hide the celebration immediately
+    setIsPassed(false); 
+    
+    // 2. Map out the entire curriculum into a flat list for easy navigation
+    const allLessonsFlat = allMissions;
+    
+    // 3. Find where we are currently
+    const currentIndex = allLessonsFlat.findIndex(l => l.id === activeLesson?.id);
+    
+    // 4. If there is a next lesson, move to it
+    if (currentIndex < allLessonsFlat.length - 1) {
+      const next = allLessonsFlat[currentIndex + 1];
       setCurrentMissionId(next.id);
-      setCode(next.startingCode);
-      setOutput([]);
+      setCode(next.startingCode); // Load fresh code for the new task
+      setOutput([]);              // Clear the old console
       toast({ title: `Next Mission: ${next.title}` });
     } else {
+      // 5. If they finished the very last lesson of Phase 4
       confetti({ particleCount: 300, spread: 120, origin: { y: 0.5 } });
-      toast({
-        title: "ACADEMY GRADUATE!",
-        description: "You have completed the entire Python pathway!",
-        variant: "default"
+      toast({ 
+          title: "ACADEMY GRADUATE!", 
+          description: "You have completed the entire Python pathway!",
+          variant: "default"
       });
     }
   };
 
-  if (isDataLoading || isLoadingPy || isUserLoading || !activeLesson) {
+
+  if (isDataLoading || isLoadingPy || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -585,31 +592,48 @@ function PythonAcademy() {
 
                 {/* THE CELEBRATION OVERLAY */}
                 {isPassed && (
-                    <div className="absolute inset-0 z-50 bg-slate-950/60 backdrop-blur-md flex items-center justify-center animate-in zoom-in duration-300">
-                        <div className="bg-slate-900 border-2 border-yellow-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(251,191,36,0.2)] text-center space-y-6 max-w-sm">
-                            <div className="bg-yellow-500 w-24 h-24 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-yellow-500/20">
-                                <CheckCircle2 className="h-14 w-14 text-slate-900" />
+                    <div className="absolute inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center animate-in zoom-in duration-300">
+                        <div className="bg-slate-900 border-2 border-yellow-500 p-10 rounded-[48px] shadow-[0_0_60px_rgba(251,191,36,0.3)] text-center space-y-8 max-w-md">
+                            
+                            {/* Animated Icon */}
+                            <div className="relative mx-auto w-24 h-24">
+                                <div className="absolute inset-0 bg-yellow-500 rounded-full animate-ping opacity-20" />
+                                <div className="relative bg-yellow-500 w-24 h-24 rounded-full flex items-center justify-center shadow-lg">
+                                    <CheckCircle2 className="h-14 w-14 text-slate-900" />
+                                </div>
                             </div>
                             
                             <div className="space-y-2">
-                                <h3 className="text-4xl font-black text-white tracking-tight">EXCELLENT!</h3>
-                                <p className="text-slate-400 font-medium">Mission Complete. Your logic is sound and the Python engine is happy!</p>
+                                <h3 className="text-4xl font-black text-white tracking-tight italic">MISSION PASSED!</h3>
+                                <p className="text-slate-400 font-medium leading-relaxed">
+                                    Logic validation successful. You've mastered the <span className="text-yellow-500 font-bold">{activeLesson.title}</span> task!
+                                </p>
                             </div>
 
-                            <div className="pt-4 space-y-3">
+                            {/* CHOICE BUTTONS */}
+                            <div className="grid grid-cols-1 gap-3 pt-4">
                                 <Button 
                                     onClick={goToNextLesson}
-                                    className="w-full h-16 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-xl rounded-2xl shadow-[0_8px_0_#b45309] active:translate-y-1 active:shadow-none transition-all"
+                                    className="h-16 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-xl rounded-2xl shadow-[0_6px_0_#b45309] active:translate-y-1 active:shadow-none transition-all"
                                 >
-                                    GO NEXT <ArrowRight className="ml-2 h-6 w-6" />
+                                    GO TO NEXT LESSON <ArrowRight className="ml-2 h-6 w-6" />
                                 </Button>
+
                                 <Button 
-                                    onClick={() => setIsPassed(false)}
-                                    className="w-full h-12 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold rounded-2xl"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setIsPassed(false);
+                                        toast({ description: "Free practice mode active. Keep experimenting!" });
+                                    }}
+                                    className="h-12 text-slate-400 hover:text-white hover:bg-white/5 font-bold rounded-xl"
                                 >
-                                    Practice More
+                                    Stay & Practice More
                                 </Button>
-                                <p className="mt-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">+50 ACADEMY XP EARNED</p>
+                            </div>
+
+                            <div className="flex items-center justify-center gap-2 opacity-40">
+                                <Trophy className="h-3 w-3 text-yellow-500" />
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">+50 XP RECORDED</p>
                             </div>
                         </div>
                     </div>
