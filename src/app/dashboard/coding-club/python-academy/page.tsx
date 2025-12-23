@@ -70,7 +70,7 @@ export default function PythonAcademy() {
   const { toast } = useToast();
 
   // --- STATE ---
-  const [allMissions, setAllMissions] = useState<Mission[]>(PYTHON_ACADEMY_CURRICULUM);
+  const [allMissions, setAllMissions] = useState<Mission[]>([]);
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<number[]>([]);
   const [code, setCode] = useState('');
@@ -115,7 +115,7 @@ export default function PythonAcademy() {
     return () => unsubscribe();
   }, [firestore]);
 
-  const activeLesson = allMissions[currentMissionIndex] || PYTHON_ACADEMY_CURRICULUM[0];
+  const activeLesson = allMissions[currentMissionIndex];
   
   // Reset code when mission changes
   useEffect(() => {
@@ -147,9 +147,8 @@ export default function PythonAcademy() {
           validationCheck = true;
       }
       
-      // More specific checks
-      if (activeLesson.id === "p1-2") { 
-        validationCheck = pyodide.current.runPython("globals().get('school_name') == 'Sunnyside'");
+      if (activeLesson.id === "p1-2-2") { 
+        validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
       }
 
       if (validationCheck) {
@@ -296,12 +295,14 @@ export default function PythonAcademy() {
                   <TabsTrigger value="console" className="text-[10px] uppercase font-bold"><Terminal className="w-3 h-3 mr-2"/> Console</TabsTrigger>
                   <TabsTrigger value="visuals" className="text-[10px] uppercase font-bold"><BarChart3 className="w-3 h-3 mr-2"/> Visual Lab</TabsTrigger>
                 </TabsList>
+                
                 <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
                     {output.map((line, i) => <div key={i} className="text-emerald-400/80 mb-1">{`>>> ${line}`}</div>)}
                     {output.length === 0 && <p className="text-slate-700 italic">Awaiting execution...</p>}
                 </TabsContent>
+
                 <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                    <img id="plot-output" className="max-h-full rounded-lg bg-white" alt="Matplotlib plot will appear here" src="https://picsum.photos/seed/plot/400/200?blur=10" />
+                    <img id="plot-output" className="max-h-full rounded-lg bg-white" alt="Matplotlib plot will appear here" src="https://placehold.co/400x200/000000/FFFFFF/png?text=Plot+Output" />
                 </TabsContent>
               </Tabs>
             </div>
@@ -309,7 +310,7 @@ export default function PythonAcademy() {
         </main>
         
         <aside className="lg:col-span-3 space-y-6">
-            <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
+            <Card className="bg-indigo-600 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
