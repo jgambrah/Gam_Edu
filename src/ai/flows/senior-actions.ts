@@ -7,7 +7,6 @@ import { z } from 'zod';
 // --- 0. AI CONTEXT SCHEMA (NEW) ---
 const AIContextSchema = z.object({
   topic: z.string(),
-  difficulty: z.string().optional(),
   gradeLevel: z.string().optional(),
   instructions: z.string().optional(),
 });
@@ -33,7 +32,6 @@ export async function generateSeniorEnglish(context: z.infer<typeof AIContextSch
   try {
     const prompt = `Generate an advanced literary passage based on this context:
     Topic: "${context.topic}"
-    Difficulty: ${context.difficulty}
     Grade Level: ${context.gradeLevel}
     Specific Instructions: ${context.instructions || 'None'}
     
@@ -51,7 +49,8 @@ export async function generateSeniorEnglish(context: z.infer<typeof AIContextSch
 
 const MathSchema = z.object({
     title: z.string().describe("The name of the math problem (e.g. 'Quadratic Roots')."),
-    category: z.string().describe("The math category (e.g. Algebra, Calculus)."),
+    category: z.string().describe("The main math category (e.g. Algebra, Calculus)."),
+    subTopic: z.string().describe("A specific sub-topic (e.g. 'Linear Equations', 'Differentiation')."),
     latexFormula: z.string().describe("A complex mathematical formula formatted in LaTeX, without dollar signs or other wrappers."),
     instruction: z.string().describe("A clear instruction for the student (e.g. 'Solve for x')."),
     answer: z.string().describe("The final, single correct answer to the problem."),
@@ -62,7 +61,6 @@ export async function generateSeniorMath(context: z.infer<typeof AIContextSchema
     const prompt = `You are a math teacher. 
     Topic: ${context.topic}. 
     Grade Level: ${context.gradeLevel}. 
-    Difficulty: ${context.difficulty}. 
     Additional Rules: ${context.instructions || 'None'}. 
     Return a LaTeX formula without dollar signs and a clear solution.`;
     const { output } = await ai.generate({ prompt, output: { schema: MathSchema } });
@@ -93,7 +91,6 @@ export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>
   try {
     const prompt = `Design a virtual science lab experiment based on this context:
     Topic: "${context.topic}"
-    Difficulty: ${context.difficulty}
     Grade Level: ${context.gradeLevel}
     Specific Instructions: ${context.instructions || 'None'}
     

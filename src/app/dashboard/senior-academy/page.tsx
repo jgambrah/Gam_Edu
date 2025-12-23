@@ -28,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import ReactMarkdown from 'react-markdown';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
 // Import the AI actions
@@ -225,7 +226,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                     <CardContent className="p-10 space-y-12 max-w-4xl mx-auto">
                         {/* 1. Introduction Block */}
                         <section className="prose prose-slate max-w-none">
-                            <p className="text-2xl leading-relaxed text-slate-600 first-letter:text-5xl first-letter:font-bold first-letter:mr-2">
+                            <p className="whitespace-pre-wrap text-2xl leading-relaxed text-slate-600 first-letter:text-5xl first-letter:font-bold first-letter:mr-2">
                                 {activeLesson.introduction}
                             </p>
                         </section>
@@ -235,7 +236,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                             {activeLesson.content_blocks?.map((block: any, i: number) => (
                                 <div key={i} className="animate-in fade-in" style={{ animationDelay: `${i * 0.2}s` }}>
                                     {block.type === 'text' && (
-                                        <p className="text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
+                                        <p className="whitespace-pre-wrap text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
                                     )}
                                     {block.type === 'latex' && (
                                         <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-emerald-500 flex justify-center overflow-x-auto">
@@ -267,7 +268,7 @@ function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
                             </h3>
                             {activeLesson.practice_problems?.map((prob: any, i: number) => (
                                 <div key={i} className="p-8 bg-slate-50 rounded-[32px] border-2 border-slate-100 space-y-6">
-                                    <p className="text-xl font-bold text-slate-700 whitespace-pre-wrap">
+                                    <p className="whitespace-pre-wrap text-xl font-bold text-slate-700">
                                         {prob.question}
                                     </p>
                                     <div className="flex gap-4">
@@ -318,7 +319,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const [subject, setSubject] = useState('math');
     const [topic, setTopic] = useState('');
     const [gradeLevel, setGradeLevel] = useState('SHS');
-    const [difficulty, setDifficulty] = useState('University');
     const [instructions, setInstructions] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -326,20 +326,18 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const [isManualFormOpen, setIsManualFormOpen] = useState(false);
     const [manualType, setManualType] = useState('math');
     const [manualTitle, setManualTitle] = useState('');
-    const [manualContent, setManualContent] = useState('');
     const [manualCategory, setManualCategory] = useState('');
+    const [manualSubTopic, setManualSubTopic] = useState('');
+    const [manualGradeLevel, setManualGradeLevel] = useState('JHS');
+    
+    // Manual state for specific types
     const [manualFormula, setManualFormula] = useState('');
     const [manualInstruction, setManualInstruction] = useState('');
     const [manualAnswer, setManualAnswer] = useState('');
-    
-    // Science Manual State
+    const [manualContent, setManualContent] = useState('');
     const [manualLab, setManualLab] = useState({
-        background: '',
-        question: '',
-        hypothesisPrompt: '',
-        hypothesisOptions: ['', '', ''],
-        conclusion: '',
-        explanation: ''
+        background: '', question: '', hypothesisPrompt: '', 
+        hypothesisOptions: ['', '', ''], conclusion: '', explanation: ''
     });
 
     const [manualLoading, setManualLoading] = useState(false);
@@ -351,7 +349,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
         }
         setLoading(true);
 
-        const context = { topic, gradeLevel, difficulty, instructions };
+        const context = { topic, gradeLevel, instructions };
         let collectionName = '';
         let aiAction;
 
@@ -378,6 +376,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
             if (result.success && result.data && firestore) {
                 await addDoc(collection(firestore, collectionName), {
                     ...result.data,
+                    gradeLevel: gradeLevel, // Add grade level to data
                     createdAt: serverTimestamp()
                 });
                 toast({ title: 'Content Created!', description: `${subject} module added successfully.` });
@@ -400,33 +399,28 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
         setManualLoading(true);
     
         let collectionName = '';
-        let dataToSave: any = { title: manualTitle, createdAt: serverTimestamp() };
+        let dataToSave: any = { 
+            title: manualTitle, 
+            category: manualCategory, 
+            subTopic: manualSubTopic,
+            gradeLevel: manualGradeLevel,
+            createdAt: serverTimestamp() 
+        };
     
         if (manualType === 'math') {
             collectionName = 'senior_math';
             dataToSave = {
                 ...dataToSave,
-                category: manualCategory,
                 latexFormula: manualFormula,
                 instruction: manualInstruction,
                 answer: manualAnswer,
             };
         } else if (manualType === 'english') {
             collectionName = 'senior_stories';
-            dataToSave = {
-                ...dataToSave,
-                content: manualContent,
-                genre: manualCategory,
-                quiz: [], // Manual quiz is complex, keep simple
-            };
+            dataToSave = { ...dataToSave, content: manualContent, genre: manualCategory, quiz: [] };
         } else if (manualType === 'science') {
             collectionName = 'senior_labs';
-            dataToSave = {
-                ...dataToSave,
-                category: manualCategory,
-                icon: '🔬', // Default icon
-                ...manualLab,
-            };
+            dataToSave = { ...dataToSave, icon: '🔬', ...manualLab };
         }
     
         try {
@@ -440,6 +434,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
             setManualLoading(false);
         }
     };
+
+    const GRADE_LEVELS = ['Early Childhood', 'Lower Primary', 'Upper Primary', 'JHS', 'SHS'];
 
     return (
         <Card className="bg-slate-800 text-white shadow-2xl border-indigo-900">
@@ -468,27 +464,42 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                                 </SelectContent>
                             </Select>
 
+                            <Label>Grade Level</Label>
+                            <Select value={manualGradeLevel} onValueChange={setManualGradeLevel}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    {GRADE_LEVELS.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+
+                            <Label>Main Topic / Category</Label>
+                            <Input value={manualCategory} onChange={e => setManualCategory(e.target.value)} placeholder="e.g., Algebra, Physics, Poetry"/>
+
+                            <Label>Sub-Topic</Label>
+                            <Input value={manualSubTopic} onChange={e => setManualSubTopic(e.target.value)} placeholder="e.g., Linear Equations, Optics"/>
+
                             <Label>Title</Label>
                             <Input value={manualTitle} onChange={e => setManualTitle(e.target.value)} />
                             
-                            {manualType === 'math' ? (
+                            {manualType === 'math' && (
                                 <div className="space-y-4 p-4 border rounded-md bg-slate-50">
-                                    <Label>Math Details</Label>
-                                    <Input placeholder="Category (e.g. Calculus)" value={manualCategory} onChange={e => setManualCategory(e.target.value)} />
+                                    <Label className="font-bold">Math Details</Label>
                                     <Textarea placeholder="LaTeX Formula (e.g. \int_0^1 x^2 dx)" value={manualFormula} onChange={e => setManualFormula(e.target.value)} />
                                     <Input placeholder="Instruction (e.g. Solve for x)" value={manualInstruction} onChange={e => setManualInstruction(e.target.value)} />
                                     <Input placeholder="Final Answer" value={manualAnswer} onChange={e => setManualAnswer(e.target.value)} />
                                 </div>
-                            ) : manualType === 'english' ? (
+                            )}
+
+                            {manualType === 'english' && (
                                 <div className="space-y-4 p-4 border rounded-md bg-slate-50">
-                                    <Label>English Details</Label>
-                                    <Input placeholder="Genre (e.g. Poetry)" value={manualCategory} onChange={e => setManualCategory(e.target.value)} />
+                                     <Label className="font-bold">English Details</Label>
                                     <Textarea placeholder="Full text of the passage..." value={manualContent} onChange={e => setManualContent(e.target.value)} rows={6}/>
                                 </div>
-                            ) : (
+                            )}
+                            
+                            {manualType === 'science' && (
                                 <div className="space-y-4 p-4 border rounded-md bg-slate-50">
-                                    <Label>Science Lab Details</Label>
-                                    <Input placeholder="Category (e.g. Physics)" value={manualCategory} onChange={e => setManualCategory(e.target.value)} />
+                                    <Label className="font-bold">Science Lab Details</Label>
                                     <Textarea placeholder="Background Info" value={manualLab.background} onChange={e => setManualLab({...manualLab, background: e.target.value})}/>
                                     <Textarea placeholder="Research Question" value={manualLab.question} onChange={e => setManualLab({...manualLab, question: e.target.value})}/>
                                     <Textarea placeholder="Hypothesis Prompt" value={manualLab.hypothesisPrompt} onChange={e => setManualLab({...manualLab, hypothesisPrompt: e.target.value})}/>
@@ -518,16 +529,18 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                         </Select>
                     </div>
                      <div className="space-y-1">
-                        <Label className="text-slate-400 text-xs">Difficulty</Label>
-                        <Select value={difficulty} onValueChange={setDifficulty}>
+                        <Label className="text-slate-400 text-xs">Grade Level</Label>
+                        <Select value={gradeLevel} onValueChange={setGradeLevel}>
                             <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue/></SelectTrigger>
-                            <SelectContent><SelectItem value="JHS">JHS</SelectItem><SelectItem value="SHS">SHS</SelectItem><SelectItem value="University">University</SelectItem></SelectContent>
+                            <SelectContent>
+                                {GRADE_LEVELS.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
+                            </SelectContent>
                         </Select>
                     </div>
                 </div>
                 <div className="space-y-1">
                     <Label className="text-slate-400 text-xs">Topic</Label>
-                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Quantum Physics, Shakespeare" className="bg-slate-700 border-slate-600 text-white" />
+                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Quantum Physics, Shakespearean Sonnets" className="bg-slate-700 border-slate-600 text-white" />
                 </div>
                 <Button onClick={handleAiGenerate} disabled={loading || !topic} className="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold h-12">
                     {loading ? <Loader2 className="animate-spin"/> : "Generate Content with AI"}
@@ -574,7 +587,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                 {!activeStory ? (
                     <div className="h-96 flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
                         <BookOpen className="w-16 h-16 text-slate-200 mb-4" />
-                        <p className="text-slate-400 font-bold text-xl">Select a Literary Work</p>
+                        <p className="text-slate-400 font-bold text-2xl">Select a Literary Work</p>
                     </div>
                 ) : (
                     <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden bg-white">
@@ -588,7 +601,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             </div>
                         </div>
                         <CardContent className="p-10 space-y-10">
-                            <p className="text-2xl leading-relaxed text-slate-700 font-serif whitespace-pre-wrap">{activeStory.content}</p>
+                            <p className="whitespace-pre-wrap text-2xl leading-relaxed text-slate-700 font-serif">{activeStory.content}</p>
                             <div className="bg-slate-50 p-8 rounded-[32px] space-y-8 border-2 border-slate-100">
                                 <h3 className="text-2xl font-black text-indigo-900 flex items-center gap-2"><Brain className="text-indigo-500"/> Critical Analysis</h3>
                                 {activeStory.quiz.map((q: any, i: number) => (
@@ -629,6 +642,9 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
 
+    const [selectedGrade, setSelectedGrade] = useState('JHS');
+    const GRADE_LEVELS = ['Early Childhood', 'Lower Primary', 'Upper Primary', 'JHS', 'SHS'];
+
     const mathQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, [firestore]);
     const { data: dbProblems, isLoading: isLoadingProblems, forceRefetch } = useCollection<any>(mathQuery);
 
@@ -653,13 +669,16 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     
     const groupedProblems = useMemo(() => {
         if (!dbProblems) return {};
-        return dbProblems.reduce((acc, p) => {
+        const filteredByGrade = dbProblems.filter(p => p.gradeLevel === selectedGrade);
+        return filteredByGrade.reduce((acc, p) => {
             const category = p.category || 'General';
-            if (!acc[category]) acc[category] = [];
-            acc[category].push(p);
+            if (!acc[category]) acc[category] = {};
+            const subTopic = p.subTopic || 'Uncategorized';
+            if (!acc[category][subTopic]) acc[category][subTopic] = [];
+            acc[category][subTopic].push(p);
             return acc;
-        }, {} as Record<string, any[]>);
-    }, [dbProblems]);
+        }, {} as Record<string, Record<string, any[]>>);
+    }, [dbProblems, selectedGrade]);
 
     return (
         <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in">
@@ -667,11 +686,11 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 {problem ? (
                     <Card className="rounded-[50px] border-none shadow-2xl overflow-hidden bg-white">
                         <div className="bg-emerald-600 p-10 text-center text-white">
-                            <Badge className="bg-emerald-400 mb-4">{problem.category}</Badge>
+                            <Badge className="bg-emerald-400 mb-4">{problem.category} / {problem.subTopic}</Badge>
                             <CardTitle className="text-4xl font-black">{problem.title}</CardTitle>
                         </div>
                         <CardContent className="p-12 space-y-10">
-                            <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl relative border-t-8 border-emerald-500">
+                            <div className="bg-slate-900 p-12 rounded-[40px] shadow-inner relative border-t-8 border-emerald-500">
                                 <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
                                     <SafeMath formula={problem.latexFormula} />
                                 </div>
@@ -691,7 +710,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100 min-h-[400px]">
                         <Sigma className="w-20 h-20 text-slate-200 mb-4" />
                         <p className="text-slate-400 font-bold text-2xl">Select a Math Mission</p>
                     </div>
@@ -699,31 +718,51 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
             </div>
 
             <div className="lg:col-span-1 order-1 lg:order-2 space-y-4">
-                 <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Problem Archive</h3>
-                 <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                 <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                    <SelectTrigger className="font-bold"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        {GRADE_LEVELS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
+                    </SelectContent>
+                 </Select>
+                 <ScrollArea className="h-[60vh] -mr-3 pr-3">
+                 <div className="space-y-4">
                     {isLoadingProblems ? (
                         <Skeleton className="h-40 w-full"/>
-                    ) : Object.entries(groupedProblems).map(([category, problems]) => (
-                        <div key={category}>
-                            <h4 className="font-bold text-slate-600 mb-2">{category}</h4>
-                            <div className="space-y-2">
-                                {problems.map((p: any) => (
-                                    <div key={p.id} className="relative group">
-                                        <button 
-                                            onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }} 
-                                            className={`w-full text-left p-4 rounded-[24px] border-b-4 transition-all ${problem?.id === p.id ? 'bg-emerald-50 border-emerald-500' : 'bg-white border-slate-100 hover:border-emerald-200'}`}
-                                        >
-                                            <p className="font-bold text-slate-800">{p.title}</p>
-                                        </button>
-                                         {canEdit && (
-                                            <button onClick={() => handleDelete(p.id)} className="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100 z-10"><Trash2 className="w-4 h-4"/></button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                    ) : Object.keys(groupedProblems).length === 0 ? (
+                        <p className="text-sm text-center text-muted-foreground p-8">No problems found for this grade level.</p>
+                    ) : Object.entries(groupedProblems).map(([category, subTopics]) => (
+                        <Accordion key={category} type="single" collapsible className="w-full">
+                            <AccordionItem value={category} className="border bg-white rounded-2xl shadow-sm">
+                                <AccordionTrigger className="p-4 font-bold text-slate-700 text-md">{category}</AccordionTrigger>
+                                <AccordionContent className="px-4 pb-4">
+                                     {Object.entries(subTopics).map(([subTopic, problems]) => (
+                                         <Accordion key={subTopic} type="single" collapsible className="w-full">
+                                            <AccordionItem value={subTopic} className="border-t">
+                                                <AccordionTrigger className="text-sm">{subTopic}</AccordionTrigger>
+                                                <AccordionContent className="pl-4 border-l-2 border-slate-200 ml-2">
+                                                     {problems.map((p: any) => (
+                                                        <div key={p.id} className="relative group my-1">
+                                                            <button 
+                                                                onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }} 
+                                                                className={`w-full text-left p-3 rounded-lg border-b-2 transition-all ${problem?.id === p.id ? 'bg-emerald-50 border-emerald-500' : 'bg-slate-50/50 border-slate-100'}`}
+                                                            >
+                                                                <p className="font-semibold text-slate-800 text-xs">{p.title}</p>
+                                                            </button>
+                                                            {canEdit && (
+                                                                <button onClick={() => handleDelete(p.id)} className="absolute top-1 right-1 text-red-300 opacity-0 group-hover:opacity-100 z-10"><Trash2 className="w-3 h-3"/></button>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                         </Accordion>
+                                     ))}
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     ))}
                  </div>
+                 </ScrollArea>
             </div>
         </div>
     );
@@ -840,7 +879,6 @@ export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
     
-    // This is a dummy function. In a real app, you'd fetch data or trigger a re-render.
     const handleContentUpdate = () => {
         console.log("Content updated. Re-fetching data...");
     };
