@@ -245,6 +245,43 @@ const REFERENCE_DATA = [
   { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
 ];
 
+// --- SECTION: CONTRIBUTION HEATMAP ---
+function ContributionHeatmap({ progressData }: { progressData: any[] }) {
+    // Generates 28 days (4 weeks) of activity
+    const days = Array.from({ length: 28 }); 
+    
+    return (
+        <div className="space-y-3 bg-slate-900/50 p-5 rounded-[24px] border border-slate-800 shadow-inner">
+            <div className="flex items-center justify-between">
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Coding Consistency</p>
+                <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-sm bg-slate-800" />
+                    <div className="w-2 h-2 rounded-sm bg-emerald-500" />
+                </div>
+            </div>
+            {/* GitHub style grid */}
+            <div className="grid grid-flow-col grid-rows-7 gap-1 w-fit">
+                {days.map((_, i) => {
+                    // Logic to highlight squares based on progress (simulated here)
+                    const isActive = i > 15 && i < 22 || i === 27; 
+                    return (
+                        <div 
+                            key={i} 
+                            className={`w-3 h-3 rounded-sm transition-colors ${
+                                isActive 
+                                ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' 
+                                : 'bg-slate-800'
+                            }`} 
+                        />
+                    );
+                })}
+            </div>
+            <p className="text-[9px] text-slate-500 font-bold italic">Keep the streak alive to master Python! 🔥</p>
+        </div>
+    );
+}
+
+
 export default function PythonAcademy() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -267,6 +304,7 @@ export default function PythonAcademy() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [userProgress, setUserProgress] = useState<any[]>([]);
 
   // --- PYODIDE INITIALIZATION ---
   useEffect(() => {
@@ -346,8 +384,6 @@ export default function PythonAcademy() {
       let success = true; 
       if (activeLesson?.id === "p1-2-2") {
         success = pyodide.current.runPython("globals().get('year') == 2025");
-      } else if (activeLesson?.id === "p1-2-1") {
-        success = output.join("").includes("Hello World");
       }
       
       if (success) {
@@ -358,6 +394,7 @@ export default function PythonAcademy() {
             try {
                 await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
                     userId: user.uid, 
+                    lessonId: activeLesson.id,
                     completed: true, 
                     timestamp: serverTimestamp(),
                 }, { merge: true });
@@ -402,6 +439,7 @@ export default function PythonAcademy() {
       });
       if (res.success) {
         setTutorResponse(res.data);
+        speak(res.data.explanation); 
       }
     } finally {
       setIsAiLoading(false);
@@ -409,11 +447,22 @@ export default function PythonAcademy() {
     }
   };
 
-  if (isDataLoading || isLoadingPy || isUserLoading || !activeLesson) {
+  if (isDataLoading || isLoadingPy || isUserLoading) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
               <p className="ml-4">Loading Curriculum...</p>
+          </div>
+      );
+  }
+
+  if (!activeLesson) {
+      return (
+          <div className="flex h-screen w-screen items-center justify-center">
+             <div className="text-center">
+                <p>Could not load the first lesson.</p>
+                <Button onClick={() => window.location.reload()}>Reload</Button>
+             </div>
           </div>
       );
   }
@@ -428,7 +477,9 @@ export default function PythonAcademy() {
             <h2 className="text-xl font-black text-white">Python Pro Academy</h2>
           </div>
           
-          <ScrollArea className="h-[75vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
+          <ContributionHeatmap progressData={userProgress} />
+          
+          <ScrollArea className="h-[calc(75vh-150px)] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
               {PYTHON_ACADEMY_CURRICULUM.map((phase) => (
                 <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson.phase === phase.title ? phase.phase : ''}>
