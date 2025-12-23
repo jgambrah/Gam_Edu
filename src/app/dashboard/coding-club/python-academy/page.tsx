@@ -171,7 +171,7 @@ export default function PythonAcademy() {
                 <CardTitle className="text-sm font-black text-slate-400 uppercase tracking-widest">Learning Pathway</CardTitle>
               </CardHeader>
               <CardContent className="p-2">
-                <Accordion type="multiple" defaultValue={['phase1', 'topic-1']} className="space-y-4">
+                <Accordion type="multiple" defaultValue={['Phase 1', '1. Environment Setup']} className="space-y-4">
                   {PYTHON_SYLLABUS.map((phase) => (
                     <AccordionItem key={phase.phase} value={phase.phase} className="border-none bg-slate-900/50 rounded-3xl overflow-hidden px-4">
                       <AccordionTrigger className="hover:no-underline py-4">
@@ -185,9 +185,9 @@ export default function PythonAcademy() {
                       </AccordionTrigger>
                       <AccordionContent className="pb-4 space-y-4">
                         {phase.mainTopics.map((topic, topicIdx) => (
-                          <Accordion key={topic.title} type="single" collapsible defaultValue={`topic-${topicIdx}`}>
-                            <AccordionItem value={`topic-${topicIdx}`} className="border-none">
-                              <AccordionTrigger className="text-xs font-bold text-slate-500 py-2 hover:no-underline">
+                          <Accordion key={topic.title} type="single" collapsible defaultValue={topic.title}>
+                            <AccordionItem value={topic.title} className="border-none">
+                              <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-slate-300 hover:no-underline">
                                 {topic.title}
                               </AccordionTrigger>
                               <AccordionContent className="space-y-1">
@@ -266,7 +266,7 @@ export default function PythonAcademy() {
                 <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
                   <div className="flex items-center gap-2 mb-4 text-slate-600">
                     <Terminal className="h-3 w-3" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">System Console</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">System Console Output</span>
                   </div>
                   <ScrollArea className="h-40">
                     {output.map((line, i) => (
@@ -281,10 +281,9 @@ export default function PythonAcademy() {
 
           {/* RIGHT: CHEAT SHEET & TIPS */}
           <aside className="lg:col-span-3 space-y-6">
-            {/* CHEAT SHEET */}
             <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
               <CardHeader className="bg-slate-800/50">
-                <CardTitle className="text-xs font-black text-indigo-400 uppercase flex items-center gap-2">
+                <CardTitle className="text-sm font-black text-indigo-400 uppercase flex items-center gap-2">
                   <FileJson className="h-4 w-4" /> Python Cheat Sheet
                 </CardTitle>
               </CardHeader>
@@ -320,8 +319,7 @@ export default function PythonAcademy() {
               </CardContent>
             </Card>
 
-            {/* LEARNING TIPS */}
-            <div className="p-8 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl">
+            <div className="p-6 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl">
               <Sparkles className="h-8 w-8 mb-4 text-yellow-300" />
               <h3 className="text-xl font-black mb-2">Ready for a challenge?</h3>
               <p className="text-sm opacity-80 mb-6">Build a simple calculator using the variables and input logic we just learned.</p>
@@ -333,9 +331,4 @@ export default function PythonAcademy() {
       </div>
     </div>
   );
-}
-
-// --- SUB-COMPONENTS (Simplified for standard UI) ---
-function Badge({ children, variant, className }: any) {
-  return <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${className}`}>{children}</span>;
 }
