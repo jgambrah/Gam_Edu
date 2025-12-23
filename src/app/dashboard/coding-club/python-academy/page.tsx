@@ -6,7 +6,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
-  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket, Terminal, BarChart3, Target, BookCopy
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { PYTHON_ACADEMY_CURRICULUM, Mission } from '@/lib/logic-lab-data';
 import dynamic from 'next/dynamic';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
@@ -35,17 +34,75 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 });
 
 
-// --- REFERENCE GUIDE DATA ---
-const REFERENCE_DATA = [
-  { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
-  { title: "print()", desc: "Outputs text or numbers to the console.", example: "print('Hello')" },
-  { title: "if / else", desc: "Decides which code to run based on a condition.", example: "if x > 5: print('Big')" },
-  { title: "for loop", desc: "Repeats code for each item in a sequence.", example: "for i in range(3):" },
-  { title: "while loop", desc: "Repeats code as long as a condition is true.", example: "while x < 10:" },
-  { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
+// --- UPDATED FULL PHASE 1 SYLLABUS ---
+const PYTHON_ACADEMY_CURRICULUM = [
+  {
+    phase: "Phase 1",
+    title: "Python Fundamentals (Weeks 1-2)",
+    mainTopics: [
+      {
+        title: "1. Environment Setup",
+        lessons: [
+          { id: "p1-1-1", title: "Install Python & VS Code", task: "Run your first script to confirm Python is in your PATH.", startingCode: "import sys\nprint('Python Version:', sys.version)\nprint('Environment Ready!')" },
+        ]
+      },
+      {
+        title: "2. The Basics",
+        lessons: [
+          { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')" },
+          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = \nprint(year)" },
+          { id: "p1-2-3", title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
+          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)" },
+          { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)" }
+        ]
+      },
+      {
+        title: "3. Data Types",
+        lessons: [
+          { id: "p1-3-1", title: "Numbers (Int & Float)", task: "Create an integer and a decimal (float).", startingCode: "my_int = 10\nmy_float = 10.5\nprint(type(my_float))" },
+          { id: "p1-3-2", title: "Strings", task: "Create a string with double quotes.", startingCode: "msg = \"Python is fun\"\nprint(msg)" },
+          { id: "p1-3-3", title: "Booleans", task: "Set a variable to True.", startingCode: "is_sunny = \nprint(is_sunny)" }
+        ]
+      },
+      {
+        title: "4. Data Structures (Basic)",
+        lessons: [
+          { id: "p1-4-1", title: "Lists (Create & Access)", task: "Change the first item in the list to 'Apple'.", startingCode: "fruits = ['Orange', 'Banana']\nfruits[0] = 'Apple'\nprint(fruits)" },
+          { id: "p1-4-2", title: "Tuples", task: "Create an unchangeable tuple (a, b).", startingCode: "coords = (10, 20)\nprint(coords)" },
+          { id: "p1-4-3", title: "Dictionaries", task: "Access the 'age' value from the dictionary.", startingCode: "user = {'name': 'Kojo', 'age': 15}\nprint(user['age'])" },
+          { id: "p1-4-4", title: "Sets", task: "Create a set with unique numbers.", startingCode: "my_set = {1, 2, 2, 3} # 2 will only appear once\nprint(my_set)" }
+        ]
+      },
+      {
+        title: "5. Control Flow",
+        lessons: [
+          { id: "p1-5-1", title: "If, Elif, Else", task: "Write an if statement to check if x is 10.", startingCode: "x = 10\nif x == 10:\n    print('Correct!')" },
+          { id: "p1-5-2", title: "For Loops & Range()", task: "Print numbers 0 to 4 using range(5).", startingCode: "for i in range(5):\n    print(i)" },
+          { id: "p1-5-3", title: "While Loops", task: "Create a loop that runs while count < 3.", startingCode: "count = 0\nwhile count < 3:\n    print(count)\n    count += 1" },
+          { id: "p1-5-4", title: "Break & Continue", task: "Use 'break' to stop a loop early.", startingCode: "for i in range(10):\n    if i == 3:\n        break\n    print(i)" }
+        ]
+      }
+    ]
+  },
+  {
+    phase: "Phase 2",
+    title: "Intermediate Python (Weeks 3-4)",
+    mainTopics: []
+  },
+  {
+    phase: "Phase 3",
+    title: "Object-Oriented Programming (OOP) & Beyond (Weeks 5-6)",
+    mainTopics: []
+  },
+  {
+    phase: "Phase 4",
+    title: "Specialization & Projects (Weeks 7+)",
+    mainTopics: []
+  }
 ];
 
-// --- STREAK COMPONENT ---
+
+// --- UPGRADE 4: STREAK COMPONENT ---
 function ContributionHeatmap() {
     const days = Array.from({ length: 28 }); // Mocking 4 weeks
     return (
@@ -70,15 +127,15 @@ export default function PythonAcademy() {
   const { toast } = useToast();
 
   // --- STATE ---
-  const [allMissions, setAllMissions] = useState<Mission[]>([]);
+  const [allMissions, setAllMissions] = useState<any[]>(PYTHON_ACADEMY_CURRICULUM);
   const [missionsLoaded, setMissionsLoaded] = useState(false);
-  const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
-  const [completedMissions, setCompletedMissions] = useState<number[]>([]);
+  const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
+  const [completedMissions, setCompletedMissions] = useState<string[]>([]);
   const [code, setCode] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
-  const [isPassed, setIsPassed] = useState(false);
+  const [isPassed, setIsPassed] = useState(false); // UPGRADE 2: VALIDATION
   const pyodide = useRef<any>(null);
 
   // AI Tutor State
@@ -87,41 +144,31 @@ export default function PythonAcademy() {
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   // --- PYODIDE INITIALIZATION ---
-useEffect(() => {
-  async function initPyodide() {
-    if (!pyodide.current) {
-      // @ts-ignore
-      pyodide.current = await window.loadPyodide();
-      
-      // PRE-LOAD PROFESSIONAL PACKAGES
-      // This ensures Phase 4 (Data Science) works instantly
-      await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
-      
-      setIsLoadingPy(false);
-    }
-  }
-  initPyodide();
-}, []);
-
-  // --- 1. LOAD MISSIONS FROM DB ---
   useEffect(() => {
-    if (!firestore) return;
-    const q = query(collection(firestore, 'logic_lab_curriculum'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-        const dbMissions: Mission[] = [];
-        snapshot.forEach((doc) => dbMissions.push(doc.data() as Mission));
-        // Safe merge and sort
-        const merged = [...PYTHON_ACADEMY_CURRICULUM, ...dbMissions]
-            .filter((val, index, self) => self.findIndex(m => m.id === val.id) === index) // De-duplicate
-            .sort((a, b) => a.id - b.id);
+    async function initPyodide() {
+      if (!pyodide.current) {
+        // @ts-ignore
+        pyodide.current = await window.loadPyodide();
         
-        setAllMissions(merged);
-        setMissionsLoaded(true);
-    });
-    return () => unsubscribe();
-  }, [firestore]);
-  
-  const activeLesson = allMissions[currentMissionIndex] || PYTHON_ACADEMY_CURRICULUM[0];
+        // PRE-LOAD PROFESSIONAL PACKAGES
+        // This ensures Phase 4 (Data Science) works instantly
+        await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
+        
+        setIsLoadingPy(false);
+      }
+    }
+    initPyodide();
+  }, []);
+
+  const activeLesson = useMemo(() => {
+      for (const phase of allMissions) {
+          for (const topic of phase.mainTopics) {
+              const lesson = topic.lessons.find((l: any) => l.id === currentMissionId);
+              if (lesson) return lesson;
+          }
+      }
+      return allMissions[0]?.mainTopics[0]?.lessons[0] || null;
+  }, [allMissions, currentMissionId]);
   
   // Reset code when mission changes
   useEffect(() => {
@@ -141,7 +188,7 @@ useEffect(() => {
         try {
             const ref = doc(firestore, 'student_progress', user.uid);
             const snap = await getDoc(ref);
-            if (snap.exists() && snap.data().logicLabCompleted) {
+            if (snap.exists() && snap.data().logicLabCompleted) { // Assuming same progress data structure
                 setCompletedMissions(snap.data().logicLabCompleted);
             }
         } catch(e) { console.error(e); }
@@ -162,11 +209,14 @@ useEffect(() => {
       await pyodide.current.runPythonAsync(code);
       
       // Validation Logic
-      const success = pyodide.current.runPython("globals().get('year') == 2025");
+      let success = false;
+      if (activeLesson.id === "p1-2-2") {
+        success = pyodide.current.runPython("globals().get('year') == 2025");
+      }
       
       if (success) {
         setIsPassed(true);
-        confetti({ particleCount: 100 });
+        confetti({ particleCount: 100, spread: 70 });
 
         // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
         if (user && firestore) {
@@ -175,7 +225,6 @@ useEffect(() => {
                     userId: user.uid, 
                     completed: true, 
                     timestamp: serverTimestamp(),
-                    // schoolId: schoolId // Add this if using SaaS version
                 });
             } catch (dbError) {
                 console.error("Database save failed:", dbError);
@@ -183,44 +232,28 @@ useEffect(() => {
             }
         }
       }
+
+      // --- RENDER MATPLOTLIB TO CANVAS ---
+      const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
+      if (hasPlot) {
+        pyodide.current.runPython(`
+            import io, base64
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
+            from js import document
+            document.getElementById('plot-output').src = img_str
+        `);
+      }
+
     } catch (pythonErr: any) {
-      // This is for actual Python typos (like prnt instead of print)
       setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
     }
     setIsRunning(false);
 };
 
-  const groupedMissions = useMemo(() => {
-    const groups: Record<string, Mission[]> = {};
-    allMissions.forEach(m => { if(!groups[m.section]) groups[m.section] = []; groups[m.section].push(m); });
-    return groups;
-  }, [allMissions]);
-
-  const askTutor = async () => {
-    if (!aiQuestion.trim()) return;
-    setIsAiLoading(true);
-    try {
-      const res = await getPythonTutorHelp({
-        phase: activeLesson.phase || "Fundamentals",
-        lesson: activeLesson.title,
-        task: activeLesson.task,
-        userCode: code,
-        question: aiQuestion
-      });
-      if (res.success && res.data) {
-        setTutorResponse(res.data);
-      } else {
-        throw new Error(res.error || "AI failed to respond.");
-      }
-    } catch(e) {
-        toast({ title: "AI Tutor Error", description: "Could not get a response.", variant: "destructive"});
-    } finally {
-      setIsAiLoading(false);
-      setAiQuestion("");
-    }
-  };
-
-  if (!missionsLoaded) {
+  if (!activeLesson) {
     return <div className="flex h-screen w-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
   
@@ -236,21 +269,32 @@ useEffect(() => {
           <ContributionHeatmap />
           <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
-              {Object.entries(groupedMissions).map(([phase, lessons]) => (
-                <Accordion key={phase} type="single" collapsible className="w-full" defaultValue={activeLesson.phase === phase ? phase : ''}>
-                  <AccordionItem value={phase} className="border-none">
+              {allMissions.map((phase) => (
+                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson && activeLesson.id.startsWith(phase.phase.replace(/\s+/g, '-').toLowerCase().slice(0, 4)) ? phase.phase : ''}>
+                  <AccordionItem value={phase.phase} className="border-none">
                     <AccordionTrigger className="hover:no-underline p-3 bg-slate-800/50 rounded-2xl mb-1 group">
-                      <span className="font-black text-slate-300 text-xs uppercase tracking-tight">{phase}</span>
+                      <span className="font-black text-slate-300 text-xs uppercase tracking-tight">{phase.title}</span>
                     </AccordionTrigger>
                     <AccordionContent className="pt-1 pl-4 space-y-1">
-                      {lessons.map(lesson => (
-                        <button
-                          key={lesson.id}
-                          onClick={() => setCurrentMissionIndex(allMissions.findIndex(am => am.id === lesson.id))}
-                          className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-950 shadow-md' : 'hover:bg-slate-800 text-slate-400'}`}
-                        >
-                          {lesson.title}
-                        </button>
+                      {phase.mainTopics.map((mainTopic: any) => (
+                        <Accordion key={mainTopic.title} type="single" collapsible>
+                          <AccordionItem value={mainTopic.title} className="border-none">
+                            <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-emerald-400">
+                                {mainTopic.title}
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-1 pl-4">
+                                {mainTopic.lessons.map((lesson: any) => (
+                                    <button
+                                        key={lesson.id}
+                                        onClick={() => setCurrentMissionId(lesson.id)}
+                                        className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeLesson?.id === lesson.id ? 'bg-yellow-500 text-slate-950 shadow-md' : 'hover:bg-slate-800 text-slate-400'}`}
+                                    >
+                                        {lesson.title}
+                                    </button>
+                                ))}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
                       ))}
                     </AccordionContent>
                   </AccordionItem>
@@ -288,7 +332,7 @@ useEffect(() => {
                 <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
                     <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
                         <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                        <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
+                        <h3 className="text-3xl font-black text-white">Mission Complete!</h3>
                         <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">Next Lesson</Button>
                     </div>
                 </div>
@@ -356,7 +400,20 @@ useEffect(() => {
                     className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
                   />
                   <Button 
-                    onClick={askTutor} 
+                    onClick={async () => {
+                      if (!aiQuestion.trim()) return;
+                      setIsAiLoading(true);
+                      const res = await getPythonTutorHelp({
+                        phase: "Phase 1",
+                        lesson: activeLesson.title,
+                        task: activeLesson.task,
+                        userCode: code,
+                        question: aiQuestion
+                      });
+                      if (res.success) setTutorResponse(res.data);
+                      setIsAiLoading(false);
+                      setAiQuestion("");
+                    }} 
                     disabled={isAiLoading || !aiQuestion}
                     className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
                   >
@@ -366,23 +423,10 @@ useEffect(() => {
               )}
             </CardContent>
           </Card>
-          <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="text-yellow-500 h-4 w-4" />
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
-            </div>
-            <ul className="space-y-3">
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Consistency is key.
-              </li>
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Build projects to apply logic.
-              </li>
-            </ul>
-          </div>
         </aside>
-
       </div>
     </div>
   );
 }
+
+    
