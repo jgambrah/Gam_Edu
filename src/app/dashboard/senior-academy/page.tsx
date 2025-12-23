@@ -669,7 +669,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     
     const groupedProblems = useMemo(() => {
         if (!dbProblems) return {};
-        const filteredByGrade = dbProblems.filter(p => p.gradeLevel === selectedGrade);
+        const filteredByGrade = dbProblems.filter(p => p.gradeLevel === selectedGrade || (!p.gradeLevel && selectedGrade === 'JHS'));
         return filteredByGrade.reduce((acc, p) => {
             const category = p.category || 'General';
             if (!acc[category]) acc[category] = {};
