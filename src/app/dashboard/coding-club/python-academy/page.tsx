@@ -87,7 +87,47 @@ const PYTHON_ACADEMY_CURRICULUM = [
   {
     phase: "Phase 2",
     title: "Intermediate Python (Weeks 3-4)",
-    mainTopics: []
+    mainTopics: [
+      {
+        title: "1. Functions",
+        lessons: [
+          { id: "p2-1-1", title: "Defining & Calling", task: "Create a function named 'welcome' that prints a greeting.", startingCode: "def welcome():\n    print('Welcome to Phase 2!')\n\nwelcome()" },
+          { id: "p2-1-2", title: "Arguments (Default & Keyword)", task: "Create a function with a default 'city' argument.", startingCode: "def travel(city='Accra'):\n    print('Visiting ' + city)\n\ntravel()\ntravel(city='Kumasi')" },
+          { id: "p2-1-3", title: "Advanced Args (*args, **kwargs)", task: "Use *args to accept multiple numbers and sum them.", startingCode: "def sum_all(*args):\n    return sum(args)\n\nprint(sum_all(1, 2, 3, 4))" },
+          { id: "p2-1-4", title: "Lambda Expressions", task: "Write a lambda function to square a number.", startingCode: "square = lambda x: x * x\nprint(square(5))" },
+          { id: "p2-1-5", title: "Docstrings", task: "Add a description to your function using triple quotes.", startingCode: "def power(a, b):\n    \"\"\"Calculates a to the power of b.\"\"\"\n    return a ** b\n\nprint(power.__doc__)" }
+        ]
+      },
+      {
+        title: "2. Data Structures (Advanced)",
+        lessons: [
+          { id: "p2-2-1", title: "List Comprehensions", task: "Create a list of squares for numbers 0-4 in one line.", startingCode: "squares = [x**2 for x in range(5)]\nprint(squares)" },
+          { id: "p2-2-2", title: "Dictionary Methods", task: "Use .keys() and .values() to explore the dictionary.", startingCode: "stats = {'HP': 100, 'MP': 50}\nprint(stats.keys())\nprint(stats.values())" },
+          { id: "p2-2-3", title: "Set Operations", task: "Find the intersection (common items) of two sets.", startingCode: "set_a = {1, 2, 3}\nset_b = {3, 4, 5}\nprint(set_a.intersection(set_b))" }
+        ]
+      },
+      {
+        title: "3. Modules & Packages",
+        lessons: [
+          { id: "p2-3-1", title: "Importing (math, random)", task: "Use the math module to find the square root of 16.", startingCode: "import math\nprint(math.sqrt(16))" },
+          { id: "p2-3-2", title: "The 'sys' Module", task: "Print the current Python platform using sys.", startingCode: "import sys\nprint(sys.platform)" }
+        ]
+      },
+      {
+        title: "4. File Handling",
+        lessons: [
+          { id: "p2-4-1", title: "Writing & Appending", task: "Simulate writing text to a virtual file.", startingCode: "# In browser, we use strings to simulate files\nfile_buffer = 'Line 1\\n'\nfile_buffer += 'Line 2 (Appended)'\nprint(file_buffer)" },
+          { id: "p2-4-2", title: "Reading Files", task: "Process a multi-line string as if reading a file.", startingCode: "data = 'User: Kojo\\nRole: Admin'\nfor line in data.split('\\n'):\n    print('Reading:', line)" }
+        ]
+      },
+      {
+        title: "5. Error Handling",
+        lessons: [
+          { id: "p2-5-1", title: "Try, Except Blocks", task: "Catch a ValueError when converting a string to int.", startingCode: "try:\n    num = int('abc')\nexcept ValueError:\n    print('That is not a number!')" },
+          { id: "p2-5-2", title: "Finally Block", task: "Use 'finally' to print a cleanup message.", startingCode: "try:\n    print(10 / 2)\nexcept:\n    print('Error')\nfinally:\n    print('Process Complete.')" }
+        ]
+      }
+    ]
   },
   {
     phase: "Phase 3",
@@ -128,14 +168,12 @@ export default function PythonAcademy() {
 
   // --- STATE ---
   const [allMissions, setAllMissions] = useState<any[]>(PYTHON_ACADEMY_CURRICULUM);
-  const [missionsLoaded, setMissionsLoaded] = useState(false);
   const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
-  const [completedMissions, setCompletedMissions] = useState<string[]>([]);
   const [code, setCode] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
-  const [isPassed, setIsPassed] = useState(false); // UPGRADE 2: VALIDATION
+  const [isPassed, setIsPassed] = useState(false);
   const pyodide = useRef<any>(null);
 
   // AI Tutor State
@@ -167,7 +205,7 @@ export default function PythonAcademy() {
               if (lesson) return lesson;
           }
       }
-      return allMissions[0]?.mainTopics[0]?.lessons[0] || null;
+      return null;
   }, [allMissions, currentMissionId]);
   
   // Reset code when mission changes
@@ -179,22 +217,6 @@ export default function PythonAcademy() {
     setOutput([]);
     setTutorResponse(null);
   }, [activeLesson]);
-
-
-  // --- 2. LOAD PROGRESS ---
-  useEffect(() => {
-    if(!user || !firestore) return;
-    const fetchProgress = async () => {
-        try {
-            const ref = doc(firestore, 'student_progress', user.uid);
-            const snap = await getDoc(ref);
-            if (snap.exists() && snap.data().logicLabCompleted) { // Assuming same progress data structure
-                setCompletedMissions(snap.data().logicLabCompleted);
-            }
-        } catch(e) { console.error(e); }
-    };
-    fetchProgress();
-  }, [user, firestore]);
 
   const runAndValidate = async () => {
     if (!pyodide.current) return;
@@ -210,16 +232,16 @@ export default function PythonAcademy() {
       
       // Validation Logic
       let success = false;
-      if (activeLesson.id === "p1-2-2") {
+      if (activeLesson?.id === "p1-2-2") {
         success = pyodide.current.runPython("globals().get('year') == 2025");
       }
       
       if (success) {
         setIsPassed(true);
-        confetti({ particleCount: 100, spread: 70 });
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
 
         // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
-        if (user && firestore) {
+        if (user && firestore && activeLesson) {
             try {
                 await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
                     userId: user.uid, 
@@ -233,11 +255,13 @@ export default function PythonAcademy() {
         }
       }
 
-      // --- RENDER MATPLOTLIB TO CANVAS ---
+      // 4. UPGRADE 3: RENDER MATPLOTLIB TO CANVAS
       const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
       if (hasPlot) {
+        // This targets an HTML div with id="plot-target"
         pyodide.current.runPython(`
             import io, base64
+            import matplotlib.pyplot as plt
             buf = io.BytesIO()
             plt.savefig(buf, format='png')
             buf.seek(0)
@@ -251,12 +275,12 @@ export default function PythonAcademy() {
       setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
     }
     setIsRunning(false);
-};
-
-  if (!activeLesson) {
+  };
+  
+   if (!activeLesson) {
     return <div className="flex h-screen w-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
-  
+
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -282,7 +306,7 @@ export default function PythonAcademy() {
                             <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-emerald-400">
                                 {mainTopic.title}
                             </AccordionTrigger>
-                            <AccordionContent className="space-y-1 pl-4">
+                            <AccordionContent className="space-y-1">
                                 {mainTopic.lessons.map((lesson: any) => (
                                     <button
                                         key={lesson.id}
@@ -352,7 +376,7 @@ export default function PythonAcademy() {
                 </TabsContent>
 
                 <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                    <img id="plot-output" className="max-h-full rounded-lg bg-white" alt="Matplotlib plot will appear here" src="https://placehold.co/400x200/000000/FFFFFF/png?text=Plot+Output" />
+                    <img id="plot-output" className="max-h-full rounded-lg" alt="Science plot will appear here" src="https://placehold.co/400x200/000000/FFFFFF/png?text=Plot+Output" />
                 </TabsContent>
               </Tabs>
             </div>
@@ -428,5 +452,3 @@ export default function PythonAcademy() {
     </div>
   );
 }
-
-    
