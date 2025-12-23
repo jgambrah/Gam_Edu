@@ -1,25 +1,33 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { useUser, useFirestore } from '@/firebase';
-import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc } from 'firebase/firestore';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
-  Loader2, Play, Save, CheckCircle2, ChevronRight, 
-  Code2, Terminal, Info, Target, BarChart3, Calendar, Sparkles, Trophy, HelpCircle, Github, BookOpen, Lock
+  Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
+  Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, Sparkles, Github, Sigma as SigmaIcon, Languages as LanguagesIcon, Atom as AtomIcon, Rocket
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
-import dynamic from 'next/dynamic';
-import confetti from 'canvas-confetti';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-
+import ReactMarkdown from 'react-markdown';
+import AdminBlockManager from './AdminBlockManager';
+import AdminMissionCreator from '@/components/AdminMissionCreator';
+import confetti from 'canvas-confetti';
+import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { PYTHON_ACADEMY_CURRICULUM, Mission } from '@/lib/logic-lab-data'; // Assuming curriculum is moved here
+import dynamic from 'next/dynamic';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -27,23 +35,17 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 });
 
 
-// --- THE CORRECT, PHASED CURRICULUM ---
-const PYTHON_ACADEMY_CURRICULUM = [
-    // Phase 1
-    { id: "p1-1", phase: "Phase 1: Python Fundamentals", title: "Print 'Hello'", task: "Print the exact text: Hello, Python Pro!", expectedOutput: "Hello, Python Pro!", startingCode: "print(\"...\")" },
-    { id: "p1-2", phase: "Phase 1: Python Fundamentals", title: "Variables", task: "Create a variable named 'school_name' and assign it the value 'Sunnyside'. Print the variable.", expectedOutput: "Sunnyside", startingCode: "school_name = \"...\"\nprint(school_name)" },
-    { id: "p1-3", phase: "Phase 1: Python Fundamentals", title: "Basic Math", task: "Add the numbers 25 and 17. Print the result.", expectedOutput: "42", startingCode: "result = ...\nprint(result)" },
-    // Phase 2
-    { id: "p2-1", phase: "Phase 2: Intermediate Python", title: "If/Else Statements", task: "Given `score = 85`, if the score is greater than 80, print 'Pass'. Otherwise, print 'Fail'.", expectedOutput: "Pass", startingCode: "score = 85\nif score > ...:\n  print(...)\nelse:\n  print(...)" },
-    { id: "p2-2", phase: "Phase 2: Intermediate Python", title: "Lists", task: "Create a list called `subjects` containing 'Math', 'Science', 'English'. Print the second item in the list.", expectedOutput: "Science", startingCode: "subjects = [...]\nprint(subjects[...])" },
-    { id: "p2-3", phase: "Phase 2: Intermediate Python", title: "For Loops", task: "Loop through the `subjects` list and print each one on a new line.", expectedOutput: "Math\nScience\nEnglish", startingCode: "subjects = ['Math', 'Science', 'English']\nfor s in ...:\n  print(s)" },
-    // Phase 3
-    { id: "p3-1", phase: "Phase 3: OOP & Beyond", title: "Functions", task: "Define a function called `greet` that takes a `name` and prints 'Welcome, ' followed by the name. Call it with 'Admin'.", expectedOutput: "Welcome, Admin", startingCode: "def greet(name):\n  ...\ngreet(...)" },
-    { id: "p3-2", phase: "Phase 3: OOP & Beyond", title: "Classes and Objects", task: "Create a `Student` class. Inside, create an `__init__` method that sets `self.name = 'Alex'`. Then, create an object and print its name.", expectedOutput: "Alex", startingCode: "class Student:\n  def __init__(self):\n    ...\n\nstudent1 = ...\nprint(student1.name)" },
-    // Phase 4
-    { id: "p4-1", phase: "Phase 4: Specialization", title: "Data Plotting", task: "Import matplotlib.pyplot as plt. Plot the data x=[1, 2, 3] and y=[2, 4, 1]. Then show the plot.", expectedOutput: "", startingCode: "import matplotlib.pyplot as plt\n\nx = [1, 2, 3]\ny = [2, 4, 1]\n\nplt.plot(x, y)\nplt.show()" },
+// --- REFERENCE GUIDE DATA ---
+const REFERENCE_DATA = [
+  { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
+  { title: "print()", desc: "Outputs text or numbers to the console.", example: "print('Hello')" },
+  { title: "if / else", desc: "Decides which code to run based on a condition.", example: "if x > 5: print('Big')" },
+  { title: "for loop", desc: "Repeats code for each item in a sequence.", example: "for i in range(3):" },
+  { title: "while loop", desc: "Repeats code as long as a condition is true.", example: "while x < 10:" },
+  { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
 ];
 
+// --- STREAK COMPONENT ---
 function ContributionHeatmap() {
     const days = Array.from({ length: 28 }); // Mocking 4 weeks
     return (
@@ -68,8 +70,10 @@ export default function PythonAcademy() {
   const { toast } = useToast();
 
   // --- STATE ---
-  const [activeLesson, setActiveLesson] = useState(PYTHON_ACADEMY_CURRICULUM[0]);
-  const [code, setCode] = useState(activeLesson.startingCode);
+  const [allMissions, setAllMissions] = useState<Mission[]>(PYTHON_ACADEMY_CURRICULUM);
+  const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
+  const [completedMissions, setCompletedMissions] = useState<number[]>([]);
+  const [code, setCode] = useState(allMissions[0].startingCode);
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
@@ -81,43 +85,34 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  // --- HOOKS ---
+  // --- PYODIDE INITIALIZATION ---
   useEffect(() => {
     async function initPyodide() {
-      // @ts-ignore
-      pyodide.current = await window.loadPyodide();
-      await pyodide.current.loadPackage(['numpy', 'matplotlib']);
-      setIsLoadingPy(false);
+      if (!pyodide.current) {
+        // @ts-ignore
+        pyodide.current = await window.loadPyodide();
+        
+        // PRE-LOAD PROFESSIONAL PACKAGES
+        // This ensures Phase 4 (Data Science) works instantly
+        await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
+        
+        setIsLoadingPy(false);
+      }
     }
-    if (typeof window !== 'undefined' && !pyodide.current) initPyodide();
+    initPyodide();
   }, []);
+
+  const activeMission = allMissions[currentMissionIndex] || allMissions[0];
   
+  // Reset code when mission changes
   useEffect(() => {
-    setCode(activeLesson.startingCode);
+    setCode(activeMission.startingCode);
     setIsPassed(false);
     setOutput([]);
     setTutorResponse(null);
-  }, [activeLesson]);
+  }, [activeMission]);
 
-  const groupedMissions = useMemo(() => {
-    const groups: Record<string, any[]> = {};
-    PYTHON_ACADEMY_CURRICULUM.forEach(m => {
-      if (!groups[m.phase]) groups[m.phase] = [];
-      groups[m.phase].push(m);
-    });
-    return groups;
-  }, []);
 
-  const speak = (text: string) => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = 0.9;
-        window.speechSynthesis.speak(u);
-    }
-  };
-  
-  // --- ACTIONS ---
   const runAndValidate = async () => {
     if (!pyodide.current) return;
     setIsRunning(true);
@@ -131,20 +126,22 @@ export default function PythonAcademy() {
       await pyodide.current.runPythonAsync(code);
 
       let validationCheck = false;
-      
       const normalizedOutput = output.join("\n").trim();
+      
+      // Default Check: Does the program output match the expected output?
       if (normalizedOutput === activeLesson.expectedOutput) {
           validationCheck = true;
       }
-      
-      if (activeLesson.id === "p1-2") { // More robust variable check
+
+      // Specific validation logic for certain lessons
+      if (activeLesson.id === "p1-2") { // More robust variable check for "Variables" lesson
         validationCheck = pyodide.current.runPython("globals().get('school_name') == 'Sunnyside'");
       }
 
       if (validationCheck) {
         setIsPassed(true);
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        speak("Mission accomplished! Great coding.");
+        //speak("Mission accomplished! Great coding.");
         if (user && firestore) {
             await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
                 userId: user.uid, completed: true, timestamp: serverTimestamp()
@@ -175,6 +172,14 @@ export default function PythonAcademy() {
     setIsRunning(false);
   };
   
+  const activeLesson = allMissions[currentMissionIndex] || allMissions[0];
+  
+  const groupedMissions = useMemo(() => {
+    const groups: Record<string, Mission[]> = {};
+    allMissions.forEach(m => { if(!groups[m.section]) groups[m.section] = []; groups[m.section].push(m); });
+    return groups;
+  }, [allMissions]);
+
   const askTutor = async () => {
     if (!aiQuestion.trim()) return;
     setIsAiLoading(true);
@@ -188,7 +193,7 @@ export default function PythonAcademy() {
       });
       if (res.success && res.data) {
         setTutorResponse(res.data);
-        speak(res.data.explanation);
+        // speak(res.data.explanation); 
       } else {
         throw new Error(res.error || "AI failed to respond.");
       }
@@ -204,7 +209,6 @@ export default function PythonAcademy() {
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* SIDEBAR: NAVIGATION & STREAK */}
         <aside className="lg:col-span-3 space-y-6">
           <div className="flex items-center gap-3 px-2">
             <div className="bg-yellow-500 p-2 rounded-xl shadow-lg shadow-yellow-500/20"><Code2 className="text-slate-900" /></div>
@@ -223,7 +227,7 @@ export default function PythonAcademy() {
                       {lessons.map(lesson => (
                         <button
                           key={lesson.id}
-                          onClick={() => setActiveLesson(lesson)}
+                          onClick={() => setCurrentMissionIndex(allMissions.findIndex(am => am.id === lesson.id))}
                           className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-950 shadow-md' : 'hover:bg-slate-800 text-slate-400'}`}
                         >
                           {lesson.title}
@@ -237,7 +241,6 @@ export default function PythonAcademy() {
           </ScrollArea>
         </aside>
 
-        {/* MAIN WORKSTATION */}
         <main className="lg:col-span-6 flex flex-col gap-4">
           <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[800px]">
             <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
@@ -291,7 +294,6 @@ export default function PythonAcademy() {
           </Card>
         </main>
         
-        {/* RIGHT SIDEBAR (AI TUTOR) */}
         <aside className="lg:col-span-3 space-y-6">
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
@@ -348,32 +350,6 @@ export default function PythonAcademy() {
               </li>
             </ul>
           </div>
-          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-6 space-y-2">
-              <a href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group">
-                <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-              <a href="https://www.w3schools.com/python/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group">
-                <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-              <a href="https://www.geeksforgeeks.org/python-programming-language/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group">
-                <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group">
-                <div className="flex items-center gap-2">
-                  <Github className="h-3 w-3 text-white" />
-                  <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
-                </div>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-            </CardContent>
-          </Card>
         </aside>
       </div>
     </div>
