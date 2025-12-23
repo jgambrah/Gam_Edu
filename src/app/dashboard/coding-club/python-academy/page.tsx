@@ -49,11 +49,11 @@ const PYTHON_ACADEMY_CURRICULUM = [
       {
         title: "2. The Basics",
         lessons: [
-          { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')", expectedOutput: "Hello World" },
-          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)", expectedOutput: "2025" },
+          { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')" },
+          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)", validation: "globals().get('year') == 2025" },
           { id: "p1-2-3", title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
-          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)", expectedOutput: "25" },
-          { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)", expectedOutput: "True" }
+          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)" },
+          { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)" }
         ]
       },
       {
@@ -232,9 +232,9 @@ interface Mission {
   title: string;
   task: string;
   startingCode: string;
-  expectedOutput?: string;
   phase: string;
   mainTopicTitle: string;
+  validation?: string;
 }
 
 // --- SECTION: CONTRIBUTION HEATMAP ---
@@ -273,7 +273,6 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
     );
 }
 
-
 // --- REFERENCE GUIDE DATA ---
 const REFERENCE_DATA = [
   { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
@@ -284,7 +283,7 @@ const REFERENCE_DATA = [
   { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
 ];
 
-export default function PythonAcademy() {
+function PythonAcademy() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -377,7 +376,7 @@ export default function PythonAcademy() {
 
   // --- SECTION: RUN & VALIDATE ENGINE ---
   const runAndValidate = async () => {
-    if (!pyodide.current) return;
+    if (!pyodide.current || !activeLesson) return;
     setIsRunning(true);
     setOutput([]);
     setIsPassed(false);
@@ -389,61 +388,53 @@ export default function PythonAcademy() {
 
     try {
         // 1. Reset Matplotlib to prevent old charts from showing
-        pyodide.current.runPython(`
-            import matplotlib.pyplot as plt
-            plt.clf()
-            plt.close('all')
-        `);
+        pyodide.current.runPython(`import matplotlib.pyplot as plt; plt.clf(); plt.close('all')`);
 
         // 2. Execute Student Code
         await pyodide.current.runPythonAsync(code);
 
         // 3. AUTO-VALIDATION: Check if goal was met
-        let validationCheck = false;
-        if (activeLesson) {
-            if (activeLesson.id === "p1-2-2") { // Variables lesson
-                const result = pyodide.current.runPython("globals().get('year') == 2025");
-                validationCheck = !!result;
-            } else if (activeLesson.id === "p1-2-1") { // Print lesson
-                validationCheck = output.join("").includes("Hello World");
-            } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
-                const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
-                const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
-                if (normExpected) {
-                  validationCheck = normOutput.includes(normExpected);
-                }
-            }
+        let isCorrect = false;
+        
+        if (activeLesson.validation) {
+            // Run the specific hidden validation script for this lesson
+            isCorrect = pyodide.current.runPython(activeLesson.validation);
+        } else {
+            // Fallback: If no script, check if the console has any output
+            isCorrect = output.length > 0 || code.length > 10;
         }
 
-
-        if (validationCheck) {
+        if (isCorrect) {
+            // THE CELEBRATION
             setIsPassed(true);
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            speak("Mission accomplished! Great coding.");
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#fbbf24', '#34d399', '#60a5fa', '#f87171'] // Vibrant coding colors
+            });
+            speak("Mission accomplished! Well done.");
         }
 
         // 4. VISUAL LAB: Capture Matplotlib output
         const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
         if (hasPlotting) {
-            const imgStr = pyodide.current.runPython(`
+            pyodide.current.runPython(`
                 import io, base64
-                buf = io.BytesIO()
-                plt.savefig(buf, format='png', bbox_inches='tight')
+                buf = io.BytesIO(); plt.savefig(buf, format='png', bbox_inches='tight')
                 buf.seek(0)
                 img_base64 = base64.b64encode(buf.read()).decode('utf-8')
-                img_base64
+                from js import document
+                # Push image data to our Visual Lab tab
+                document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
             `);
-            const imgEl = document.getElementById('plot-output') as HTMLImageElement;
-            if(imgEl) {
-                imgEl.src = 'data:image/png;base64,' + imgStr;
-            }
         }
 
     } catch (err: any) {
         setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
     }
     setIsRunning(false);
-  };
+};
 
   
   const askTutor = async () => {
@@ -488,7 +479,7 @@ export default function PythonAcademy() {
           
           <ContributionHeatmap progressData={userProgress} />
           
-          <ScrollArea className="h-[75vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
+          <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
               {PYTHON_ACADEMY_CURRICULUM.map((phase) => (
                 <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson.phase === phase.title ? phase.phase : ''}>
@@ -544,10 +535,9 @@ export default function PythonAcademy() {
                     options={{
                         fontSize: 16,
                         minimap: { enabled: false },
-                        padding: { top: 20 },
-                        automaticLayout: true,
                         scrollBeyondLastLine: false,
-                        lineNumbers: 'on',
+                        automaticLayout: true,
+                        padding: { top: 20 },
                         fontFamily: 'JetBrains Mono, monospace'
                     }}
                 />
@@ -559,7 +549,7 @@ export default function PythonAcademy() {
                             <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
                             <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
                             <p className="text-slate-400">Your logic is perfect. +50 Python XP Earned.</p>
-                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">
+                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
                                 Next Lesson
                             </Button>
                         </div>
@@ -720,3 +710,20 @@ export default function PythonAcademy() {
   );
 }
 
+// Separate component for the main page logic to avoid client/server component issues
+function Page() {
+    const { user, isUserLoading } = useUser();
+    const { role, isRoleLoading } = useRole();
+
+    if (isUserLoading || isRoleLoading) {
+        return (
+            <div className="flex h-screen w-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
+    }
+    
+    return <PythonAcademy />;
+}
+
+export default Page;
