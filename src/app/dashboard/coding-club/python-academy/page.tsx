@@ -7,7 +7,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, setDoc, doc } from
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
   BookOpen, Code2, Terminal, Info, Layout, Cpu, 
-  Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Sparkles, Trophy
+  Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Trophy, Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -256,12 +256,12 @@ export default function PythonAcademy() {
     });
 
     try {
-      if (code.includes("import numpy")) {
-          await pyodide.current.loadPackage("numpy");
-      }
-      if (code.includes("import pandas")) {
-          await pyodide.current.loadPackage("pandas");
-      }
+        if (code.includes("import numpy")) {
+            await pyodide.current.loadPackage("numpy");
+        }
+        if (code.includes("import pandas")) {
+            await pyodide.current.loadPackage("pandas");
+        }
       await pyodide.current.runPythonAsync(code);
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
     } catch (err: any) {
@@ -339,7 +339,7 @@ export default function PythonAcademy() {
 
         {/* MAIN: EDITOR & WORKSTATION */}
         <main className="lg:col-span-6 space-y-4">
-          <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[750px]">
+          <Card className="bg-slate-900 border-slate-800 rounded-[40px] overflow-hidden flex flex-col h-[750px] shadow-2xl">
             <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
               <div className="flex items-center gap-4">
                 <div className="flex gap-1.5 mr-4">
@@ -347,7 +347,7 @@ export default function PythonAcademy() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40" />
                   <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40" />
                 </div>
-                <Badge variant="outline" className="bg-slate-950 text-slate-400 font-mono text-[10px] border-slate-800">main.py</Badge>
+                <Badge variant="outline" className="bg-slate-950 text-slate-500 border-slate-800 font-mono text-[10px]">main.py</Badge>
               </div>
               <div className="flex gap-2">
                 <Button onClick={saveProgress} variant="ghost" className="text-slate-400 hover:text-white"><Save className="h-4 w-4 mr-2" /> Save</Button>
@@ -390,70 +390,118 @@ export default function PythonAcademy() {
               <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
                 <div className="flex items-center gap-2 mb-4 text-slate-600">
                   <Terminal className="h-3 w-3" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">System Console Output</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest">System Console</span>
                 </div>
                 <ScrollArea className="h-40">
                   {output.map((line, i) => (
-                    <div key={i} className="text-emerald-500/90 py-0.5">{`> ${line}`}</div>
+                    <div key={i} className="text-emerald-500/90 mb-1">{`>>> ${line}`}</div>
                   ))}
-                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to execute.</div>}
+                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to see results.</div>}
                 </ScrollArea>
               </div>
             </div>
           </Card>
         </main>
 
-        {/* RIGHT: CHEAT SHEET & TIPS */}
+        {/* RIGHT: PROGRESS, TIPS & EXTERNAL RESOURCES */}
         <aside className="lg:col-span-3 space-y-6">
-          {/* CHEAT SHEET */}
+  
+          {/* 1. MASTER STATS (Existing Card) */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader className="bg-slate-800/50">
-              <CardTitle className="text-xs font-black text-indigo-400 uppercase flex items-center gap-2">
-                <FileJson className="h-4 w-4" /> Python Cheat Sheet
+              <CardTitle className="text-sm font-black flex items-center gap-2">
+                <Trophy className="text-yellow-500 h-4 w-4" /> Mastery Stats
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
-              <ScrollArea className="h-[400px] pr-4">
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <p className="text-xs font-bold text-white">Variables</p>
-                    <code className="block bg-black p-3 rounded-xl text-emerald-500 text-[10px] border border-slate-800">
-                      name = "Kojo" <br/>
-                      age = 15 <br/>
-                      is_coding = True
-                    </code>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-xs font-bold text-white">Control Flow</p>
-                    <code className="block bg-black p-3 rounded-xl text-blue-400 text-[10px] border border-slate-800">
-                      if age {'>'} 10: <br/>
-                      &nbsp;&nbsp;print("Big kid") <br/>
-                      else: <br/>
-                      &nbsp;&nbsp;print("Junior")
-                    </code>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-xs font-bold text-white">Loops</p>
-                    <code className="block bg-black p-3 rounded-xl text-purple-400 text-[10px] border border-slate-800">
-                      for i in range(5): <br/>
-                      &nbsp;&nbsp;print(i)
-                    </code>
-                  </div>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold">
+                  <span className="text-slate-400">Total Progress</span>
+                  <span className="text-white">Selected Lesson</span>
                 </div>
-              </ScrollArea>
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="bg-yellow-500 h-full w-1/4" />
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          {/* LEARNING TIPS */}
-          <div className="p-6 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl">
-            <Sparkles className="h-8 w-8 mb-4 text-yellow-300" />
-            <h3 className="text-xl font-black mb-2">Ready for a challenge?</h3>
-            <p className="text-sm opacity-80 mb-6">Build a simple calculator using the variables and input logic we just learned.</p>
-            <Button className="w-full bg-white text-indigo-600 font-black rounded-xl">Start Project</Button>
+          {/* 2. LEARNING TIPS (PRO MINDSET) */}
+          <div className="p-6 bg-indigo-900/40 border border-indigo-500/20 rounded-[32px] space-y-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="text-indigo-400 h-5 w-5" />
+              <h3 className="text-sm font-black text-indigo-100 uppercase tracking-tight">Learning Tips</h3>
+            </div>
+            <ul className="space-y-4">
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
+                </div>
+              </li>
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Build Projects</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
+                </div>
+              </li>
+            </ul>
           </div>
+
+          {/* 3. EXTERNAL PORTALS (LINKS) */}
+          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-6 space-y-2">
+              <a 
+                href="https://docs.python.org/3/tutorial/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.w3schools.com/python/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.geeksforgeeks.org/python-programming-language/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://github.com/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <div className="flex items-center gap-2">
+                  <Github className="h-3 w-3 text-white" />
+                  <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
+                </div>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+            </CardContent>
+          </Card>
+
         </aside>
 
       </div>
     </div>
   );
 }
+```)
