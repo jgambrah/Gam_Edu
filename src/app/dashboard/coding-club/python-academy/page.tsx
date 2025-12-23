@@ -245,6 +245,7 @@ const REFERENCE_DATA = [
   { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
 ];
 
+
 // --- SECTION: CONTRIBUTION HEATMAP ---
 function ContributionHeatmap({ progressData }: { progressData: any[] }) {
     // Generates 28 days (4 weeks) of activity
@@ -303,7 +304,6 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-  const [isDataLoading, setIsDataLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any[]>([]);
 
   // --- PYODIDE INITIALIZATION ---
@@ -340,12 +340,10 @@ export default function PythonAcademy() {
             )
         );
         
-        // Combine static and DB missions, ensuring unique IDs
         const combined = [...flattenedSyllabus, ...dbMissions];
         const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
 
         setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
-        setIsDataLoading(false); // Data is ready
     });
     return () => unsubscribe();
   }, [firestore]);
@@ -366,64 +364,76 @@ export default function PythonAcademy() {
     setTutorResponse(null);
   }, [activeLesson]);
 
+  // --- SECTION: RUN & VALIDATE ENGINE ---
   const runAndValidate = async () => {
-    if (!pyodide.current) return;
-    setIsRunning(true);
-    setOutput([]);
-    setIsPassed(false);
+      if (!pyodide.current) return;
+      setIsRunning(true);
+      setOutput([]);
+      setIsPassed(false);
 
-    pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
+      // Set output handling
+      pyodide.current.setStdout({ 
+          batched: (str: string) => setOutput(prev => [...prev, str]) 
+      });
 
-    // --- PART A: RUN PYTHON ---
-    try {
-      if (code.includes("import numpy")) await pyodide.current.loadPackage("numpy");
-      if (code.includes("import pandas")) await pyodide.current.loadPackage("pandas");
+      try {
+          // 1. Reset Matplotlib to prevent old charts from showing
+          pyodide.current.runPython(`
+              import matplotlib.pyplot as plt
+              plt.clf()
+              plt.close('all')
+          `);
 
-      await pyodide.current.runPythonAsync(code);
-      
-      let success = true; 
-      if (activeLesson?.id === "p1-2-2") {
-        success = pyodide.current.runPython("globals().get('year') == 2025");
+          // 2. Load packages dynamically
+          if (code.includes("import numpy")) {
+              await pyodide.current.loadPackage("numpy");
+          }
+          if (code.includes("import pandas")) {
+              await pyodide.current.loadPackage("pandas");
+          }
+
+          // 3. Execute Student Code
+          await pyodide.current.runPythonAsync(code);
+
+          // 4. AUTO-VALIDATION: Check if goal was met
+          let validationCheck = false;
+          if (activeLesson) {
+              if (activeLesson.id === "p1-2-2") { // Variables lesson
+                  validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
+              } else {
+                  // Fallback for simple output matching if not a specific check
+                  const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
+                  const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
+                  if (normExpected) {
+                    validationCheck = normOutput.includes(normExpected);
+                  }
+              }
+          }
+
+          if (validationCheck) {
+              setIsPassed(true);
+              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+          }
+
+          // 5. VISUAL LAB: Capture Matplotlib output
+          const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
+          if (hasPlotting) {
+              pyodide.current.runPython(`
+                  import io, base64
+                  buf = io.BytesIO()
+                  plt.savefig(buf, format='png', bbox_inches='tight')
+                  buf.seek(0)
+                  img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+                  from js import document
+                  // Push image data to our Visual Lab tab
+                  document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
+              `);
+          }
+
+      } catch (err: any) {
+          setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
       }
-      
-      if (success) {
-        setIsPassed(true);
-        confetti({ particleCount: 100 });
-
-        if (user && firestore && activeLesson) {
-            try {
-                await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
-                    userId: user.uid, 
-                    lessonId: activeLesson.id,
-                    completed: true, 
-                    timestamp: serverTimestamp(),
-                }, { merge: true });
-            } catch (dbError) {
-                console.error("Database save failed:", dbError);
-                toast({ title: "Progress not saved", description: "Check your internet or database permissions." });
-            }
-        }
-      }
-
-      const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
-      if (hasPlot) {
-        pyodide.current.runPython(`
-            import io, base64
-            import matplotlib.pyplot as plt
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png')
-            buf.seek(0)
-            img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
-            from js import document
-            if document.getElementById('plot-output'):
-                document.getElementById('plot-output').src = img_str
-        `);
-      }
-
-    } catch (pythonErr: any) {
-      setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
-    }
-    setIsRunning(false);
+      setIsRunning(false);
   };
   
   const askTutor = async () => {
@@ -447,22 +457,11 @@ export default function PythonAcademy() {
     }
   };
 
-  if (isDataLoading || isLoadingPy || isUserLoading) {
+  if (isUserLoading || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
               <p className="ml-4">Loading Curriculum...</p>
-          </div>
-      );
-  }
-
-  if (!activeLesson) {
-      return (
-          <div className="flex h-screen w-screen items-center justify-center">
-             <div className="text-center">
-                <p>Could not load the first lesson.</p>
-                <Button onClick={() => window.location.reload()}>Reload</Button>
-             </div>
           </div>
       );
   }
@@ -624,23 +623,36 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
 
-          {/* 2. PRO TIPS (Moved below) */}
+          {/* 2. PRO TIPS */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pro Mindsets</h3>
             </div>
             <ul className="space-y-3">
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Consistency is key.
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-400"/>
+                </div>
+                <div>
+                    <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
+                </div>
               </li>
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Build projects to apply logic.
+              <li className="flex gap-3">
+                 <div className="h-5 w-5 rounded-full bg-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-400"/>
+                </div>
+                <div>
+                    <p className="text-xs font-bold text-white leading-none">Build Projects</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
+                </div>
               </li>
             </ul>
           </div>
+          
 
-          {/* 3. LEARNING PORTALS */}
+          {/* 3. LEARNING PORTALS (LINKS) */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
@@ -683,6 +695,7 @@ export default function PythonAcademy() {
               </a>
             </CardContent>
           </Card>
+
         </aside>
       </div>
     </div>
