@@ -96,7 +96,7 @@ const isJuniorLevel = (grade: string) =>
 
 const juniorStyles = {
     // English Storybook styles
-    storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FEF9C3]",
+    storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
     storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
     
     // Science Quest styles
@@ -208,7 +208,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION */}
             <div className="lg:col-span-3">
                 {activeStory ? (
-                    <Card className={isJunior ? juniorStyles.storybook : "rounded-[48px] border-none shadow-2xl bg-white"}>
+                    <Card className={isJunior ? juniorStyles.storybook : "rounded-[48px] border-none shadow-2xl bg-white animate-in zoom-in"}>
                         <div className={isJunior ? "text-center mb-8" : "bg-indigo-600 p-10 text-white"}>
                             {isJunior && <div className="text-7xl mb-4 animate-bounce">📖</div>}
                             <CardTitle className={isJunior ? "text-5xl font-black text-orange-800" : "text-4xl font-black"}>
@@ -236,7 +236,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                             placeholder={isJunior ? "Tell me the secret..." : "Type analysis..."} 
                                             value={answers[i] || ""} 
                                             onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} 
-                                            className={isJunior ? "h-20 text-3xl rounded-[30px] border-4 border-orange-100 text-center" : "h-14 rounded-2xl border-2"} 
+                                            className={isJunior ? juniorStyles.input : "h-14 rounded-2xl border-2"} 
                                         />
                                     </div>
                                 ))}
@@ -259,7 +259,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 2. ADVANCED MATH LAB (FOLDER ORGANIZED) ---
+// --- 2. ADVANCED MATH LAB ---
 function CounterDisplay({ count }: { count: number }) {
     const icons = ['🍎', '⭐', '🎈', '🐱', '🚗', '🍦'];
     const icon = icons[Math.floor(Math.random() * icons.length)];
@@ -285,7 +285,6 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
 
-    // Navigation State
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
     const isJunior = isJuniorLevel(selectedGrade);
     const theme = isJunior ? juniorStyles : null;
@@ -295,14 +294,11 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     [firestore]);
     const { data: dbProblems, isLoading, forceRefetch } = useCollection<any>(mathQuery);
 
-    // BRILLIANT ORGANIZATION LOGIC: Grouping by Subject -> Sub-Topic
     const folderStructure = useMemo(() => {
         if (!dbProblems) return {};
         
-        // 1. Filter by current Student Category
         const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
 
-        // 2. Group into Subjects (Algebra, Stats, etc.)
         return filtered.reduce((acc, p) => {
             const subject = p.category || 'General Mathematics';
             const sub = p.subTopic || 'Standard Practice';
@@ -328,7 +324,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
-            {/* SIDEBAR: THE BRILLIANT NAVIGATOR */}
+            {/* SIDEBAR */}
             <div className="lg:col-span-1 space-y-4">
                 <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-700">
                     <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">Student Category</Label>
@@ -386,7 +382,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 </ScrollArea>
             </div>
 
-            {/* MAIN STAGE: THE WORKSTATION */}
+            {/* MAIN STAGE */}
             <div className="lg:col-span-3">
                 {problem ? (
                     <Card className={isJunior ? theme?.card : "rounded-[48px] border-none shadow-2xl overflow-hidden bg-white"}>
@@ -436,6 +432,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                     </Button>
                                 </div>
                             </div>
+
                             {feedback && (
                                 <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
                                     {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
@@ -447,7 +444,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
                         <div className="p-8 bg-slate-50 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-200" /></div>
-                        <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest text-center">
+                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
                         </h2>
                     </div>
@@ -463,6 +460,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+
     const isJunior = isJuniorLevel(selectedGrade);
     const theme = isJunior ? juniorStyles : null;
 
@@ -540,7 +538,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION (Discovery View) */}
             <div className="lg:col-span-3">
                 {lab ? (
-                    <Card className={isJunior ? theme?.card : "rounded-[48px] shadow-2xl bg-white"}>
+                    <Card className={isJunior ? theme?.card : "rounded-[48px] shadow-2xl bg-white animate-in zoom-in"}>
                         <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
                             <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-900 text-white p-10 space-y-8`}>
                                 <div className="flex flex-col gap-6">
@@ -588,7 +586,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                             {isJunior ? "🚀 Let's Try It!" : "Mission: Data Collection"}
                                         </h2>
                                         <div className={isJunior ? "text-[200px] hover:rotate-12 transition-transform cursor-pointer" : "text-[180px] py-10 animate-pulse"}>{lab.icon}</div>
-                                        <Button onClick={() => setStage('conclusion')} className={isJunior ? juniorStyles.button : "h-16 px-12 bg-orange-500"}>
+                                        <Button onClick={() => setStage('conclusion')} className={isJunior ? juniorStyles.button : "h-16 px-12 bg-orange-500 hover:bg-orange-600 text-xl font-black rounded-full shadow-xl"}>
                                             {isJunior ? "SEE THE SECRET! 🔍" : "Observe Outcome"}
                                         </Button>
                                     </div>
@@ -658,7 +656,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
 
         const isJunior = isJuniorLevel(targetGrade);
         
-        // Force AI to generate "Junior-Friendly" content
         const systemInstructions = isJunior 
             ? `${instructions}. Target audience: 5-7 year olds. Use simple words, short sentences, and LOTS of emojis. In math, make sure the answer is a whole number between 1 and 20 so it can be counted visually.`
             : instructions;
@@ -673,7 +670,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
         if (subject === 'math') result = await generateSeniorMath(context);
         else if (subject === 'english') result = await generateSeniorEnglish(context);
         else result = await generateSeniorLab(context);
-        
+
         if (result.success && result.data) {
             await addDoc(collection(firestore!, subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs'), {
                 ...result.data,
@@ -758,11 +755,11 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     <div className="space-y-6 animate-in slide-in-from-top-4">
                         <div className="grid md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase">Category (Main Folder)</Label>
+                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Category (Main Folder)</Label>
                                 <Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase">Sub-Topic (Sub Folder)</Label>
+                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (Sub Folder)</Label>
                                 <Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
                             </div>
                             <div className="space-y-2">
@@ -800,10 +797,10 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                                         {[0,1,2].map(i => (
                                             <div key={i} className="p-3 bg-slate-800/50 rounded-xl space-y-2">
                                                 <Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label>
-                                                <Input placeholder="Question" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i]?.question || ''} onChange={e => {
+                                                <Input placeholder="Question" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].question} onChange={e => {
                                                     const n = [...manualData.quiz]; n[i] = {...n[i], question: e.target.value}; setManualData({...manualData, quiz: n});
                                                 }} />
-                                                <Input placeholder="Answer" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i]?.answer || ''} onChange={e => {
+                                                <Input placeholder="Answer" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].answer} onChange={e => {
                                                     const n = [...manualData.quiz]; n[i] = {...n[i], answer: e.target.value}; setManualData({...manualData, quiz: n});
                                                 }} />
                                             </div>
@@ -846,6 +843,8 @@ export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
     const firestore = useFirestore();
+    
+    // Memoize forceRefetch to prevent re-creation on every render
     const { forceRefetch: forceMath } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_math') : null, [firestore]));
     const { forceRefetch: forceEnglish } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_stories') : null, [firestore]));
     const { forceRefetch: forceScience } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_labs') : null, [firestore]));
@@ -899,5 +898,3 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-
-```
