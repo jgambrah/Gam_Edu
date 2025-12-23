@@ -272,6 +272,8 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
     );
 }
 
+
+// --- MAIN PAGE ---
 export default function PythonAcademy() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -468,7 +470,7 @@ export default function PythonAcademy() {
           <ScrollArea className="h-[75vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
               {PYTHON_ACADEMY_CURRICULUM.map((phase) => (
-                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson?.phase === phase.title ? phase.phase : ''}>
+                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson.phase === phase.title ? phase.phase : ''}>
                   <AccordionItem value={phase.phase} className="border-none">
                     <AccordionTrigger className="hover:no-underline p-3 bg-slate-800/50 rounded-2xl mb-1 group">
                       <span className="font-black text-slate-300 text-xs uppercase tracking-tight">{phase.title}</span>
@@ -512,35 +514,36 @@ export default function PythonAcademy() {
             </div>
 
             <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e]">
-              <Editor
-                  height="100%"
-                  defaultLanguage="python"
-                  theme="vs-dark"
-                  value={code}
-                  onChange={(val) => setCode(val || "")}
-                  options={{
-                      fontSize: 16,
-                      minimap: { enabled: false },
-                      padding: { top: 20 },
-                      automaticLayout: true,
-                      scrollBeyondLastLine: false,
-                      lineNumbers: 'on',
-                      fontFamily: 'JetBrains Mono, monospace'
-                  }}
-              />
-              
-              {isPassed && (
-                  <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
-                      <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
-                          <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                          <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
-                          <p className="text-slate-400">Your logic is perfect. +50 Python XP Earned.</p>
-                          <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
-                              Next Lesson
-                          </Button>
-                      </div>
-                  </div>
-              )}
+                <Editor
+                    height="100%"
+                    defaultLanguage="python"
+                    theme="vs-dark"
+                    value={code}
+                    onChange={(v) => setCode(v || "")}
+                    options={{
+                        fontSize: 16,
+                        minimap: { enabled: false },
+                        padding: { top: 20 },
+                        automaticLayout: true,
+                        scrollBeyondLastLine: false,
+                        lineNumbers: 'on',
+                        fontFamily: 'JetBrains Mono, monospace'
+                    }}
+                />
+                
+                {/* MISSION SUCCESS OVERLAY */}
+                {isPassed && (
+                    <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
+                        <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(16,185,129,0.2)] text-center space-y-4">
+                            <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
+                            <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
+                            <p className="text-slate-400">Your logic is perfect. +50 XP earned.</p>
+                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
+                                Next Lesson
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="h-64 bg-black border-t border-slate-800">
@@ -548,10 +551,10 @@ export default function PythonAcademy() {
                     <div className="px-6 py-2 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                         <TabsList className="bg-slate-950 p-1">
                             <TabsTrigger value="console" className="text-[10px] font-black uppercase">
-                                <Terminal className="w-3 h-3 mr-2" /> Console
+                                <Terminal className="w-3 h-3 mr-2"/> Console
                             </TabsTrigger>
                             <TabsTrigger value="visuals" className="text-[10px] font-black uppercase">
-                                <BarChart3 className="w-3 h-3 mr-2" /> Visual Lab
+                                <BarChart3 className="w-3 h-3 mr-2"/> Visual Lab
                             </TabsTrigger>
                         </TabsList>
                         <p className="text-[9px] font-mono text-slate-500">Python 3.11 (WASM)</p>
@@ -579,7 +582,7 @@ export default function PythonAcademy() {
         </main>
         
         <aside className="lg:col-span-3 space-y-6">
-          
+          {/* 1. NEURAL TUTOR CARD */}
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
@@ -630,7 +633,8 @@ export default function PythonAcademy() {
               )}
             </CardContent>
           </Card>
-        
+
+          {/* 2. PRO TIPS (Moved below) */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
@@ -645,7 +649,8 @@ export default function PythonAcademy() {
               </li>
             </ul>
           </div>
-        
+
+          {/* 3. LEARNING PORTALS */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
