@@ -2,15 +2,15 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import Editor from '@monaco-editor/react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import dynamic from 'next/dynamic';
+import { useUser, useFirestore } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, setDoc, doc } from 'firebase/firestore';
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
   BookOpen, Code2, Terminal, Info, Layout, Cpu, 
   Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Trophy, Sparkles
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,7 +19,17 @@ import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
+const Editor = dynamic(() => import('@monaco-editor/react'), {
+  ssr: false,
+  loading: () => <div className="flex h-full items-center justify-center bg-slate-800"><Loader2 className="h-8 w-8 animate-spin text-slate-400" /></div>,
+});
+
+
+// --- FULL CURRICULUM DATA STRUCTURE ---
 const PYTHON_SYLLABUS = [
   {
     phase: "Phase 1",
@@ -218,7 +228,6 @@ export default function PythonAcademy() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // --- STATE ---
   const [activeLesson, setActiveLesson] = useState(PYTHON_SYLLABUS[0].mainTopics[0].lessons[0]);
   const [code, setCode] = useState(activeLesson.startingCode);
   const [output, setOutput] = useState<string[]>([]);
@@ -227,94 +236,16 @@ export default function PythonAcademy() {
   const [activeTab, setActiveTab] = useState('editor');
   const pyodide = useRef<any>(null);
 
-  // --- AI TUTOR STATE ---
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isPassed, setIsPassed] = useState(false);
-
-  // Load Pyodide (Python in Browser)
-  useEffect(() => {
-    async function initPyodide() {
-      // @ts-ignore
-      if (window.loadPyodide) {
-        // @ts-ignore
-        pyodide.current = await window.loadPyodide();
-        setIsLoadingPy(false);
-      } else {
-        const script = document.createElement("script");
-        script.src = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js";
-        script.onload = async () => {
-          // @ts-ignore
-          pyodide.current = await window.loadPyodide();
-          setIsLoadingPy(false);
-        };
-        document.head.appendChild(script);
-      }
-    }
-    initPyodide();
-  }, []);
-
-  const runAndValidate = async () => {
-      if (!pyodide.current) return;
-      setIsRunning(true);
-      setOutput([]);
-      setIsPassed(false);
-
-      pyodide.current.setStdout({
-          batched: (str: string) => setOutput(prev => [...prev, str])
-      });
-
-      try {
-          // Run the student's code
-          if (code.includes("import numpy")) {
-              await pyodide.current.loadPackage("numpy");
-          }
-          if (code.includes("import pandas")) {
-              await pyodide.current.loadPackage("pandas");
-          }
-          await pyodide.current.runPythonAsync(code);
-
-          // --- THE "SOLID" VALIDATION LOGIC ---
-          let validationCheck = false;
-          
-          if (activeLesson.id === "p1-2-2") { // Variables lesson
-              validationCheck = pyodide.current.runPython("isinstance(year, int) and year == 2025");
-          } else if (activeLesson.id === "p1-2-1") { // Print lesson
-              validationCheck = output.join("").includes("Hello World");
-          }
-          // Add logic for other lesson IDs here...
-
-          if (validationCheck) {
-              setIsPassed(true);
-              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-          }
-
-      } catch (err: any) {
-          setOutput(prev => [...prev, `❌ Syntax Error: ${err.message}`]);
-      }
-      setIsRunning(false);
-  };
-
-  const saveProgress = async () => {
-    if (!user || !firestore) {
-        toast({title: "Please log in to save."});
-        return;
-    };
-    await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
-      userId: user.uid,
-      lessonId: activeLesson.id,
-      code: code,
-      completed: true,
-      updatedAt: serverTimestamp()
-    });
-    toast({title: "Progress Saved!"});
-  };
-
+  
   const askTutor = async () => {
     if (!aiQuestion.trim()) return;
     setIsAiLoading(true);
     
+    // Find the current phase based on the active lesson
     const currentPhase = PYTHON_SYLLABUS.find(phase => 
       phase.mainTopics.some(topic => 
         topic.lessons.some(lesson => lesson.id === activeLesson.id)
@@ -340,11 +271,85 @@ export default function PythonAcademy() {
     }
   };
 
+
+  useEffect(() => {
+    async function initPyodide() {
+      // @ts-ignore
+      if (window.loadPyodide) {
+        // @ts-ignore
+        pyodide.current = await window.loadPyodide();
+        setIsLoadingPy(false);
+      } else {
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js";
+        script.onload = async () => {
+          // @ts-ignore
+          pyodide.current = await window.loadPyodide();
+          setIsLoadingPy(false);
+        };
+        document.head.appendChild(script);
+      }
+    }
+    initPyodide();
+  }, []);
+
+  const runAndValidate = async () => {
+    if (!pyodide.current) return;
+    setIsRunning(true);
+    setOutput([]);
+    setIsPassed(false);
+
+    pyodide.current.setStdout({
+        batched: (str: string) => setOutput(prev => [...prev, str])
+    });
+
+    try {
+        if (code.includes("import numpy")) {
+            await pyodide.current.loadPackage("numpy");
+        }
+        if (code.includes("import pandas")) {
+            await pyodide.current.loadPackage("pandas");
+        }
+        await pyodide.current.runPythonAsync(code);
+
+        let validationCheck = false;
+        
+        if (activeLesson.id === "p1-2-2") {
+            validationCheck = pyodide.current.runPython("isinstance(year, int) and year == 2025");
+        } else if (activeLesson.id === "p1-2-1") {
+            validationCheck = output.join("").includes("Hello World");
+        }
+        
+        if (validationCheck) {
+            setIsPassed(true);
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        }
+
+    } catch (err: any) {
+        setOutput(prev => [...prev, `❌ Syntax Error: ${err.message}`]);
+    }
+    setIsRunning(false);
+};
+
+  const saveProgress = async () => {
+    if (!user || !firestore) {
+        toast({title: "Please log in to save."});
+        return;
+    };
+    await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
+      userId: user.uid,
+      lessonId: activeLesson.id,
+      code: code,
+      completed: true,
+      updatedAt: serverTimestamp()
+    });
+    toast({title: "Progress Saved!"});
+  };
+
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* SIDEBAR: NAVIGATION */}
         <aside className="lg:col-span-3 space-y-6">
           <div className="flex items-center gap-3 mb-6 px-2">
             <div className="bg-yellow-500 p-2 rounded-xl"><Monitor className="text-slate-900" /></div>
@@ -396,7 +401,6 @@ export default function PythonAcademy() {
           </ScrollArea>
         </aside>
 
-        {/* MAIN: EDITOR & WORKSTATION */}
         <main className="lg:col-span-6 space-y-6">
           <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[750px]">
             <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
@@ -421,35 +425,33 @@ export default function PythonAcademy() {
             </div>
 
             <div className="flex-1 flex flex-col bg-[#0d1117]">
-                <div className="flex-1 border-b border-slate-800 relative">
-                    <Editor
-                        height="100%"
-                        defaultLanguage="python"
-                        theme="vs-dark"
-                        value={code}
-                        onChange={(val) => setCode(val || "")}
-                        options={{
-                            fontSize: 16,
-                            minimap: { enabled: false },
-                            scrollBeyondLastLine: false,
-                            automaticLayout: true,
-                            padding: { top: 20 }
-                        }}
-                    />
-                    
-                    {isPassed && (
-                        <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
-                            <div className="bg-slate-900 border-2 border-emerald-500 p-6 rounded-[32px] shadow-2xl text-center">
-                                <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto mb-2" />
-                                <h3 className="text-xl font-black text-white">Mission Passed!</h3>
-                                <p className="text-xs text-slate-400 mb-4">+50 Python XP Earned</p>
-                                <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-xl">Continue Exploring</Button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-              {/* TERMINAL */}
+              <div className="flex-1 border-b border-slate-800 relative">
+                  <Editor
+                      height="100%"
+                      defaultLanguage="python"
+                      theme="vs-dark"
+                      value={code}
+                      onChange={(val) => setCode(val || "")}
+                      options={{
+                          fontSize: 16,
+                          minimap: { enabled: false },
+                          scrollBeyondLastLine: false,
+                          automaticLayout: true,
+                          padding: { top: 20 }
+                      }}
+                  />
+                  
+                  {isPassed && (
+                      <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
+                          <div className="bg-slate-900 border-2 border-emerald-500 p-6 rounded-[32px] shadow-2xl text-center">
+                              <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto mb-2" />
+                              <h3 className="text-xl font-black text-white">Mission Passed!</h3>
+                              <p className="text-xs text-slate-400 mb-4">+50 Python XP Earned</p>
+                              <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-xl">Continue Exploring</Button>
+                          </div>
+                      </div>
+                  )}
+              </div>
               <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
                 <div className="flex items-center gap-2 mb-4 text-slate-600">
                   <Terminal className="h-3 w-3" />
@@ -465,10 +467,8 @@ export default function PythonAcademy() {
             </div>
           </Card>
         </main>
-
-        {/* RIGHT: CHEAT SHEET & TIPS */}
+        
         <aside className="lg:col-span-3 space-y-6">
-          {/* 1. NEURAL TUTOR CARD */}
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
@@ -520,21 +520,76 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
 
-          {/* 2. PRO TIPS */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
-              <HelpCircle className="text-yellow-500 h-4 w-4" />
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
+              <HelpCircle className="text-yellow-500 h-5 w-5" />
+              <h3 className="text-sm font-black text-slate-100 uppercase tracking-tight">Pro Mindsets</h3>
             </div>
-            <ul className="space-y-3">
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Consistency is key.
+            <ul className="space-y-4">
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
+                </div>
               </li>
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Build projects to apply logic.
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Build Projects</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
+                </div>
               </li>
             </ul>
           </div>
+          
+          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-6 space-y-2">
+              <a 
+                href="https://docs.python.org/3/tutorial/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.w3schools.com/python/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.geeksforgeeks.org/python-programming-language/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://github.com/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <div className="flex items-center gap-2">
+                  <Github className="h-3 w-3 text-white" />
+                  <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
+                </div>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+            </CardContent>
+          </Card>
+
         </aside>
       </div>
     </div>
