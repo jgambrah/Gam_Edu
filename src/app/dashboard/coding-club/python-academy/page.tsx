@@ -48,11 +48,11 @@ const PYTHON_ACADEMY_CURRICULUM = [
       {
         title: "2. The Basics",
         lessons: [
-          { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')" },
-          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)" },
+          { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')", expectedOutput: "Hello World" },
+          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)", expectedOutput: "2025" },
           { id: "p1-2-3", title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
-          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)" },
-          { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)" }
+          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)", expectedOutput: "25" },
+          { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)", expectedOutput: "True" }
         ]
       },
       {
@@ -145,7 +145,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
       {
         title: "2. Advanced Topics",
         lessons: [
-          { id: "p3-2-1", title: "Regular Expressions (RegEx)", task: "Use the 're' module to find all numbers in a string.", startingCode: "import re\ntext = 'Price is 100 dollars'\nnums = re.findall(r'\\\\d+', text)\nprint(nums)" },
+          { id: "p3-2-1", title: "Regular Expressions (RegEx)", task: "Use the 're' module to find all numbers in a string.", startingCode: "import re\ntext = 'Price is 100 dollars'\nnums = re.findall(r'\\d+', text)\nprint(nums)" },
           { id: "p3-2-2", title: "Decorators", task: "Create a decorator that prints a message before a function runs.", startingCode: "def my_decorator(func):\n    def wrapper():\n        print('Starting...')\n        func()\n    return wrapper\n\n@my_decorator\ndef say_hi(): print('Hi!')\n\nsay_hi()" },
           { id: "p3-2-3", title: "Generators", task: "Use 'yield' to create a simple number generator.", startingCode: "def count_up():\n    yield 1\n    yield 2\n\nfor n in count_up(): print(n)" },
           { id: "p3-2-4", title: "Context Managers", task: "Use the 'with' statement for safe operations.", startingCode: "# Simulated context manager\nclass MySafeOpen:\n    def __enter__(self): print('Opened'); return self\n    def __exit__(self, *args): print('Closed')\n\nwith MySafeOpen():\n    print('Working...')" }
@@ -233,6 +233,7 @@ interface Mission {
   startingCode: string;
   phase: string;
   mainTopicTitle: string;
+  expectedOutput?: string;
 }
 
 // --- REFERENCE GUIDE DATA ---
@@ -245,10 +246,7 @@ const REFERENCE_DATA = [
   { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
 ];
 
-
-// --- SECTION: CONTRIBUTION HEATMAP ---
 function ContributionHeatmap({ progressData }: { progressData: any[] }) {
-    // Generates 28 days (4 weeks) of activity
     const days = Array.from({ length: 28 }); 
     
     return (
@@ -260,10 +258,8 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
                     <div className="w-2 h-2 rounded-sm bg-emerald-500" />
                 </div>
             </div>
-            {/* GitHub style grid */}
             <div className="grid grid-flow-col grid-rows-7 gap-1 w-fit">
                 {days.map((_, i) => {
-                    // Logic to highlight squares based on progress (simulated here)
                     const isActive = i > 15 && i < 22 || i === 27; 
                     return (
                         <div 
@@ -304,6 +300,7 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any[]>([]);
 
   // --- PYODIDE INITIALIZATION ---
@@ -344,6 +341,7 @@ export default function PythonAcademy() {
         const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
 
         setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
+        setIsDataLoading(false);
     });
     return () => unsubscribe();
   }, [firestore]);
@@ -364,7 +362,6 @@ export default function PythonAcademy() {
     setTutorResponse(null);
   }, [activeLesson]);
 
-  // --- SECTION: RUN & VALIDATE ENGINE ---
   const runAndValidate = async () => {
       if (!pyodide.current) return;
       setIsRunning(true);
@@ -391,7 +388,7 @@ export default function PythonAcademy() {
           if (code.includes("import pandas")) {
               await pyodide.current.loadPackage("pandas");
           }
-
+          
           // 3. Execute Student Code
           await pyodide.current.runPythonAsync(code);
 
@@ -400,8 +397,7 @@ export default function PythonAcademy() {
           if (activeLesson) {
               if (activeLesson.id === "p1-2-2") { // Variables lesson
                   validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
-              } else {
-                  // Fallback for simple output matching if not a specific check
+              } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
                   const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
                   const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
                   if (normExpected) {
@@ -457,7 +453,7 @@ export default function PythonAcademy() {
     }
   };
 
-  if (isUserLoading || !activeLesson) {
+  if (isDataLoading || isLoadingPy || isUserLoading || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -524,30 +520,36 @@ export default function PythonAcademy() {
               </Button>
             </div>
 
-            <div className="flex-1 relative">
-              <Editor
-                height="100%"
-                defaultLanguage="python"
-                theme="vs-dark"
-                value={code}
-                onChange={(v) => setCode(v || "")}
-                options={{ fontSize: 16, minimap: { enabled: false }, padding: { top: 20 }, automaticLayout: true }}
-              />
-              <div className="absolute bottom-6 left-6 right-6">
-                 <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
-                    <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="text-indigo-400 w-4 h-4" /></div>
-                    <p className="text-sm font-medium text-slate-200">{activeLesson.task}</p>
-                 </div>
-              </div>
-              {isPassed && (
-                <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
-                    <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
-                        <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                        <h3 className="text-3xl font-black text-white">Mission Complete!</h3>
-                        <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">Next Lesson</Button>
+            <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e]">
+                <Editor
+                    height="100%"
+                    defaultLanguage="python"
+                    theme="vs-dark"
+                    value={code}
+                    onChange={(val) => setCode(val || "")}
+                    options={{
+                        fontSize: 16,
+                        minimap: { enabled: false },
+                        padding: { top: 20 },
+                        automaticLayout: true,
+                        scrollBeyondLastLine: false,
+                        lineNumbers: 'on',
+                        fontFamily: 'JetBrains Mono, monospace'
+                    }}
+                />
+                
+                {isPassed && (
+                    <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
+                        <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(16,185,129,0.2)] text-center space-y-4">
+                            <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
+                            <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
+                            <p className="text-slate-400">Your logic is perfect. +50 XP earned.</p>
+                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
+                                Next Lesson
+                            </Button>
+                        </div>
                     </div>
-                </div>
-              )}
+                )}
             </div>
 
             <div className="h-64 bg-black border-t border-slate-800">
@@ -571,7 +573,6 @@ export default function PythonAcademy() {
         </main>
         
         <aside className="lg:col-span-3 space-y-6">
-          {/* 1. NEURAL TUTOR CARD */}
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
@@ -623,7 +624,6 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
 
-          {/* 2. PRO TIPS */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
@@ -651,8 +651,6 @@ export default function PythonAcademy() {
             </ul>
           </div>
           
-
-          {/* 3. LEARNING PORTALS (LINKS) */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
