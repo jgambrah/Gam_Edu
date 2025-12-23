@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import Editor from '@monaco-editor/react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, query, orderBy, serverTimestamp, setDoc, doc } from 'firebase/firestore';
 import { 
@@ -19,7 +20,6 @@ import { useToast } from '@/hooks/use-toast';
 import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
 import { Textarea } from '@/components/ui/textarea';
 
-// --- FULL CURRICULUM DATA STRUCTURE ---
 const PYTHON_SYLLABUS = [
   {
     phase: "Phase 1",
@@ -214,9 +214,9 @@ const PYTHON_SYLLABUS = [
 
 
 export default function PythonAcademy() {
-  const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   // --- STATE ---
   const [activeLesson, setActiveLesson] = useState(PYTHON_SYLLABUS[0].mainTopics[0].lessons[0]);
@@ -231,6 +231,7 @@ export default function PythonAcademy() {
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isPassed, setIsPassed] = useState(false);
 
   // Load Pyodide (Python in Browser)
   useEffect(() => {
@@ -254,28 +255,45 @@ export default function PythonAcademy() {
     initPyodide();
   }, []);
 
-  const runCode = async () => {
-    if (!pyodide.current) return;
-    setIsRunning(true);
-    setOutput([]);
-    
-    pyodide.current.setStdout({
-      batched: (str: string) => setOutput(prev => [...prev, str])
-    });
+  const runAndValidate = async () => {
+      if (!pyodide.current) return;
+      setIsRunning(true);
+      setOutput([]);
+      setIsPassed(false);
 
-    try {
-        if (code.includes("import numpy")) {
-            await pyodide.current.loadPackage("numpy");
-        }
-        if (code.includes("import pandas")) {
-            await pyodide.current.loadPackage("pandas");
-        }
-      await pyodide.current.runPythonAsync(code);
-      confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
-    } catch (err: any) {
-      setOutput(prev => [...prev, `❌ Error: ${err.message}`]);
-    }
-    setIsRunning(false);
+      pyodide.current.setStdout({
+          batched: (str: string) => setOutput(prev => [...prev, str])
+      });
+
+      try {
+          // Run the student's code
+          if (code.includes("import numpy")) {
+              await pyodide.current.loadPackage("numpy");
+          }
+          if (code.includes("import pandas")) {
+              await pyodide.current.loadPackage("pandas");
+          }
+          await pyodide.current.runPythonAsync(code);
+
+          // --- THE "SOLID" VALIDATION LOGIC ---
+          let validationCheck = false;
+          
+          if (activeLesson.id === "p1-2-2") { // Variables lesson
+              validationCheck = pyodide.current.runPython("isinstance(year, int) and year == 2025");
+          } else if (activeLesson.id === "p1-2-1") { // Print lesson
+              validationCheck = output.join("").includes("Hello World");
+          }
+          // Add logic for other lesson IDs here...
+
+          if (validationCheck) {
+              setIsPassed(true);
+              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+          }
+
+      } catch (err: any) {
+          setOutput(prev => [...prev, `❌ Syntax Error: ${err.message}`]);
+      }
+      setIsRunning(false);
   };
 
   const saveProgress = async () => {
@@ -297,7 +315,6 @@ export default function PythonAcademy() {
     if (!aiQuestion.trim()) return;
     setIsAiLoading(true);
     
-    // Find the phase title for the current lesson
     const currentPhase = PYTHON_SYLLABUS.find(phase => 
       phase.mainTopics.some(topic => 
         topic.lessons.some(lesson => lesson.id === activeLesson.id)
@@ -323,9 +340,8 @@ export default function PythonAcademy() {
     }
   };
 
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* SIDEBAR: NAVIGATION */}
@@ -355,13 +371,15 @@ export default function PythonAcademy() {
                     {phase.mainTopics.map((topic) => (
                       <Accordion key={topic.title} type="single" collapsible className="w-full">
                         <AccordionItem value={topic.title} className="border-none">
-                            <AccordionTrigger className="text-xs font-bold text-slate-400 py-2 hover:no-underline">{topic.title}</AccordionTrigger>
+                            <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-indigo-400">
+                                {topic.title}
+                            </AccordionTrigger>
                             <AccordionContent className="space-y-1 pl-4 border-l border-slate-700/50">
                                 {topic.lessons.map((lesson) => (
                                     <button
                                     key={lesson.id}
                                     onClick={() => { setActiveLesson(lesson); setCode(lesson.startingCode); setOutput([]); }}
-                                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
+                                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900' : 'hover:bg-slate-800 text-slate-400'}`}
                                     >
                                     {lesson.title}
                                     <ChevronRight className={`h-3 w-3 ${activeLesson.id === lesson.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
@@ -393,7 +411,7 @@ export default function PythonAcademy() {
               <div className="flex gap-2">
                 <Button onClick={saveProgress} variant="ghost" className="text-slate-400 hover:text-white"><Save className="h-4 w-4 mr-2" /> Save</Button>
                 <Button 
-                  onClick={runCode} 
+                  onClick={runAndValidate} 
                   disabled={isLoadingPy || isRunning}
                   className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-8 rounded-xl shadow-lg shadow-yellow-900/20"
                 >
@@ -403,29 +421,33 @@ export default function PythonAcademy() {
             </div>
 
             <div className="flex-1 flex flex-col bg-[#0d1117]">
-              {/* CODE EDITOR */}
-              <div className="flex-1 p-6 relative">
-                 <textarea
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  className="w-full h-full bg-transparent text-emerald-400 font-mono text-lg outline-none resize-none"
-                  spellCheck={false}
-                  placeholder="# Write your Python code here..."
-                />
-                
-                {/* FLOATING MISSION BOX */}
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="h-4 w-4 text-indigo-400" /></div>
-                      <div>
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Mission</p>
-                        <p className="text-sm font-bold text-white">{activeLesson.task}</p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex-1 border-b border-slate-800 relative">
+                    <Editor
+                        height="100%"
+                        defaultLanguage="python"
+                        theme="vs-dark"
+                        value={code}
+                        onChange={(val) => setCode(val || "")}
+                        options={{
+                            fontSize: 16,
+                            minimap: { enabled: false },
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            padding: { top: 20 }
+                        }}
+                    />
+                    
+                    {isPassed && (
+                        <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
+                            <div className="bg-slate-900 border-2 border-emerald-500 p-6 rounded-[32px] shadow-2xl text-center">
+                                <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto mb-2" />
+                                <h3 className="text-xl font-black text-white">Mission Passed!</h3>
+                                <p className="text-xs text-slate-400 mb-4">+50 Python XP Earned</p>
+                                <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-xl">Continue Exploring</Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-              </div>
 
               {/* TERMINAL */}
               <div className="h-60 bg-black border-t border-slate-800 p-6 font-mono text-sm shadow-inner">
@@ -444,121 +466,76 @@ export default function PythonAcademy() {
           </Card>
         </main>
 
-        {/* RIGHT: AI TUTOR & EXTERNAL RESOURCES */}
+        {/* RIGHT: CHEAT SHEET & TIPS */}
         <aside className="lg:col-span-3 space-y-6">
-            {/* 1. NEURAL TUTOR CARD */}
-            <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
-              <CardHeader className="bg-indigo-600 p-6">
-                <CardTitle className="text-sm font-black text-white flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
-                </CardTitle>
-                <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
-              </CardHeader>
-              
-              <CardContent className="p-6 space-y-4">
-                {tutorResponse ? (
-                  <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                       <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
-                       <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
-                    </div>
-                    <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
-                       <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
-                       <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => setTutorResponse(null)} 
-                      className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
-                    >
-                      Ask another question
-                    </Button>
+          {/* 1. NEURAL TUTOR CARD */}
+          <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
+            <CardHeader className="bg-indigo-600 p-6">
+              <CardTitle className="text-sm font-black text-white flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
+              </CardTitle>
+              <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
+            </CardHeader>
+            
+            <CardContent className="p-6 space-y-4">
+              {tutorResponse ? (
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                     <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
+                     <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="text-[11px] text-slate-400 leading-relaxed">
-                      Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
-                      Describe your problem below and I'll guide you through the logic.
-                    </p>
-                    <Textarea 
-                      placeholder="e.g. Why am I getting a SyntaxError?" 
-                      value={aiQuestion}
-                      onChange={(e) => setAiQuestion(e.target.value)}
-                      className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
-                    />
-                    <Button 
-                      onClick={askTutor} 
-                      disabled={isAiLoading || !aiQuestion}
-                      className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
-                    >
-                      {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
-                    </Button>
+                  <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
+                     <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
+                     <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setTutorResponse(null)} 
+                    className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
+                  >
+                    Ask another question
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
+                    Describe your problem below and I'll guide you through the logic.
+                  </p>
+                  <Textarea 
+                    placeholder="e.g. Why am I getting a SyntaxError?" 
+                    value={aiQuestion}
+                    onChange={(e) => setAiQuestion(e.target.value)}
+                    className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
+                  />
+                  <Button 
+                    onClick={askTutor} 
+                    disabled={isAiLoading || !aiQuestion}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
+                  >
+                    {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            {/* 2. PRO TIPS (Moved below) */}
-            <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
-              <div className="flex items-center gap-2">
-                <HelpCircle className="text-yellow-500 h-4 w-4" />
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                  <span className="text-yellow-500">★</span> Consistency is key.
-                </li>
-                <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                  <span className="text-yellow-500">★</span> Build projects to apply logic.
-                </li>
-              </ul>
+          {/* 2. PRO TIPS */}
+          <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="text-yellow-500 h-4 w-4" />
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
             </div>
-
-            {/* 3. LEARNING PORTALS (Keep your existing links card here) */}
-            <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
-                <CardHeader>
-                <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
-                </CardHeader>
-                <CardContent className="px-4 pb-6 space-y-2">
-                <a 
-                    href="https://docs.python.org/3/tutorial/" 
-                    target="_blank" 
-                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-                >
-                    <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
-                    <ChevronRight className="h-3 w-3 text-slate-600" />
-                </a>
-                <a 
-                    href="https://www.w3schools.com/python/" 
-                    target="_blank" 
-                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-                >
-                    <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
-                    <ChevronRight className="h-3 w-3 text-slate-600" />
-                </a>
-                <a 
-                    href="https://www.geeksforgeeks.org/python-programming-language/" 
-                    target="_blank" 
-                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-                >
-                    <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
-                    <ChevronRight className="h-3 w-3 text-slate-600" />
-                </a>
-                <a 
-                    href="https://github.com/" 
-                    target="_blank" 
-                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-                >
-                    <div className="flex items-center gap-2">
-                    <Github className="h-3 w-3 text-white" />
-                    <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
-                    </div>
-                    <ChevronRight className="h-3 w-3 text-slate-600" />
-                </a>
-                </CardContent>
-            </Card>
+            <ul className="space-y-3">
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Consistency is key.
+              </li>
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Build projects to apply logic.
+              </li>
+            </ul>
+          </div>
         </aside>
-
       </div>
     </div>
   );
