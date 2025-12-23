@@ -97,16 +97,21 @@ const isJuniorLevel = (grade: string) =>
 
 const juniorStyles = {
     // English Storybook styles
-    storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
+    storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FEF9C3]",
     storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
     
     // Science Quest styles
     questCard: "bg-gradient-to-b from-sky-400 to-blue-500 border-b-[12px] border-blue-700 rounded-[50px] text-white",
     stepBubble: "w-16 h-16 rounded-full bg-white text-blue-600 flex items-center justify-center text-3xl shadow-lg border-4 border-blue-200",
     
+    // Math Playground styles
+    card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
+    header: "p-10 text-center",
+    mathBox: "bg-white/70 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    
     // Global Elements
     button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
-    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
+    input: "h-24 text-6xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-blue-600 shadow-inner"
 };
 
 
@@ -255,7 +260,26 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 2. ADVANCED MATH LAB (FOLDER ORGANIZED) ---
+
+// --- 2. ADVANCED MATH LAB ---
+function CounterDisplay({ count }: { count: number }) {
+    const icons = ['🍎', '⭐', '🎈', '🐱', '🚗', '🍦'];
+    const icon = icons[Math.floor(Math.random() * icons.length)];
+    // Cap at 20 so the screen doesn't get too messy
+    const displayCount = Math.min(count, 20);
+
+    return (
+        <div className="flex flex-wrap justify-center gap-3 p-6 bg-white/50 rounded-3xl mt-4">
+            {Array.from({ length: displayCount }).map((_, i) => (
+                <span key={i} className="text-4xl animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
+                    {icon}
+                </span>
+            ))}
+            {count > 20 && <span className="text-xl font-black text-blue-400">... and more!</span>}
+        </div>
+    );
+}
+
 function MathLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -263,7 +287,6 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
 
-    // Navigation State
     const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
     const isJunior = isJuniorLevel(selectedGrade);
     const theme = isJunior ? juniorStyles : null;
@@ -273,14 +296,11 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     [firestore]);
     const { data: dbProblems, isLoading, forceRefetch } = useCollection<any>(mathQuery);
 
-    // BRILLIANT ORGANIZATION LOGIC: Grouping by Subject -> Sub-Topic
     const folderStructure = useMemo(() => {
         if (!dbProblems) return {};
         
-        // 1. Filter by current Student Category
         const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
 
-        // 2. Group into Subjects (Algebra, Stats, etc.)
         return filtered.reduce((acc, p) => {
             const subject = p.category || 'General Mathematics';
             const sub = p.subTopic || 'Standard Practice';
@@ -306,7 +326,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 
     return (
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
-            {/* SIDEBAR: THE BRILLIANT NAVIGATOR */}
+            {/* SIDEBAR */}
             <div className="lg:col-span-1 space-y-4">
                 <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-700">
                     <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">Student Category</Label>
@@ -317,7 +337,6 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
-
                 <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
                     <div className="space-y-2 p-2">
                         {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
@@ -365,10 +384,10 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 </ScrollArea>
             </div>
 
-            {/* MAIN STAGE: THE WORKSTATION */}
+            {/* MAIN STAGE */}
             <div className="lg:col-span-3">
                 {problem ? (
-                    <Card className={isJunior ? theme?.card : "rounded-[50px] border-none shadow-2xl overflow-hidden bg-white"}>
+                    <Card className={isJunior ? theme?.card : "rounded-[48px] border-none shadow-2xl overflow-hidden bg-white"}>
                         <div className={isJunior ? theme?.header : "bg-emerald-600 p-10 text-white"}>
                             <div className="flex justify-between items-center">
                                 <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black"}>
@@ -385,7 +404,6 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                 <div className={isJunior ? "text-7xl text-blue-600 flex justify-center" : "text-5xl text-emerald-400"}>
                                     <SafeMath formula={problem.latexFormula} />
                                 </div>
-                                {/* NEW: VISUAL COUNTERS FOR JUNIORS */}
                                 {isJunior && !isNaN(parseInt(problem.answer)) && (
                                     <div className="mt-8 border-t border-sky-200 pt-6">
                                         <p className="text-center font-black text-sky-500 uppercase text-xs tracking-widest mb-2">Can you count them?</p>
@@ -394,9 +412,9 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                 )}
                             </div>
 
-                            <div className="text-center space-y-8">
+                            <div className="max-w-2xl mx-auto text-center space-y-8">
                                 <p className={isJunior ? "text-3xl font-black text-blue-800" : "text-2xl font-medium text-slate-600 italic"}>
-                                    {isJunior ? "✨ " + problem.instruction : problem.instruction}
+                                    {isJunior ? "✨ " + problem.instruction : `"${problem.instruction}"`}
                                 </p>
                                 <div className="flex flex-col items-center gap-6">
                                     <Input 
@@ -405,17 +423,18 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                         placeholder={isJunior ? "Type Number Here..." : "Enter Solution..."} 
                                         className={isJunior 
                                             ? juniorStyles.input 
-                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px]"
+                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[32px] focus:border-emerald-500 shadow-inner"
                                         }
                                     />
                                     <Button 
                                         onClick={checkAnswer} 
                                         className={isJunior ? theme?.button : "h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full"}
                                     >
-                                        {isJunior ? "I'M FINISHED! 🚀" : "VERIFY ANSWER"}
+                                        {isJunior ? "I'M FINISHED! 🚀" : "VERIFY DERIVATION"}
                                     </Button>
                                 </div>
                             </div>
+
                             {feedback && (
                                 <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
                                     {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
@@ -426,7 +445,9 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                     </Card>
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
-                        <div className="p-8 bg-slate-50 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-200" /></div>
+                        <div className="p-8 bg-slate-50 rounded-full mb-6">
+                            <Sigma className="w-20 h-20 text-slate-200" />
+                        </div>
                         <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
                         </h2>
@@ -436,6 +457,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
         </div>
     );
 }
+
 
 // --- 3. DISCOVERY LAB (FOLDER ORGANIZED) ---
 function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
@@ -520,7 +542,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION (Discovery View) */}
             <div className="lg:col-span-3">
                 {lab ? (
-                    <Card className={isJunior ? "rounded-[50px] border-none shadow-2xl overflow-hidden" : "rounded-[48px] shadow-2xl bg-white"}>
+                    <Card className={isJunior ? theme?.card : "rounded-[48px] shadow-2xl bg-white"}>
                         <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
                             <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-900 text-white p-10 space-y-8`}>
                                 <div className="flex flex-col gap-6">
@@ -540,44 +562,27 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             <div className="md:col-span-2 p-12 flex flex-col justify-center">
                                 {stage === 'hypothesis' && (
                                     <div className="space-y-8 animate-in slide-in-from-right-4">
-                                        <h2 className={isJunior ? "text-5xl font-black text-blue-600 text-center" : "text-3xl font-black text-slate-800"}>
-                                            {isJunior ? "🤔 What is your Guess?" : lab.question}
-                                        </h2>
-                                        <div className={isJunior ? "p-10 bg-white rounded-[60px] border-8 border-blue-100 shadow-inner" : "p-8 bg-blue-50 rounded-[32px] border-2 border-blue-100"}>
-                                            {isJunior && <p className="text-blue-400 font-bold mb-6 text-center uppercase tracking-widest">Pick a card!</p>}
-                                            <div className={isJunior ? "grid grid-cols-1 gap-4" : "grid gap-3"}>
+                                        <h2 className={`font-black leading-tight ${isJunior ? 'text-4xl text-blue-900' : 'text-3xl text-slate-800'}`}>{isJunior ? '🤔 ' + lab.question : lab.question}</h2>
+                                        <div className={`p-8 rounded-[32px] border-2 space-y-4 ${isJunior ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-100'}`}>
+                                            <p className={`font-bold ${isJunior ? 'text-xl text-yellow-900' : 'text-blue-800'}`}>{lab.hypothesisPrompt}</p>
+                                            <div className="grid gap-3">
                                                 {lab.hypothesisOptions.map((opt: string) => (
-                                                    <Button 
-                                                        key={opt} 
-                                                        variant="outline" 
-                                                        className={isJunior 
-                                                            ? "h-24 text-2xl font-black border-4 border-blue-50 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-[35px] transition-all" 
-                                                            : "bg-white border-2 h-auto py-4 font-bold rounded-2xl"} 
-                                                        onClick={() => setStage('experiment')}
-                                                    >
-                                                        {isJunior && "✨ "} {opt}
-                                                    </Button>
+                                                    <Button key={opt} variant="outline" className={`bg-white border-2 h-auto py-4 font-bold rounded-2xl ${isJunior ? 'text-lg' : ''}`} onClick={() => setStage('experiment')}>{opt}</Button>
                                                 ))}
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {stage === 'experiment' && (
-                                    <div className="text-center space-y-12">
-                                        <h2 className={isJunior ? "text-5xl font-black text-orange-500" : "text-3xl font-black text-slate-800"}>
-                                            {isJunior ? "🚀 Let's Try It!" : "Mission: Data Collection"}
-                                        </h2>
-                                        <div className={isJunior ? "text-[200px] hover:rotate-12 transition-transform cursor-pointer" : "text-[180px] py-10 animate-pulse"}>
-                                            {lab.icon}
-                                        </div>
-                                        <Button onClick={() => setStage('conclusion')} className={isJunior ? theme?.button : "h-16 px-12 bg-orange-500"}>
-                                            {isJunior ? "SEE THE SECRET! 🔍" : "Observe Outcome"}
-                                        </Button>
+                                    <div className="text-center space-y-12 animate-in zoom-in">
+                                        <h2 className={`font-black ${isJunior ? 'text-4xl text-blue-800' : 'text-3xl text-slate-800'}`}>Mission: Data Collection</h2>
+                                        <div className="text-[180px] py-10 animate-pulse">{lab.icon}</div>
+                                        <Button onClick={() => setStage('conclusion')} className={`h-16 px-12 text-xl font-black rounded-full shadow-xl ${isJunior ? theme?.button : 'bg-orange-500 hover:bg-orange-600'}`}>Observe Outcome</Button>
                                     </div>
                                 )}
                                 {stage === 'conclusion' && (
                                     <div className="space-y-6 animate-in slide-in-from-bottom-4">
-                                        <h2 className={isJunior ? "text-5xl font-black text-green-800" : "text-4xl text-green-700"}>Discovery Conclusion</h2>
+                                        <h2 className={`font-black ${isJunior ? 'text-5xl text-green-800' : 'text-4xl text-green-700'}`}>Discovery Conclusion</h2>
                                         <div className={`p-8 rounded-[40px] border-4 space-y-4 ${isJunior ? 'bg-green-50 border-green-200' : 'bg-green-50 border-green-100'}`}>
                                             <p className={`font-bold ${isJunior ? 'text-3xl' : 'text-2xl'} text-slate-800`}>{lab.conclusion}</p>
                                             <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-lg text-slate-600'}`}>{lab.explanation}</p>
@@ -611,6 +616,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     // AI States
     const [topic, setTopic] = useState("");
     const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
+    const [instructions, setInstructions] = useState('');
 
     // Manual States (Shared across subjects where applicable)
     const [manualData, setManualData] = useState<any>({
@@ -636,22 +642,25 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const handleAiGenerate = async () => {
         if (!topic.trim()) return;
         setLoading(true);
-        // Add visual instructions automatically if junior
-        const juniorPrompt = isJuniorLevel(targetGrade) 
-            ? ". This is for a young child. Use very simple language, add many emojis in the text, and ensure the answer is a simple number or word that can be counted."
-            : "";
+    
+        const isJunior = isJuniorLevel(targetGrade);
+        
+        // Force AI to generate "Junior-Friendly" content
+        const systemInstructions = isJunior 
+            ? `${instructions}. Target audience: 5-7 year olds. Use simple words, short sentences, and LOTS of emojis. In math, make sure the answer is a whole number between 1 and 20 so it can be counted visually.`
+            : instructions;
 
         const context = { 
             topic, 
-            gradeLevel: targetGrade as any,
-            instructions: "" + juniorPrompt 
+            gradeLevel: targetGrade as any, 
+            instructions: systemInstructions 
         };
+    
         let result;
-
         if (subject === 'math') result = await generateSeniorMath(context);
         else if (subject === 'english') result = await generateSeniorEnglish(context);
         else result = await generateSeniorLab(context);
-
+        
         if (result.success && result.data) {
             await addDoc(collection(firestore!, subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs'), {
                 ...result.data,
@@ -666,8 +675,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     };
 
     const handleManualSave = async () => {
-        if (!manualData.title || !manualData.category) {
-            toast({ title: "Required Fields", description: "Title and Category are needed for folder organization.", variant: "destructive" });
+        if (!manualData.title || !manualData.category || !manualData.subTopic) {
+            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
             return;
         }
         setLoading(true);
@@ -736,11 +745,11 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     <div className="space-y-6 animate-in slide-in-from-top-4">
                         <div className="grid md:grid-cols-3 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Category (Main Folder)</Label>
+                                <Label className="text-slate-500 text-[10px] font-black uppercase">Category (Main Folder)</Label>
                                 <Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (Sub Folder)</Label>
+                                <Label className="text-slate-500 text-[10px] font-black uppercase">Sub-Topic (Sub Folder)</Label>
                                 <Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
                             </div>
                             <div className="space-y-2">
@@ -873,5 +882,3 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-
-    
