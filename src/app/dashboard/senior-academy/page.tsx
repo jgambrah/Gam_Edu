@@ -124,7 +124,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         if (!library) return {};
         const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, s) => {
-            const category = s.category || 'General Reading'; // Folder 1
+            const category = s.category || s.genre || 'General Reading'; // Folder 1
             const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
             if (!acc[category]) acc[category] = {};
             if (!acc[category][subTopic]) acc[category][subTopic] = [];
@@ -198,8 +198,8 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION */}
             <div className="lg:col-span-3">
                 {activeStory ? (
-                    <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? juniorTheme.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
-                        <div className={isJunior ? juniorTheme.header : 'bg-indigo-600 p-10 text-white'}>
+                    <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? theme?.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
+                        <div className={isJunior ? theme?.header : 'bg-indigo-600 p-10 text-white'}>
                             <Badge className="bg-white/20 border-none mb-4">{activeStory.genre || activeStory.category}</Badge>
                             <CardTitle className={`font-black ${isJunior ? 'text-5xl' : 'text-4xl'}`}>{isJunior && '📖'} {activeStory.title}</CardTitle>
                         </div>
@@ -213,7 +213,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                         <Input placeholder="Type your analysis..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className={`${isJunior ? 'h-20 text-xl rounded-3xl border-4' : 'h-14 rounded-2xl border-2'}`} />
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className={`w-full ${isJunior ? juniorTheme.button : 'h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-full'}`}>Submit Analysis</Button>
+                                <Button onClick={checkAnswers} className={`w-full ${isJunior ? theme?.button : 'h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-full'}`}>Submit Analysis</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -361,7 +361,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 {problem ? (
                     <Card className={isJunior ? theme?.card : "rounded-[50px] border-none shadow-2xl overflow-hidden bg-white"}>
                         <div className={isJunior ? theme?.header : "bg-emerald-600 p-10 text-white"}>
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-center">
                                 <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black"}>
                                     {isJunior && "🌈 "} {problem.title}
                                 </CardTitle>
@@ -402,7 +402,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                         onClick={checkAnswer} 
                                         className={isJunior ? theme?.button : "h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full"}
                                     >
-                                        {isJunior ? "I'M FINISHED! 🚀" : "VERIFY ANSWER"}
+                                        {isJunior ? "I'M FINISHED! 🚀" : "VERIFY DERIVATION"}
                                     </Button>
                                 </div>
                             </div>
@@ -510,7 +510,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
             {/* WORKSTATION (Discovery View) */}
             <div className="lg:col-span-3">
                 {lab ? (
-                    <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? juniorTheme.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
+                    <Card className={`transition-all duration-500 overflow-hidden ${isJunior ? theme?.card : 'rounded-[48px] shadow-2xl bg-white'}`}>
                         <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
                             <div className={isJunior ? `bg-orange-500 p-10 text-white space-y-8` : `bg-slate-900 text-white p-10 space-y-8`}>
                                 <div className="flex flex-col gap-6">
@@ -545,7 +545,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                     <div className="text-center space-y-8 animate-in zoom-in">
                                         <h2 className={`font-black ${isJunior ? 'text-4xl text-blue-800' : 'text-3xl text-slate-800'}`}>Mission: Data Collection</h2>
                                         <div className="text-[180px] py-10 animate-pulse">{lab.icon}</div>
-                                        <Button onClick={() => setStage('conclusion')} className={`h-16 px-12 text-xl font-black rounded-full shadow-xl ${isJunior ? juniorTheme.button : 'bg-orange-500 hover:bg-orange-600'}`}>Observe Outcome</Button>
+                                        <Button onClick={() => setStage('conclusion')} className={`h-16 px-12 text-xl font-black rounded-full shadow-xl ${isJunior ? theme?.button : 'bg-orange-500 hover:bg-orange-600'}`}>Observe Outcome</Button>
                                     </div>
                                 )}
                                 {stage === 'conclusion' && (
@@ -555,7 +555,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                             <p className={`font-bold ${isJunior ? 'text-3xl' : 'text-2xl'} text-slate-800`}>{lab.conclusion}</p>
                                             <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-lg text-slate-600'}`}>{lab.explanation}</p>
                                         </div>
-                                        <Button onClick={() => { setLab(null); confetti(); }} className={`w-full h-16 text-xl font-black rounded-2xl shadow-xl ${isJunior ? juniorTheme.button : 'bg-green-600 hover:bg-green-700'}`}>Complete Mission</Button>
+                                        <Button onClick={() => { setLab(null); confetti(); }} className={`w-full h-16 text-xl font-black rounded-2xl shadow-xl ${isJunior ? theme?.button : 'bg-green-600 hover:bg-green-700'}`}>Complete Mission</Button>
                                     </div>
                                 )}
                             </div>
@@ -572,7 +572,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 4. ADMIN CONSOLE (Manual & AI Hybrid) ---
+// --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
 function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -610,7 +610,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const handleAiGenerate = async () => {
         if (!topic.trim()) return;
         setLoading(true);
-        
         const juniorPrompt = isJuniorLevel(targetGrade) 
             ? ". This is for a young child. Use very simple language, add many emojis in the text, and ensure the answer is a simple number or word that can be counted."
             : "";
@@ -640,8 +639,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     };
 
     const handleManualSave = async () => {
-        if (!manualData.title || !manualData.category || !manualData.subTopic) {
-            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
+        if (!manualData.title || !manualData.category) {
+            toast({ title: "Required Fields", description: "Title and Category are needed for folder organization.", variant: "destructive" });
             return;
         }
         setLoading(true);
@@ -709,13 +708,13 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     /* --- MANUAL ENTRY FORM --- */
                     <div className="space-y-6 animate-in slide-in-from-top-4">
                         <div className="grid md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Category (Main Folder)</Label>
-                                <Input placeholder={subject === 'math' ? 'e.g. Algebra' : 'e.g. Narrative, Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                             <div className="space-y-2">
+                                <Label className="text-slate-500 text-[10px] font-black uppercase">Category (Main Folder)</Label>
+                                <Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (Sub Folder)</Label>
-                                <Input placeholder={subject === 'math' ? 'e.g. Differentiation' : 'e.g. Short Stories, Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                <Label className="text-slate-500 text-[10px] font-black uppercase">Sub-Topic (Sub Folder)</Label>
+                                <Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Student Category</Label>
@@ -791,3 +790,266 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
         </Card>
     );
 }
+
+
+// --- MAIN PAGE ---
+export default function SeniorAcademyPage() {
+    const { role } = useRole();
+    const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+    const { forceRefetch: forceMath } = useCollection(collection(useFirestore()!, 'senior_math'));
+    const { forceRefetch: forceEnglish } = useCollection(collection(useFirestore()!, 'senior_stories'));
+    const { forceRefetch: forceScience } = useCollection(collection(useFirestore()!, 'senior_labs'));
+
+    const handleContentUpdate = useCallback(() => {
+        forceMath();
+        forceEnglish();
+        forceScience();
+    }, [forceMath, forceEnglish, forceScience]);
+    
+    return (
+        <div className="space-y-8 p-1">
+            <Card className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-[48px] shadow-2xl border-b-8 border-slate-700">
+                <CardHeader className="p-10">
+                    <CardTitle className="text-5xl font-black flex items-center gap-4">
+                        <Rocket className="w-12 h-12 text-indigo-400" />
+                        <span>Senior Academy</span>
+                    </CardTitle>
+                    <CardDescription className="text-slate-400 text-lg max-w-2xl mt-2">
+                        Advanced, folder-organized learning modules for focused study in Mathematics, Literature, and Scientific Discovery, complete with AI-powered content generation for teachers.
+                    </CardDescription>
+                </CardHeader>
+            </Card>
+
+            <div className="space-y-12">
+                
+                {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
+
+                <Tabs defaultValue="math" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
+                        <TabsTrigger value="math" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                            <Sigma className="w-6 h-6"/> Advanced Math Lab
+                        </TabsTrigger>
+                        <TabsTrigger value="english" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                            <Languages className="w-6 h-6"/> English Mastery
+                        </TabsTrigger>
+                        <TabsTrigger value="science" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                            <Atom className="w-6 h-6"/> Discovery Lab
+                        </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="math"><MathLab canEdit={canEdit} /></TabsContent>
+                    <TabsContent value="english"><EnglishMastery canEdit={canEdit} /></TabsContent>
+                    <TabsContent value="science"><DiscoveryLab canEdit={canEdit} /></TabsContent>
+                </Tabs>
+            </div>
+             <style jsx global>{`
+                .math-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+                .katex-display { margin: 0 !important; }
+            `}</style>
+        </div>
+    );
+}
+
+```
+- src/firebase/index.ts:
+```ts
+
+'use client';
+
+import { firebaseConfig } from '@/firebase/config';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { initializeFirestore, getFirestore, Firestore, persistentLocalCache, memoryLocalCache, CACHE_SIZE_UNLIMITED } from 'firebase/firestore'; 
+import { getStorage, FirebaseStorage } from 'firebase/storage';
+
+// Global variables to hold instances (Prevents re-initialization crashes in Next.js)
+let firebaseApp: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
+let storage: FirebaseStorage;
+
+export function initializeFirebase() {
+  // Don't run on server side
+  if (typeof window === 'undefined') return null; 
+
+  if (!getApps().length) {
+    // --- INITIALIZATION FOR THE FIRST TIME ---
+    firebaseApp = initializeApp({
+        ...firebaseConfig,
+    });
+
+    // 2. CRITICAL FIX: Force Long Polling & enable persistent cache
+    try {
+      firestore = initializeFirestore(firebaseApp, {
+        localCache: persistentLocalCache({
+            cacheSizeBytes: CACHE_SIZE_UNLIMITED
+        }),
+      });
+      console.log("🔥 Firestore initialized with Long Polling (Stable Mode)");
+    } catch (e) {
+      console.warn("Firestore persistence failed, falling back to in-memory:", e);
+      try {
+        // Fallback without persistence if the first attempt fails
+        firestore = initializeFirestore(firebaseApp, {
+          localCache: memoryLocalCache({})
+        });
+      } catch (fallbackError) {
+          console.error("Critical Firestore initialization failed:", fallbackError);
+          // If even the basic init fails, get the standard instance
+          firestore = getFirestore(firebaseApp);
+      }
+    }
+
+  } else {
+    // --- ALREADY INITIALIZED (Hot Reload) ---
+    firebaseApp = getApp();
+    // Re-get firestore instance to ensure it's linked to the correct app instance
+    firestore = getFirestore(firebaseApp);
+  }
+
+  auth = getAuth(firebaseApp);
+  
+  storage = getStorage(firebaseApp);
+
+  return { firebaseApp, auth, firestore, storage };
+}
+
+export function getSdks(app: FirebaseApp) {
+    return {
+        firebaseApp: app,
+        auth: getAuth(app),
+        firestore: getFirestore(app),
+        storage: getStorage(app)
+    }
+}
+
+// Export existing hooks and providers
+export * from './provider';
+export * from './client-provider';
+export * from './firestore/use-collection';
+export * from './firestore/use-doc';
+export * from './non-blocking-updates';
+export * from './non-blocking-login';
+export * from './errors';
+export * from './error-emitter';
+
+```
+- src/firebase/provider.tsx:
+```tsx
+
+'use client';
+
+import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
+import { FirebaseApp } from 'firebase/app';
+import { Firestore } from 'firebase/firestore';
+import { Auth, User, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+
+// This interface defines the shape of the context's value.
+export interface FirebaseContextState {
+  firebaseApp: FirebaseApp | null;
+  firestore: Firestore | null;
+  auth: Auth | null;
+  user: User | null;
+  isUserLoading: boolean;
+  userError: Error | null;
+}
+
+// Create the context with an undefined initial value.
+export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
+
+export const FirebaseProvider: React.FC<{ children: ReactNode, firebaseApp: FirebaseApp | null, firestore: Firestore | null, auth: Auth | null }> = ({
+  children,
+  firebaseApp,
+  firestore,
+  auth,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isUserLoading, setIsUserLoading] = useState(true);
+  const [userError, setUserError] = useState<Error | null>(null);
+
+  // Subscribe to Firebase auth state changes.
+  useEffect(() => {
+    if (!auth) {
+        setIsUserLoading(false);
+        // FIX: Add Anonymous Sign-in as a fallback
+        console.warn("Auth not ready. Trying anonymous sign-in.");
+        
+        // This is a temporary measure. In a real app, you'd want to handle this more gracefully,
+        // perhaps by showing a "Connecting..." screen or redirecting to a status page.
+        const tempAuth = getAuth(); // Assuming firebase is initialized somewhere
+        if (tempAuth) {
+            signInAnonymously(tempAuth).catch((err) => {
+                console.error("Anonymous sign-in failed:", err);
+            });
+        }
+        
+        return;
+    }
+
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        setUser(user);
+        setIsUserLoading(false);
+      },
+      (error) => {
+        console.error("FirebaseProvider: Auth state error:", error);
+        setUserError(error);
+        setIsUserLoading(false);
+      }
+    );
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [auth]);
+
+  // Memoize the context value to prevent unnecessary re-renders.
+  const contextValue = useMemo(() => ({
+    firebaseApp,
+    firestore,
+    auth,
+    user,
+    isUserLoading,
+    userError,
+  }), [firebaseApp, firestore, auth, user, isUserLoading, userError]);
+
+  return (
+    <FirebaseContext.Provider value={contextValue}>
+      <FirebaseErrorListener />
+      {children}
+    </FirebaseContext.Provider>
+  );
+};
+
+
+// Custom hook to easily access the Firebase context.
+function useFirebaseContext() {
+  const context = useContext(FirebaseContext);
+  if (context === undefined) {
+    throw new Error('useFirebaseContext must be used within a FirebaseProvider.');
+  }
+  return context;
+}
+
+export const useFirebase = () => useFirebaseContext();
+export const useAuth = (): Auth | null => useFirebaseContext().auth;
+export const useFirestore = (): Firestore | null => useFirebaseContext().firestore;
+export const useFirebaseApp = (): FirebaseApp | null => useFirebaseContext().firebaseApp;
+export const useUser = () => {
+    const { user, isUserLoading, userError } = useFirebaseContext();
+    return { user, isUserLoading, userError };
+};
+
+export function useMemoFirebase<T>(factory: () => T, deps: React.DependencyList): T {
+    const memoized = useMemo(factory, deps);
+    if (typeof memoized === 'object' && memoized !== null && !(memoized as any).__memo) {
+        Object.defineProperty(memoized, '__memo', {
+            value: true,
+            writable: false,
+            enumerable: false,
+        });
+    }
+    return memoized;
+}
+
+```
