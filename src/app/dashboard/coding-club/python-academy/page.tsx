@@ -7,7 +7,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp } from 'firebase/fi
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
   BookOpen, Code2, Terminal, Info, Layout, Cpu, 
-  Globe, Database, Github, HelpCircle, FileJson, Trophy
+  Globe, Database, Github, HelpCircle, FileJson, Trophy, Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
