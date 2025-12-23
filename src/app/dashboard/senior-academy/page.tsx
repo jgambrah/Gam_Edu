@@ -92,27 +92,40 @@ const CATEGORIES = [
     'Senior Secondary (SHS)'
 ];
 
-// --- 1. ENGLISH MASTERY (COMPREHENSION) ---
+// --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [activeStory, setActiveStory] = useState<any>(null);
     const [answers, setAnswers] = useState<string[]>([]);
-    
-    const storiesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: library, forceRefetch } = useCollection<any>(storiesQuery);
+    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+
+    const storiesQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
+    [firestore]);
+    const { data: library, isLoading, forceRefetch } = useCollection<any>(storiesQuery);
+
+    // Folder Logic for English
+    const folderStructure = useMemo(() => {
+        if (!library) return {};
+        const filtered = library.filter(s => s.gradeLevel === selectedGrade);
+        return filtered.reduce((acc, s) => {
+            const category = s.category || 'General Reading'; // Folder 1
+            const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
+            if (!acc[category]) acc[category] = {};
+            if (!acc[category][subTopic]) acc[category][subTopic] = [];
+            acc[category][subTopic].push(s);
+            return acc;
+        }, {} as Record<string, Record<string, any[]>>);
+    }, [library, selectedGrade]);
 
     const checkAnswers = () => {
-        if (!activeStory || !activeStory.quiz) return;
         let correct = 0;
         activeStory.quiz.forEach((q: any, i: number) => {
             if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
         });
-        if (correct === activeStory.quiz.length) {
-            confetti();
-            speak("Excellent analysis!");
-        } else {
-            speak(`You have ${correct} correct answers. Keep investigating.`);
-        }
+        if (correct === activeStory.quiz.length) { confetti(); speak("Analysis complete! You have mastered this passage."); }
+        else { speak(`Keep investigating. You found ${correct} insights.`); }
     };
     
     const handleDelete = async (id: string) => {
@@ -123,58 +136,91 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     };
 
     return (
-        <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in">
-            <div className="lg:col-span-2 space-y-6">
-                
-                {!activeStory ? (
-                    <div className="h-96 flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100">
-                        <BookOpen className="w-16 h-16 text-slate-200 mb-4" />
-                        <p className="text-slate-400 font-bold text-2xl">Select a Literary Work</p>
-                    </div>
-                ) : (
-                    <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden bg-white">
-                        <div className="bg-indigo-600 p-8 text-white">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <Badge className="mb-4 bg-white/20 text-white border-none">{activeStory.genre}</Badge>
-                                    <CardTitle className="text-4xl font-black">{activeStory.title}</CardTitle>
-                                </div>
-                                <Button onClick={() => speak(activeStory.content)} variant="secondary" size="icon" className="rounded-full"><Volume2/></Button>
+        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
+            {/* SIDEBAR NAVIGATION */}
+            <div className="lg:col-span-1 space-y-4">
+                <div className="bg-indigo-900 p-4 rounded-3xl shadow-lg">
+                    <Label className="text-indigo-300 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
+                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                        <SelectTrigger className="bg-indigo-800 border-indigo-700 text-white rounded-2xl h-12">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                </div>
+
+                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                    <div className="p-2 space-y-2">
+                        {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
+                            <div className="text-center py-20 text-slate-300">
+                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                                <p className="text-xs font-bold">No passages in this category yet.</p>
                             </div>
+                        ) : (
+                            Object.entries(folderStructure).map(([cat, subs]) => (
+                                <Accordion key={cat} type="single" collapsible className="w-full">
+                                    <AccordionItem value={cat} className="border-none">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-indigo-50 rounded-2xl mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <BookOpen className="w-3 h-3 text-indigo-500" />
+                                                <span className="font-black text-indigo-900 text-xs uppercase">{cat}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-1 pl-4">
+                                            {Object.entries(subs).map(([subTitle, items]) => (
+                                                <Accordion key={subTitle} type="single" collapsible>
+                                                    <AccordionItem value={subTitle} className="border-none">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>
+                                                        <AccordionContent className="space-y-1">
+                                                            {items.map((item: any) => (
+                                                                <button key={item.id} onClick={() => { setActiveStory(item); setAnswers([]); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeStory?.id === item.id ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-slate-600'}`}>{item.title}</button>
+                                                            ))}
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            ))}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            ))
+                        )}
+                    </div>
+                </ScrollArea>
+            </div>
+
+            {/* WORKSTATION */}
+            <div className="lg:col-span-3">
+                {activeStory ? (
+                    <Card className="rounded-[48px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in">
+                        <div className="bg-indigo-600 p-10 text-white">
+                            <Badge className="bg-indigo-400 mb-4">{activeStory.genre || activeStory.category}</Badge>
+                            <CardTitle className="text-4xl font-black">{activeStory.title}</CardTitle>
                         </div>
-                        <CardContent className="p-10 space-y-10">
+                        <CardContent className="p-12 space-y-10">
                             <p className="whitespace-pre-wrap text-2xl leading-relaxed text-slate-700 font-serif">{activeStory.content}</p>
-                            <div className="bg-slate-50 p-8 rounded-[32px] space-y-8 border-2 border-slate-100">
+                            <div className="bg-slate-50 p-8 rounded-[32px] space-y-6 border-2 border-slate-100">
                                 <h3 className="text-2xl font-black text-indigo-900 flex items-center gap-2"><Brain className="text-indigo-500"/> Critical Analysis</h3>
                                 {activeStory.quiz.map((q: any, i: number) => (
-                                    <div key={i} className="space-y-3">
-                                        <p className="font-bold text-slate-800 text-lg">{i + 1}. {q.question}</p>
-                                        <Input placeholder="Type response..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-14 rounded-2xl border-2 focus:border-indigo-500 shadow-sm"/>
+                                    <div key={i} className="space-y-2">
+                                        <p className="font-bold text-slate-800">{i + 1}. {q.question}</p>
+                                        <Input placeholder="Type your analysis..." value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-14 rounded-2xl border-2" />
                                     </div>
                                 ))}
-                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-2xl shadow-xl">Submit for Review</Button>
+                                <Button onClick={checkAnswers} className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-xl font-black rounded-full">Submit Analysis</Button>
                             </div>
                         </CardContent>
                     </Card>
-                )}
-            </div>
-            <div className="space-y-4">
-                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest ml-2">Archive</h3>
-                {library?.map((s: any) => (
-                    <div key={s.id} className="relative group">
-                        <button onClick={() => { setActiveStory(s); setAnswers([]); }} className={`w-full text-left p-6 rounded-[24px] border-b-4 transition-all ${activeStory?.id === s.id ? 'bg-indigo-50 border-indigo-500' : 'bg-white border-slate-100'}`}>
-                            <h4 className="font-bold text-slate-800">{s.title}</h4>
-                            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase">{s.genre} • {s.difficulty}</p>
-                        </button>
-                        {canEdit && (
-                            <button onClick={() => handleDelete(s.id)} className="absolute top-2 right-2 text-red-300 opacity-0 group-hover:opacity-100 z-10"><Trash2 className="w-4 h-4"/></button>
-                        )}
+                ) : (
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
+                        <Languages className="w-20 h-20 text-slate-100 mb-4" />
+                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">Select a Literary Passage</h2>
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );
 }
+
 
 // --- 2. ADVANCED MATH LAB (FOLDER ORGANIZED) ---
 function MathLab({ canEdit }: { canEdit: boolean }) {
@@ -197,8 +243,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
         if (!dbProblems) return {};
         
         // 1. Filter by current Student Category
-        const filtered = dbProblems.filter(p => p.gradeLevel === selectedGrade || (!p.gradeLevel && selectedGrade === 'Junior Secondary (JHS)'));
-
+        const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
 
         // 2. Group into Subjects (Algebra, Stats, etc.)
         return filtered.reduce((acc, p) => {
@@ -242,9 +287,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         <SelectTrigger className="bg-slate-800 border-slate-700 text-white font-bold rounded-2xl h-12">
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
-                            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                        </SelectContent>
+                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
 
@@ -263,7 +306,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                     <AccordionItem value={subject} className="border-none">
                                         <AccordionTrigger className="hover:no-underline p-3 bg-slate-50 rounded-2xl mb-1 group">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
                                                 <span className="font-black text-slate-700 text-xs uppercase tracking-tight">{subject}</span>
                                             </div>
                                         </AccordionTrigger>
@@ -271,7 +314,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                             {Object.entries(subTopics).map(([subTitle, items]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-indigo-600">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-emerald-600">
                                                             {subTitle} ({items.length})
                                                         </AccordionTrigger>
                                                         <AccordionContent className="space-y-1">
@@ -351,11 +394,11 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
                         <div className="p-8 bg-slate-50 rounded-full mb-6">
                             <Sigma className="w-20 h-20 text-slate-200" />
                         </div>
-                        <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest text-center">
+                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
                         </h2>
                     </div>
@@ -365,332 +408,151 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 3. DISCOVERY LAB (SCIENTIFIC METHOD) ---
+// --- 3. DISCOVERY LAB (FOLDER ORGANIZED) ---
 function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
-    const [isExperimentRunning, setIsExperimentRunning] = useState(false);
-    const [progress, setProgress] = useState(0);
+    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
 
-    const labQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: dbLabs } = useCollection<any>(labQuery);
+    const labQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
+    [firestore]);
+    const { data: dbLabs, isLoading } = useCollection<any>(labQuery);
 
-    const runExperiment = () => {
-        setIsExperimentRunning(true);
-        setProgress(0);
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                const newValue = prev + 20;
-                if (newValue >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => setStage('conclusion'), 500);
-                }
-                return newValue;
-            });
-        }, 400);
-    };
+    const folderStructure = useMemo(() => {
+        if (!dbLabs) return {};
+        const filtered = dbLabs.filter(l => l.gradeLevel === selectedGrade);
+        return filtered.reduce((acc, l) => {
+            const category = l.category || 'Science Journal';
+            const subTopic = l.subTopic || 'Research Mission';
+            if (!acc[category]) acc[category] = {};
+            if (!acc[category][subTopic]) acc[category][subTopic] = [];
+            acc[category][subTopic].push(l);
+            return acc;
+        }, {} as Record<string, Record<string, any[]>>);
+    }, [dbLabs, selectedGrade]);
     
-    useEffect(() => {
-        setIsExperimentRunning(false);
-        setProgress(0);
-    }, [lab]);
-
     return (
-        <div className="space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {dbLabs?.map((l: any) => (
-                    <Card key={l.id} onClick={() => { setLab(l); setStage('hypothesis'); }} className={`cursor-pointer hover:shadow-xl transition-all border-b-8 ${lab?.id === l.id ? 'border-blue-600 bg-blue-50' : 'border-slate-100'}`}>
-                        <CardContent className="p-6 text-center space-y-3">
-                            <div className="text-5xl">{l.icon}</div>
-                            <h4 className="font-bold text-slate-800">{l.title}</h4>
-                        </CardContent>
-                    </Card>
-                ))}
+        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
+            {/* SIDEBAR NAVIGATION */}
+            <div className="lg:col-span-1 space-y-4">
+                <div className="bg-cyan-900 p-4 rounded-3xl shadow-lg">
+                    <Label className="text-cyan-300 text-[10px] uppercase font-black ml-2 mb-2 block">Research Level</Label>
+                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                        <SelectTrigger className="bg-cyan-800 border-cyan-700 text-white rounded-2xl h-12">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                </div>
+
+                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                    <div className="p-2 space-y-2">
+                         {isLoading ? <Skeleton className="h-40 w-full"/> : Object.keys(folderStructure).length === 0 ? (
+                            <div className="text-center py-20 text-slate-300">
+                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                                <p className="text-xs font-bold">No labs in this category yet.</p>
+                            </div>
+                         ) : (
+                            Object.entries(folderStructure).map(([cat, subs]) => (
+                                <Accordion key={cat} type="single" collapsible className="w-full">
+                                    <AccordionItem value={cat} className="border-none">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-cyan-50 rounded-2xl mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <Microscope className="w-3 h-3 text-cyan-500" />
+                                                <span className="font-black text-cyan-900 text-xs uppercase">{cat}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-1 pl-4">
+                                            {Object.entries(subs).map(([subTitle, items]) => (
+                                                <Accordion key={subTitle} type="single" collapsible>
+                                                    <AccordionItem value={subTitle} className="border-none">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>
+                                                        <AccordionContent className="space-y-1">
+                                                            {items.map((item: any) => (
+                                                                <button key={item.id} onClick={() => { setLab(item); setStage('hypothesis'); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${lab?.id === item.id ? 'bg-cyan-600 text-white shadow-md' : 'hover:bg-cyan-50 text-slate-600'}`}>{item.title}</button>
+                                                            ))}
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            ))}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            ))
+                        )}
+                    </div>
+                </ScrollArea>
             </div>
 
-            {lab && (
-                <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden animate-in slide-in-from-right-4">
-                    <div className="grid md:grid-cols-3">
-                        <div className="bg-slate-900 text-white p-10 space-y-8">
-                            <div className="flex flex-col gap-6">
-                                {['hypothesis', 'experiment', 'conclusion'].map((s: any, i) => (
-                                    <div key={s} className={`flex items-center gap-4 transition-opacity ${stage === s ? 'opacity-100' : 'opacity-30'}`}>
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${i === 0 ? 'bg-blue-500' : i === 1 ? 'bg-orange-500' : 'bg-green-500'}`}>{i + 1}</div>
-                                        <span className="font-bold capitalize">{s}</span>
+            {/* WORKSTATION (Discovery View) */}
+            <div className="lg:col-span-3">
+                {lab ? (
+                    <Card className="rounded-[48px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in">
+                        <div className="grid md:grid-cols-3 min-h-[600px]">
+                            <div className="bg-slate-900 text-white p-10 space-y-8">
+                                <div className="flex flex-col gap-6">
+                                    {['hypothesis', 'experiment', 'conclusion'].map((s: any, i) => (
+                                        <div key={s} className={`flex items-center gap-4 transition-opacity ${stage === s ? 'opacity-100' : 'opacity-30'}`}>
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${i === 0 ? 'bg-blue-500' : i === 1 ? 'bg-orange-500' : 'bg-green-500'}`}>{i+1}</div>
+                                            <span className="font-black capitalize">{s}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <hr className="opacity-10" />
+                                <div className="space-y-2">
+                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Scientific Background</p>
+                                    <p className="text-sm opacity-60 leading-relaxed italic">{lab.background}</p>
+                                </div>
+                            </div>
+                            <div className="md:col-span-2 p-12 flex flex-col justify-center">
+                                {stage === 'hypothesis' && (
+                                    <div className="space-y-8 animate-in slide-in-from-right-4">
+                                        <h2 className="text-3xl font-black text-slate-800 leading-tight">{lab.question}</h2>
+                                        <div className="p-8 bg-blue-50 rounded-[32px] border-2 border-blue-100 space-y-4">
+                                            <p className="font-bold text-blue-800">{lab.hypothesisPrompt}</p>
+                                            <div className="grid gap-3">
+                                                {lab.hypothesisOptions.map((opt: string) => (
+                                                    <Button key={opt} variant="outline" className="bg-white border-2 h-auto py-4 font-bold rounded-2xl" onClick={() => setStage('experiment')}>{opt}</Button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
-                                ))}
+                                )}
+                                {stage === 'experiment' && (
+                                    <div className="text-center space-y-8 animate-in zoom-in">
+                                        <h2 className="text-3xl font-black text-slate-800">Mission: Data Collection</h2>
+                                        <div className="text-[180px] py-10 animate-pulse">{lab.icon}</div>
+                                        <Button onClick={() => setStage('conclusion')} className="h-16 px-12 bg-orange-500 hover:bg-orange-600 text-xl font-black rounded-full shadow-xl">Observe Outcome</Button>
+                                    </div>
+                                )}
+                                {stage === 'conclusion' && (
+                                    <div className="space-y-6 animate-in slide-in-from-bottom-4">
+                                        <h2 className="text-4xl font-black text-green-700">Discovery Conclusion</h2>
+                                        <div className="p-8 bg-green-50 rounded-[40px] border-4 border-green-100 space-y-4">
+                                            <p className="text-2xl font-bold text-slate-800">{lab.conclusion}</p>
+                                            <p className="text-slate-600 leading-relaxed text-lg">{lab.explanation}</p>
+                                        </div>
+                                        <Button onClick={() => { setLab(null); confetti(); }} className="w-full h-16 bg-green-600 rounded-2xl font-black text-xl shadow-xl">Complete Mission</Button>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div className="md:col-span-2 p-10 bg-white">
-                            {stage === 'hypothesis' && (
-                                <div className="space-y-6">
-                                    <h2 className="text-3xl font-black text-slate-800 leading-relaxed">{lab.question}</h2>
-                                    <div className="p-8 bg-blue-50 rounded-3xl border-2 border-blue-100">
-                                        <p className="text-slate-600 mb-4 leading-relaxed">{lab.hypothesisPrompt}</p>
-                                        <div className="grid grid-cols-1 gap-3">
-                                            {lab.hypothesisOptions.map((opt: string) => (
-                                                <Button key={opt} variant="outline" className="bg-white border-2 hover:bg-blue-50 font-bold text-left h-auto py-3 whitespace-normal" onClick={() => setStage('experiment')}>{opt}</Button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            {stage === 'experiment' && (
-                                <div className="space-y-8 text-center">
-                                    <h2 className="text-3xl font-black text-slate-800">Experimentation in Progress</h2>
-                                    <div className="text-9xl my-10 animate-pulse">{lab.icon}</div>
-                                    
-                                    {isExperimentRunning ? (
-                                        <div className="space-y-3">
-                                            <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
-                                                <div className="bg-orange-500 h-4 rounded-full transition-all duration-500" style={{width: `${progress}%`}}></div>
-                                            </div>
-                                            <p className="text-sm font-medium text-orange-600">Running Simulation...</p>
-                                        </div>
-                                    ) : (
-                                        <Button onClick={runExperiment} className="bg-orange-500 hover:bg-orange-600 px-10 rounded-full font-bold h-14 text-lg">Run Experiment</Button>
-                                    )}
-                                </div>
-                            )}
-                            {stage === 'conclusion' && (
-                                <div className="space-y-6 animate-in zoom-in">
-                                    <h2 className="text-3xl font-black text-green-800">Findings</h2>
-                                    <div className="p-8 bg-green-50 rounded-3xl border-2 border-green-100 space-y-4">
-                                        <p className="text-2xl font-bold text-slate-800">{lab.conclusion}</p>
-                                        <p className="text-slate-600 leading-relaxed">{lab.explanation}</p>
-                                    </div>
-                                    <Button onClick={() => { setLab(null); confetti(); }} className="w-full h-14 bg-green-600 rounded-2xl font-black text-lg">Complete Mission</Button>
-                                </div>
-                            )}
-                        </div>
+                    </Card>
+                ) : (
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
+                        <Microscope className="w-20 h-20 text-slate-100 mb-4" />
+                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">Select an Active Research Lab</h2>
                     </div>
-                </Card>
-            )}
+                )}
+            </div>
         </div>
     );
 }
 
-// --- 4. ADMIN CONSOLE (HYBRID AI & MANUAL CREATOR) ---
-function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    
-    const [subject, setSubject] = useState<'math' | 'english' | 'science'>('math');
-    const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
-    const [loading, setLoading] = useState(false);
+// ... (Keep the rest of the page component as is) ...
 
-    // AI States
-    const [topic, setTopic] = useState("");
-    const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
-
-    // Manual States (Shared across subjects where applicable)
-    const [manualData, setManualData] = useState<any>({
-        title: '',
-        category: '', // Broad Category (e.g. Algebra)
-        subTopic: '', // Sub Topic (e.g. Linear Equations)
-        gradeLevel: 'Junior Secondary (JHS)',
-        latexFormula: '',
-        instruction: '',
-        answer: '',
-        content: '', // For English
-        genre: '',   // For English
-        quiz: [{ question: '', answer: '' }, { question: '', answer: '' }, { question: '', answer: '' }],
-        background: '', // For Science
-        question: '',
-        hypothesisPrompt: '',
-        hypothesisOptions: ['', '', ''],
-        conclusion: '',
-        explanation: '',
-        icon: '🔬'
-    });
-
-    const handleAiGenerate = async () => {
-        if (!topic.trim()) return;
-        setLoading(true);
-        const context = { topic, gradeLevel: targetGrade as any };
-        let result;
-        let collectionName = '';
-
-        if (subject === 'math') {
-            collectionName = 'senior_math';
-            result = await generateSeniorMath(context);
-        } else if (subject === 'english') {
-            collectionName = 'senior_stories';
-            result = await generateSeniorEnglish(context);
-        } else {
-            collectionName = 'senior_labs';
-            result = await generateSeniorLab(context);
-        }
-
-        if (result.success && result.data) {
-            if (firestore) {
-                await addDoc(collection(firestore, collectionName), {
-                    ...result.data,
-                    gradeLevel: targetGrade, 
-                    createdAt: serverTimestamp()
-                });
-                toast({ title: 'AI Success', description: `Added to ${targetGrade} library.` });
-                onContentAdded();
-                setTopic("");
-            }
-        }
-        setLoading(false);
-    };
-
-    const handleManualSave = async () => {
-        if (!manualData.title || !manualData.category) {
-            toast({ title: "Required Fields", description: "Title and Category are needed for folder organization.", variant: "destructive" });
-            return;
-        }
-        setLoading(true);
-        try {
-            const colName = subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs';
-            if (firestore) {
-                await addDoc(collection(firestore, colName), {
-                    ...manualData,
-                    createdAt: serverTimestamp()
-                });
-                toast({ title: "Saved", description: "Manual entry added to the folders." });
-                onContentAdded();
-                // Reset form
-                setManualData({ ...manualData, title: '', latexFormula: '', content: '', background: '', answer: '' });
-            }
-        } catch (e) {
-            toast({ title: "Error", description: "Failed to save manually.", variant: "destructive" });
-        }
-        setLoading(false);
-    };
-
-    return (
-        <Card className="bg-slate-900 border-none shadow-2xl overflow-hidden rounded-[40px] animate-in fade-in">
-            {/* Control Bar */}
-            <div className="p-6 bg-slate-800/50 border-b border-slate-700 flex flex-wrap justify-between items-center gap-4">
-                <div className="flex bg-slate-900 p-1 rounded-2xl border border-slate-700">
-                    <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('ai')} className="rounded-xl font-bold text-xs h-9">
-                        <Sparkles className="w-3 h-3 mr-2 text-blue-400"/> AI Magic
-                    </Button>
-                    <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} onClick={() => setCreationMode('manual')} className="rounded-xl font-bold text-xs h-9">
-                        <PenTool className="w-3 h-3 mr-2 text-emerald-400"/> Manual Entry
-                    </Button>
-                </div>
-
-                <div className="flex gap-2">
-                    {['math', 'english', 'science'].map((s: any) => (
-                        <button 
-                            key={s} 
-                            onClick={() => setSubject(s)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${subject === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
-                        >
-                            {s}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <CardContent className="p-8">
-                {creationMode === 'ai' ? (
-                    <div className="flex flex-col md:flex-row gap-4 items-end">
-                        <div className="flex-1 space-y-2 w-full">
-                            <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Topic for AI</Label>
-                            <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Simultaneous Equations, Plant Cells..." className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl" />
-                        </div>
-                        <div className="w-full md:w-64 space-y-2">
-                            <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Grade</Label>
-                            <Select value={targetGrade} onValueChange={setTargetGrade}>
-                                <SelectTrigger className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"><SelectValue /></SelectTrigger>
-                                <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                        <Button onClick={handleAiGenerate} disabled={loading || !topic} className="h-14 px-8 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black min-w-[160px]">
-                            {loading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2 h-4 w-4"/> GENERATE</>}
-                        </Button>
-                    </div>
-                ) : (
-                    /* --- MANUAL ENTRY FORM --- */
-                    <div className="space-y-6 animate-in slide-in-from-top-4">
-                        <div className="grid md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Category (Main Folder)</Label>
-                                <Input placeholder="e.g. Algebra" value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (Sub Folder)</Label>
-                                <Input placeholder="e.g. Differentiation" value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Student Category</Label>
-                                <Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}>
-                                    <SelectTrigger className="h-12 bg-slate-800 border-slate-700 text-white rounded-xl"><SelectValue /></SelectTrigger>
-                                    <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl text-lg font-bold" />
-                            
-                            {subject === 'math' && (
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div className="space-y-4">
-                                        <Textarea placeholder="LaTeX Formula (e.g. \frac{x}{y})" value={manualData.latexFormula} onChange={e => setManualData({...manualData, latexFormula: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl font-mono" />
-                                        <Input placeholder="Instruction (e.g. Solve for x)" value={manualData.instruction} onChange={e => setManualData({...manualData, instruction: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                                        <Input placeholder="Final Answer" value={manualData.answer} onChange={e => setManualData({...manualData, answer: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                                    </div>
-                                    <div className="bg-slate-950 rounded-2xl p-6 flex flex-col justify-center items-center border-2 border-dashed border-slate-800">
-                                        <p className="text-[10px] font-black text-slate-600 uppercase mb-4 tracking-widest">Live Math Preview</p>
-                                        <div className="text-2xl text-emerald-400">
-                                            {manualData.latexFormula ? <SafeMath formula={manualData.latexFormula} /> : <span className="opacity-20 italic text-sm">Formula will render here</span>}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {subject === 'english' && (
-                                <div className="space-y-4">
-                                    <Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-48 rounded-xl" />
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {[0,1,2].map(i => (
-                                            <div key={i} className="p-3 bg-slate-800/50 rounded-xl space-y-2">
-                                                <Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label>
-                                                <Input placeholder="Question" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].question} onChange={e => {
-                                                    const n = [...manualData.quiz]; n[i].question = e.target.value; setManualData({...manualData, quiz: n});
-                                                }} />
-                                                <Input placeholder="Answer" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].answer} onChange={e => {
-                                                    const n = [...manualData.quiz]; n[i].answer = e.target.value; setManualData({...manualData, quiz: n});
-                                                }} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {subject === 'science' && (
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" />
-                                    <Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" />
-                                    <div className="md:col-span-2 grid grid-cols-3 gap-2">
-                                        {manualData.hypothesisOptions.map((opt: string, i: number) => (
-                                            <Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {
-                                                const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});
-                                            }} className="bg-slate-800 border-slate-700 text-white h-10 rounded-lg" />
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <Button onClick={handleManualSave} disabled={loading} className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black shadow-xl">
-                            {loading ? <Loader2 className="animate-spin" /> : <><Save className="mr-2" /> PUBLISH MANUAL MISSION</>}
-                        </Button>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    );
-}
-
-// --- MAIN PAGE ---
 export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
@@ -714,7 +576,6 @@ export default function SeniorAcademyPage() {
                     </div>
                 </div>
 
-                {/* This will render ONLY if user is a teacher or admin */}
                 {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
 
                 <Tabs defaultValue="math" className="w-full">
@@ -745,3 +606,4 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
+
