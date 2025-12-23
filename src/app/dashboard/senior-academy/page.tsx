@@ -8,7 +8,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } f
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, PenTool, ArrowRight, Play, PencilRuler, Lightbulb, Atom, Building2, ArrowDown
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, FolderOpen, Play
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -27,13 +27,11 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import ReactMarkdown from 'react-markdown';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
 // Import the AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
-import CurriculumSeeder from '@/components/dashboard/senior-academy/CurriculumSeeder';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,469 +84,13 @@ function SafeMath({ formula, block = true }: { formula: string, block?: boolean 
   }
 }
 
-// --- SENIOR ACADEMY: GEOGEBRA INTERACTIVE ---
-interface GeoGebraProps {
-  materialId: string; // The code from the GeoGebra URL
-  title?: string;
-  height?: number;
-}
-
-function GeoGebraInteractive({ materialId, title, height = 500 }: GeoGebraProps) {
-  // Constructing the URL with "Clean UI" parameters
-  const embedUrl = `https://www.geogebra.org/material/iframe/id/${materialId}/width/800/height/${height}/ai/false/asb/false/sbr/false/cd/false/ize/false/msb/false/stb/false/sts/false/sri/false`;
-
-  return (
-    <div className="space-y-3 animate-in fade-in zoom-in duration-500">
-      {title && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 w-fit rounded-full">
-           <Atom className="w-3 h-3 text-indigo-500" />
-           <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{title}</span>
-        </div>
-      )}
-      <div className="relative w-full rounded-[32px] overflow-hidden border-4 border-slate-100 shadow-2xl bg-white">
-        <iframe
-          src={embedUrl}
-          width="100%"
-          height={height}
-          style={{ border: 'none' }}
-          allowFullScreen
-          title={title || "GeoGebra Activity"}
-        />
-        {/* Attribution Watermark */}
-        <div className="absolute bottom-2 right-4 pointer-events-none">
-            <p className="text-[8px] font-bold text-slate-300">INTERACTIVE POWERED BY GEOGEBRA OER</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-// --- SENIOR ACADEMY: CURRICULUM PATHWAY ---
-function CurriculumPathway({ canEdit }: { canEdit: boolean }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-
-    // Navigation State
-    const [selection, setSelection] = useState({ grade: '', unit: '', lesson: '' });
-    const [activeLesson, setActiveLesson] = useState<any>(null);
-
-    // 1. Fetch Grades
-    const gradesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'curriculum'), orderBy('level', 'asc')) : null, [firestore]);
-    const { data: grades, forceRefetch: refetchGrades } = useCollection<any>(gradesQuery);
-
-    // 2. Fetch Units (when grade is selected)
-    const unitsQuery = useMemoFirebase(() => 
-        (firestore && selection.grade) ? query(collection(firestore, `curriculum/${selection.grade}/units`), orderBy('number', 'asc')) : null, 
-    [firestore, selection.grade]);
-    const { data: units } = useCollection<any>(unitsQuery);
-
-    // 3. Fetch Lessons (when unit is selected)
-    const lessonsQuery = useMemoFirebase(() => 
-        (firestore && selection.grade && selection.unit) ? query(collection(firestore, `curriculum/${selection.grade}/units/${selection.unit}/lessons`), orderBy('order', 'asc')) : null, 
-    [firestore, selection.grade, selection.unit]);
-    const { data: lessons } = useCollection<any>(lessonsQuery);
-
-    const handleStartLesson = (lesson: any) => {
-        setActiveLesson(lesson);
-        speak(`Starting lesson: ${lesson.title}`);
-    };
-
-    return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            {/* --- BREADCRUMB SELECTOR --- */}
-            {!activeLesson && (
-                <>
-                {canEdit && <CurriculumSeeder onSeedComplete={refetchGrades} />}
-                <div className="grid md:grid-cols-3 gap-4 bg-white p-6 rounded-[32px] shadow-xl border-b-8 border-slate-100">
-                    {/* Grade Selector */}
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2">1. Select Grade</label>
-                        <Select onValueChange={(v) => setSelection({ grade: v, unit: '', lesson: '' })}>
-                            <SelectTrigger className="rounded-2xl h-14 border-2"><SelectValue placeholder="Pick a Grade" /></SelectTrigger>
-                            <SelectContent>
-                                {grades?.map(g => <SelectItem key={g.id} value={g.id}>{g.title}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Unit Selector */}
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2">2. Select Unit</label>
-                        <Select disabled={!selection.grade} onValueChange={(v) => setSelection({ ...selection, unit: v, lesson: '' })}>
-                            <SelectTrigger className="rounded-2xl h-14 border-2"><SelectValue placeholder="Pick a Unit" /></SelectTrigger>
-                            <SelectContent>
-                                {units?.map(u => <SelectItem key={u.id} value={u.id}>Unit {u.number}: {u.title}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Lesson List Display */}
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase ml-2">3. Available Lessons</label>
-                        <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                            {lessons?.map(l => (
-                                <button 
-                                    key={l.id} 
-                                    onClick={() => handleStartLesson(l)}
-                                    className="w-full text-left p-4 rounded-2xl bg-slate-50 hover:bg-indigo-50 border-2 border-transparent hover:border-indigo-200 transition-all flex justify-between items-center group"
-                                >
-                                    <span className="font-bold text-slate-700 group-hover:text-indigo-600">{l.title}</span>
-                                    <Play className="w-4 h-4 text-indigo-400" />
-                                </button>
-                            ))}
-                            {!selection.unit && <p className="text-center text-slate-300 text-sm py-4">Select a unit to see lessons</p>}
-                        </div>
-                    </div>
-                </div>
-                </>
-            )}
-
-            {/* --- THE LESSON VIEWER (THE "GO" PHASE) --- */}
-            {activeLesson ? (
-                <Card className="rounded-[40px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in duration-500">
-                    <div className="bg-slate-900 p-8 text-white flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-                            <Button variant="ghost" onClick={() => setActiveLesson(null)} className="text-white hover:bg-white/10 rounded-full">
-                                <ArrowRight className="rotate-180 mr-2" /> Exit
-                            </Button>
-                            <div>
-                                <h2 className="text-3xl font-black tracking-tight">{activeLesson.title}</h2>
-                                <p className="text-indigo-400 text-xs font-bold uppercase tracking-widest">{activeLesson.attribution || 'Open Curriculum'}</p>
-                            </div>
-                        </div>
-                        <div className="hidden md:block">
-                            <Badge className="bg-green-500 px-4 py-1">In Progress</Badge>
-                        </div>
-                    </div>
-
-                    <CardContent className="p-10 space-y-12 max-w-4xl mx-auto">
-                        {/* 1. Introduction Block */}
-                        <section className="prose prose-slate max-w-none">
-                            <p className="whitespace-pre-wrap text-2xl leading-relaxed text-slate-600 first-letter:text-5xl first-letter:font-bold first-letter:mr-2">
-                                {activeLesson.introduction}
-                            </p>
-                        </section>
-
-                        {/* 2. Teaching Blocks (Text + LaTeX + Interactive) */}
-                        <div className="space-y-8">
-                            {activeLesson.content_blocks?.map((block: any, i: number) => (
-                                <div key={i} className="animate-in fade-in" style={{ animationDelay: `${i * 0.2}s` }}>
-                                    {block.type === 'text' && (
-                                        <p className="whitespace-pre-wrap text-xl text-slate-800 leading-relaxed font-medium">{block.body}</p>
-                                    )}
-                                    {block.type === 'latex' && (
-                                        <div className="bg-slate-900 p-10 rounded-[40px] shadow-inner border-t-8 border-emerald-500 flex justify-center overflow-x-auto">
-                                            <div className="text-4xl text-emerald-400">
-                                                <SafeMath formula={block.formula} />
-                                            </div>
-                                        </div>
-                                    )}
-                                    {block.type === 'interactive' && (
-                                        <GeoGebraInteractive 
-                                            materialId={block.materialId} 
-                                            title={block.label} 
-                                        />
-                                    )}
-                                    {block.type === 'concept' && (
-                                        <div className="bg-amber-50 p-6 rounded-3xl border-2 border-amber-100 flex gap-4">
-                                            <Lightbulb className="w-8 h-8 text-amber-500 shrink-0" />
-                                            <p className="text-lg text-amber-900 font-bold italic">{block.body}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* 3. Guided Practice Block */}
-                        <div className="pt-12 border-t border-slate-100 space-y-8">
-                            <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-                                <PencilRuler className="text-indigo-500 w-8 h-8" /> Practice Arena
-                            </h3>
-                            {activeLesson.practice_problems?.map((prob: any, i: number) => (
-                                <div key={i} className="p-8 bg-slate-50 rounded-[32px] border-2 border-slate-100 space-y-6">
-                                    <p className="whitespace-pre-wrap text-xl font-bold text-slate-700">
-                                        {prob.question}
-                                    </p>
-                                    <div className="flex gap-4">
-                                        <Input placeholder="Your answer..." className="h-14 rounded-2xl text-xl font-mono border-2 focus:border-indigo-500 shadow-sm" />
-                                        <Button className="h-14 px-10 bg-indigo-600 rounded-2xl font-bold shadow-lg">Check</Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-
-                    <CardFooter className="bg-slate-50 p-10 border-t flex justify-between items-center">
-                        <div className="flex gap-2">
-                             {['📚', '🧬', '📐'].map((emoji, i) => <span key={i} className="text-2xl">{emoji}</span>)}
-                        </div>
-                        <Button 
-                            onClick={() => {
-                                confetti();
-                                toast({ title: "Lesson Complete!", description: "Progress saved to your transcript." });
-                                setActiveLesson(null);
-                            }}
-                            className="bg-green-600 hover:bg-green-700 px-12 h-16 rounded-2xl text-xl font-black shadow-xl"
-                        >
-                            Complete & Next <ArrowRight className="ml-2" />
-                        </Button>
-                    </CardFooter>
-                </Card>
-            ) : (
-                /* --- IF NO SELECTION: WELCOME STATE --- */
-                <div className="py-20 text-center space-y-4">
-                    <div className="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto shadow-xl mb-6">
-                        <BookOpen className="w-10 h-10 text-indigo-500" />
-                    </div>
-                    <h2 className="text-4xl font-black text-slate-800">Your Learning Path</h2>
-                    <p className="text-slate-400 font-medium max-w-md mx-auto">Select a Grade and Unit above to begin your professional academy curriculum.</p>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// --- TEACHER/ADMIN CONTENT GENERATOR ---
-function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    
-    // AI Form State
-    const [subject, setSubject] = useState('math');
-    const [topic, setTopic] = useState('');
-    const [gradeLevel, setGradeLevel] = useState('SHS');
-    const [instructions, setInstructions] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    // Manual Form State
-    const [isManualFormOpen, setIsManualFormOpen] = useState(false);
-    const [manualType, setManualType] = useState('math');
-    const [manualTitle, setManualTitle] = useState('');
-    const [manualCategory, setManualCategory] = useState('');
-    const [manualSubTopic, setManualSubTopic] = useState('');
-    const [manualGradeLevel, setManualGradeLevel] = useState('JHS');
-    
-    // Manual state for specific types
-    const [manualFormula, setManualFormula] = useState('');
-    const [manualInstruction, setManualInstruction] = useState('');
-    const [manualAnswer, setManualAnswer] = useState('');
-    const [manualContent, setManualContent] = useState('');
-    const [manualLab, setManualLab] = useState({
-        background: '', question: '', hypothesisPrompt: '', 
-        hypothesisOptions: ['', '', ''], conclusion: '', explanation: ''
-    });
-
-    const [manualLoading, setManualLoading] = useState(false);
-
-    const handleAiGenerate = async () => {
-        if (!topic.trim()) {
-            toast({ variant: 'destructive', title: 'Topic is required' });
-            return;
-        }
-        setLoading(true);
-
-        const context = { topic, gradeLevel, instructions };
-        let collectionName = '';
-        let aiAction;
-
-        switch (subject) {
-            case 'english':
-                collectionName = 'senior_stories';
-                aiAction = generateSeniorEnglish;
-                break;
-            case 'math':
-                collectionName = 'senior_math';
-                aiAction = generateSeniorMath;
-                break;
-            case 'science':
-                collectionName = 'senior_labs';
-                aiAction = generateSeniorLab;
-                break;
-            default:
-                setLoading(false);
-                return;
-        }
-
-        try {
-            const result = await aiAction(context);
-            if (result.success && result.data && firestore) {
-                await addDoc(collection(firestore, collectionName), {
-                    ...result.data,
-                    gradeLevel: gradeLevel, // Add grade level to data
-                    createdAt: serverTimestamp()
-                });
-                toast({ title: 'Content Created!', description: `${subject} module added successfully.` });
-                onContentAdded(); // Notify parent to refetch
-            } else {
-                throw new Error(result.error || "AI failed to generate content.");
-            }
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    const handleManualSave = async () => {
-        if (!manualTitle || !firestore) {
-            toast({ variant: 'destructive', title: "Title is required" });
-            return;
-        }
-        setManualLoading(true);
-    
-        let collectionName = '';
-        let dataToSave: any = { 
-            title: manualTitle, 
-            category: manualCategory, 
-            subTopic: manualSubTopic,
-            gradeLevel: manualGradeLevel,
-            createdAt: serverTimestamp() 
-        };
-    
-        if (manualType === 'math') {
-            collectionName = 'senior_math';
-            dataToSave = {
-                ...dataToSave,
-                latexFormula: manualFormula,
-                instruction: manualInstruction,
-                answer: manualAnswer,
-            };
-        } else if (manualType === 'english') {
-            collectionName = 'senior_stories';
-            dataToSave = { ...dataToSave, content: manualContent, genre: manualCategory, quiz: [] };
-        } else if (manualType === 'science') {
-            collectionName = 'senior_labs';
-            dataToSave = { ...dataToSave, icon: '🔬', ...manualLab };
-        }
-    
-        try {
-            await addDoc(collection(firestore, collectionName), dataToSave);
-            toast({ title: "Manual Content Saved!" });
-            onContentAdded();
-            setIsManualFormOpen(false);
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: "Save Error", description: e.message });
-        } finally {
-            setManualLoading(false);
-        }
-    };
-
-    const GRADE_LEVELS = ['Early Childhood', 'Lower Primary', 'Upper Primary', 'JHS', 'SHS'];
-
-    return (
-        <Card className="bg-slate-800 text-white shadow-2xl border-indigo-900">
-            <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                    <CardTitle className="flex items-center gap-2 text-indigo-300"><Wand2 /> Admin Console</CardTitle>
-                    <CardDescription className="text-slate-400">Generate or manually create learning modules.</CardDescription>
-                </div>
-                 <Dialog open={isManualFormOpen} onOpenChange={setIsManualFormOpen}>
-                    <DialogTrigger asChild>
-                        <Button variant="outline" className="bg-slate-700 border-slate-600 hover:bg-slate-600">
-                           <PlusCircle className="mr-2 h-4 w-4"/> Manual Entry
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[600px]">
-                        <DialogHeader><DialogTitle>Manual Content Creator</DialogTitle></DialogHeader>
-                        <ScrollArea className="max-h-[70vh] pr-4">
-                        <div className="space-y-4 py-2">
-                             <Label>Content Type</Label>
-                            <Select value={manualType} onValueChange={setManualType}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="math">Math Problem</SelectItem>
-                                    <SelectItem value="english">English Passage</SelectItem>
-                                    <SelectItem value="science">Science Lab</SelectItem>
-                                </SelectContent>
-                            </Select>
-
-                            <Label>Grade Level</Label>
-                            <Select value={manualGradeLevel} onValueChange={setManualGradeLevel}>
-                                <SelectTrigger><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {GRADE_LEVELS.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-
-                            <Label>Main Topic / Category</Label>
-                            <Input value={manualCategory} onChange={e => setManualCategory(e.target.value)} placeholder="e.g., Algebra, Physics, Poetry"/>
-
-                            <Label>Sub-Topic</Label>
-                            <Input value={manualSubTopic} onChange={e => setManualSubTopic(e.target.value)} placeholder="e.g., Linear Equations, Optics"/>
-
-                            <Label>Title</Label>
-                            <Input value={manualTitle} onChange={e => setManualTitle(e.target.value)} />
-                            
-                            {manualType === 'math' && (
-                                <div className="space-y-4 p-4 border rounded-md bg-slate-50">
-                                    <Label className="font-bold">Math Details</Label>
-                                    <Textarea placeholder="LaTeX Formula (e.g. \int_0^1 x^2 dx)" value={manualFormula} onChange={e => setManualFormula(e.target.value)} />
-                                    <Input placeholder="Instruction (e.g. Solve for x)" value={manualInstruction} onChange={e => setManualInstruction(e.target.value)} />
-                                    <Input placeholder="Final Answer" value={manualAnswer} onChange={e => setManualAnswer(e.target.value)} />
-                                </div>
-                            )}
-
-                            {manualType === 'english' && (
-                                <div className="space-y-4 p-4 border rounded-md bg-slate-50">
-                                     <Label className="font-bold">English Details</Label>
-                                    <Textarea placeholder="Full text of the passage..." value={manualContent} onChange={e => setManualContent(e.target.value)} rows={6}/>
-                                </div>
-                            )}
-                            
-                            {manualType === 'science' && (
-                                <div className="space-y-4 p-4 border rounded-md bg-slate-50">
-                                    <Label className="font-bold">Science Lab Details</Label>
-                                    <Textarea placeholder="Background Info" value={manualLab.background} onChange={e => setManualLab({...manualLab, background: e.target.value})}/>
-                                    <Textarea placeholder="Research Question" value={manualLab.question} onChange={e => setManualLab({...manualLab, question: e.target.value})}/>
-                                    <Textarea placeholder="Hypothesis Prompt" value={manualLab.hypothesisPrompt} onChange={e => setManualLab({...manualLab, hypothesisPrompt: e.target.value})}/>
-                                    <Input placeholder="Hypothesis Option 1" value={manualLab.hypothesisOptions[0]} onChange={e => { const o = [...manualLab.hypothesisOptions]; o[0] = e.target.value; setManualLab({...manualLab, hypothesisOptions: o}); }} />
-                                    <Input placeholder="Hypothesis Option 2" value={manualLab.hypothesisOptions[1]} onChange={e => { const o = [...manualLab.hypothesisOptions]; o[1] = e.target.value; setManualLab({...manualLab, hypothesisOptions: o}); }} />
-                                    <Input placeholder="Hypothesis Option 3" value={manualLab.hypothesisOptions[2]} onChange={e => { const o = [...manualLab.hypothesisOptions]; o[2] = e.target.value; setManualLab({...manualLab, hypothesisOptions: o}); }} />
-                                    <Textarea placeholder="Conclusion" value={manualLab.conclusion} onChange={e => setManualLab({...manualLab, conclusion: e.target.value})}/>
-                                    <Textarea placeholder="Detailed Explanation" value={manualLab.explanation} onChange={e => setManualLab({...manualLab, explanation: e.target.value})}/>
-                                </div>
-                            )}
-
-                            <Button onClick={handleManualSave} disabled={manualLoading} className="w-full">
-                                {manualLoading ? <Loader2 className="animate-spin"/> : "Save Manual Content"}
-                            </Button>
-                        </div>
-                        </ScrollArea>
-                    </DialogContent>
-                </Dialog>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <Label className="text-slate-400 text-xs">Subject</Label>
-                        <Select value={subject} onValueChange={setSubject}>
-                            <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue/></SelectTrigger>
-                            <SelectContent><SelectItem value="math">Math</SelectItem><SelectItem value="english">English</SelectItem><SelectItem value="science">Science</SelectItem></SelectContent>
-                        </Select>
-                    </div>
-                     <div className="space-y-1">
-                        <Label className="text-slate-400 text-xs">Grade Level</Label>
-                        <Select value={gradeLevel} onValueChange={setGradeLevel}>
-                            <SelectTrigger className="bg-slate-700 border-slate-600 text-white"><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                {GRADE_LEVELS.map(level => <SelectItem key={level} value={level}>{level}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <div className="space-y-1">
-                    <Label className="text-slate-400 text-xs">Topic</Label>
-                    <Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Quantum Physics, Shakespearean Sonnets" className="bg-slate-700 border-slate-600 text-white" />
-                </div>
-                <Button onClick={handleAiGenerate} disabled={loading || !topic} className="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold h-12">
-                    {loading ? <Loader2 className="animate-spin"/> : "Generate Content with AI"}
-                </Button>
-            </CardContent>
-        </Card>
-    );
-}
+const CATEGORIES = [
+    'Early Childhood', 
+    'Lower Primary', 
+    'Upper Primary', 
+    'Junior Secondary (JHS)', 
+    'Senior Secondary (SHS)'
+];
 
 // --- 1. ENGLISH MASTERY (COMPREHENSION) ---
 function EnglishMastery({ canEdit }: { canEdit: boolean }) {
@@ -634,7 +176,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     );
 }
 
-// --- 2. ADVANCED MATH LAB ---
+// --- 2. ADVANCED MATH LAB (FOLDER ORGANIZED) ---
 function MathLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -642,20 +184,43 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
     const [userInput, setUserInput] = useState("");
     const [feedback, setFeedback] = useState<any>(null);
 
-    const [selectedGrade, setSelectedGrade] = useState('JHS');
-    const GRADE_LEVELS = ['Early Childhood', 'Lower Primary', 'Upper Primary', 'JHS', 'SHS'];
+    // Navigation State
+    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
 
-    const mathQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: dbProblems, isLoading: isLoadingProblems, forceRefetch } = useCollection<any>(mathQuery);
+    const mathQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, 
+    [firestore]);
+    const { data: dbProblems, isLoading, forceRefetch } = useCollection<any>(mathQuery);
+
+    // BRILLIANT ORGANIZATION LOGIC: Grouping by Subject -> Sub-Topic
+    const folderStructure = useMemo(() => {
+        if (!dbProblems) return {};
+        
+        // 1. Filter by current Student Category
+        const filtered = dbProblems.filter(p => p.gradeLevel === selectedGrade || (!p.gradeLevel && selectedGrade === 'Junior Secondary (JHS)'));
+
+
+        // 2. Group into Subjects (Algebra, Stats, etc.)
+        return filtered.reduce((acc, p) => {
+            const subject = p.category || 'General Mathematics';
+            const sub = p.subTopic || 'Standard Practice';
+            
+            if (!acc[subject]) acc[subject] = {};
+            if (!acc[subject][sub]) acc[subject][sub] = [];
+            
+            acc[subject][sub].push(p);
+            return acc;
+        }, {} as Record<string, Record<string, any[]>>);
+    }, [dbProblems, selectedGrade]);
 
     const checkAnswer = () => {
         if (userInput.trim().toLowerCase() === problem.answer.toLowerCase().trim()) {
-            setFeedback({ ok: true, msg: "Correct logical derivation." });
+            setFeedback({ ok: true, msg: "Logical match confirmed! Well done." });
             confetti();
-            speak("Correct.");
+            speak("Correct solution.");
         } else {
-            setFeedback({ ok: false, msg: `Review calculation. Correct value: ${problem.answer}` });
-            speak("Incorrect.");
+            setFeedback({ ok: false, msg: `Correction required. Expected: ${problem.answer}` });
+            speak("Review your derivation.");
         }
     };
     
@@ -666,103 +231,135 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
         setProblem(null);
         forceRefetch();
     };
-    
-    const groupedProblems = useMemo(() => {
-        if (!dbProblems) return {};
-        const filteredByGrade = dbProblems.filter(p => p.gradeLevel === selectedGrade || (!p.gradeLevel && selectedGrade === 'JHS'));
-        return filteredByGrade.reduce((acc, p) => {
-            const category = p.category || 'General';
-            if (!acc[category]) acc[category] = {};
-            const subTopic = p.subTopic || 'Uncategorized';
-            if (!acc[category][subTopic]) acc[category][subTopic] = [];
-            acc[category][subTopic].push(p);
-            return acc;
-        }, {} as Record<string, Record<string, any[]>>);
-    }, [dbProblems, selectedGrade]);
 
     return (
-        <div className="grid lg:grid-cols-3 gap-6 animate-in fade-in">
-            <div className="lg:col-span-2 order-2 lg:order-1">
+        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
+            {/* SIDEBAR: THE BRILLIANT NAVIGATOR */}
+            <div className="lg:col-span-1 space-y-4">
+                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-700">
+                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">Student Category</Label>
+                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white font-bold rounded-2xl h-12">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                    <div className="space-y-2 p-2">
+                        {isLoading ? (
+                            <Skeleton className="h-40 w-full" />
+                        ) : Object.keys(folderStructure).length === 0 ? (
+                            <div className="text-center py-20 text-slate-300">
+                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                                <p className="text-xs font-bold">No questions in this category yet.</p>
+                            </div>
+                        ) : (
+                            Object.entries(folderStructure).map(([subject, subTopics]) => (
+                                <Accordion key={subject} type="single" collapsible className="w-full">
+                                    <AccordionItem value={subject} className="border-none">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-50 rounded-2xl mb-1 group">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                                                <span className="font-black text-slate-700 text-xs uppercase tracking-tight">{subject}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-1 pl-4 space-y-1">
+                                            {Object.entries(subTopics).map(([subTitle, items]) => (
+                                                <Accordion key={subTitle} type="single" collapsible>
+                                                    <AccordionItem value={subTitle} className="border-none">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-indigo-600">
+                                                            {subTitle} ({items.length})
+                                                        </AccordionTrigger>
+                                                        <AccordionContent className="space-y-1">
+                                                            {items.map((item: any) => (
+                                                                <button
+                                                                    key={item.id}
+                                                                    onClick={() => { setProblem(item); setFeedback(null); setUserInput(""); }}
+                                                                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-medium transition-all ${problem?.id === item.id ? 'bg-emerald-500 text-white shadow-md' : 'hover:bg-slate-100 text-slate-600'}`}
+                                                                >
+                                                                    {item.title}
+                                                                </button>
+                                                            ))}
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            ))}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            ))
+                        )}
+                    </div>
+                </ScrollArea>
+            </div>
+
+            {/* MAIN STAGE: THE WORKSTATION */}
+            <div className="lg:col-span-3">
                 {problem ? (
-                    <Card className="rounded-[50px] border-none shadow-2xl overflow-hidden bg-white">
-                        <div className="bg-emerald-600 p-10 text-center text-white">
-                            <Badge className="bg-emerald-400 mb-4">{problem.category} / {problem.subTopic}</Badge>
-                            <CardTitle className="text-4xl font-black">{problem.title}</CardTitle>
+                    <Card className="rounded-[48px] border-none shadow-2xl overflow-hidden bg-white animate-in zoom-in duration-500">
+                        <div className="bg-emerald-600 p-10 text-white relative">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <div className="flex gap-2 mb-4">
+                                        <Badge className="bg-white/20 border-none">{problem.category}</Badge>
+                                        <Badge className="bg-emerald-400 border-none">{problem.subTopic}</Badge>
+                                    </div>
+                                    <CardTitle className="text-4xl font-black tracking-tight">{problem.title}</CardTitle>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black uppercase opacity-60">Curriculum Level</p>
+                                    <p className="font-bold">{problem.gradeLevel}</p>
+                                </div>
+                            </div>
                         </div>
                         <CardContent className="p-12 space-y-10">
-                            <div className="bg-slate-900 p-12 rounded-[40px] shadow-inner relative border-t-8 border-emerald-500">
-                                <div className="text-5xl text-emerald-400 overflow-x-auto py-4 text-center">
+                            {/* THE PROFESSIONAL LATEX BOX */}
+                            <div className="bg-slate-900 p-12 rounded-[40px] shadow-2xl border-t-8 border-emerald-500 relative">
+                                <div className="text-4xl text-emerald-400 overflow-x-auto py-6 text-center">
                                     <SafeMath formula={problem.latexFormula} />
                                 </div>
+                                <div className="absolute top-4 right-6 text-slate-700 font-mono text-[10px] uppercase tracking-widest">Neural Math Engine v2.0</div>
                             </div>
-                            <div className="text-center space-y-8">
-                                <p className="text-2xl font-medium text-slate-600 italic">{problem.instruction}</p>
-                                <div className="flex flex-col items-center gap-4">
-                                    <Input value={userInput} onChange={e => setUserInput(e.target.value)} placeholder="Enter Solution..." className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] max-w-sm"/>
-                                    <Button onClick={checkAnswer} className="h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-lg">VERIFY ANSWER</Button>
+
+                            <div className="max-w-2xl mx-auto text-center space-y-8">
+                                <p className="whitespace-pre-wrap text-2xl font-medium text-slate-600 leading-relaxed italic">
+                                    "{problem.instruction}"
+                                </p>
+                                <div className="flex flex-col items-center gap-6">
+                                    <Input 
+                                        value={userInput} 
+                                        onChange={e => setUserInput(e.target.value)} 
+                                        placeholder="Enter final derived value..." 
+                                        className="h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[32px] focus:border-emerald-500 shadow-inner"
+                                    />
+                                    <Button onClick={checkAnswer} className="h-16 px-20 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full shadow-xl transition-all hover:-translate-y-1">
+                                        VERIFY DERIVATION
+                                    </Button>
                                 </div>
                             </div>
+
                             {feedback && (
-                                <div className={`p-6 rounded-[24px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                                <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                                    {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
                                     <p className="text-xl font-black">{feedback.msg}</p>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[40px] border-4 border-dashed border-slate-100 min-h-[400px]">
-                        <Sigma className="w-20 h-20 text-slate-200 mb-4" />
-                        <p className="text-slate-400 font-bold text-2xl">Select a Math Mission</p>
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
+                        <div className="p-8 bg-slate-50 rounded-full mb-6">
+                            <Sigma className="w-20 h-20 text-slate-200" />
+                        </div>
+                        <h2 className="text-3xl font-black text-slate-300 uppercase tracking-widest text-center">
+                            Select a topic from the <br /> {selectedGrade} library
+                        </h2>
                     </div>
                 )}
-            </div>
-
-            <div className="lg:col-span-1 order-1 lg:order-2 space-y-4">
-                 <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                    <SelectTrigger className="font-bold"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        {GRADE_LEVELS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
-                    </SelectContent>
-                 </Select>
-                 <ScrollArea className="h-[60vh] -mr-3 pr-3">
-                 <div className="space-y-4">
-                    {isLoadingProblems ? (
-                        <Skeleton className="h-40 w-full"/>
-                    ) : Object.keys(groupedProblems).length === 0 ? (
-                        <p className="text-sm text-center text-muted-foreground p-8">No problems found for this grade level.</p>
-                    ) : Object.entries(groupedProblems).map(([category, subTopics]) => (
-                        <Accordion key={category} type="single" collapsible className="w-full">
-                            <AccordionItem value={category} className="border bg-white rounded-2xl shadow-sm">
-                                <AccordionTrigger className="p-4 font-bold text-slate-700 text-md">{category}</AccordionTrigger>
-                                <AccordionContent className="px-4 pb-4">
-                                     {Object.entries(subTopics).map(([subTopic, problems]) => (
-                                         <Accordion key={subTopic} type="single" collapsible className="w-full">
-                                            <AccordionItem value={subTopic} className="border-t">
-                                                <AccordionTrigger className="text-sm">{subTopic}</AccordionTrigger>
-                                                <AccordionContent className="pl-4 border-l-2 border-slate-200 ml-2">
-                                                     {problems.map((p: any) => (
-                                                        <div key={p.id} className="relative group my-1">
-                                                            <button 
-                                                                onClick={() => { setProblem(p); setUserInput(""); setFeedback(null); }} 
-                                                                className={`w-full text-left p-3 rounded-lg border-b-2 transition-all ${problem?.id === p.id ? 'bg-emerald-50 border-emerald-500' : 'bg-slate-50/50 border-slate-100'}`}
-                                                            >
-                                                                <p className="font-semibold text-slate-800 text-xs">{p.title}</p>
-                                                            </button>
-                                                            {canEdit && (
-                                                                <button onClick={() => handleDelete(p.id)} className="absolute top-1 right-1 text-red-300 opacity-0 group-hover:opacity-100 z-10"><Trash2 className="w-3 h-3"/></button>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                         </Accordion>
-                                     ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    ))}
-                 </div>
-                 </ScrollArea>
             </div>
         </div>
     );
@@ -874,13 +471,103 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     );
 }
 
+// --- 4. ADMIN CONSOLE (INTEGRATED CATEGORY CONTROL) ---
+function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    
+    const [subject, setSubject] = useState('math');
+    const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
+    const [topic, setTopic] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleAiGenerate = async () => {
+        if (!topic.trim()) {
+            toast({ variant: 'destructive', title: 'Topic is required' });
+            return;
+        }
+        setLoading(true);
+
+        // Sending the specific grade category to Genkit
+        const context = { topic, gradeLevel: targetGrade as any };
+        let result;
+        let collectionName = '';
+
+        if (subject === 'math') {
+            collectionName = 'senior_math';
+            result = await generateSeniorMath(context);
+        } else if (subject === 'english') {
+            collectionName = 'senior_stories';
+            result = await generateSeniorEnglish(context);
+        } else {
+            collectionName = 'senior_labs';
+            result = await generateSeniorLab(context);
+        }
+
+        if (result.success && result.data) {
+            if (firestore) {
+                await addDoc(collection(firestore, collectionName), {
+                    ...result.data,
+                    gradeLevel: targetGrade, // Force the folder association
+                    createdAt: serverTimestamp()
+                });
+                toast({ title: 'Success', description: `Added to ${targetGrade} folder.` });
+                onContentAdded();
+                setTopic("");
+            }
+        }
+        setLoading(false);
+    };
+
+    return (
+        <Card className="bg-slate-900 border-none shadow-2xl overflow-hidden rounded-[40px]">
+            <div className="p-8 flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex-1 space-y-2 w-full">
+                    <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Topic & Concept</Label>
+                    <Input 
+                        value={topic} 
+                        onChange={e => setTopic(e.target.value)} 
+                        placeholder="e.g. Calculus Derivatives, Shakespearean Sonnets..." 
+                        className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"
+                    />
+                </div>
+                <div className="w-full md:w-64 space-y-2">
+                    <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Grade</Label>
+                    <Select value={targetGrade} onValueChange={setTargetGrade}>
+                        <SelectTrigger className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            {CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="w-full md:w-48 space-y-2">
+                    <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Subject</Label>
+                    <Select value={subject} onValueChange={setSubject}>
+                        <SelectTrigger className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl capitalize"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="math">Mathematics</SelectItem>
+                            <SelectItem value="english">English Literature</SelectItem>
+                            <SelectItem value="science">Scientific Discovery</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <Button onClick={handleAiGenerate} disabled={loading || !topic} className="h-14 px-8 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black min-w-[160px]">
+                    {loading ? <Loader2 className="animate-spin"/> : <><Sparkles className="mr-2 h-4 w-4"/> GENERATE</>}
+                </Button>
+            </div>
+        </Card>
+    );
+}
+
 // --- MAIN PAGE ---
 export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
     
     const handleContentUpdate = () => {
-        console.log("Content updated. Re-fetching data...");
+        // This is a placeholder for a potential forceRefetch call if needed.
+        // Since useCollection is live, direct re-fetching isn't always necessary.
+        console.log("Content updated, UI will refresh automatically.");
     };
 
     return (
@@ -899,16 +586,14 @@ export default function SeniorAcademyPage() {
                 {/* This will render ONLY if user is a teacher or admin */}
                 {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
 
-                <Tabs defaultValue="curriculum" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
-                        <TabsTrigger value="curriculum" className="rounded-2xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-black flex flex-col items-center justify-center gap-1"><Play className="w-5 h-5"/> Open & Go</TabsTrigger>
+                <Tabs defaultValue="math" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
                         <TabsTrigger value="english" className="rounded-2xl data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 font-black flex flex-col items-center justify-center gap-1"><Languages className="w-5 h-5"/> English</TabsTrigger>
                         <TabsTrigger value="math" className="rounded-2xl data-[state=active]:bg-emerald-100 data-[state=active]:text-emerald-700 font-black flex flex-col items-center justify-center gap-1"><Sigma className="w-5 h-5"/> Math Lab</TabsTrigger>
                         <TabsTrigger value="science" className="rounded-2xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-black flex flex-col items-center justify-center gap-1"><Microscope className="w-5 h-5"/> Discovery</TabsTrigger>
                     </TabsList>
                     
                     <div className="min-h-[700px]">
-                        <TabsContent value="curriculum" className="mt-0"><CurriculumPathway canEdit={canEdit} /></TabsContent>
                         <TabsContent value="english" className="mt-0"><EnglishMastery canEdit={canEdit} /></TabsContent>
                         <TabsContent value="math" className="mt-0"><MathLab canEdit={canEdit} /></TabsContent>
                         <TabsContent value="science" className="mt-0"><DiscoveryLab canEdit={canEdit} /></TabsContent>
