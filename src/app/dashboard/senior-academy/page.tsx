@@ -608,8 +608,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     };
 
     const handleManualSave = async () => {
-        if (!manualData.title || !manualData.category) {
-            toast({ title: "Required Fields", description: "Title and Category are needed for folder organization.", variant: "destructive" });
+        if (!manualData.title || !manualData.category || !manualData.subTopic) {
+            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
             return;
         }
         setLoading(true);
@@ -677,14 +677,30 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     /* --- MANUAL ENTRY FORM --- */
                     <div className="space-y-6 animate-in slide-in-from-top-4">
                         <div className="grid md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Category (Main Folder)</Label>
-                                <Input placeholder="e.g. Algebra" value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (Sub Folder)</Label>
-                                <Input placeholder="e.g. Differentiation" value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
-                            </div>
+                            {subject === 'math' ? (
+                                <>
+                                    <div className="space-y-2">
+                                        <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Main Subject (e.g. Algebra)</Label>
+                                        <Input value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Sub-Topic (e.g. Differentiation)</Label>
+                                        <Input value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="grid md:grid-cols-2 gap-4 md:col-span-2">
+                                    <div className="space-y-2">
+                                        <Label className="text-slate-500 text-[10px] font-black uppercase">Broad Category (e.g. Narrative, Life Science)</Label>
+                                        <Input value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-slate-500 text-[10px] font-black uppercase">Sub-Topic (e.g. Short Stories, Plant Biology)</Label>
+                                        <Input value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="space-y-2">
                                 <Label className="text-slate-500 text-[10px] font-black uppercase ml-2">Target Student Category</Label>
                                 <Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}>
