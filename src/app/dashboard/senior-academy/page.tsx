@@ -8,7 +8,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc } f
 import { 
   Loader2, Volume2, Rocket, Wand2, 
   Save, Trash2, Library, Brain, BookOpen, 
-  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, FolderOpen, Play, PenTool, Star, Type, Languages as LanguagesIcon, Sigma as SigmaIcon, Atom as AtomIcon
+  CheckCircle2, XCircle, PlusCircle, Microscope, Sigma, Languages, Sparkles, FolderOpen, PenTool, Languages as LanguagesIcon, Sigma as SigmaIcon, Atom as AtomIcon
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -25,8 +25,6 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 
@@ -36,6 +34,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 
 
 // --- HELPER: TEXT TO SPEECH ---
@@ -133,9 +132,9 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
     // Folder Logic for English
     const folderStructure = useMemo(() => {
         if (!library) return {};
-        const filtered = library.filter(s => s.gradeLevel === selectedGrade);
+        const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, s) => {
-            const category = s.category || 'General Reading'; // Folder 1
+            const category = s.category || s.genre || 'General Reading'; // Folder 1
             const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
             if (!acc[category]) acc[category] = {};
             if (!acc[category][subTopic]) acc[category][subTopic] = [];
@@ -237,7 +236,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                             placeholder={isJunior ? "Tell me the secret..." : "Type analysis..."} 
                                             value={answers[i] || ""} 
                                             onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} 
-                                            className={isJunior ? juniorStyles.input : "h-14 rounded-2xl border-2"} 
+                                            className={isJunior ? "h-20 text-3xl rounded-[30px] border-4 border-orange-100 text-center" : "h-14 rounded-2xl border-2"} 
                                         />
                                     </div>
                                 ))}
@@ -261,6 +260,24 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
 }
 
 // --- 2. ADVANCED MATH LAB (FOLDER ORGANIZED) ---
+function CounterDisplay({ count }: { count: number }) {
+    const icons = ['🍎', '⭐', '🎈', '🐱', '🚗', '🍦'];
+    const icon = icons[Math.floor(Math.random() * icons.length)];
+    // Cap at 20 so the screen doesn't get too messy
+    const displayCount = Math.min(count, 20);
+
+    return (
+        <div className="flex flex-wrap justify-center gap-3 p-6 bg-white/50 rounded-3xl mt-4">
+            {Array.from({ length: displayCount }).map((_, i) => (
+                <span key={i} className="text-4xl animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
+                    {icon}
+                </span>
+            ))}
+            {count > 20 && <span className="text-xl font-black text-blue-400">... and more!</span>}
+        </div>
+    );
+}
+
 function MathLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -283,7 +300,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
         if (!dbProblems) return {};
         
         // 1. Filter by current Student Category
-        const filtered = dbProblems.filter(p => p.gradeLevel === selectedGrade);
+        const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
 
         // 2. Group into Subjects (Algebra, Stats, etc.)
         return filtered.reduce((acc, p) => {
@@ -322,7 +339,6 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
-
                 <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
                     <div className="space-y-2 p-2">
                         {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
@@ -375,7 +391,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                 {problem ? (
                     <Card className={isJunior ? theme?.card : "rounded-[48px] border-none shadow-2xl overflow-hidden bg-white"}>
                         <div className={isJunior ? theme?.header : "bg-emerald-600 p-10 text-white"}>
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-center">
                                 <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black"}>
                                     {isJunior && "🌈 "} {problem.title}
                                 </CardTitle>
@@ -400,7 +416,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
 
                             <div className="text-center space-y-8">
                                 <p className={isJunior ? "text-3xl font-black text-blue-800" : "text-2xl font-medium text-slate-600 italic"}>
-                                    {isJunior ? "✨ " + problem.instruction : problem.instruction}
+                                    {isJunior ? "✨ " + problem.instruction : `"${problem.instruction}"`}
                                 </p>
                                 <div className="flex flex-col items-center gap-6">
                                     <Input 
@@ -409,18 +425,17 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                                         placeholder={isJunior ? "Type Number Here..." : "Enter Solution..."} 
                                         className={isJunior 
                                             ? juniorStyles.input 
-                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px]"
+                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] focus:border-emerald-500 shadow-inner"
                                         }
                                     />
                                     <Button 
                                         onClick={checkAnswer} 
                                         className={isJunior ? theme?.button : "h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full"}
                                     >
-                                        {isJunior ? "I'M FINISHED! 🚀" : "VERIFY DERIVATION"}
+                                        {isJunior ? "I'M FINISHED! 🚀" : "VERIFY ANSWER"}
                                     </Button>
                                 </div>
                             </div>
-
                             {feedback && (
                                 <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
                                     {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
@@ -458,7 +473,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
 
     const folderStructure = useMemo(() => {
         if (!dbLabs) return {};
-        const filtered = dbLabs.filter(l => l.gradeLevel === selectedGrade);
+        const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
         return filtered.reduce((acc, l) => {
             const category = l.category || 'Science Journal';
             const subTopic = l.subTopic || 'Research Mission';
@@ -496,7 +511,7 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                     <AccordionItem value={cat} className="border-none">
                                         <AccordionTrigger className="hover:no-underline p-3 bg-cyan-50 rounded-2xl mb-1">
                                             <div className="flex items-center gap-2">
-                                                <Microscope className="w-3 h-3 text-cyan-500" />
+                                                <div className="text-lg">{cat === 'Life Science' ? '🧬' : cat === 'Physical Science' ? '🔬' : '🌍'}</div>
                                                 <span className="font-black text-cyan-900 text-xs uppercase">{cat}</span>
                                             </div>
                                         </AccordionTrigger>
@@ -545,12 +560,23 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                             <div className="md:col-span-2 p-12 flex flex-col justify-center">
                                 {stage === 'hypothesis' && (
                                     <div className="space-y-8 animate-in slide-in-from-right-4">
-                                        <h2 className={`font-black leading-tight ${isJunior ? 'text-4xl text-blue-900' : 'text-3xl text-slate-800'}`}>{isJunior ? '🤔 ' + lab.question : lab.question}</h2>
-                                        <div className={`p-8 rounded-[32px] border-2 space-y-4 ${isJunior ? 'bg-yellow-50 border-yellow-200' : 'bg-blue-50 border-blue-100'}`}>
-                                            <p className={`font-bold ${isJunior ? 'text-xl text-yellow-900' : 'text-blue-800'}`}>{lab.hypothesisPrompt}</p>
+                                        <h2 className={isJunior ? "text-5xl font-black text-blue-600 text-center" : "text-3xl font-black text-slate-800"}>
+                                            {isJunior ? '🤔 What is your Guess?' : lab.question}
+                                        </h2>
+                                        <div className={isJunior ? "p-10 bg-white rounded-[60px] border-8 border-blue-100 shadow-inner" : "p-8 bg-blue-50 rounded-[32px] border-2 border-blue-100"}>
+                                            {isJunior && <p className="text-blue-400 font-bold mb-6 text-center uppercase tracking-widest">Pick a card!</p>}
                                             <div className={isJunior ? "grid grid-cols-1 gap-4" : "grid gap-3"}>
                                                 {lab.hypothesisOptions.map((opt: string) => (
-                                                    <Button key={opt} variant="outline" className={`bg-white border-2 h-auto py-4 font-bold rounded-2xl ${isJunior ? 'text-lg' : ''}`} onClick={() => setStage('experiment')}>{opt}</Button>
+                                                    <Button 
+                                                        key={opt} 
+                                                        variant="outline" 
+                                                        className={isJunior 
+                                                            ? "h-24 text-2xl font-black border-4 border-blue-50 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-[35px] transition-all" 
+                                                            : "bg-white border-2 h-auto py-4 font-bold rounded-2xl"} 
+                                                        onClick={() => setStage('experiment')}
+                                                    >
+                                                        {isJunior && "✨ "} {opt}
+                                                    </Button>
                                                 ))}
                                             </div>
                                         </div>
@@ -558,7 +584,9 @@ function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
                                 )}
                                 {stage === 'experiment' && (
                                     <div className="text-center space-y-12 animate-in zoom-in">
-                                        <h2 className={`font-black ${isJunior ? 'text-5xl text-orange-500' : 'text-3xl text-slate-800'}`}>{isJunior ? "🚀 Let's Try It!" : "Mission: Data Collection"}</h2>
+                                        <h2 className={isJunior ? "text-5xl font-black text-orange-500" : "text-3xl font-black text-slate-800"}>
+                                            {isJunior ? "🚀 Let's Try It!" : "Mission: Data Collection"}
+                                        </h2>
                                         <div className={isJunior ? "text-[200px] hover:rotate-12 transition-transform cursor-pointer" : "text-[180px] py-10 animate-pulse"}>{lab.icon}</div>
                                         <Button onClick={() => setStage('conclusion')} className={isJunior ? juniorStyles.button : "h-16 px-12 bg-orange-500"}>
                                             {isJunior ? "SEE THE SECRET! 🔍" : "Observe Outcome"}
@@ -660,8 +688,8 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     };
 
     const handleManualSave = async () => {
-        if (!manualData.title || !manualData.category) {
-            toast({ title: "Required Fields", description: "Title and Category are needed for folder organization.", variant: "destructive" });
+        if (!manualData.title || !manualData.category || !manualData.subTopic) {
+            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
             return;
         }
         setLoading(true);
@@ -795,6 +823,9 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                                             }} className="bg-slate-800 border-slate-700 text-white h-10 rounded-lg" />
                                         ))}
                                     </div>
+                                    <Input placeholder="Icon Emoji (e.g. 🔬)" value={manualData.icon} onChange={e => setManualData({...manualData, icon: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    <Input placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" />
+                                    <Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="md:col-span-2 bg-slate-800 border-slate-700 text-white h-24 rounded-xl" />
                                 </div>
                             )}
                         </div>
@@ -814,9 +845,10 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
 export default function SeniorAcademyPage() {
     const { role } = useRole();
     const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
-    const { forceRefetch: forceMath } = useCollection(useMemoFirebase(() => collection(useFirestore()!, 'senior_math'), []));
-    const { forceRefetch: forceEnglish } = useCollection(useMemoFirebase(() => collection(useFirestore()!, 'senior_stories'), []));
-    const { forceRefetch: forceScience } = useCollection(useMemoFirebase(() => collection(useFirestore()!, 'senior_labs'), []));
+    const firestore = useFirestore();
+    const { forceRefetch: forceMath } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_math') : null, [firestore]));
+    const { forceRefetch: forceEnglish } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_stories') : null, [firestore]));
+    const { forceRefetch: forceScience } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_labs') : null, [firestore]));
 
     const handleContentUpdate = useCallback(() => {
         forceMath();
@@ -868,3 +900,4 @@ export default function SeniorAcademyPage() {
     );
 }
 
+```
