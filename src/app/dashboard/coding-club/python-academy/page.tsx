@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -50,7 +49,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
         title: "2. The Basics",
         lessons: [
           { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')" },
-          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = \nprint(year)" },
+          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)" },
           { id: "p1-2-3", title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
           { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)" },
           { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)" }
@@ -61,7 +60,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
         lessons: [
           { id: "p1-3-1", title: "Numbers (Int & Float)", task: "Create an integer and a decimal (float).", startingCode: "my_int = 10\nmy_float = 10.5\nprint(type(my_float))" },
           { id: "p1-3-2", title: "Strings", task: "Create a string with double quotes.", startingCode: "msg = \"Python is fun\"\nprint(msg)" },
-          { id: "p1-3-3", title: "Booleans", task: "Set a variable to True.", startingCode: "is_sunny = \nprint(is_sunny)" }
+          { id: "p1-3-3", title: "Booleans", task: "Set a variable to True.", startingCode: "is_sunny = True\nprint(is_sunny)" }
         ]
       },
       {
@@ -232,6 +231,8 @@ interface Mission {
   title: string;
   task: string;
   startingCode: string;
+  phase: string;
+  mainTopicTitle: string;
 }
 
 // --- REFERENCE GUIDE DATA ---
@@ -250,7 +251,7 @@ export default function PythonAcademy() {
   const { toast } = useToast();
 
   // --- STATE ---
-  const [allMissions, setAllMissions] = useState<any[]>(PYTHON_ACADEMY_CURRICULUM);
+  const [allMissions, setAllMissions] = useState<Mission[]>([]);
   const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
   const [completedMissions, setCompletedMissions] = useState<string[]>([]);
   const [code, setCode] = useState('');
@@ -265,7 +266,7 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
-
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   // --- PYODIDE INITIALIZATION ---
   useEffect(() => {
@@ -275,7 +276,6 @@ export default function PythonAcademy() {
         pyodide.current = await window.loadPyodide();
         
         // PRE-LOAD PROFESSIONAL PACKAGES
-        // This ensures Phase 4 (Data Science) works instantly
         await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
         
         setIsLoadingPy(false);
@@ -284,16 +284,40 @@ export default function PythonAcademy() {
     initPyodide();
   }, []);
 
-  const activeLesson: Mission | undefined = useMemo(() => {
-      for (const phase of allMissions) {
-          for (const topic of phase.mainTopics) {
-              const lesson = topic.lessons.find((l: any) => l.id === currentMissionId);
-              if (lesson) return lesson;
-          }
-      }
-      return undefined;
+  // --- LOAD & FLATTEN MISSIONS ---
+  useEffect(() => {
+    if (!firestore) return;
+    const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const dbMissions: any[] = [];
+        snapshot.forEach((doc) => dbMissions.push(doc.data()));
+        
+        const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
+            phase.mainTopics.flatMap(mainTopic => 
+                mainTopic.lessons.map(lesson => ({
+                    ...lesson,
+                    phase: phase.title,
+                    mainTopicTitle: mainTopic.title
+                }))
+            )
+        );
+        
+        // Combine static and DB missions, ensuring unique IDs
+        const combined = [...flattenedSyllabus, ...dbMissions];
+        const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
+
+        setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
+        setIsDataLoading(false); // Data is ready
+    });
+    return () => unsubscribe();
+  }, [firestore]);
+
+
+  const activeLesson = useMemo(() => {
+    if (allMissions.length === 0) return null;
+    return allMissions.find(m => m.id === currentMissionId) || allMissions[0];
   }, [allMissions, currentMissionId]);
-  
+
   // Reset code when mission changes
   useEffect(() => {
     if (activeLesson) {
@@ -314,16 +338,12 @@ export default function PythonAcademy() {
 
     // --- PART A: RUN PYTHON ---
     try {
-      if (code.includes("import numpy")) {
-          await pyodide.current.loadPackage("numpy");
-      }
-      if (code.includes("import pandas")) {
-          await pyodide.current.loadPackage("pandas");
-      }
+      if (code.includes("import numpy")) await pyodide.current.loadPackage("numpy");
+      if (code.includes("import pandas")) await pyodide.current.loadPackage("pandas");
+
       await pyodide.current.runPythonAsync(code);
       
-      // Validation Logic
-      let success = true; // Default to success if no specific validation
+      let success = true; 
       if (activeLesson?.id === "p1-2-2") {
         success = pyodide.current.runPython("globals().get('year') == 2025");
       }
@@ -332,7 +352,6 @@ export default function PythonAcademy() {
         setIsPassed(true);
         confetti({ particleCount: 100 });
 
-        // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
         if (user && firestore && activeLesson) {
             try {
                 await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
@@ -351,23 +370,45 @@ export default function PythonAcademy() {
       if (hasPlot) {
         pyodide.current.runPython(`
             import io, base64
+            import matplotlib.pyplot as plt
             buf = io.BytesIO()
             plt.savefig(buf, format='png')
             buf.seek(0)
             img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
             from js import document
-            document.getElementById('plot-output').src = img_str
+            if document.getElementById('plot-output'):
+                document.getElementById('plot-output').src = img_str
         `);
       }
 
     } catch (pythonErr: any) {
-      // This is for actual Python typos (like prnt instead of print)
       setOutput(prev => [...prev, `❌ Python Error: ${pythonErr.message}`]);
     }
     setIsRunning(false);
   };
   
-  if (isUserLoading || isLoadingPy || !activeLesson) {
+  const askTutor = async () => {
+    if (!aiQuestion.trim() || !activeLesson) return;
+    setIsAiLoading(true);
+    try {
+      const res = await getPythonTutorHelp({
+        phase: activeLesson.phase || "Fundamentals",
+        lesson: activeLesson.title,
+        task: activeLesson.task,
+        userCode: code,
+        question: aiQuestion
+      });
+      if (res.success) {
+        setTutorResponse(res.data);
+        speak(res.data.explanation); 
+      }
+    } finally {
+      setIsAiLoading(false);
+      setAiQuestion("");
+    }
+  };
+
+  if (isDataLoading || isLoadingPy || isUserLoading || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -385,14 +426,11 @@ export default function PythonAcademy() {
             <div className="bg-yellow-500 p-2 rounded-xl shadow-lg shadow-yellow-500/20"><Code2 className="text-slate-900" /></div>
             <h2 className="text-xl font-black text-white">Python Pro Academy</h2>
           </div>
-          <div className="space-y-2 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Coding Activity</p>
-            <div className="text-[9px] text-slate-600 font-bold">Heatmap coming soon...</div>
-          </div>
-          <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
+          
+          <ScrollArea className="h-[75vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
-              {allMissions.map((phase) => (
-                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson && activeLesson.id.startsWith(phase.phase.replace(/\s+/g, '-').toLowerCase().slice(0, 4)) ? phase.phase : ''}>
+              {PYTHON_ACADEMY_CURRICULUM.map((phase) => (
+                <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson.phase === phase.title ? phase.phase : ''}>
                   <AccordionItem value={phase.phase} className="border-none">
                     <AccordionTrigger className="hover:no-underline p-3 bg-slate-800/50 rounded-2xl mb-1 group">
                       <span className="font-black text-slate-300 text-xs uppercase tracking-tight">{phase.title}</span>
@@ -428,7 +466,7 @@ export default function PythonAcademy() {
 
         <main className="lg:col-span-6 flex flex-col gap-4">
           <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[800px]">
-            <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
+            <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
               <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">● System Online</Badge>
               <Button onClick={runAndValidate} disabled={isLoadingPy || isRunning} className="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black rounded-xl px-8 h-10 transition-all active:scale-95">
                 {isRunning ? <Loader2 className="animate-spin" /> : <><Play className="mr-2 h-4 w-4 fill-current" /> Execute Code</>}
@@ -474,7 +512,7 @@ export default function PythonAcademy() {
                 </TabsContent>
 
                 <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                    <img id="plot-output" className="max-h-full rounded-lg" alt="Science plot will appear here" src="https://placehold.co/400x200/020617/FFFFFF/png?text=Plot+Output" />
+                    <img id="plot-output" className="max-h-full rounded-lg" alt="Matplotlib plots will appear here" src="https://placehold.co/400x200/020617/FFFFFF/png?text=Plot+Output" />
                 </TabsContent>
               </Tabs>
             </div>
@@ -482,56 +520,75 @@ export default function PythonAcademy() {
         </main>
         
         <aside className="lg:col-span-3 space-y-6">
-  
-          {/* 1. MASTER STATS */}
-          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
-            <CardHeader className="bg-slate-800/50">
-              <CardTitle className="text-sm font-black flex items-center gap-2">
-                <Trophy className="text-yellow-500 h-4 w-4" /> Mastery Stats
+          {/* 1. NEURAL TUTOR CARD */}
+          <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
+            <CardHeader className="bg-indigo-600 p-6">
+              <CardTitle className="text-sm font-black text-white flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
               </CardTitle>
+              <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-slate-400">Total Progress</span>
-                  <span className="text-white">Selected Lesson</span>
+            
+            <CardContent className="p-6 space-y-4">
+              {tutorResponse ? (
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                     <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
+                     <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
+                  </div>
+                  <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
+                     <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
+                     <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setTutorResponse(null)} 
+                    className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
+                  >
+                    Ask another question
+                  </Button>
                 </div>
-                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="bg-yellow-500 h-full w-1/4" />
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
+                    Describe your problem below and I'll guide you through the logic.
+                  </p>
+                  <Textarea 
+                    placeholder="e.g. Why am I getting a SyntaxError?" 
+                    value={aiQuestion}
+                    onChange={(e) => setAiQuestion(e.target.value)}
+                    className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
+                  />
+                  <Button 
+                    onClick={askTutor} 
+                    disabled={isAiLoading || !aiQuestion}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
+                  >
+                    {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
+                  </Button>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
-        
-          {/* 2. LEARNING TIPS */}
-          <div className="p-6 bg-indigo-900/40 border border-indigo-500/20 rounded-[32px] space-y-4">
+
+          {/* 2. PRO TIPS (Moved below) */}
+          <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
-              <HelpCircle className="text-indigo-400 h-5 w-5" />
-              <h3 className="text-sm font-black text-indigo-100 uppercase tracking-tight">Learning Tips</h3>
+              <HelpCircle className="text-yellow-500 h-4 w-4" />
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
             </div>
-            <ul className="space-y-4">
-              <li className="flex gap-3">
-                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
-                </div>
+            <ul className="space-y-3">
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Consistency is key.
               </li>
-              <li className="flex gap-3">
-                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white leading-none">Build Projects</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
-                </div>
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Build projects to apply logic.
               </li>
             </ul>
           </div>
-        
-          {/* 3. EXTERNAL PORTALS */}
+
+          {/* 3. LEARNING PORTALS */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
@@ -574,7 +631,6 @@ export default function PythonAcademy() {
               </a>
             </CardContent>
           </Card>
-        
         </aside>
       </div>
     </div>
