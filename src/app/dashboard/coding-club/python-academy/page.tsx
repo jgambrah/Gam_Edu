@@ -7,7 +7,7 @@ import { collection, addDoc, query, orderBy, serverTimestamp, setDoc, doc } from
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
   BookOpen, Code2, Terminal, Info, Layout, Cpu, 
-  Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Trophy
+  Globe, Database, Github, HelpCircle, FileJson, Layers, Monitor, Target, Trophy, Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,11 +16,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
 import { Textarea } from '@/components/ui/textarea';
-
 
 // --- FULL CURRICULUM DATA STRUCTURE ---
 const PYTHON_SYLLABUS = [
@@ -117,7 +114,7 @@ const PYTHON_SYLLABUS = [
       }
     ]
   },
-    {
+  {
     phase: "Phase 3",
     title: "Object-Oriented Programming (OOP) & Beyond (Weeks 5-6)",
     mainTopics: [
@@ -144,13 +141,13 @@ const PYTHON_SYLLABUS = [
         title: "3. Standard Library Deep Dive",
         lessons: [
           { id: "p3-3-1", title: "JSON & Data", task: "Convert a Python dictionary into a JSON string.", startingCode: "import json\nuser = {'id': 1, 'active': True}\njson_data = json.dumps(user)\nprint(json_data)" },
-          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\\nfor row in csv_data.split('\\n'):\\n    print(row.split(','))" },
-          { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\\nnow = datetime.now()\\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
+          { id: "p3-3-2", title: "CSV Handling", task: "Simulate reading spreadsheet data using split.", startingCode: "csv_data = 'Name,Age\\nKojo,15\\nAbena,14'\nfor row in csv_data.split('\\n'):\n    print(row.split(','))" },
+          { id: "p3-3-3", title: "OS & Datetime", task: "Print the current date and time.", startingCode: "from datetime import datetime\nnow = datetime.now()\nprint('Current Time:', now.strftime('%H:%M:%S'))" }
         ]
       }
     ]
   },
-    {
+  {
     phase: "Phase 4",
     title: "Specialization & Projects (Weeks 7+)",
     mainTopics: [
@@ -215,11 +212,13 @@ const PYTHON_SYLLABUS = [
   }
 ];
 
+
 export default function PythonAcademy() {
+  const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
-  const { toast } = useToast();
 
+  // --- STATE ---
   const [activeLesson, setActiveLesson] = useState(PYTHON_SYLLABUS[0].mainTopics[0].lessons[0]);
   const [code, setCode] = useState(activeLesson.startingCode);
   const [output, setOutput] = useState<string[]>([]);
@@ -228,7 +227,12 @@ export default function PythonAcademy() {
   const [activeTab, setActiveTab] = useState('editor');
   const pyodide = useRef<any>(null);
 
-  // Initialize Python in Browser
+  // --- AI TUTOR STATE ---
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [tutorResponse, setTutorResponse] = useState<any>(null);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  // Load Pyodide (Python in Browser)
   useEffect(() => {
     async function initPyodide() {
       // @ts-ignore
@@ -276,8 +280,8 @@ export default function PythonAcademy() {
 
   const saveProgress = async () => {
     if (!user || !firestore) {
-      toast({title: "Please log in to save."});
-      return;
+        toast({title: "Please log in to save."});
+        return;
     };
     await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
       userId: user.uid,
@@ -288,6 +292,37 @@ export default function PythonAcademy() {
     });
     toast({title: "Progress Saved!"});
   };
+
+  const askTutor = async () => {
+    if (!aiQuestion.trim()) return;
+    setIsAiLoading(true);
+    
+    // Find the phase title for the current lesson
+    const currentPhase = PYTHON_SYLLABUS.find(phase => 
+      phase.mainTopics.some(topic => 
+        topic.lessons.some(lesson => lesson.id === activeLesson.id)
+      )
+    );
+
+    try {
+      const res = await getPythonTutorHelp({
+        phase: currentPhase?.title || "Fundamentals",
+        lesson: activeLesson.title,
+        task: activeLesson.task,
+        userCode: code,
+        question: aiQuestion
+      });
+      if (res.success) {
+        setTutorResponse(res.data);
+      } else {
+        toast({ variant: 'destructive', title: 'AI Error', description: res.error });
+      }
+    } finally {
+      setIsAiLoading(false);
+      setAiQuestion("");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 font-sans">
@@ -318,21 +353,23 @@ export default function PythonAcademy() {
                   </AccordionTrigger>
                   <AccordionContent className="pb-4 space-y-4">
                     {phase.mainTopics.map((topic) => (
-                      <div key={topic.title} className="space-y-2">
-                        <p className="text-[10px] font-black text-slate-500 uppercase ml-2 tracking-tighter">{topic.title}</p>
-                        <div className="space-y-1">
-                          {topic.lessons.map((lesson) => (
-                            <button
-                              key={lesson.id}
-                              onClick={() => { setActiveLesson(lesson); setCode(lesson.startingCode); setOutput([]); }}
-                              className={`w-full text-left px-4 py-2 rounded-xl text-xs transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
-                            >
-                              {lesson.title}
-                              <ChevronRight className={`h-3 w-3 ${activeLesson.id === lesson.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <Accordion key={topic.title} type="single" collapsible className="w-full">
+                        <AccordionItem value={topic.title} className="border-none">
+                            <AccordionTrigger className="text-xs font-bold text-slate-400 py-2 hover:no-underline">{topic.title}</AccordionTrigger>
+                            <AccordionContent className="space-y-1 pl-4 border-l border-slate-700/50">
+                                {topic.lessons.map((lesson) => (
+                                    <button
+                                    key={lesson.id}
+                                    onClick={() => { setActiveLesson(lesson); setCode(lesson.startingCode); setOutput([]); }}
+                                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
+                                    >
+                                    {lesson.title}
+                                    <ChevronRight className={`h-3 w-3 ${activeLesson.id === lesson.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                                    </button>
+                                ))}
+                            </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     ))}
                   </AccordionContent>
                 </AccordionItem>
@@ -346,7 +383,7 @@ export default function PythonAcademy() {
           <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[750px]">
             <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
               <div className="flex items-center gap-4">
-                <div className="flex gap-1.5 mr-4">
+                <div className="flex gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40" />
                   <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40" />
@@ -398,107 +435,128 @@ export default function PythonAcademy() {
                 </div>
                 <ScrollArea className="h-40">
                   {output.map((line, i) => (
-                    <div key={i} className="text-emerald-500/90 mb-1">{`>>> ${line}`}</div>
+                    <div key={i} className="text-emerald-500/80 mb-1">{`>>> ${line}`}</div>
                   ))}
-                  {output.length === 0 && <div className="text-slate-700 italic">No output yet. Run your code to see results.</div>}
+                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to see results.</div>}
                 </ScrollArea>
               </div>
             </div>
           </Card>
         </main>
 
-        {/* RIGHT: PROGRESS, TIPS & EXTERNAL RESOURCES */}
+        {/* RIGHT: AI TUTOR & EXTERNAL RESOURCES */}
         <aside className="lg:col-span-3 space-y-6">
-          
-          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
-            <CardHeader className="bg-slate-800/50">
-              <CardTitle className="text-sm font-black flex items-center gap-2">
-                <Trophy className="text-yellow-500 h-4 w-4" /> Mastery Stats
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-slate-400">Total Progress</span>
-                  <span className="text-white">Selected Lesson</span>
-                </div>
-                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="bg-yellow-500 h-full w-1/4" />
-                </div>
+            {/* 1. NEURAL TUTOR CARD */}
+            <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
+              <CardHeader className="bg-indigo-600 p-6">
+                <CardTitle className="text-sm font-black text-white flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
+                </CardTitle>
+                <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
+              </CardHeader>
+              
+              <CardContent className="p-6 space-y-4">
+                {tutorResponse ? (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                       <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
+                       <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
+                    </div>
+                    <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
+                       <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
+                       <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => setTutorResponse(null)} 
+                      className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
+                    >
+                      Ask another question
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
+                      Describe your problem below and I'll guide you through the logic.
+                    </p>
+                    <Textarea 
+                      placeholder="e.g. Why am I getting a SyntaxError?" 
+                      value={aiQuestion}
+                      onChange={(e) => setAiQuestion(e.target.value)}
+                      className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
+                    />
+                    <Button 
+                      onClick={askTutor} 
+                      disabled={isAiLoading || !aiQuestion}
+                      className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
+                    >
+                      {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* 2. PRO TIPS (Moved below) */}
+            <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
+              <div className="flex items-center gap-2">
+                <HelpCircle className="text-yellow-500 h-4 w-4" />
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
               </div>
-            </CardContent>
-          </Card>
-        
-          <div className="p-6 bg-indigo-900/40 border border-indigo-500/20 rounded-[32px] space-y-4">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="text-indigo-400 h-5 w-5" />
-              <h3 className="text-sm font-black text-indigo-100 uppercase tracking-tight">Learning Tips</h3>
+              <ul className="space-y-3">
+                <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                  <span className="text-yellow-500">★</span> Consistency is key.
+                </li>
+                <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                  <span className="text-yellow-500">★</span> Build projects to apply logic.
+                </li>
+              </ul>
             </div>
-            <ul className="space-y-4">
-              <li className="flex gap-3">
-                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
-                </div>
-              </li>
-              <li className="flex gap-3">
-                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white leading-none">Build Projects</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
-                </div>
-              </li>
-            </ul>
-          </div>
 
-          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-6 space-y-2">
-              <a 
-                href="https://docs.python.org/3/tutorial/" 
-                target="_blank" 
-                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-              >
-                <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-              <a 
-                href="https://www.w3schools.com/python/" 
-                target="_blank" 
-                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-              >
-                <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-              <a 
-                href="https://www.geeksforgeeks.org/python-programming-language/" 
-                target="_blank" 
-                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-              >
-                <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-              <a 
-                href="https://github.com/" 
-                target="_blank" 
-                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-              >
-                <div className="flex items-center gap-2">
-                  <Github className="h-3 w-3 text-white" />
-                  <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
-                </div>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-              </a>
-            </CardContent>
-          </Card>
-
+            {/* 3. LEARNING PORTALS (Keep your existing links card here) */}
+            <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
+                <CardHeader>
+                <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-6 space-y-2">
+                <a 
+                    href="https://docs.python.org/3/tutorial/" 
+                    target="_blank" 
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                <a 
+                    href="https://www.w3schools.com/python/" 
+                    target="_blank" 
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                <a 
+                    href="https://www.geeksforgeeks.org/python-programming-language/" 
+                    target="_blank" 
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                <a 
+                    href="https://github.com/" 
+                    target="_blank" 
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <div className="flex items-center gap-2">
+                    <Github className="h-3 w-3 text-white" />
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
+                    </div>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                </CardContent>
+            </Card>
         </aside>
 
       </div>
