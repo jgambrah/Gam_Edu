@@ -51,9 +51,21 @@ const PYTHON_ACADEMY_CURRICULUM = [
         title: "2. The Basics",
         lessons: [
           { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')" },
-          { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)", validation: "globals().get('year') == 2025" },
+          { 
+            id: "p1-2-2", 
+            title: "Variables", 
+            task: "Create a variable named 'year' and set it to 2025.", 
+            startingCode: "year = ",
+            validation: "globals().get('year') == 2025" 
+          },
           { id: "p1-2-3", title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
-          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)" },
+          {
+            id: "p1-2-4",
+            title: "Arithmetic",
+            task: "Calculate 5 times 5 and name the variable 'result'.",
+            startingCode: "result = ",
+            validation: "globals().get('result') == 25"
+          },
           { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)" }
         ]
       },
@@ -378,24 +390,25 @@ function PythonAcademy() {
     setTutorResponse(null);
   }, [activeLesson]);
 
+    // --- SECTION: RUN & VALIDATE ENGINE ---
     const runAndValidate = async () => {
         if (!pyodide.current || !activeLesson) return;
         setIsRunning(true);
         setOutput([]);
         setIsPassed(false);
-    
+
         // Set output handling
         pyodide.current.setStdout({ 
             batched: (str: string) => setOutput(prev => [...prev, str]) 
         });
-    
+
         try {
             // 1. Reset Matplotlib to prevent old charts from showing
             pyodide.current.runPython(`import matplotlib.pyplot as plt; plt.clf(); plt.close('all')`);
-    
+
             // 2. Execute Student Code
             await pyodide.current.runPythonAsync(code);
-    
+
             // 3. AUTO-VALIDATION: Check if goal was met
             let isCorrect = false;
             
@@ -406,7 +419,7 @@ function PythonAcademy() {
                 // Fallback: If no script, check if the console has any output
                 isCorrect = output.length > 0 || code.length > 10;
             }
-    
+
             if (isCorrect) {
                 // THE CELEBRATION
                 setIsPassed(true);
@@ -418,7 +431,7 @@ function PythonAcademy() {
                 });
                 speak("Mission accomplished! Well done.");
             }
-    
+
             // 4. VISUAL LAB: Capture Matplotlib output
             const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
             if (hasPlotting) {
@@ -430,10 +443,12 @@ function PythonAcademy() {
                     img_base64 = base64.b64encode(buf.read()).decode('utf-8')
                     from js import document
                     # Push image data to our Visual Lab tab
-                    document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
+                    if (document.getElementById('plot-output')) {
+                        document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64;
+                    }
                 `);
             }
-    
+
         } catch (err: any) {
             setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
         }
