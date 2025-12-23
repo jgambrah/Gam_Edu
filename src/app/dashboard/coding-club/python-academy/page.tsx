@@ -226,6 +226,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
   }
 ];
 
+
 interface Mission {
   id: string;
   title: string;
@@ -338,20 +339,26 @@ export default function PythonAcademy() {
 
     // --- PART A: RUN PYTHON ---
     try {
-      if (code.includes("import numpy")) await pyodide.current.loadPackage("numpy");
-      if (code.includes("import pandas")) await pyodide.current.loadPackage("pandas");
+        if (code.includes("import numpy")) await pyodide.current.loadPackage("numpy");
+        if (code.includes("import pandas")) await pyodide.current.loadPackage("pandas");
 
       await pyodide.current.runPythonAsync(code);
       
-      let success = true; 
-      if (activeLesson?.id === "p1-2-2") {
-        success = pyodide.current.runPython("globals().get('year') == 2025");
-      }
+      // --- THE "SOLID" VALIDATION LOGIC ---
+      let validationCheck = false;
       
-      if (success) {
-        setIsPassed(true);
-        confetti({ particleCount: 100 });
+      if (activeLesson?.id === "p1-2-2") {
+        validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
+      } else if (activeLesson?.id === "p1-2-1") {
+        validationCheck = output.join("").includes("Hello World");
+      }
 
+      if (validationCheck) {
+        setIsPassed(true);
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        speak("Mission accomplished! Great coding.");
+        
+        // --- PART B: SAVE TO DATABASE (Isolated Try/Catch) ---
         if (user && firestore && activeLesson) {
             try {
                 await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
@@ -480,22 +487,24 @@ export default function PythonAcademy() {
                 theme="vs-dark"
                 value={code}
                 onChange={(v) => setCode(v || "")}
-                options={{ fontSize: 16, minimap: { enabled: false }, padding: { top: 20 }, automaticLayout: true }}
+                options={{
+                    fontSize: 16,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    padding: { top: 20 }
+                }}
               />
-              <div className="absolute bottom-6 left-6 right-6">
-                 <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
-                    <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="text-indigo-400 w-4 h-4" /></div>
-                    <p className="text-sm font-medium text-slate-200">{activeLesson.task}</p>
-                 </div>
-              </div>
+              {/* SUCCESS OVERLAY */}
               {isPassed && (
-                <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
-                    <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
-                        <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                        <h3 className="text-3xl font-black text-white">Mission Complete!</h3>
-                        <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">Next Lesson</Button>
-                    </div>
-                </div>
+                  <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
+                      <div className="bg-slate-900 border-2 border-emerald-500 p-6 rounded-[32px] shadow-2xl text-center">
+                          <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto mb-2" />
+                          <h3 className="text-xl font-black text-white">Mission Passed!</h3>
+                          <p className="text-xs text-slate-400 mb-4">+50 Python XP Earned</p>
+                          <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-xl">Continue Exploring</Button>
+                      </div>
+                  </div>
               )}
             </div>
 
@@ -572,18 +581,30 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
 
-          {/* 2. PRO TIPS (Moved below) */}
+          {/* 2. PRO TIPS */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
             </div>
             <ul className="space-y-3">
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Consistency is key.
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Practice Daily</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Consistency is the key to mastering logic.</p>
+                </div>
               </li>
-              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
-                <span className="text-yellow-500">★</span> Build projects to apply logic.
+              <li className="flex gap-3">
+                <div className="h-5 w-5 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="h-3 w-3 text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white leading-none">Build Projects</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Apply what you learn in the editor immediately.</p>
+                </div>
               </li>
             </ul>
           </div>
