@@ -3,18 +3,26 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, serverTimestamp, setDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, serverTimestamp, setDoc, doc, where, limit } from 'firebase/firestore';
 import { 
   Loader2, Play, Save, CheckCircle2, ChevronRight, 
-  Code2, Terminal, Info, Target, BarChart3, Calendar, Sparkles
+  Code2, Terminal, Info, Target, BarChart3, Calendar, Sparkles, Trophy, HelpCircle, Github
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Editor from '@monaco-editor/react'; // UPGRADE 1: MONACO
+import dynamic from 'next/dynamic';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
+import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
+
+const Editor = dynamic(() => import('@monaco-editor/react'), {
+  ssr: false,
+  loading: () => <div className="flex h-full items-center justify-center bg-slate-900 text-slate-400">Loading Editor...</div>,
+});
+
 
 // --- UPGRADE 4: STREAK COMPONENT ---
 function ContributionHeatmap() {
@@ -38,21 +46,31 @@ function ContributionHeatmap() {
 export default function PythonAcademy() {
   const { user } = useUser();
   const firestore = useFirestore();
-  const [activeLesson, setActiveLesson] = useState({ id: "p1-2-2", title: "Variables", task: "Create a variable named 'year' and set it to 2025.", startingCode: "year = " });
+  const [activeLesson, setActiveLesson] = useState({ id: "p1-2-2", phase: "Phase 1", title: "Variables", task: "Create a variable named 'year' and set it to 2025.", startingCode: "year = " });
   const [code, setCode] = useState(activeLesson.startingCode);
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
-  const [isPassed, setIsPassed] = useState(false); // UPGRADE 2: VALIDATION
+  const [isPassed, setIsPassed] = useState(false);
+  const [activeTab, setActiveTab] = useState('editor');
   const pyodide = useRef<any>(null);
-  const {toast} = useToast();
+  const { toast } = useToast();
+  
+  const [aiQuestion, setAiQuestion] = useState("");
+  const [tutorResponse, setTutorResponse] = useState<any>(null);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  const speak = (text: string) => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      const u = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(u);
+    }
+  };
 
   useEffect(() => {
     async function initPyodide() {
       // @ts-ignore
       pyodide.current = await window.loadPyodide();
-      // Load Matplotlib/NumPy for Phase 4
-      await pyodide.current.loadPackage(['numpy', 'matplotlib']);
       setIsLoadingPy(false);
     }
     if (!pyodide.current) initPyodide();
@@ -64,75 +82,98 @@ export default function PythonAcademy() {
     setOutput([]);
     setIsPassed(false);
 
-    // Redirect stdout to console state
     pyodide.current.setStdout({ batched: (str: string) => setOutput(prev => [...prev, str]) });
 
     try {
-      // 1. Clear previous Matplotlib plots
-      pyodide.current.runPython(`
-        import matplotlib.pyplot as plt
-        plt.clf()
-      `);
-
-      // 2. Run Student Code
-      await pyodide.current.runPythonAsync(code);
-
-      // 3. UPGRADE 2: AUTO-VALIDATION LOGIC
-      let success = false;
-      if (activeLesson.id === "p1-2-2") {
-        // Check if variable 'year' exists in Python memory and is 2025
-        success = pyodide.current.runPython("globals().get('year') == 2025");
+      if (code.includes("import numpy")) {
+          await pyodide.current.loadPackage("numpy");
+      }
+      if (code.includes("import pandas")) {
+          await pyodide.current.loadPackage("pandas");
+      }
+      if (code.includes("import matplotlib")) {
+          await pyodide.current.loadPackage("matplotlib");
       }
       
-      if (activeLesson.id === "p1-2-1") { // Print lesson
-            success = output.join("").includes("Hello World");
+      await pyodide.current.runPythonAsync(code);
+
+      let validationCheck = false;
+      if (activeLesson.id === "p1-2-2") {
+        validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
+      } else if (activeLesson.id === "p1-2-1") {
+        validationCheck = output.join("").includes("Hello World");
       }
 
-      if (success) {
+      if (validationCheck) {
         setIsPassed(true);
-        confetti({ particleCount: 100, spread: 70 });
-        // Save progress to Firebase automatically
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        speak("Mission accomplished! Great coding.");
         if (user && firestore) {
-            await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
-                userId: user.uid, completed: true, timestamp: serverTimestamp()
-            });
+          await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
+              userId: user.uid, completed: true, timestamp: serverTimestamp()
+          });
         }
       }
 
-      // 4. UPGRADE 3: RENDER MATPLOTLIB TO CANVAS
-      const hasPlot = code.includes("plt.show()") || code.includes("plt.plot");
+      const hasPlot = code.includes("plt.show") || code.includes("plt.plot");
       if (hasPlot) {
-        // This targets an HTML div with id="plot-target"
         pyodide.current.runPython(`
             import io, base64
+            import matplotlib.pyplot as plt
+            plt.clf()
+            ${code}
             buf = io.BytesIO()
             plt.savefig(buf, format='png')
             buf.seek(0)
             img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
             from js import document
-            document.getElementById('plot-output').src = img_str
+            img_element = document.getElementById('plot-output')
+            if img_element:
+                img_element.src = img_str
         `);
       }
 
     } catch (err: any) {
-      setOutput(prev => [...prev, `❌ Error: ${err.message}`]);
+      setOutput(prev => [...prev, `❌ Syntax Error: ${err.message}`]);
     }
     setIsRunning(false);
+  };
+  
+  const askTutor = async () => {
+    if (!aiQuestion.trim()) return;
+    setIsAiLoading(true);
+    try {
+      const res = await getPythonTutorHelp({
+        phase: activeLesson.phase || "Fundamentals",
+        lesson: activeLesson.title,
+        task: activeLesson.task,
+        userCode: code,
+        question: aiQuestion
+      });
+      if (res.success && res.data) {
+        setTutorResponse(res.data);
+        speak(res.data.explanation);
+      } else {
+        throw new Error(res.error || "AI failed to respond.");
+      }
+    } catch(e) {
+        toast({ title: "AI Tutor Error", description: "Could not get a response.", variant: "destructive"});
+    } finally {
+      setIsAiLoading(false);
+      setAiQuestion("");
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* SIDEBAR: NAVIGATION & STREAK */}
         <aside className="lg:col-span-3 space-y-6">
           <div className="flex items-center gap-3 px-2">
             <div className="bg-yellow-500 p-2 rounded-xl shadow-lg shadow-yellow-500/20"><Code2 className="text-slate-900" /></div>
             <h2 className="text-xl font-black text-white">Python Pro</h2>
           </div>
-
-          <ContributionHeatmap /> {/* UPGRADE 4: HEATMAP */}
-
+          <ContributionHeatmap />
           <div className="bg-slate-900/50 rounded-3xl p-4 border border-slate-800">
              <p className="text-[10px] font-black text-slate-500 uppercase mb-4">Phase 1: Basics</p>
              <button className="w-full text-left p-3 rounded-xl bg-yellow-500 text-slate-950 font-bold text-xs">
@@ -141,7 +182,6 @@ export default function PythonAcademy() {
           </div>
         </aside>
 
-        {/* MAIN WORKSTATION */}
         <main className="lg:col-span-6 flex flex-col gap-4">
           <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[800px]">
             <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-800">
@@ -151,18 +191,15 @@ export default function PythonAcademy() {
               </Button>
             </div>
 
-            {/* EDITOR (UPGRADE 1: MONACO) */}
             <div className="flex-1 relative">
               <Editor
                 height="100%"
                 defaultLanguage="python"
                 theme="vs-dark"
                 value={code}
-                onChange={(v) => setCode(v || "")}
+                onChange={(val) => setCode(val || "")}
                 options={{ fontSize: 16, minimap: { enabled: false }, padding: { top: 20 }, automaticLayout: true }}
               />
-              
-              {/* TASK OVERLAY */}
               <div className="absolute bottom-6 left-6 right-6">
                  <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-700 p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
                     <div className="bg-indigo-500/20 p-2 rounded-lg"><Target className="text-indigo-400 w-4 h-4" /></div>
@@ -170,19 +207,17 @@ export default function PythonAcademy() {
                  </div>
               </div>
 
-              {/* MISSION PASSED OVERLAY */}
               {isPassed && (
                 <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
                     <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
                         <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                        <h3 className="text-3xl font-black text-white">Mission Complete!</h3>
+                        <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
                         <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">Next Lesson</Button>
                     </div>
                 </div>
               )}
             </div>
 
-            {/* OUTPUT AREA (UPGRADE 3: TABS FOR VISUALS) */}
             <div className="h-64 bg-black border-t border-slate-800">
               <Tabs defaultValue="console" className="h-full flex flex-col">
                 <TabsList className="bg-slate-900 w-fit mx-6 mt-4 rounded-lg">
@@ -196,20 +231,126 @@ export default function PythonAcademy() {
                 </TabsContent>
 
                 <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                    <img id="plot-output" className="max-h-full rounded-lg" alt="Science plot will appear here" src="/placeholder-plot.png" />
+                    <img id="plot-output" className="max-h-full rounded-lg" alt="Matplotlib plot will appear here" src="https://picsum.photos/seed/plot/400/200" />
                 </TabsContent>
               </Tabs>
             </div>
           </Card>
         </main>
-
-        {/* RIGHT SIDEBAR (AI TUTOR) */}
+        
+        {/* RIGHT SIDEBAR (AI TUTOR & RESOURCES) */}
         <aside className="lg:col-span-3 space-y-6">
-            <Card className="bg-indigo-600 rounded-[32px] p-6 text-white shadow-xl">
-                <Sparkles className="w-8 h-8 mb-4 text-yellow-300" />
-                <h3 className="text-xl font-black mb-2">AI Coding Tutor</h3>
-                <p className="text-sm text-indigo-100 mb-6 leading-relaxed">I can see your code and guide you if you get stuck on the variables lesson.</p>
-                <Button className="w-full bg-white text-indigo-600 font-black rounded-xl">Ask for a Hint</Button>
+          <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
+            <CardHeader className="bg-indigo-600 p-6">
+              <CardTitle className="text-sm font-black text-white flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
+              </CardTitle>
+              <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
+            </CardHeader>
+            
+            <CardContent className="p-6 space-y-4">
+              {tutorResponse ? (
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                     <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
+                     <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
+                  </div>
+                  <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
+                     <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
+                     <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setTutorResponse(null)} 
+                    className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
+                  >
+                    Ask another question
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
+                    Describe your problem below and I'll guide you through the logic.
+                  </p>
+                  <Textarea 
+                    placeholder="e.g. Why am I getting a SyntaxError?" 
+                    value={aiQuestion}
+                    onChange={(e) => setAiQuestion(e.target.value)}
+                    className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
+                  />
+                  <Button 
+                    onClick={askTutor} 
+                    disabled={isAiLoading || !aiQuestion}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
+                  >
+                    {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        
+          <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="text-yellow-500 h-4 w-4" />
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
+            </div>
+            <ul className="space-y-3">
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Consistency is key.
+              </li>
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Build projects to apply logic.
+              </li>
+            </ul>
+          </div>
+          
+           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
+                <CardHeader>
+                <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-6 space-y-2">
+                <a 
+                    href="https://docs.python.org/3/tutorial/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                <a 
+                    href="https://www.w3schools.com/python/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                <a 
+                    href="https://www.geeksforgeeks.org/python-programming-language/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                <a 
+                    href="https://github.com/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                >
+                    <div className="flex items-center gap-2">
+                    <Github className="h-3 w-3 text-white" />
+                    <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
+                    </div>
+                    <ChevronRight className="h-3 w-3 text-slate-600" />
+                </a>
+                </CardContent>
             </Card>
         </aside>
 
@@ -217,4 +358,3 @@ export default function PythonAcademy() {
     </div>
   );
 }
-
