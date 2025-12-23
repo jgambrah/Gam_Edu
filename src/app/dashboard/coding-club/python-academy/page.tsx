@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, serverTimestamp, setDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { 
@@ -73,7 +73,7 @@ export default function PythonAcademy() {
   const [allMissions, setAllMissions] = useState<Mission[]>(PYTHON_ACADEMY_CURRICULUM);
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<number[]>([]);
-  const [code, setCode] = useState(''); // FIX: Initialize with empty string
+  const [code, setCode] = useState('');
   const [output, setOutput] = useState<string[]>([]);
   const [isLoadingPy, setIsLoadingPy] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
@@ -102,12 +102,25 @@ export default function PythonAcademy() {
     initPyodide();
   }, []);
 
-  const activeLesson = allMissions[currentMissionIndex] || allMissions[0];
+  // --- 1. LOAD MISSIONS FROM DB ---
+  useEffect(() => {
+    if (!firestore) return;
+    const q = query(collection(firestore, 'logic_lab_curriculum'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const dbMissions: Mission[] = [];
+        snapshot.forEach((doc) => dbMissions.push(doc.data() as Mission));
+        const merged = [...PYTHON_ACADEMY_CURRICULUM, ...dbMissions].sort((a, b) => a.id - b.id);
+        setAllMissions(merged);
+    });
+    return () => unsubscribe();
+  }, [firestore]);
+
+  const activeLesson = allMissions[currentMissionIndex] || PYTHON_ACADEMY_CURRICULUM[0];
   
   // Reset code when mission changes
   useEffect(() => {
     if (activeLesson) {
-        setCode(activeLesson.startingCode); // Set code here after activeLesson is guaranteed to exist
+        setCode(activeLesson.startingCode || '');
     }
     setIsPassed(false);
     setOutput([]);
@@ -130,20 +143,18 @@ export default function PythonAcademy() {
       let validationCheck = false;
       const normalizedOutput = output.join("\n").trim();
       
-      // Default Check: Does the program output match the expected output?
-      if (normalizedOutput === activeLesson.expectedOutput) {
+      if (activeLesson.expectedOutput === normalizedOutput) {
           validationCheck = true;
       }
-
-      // Specific validation logic for certain lessons
-      if (activeLesson.id === "p1-2") { // More robust variable check for "Variables" lesson
+      
+      // More specific checks
+      if (activeLesson.id === "p1-2") { 
         validationCheck = pyodide.current.runPython("globals().get('school_name') == 'Sunnyside'");
       }
 
       if (validationCheck) {
         setIsPassed(true);
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        //speak("Mission accomplished! Great coding.");
         if (user && firestore) {
             await setDoc(doc(firestore, 'student_coding_progress', `${user.uid}_${activeLesson.id}`), {
                 userId: user.uid, completed: true, timestamp: serverTimestamp()
@@ -298,13 +309,14 @@ export default function PythonAcademy() {
         </main>
         
         <aside className="lg:col-span-3 space-y-6">
-          <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
+            <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
               </CardTitle>
               <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
             </CardHeader>
+            
             <CardContent className="p-6 space-y-4">
               {tutorResponse ? (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
@@ -316,7 +328,11 @@ export default function PythonAcademy() {
                      <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
                      <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
                   </div>
-                  <Button variant="ghost" onClick={() => setTutorResponse(null)} className="w-full text-[10px] font-bold text-slate-500 hover:text-white">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setTutorResponse(null)} 
+                    className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
+                  >
                     Ask another question
                   </Button>
                 </div>
@@ -332,7 +348,11 @@ export default function PythonAcademy() {
                     onChange={(e) => setAiQuestion(e.target.value)}
                     className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
                   />
-                  <Button onClick={askTutor} disabled={isAiLoading || !aiQuestion} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12">
+                  <Button 
+                    onClick={askTutor} 
+                    disabled={isAiLoading || !aiQuestion}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
+                  >
                     {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
                   </Button>
                 </div>
@@ -354,6 +374,7 @@ export default function PythonAcademy() {
             </ul>
           </div>
         </aside>
+
       </div>
     </div>
   );
