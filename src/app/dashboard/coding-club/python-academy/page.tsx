@@ -274,6 +274,7 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
     );
 }
 
+
 // --- REFERENCE GUIDE DATA ---
 const REFERENCE_DATA = [
   { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
@@ -378,66 +379,66 @@ function PythonAcademy() {
   }, [activeLesson]);
 
     const runAndValidate = async () => {
-    if (!pyodide.current || !activeLesson) return;
-    setIsRunning(true);
-    setOutput([]);
-    setIsPassed(false);
-
-    // Set output handling
-    pyodide.current.setStdout({ 
-        batched: (str: string) => setOutput(prev => [...prev, str]) 
-    });
-
-    try {
-        // 1. Reset Matplotlib to prevent old charts from showing
-        pyodide.current.runPython(`import matplotlib.pyplot as plt; plt.clf(); plt.close('all')`);
-
-        // 2. Execute Student Code
-        await pyodide.current.runPythonAsync(code);
-
-        // 3. AUTO-VALIDATION: Check if goal was met
-        let isCorrect = false;
-        
-        if (activeLesson.validation) {
-            // Run the specific hidden validation script for this lesson
-            isCorrect = pyodide.current.runPython(activeLesson.validation);
-        } else {
-            // Fallback: If no script, check if the console has any output
-            isCorrect = output.length > 0 || code.length > 10;
+        if (!pyodide.current || !activeLesson) return;
+        setIsRunning(true);
+        setOutput([]);
+        setIsPassed(false);
+    
+        // Set output handling
+        pyodide.current.setStdout({ 
+            batched: (str: string) => setOutput(prev => [...prev, str]) 
+        });
+    
+        try {
+            // 1. Reset Matplotlib to prevent old charts from showing
+            pyodide.current.runPython(`import matplotlib.pyplot as plt; plt.clf(); plt.close('all')`);
+    
+            // 2. Execute Student Code
+            await pyodide.current.runPythonAsync(code);
+    
+            // 3. AUTO-VALIDATION: Check if goal was met
+            let isCorrect = false;
+            
+            if (activeLesson.validation) {
+                // Run the specific hidden validation script for this lesson
+                isCorrect = pyodide.current.runPython(activeLesson.validation);
+            } else {
+                // Fallback: If no script, check if the console has any output
+                isCorrect = output.length > 0 || code.length > 10;
+            }
+    
+            if (isCorrect) {
+                // THE CELEBRATION
+                setIsPassed(true);
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#fbbf24', '#34d399', '#60a5fa', '#f87171'] // Vibrant coding colors
+                });
+                speak("Mission accomplished! Well done.");
+            }
+    
+            // 4. VISUAL LAB: Capture Matplotlib output
+            const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
+            if (hasPlotting) {
+                pyodide.current.runPython(`
+                    import io, base64
+                    buf = io.BytesIO()
+                    plt.savefig(buf, format='png', bbox_inches='tight')
+                    buf.seek(0)
+                    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+                    from js import document
+                    # Push image data to our Visual Lab tab
+                    document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
+                `);
+            }
+    
+        } catch (err: any) {
+            setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
         }
-
-        if (isCorrect) {
-            // THE CELEBRATION
-            setIsPassed(true);
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#fbbf24', '#34d399', '#60a5fa', '#f87171'] // Vibrant coding colors
-            });
-            speak("Mission accomplished! Well done.");
-        }
-
-        // 4. VISUAL LAB: Capture Matplotlib output
-        const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
-        if (hasPlotting) {
-            pyodide.current.runPython(`
-                import io, base64
-                buf = io.BytesIO()
-                plt.savefig(buf, format='png', bbox_inches='tight')
-                buf.seek(0)
-                img_base64 = base64.b64encode(buf.read()).decode('utf-8')
-                from js import document
-                # Push image data to our Visual Lab tab
-                document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64
-            `);
-        }
-
-    } catch (err: any) {
-        setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
-    }
-    setIsRunning(false);
-};
+        setIsRunning(false);
+    };
   
   const askTutor = async () => {
     if (!aiQuestion.trim() || !activeLesson) return;
@@ -545,16 +546,32 @@ function PythonAcademy() {
                     }}
                 />
 
-                {/* MISSION SUCCESS OVERLAY */}
+                {/* THE CELEBRATION OVERLAY */}
                 {isPassed && (
-                    <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
-                        <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(16,185,129,0.2)] text-center space-y-4">
-                            <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                            <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
-                            <p className="text-slate-400">Your logic is perfect. +50 XP Earned.</p>
-                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
-                                Next Lesson
-                            </Button>
+                    <div className="absolute inset-0 z-50 bg-slate-950/60 backdrop-blur-md flex items-center justify-center animate-in zoom-in duration-300">
+                        <div className="bg-slate-900 border-2 border-yellow-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(251,191,36,0.2)] text-center space-y-6 max-w-sm">
+                            <div className="bg-yellow-500 w-24 h-24 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-yellow-500/20">
+                                <CheckCircle2 className="h-14 w-14 text-slate-900" />
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <h3 className="text-4xl font-black text-white tracking-tight">EXCELLENT!</h3>
+                                <p className="text-slate-400 font-medium">Mission Complete. Your logic is sound and the Python engine is happy!</p>
+                            </div>
+
+                            <div className="pt-4">
+                                <Button 
+                                    onClick={() => {
+                                        setIsPassed(false);
+                                        // Add logic here to find the next lesson in your syllabus array
+                                        toast({ title: "Moving to next lesson..." });
+                                    }}
+                                    className="w-full h-16 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-xl rounded-2xl shadow-[0_8px_0_#b45309] active:translate-y-1 active:shadow-none transition-all"
+                                >
+                                    GO NEXT <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                                <p className="mt-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">+50 ACADEMY XP EARNED</p>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -576,7 +593,7 @@ function PythonAcademy() {
                     
                     <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
                         {output.map((line, i) => <div key={i} className="text-emerald-400/90 mb-1">{`>>> ${line}`}</div>)}
-                        {output.length === 0 && <span className="text-slate-700 italic">Terminal ready...</span>}
+                        {output.length === 0 && <span className="text-slate-700 italic">Awaiting execution...</span>}
                     </TabsContent>
 
                     <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4 bg-slate-50 relative">
@@ -730,5 +747,3 @@ function Page() {
 }
 
 export default Page;
-
-    
