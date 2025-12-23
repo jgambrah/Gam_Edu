@@ -259,6 +259,7 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
     const [isRunning, setIsRunning] = useState(false);
     const [isPassed, setIsPassed] = useState(false);
     const pyodide = useRef<any>(null);
+    const [isLoadingPy, setIsLoadingPy] = useState(true);
     
     // AI Tutor State
     const [aiQuestion, setAiQuestion] = useState("");
@@ -284,14 +285,23 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
     // --- PYODIDE INITIALIZATION ---
     useEffect(() => {
       async function initPyodide() {
-        if (!pyodide.current && window.loadPyodide) {
-          // @ts-ignore
-          pyodide.current = await window.loadPyodide();
-          await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
+        if (!pyodide.current && (window as any).loadPyodide) {
+          try {
+            // @ts-ignore
+            pyodide.current = await window.loadPyodide();
+            toast({ title: "Python Ready!", description: "The coding environment has loaded." });
+          } catch(e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: "Pyodide Failed", description: "Could not load Python runtime." });
+          } finally {
+            setIsLoadingPy(false);
+          }
+        } else {
+            setIsLoadingPy(false);
         }
       }
       initPyodide();
-    }, []);
+    }, [toast]);
   
     // --- ACTIONS ---
     const runAndValidate = async () => {
@@ -308,6 +318,7 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
         await pyodide.current.runPythonAsync(code);
         
         let validationCheck = false;
+        
         if (activeLesson.id === "p1-2-2") validationCheck = pyodide.current.runPython("globals().get('year') == 2025");
         else if (activeLesson.id === "p1-2-1") validationCheck = output.join("").includes("Hello World");
   
@@ -359,25 +370,25 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
 
     const groupedMissions = useMemo(() => {
         const groups: Record<string, Mission[]> = {};
-        const flattened = PYTHON_ACADEMY_CURRICULUM.flatMap(phase =>
-            phase.mainTopics.flatMap(topic =>
-                topic.lessons.map(lesson => ({
-                    ...lesson,
-                    phase: phase.title,
-                    mainTopicTitle: topic.title,
-                }))
-            )
-        );
-        flattened.forEach(m => {
+        allMissions.forEach(m => {
             const sectionKey = `${m.phase} - ${m.mainTopicTitle}`;
             if (!groups[sectionKey]) groups[sectionKey] = [];
             groups[sectionKey].push(m);
         });
         return groups;
-    }, []);
+    }, [allMissions]);
 
     const progressPercentage = Math.round((completedMissions.length / allMissions.length) * 100) || 0;
   
+    if (isLoadingPy) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center bg-slate-900 text-slate-300">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <p className="ml-4">Initializing Python Environment...</p>
+            </div>
+        );
+    }
+
     return (
       <div className="flex flex-col h-[calc(100vh-2rem)] gap-4 p-4">
         {/* TOP BAR */}
@@ -436,13 +447,10 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
                               <p className="text-sm text-slate-600 mt-1">Task: <span className="font-bold text-indigo-700">{activeLesson.task}</span></p>
                           </div>
                       </div>
-                      <div className="mt-2 p-3 bg-indigo-50 rounded text-sm text-indigo-900 prose prose-sm max-w-none max-h-32 overflow-y-auto">
-                          <ReactMarkdown>{activeLesson.theory}</ReactMarkdown>
-                      </div>
                   </CardHeader>
               </Card>
               <main className="lg:col-span-6 flex flex-col gap-4">
-                <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[800px]">
+                <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[600px]">
                   <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
                     <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">● System Online</Badge>
                     <Button onClick={runAndValidate} disabled={isRunning} className="bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black rounded-xl px-8 h-10 transition-all active:scale-95">
@@ -471,18 +479,14 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
                     )}
                   </div>
       
-                  <div className="h-64 bg-black border-t border-slate-800">
+                  <div className="h-40 bg-black border-t border-slate-800">
                     <Tabs defaultValue="console" className="h-full flex flex-col">
                       <TabsList className="bg-slate-900 w-fit mx-6 mt-4 rounded-lg">
                         <TabsTrigger value="console" className="text-[10px] uppercase font-bold"><Terminal className="w-3 h-3 mr-2"/> Console</TabsTrigger>
-                        <TabsTrigger value="visuals" className="text-[10px] uppercase font-bold"><BarChart3 className="w-3 h-3 mr-2"/> Visual Lab</TabsTrigger>
                       </TabsList>
                       <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
                           {output.map((line, i) => <div key={i} className="text-emerald-400/80 mb-1">{`>>> ${line}`}</div>)}
                           {output.length === 0 && <p className="text-slate-700 italic">Awaiting execution...</p>}
-                      </TabsContent>
-                      <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4">
-                          <img id="plot-output" className="max-h-full rounded-lg" alt="Matplotlib plots will appear here" src="https://placehold.co/400x200/020617/FFFFFF/png?text=Plot+Output" />
                       </TabsContent>
                     </Tabs>
                   </div>
@@ -492,20 +496,117 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
         </div>
   
         {/* TUTOR MODAL */}
-        <Dialog open={isReferenceOpen} onOpenChange={setIsReferenceOpen}>
-            <DialogContent className="max-w-2xl">
-                <DialogHeader><DialogTitle className="flex items-center gap-2"><Info className="h-5 w-5 text-blue-600"/> Python Cheat Sheet</DialogTitle></DialogHeader>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    {REFERENCE_DATA.map((item, i) => (
-                        <div key={i} className="p-3 border rounded bg-slate-50">
-                            <h4 className="font-bold text-sm text-indigo-700 font-mono mb-1">{item.title}</h4>
-                            <p className="text-xs text-slate-600 mb-2">{item.desc}</p>
-                            <code className="block bg-slate-900 text-green-400 text-xs p-2 rounded font-mono">{item.example}</code>
-                        </div>
-                    ))}
+        <aside className="lg:col-span-3 space-y-6">
+          <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
+            <CardHeader className="bg-indigo-600 p-6">
+              <CardTitle className="text-sm font-black text-white flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-yellow-300" /> Neural Coding Tutor
+              </CardTitle>
+              <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
+            </CardHeader>
+            
+            <CardContent className="p-6 space-y-4">
+              {tutorResponse ? (
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                    <p className="text-xs text-indigo-300 font-bold mb-2">Professor says:</p>
+                    <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
+                  </div>
+                  <div className="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20">
+                    <p className="text-[10px] text-indigo-400 font-black uppercase mb-1">Lightbulb Hint</p>
+                    <p className="text-xs italic text-indigo-200">{tutorResponse.hint}</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setTutorResponse(null)} 
+                    className="w-full text-[10px] font-bold text-slate-500 hover:text-white"
+                  >
+                    Ask another question
+                  </Button>
                 </div>
-            </DialogContent>
-        </Dialog>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
+                    Describe your problem below and I'll guide you through the logic.
+                  </p>
+                  <Textarea 
+                    placeholder="e.g. Why am I getting a SyntaxError?" 
+                    value={aiQuestion}
+                    onChange={(e) => setAiQuestion(e.target.value)}
+                    className="bg-slate-950 border-slate-800 rounded-2xl text-xs min-h-[80px] focus:ring-indigo-500"
+                  />
+                  <Button 
+                    onClick={askTutor} 
+                    disabled={isAiLoading || !aiQuestion}
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl h-12"
+                  >
+                    {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Get AI Guidance"}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="text-yellow-500 h-4 w-4" />
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Professional Tips</h3>
+            </div>
+            <ul className="space-y-3">
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Consistency is key.
+              </li>
+              <li className="flex gap-2 text-[11px] font-bold text-slate-300">
+                <span className="text-yellow-500">★</span> Build projects to apply logic.
+              </li>
+            </ul>
+          </div>
+
+          <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-6 space-y-2">
+              <a 
+                href="https://docs.python.org/3/tutorial/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-yellow-500">Official Python Docs</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.w3schools.com/python/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-blue-400">W3Schools Tutorial</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://www.geeksforgeeks.org/python-programming-language/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <span className="text-xs font-bold text-slate-300 group-hover:text-emerald-400">GeeksforGeeks</span>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+              <a 
+                href="https://github.com/" 
+                target="_blank" 
+                className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+              >
+                <div className="flex items-center gap-2">
+                  <Github className="h-3 w-3 text-white" />
+                  <span className="text-xs font-bold text-slate-300 group-hover:text-white">GitHub Community</span>
+                </div>
+                <ChevronRight className="h-3 w-3 text-slate-600" />
+              </a>
+            </CardContent>
+          </Card>
+
+        </aside>
       </div>
     );
   }
@@ -513,44 +614,53 @@ function AcademyInterface({ allMissions }: { allMissions: Mission[] }) {
 export default function PythonAcademyPage() {
     const firestore = useFirestore();
     const { isUserLoading } = useUser();
-
     const [allMissions, setAllMissions] = useState<Mission[]>([]);
-    const [isLoadingDb, setIsLoadingDb] = useState(true);
+    const [isDataLoading, setIsDataLoading] = useState(true);
 
     useEffect(() => {
         if (!firestore) return;
+        
+        const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
+            phase.mainTopics.flatMap(mainTopic => 
+                mainTopic.lessons.map(lesson => ({
+                    ...lesson,
+                    phase: phase.title,
+                    mainTopicTitle: mainTopic.title
+                }))
+            )
+        );
+
         const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const dbMissions: any[] = [];
             snapshot.forEach((doc) => dbMissions.push(doc.data()));
             
-            const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
-                phase.mainTopics.flatMap(mainTopic => 
-                    mainTopic.lessons.map(lesson => ({
-                        ...lesson,
-                        phase: phase.title,
-                        mainTopicTitle: mainTopic.title
-                    }))
-                )
-            );
-            
             const combined = [...flattenedSyllabus, ...dbMissions];
             const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
 
             setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
-            setIsLoadingDb(false);
+            setIsDataLoading(false);
+        }, (error) => {
+            console.error("Error fetching curriculum:", error);
+            // Fallback to static data if DB fails
+            setAllMissions(flattenedSyllabus);
+            setIsDataLoading(false);
         });
+
         return () => unsubscribe();
     }, [firestore]);
 
-    if (isUserLoading || isLoadingDb) {
+
+    if (isUserLoading || isDataLoading) {
         return (
-            <div className="flex h-screen w-screen items-center justify-center">
+            <div className="flex h-screen w-screen items-center justify-center bg-slate-900 text-slate-300">
                 <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="ml-4">Loading Curriculum...</p>
+                <p className="ml-4">Loading Python Academy...</p>
             </div>
         );
     }
     
     return <AcademyInterface allMissions={allMissions} />;
 }
+
+    
