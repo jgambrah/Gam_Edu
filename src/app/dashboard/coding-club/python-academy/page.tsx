@@ -27,7 +27,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
-import useSound from 'use-sound';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -52,7 +51,7 @@ const PYTHON_ACADEMY_CURRICULUM = [
           { id: "p1-2-1", title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')", expectedOutput: "Hello World" },
           { id: "p1-2-2", title: "Variables", task: "Assign the number 2025 to a variable named 'year'.", startingCode: "year = 2025\nprint(year)", expectedOutput: "2025" },
           { id: "p1-2-3", title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
-          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)", expectedOutput: "50" },
+          { id: "p1-2-4", title: "Arithmetic Operators", task: "Multiply 5 by 5 using the * operator.", startingCode: "print(5 * 5)", expectedOutput: "25" },
           { id: "p1-2-5", title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)", expectedOutput: "True" }
         ]
       },
@@ -273,7 +272,6 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
     );
 }
 
-
 export default function PythonAcademy() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -295,6 +293,7 @@ export default function PythonAcademy() {
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReferenceOpen, setIsReferenceOpen] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any[]>([]);
 
   // --- PYODIDE INITIALIZATION ---
@@ -314,26 +313,32 @@ export default function PythonAcademy() {
   }, []);
 
   // --- LOAD & FLATTEN MISSIONS ---
-  const { data: dbMissions, isLoading: isLoadingMissions } = useCollection<Mission>(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'logic_lab_curriculum'), orderBy('id')) : null, [firestore])
-  );
-
   useEffect(() => {
-    const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
-        phase.mainTopics.flatMap(mainTopic => 
-            mainTopic.lessons.map(lesson => ({
-                ...lesson,
-                phase: phase.title,
-                mainTopicTitle: mainTopic.title
-            }))
-        )
-    );
-    
-    const combined = [...flattenedSyllabus, ...(dbMissions || [])];
-    const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
+    if (!firestore) return;
+    const q = query(collection(firestore, 'logic_lab_curriculum'), orderBy('id'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const dbMissions: any[] = [];
+        snapshot.forEach((doc) => dbMissions.push(doc.data()));
+        
+        const flattenedSyllabus = PYTHON_ACADEMY_CURRICULUM.flatMap(phase => 
+            phase.mainTopics.flatMap(mainTopic => 
+                mainTopic.lessons.map(lesson => ({
+                    ...lesson,
+                    phase: phase.title,
+                    mainTopicTitle: mainTopic.title
+                }))
+            )
+        );
+        
+        // Combine static and DB missions, ensuring unique IDs
+        const combined = [...flattenedSyllabus, ...dbMissions];
+        const uniqueMissions = Array.from(new Map(combined.map(m => [m.id, m])).values());
 
-    setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
-  }, [dbMissions]);
+        setAllMissions(uniqueMissions.sort((a,b) => a.id.localeCompare(b.id)));
+        setIsDataLoading(false); // Data is ready
+    });
+    return () => unsubscribe();
+  }, [firestore]);
 
 
   const activeLesson = useMemo(() => {
@@ -371,18 +376,10 @@ export default function PythonAcademy() {
                 plt.close('all')
             `);
 
-            // 2. Load packages dynamically
-            if (code.includes("import numpy")) {
-                await pyodide.current.loadPackage("numpy");
-            }
-            if (code.includes("import pandas")) {
-                await pyodide.current.loadPackage("pandas");
-            }
-            
-            // 3. Execute Student Code
+            // 2. Execute Student Code
             await pyodide.current.runPythonAsync(code);
 
-            // 4. AUTO-VALIDATION: Check if goal was met
+            // 3. AUTO-VALIDATION: Check if goal was met
             let validationCheck = false;
             if (activeLesson) {
                 if (activeLesson.id === "p1-2-2") { // Variables lesson
@@ -403,7 +400,7 @@ export default function PythonAcademy() {
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             }
 
-            // 5. VISUAL LAB: Capture Matplotlib output
+            // 4. VISUAL LAB: Capture Matplotlib output
             const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
             if (hasPlotting) {
                 const imgStr = pyodide.current.runPython(`
@@ -440,9 +437,6 @@ export default function PythonAcademy() {
       });
       if (res.success) {
         setTutorResponse(res.data);
-        if (res.data?.explanation) {
-            speak(res.data.explanation);
-        }
       }
     } finally {
       setIsAiLoading(false);
@@ -450,21 +444,13 @@ export default function PythonAcademy() {
     }
   };
 
-  if (isLoadingMissions || isLoadingPy || isUserLoading) {
+  if (isDataLoading || isLoadingPy || isUserLoading || !activeLesson) {
       return (
           <div className="flex h-screen w-screen items-center justify-center">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <p className="ml-4">Loading Python Academy...</p>
+              <p className="ml-4">Loading Curriculum...</p>
           </div>
       );
-  }
-  
-  if(!activeLesson) {
-    return (
-        <div className="flex h-screen w-screen items-center justify-center">
-            <p className="ml-4">Could not load active lesson.</p>
-        </div>
-    );
   }
   
   return (
@@ -479,7 +465,7 @@ export default function PythonAcademy() {
           
           <ContributionHeatmap progressData={userProgress} />
           
-          <ScrollArea className="h-[calc(75vh-150px)] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
+          <ScrollArea className="h-[75vh] rounded-3xl border-2 border-slate-800 bg-slate-900/50 p-2">
             <div className="p-2 space-y-2">
               {PYTHON_ACADEMY_CURRICULUM.map((phase) => (
                 <Accordion key={phase.phase} type="single" collapsible className="w-full" defaultValue={activeLesson?.phase === phase.title ? phase.phase : ''}>
@@ -526,38 +512,38 @@ export default function PythonAcademy() {
             </div>
 
             <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e]">
-                <Editor
-                    height="100%"
-                    defaultLanguage="python"
-                    theme="vs-dark"
-                    value={code}
-                    onChange={(val) => setCode(val || "")}
-                    options={{
-                        fontSize: 16,
-                        minimap: { enabled: false },
-                        padding: { top: 20 },
-                        automaticLayout: true,
-                        scrollBeyondLastLine: false,
-                        lineNumbers: 'on',
-                        fontFamily: 'JetBrains Mono, monospace'
-                    }}
-                />
-                
-                {isPassed && (
-                    <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
-                        <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(16,185,129,0.2)] text-center space-y-4">
-                            <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
-                            <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
-                            <p className="text-slate-400">Your logic is perfect. +50 Python XP Earned.</p>
-                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
-                                Next Lesson
-                            </Button>
-                        </div>
-                    </div>
-                )}
+              <Editor
+                  height="100%"
+                  defaultLanguage="python"
+                  theme="vs-dark"
+                  value={code}
+                  onChange={(val) => setCode(val || "")}
+                  options={{
+                      fontSize: 16,
+                      minimap: { enabled: false },
+                      padding: { top: 20 },
+                      automaticLayout: true,
+                      scrollBeyondLastLine: false,
+                      lineNumbers: 'on',
+                      fontFamily: 'JetBrains Mono, monospace'
+                  }}
+              />
+              
+              {isPassed && (
+                  <div className="absolute inset-0 bg-emerald-500/10 backdrop-blur-sm flex items-center justify-center animate-in zoom-in">
+                      <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-2xl text-center space-y-4">
+                          <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
+                          <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
+                          <p className="text-slate-400">Your logic is perfect. +50 Python XP Earned.</p>
+                          <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
+                              Next Lesson
+                          </Button>
+                      </div>
+                  </div>
+              )}
             </div>
 
-            <div className="h-64 bg-black">
+            <div className="h-64 bg-black border-t border-slate-800">
                 <Tabs defaultValue="console" className="h-full flex flex-col">
                     <div className="px-6 py-2 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                         <TabsList className="bg-slate-950 p-1">
@@ -580,7 +566,7 @@ export default function PythonAcademy() {
                         <img 
                             id="plot-output" 
                             className="max-h-full rounded shadow-lg border border-slate-200" 
-                            alt="Science Plot Output"
+                            alt="Matplotlib plots will appear here"
                             src="https://placehold.co/600x400/0f172a/10b981?text=Awaiting+Plot+Data"
                         />
                         <div className="absolute top-2 right-2">
@@ -592,10 +578,8 @@ export default function PythonAcademy() {
           </Card>
         </main>
         
-        {/* RIGHT: PROGRESS, TIPS & EXTERNAL RESOURCES */}
         <aside className="lg:col-span-3 space-y-6">
           
-          {/* 1. NEURAL TUTOR (Existing Card) */}
           <Card className="bg-slate-900 border-indigo-500/30 rounded-[32px] overflow-hidden shadow-2xl ring-1 ring-indigo-500/20">
             <CardHeader className="bg-indigo-600 p-6">
               <CardTitle className="text-sm font-black text-white flex items-center gap-2">
@@ -603,6 +587,7 @@ export default function PythonAcademy() {
               </CardTitle>
               <p className="text-[10px] text-indigo-100 font-bold uppercase tracking-widest opacity-70">Context-Aware AI Helper</p>
             </CardHeader>
+            
             <CardContent className="p-6 space-y-4">
               {tutorResponse ? (
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
@@ -625,7 +610,7 @@ export default function PythonAcademy() {
               ) : (
                 <div className="space-y-4">
                   <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson?.title || 'this lesson'}</span>? 
+                    Stuck on <span className="text-indigo-400 font-bold">{activeLesson.title}</span>? 
                     Describe your problem below and I'll guide you through the logic.
                   </p>
                   <Textarea 
@@ -646,7 +631,6 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
         
-          {/* 2. PRO TIPS */}
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-[32px] space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="text-yellow-500 h-4 w-4" />
@@ -662,7 +646,6 @@ export default function PythonAcademy() {
             </ul>
           </div>
         
-          {/* 3. LEARNING PORTALS */}
           <Card className="bg-slate-900 border-slate-800 rounded-[32px] overflow-hidden">
             <CardHeader>
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Learning Portals</CardTitle>
@@ -706,10 +689,7 @@ export default function PythonAcademy() {
             </CardContent>
           </Card>
         </aside>
-
       </div>
     </div>
   );
 }
-
-    
