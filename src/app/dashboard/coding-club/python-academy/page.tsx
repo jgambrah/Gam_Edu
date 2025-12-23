@@ -27,6 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
+import useSound from 'use-sound';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -273,7 +274,16 @@ function ContributionHeatmap({ progressData }: { progressData: any[] }) {
 }
 
 
-// --- MAIN PAGE ---
+// --- REFERENCE GUIDE DATA ---
+const REFERENCE_DATA = [
+  { title: "Variables", desc: "Containers for storing data values.", example: "score = 10" },
+  { title: "print()", desc: "Outputs text or numbers to the console.", example: "print('Hello')" },
+  { title: "if / else", desc: "Decides which code to run based on a condition.", example: "if x > 5: print('Big')" },
+  { title: "for loop", desc: "Repeats code for each item in a sequence.", example: "for i in range(3):" },
+  { title: "while loop", desc: "Repeats code as long as a condition is true.", example: "while x < 10:" },
+  { title: "input()", desc: "Pauses the program to get text from the user.", example: "name = input()" },
+];
+
 export default function PythonAcademy() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -289,6 +299,7 @@ export default function PythonAcademy() {
   const [isRunning, setIsRunning] = useState(false);
   const [isPassed, setIsPassed] = useState(false);
   const pyodide = useRef<any>(null);
+  const [playSuccess] = useSound('/sounds/success.mp3'); 
   
   // AI Tutor State
   const [aiQuestion, setAiQuestion] = useState("");
@@ -298,6 +309,12 @@ export default function PythonAcademy() {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<any[]>([]);
 
+  const speak = (text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const u = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(u);
+  };
+  
   // --- PYODIDE INITIALIZATION ---
   useEffect(() => {
     async function initPyodide() {
@@ -359,71 +376,74 @@ export default function PythonAcademy() {
   }, [activeLesson]);
 
   // --- SECTION: RUN & VALIDATE ENGINE ---
-    const runAndValidate = async () => {
-        if (!pyodide.current) return;
-        setIsRunning(true);
-        setOutput([]);
-        setIsPassed(false);
+  const runAndValidate = async () => {
+    if (!pyodide.current) return;
+    setIsRunning(true);
+    setOutput([]);
+    setIsPassed(false);
 
-        // Set output handling
-        pyodide.current.setStdout({ 
-            batched: (str: string) => setOutput(prev => [...prev, str]) 
-        });
+    // Set output handling
+    pyodide.current.setStdout({ 
+        batched: (str: string) => setOutput(prev => [...prev, str]) 
+    });
 
-        try {
-            // 1. Reset Matplotlib to prevent old charts from showing
-            pyodide.current.runPython(`
-                import matplotlib.pyplot as plt
-                plt.clf()
-                plt.close('all')
-            `);
+    try {
+        // 1. Reset Matplotlib to prevent old charts from showing
+        pyodide.current.runPython(`
+            import matplotlib.pyplot as plt
+            plt.clf()
+            plt.close('all')
+        `);
 
-            // 2. Execute Student Code
-            await pyodide.current.runPythonAsync(code);
+        // 2. Execute Student Code
+        await pyodide.current.runPythonAsync(code);
 
-            // 3. AUTO-VALIDATION: Check if goal was met
-            let validationCheck = false;
-            if (activeLesson) {
-                if (activeLesson.id === "p1-2-2") { // Variables lesson
-                    const result = pyodide.current.runPython("globals().get('year') == 2025");
-                    validationCheck = !!result;
-                } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
-                    const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
-                    const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
-                    if (normExpected) {
-                      validationCheck = normOutput.includes(normExpected);
-                    }
+        // 3. AUTO-VALIDATION: Check if goal was met
+        let validationCheck = false;
+        if (activeLesson) {
+            if (activeLesson.id === "p1-2-2") { // Variables lesson
+                const result = pyodide.current.runPython("globals().get('year') == 2025");
+                validationCheck = !!result;
+            } else if (activeLesson.id === "p1-2-1") { // Print lesson
+                validationCheck = output.join("").includes("Hello World");
+            } else if (activeLesson.expectedOutput) { // Fallback for simple output matching
+                const normOutput = output.join("").replace(/\s+/g, '').toLowerCase();
+                const normExpected = (activeLesson.expectedOutput || "").replace(/\s+/g, '').toLowerCase();
+                if (normExpected) {
+                  validationCheck = normOutput.includes(normExpected);
                 }
             }
-
-
-            if (validationCheck) {
-                setIsPassed(true);
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            }
-
-            // 4. VISUAL LAB: Capture Matplotlib output
-            const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
-            if (hasPlotting) {
-                const imgStr = pyodide.current.runPython(`
-                    import io, base64
-                    buf = io.BytesIO()
-                    plt.savefig(buf, format='png', bbox_inches='tight')
-                    buf.seek(0)
-                    img_base64 = base64.b64encode(buf.read()).decode('utf-8')
-                    img_base64
-                `);
-                const imgEl = document.getElementById('plot-output') as HTMLImageElement;
-                if(imgEl) {
-                    imgEl.src = 'data:image/png;base64,' + imgStr;
-                }
-            }
-
-        } catch (err: any) {
-            setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
         }
-        setIsRunning(false);
-    };
+
+
+        if (validationCheck) {
+            setIsPassed(true);
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            speak("Mission accomplished! Great coding.");
+        }
+
+        // 4. VISUAL LAB: Capture Matplotlib output
+        const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
+        if (hasPlotting) {
+            const imgStr = pyodide.current.runPython(`
+                import io, base64
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', bbox_inches='tight')
+                buf.seek(0)
+                img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+                img_base64
+            `);
+            const imgEl = document.getElementById('plot-output') as HTMLImageElement;
+            if(imgEl) {
+                imgEl.src = 'data:image/png;base64,' + imgStr;
+            }
+        }
+
+    } catch (err: any) {
+        setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
+    }
+    setIsRunning(false);
+  };
 
   
   const askTutor = async () => {
@@ -439,6 +459,7 @@ export default function PythonAcademy() {
       });
       if (res.success) {
         setTutorResponse(res.data);
+        speak(res.data.explanation); 
       }
     } finally {
       setIsAiLoading(false);
@@ -513,13 +534,13 @@ export default function PythonAcademy() {
               </Button>
             </div>
 
-            <div className="flex-1 relative border-b border-slate-800 bg-[#1e1e1e]">
+            <div className="flex-1 border-b border-slate-800 relative">
                 <Editor
                     height="100%"
                     defaultLanguage="python"
                     theme="vs-dark"
                     value={code}
-                    onChange={(v) => setCode(v || "")}
+                    onChange={(val) => setCode(val || "")}
                     options={{
                         fontSize: 16,
                         minimap: { enabled: false },
@@ -537,8 +558,8 @@ export default function PythonAcademy() {
                         <div className="bg-slate-900 border-2 border-emerald-500 p-10 rounded-[48px] shadow-[0_0_50px_rgba(16,185,129,0.2)] text-center space-y-4">
                             <CheckCircle2 className="h-20 w-20 text-emerald-500 mx-auto" />
                             <h3 className="text-3xl font-black text-white">Mission Passed!</h3>
-                            <p className="text-slate-400">Your logic is perfect. +50 XP earned.</p>
-                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 hover:bg-emerald-500 rounded-2xl px-10 h-12 font-bold">
+                            <p className="text-slate-400">Your logic is perfect. +50 Python XP Earned.</p>
+                            <Button onClick={() => setIsPassed(false)} className="bg-emerald-600 rounded-2xl px-10 h-12 font-bold">
                                 Next Lesson
                             </Button>
                         </div>
@@ -698,3 +719,4 @@ export default function PythonAcademy() {
     </div>
   );
 }
+
