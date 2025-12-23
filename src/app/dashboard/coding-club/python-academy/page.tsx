@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import confetti from 'canvas-confetti';
+import { useToast } from '@/hooks/use-toast';
 
 // --- DATA: THE STRUCTURED LEARNING PATH ---
 const PYTHON_SYLLABUS = [
@@ -256,7 +257,7 @@ export default function PythonAcademy() {
 
     try {
       if (code.includes("import numpy")) {
-        await pyodide.current.loadPackage("numpy");
+          await pyodide.current.loadPackage("numpy");
       }
       if (code.includes("import pandas")) {
           await pyodide.current.loadPackage("pandas");
@@ -299,9 +300,9 @@ export default function PythonAcademy() {
           </div>
 
           <ScrollArea className="h-[80vh] pr-4">
-            <Accordion type="multiple" defaultValue={['phase-1']} className="space-y-4">
+            <Accordion type="multiple" defaultValue={['Phase 1']} className="space-y-4">
               {PYTHON_SYLLABUS.map((phase) => (
-                <AccordionItem key={phase.phase} value={phase.phase.toLowerCase().replace(' ', '-')} className="border-none bg-slate-900/50 rounded-3xl overflow-hidden px-4">
+                <AccordionItem key={phase.phase} value={phase.phase} className="border-none bg-slate-900/50 rounded-3xl overflow-hidden px-4">
                   <AccordionTrigger className="hover:no-underline py-4">
                     <div className="flex items-center gap-3">
                       <Layers className="h-4 w-4 text-yellow-500" />
@@ -320,7 +321,7 @@ export default function PythonAcademy() {
                             <button
                               key={lesson.id}
                               onClick={() => { setActiveLesson(lesson); setCode(lesson.startingCode); setOutput([]); }}
-                              className={`w-full text-left px-4 py-2 rounded-xl text-xs transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
+                              className={`w-full text-left px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between group ${activeLesson.id === lesson.id ? 'bg-yellow-500 text-slate-900 font-bold' : 'hover:bg-slate-800 text-slate-400'}`}
                             >
                               {lesson.title}
                               <ChevronRight className={`h-3 w-3 ${activeLesson.id === lesson.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
@@ -337,7 +338,7 @@ export default function PythonAcademy() {
         </aside>
 
         {/* MAIN: EDITOR & WORKSTATION */}
-        <main className="lg:col-span-6 space-y-6">
+        <main className="lg:col-span-6 space-y-4">
           <Card className="bg-slate-900 border-slate-800 rounded-[40px] shadow-2xl overflow-hidden flex flex-col h-[750px]">
             <div className="bg-slate-800/50 px-8 py-4 flex justify-between items-center border-b border-slate-700">
               <div className="flex items-center gap-4">
@@ -346,7 +347,7 @@ export default function PythonAcademy() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40" />
                   <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40" />
                 </div>
-                <Badge variant="outline" className="bg-slate-950 text-slate-500 border-slate-800 font-mono text-[10px]">main.py</Badge>
+                <Badge variant="outline" className="bg-slate-950 text-slate-400 font-mono text-[10px] border-slate-800">main.py</Badge>
               </div>
               <div className="flex gap-2">
                 <Button onClick={saveProgress} variant="ghost" className="text-slate-400 hover:text-white"><Save className="h-4 w-4 mr-2" /> Save</Button>
@@ -395,7 +396,7 @@ export default function PythonAcademy() {
                   {output.map((line, i) => (
                     <div key={i} className="text-emerald-500/90 py-0.5">{`> ${line}`}</div>
                   ))}
-                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to see results.</div>}
+                  {output.length === 0 && <div className="text-slate-800 italic">No output yet. Run your code to execute.</div>}
                 </ScrollArea>
               </div>
             </div>
@@ -416,7 +417,7 @@ export default function PythonAcademy() {
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <p className="text-xs font-bold text-white">Variables</p>
-                    <code className="block bg-black p-3 rounded-xl text-emerald-400 text-[10px] border border-slate-800">
+                    <code className="block bg-black p-3 rounded-xl text-emerald-500 text-[10px] border border-slate-800">
                       name = "Kojo" <br/>
                       age = 15 <br/>
                       is_coding = True
@@ -444,7 +445,7 @@ export default function PythonAcademy() {
           </Card>
 
           {/* LEARNING TIPS */}
-          <div className="p-8 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl">
+          <div className="p-6 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[32px] text-white shadow-xl">
             <Sparkles className="h-8 w-8 mb-4 text-yellow-300" />
             <h3 className="text-xl font-black mb-2">Ready for a challenge?</h3>
             <p className="text-sm opacity-80 mb-6">Build a simple calculator using the variables and input logic we just learned.</p>
