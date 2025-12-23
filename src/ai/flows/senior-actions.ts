@@ -93,3 +93,42 @@ export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>
     return { success: false, error: "Failed to generate Science module." };
   }
 }
+
+// --- AI ACTION: PYTHON TUTOR ---
+const TutorSchema = z.object({
+  explanation: z.string().describe("A helpful explanation of the concept or the error."),
+  hint: z.string().describe("A small hint to help the student find the solution themselves."),
+  encouragement: z.string().describe("A short encouraging phrase.")
+});
+
+export async function getPythonTutorHelp(context: { 
+  phase: string, 
+  lesson: string, 
+  task: string, 
+  userCode: string, 
+  question: string 
+}) {
+  try {
+    const prompt = `You are a professional Python Tutor for a student in ${context.phase}.
+    Current Lesson: ${context.lesson}
+    Current Task: ${context.task}
+    Student's Current Code: 
+    """
+    ${context.userCode}
+    """
+    
+    Student's Question: "${context.question}"
+    
+    Instructions:
+    1. Do not simply provide the full completed code.
+    2. Explain the concept being used.
+    3. If there is an error in their code, point it out gently.
+    4. Provide a small code snippet if necessary, but leave the main task for them to solve.
+    5. Maintain a professional, encouraging tone.`;
+
+    const { output } = await ai.generate({ prompt, output: { schema: TutorSchema } });
+    return { success: true, data: output };
+  } catch (error) {
+    return { success: false, error: "Tutor is currently busy. Try again!" };
+  }
+}
