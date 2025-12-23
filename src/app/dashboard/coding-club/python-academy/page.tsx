@@ -396,19 +396,19 @@ function PythonAcademy() {
         setIsRunning(true);
         setOutput([]);
         setIsPassed(false);
-
+    
         // Set output handling
         pyodide.current.setStdout({ 
             batched: (str: string) => setOutput(prev => [...prev, str]) 
         });
-
+    
         try {
             // 1. Reset Matplotlib to prevent old charts from showing
             pyodide.current.runPython(`import matplotlib.pyplot as plt; plt.clf(); plt.close('all')`);
-
+    
             // 2. Execute Student Code
             await pyodide.current.runPythonAsync(code);
-
+    
             // 3. AUTO-VALIDATION: Check if goal was met
             let isCorrect = false;
             
@@ -419,7 +419,7 @@ function PythonAcademy() {
                 // Fallback: If no script, check if the console has any output
                 isCorrect = output.length > 0 || code.length > 10;
             }
-
+    
             if (isCorrect) {
                 // THE CELEBRATION
                 setIsPassed(true);
@@ -431,7 +431,7 @@ function PythonAcademy() {
                 });
                 speak("Mission accomplished! Well done.");
             }
-
+    
             // 4. VISUAL LAB: Capture Matplotlib output
             const hasPlotting = code.includes("plt.plot") || code.includes("plt.show");
             if (hasPlotting) {
@@ -442,13 +442,13 @@ function PythonAcademy() {
                     buf.seek(0)
                     img_base64 = base64.b64encode(buf.read()).decode('utf-8')
                     from js import document
-                    # Push image data to our Visual Lab tab
+                    // Push image data to our Visual Lab tab
                     if (document.getElementById('plot-output')) {
                         document.getElementById('plot-output').src = 'data:image/png;base64,' + img_base64;
                     }
                 `);
             }
-
+    
         } catch (err: any) {
             setOutput(prev => [...prev, `❌ Python Error: ${err.message}`]);
         }
@@ -473,6 +473,28 @@ function PythonAcademy() {
     } finally {
       setIsAiLoading(false);
       setAiQuestion("");
+    }
+  };
+
+  const goToNextLesson = () => {
+    setIsPassed(false);
+    const allLessons = PYTHON_ACADEMY_CURRICULUM.flatMap(phase =>
+      phase.mainTopics.flatMap(topic => topic.lessons)
+    );
+    const currentIndex = allLessons.findIndex(l => l.id === activeLesson?.id);
+    if (currentIndex < allLessons.length - 1) {
+      const next = allLessons[currentIndex + 1];
+      setCurrentMissionId(next.id);
+      setCode(next.startingCode);
+      setOutput([]);
+      toast({ title: `Next Mission: ${next.title}` });
+    } else {
+      confetti({ particleCount: 300, spread: 120, origin: { y: 0.5 } });
+      toast({
+        title: "ACADEMY GRADUATE!",
+        description: "You have completed the entire Python pathway!",
+        variant: "default"
+      });
     }
   };
 
@@ -574,16 +596,18 @@ function PythonAcademy() {
                                 <p className="text-slate-400 font-medium">Mission Complete. Your logic is sound and the Python engine is happy!</p>
                             </div>
 
-                            <div className="pt-4">
+                            <div className="pt-4 space-y-3">
                                 <Button 
-                                    onClick={() => {
-                                        setIsPassed(false);
-                                        // Add logic here to find the next lesson in your syllabus array
-                                        toast({ title: "Moving to next lesson..." });
-                                    }}
+                                    onClick={goToNextLesson}
                                     className="w-full h-16 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-xl rounded-2xl shadow-[0_8px_0_#b45309] active:translate-y-1 active:shadow-none transition-all"
                                 >
                                     GO NEXT <ArrowRight className="ml-2 h-6 w-6" />
+                                </Button>
+                                <Button 
+                                    onClick={() => setIsPassed(false)}
+                                    className="w-full h-12 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold rounded-2xl"
+                                >
+                                    Practice More
                                 </Button>
                                 <p className="mt-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">+50 ACADEMY XP EARNED</p>
                             </div>
@@ -608,7 +632,7 @@ function PythonAcademy() {
                     
                     <TabsContent value="console" className="flex-1 p-6 font-mono text-sm overflow-y-auto">
                         {output.map((line, i) => <div key={i} className="text-emerald-400/90 mb-1">{`>>> ${line}`}</div>)}
-                        {output.length === 0 && <span className="text-slate-700 italic">Awaiting execution...</span>}
+                        {output.length === 0 && <span className="text-slate-700 italic">Terminal ready...</span>}
                     </TabsContent>
 
                     <TabsContent value="visuals" className="flex-1 flex items-center justify-center p-4 bg-slate-50 relative">
