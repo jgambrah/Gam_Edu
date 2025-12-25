@@ -157,7 +157,6 @@ export default function ScratchEngine() {
             this.setColour("#FFAB19");
         }
     };
-
     Blockly.Blocks['event_whenflagclicked'] = {
         init: function(this: Blockly.Block) {
             this.appendDummyInput().appendField("when flag clicked 🚩");
@@ -207,39 +206,18 @@ export default function ScratchEngine() {
     Blockly.Blocks['operator_equals'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
     };
-    Blockly.Blocks['pen_clear'] = {
-      init: function(this: Blockly.Block) { this.appendDummyInput().appendField('clear all'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
-    };
-    Blockly.Blocks['pen_pendown'] = {
-      init: function(this: Blockly.Block) { this.appendDummyInput().appendField('pen down'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
-    };
-    Blockly.Blocks['pen_penup'] = {
-      init: function(this: Blockly.Block) { this.appendDummyInput().appendField('pen up'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
-    };
-    Blockly.Blocks['pen_setcolor'] = {
-      init: function(this: Blockly.Block) { this.appendValueInput('COLOR').setCheck('Colour').appendField('set pen color to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
-    };
-    Blockly.Blocks['pen_setsize'] = {
-      init: function(this: Blockly.Block) { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
-    };
-    
-    Blockly.Blocks['colour_random'] = {
-        init: function(this: Blockly.Block) { this.appendDummyInput().appendField('random colour'); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); }
-    };
-     Blockly.Blocks['colour_rgb'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput('RED').setCheck('Number').appendField('colour with red'); this.appendValueInput('GREEN').setCheck('Number').appendField('green'); this.appendValueInput('BLUE').setCheck('Number').appendField('blue'); this.setInputsInline(true); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); }
-    };
-     Blockly.Blocks['colour_blend'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput('COLOUR1').setCheck('Colour').appendField('blend colour'); this.appendValueInput('COLOUR2').setCheck('Colour').appendField('with'); this.appendValueInput('RATIO').setCheck('Number').appendField('ratio'); this.setInputsInline(true); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); }
-    };
-    
+    Blockly.Blocks['pen_clear'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("erase all"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
+    Blockly.Blocks['pen_pendown'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("pen down"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
+    Blockly.Blocks['pen_penup'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("pen up"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
+    Blockly.Blocks['pen_setcolor'] = { init: function(this: Blockly.Block) { this.appendValueInput('COLOR').setCheck('Colour').appendField('set pen color to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
+    Blockly.Blocks['pen_setsize'] = { init: function(this: Blockly.Block) { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
 
     // --- JAVASCRIPT GENERATORS ---
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
     javascriptGenerator.forBlock['looks_say'] = (block: any) => `say(${javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''"});\n`;
     javascriptGenerator.forBlock['video_toggle'] = (block: any) => `toggleVideo("${block.getFieldValue('STATE')}");\n`;
     javascriptGenerator.forBlock['control_wait'] = (block: any) => `await wait(${javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1'});\n`;
-    javascriptGenerator.forBlock['event_whenflagclicked'] = () => ""; // The runner starts execution
+    javascriptGenerator.forBlock['event_whenflagclicked'] = () => "";
     javascriptGenerator.forBlock['motion_turnright'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['motion_goto'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['looks_changesizeby'] = (block: any) => `\n`;
@@ -252,18 +230,15 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['operator_add'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['operator_random'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['operator_equals'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['pen_clear'] = () => `clearPen();\n`;
-    javascriptGenerator.forBlock['pen_pendown'] = () => `penDown();\n`;
-    javascriptGenerator.forBlock['pen_penup'] = () => `penUp();\n`;
+    javascriptGenerator.forBlock['pen_clear'] = () => `penClear();\n`;
+    javascriptGenerator.forBlock['pen_pendown'] = () => `setPen(true);\n`;
+    javascriptGenerator.forBlock['pen_penup'] = () => `setPen(false);\n`;
     javascriptGenerator.forBlock['pen_setcolor'] = (b: any) => `setPenColor(${javascriptGenerator.valueToCode(b, 'COLOR', 0) || "'#000000'"});\n`;
     javascriptGenerator.forBlock['pen_setsize'] = (b: any) => `setPenSize(${javascriptGenerator.valueToCode(b, 'SIZE', 0) || 1});\n`;
+    javascriptGenerator.forBlock['colour_picker'] = (block: any) => [block.getFieldValue('COLOUR'), 0];
     javascriptGenerator.forBlock['colour_random'] = () => `randomColor();\n`;
-    javascriptGenerator.forBlock['colour_rgb'] = (b: any) => `rgbToHex(
-      ${javascriptGenerator.valueToCode(b, 'RED', 0) || 0},
-      ${javascriptGenerator.valueToCode(b, 'GREEN', 0) || 0},
-      ${javascriptGenerator.valueToCode(b, 'BLUE', 0) || 0}
-    );\n`;
-
+    javascriptGenerator.forBlock['colour_rgb'] = (b: any) => `rgbToHex(${javascriptGenerator.valueToCode(b, 'RED', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'GREEN', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'BLUE', 0) || 0});\n`;
+    
 
     const toolbox = `
       <xml>
@@ -291,7 +266,6 @@ export default function ScratchEngine() {
         <category name="Sensing" colour="#4CBFE6">
           <block type="sensing_touchingmouse"></block>
           <block type="sensing_mousedown"></block>
-          <block type="video_toggle"></block>
         </category>
         <category name="Operators" colour="#40BF4A">
           <block type="operator_add"></block>
@@ -313,14 +287,10 @@ export default function ScratchEngine() {
             </value>
           </block>
         </category>
-         <category name="Colour" colour="%{BKY_COLOUR_HUE}">
-          <block type="colour_picker"></block>
-          <block type="colour_random"></block>
-          <block type="colour_rgb">
-            <value name="RED"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
-            <value name="GREEN"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
-            <value name="BLUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
-          </block>
+        <category name="Colour" colour="%{BKY_COLOUR_HUE}">
+            <block type="colour_picker"></block>
+            <block type="colour_random"></block>
+            <block type="colour_rgb"></block>
         </category>
         <sep></sep>
         <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
@@ -379,7 +349,7 @@ export default function ScratchEngine() {
           p.background(activeBackdrop.color || '#F0F9FF');
         }
 
-        // 2. VIDEO SENSING LAYER
+        // 2. NEW: VIDEO SENSING LAYER
         if (isVideoOn) {
           if (!capture) {
             capture = p.createCapture(p.VIDEO);
@@ -400,7 +370,7 @@ export default function ScratchEngine() {
           }
         }
 
-        // 3. Draw Sprite
+        // 3. Draw Sprite (as before)
         p.push();
         const screenX = p.width/2 + engineState.current.x;
         const screenY = p.height/2 - engineState.current.y;
