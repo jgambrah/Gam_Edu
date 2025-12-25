@@ -60,6 +60,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'wallpaperaccess.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
       }
     ],
   },
