@@ -131,12 +131,19 @@ export default function ScratchEngine() {
         this.setColour(230); // Motion Blue
       }
     };
-    
     Blockly.Blocks['motion_turnright'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
     };
     Blockly.Blocks['motion_goto'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("X").setCheck("Number").appendField("go to x:"); this.appendValueInput("Y").setCheck("Number").appendField("y:"); this.setInputsInline(true); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
+    };
+    Blockly.Blocks['looks_say'] = {
+      init: function(this: Blockly.Block) {
+        this.appendValueInput("TEXT").setCheck("String").appendField("say");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour("#9966FF"); // Looks Purple
+      }
     };
     Blockly.Blocks['looks_changesizeby'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("CHANGE").setCheck("Number").appendField("change size by"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#9966FF"); }
@@ -144,7 +151,7 @@ export default function ScratchEngine() {
     Blockly.Blocks['sound_play'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("SOUND").setCheck("String").appendField("play sound"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#D65DB1"); }
     };
-     Blockly.Blocks['control_if'] = {
+    Blockly.Blocks['control_if'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("IF0").setCheck("Boolean").appendField("if");
         this.appendStatementInput("DO0").appendField("then");
@@ -174,16 +181,6 @@ export default function ScratchEngine() {
     Blockly.Blocks['operator_equals'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
     };
-    Blockly.Blocks['looks_say'] = {
-      init: function(this: Blockly.Block) {
-        this.appendValueInput("TEXT")
-            .setCheck("String")
-            .appendField("say");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour("#9966FF"); // Looks Purple
-      }
-    };
     Blockly.Blocks['video_toggle'] = {
       init: function(this: Blockly.Block) {
         this.appendDummyInput()
@@ -208,15 +205,27 @@ export default function ScratchEngine() {
         this.setColour("#FFD500");
       }
     };
+    Blockly.Blocks['pen_clear'] = {
+      init: function() { this.appendDummyInput().appendField('clear all'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
+    };
+    Blockly.Blocks['pen_pendown'] = {
+      init: function() { this.appendDummyInput().appendField('pen down'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
+    };
+    Blockly.Blocks['pen_penup'] = {
+      init: function() { this.appendDummyInput().appendField('pen up'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
+    };
+    Blockly.Blocks['pen_setcolor'] = {
+      init: function() { this.appendValueInput('COLOR').setCheck('Colour').appendField('set pen color to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
+    };
+    Blockly.Blocks['pen_setsize'] = {
+      init: function() { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
+    };
 
     // --- JAVASCRIPT GENERATORS ---
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
     javascriptGenerator.forBlock['looks_say'] = (block: any) => `say(${javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''"});\n`;
     javascriptGenerator.forBlock['video_toggle'] = (block: any) => `toggleVideo("${block.getFieldValue('STATE')}");\n`;
-    javascriptGenerator.forBlock['control_wait'] = (block: any) => {
-        const duration = javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1';
-        return `await wait(${duration});\n`; // We use async/await for smooth timing
-    };
+    javascriptGenerator.forBlock['control_wait'] = (block: any) => `await wait(${javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1'});\n`;
     javascriptGenerator.forBlock['event_whenflagclicked'] = () => ""; // The runner starts execution
     javascriptGenerator.forBlock['motion_turnright'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['motion_goto'] = (block: any) => `\n`;
@@ -230,7 +239,11 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['operator_add'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['operator_random'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['operator_equals'] = (block: any) => `\n`;
-
+    javascriptGenerator.forBlock['pen_clear'] = () => `clearPen();\n`;
+    javascriptGenerator.forBlock['pen_pendown'] = () => `penDown();\n`;
+    javascriptGenerator.forBlock['pen_penup'] = () => `penUp();\n`;
+    javascriptGenerator.forBlock['pen_setcolor'] = (b: any) => `setPenColor(${javascriptGenerator.valueToCode(b, 'COLOR', 0) || "'#000000'"});\n`;
+    javascriptGenerator.forBlock['pen_setsize'] = (b: any) => `setPenSize(${javascriptGenerator.valueToCode(b, 'SIZE', 0) || 1});\n`;
 
     const toolbox = `
       <xml>
@@ -311,13 +324,12 @@ export default function ScratchEngine() {
         p.imageMode(p.CENTER);
         p.textAlign(p.CENTER, p.CENTER);
       
-        // Use a try-catch style approach for loading
         if (activeSprite.url && activeSprite.url.startsWith('http')) {
             p.loadImage(activeSprite.url, 
                 img => { spriteImg = img; },
                 (err) => { 
                   console.error("Sprite Load Failed:", err);
-                  spriteImg = null; // Forces emoji fallback in draw()
+                  spriteImg = null;
                 }
             );
         }
@@ -338,7 +350,7 @@ export default function ScratchEngine() {
           p.background(activeBackdrop.color || '#F0F9FF');
         }
 
-        // 2. NEW: VIDEO SENSING LAYER
+        // 2. VIDEO SENSING LAYER
         if (isVideoOn) {
           if (!capture) {
             capture = p.createCapture(p.VIDEO);
@@ -359,7 +371,7 @@ export default function ScratchEngine() {
           }
         }
 
-        // 3. Draw Sprite (as before)
+        // 3. Draw Sprite
         p.push();
         const screenX = p.width/2 + engineState.current.x;
         const screenY = p.height/2 - engineState.current.y;
@@ -385,7 +397,6 @@ export default function ScratchEngine() {
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
   const runCode = async () => {
-    // Generate code and wrap it in an async function
     if (!workspace) return;
     const rawCode = javascriptGenerator.workspaceToCode(workspace);
     
@@ -395,25 +406,25 @@ export default function ScratchEngine() {
     const say = (text: string) => {
       engineState.current.sayText = text;
       window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-      // Bubbles disappear after 2 seconds
       setTimeout(() => { 
         if (engineState.current) engineState.current.sayText = "";
       }, 2000);
     };
   
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
+    const toggleVideo = (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON');
 
-    // Execution environment (Injects variables and sensing data)
+    // Execution environment
     const context = {
       move,
       say,
       wait,
+      toggleVideo,
       mouseX: p5Instance.current?.mouseX || 0,
       mouseY: p5Instance.current?.mouseY || 0,
     };
   
     try {
-      // Create an Async function to allow 'await wait()'
       const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
       const runner = new AsyncFunction(...Object.keys(context), rawCode);
       await runner(...Object.values(context));
