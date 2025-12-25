@@ -4,6 +4,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
+import 'blockly/javascript';
 import { javascriptGenerator } from 'blockly/javascript';
 import p5 from 'p5';
 import { 
@@ -220,6 +221,24 @@ export default function ScratchEngine() {
     Blockly.Blocks['pen_setsize'] = {
       init: function() { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); }
     };
+     Blockly.Blocks['colour_picker'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldColour('#ff0000'), 'COLOUR');
+        this.setOutput(true, 'Colour');
+        this.setColour('%{BKY_COLOUR_HUE}');
+      }
+    };
+    Blockly.Blocks['colour_random'] = {
+        init: function() { this.appendDummyInput().appendField('random colour'); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); }
+    };
+     Blockly.Blocks['colour_rgb'] = {
+        init: function() { this.appendValueInput('RED').setCheck('Number').appendField('colour with red'); this.appendValueInput('GREEN').setCheck('Number').appendField('green'); this.appendValueInput('BLUE').setCheck('Number').appendField('blue'); this.setInputsInline(true); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); }
+    };
+     Blockly.Blocks['colour_blend'] = {
+        init: function() { this.appendValueInput('COLOUR1').setCheck('Colour').appendField('blend colour'); this.appendValueInput('COLOUR2').setCheck('Colour').appendField('with'); this.appendValueInput('RATIO').setCheck('Number').appendField('ratio'); this.setInputsInline(true); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); }
+    };
+
 
     // --- JAVASCRIPT GENERATORS ---
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
@@ -244,6 +263,14 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['pen_penup'] = () => `penUp();\n`;
     javascriptGenerator.forBlock['pen_setcolor'] = (b: any) => `setPenColor(${javascriptGenerator.valueToCode(b, 'COLOR', 0) || "'#000000'"});\n`;
     javascriptGenerator.forBlock['pen_setsize'] = (b: any) => `setPenSize(${javascriptGenerator.valueToCode(b, 'SIZE', 0) || 1});\n`;
+    javascriptGenerator.forBlock['colour_picker'] = (b: any) => [`'${b.getFieldValue('COLOUR')}'`, 0];
+    javascriptGenerator.forBlock['colour_random'] = () => `randomColor();\n`;
+    javascriptGenerator.forBlock['colour_rgb'] = (b: any) => `rgbToHex(
+      ${javascriptGenerator.valueToCode(b, 'RED', 0) || 0},
+      ${javascriptGenerator.valueToCode(b, 'GREEN', 0) || 0},
+      ${javascriptGenerator.valueToCode(b, 'BLUE', 0) || 0}
+    );\n`;
+
 
     const toolbox = `
       <xml>
@@ -271,13 +298,25 @@ export default function ScratchEngine() {
         <category name="Sensing" colour="#4CBFE6">
           <block type="sensing_touchingmouse"></block>
           <block type="sensing_mousedown"></block>
-          <block type="video_toggle"></block>
         </category>
         <category name="Operators" colour="#40BF4A">
           <block type="operator_add"></block>
           <block type="operator_random"><value name="FROM"><shadow type="math_number"><field name="NUM">1</field></shadow></value><value name="TO"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
           <block type="operator_equals"></block>
         </category>
+        <category name="Colour" colour="%{BKY_COLOUR_HUE}">
+          <block type="colour_picker"></block>
+          <block type="colour_random"></block>
+          <block type="colour_rgb">
+            <value name="RED"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+            <value name="GREEN"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+            <value name="BLUE"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
+          </block>
+          <block type="colour_blend">
+             <value name="RATIO"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
+          </block>
+        </category>
+        <sep></sep>
         <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
         <category name="My Blocks" colour="#FF6680" custom="PROCEDURE"></category>
         <sep></sep>
@@ -406,6 +445,7 @@ export default function ScratchEngine() {
     const say = (text: string) => {
       engineState.current.sayText = text;
       window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+      // Bubbles disappear after 2 seconds
       setTimeout(() => { 
         if (engineState.current) engineState.current.sayText = "";
       }, 2000);
@@ -414,7 +454,7 @@ export default function ScratchEngine() {
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
     const toggleVideo = (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON');
 
-    // Execution environment
+    // Execution environment (Injects variables and sensing data)
     const context = {
       move,
       say,
@@ -425,6 +465,7 @@ export default function ScratchEngine() {
     };
   
     try {
+      // Create an Async function to allow 'await wait()'
       const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
       const runner = new AsyncFunction(...Object.keys(context), rawCode);
       await runner(...Object.values(context));
@@ -467,13 +508,13 @@ export default function ScratchEngine() {
           {/* MAGIC MIRROR (VIDEO SENSING) */}
           <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
             <div className="flex items-center gap-3">
-              <div className="bg-purple-100 p-3 rounded-2xl">
+               <div className="bg-purple-100 p-3 rounded-2xl">
                   <Video className="w-6 h-6 text-purple-600" />
-              </div>
-              <div>
+               </div>
+               <div>
                   <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest leading-none mb-1">Magic Mirror</p>
                   <p className="text-sm font-bold text-slate-700">Video Sensing</p>
-              </div>
+               </div>
             </div>
             <button 
               onClick={() => setIsVideoOn(!isVideoOn)}
