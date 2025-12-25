@@ -4,18 +4,17 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Code, MousePointerClick, Youtube, BrainCircuit, Cpu } from 'lucide-react';
+import { Loader2, Code, MousePointerClick, Youtube, BrainCircuit, Cpu, Play, Palette, Image as ImageIcon, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
-// Import the Editor Dynamically with SSR FALSE
+// --- DYNAMICALLY IMPORT THE BLOCKLY EDITOR ---
 const BlocklyEditor = dynamic(
   () => import('@/components/BlocklyEditor'), 
   { 
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center h-[500px] bg-slate-50 border rounded-lg text-slate-400 gap-2">
+      <div className="flex items-center justify-center h-full bg-slate-50 border rounded-lg text-slate-400 gap-2">
         <Loader2 className="h-6 w-6 animate-spin" />
         Loading Block Editor...
       </div>
@@ -23,110 +22,82 @@ const BlocklyEditor = dynamic(
   }
 );
 
+// --- NEW SCRATCH-LIKE UI ---
 export default function CodingClubPage() {
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Code />
-            Coding Club
-          </CardTitle>
-          <CardDescription>
-            Explore different platforms to practice your coding skills.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-8">
-            <Card className="w-full">
-                <CardHeader>
-                <CardTitle>Option 1: Scratch Platform</CardTitle>
-                <CardDescription>
-                    A visual, block-based coding language perfect for beginners.
-                    Create stories, games, and animations.
-                </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col sm:flex-row gap-4 items-start">
-                <Link
-                    href="https://scratch.mit.edu/projects/editor/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Button>
-                    <MousePointerClick className="mr-2 h-4 w-4" />
-                    Go to Scratch Platform
-                    </Button>
-                </Link>
-                <Link
-                    href="https://www.youtube.com/watch?v=sb-wF35TuvQ&list=PLlryJer4FuggBT5-4ZDTcYivs7kJHowXb"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Button variant="outline">
-                        <Youtube className="mr-2 h-4 w-4" />
-                        Watch a Beginner's Tutorial
-                    </Button>
-                </Link>
-                </CardContent>
-            </Card>
+    <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
+      {/* Header Bar */}
+      <div className="flex justify-between items-center bg-white p-2 rounded-lg border shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="bg-orange-100 p-2 rounded text-orange-600 font-bold flex items-center gap-2">
+            <Code className="h-5 w-5" /> 
+            <span>Block-Based Game Lab</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+                <Link href="/dashboard/coding-club/logic-lab">Logic Lab</Link>
+            </Button>
+            <Button variant="outline" size="sm">
+                 <Link href="/dashboard/coding-club/python-academy">Python Academy</Link>
+            </Button>
+            <Button className="bg-green-600 hover:bg-green-700">
+                <Play className="h-4 w-4 mr-2 fill-current" /> Run Project
+            </Button>
+        </div>
+      </div>
+      
+      {/* Main Workspace */}
+      <div className="flex-1 grid grid-cols-12 gap-4 min-h-0">
 
-            <Card className="w-full">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-indigo-500" /> Option 2: Logic Lab</CardTitle>
-                    <CardDescription>
-                       An interactive, block-based environment to learn core programming concepts, powered by AI.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild>
-                        <Link href="/dashboard/coding-club/logic-lab">
-                            Enter the Logic Lab
-                        </Link>
-                    </Button>
-                </CardContent>
-            </Card>
+        {/* Left: Blockly Toolbox & Workspace */}
+        <div className="col-span-12 lg:col-span-7 flex flex-col h-full">
+            <BlocklyEditor />
+        </div>
+
+        {/* Right: Stage and Asset Panels */}
+        <div className="col-span-12 lg:col-span-5 grid grid-rows-2 gap-4 h-full">
           
-            <Card className="w-full">
-                <CardHeader>
-                    <CardTitle>Option 3: Integrated Blockly Editor</CardTitle>
-                    <CardDescription>
-                        Use our built-in block-based editor to create and save your projects directly in CampusConnect.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="mb-4">
-                        <Link
-                            href="https://www.youtube.com/watch?v=lPVJjQbEeN0"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button variant="outline">
-                                <Youtube className="mr-2 h-4 w-4" />
-                                How to Use Blockly
-                            </Button>
-                        </Link>
-                    </div>
-                    <BlocklyEditor />
-                </CardContent>
-            </Card>
+          {/* Top-Right: The Stage */}
+          <Card className="row-span-1 flex flex-col shadow-lg border-2 border-slate-200">
+            <CardHeader className="bg-slate-50 border-b py-2 px-4">
+              <CardTitle className="text-base text-center">Stage</CardTitle>
+            </CardHeader>
+            <CardContent className="p-2 flex-1 bg-slate-100 flex items-center justify-center">
+              {/* p5.js canvas will go here */}
+              <div className="w-full h-full bg-white rounded-md flex items-center justify-center text-slate-300">
+                <span>Game Canvas</span>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card className="w-full">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Cpu className="text-emerald-500" /> Option 4: Python Pro Academy</CardTitle>
-                    <CardDescription>
-                        Transition from blocks to real-world code. Write and run Python directly in your browser.
-                    </CardDescription>
+          {/* Bottom-Right: Sprites & Backdrops */}
+          <div className="row-span-1 grid grid-cols-2 gap-4 min-h-0">
+             <Card className="flex flex-col">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                        <UserIcon className="h-4 w-4 text-blue-500"/> Sprites
+                    </CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <Button asChild>
-                        <Link href="/dashboard/coding-club/python-academy">
-                            Enter Python Academy
-                        </Link>
-                    </Button>
+                <CardContent className="flex-1 overflow-y-auto text-center text-xs text-muted-foreground pt-4">
+                    Select a character...
                 </CardContent>
-            </Card>
-
-        </CardContent>
-      </Card>
+             </Card>
+              <Card className="flex flex-col">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                        <ImageIcon className="h-4 w-4 text-green-500"/> Backdrops
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-y-auto text-center text-xs text-muted-foreground pt-4">
+                    Select a background...
+                </CardContent>
+             </Card>
+          </div>
+          
+        </div>
+      </div>
     </div>
   );
 }
+
