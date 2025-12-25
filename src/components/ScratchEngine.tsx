@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -76,9 +77,9 @@ const DEFAULT_BACKDROPS = [
 ];
 
 const SOUND_LIBRARY = [
-      { id: 'meow', label: 'Meow 🐱', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' },
-      { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
-];
+      { id: 'meow', label: 'Meow 🐱', url: 'https://cdn.freesound.org/previews/256/256339_4030635-lq.mp3' },
+      { id: 'pop', label: 'Pop 🎈', url: 'https://cdn.freesound.org/previews/511/511484_10825312-lq.mp3' }
+    ];
 
 
 const ScratchEngine = () => {
@@ -241,7 +242,7 @@ const ScratchEngine = () => {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             }
         };
-
+        
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const func = new AsyncFunction(...Object.keys(context), `try { ${code} } catch(e) { console.error('Execution Error:', e); }`);
 
@@ -267,30 +268,43 @@ const ScratchEngine = () => {
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
-            
-            p.preload = () => {
+            const tempImages: { [key: string]: p5.Image } = {};
+
+            const preloadAssets = () => {
+                setIsLoading(true);
+                const allAssets: { key: string, url: string }[] = [];
+
                 sprites.forEach(sprite => {
-                    if (sprite.costumes) {
-                        sprite.costumes.forEach((url, index) => {
-                            const key = `${sprite.id}-${index}`;
-                            if (!loadedImages[key]) {
-                                p.loadImage(url, img => {
-                                    setLoadedImages(prev => ({...prev, [key]: img}));
-                                }, err => {
-                                    console.error(`Failed to load costume: ${url}`, err);
-                                });
-                            }
-                        });
-                    }
+                    sprite.costumes?.forEach((url, index) => {
+                        if (url) allAssets.push({ key: `${sprite.id}-${index}`, url });
+                    });
                 });
                 backdrops.forEach(backdrop => {
-                    if (backdrop.url && !loadedImages[backdrop.id]) {
-                         p.loadImage(backdrop.url, img => {
-                             setLoadedImages(prev => ({...prev, [backdrop.id]: img}));
-                        }, err => {
-                            console.error(`Failed to load backdrop: ${backdrop.url}`, err);
-                        });
-                    }
+                    if (backdrop.url) allAssets.push({ key: backdrop.id, url: backdrop.url });
+                });
+                
+                if(allAssets.length === 0) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                let loadedCount = 0;
+                allAssets.forEach(({ key, url }) => {
+                    p.loadImage(url, img => {
+                        tempImages[key] = img;
+                        loadedCount++;
+                        if (loadedCount === allAssets.length) {
+                            setLoadedImages(tempImages);
+                            setIsLoading(false);
+                        }
+                    }, err => {
+                        console.error(`Failed to load image: ${url}`, err);
+                        loadedCount++; // Still increment to not block loading forever
+                        if (loadedCount === allAssets.length) {
+                            setLoadedImages(tempImages);
+                            setIsLoading(false);
+                        }
+                    });
                 });
             };
 
@@ -300,6 +314,7 @@ const ScratchEngine = () => {
                 canvas.parent(container);
                 penLayer = p.createGraphics(p.width, p.height);
                 p.frameRate(30);
+                preloadAssets();
             };
     
             p.draw = () => {
@@ -378,7 +393,7 @@ const ScratchEngine = () => {
         return () => {
             p5Instance.remove();
         };
-    }, [activeSprite, activeBackdrop, loadedImages]); // Re-run sketch on asset changes
+    }, [activeSprite, activeBackdrop]); 
 
     const handleReset = () => {
         engineState.current = {
@@ -480,3 +495,5 @@ const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
 };
 
 export default ScratchEngine;
+
+      
