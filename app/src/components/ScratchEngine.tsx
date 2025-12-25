@@ -1,10 +1,11 @@
+
+      
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useBlocklyWorkspace } from 'react-blockly';
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
-import 'blockly/javascript';
 import { javascriptGenerator } from 'blockly/javascript';
 import p5 from 'p5';
 import {
@@ -75,16 +76,8 @@ const DEFAULT_BACKDROPS = [
 ];
 
 const SOUND_LIBRARY = [
-  { 
-    id: 'meow', 
-    label: 'Meow 🐱', 
-    url: 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2T" // Placeholder
-  },
-  { 
-    id: 'pop', 
-    label: 'Pop 🎈', 
-    url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' // Placeholder
-  }
+  { id: 'meow', label: 'Meow 🐱', url: 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2' },
+  { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
 ];
 
 
@@ -284,9 +277,8 @@ const ScratchEngine = () => {
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
-            
-            p.preload = () => {
-                // Preload costumes for all sprites
+
+            const preloadAssets = () => {
                 sprites.forEach(sprite => {
                     if (sprite.costumes) {
                         sprite.costumes.forEach((url, index) => {
@@ -301,26 +293,24 @@ const ScratchEngine = () => {
                         });
                     }
                 });
-                // Preload all backdrop images
                 backdrops.forEach(backdrop => {
                     if (backdrop.url && !loadedImages[backdrop.id]) {
                         p.loadImage(backdrop.url, img => {
                              setLoadedImages(prev => ({...prev, [backdrop.id]: img}));
-                        }, err => {
-                            console.error(`Failed to load backdrop: ${backdrop.url}`, err);
                         });
                     }
                 });
             };
-
+            
             p.setup = () => {
                 const container = p5ContainerRef.current!;
                 const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
                 canvas.parent(container);
                 penLayer = p.createGraphics(p.width, p.height);
                 p.frameRate(30);
+                preloadAssets();
             };
-
+    
             p.draw = () => {
                 // Background
                 const bg = loadedImages[activeBackdrop.id];
@@ -346,7 +336,7 @@ const ScratchEngine = () => {
                         p.height / 2 - engineState.current.y
                     );
                 }
-                p.image(penLayer, 0, 0);
+                p.image(penLayer, p.width/2, p.height/2);
 
                 // Sprite
                 const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
@@ -396,7 +386,7 @@ const ScratchEngine = () => {
         return () => {
             p5Instance.current?.remove();
         };
-    }, [activeSprite, activeBackdrop]); // Removed loadedImages dependency to avoid re-running on image load
+    }, [activeSprite, activeBackdrop, loadedImages]);
 
     const handleReset = () => {
         engineState.current = {
@@ -467,3 +457,37 @@ const ScratchEngine = () => {
                                 </button>
                             ))}
                              {canEdit && <AddAssetModal type="backdrop" onAdded={refetchAssets} />}
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </div>
+    );
+};
+
+// --- Helper Components ---
+
+const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded: () => void }) => {
+    // Basic modal structure
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <button className="flex flex-col items-center justify-center p-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+                    <Plus className="h-8 w-8 text-gray-500"/>
+                    <span className="text-xs mt-1">Add New</span>
+                </button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Add New {type}</DialogTitle>
+                </DialogHeader>
+                {/* Add form here to upload/add new assets */}
+                <p>Asset creation UI goes here.</p>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+export default ScratchEngine;
+
+    

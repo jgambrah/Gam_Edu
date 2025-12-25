@@ -1,11 +1,11 @@
 
+      
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useBlocklyWorkspace } from 'react-blockly';
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
-import 'blockly/javascript';
 import { javascriptGenerator } from 'blockly/javascript';
 import p5 from 'p5';
 import {
@@ -76,28 +76,10 @@ const DEFAULT_BACKDROPS = [
 ];
 
 const SOUND_LIBRARY = [
-  { id: 'meow', label: 'Meow 🐱', url: 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//uA' },
+  { id: 'meow', label: 'Meow 🐱', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' },
   { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
 ];
 
-const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop' | 'sound'; onAdded: () => void }) => {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center bg-slate-200 rounded-lg p-2 text-slate-500 hover:bg-slate-300">
-          <Plus className="h-6 w-6" />
-          <span className="text-xs mt-1">Add New</span>
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New {type.charAt(0).toUpperCase() + type.slice(1)}</DialogTitle>
-        </DialogHeader>
-        {/* Add form fields for adding a new asset */}
-      </DialogContent>
-    </Dialog>
-  );
-};
 
 const ScratchEngine = () => {
     const { toast } = useToast();
@@ -108,7 +90,8 @@ const ScratchEngine = () => {
     const [backdrops, setBackdrops] = useState(DEFAULT_BACKDROPS);
     const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
     const [activeBackdrop, setActiveBackdrop] = useState(DEFAULT_BACKDROPS[0]);
-    const [loadedImages, setLoadedImages] = useState<any>({});
+    const [loadedImages, setLoadedImages] = useState<{ [key: string]: p5.Image }>({});
+    const [bgImg, setBgImg] = useState<p5.Image | null>(null);
 
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -121,8 +104,8 @@ const ScratchEngine = () => {
         y: 0,
         prevX: 0,
         prevY: 0,
-        direction: 90,
-        size: 100, 
+        direction: 90, // 0 is right, 90 is up
+        size: 100, // percentage
         message: '',
         messageDuration: 0,
         isPenDown: false,
@@ -131,8 +114,9 @@ const ScratchEngine = () => {
         costumeIndex: 0
     });
 
+    // Blockly state
     const blocklyDivRef = useRef<HTMLDivElement>(null);
-    const [xml, setXml] = useState<string>('');
+    const [xml, setXml] = useState('');
     const [generatedCode, setGeneratedCode] = useState('');
 
     const { workspace } = useBlocklyWorkspace({
@@ -178,13 +162,15 @@ const ScratchEngine = () => {
                 { kind: 'category', name: 'My Blocks', colour: '#FF6680', custom: 'PROCEDURE' }
             ]
         },
-        initialXml: '<xml xmlns="https://developers.google.com/blockly/xml"><block type="event_whenflagclicked" id="entry_point" x="100" y="100"></block></xml>'
+        initialXml: '<xml xmlns="https://developers.google.com/blockly/xml"><block type="event_whenflagclicked" id="entry_point" x="100" y="100"></block></xml>',
+        onXmlChange: setXml,
     });
 
     const runCode = async () => {
         const code = javascriptGenerator.workspaceToCode(workspace);
         setGeneratedCode(code);
         
+        // Define context for the sandboxed execution
         const context = {
             move: (steps: number) => {
                 const angle = (engineState.current.direction - 90) * (Math.PI / 180);
@@ -205,6 +191,7 @@ const ScratchEngine = () => {
                 }
             },
             think: (message: string, duration?: number) => {
+                // For now, think behaves the same as say but could have a different UI
                 engineState.current.message = message;
                  if (duration) {
                     setTimeout(() => {
@@ -250,6 +237,7 @@ const ScratchEngine = () => {
                 }
             },
             isTouching: (object: string) => {
+                 // Placeholder for collision detection
                 return false;
             },
             getRandom: (min: number, max: number) => {
@@ -274,7 +262,14 @@ const ScratchEngine = () => {
     
     // P5.js sketch setup
     useEffect(() => {
-        if (typeof window === 'undefined' || !p5ContainerRef.current) return;
+        if (typeof window === 'undefined') return;
+        
+        if (!p5ContainerRef.current) return;
+
+        // Cleanup previous p5 instance if it exists
+        if (p5InstanceRef.current) {
+            p5InstanceRef.current.remove();
+        }
 
         let p5Instance: p5;
 
@@ -282,34 +277,30 @@ const ScratchEngine = () => {
             let penLayer: p5.Graphics;
             
             p.preload = () => {
+                // Preload all assets
                 sprites.forEach(sprite => {
                     if (sprite.costumes) {
                         sprite.costumes.forEach((url, index) => {
                             const key = `${sprite.id}-${index}`;
-                            if (!loadedImages[key] && url) {
-                                p.loadImage(url, img => {
+                            if (!loadedImages[key] && url.startsWith('http')) {
+                               p.loadImage(url, img => {
                                    setLoadedImages(prev => ({...prev, [key]: img}));
-                                }, err => console.error(`Failed to load costume ${url}:`, err));
+                               }, err => {
+                                   console.error(`Failed to load costume: ${url}`, err);
+                               });
                             }
                         });
-                    } else if (sprite.url) {
-                         const key = sprite.id;
-                         if (!loadedImages[key]) {
-                            p.loadImage(sprite.url, img => {
-                                setLoadedImages(prev => ({...prev, [key]: img}));
-                            }, err => console.error(`Failed to load sprite ${sprite.name}:`, err));
-                         }
                     }
                 });
                 backdrops.forEach(backdrop => {
-                    if (backdrop.url && !loadedImages[backdrop.id]) {
+                    if (backdrop.url && !loadedImages[backdrop.id] && backdrop.url.startsWith('http')) {
                         p.loadImage(backdrop.url, img => {
                              setLoadedImages(prev => ({...prev, [backdrop.id]: img}));
-                        }, err => console.error(`Failed to load backdrop: ${backdrop.url}`, err));
+                        });
                     }
                 });
             };
-
+            
             p.setup = () => {
                 const container = p5ContainerRef.current!;
                 const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
@@ -317,43 +308,47 @@ const ScratchEngine = () => {
                 penLayer = p.createGraphics(p.width, p.height);
                 p.frameRate(30);
             };
-
+    
             p.draw = () => {
+                // Background
                 const bg = loadedImages[activeBackdrop.id];
                 if (bg) {
-                    p.background(bg);
+                    p.image(bg, p.width/2, p.height/2, p.width, p.height);
                 } else {
                     p.background(activeBackdrop.color || '#FFFFFF');
                 }
 
+                // Pen drawing
                 if (engineState.current.shouldClear) {
                     penLayer.clear();
                     engineState.current.shouldClear = false;
                 }
 
-                if (engineState.current.isPenDown) {
-                    penLayer.stroke(engineState.current.penColor);
-                    penLayer.strokeWeight(4);
-                    penLayer.line(
-                        p.width / 2 + engineState.current.prevX,
-                        p.height / 2 - engineState.current.prevY,
-                        p.width / 2 + engineState.current.x,
-                        p.height / 2 - engineState.current.y
-                    );
-                }
                 p.image(penLayer, 0, 0);
 
-                const costumeKey = activeSprite.costumes ? `${activeSprite.id}-${engineState.current.costumeIndex}` : activeSprite.id;
-                const currentImage = loadedImages[costumeKey];
+                if (engineState.current.isPenDown) {
+                    penLayer.stroke(engineState.current.penColor);
+                    penLayer.strokeWeight(4); // You can make this dynamic later
+                    penLayer.line(
+                        engineState.current.prevX,
+                        engineState.current.prevY,
+                        engineState.current.x,
+                        engineState.current.y
+                    );
+                }
+                
+                // Sprite
+                const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
+                const currentCostumeImage = loadedImages[costumeKey];
 
                 p.push();
                 p.translate(p.width / 2 + engineState.current.x, p.height / 2 - engineState.current.y);
                 p.rotate(p.radians(engineState.current.direction - 90));
                 p.scale(engineState.current.size / 100);
 
-                if (currentImage) {
+                if (currentCostumeImage) {
                     p.imageMode(p.CENTER);
-                    p.image(currentImage, 0, 0, currentImage.width * 0.15, currentImage.height * 0.15); // Adjust size if necessary
+                    p.image(currentCostumeImage, 0, 0);
                 } else {
                     p.textAlign(p.CENTER, p.CENTER);
                     p.textSize(50);
@@ -361,36 +356,37 @@ const ScratchEngine = () => {
                 }
                 p.pop();
 
+                // Speech bubble
                 if (engineState.current.message) {
                     p.fill(255);
                     p.stroke(0);
-                    p.rect(p.width / 2 + engineState.current.x + 40, p.height / 2 - engineState.current.y - 60, p.textWidth(engineState.current.message) + 20, 30, 10);
+                    const textWidth = p.textWidth(engineState.current.message) + 20;
+                    p.rect(p.width / 2 + engineState.current.x + 40, p.height / 2 - engineState.current.y - 60, textWidth, 40, 10);
                     p.fill(0);
                     p.noStroke();
                     p.textAlign(p.CENTER, p.CENTER);
-                    p.text(engineState.current.message, p.width / 2 + engineState.current.x + 40 + (p.textWidth(engineState.current.message) + 20) / 2, p.height / 2 - engineState.current.y - 45);
+                    p.text(engineState.current.message, p.width / 2 + engineState.current.x + 100, p.height / 2 - engineState.current.y - 45);
                 }
 
-                engineState.current.prevX = engineState.current.x;
-                engineState.current.prevY = engineState.current.y;
+                // Update prev positions for next frame
+                engineState.current.prevX = p.width / 2 + engineState.current.x;
+                engineState.current.prevY = p.height / 2 - engineState.current.y;
             };
 
             p.windowResized = () => {
                 if (p5ContainerRef.current) {
                     p.resizeCanvas(p5ContainerRef.current.offsetWidth, p5ContainerRef.current.offsetHeight);
-                    if (penLayer) penLayer.resizeCanvas(p.width, p.height);
+                    penLayer.resizeCanvas(p.width, p.height);
                 }
             };
         };
         
-        // Clean up previous instance
-        p5InstanceRef.current?.remove();
-        p5InstanceRef.current = new p5(sketch, p5ContainerRef.current!);
+        p5Instance.current = new p5(sketch);
         
         return () => {
-            p5InstanceRef.current?.remove();
+            p5Instance.current?.remove();
         };
-    }, [activeSprite, activeBackdrop, sprites, backdrops, loadedImages]);
+    }, [activeSprite, activeBackdrop, loadedImages]);
 
     const handleReset = () => {
         engineState.current = {
@@ -398,10 +394,16 @@ const ScratchEngine = () => {
             size: 100, message: '', messageDuration: 0,
             isPenDown: false, penColor: '#000000', shouldClear: true, costumeIndex: 0
         };
+        if (p5Instance.current) {
+           const p = p5Instance.current;
+           const penLayer = (p as any).penLayer;
+           if(penLayer) penLayer.clear();
+        }
     };
 
+
     const handleSpriteSelect = (sprite: any) => {
-        engineState.current.costumeIndex = 0; 
+        engineState.current.costumeIndex = 0; // Reset costume on sprite change
         setActiveSprite(sprite);
     };
 
@@ -409,9 +411,9 @@ const ScratchEngine = () => {
         setActiveBackdrop(backdrop);
     };
     
-    const canEdit = false;
+    // This is a placeholder since the original component had these variables but they weren't defined.
+    // Replace with your actual logic for fetching these.
     const refetchAssets = () => {};
-    const [setLogs] = useState<string[]>([]);
     
     return (
         <div className="flex h-full bg-gray-100">
@@ -462,6 +464,29 @@ const ScratchEngine = () => {
                 </Tabs>
             </div>
         </div>
+    );
+};
+
+// --- Helper Components ---
+
+const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded: () => void }) => {
+    // Basic modal structure
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <button className="flex flex-col items-center justify-center p-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+                    <Plus className="h-8 w-8 text-gray-500"/>
+                    <span className="text-xs mt-1">Add New</span>
+                </button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Add New {type}</DialogTitle>
+                </DialogHeader>
+                {/* Add form here to upload/add new assets */}
+                <p>Asset creation UI goes here.</p>
+            </DialogContent>
+        </Dialog>
     );
 };
 
