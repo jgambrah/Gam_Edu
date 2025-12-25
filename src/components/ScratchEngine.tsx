@@ -121,11 +121,41 @@ export default function ScratchEngine() {
   }, [selectedSprite, selectedBackdrop, videoEnabled]);
 
   const runCode = () => {
-    // ... (runCode function remains the same)
+    // 1. Generate JS code from blocks
+    const code = Blockly.getGenerator('javascript').workspaceToCode(workspace);
+
+    // 2. Define the helper functions for the code to use
+    const sprite = {
+      move: (steps: number) => {
+        const rad = (spriteData.current.direction * Math.PI) / 180;
+        spriteData.current.x += Math.cos(rad) * steps;
+        spriteData.current.y += Math.sin(rad) * steps;
+      }
+    };
+
+    const speakText = (text: string) => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    };
+    
+    const toggleVideo = (state: 'ON' | 'OFF') => {
+        handleVideoToggle(state === 'ON');
+    }
+
+    // 3. Execute
+    try {
+      // In a real app, use a safer Sandbox or JS-Interpreter
+      const func = new Function('sprite', 'speakText', 'toggleVideo', code);
+      func(sprite, speakText, toggleVideo);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleVideoToggle = async () => {
-    if (!videoEnabled) {
+  const handleVideoToggle = async (forceState?: boolean) => {
+    const shouldEnable = forceState !== undefined ? forceState : !videoEnabled;
+
+    if (shouldEnable) {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -148,7 +178,7 @@ export default function ScratchEngine() {
 
 
   return (
-    <div className="flex flex-col h-screen bg-slate-100">
+    <div className="flex flex-col h-full bg-slate-100">
       <div className="p-4 bg-white border-b flex justify-between">
         <h1 className="text-xl font-bold">Scratch-p5 Academy</h1>
         <button onClick={runCode} className="bg-green-500 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:bg-green-600 transition-all">
@@ -183,7 +213,7 @@ export default function ScratchEngine() {
                 <CardHeader className="pb-2"><CardTitle className="text-sm">Backdrops</CardTitle></CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
                     {BACKDROP_LIBRARY.map(b => (
-                        <button key={b.id} onClick={() => setSelectedBackdrop(b)} className={`w-12 h-12 rounded-lg flex items-center justify-center border-2 ${selectedBackdrop.id === b.id ? 'border-blue-500' : 'border-slate-200'}`} style={{backgroundColor: b.color}}>
+                        <button key={b.id} onClick={() => setSelectedBackdrop(b)} className={`w-12 h-12 rounded-lg flex items-center justify-center border-2 ${selectedBackdrop.id === b.id ? 'border-blue-500' : 'border-slate-200'}`} style={{backgroundColor: b.color || '#fff'}}>
                           {b.img && <img src={b.img} alt={b.label} className="w-full h-full object-cover rounded-md"/>}
                         </button>
                     ))}
@@ -192,7 +222,7 @@ export default function ScratchEngine() {
               </Card>
           </div>
           {/* Video Sensing Button */}
-          <Button variant="outline" onClick={handleVideoToggle} className="w-full">
+          <Button variant="outline" onClick={() => handleVideoToggle()} className="w-full">
             <Camera className="w-4 h-4 mr-2"/> {videoEnabled ? 'Stop Video' : 'Start Video Sensing'}
           </Button>
           <video ref={videoRef} className="hidden"/>

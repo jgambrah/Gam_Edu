@@ -49,7 +49,7 @@ export default function CodingClubPage() {
                 <CardDescription>Build your own games and animations by dragging and dropping code blocks, just like Scratch!</CardDescription>
             </CardHeader>
             <CardContent>
-                 <div className="h-[calc(100vh-20rem)] w-full rounded-lg overflow-hidden border">
+                 <div className="w-full rounded-lg overflow-hidden border">
                     <ScratchEngine />
                 </div>
             </CardContent>
