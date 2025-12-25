@@ -62,141 +62,77 @@ javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block
 const toolboxCategories = {
     kind: 'categoryToolbox',
     contents: [
-      // 🟢 LOGIC
+      // 🚀 MOTION
       {
         kind: 'category',
-        name: 'Logic',
-        colour: '%{BKY_LOGIC_HUE}',
+        name: 'Motion',
+        colour: '#4C97FF',
         contents: [
-          { kind: 'block', type: 'controls_if' },
-          { kind: 'block', type: 'logic_compare' },
-          { kind: 'block', type: 'logic_operation' },
-          { kind: 'block', type: 'logic_negate' },
-          { kind: 'block', type: 'logic_boolean' },
-          { kind: 'block', type: 'logic_null' },
-          { kind: 'block', type: 'logic_ternary' },
+          { kind: 'block', type: 'motion_move' },
+          { kind: 'block', type: 'motion_turnright' },
+          { kind: 'block', type: 'motion_goto' },
         ],
       },
-      // 🔄 LOOPS
+      // 👀 LOOKS
       {
         kind: 'category',
-        name: 'Loops',
-        colour: '%{BKY_LOOPS_HUE}',
+        name: 'Looks',
+        colour: '#9966FF',
         contents: [
-          { 
-            kind: 'block', 
-            type: 'controls_repeat_ext', 
-            inputs: { TIMES: { shadow: { type: 'math_number', fields: { NUM: 10 } } } } 
-          },
-          { kind: 'block', type: 'controls_whileUntil' },
-          { 
-            kind: 'block', 
-            type: 'controls_for',
-            inputs: { 
-                FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-                TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
-                BY: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-            }
-          },
-          { kind: 'block', type: 'controls_forEach' },
-          { kind: 'block', type: 'controls_flow_statements' },
+          { kind: 'block', type: 'looks_say' },
+          { kind: 'block', type: 'looks_changesizeby' },
         ],
       },
-      // 🧮 MATH
+      // 🔊 SOUND
       {
         kind: 'category',
-        name: 'Math',
-        colour: '%{BKY_MATH_HUE}',
+        name: 'Sound',
+        colour: '#D65DB1',
         contents: [
-          { kind: 'block', type: 'math_number', fields: { NUM: 123 } },
-          { kind: 'block', type: 'math_arithmetic', 
-            inputs: { 
-                A: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-                B: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-            }
-          },
-          { kind: 'block', type: 'math_single' },
-          { kind: 'block', type: 'math_trig' },
-          { kind: 'block', type: 'math_constant' },
-          { kind: 'block', type: 'math_number_property' },
-          { kind: 'block', type: 'math_round' },
-          { kind: 'block', type: 'math_on_list' },
-          { kind: 'block', type: 'math_modulo' },
-          { 
-            kind: 'block', 
-            type: 'math_constrain',
-            inputs: { 
-                LOW: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-                HIGH: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
-            }
-          },
-          { kind: 'block', type: 'math_random_int' },
-          { kind: 'block', type: 'math_random_float' },
-          { kind: 'block', type: 'math_atan2' },
-        ],
+           { kind: 'block', type: 'sound_play' },
+        ]
       },
-      // 📝 TEXT
+       // 🎬 EVENTS
       {
         kind: 'category',
-        name: 'Text',
-        colour: '%{BKY_TEXTS_HUE}',
+        name: 'Events',
+        colour: '#FFD500',
         contents: [
-          { kind: 'block', type: 'text' },
-          { kind: 'block', type: 'text_join' },
-          { 
-            kind: 'block', 
-            type: 'text_append',
-            inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: '' } } } }
-          },
-          { kind: 'block', type: 'text_length' },
-          { kind: 'block', type: 'text_isEmpty' },
-          { kind: 'block', type: 'text_indexOf' },
-          { kind: 'block', type: 'text_charAt' },
-          { kind: 'block', type: 'text_getSubstring' },
-          { kind: 'block', type: 'text_changeCase' },
-          { kind: 'block', type: 'text_trim' },
-          { 
-            kind: 'block', 
-            type: 'text_print', 
-            inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: 'Hello World' } } } }
-          },
-          { 
-            kind: 'block', 
-            type: 'text_prompt_ext', 
-            inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: 'What is your name?' } } } }
-          },
-        ],
+           { kind: 'block', type: 'event_whenflagclicked' },
+        ]
       },
-      // 📋 LISTS
-      {
+      // 🔄 CONTROL
+       {
         kind: 'category',
-        name: 'Lists',
-        colour: '%{BKY_LISTS_HUE}',
+        name: 'Control',
+        colour: '#FFAB19',
         contents: [
-          { kind: 'block', type: 'lists_create_with' },
-          { kind: 'block', type: 'lists_repeat' },
-          { kind: 'block', type: 'lists_length' },
-          { kind: 'block', type: 'lists_isEmpty' },
-          { kind: 'block', type: 'lists_indexOf' },
-          { kind: 'block', type: 'lists_getIndex' },
-          { kind: 'block', type: 'lists_setIndex' },
-          { kind: 'block', type: 'lists_getSublist' },
-          { kind: 'block', type: 'lists_split' },
-          { kind: 'block', type: 'lists_sort' },
-          { kind: 'block', type: 'lists_reverse' },
-        ],
+           { kind: 'block', type: 'control_wait' },
+           { kind: 'block', type: 'control_repeat' },
+           { kind: 'block', type: 'control_if' },
+           { kind: 'block', type: 'control_forever' },
+        ]
       },
-      // 🎨 COLOUR (REQUIRES PLUGIN)
-      {
+      // 👁️ SENSING
+       {
         kind: 'category',
-        name: 'Colour',
-        colour: '%{BKY_COLOUR_HUE}',
+        name: 'Sensing',
+        colour: '#4CBFE6',
         contents: [
-          { kind: 'block', type: 'colour_picker' },
-          { kind: 'block', type: 'colour_random' },
-          { kind: 'block', type: 'colour_rgb' },
-          { kind: 'block', type: 'colour_blend' },
-        ],
+           { kind: 'block', type: 'sensing_touchingmouse' },
+           { kind: 'block', type: 'sensing_mousedown' },
+        ]
+      },
+      // ➕ OPERATORS
+       {
+        kind: 'category',
+        name: 'Operators',
+        colour: '#40BF4A',
+        contents: [
+           { kind: 'block', type: 'operator_add' },
+           { kind: 'block', type: 'operator_random' },
+           { kind: 'block', type: 'operator_equals' },
+        ]
       },
       // ✍️ PEN
       {
@@ -223,6 +159,17 @@ const toolboxCategories = {
           },
         ],
       },
+      // 🎨 COLOUR
+      {
+        kind: 'category',
+        name: 'Colour',
+        colour: '%{BKY_COLOUR_HUE}',
+        contents: [
+          { kind: 'block', type: 'colour_picker' },
+          { kind: 'block', type: 'colour_random' },
+          { kind: 'block', type: 'colour_rgb' },
+        ],
+      },
       { kind: 'sep' },
       // 📦 VARIABLES
       {
@@ -230,23 +177,6 @@ const toolboxCategories = {
         name: 'Variables',
         colour: '%{BKY_VARIABLES_HUE}',
         custom: 'VARIABLE',
-      },
-      // ⚙️ FUNCTIONS / PROCEDURES
-      {
-        kind: 'category',
-        name: 'Functions',
-        colour: '%{BKY_PROCEDURES_HUE}',
-        custom: 'PROCEDURE',
-      },
-      { kind: 'sep' },
-      // 🚀 EXTRAS
-      {
-        kind: 'category',
-        name: 'Extra',
-        colour: '230',
-        contents: [
-          { kind: 'block', type: 'get_science_fact' },
-        ],
       },
     ]
 };
@@ -365,7 +295,7 @@ export default function ScratchEngine() {
             .appendField("steps");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour(230);
+        this.setColour(230); // Motion Blue
       }
     };
     Blockly.Blocks['looks_say'] = {
@@ -384,7 +314,7 @@ export default function ScratchEngine() {
             .appendField(new Blockly.FieldDropdown([["on","ON"], ["off","OFF"]]), "STATE");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour("#CF63CF");
+        this.setColour("#CF63CF"); // Sensing Purple
       }
     };
     
@@ -452,9 +382,9 @@ export default function ScratchEngine() {
       init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
     };
     
-    Blockly.Blocks['pen_clear'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("erase all"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
-    Blockly.Blocks['pen_pendown'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("pen down"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
-    Blockly.Blocks['pen_penup'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("pen up"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
+    Blockly.Blocks['pen_clear'] = { init: function() { this.appendDummyInput().appendField("erase all"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
+    Blockly.Blocks['pen_pendown'] = { init: function() { this.appendDummyInput().appendField("pen down"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
+    Blockly.Blocks['pen_penup'] = { init: function() { this.appendDummyInput().appendField("pen up"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
     Blockly.Blocks['pen_setcolor'] = { init: function(this: Blockly.Block) { this.appendValueInput('COLOR').setCheck('Colour').appendField('set pen color to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
     Blockly.Blocks['pen_setsize'] = { init: function(this: Blockly.Block) { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
     Blockly.Blocks['colour_random'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField('random colour'); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); } };
