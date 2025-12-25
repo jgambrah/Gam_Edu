@@ -178,6 +178,23 @@ const toolboxCategories = {
         colour: '%{BKY_VARIABLES_HUE}',
         custom: 'VARIABLE',
       },
+      // ⚙️ FUNCTIONS / MY BLOCKS
+      {
+        kind: 'category',
+        name: 'My Blocks',
+        colour: '%{BKY_PROCEDURES_HUE}',
+        custom: 'PROCEDURE',
+      },
+      { kind: 'sep' },
+      // 🚀 EXTRAS
+      {
+        kind: 'category',
+        name: 'Extra',
+        colour: '230',
+        contents: [
+          { kind: 'block', type: 'get_science_fact' },
+        ],
+      },
     ]
 };
 
@@ -414,7 +431,6 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['pen_penup'] = () => `setPen(false);\n`;
     javascriptGenerator.forBlock['pen_setcolor'] = (b: any) => `setPenColor(${javascriptGenerator.valueToCode(b, 'COLOR', 0) || "'#000000'"});\n`;
     javascriptGenerator.forBlock['pen_setsize'] = (b: any) => `setPenSize(${javascriptGenerator.valueToCode(b, 'SIZE', 0) || 1});\n`;
-    javascriptGenerator.forBlock['colour_picker'] = (block: any) => [block.getFieldValue('COLOUR'), 0];
     javascriptGenerator.forBlock['colour_random'] = () => `randomColor();\n`;
     javascriptGenerator.forBlock['colour_rgb'] = (b: any) => `rgbToHex(${javascriptGenerator.valueToCode(b, 'RED', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'GREEN', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'BLUE', 0) || 0});\n`;
     
