@@ -1,49 +1,49 @@
-
-      
 import * as Blockly from 'blockly/core';
+import { javascriptGenerator } from 'blockly/javascript';
 
-      const customBlocks = [
-          {
-            "type": "event_whenflagclicked",
-            "message0": "when 🏁 clicked",
-            "nextStatement": null,
-            "colour": "#FFD500",
-            "tooltip": "This block starts the script when the green flag is clicked.",
-            "helpUrl": ""
-          },
-          {
-            "type": "motion_move",
-            "message0": "move %1 steps",
-            "args0": [
-              {
-                "type": "input_value",
-                "name": "STEPS",
-                "check": "Number"
-              }
-            ],
-            "previousStatement": null,
-            "nextStatement": null,
-            "colour": "#4C97FF",
-            "tooltip": "Moves the sprite forward in the direction it is facing.",
-            "helpUrl": ""
-          },
-          {
-            "type": "motion_turnright",
-            "message0": "turn ↻ %1 degrees",
-            "args0": [
-              {
-                "type": "input_value",
-                "name": "DEGREES",
-                "check": "Number"
-              }
-            ],
-            "previousStatement": null,
-            "nextStatement": null,
-            "colour": "#4C97FF",
-            "tooltip": "Turns the sprite to the right.",
-            "helpUrl": ""
-          },
-          {
+export const registerCustomBlocks = () => {
+    const customBlocks = [
+        {
+          "type": "event_whenflagclicked",
+          "message0": "when 🏁 clicked",
+          "nextStatement": null,
+          "colour": "#FFD500",
+          "tooltip": "This block starts the script when the green flag is clicked.",
+          "helpUrl": ""
+        },
+        {
+          "type": "motion_move",
+          "message0": "move %1 steps",
+          "args0": [
+            {
+              "type": "input_value",
+              "name": "STEPS",
+              "check": "Number"
+            }
+          ],
+          "previousStatement": null,
+          "nextStatement": null,
+          "colour": "#4C97FF",
+          "tooltip": "Moves the sprite forward in the direction it is facing.",
+          "helpUrl": ""
+        },
+        {
+          "type": "motion_turnright",
+          "message0": "turn ↻ %1 degrees",
+          "args0": [
+            {
+              "type": "input_value",
+              "name": "DEGREES",
+              "check": "Number"
+            }
+          ],
+          "previousStatement": null,
+          "nextStatement": null,
+          "colour": "#4C97FF",
+          "tooltip": "Turns the sprite to the right.",
+          "helpUrl": ""
+        },
+        {
             "type": "looks_sayforsecs",
             "message0": "say %1 for %2 seconds",
             "args0": [
@@ -293,124 +293,116 @@ import * as Blockly from 'blockly/core';
           }
       ];
 
-Blockly.defineBlocksWithJsonArray(customBlocks);
+    Blockly.defineBlocksWithJsonArray(customBlocks);
 
-// Generator stubs for the new blocks
-javascriptGenerator['event_whenflagclicked'] = function(block) {
-  return ''; // This is a starter block, so it generates no code by itself.
-};
+    // Generator stubs for the new blocks
+    javascriptGenerator.forBlock['event_whenflagclicked'] = function(block) {
+      return ''; // This is a starter block, so it generates no code by itself.
+    };
 
-javascriptGenerator['motion_move'] = function(block) {
-  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || 10;
-  return `await move(${steps});\n`;
-};
+    javascriptGenerator.forBlock['motion_move'] = function(block) {
+      const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '10';
+      return `await move(${steps});\n`;
+    };
 
-javascriptGenerator['motion_turnright'] = function(block) {
-  const degrees = javascriptGenerator.valueToCode(block, 'DEGREES', javascriptGenerator.ORDER_ATOMIC) || 15;
-  return `turn(${degrees});\n`;
-};
+    javascriptGenerator.forBlock['motion_turnright'] = function(block) {
+      const degrees = javascriptGenerator.valueToCode(block, 'DEGREES', javascriptGenerator.ORDER_ATOMIC) || '15';
+      return `turn(${degrees});\n`;
+    };
 
-javascriptGenerator['looks_sayforsecs'] = function(block) {
-  const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
-  const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || 2;
-  return `await say(${message}, ${secs});\n`;
-};
+    javascriptGenerator.forBlock['looks_sayforsecs'] = function(block) {
+      const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
+      const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || '2';
+      return `await say(${message}, ${secs});\n`;
+    };
 
-javascriptGenerator['looks_say'] = function(block) {
-  const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
-  return `say(${message});\n`;
-};
-
-javascriptGenerator['looks_thinkforsecs'] = function(block) {
-  const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
-  const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || 2;
-  return `await think(${message}, ${secs});\n`;
-};
-
-javascriptGenerator['looks_think'] = function(block) {
-  const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
-  return `think(${message});\n`;
-};
-
-javascriptGenerator['looks_changesizeby'] = function(block) {
-    const change = javascriptGenerator.valueToCode(block, 'CHANGE', javascriptGenerator.ORDER_ATOMIC) || 10;
-    return `changeSizeBy(${change});\n`;
-};
-
-javascriptGenerator['looks_setsizeto'] = function(block) {
-    const size = javascriptGenerator.valueToCode(block, 'SIZE', javascriptGenerator.ORDER_ATOMIC) || 100;
-    return `setSizeTo(${size});\n`;
-};
-
-javascriptGenerator['looks_nextcostume'] = function(block) {
-    return 'nextCostume();\n';
-};
-
-javascriptGenerator['sound_playuntildone'] = function(block) {
-    const sound = block.getFieldValue('SOUND_MENU');
-    return `await playSound('${sound}');\n`;
-};
-
-javascriptGenerator['control_wait'] = function(block) {
-    const duration = javascriptGenerator.valueToCode(block, 'DURATION', javascriptGenerator.ORDER_ATOMIC) || 1;
-    return `await wait(${duration});\n`;
-};
-
-javascriptGenerator['control_repeat'] = function(block) {
-    const times = javascriptGenerator.valueToCode(block, 'TIMES', javascriptGenerator.ORDER_ATOMIC) || '10';
-    const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
-    return `for (let i = 0; i < ${times}; i++) {\n${substack}}\n`;
-};
-  
-javascriptGenerator['control_forever'] = function(block) {
-    const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
-    return `while (true) {\n${substack} await wait(0.01);\n}\n`; // Small wait to prevent browser crash
-};
-
-javascriptGenerator['sensing_touchingmouse'] = function(block) {
-    return ['isTouching("mouse")', javascriptGenerator.ORDER_ATOMIC];
-};
-
-javascriptGenerator['operator_random'] = function(block) {
-    const from = javascriptGenerator.valueToCode(block, 'FROM', javascriptGenerator.ORDER_ATOMIC) || 1;
-    const to = javascriptGenerator.valueToCode(block, 'TO', javascriptGenerator.ORDER_ATOMIC) || 10;
-    return [`getRandom(${from}, ${to})`, javascriptGenerator.ORDER_FUNCTION_CALL];
-};
-
-javascriptGenerator['pen_clear'] = function(block) {
-    return 'penClear();\n';
-};
-
-javascriptGenerator['pen_stamp'] = function(block) {
-    return '// Stamping not implemented yet\n'; // Placeholder
-};
-
-javascriptGenerator['pen_penDown'] = function(block) {
-    return 'setPen(true);\n';
-};
-
-javascriptGenerator['pen_penUp'] = function(block) {
-    return 'setPen(false);\n';
-};
-
-javascriptGenerator['pen_setPenColorToColor'] = function(block) {
-    const color = javascriptGenerator.valueToCode(block, 'COLOR', javascriptGenerator.ORDER_ATOMIC) || "'#000000'";
-    return `setPenColor(${color});\n`;
-};
-
-javascriptGenerator['pen_changePenSizeBy'] = function(block) {
-    const size = javascriptGenerator.valueToCode(block, 'SIZE', javascriptGenerator.ORDER_ATOMIC) || '1';
-    return '// pen_changePenSizeBy not implemented yet\n'; // Placeholder
-};
-
-javascriptGenerator['pen_setPenSizeTo'] = function(block) {
-    const size = javascriptGenerator.valueToCode(block, 'SIZE', javascriptGenerator.ORDER_ATOMIC) || '1';
-    return '// pen_setPenSizeTo not implemented yet\n'; // Placeholder
-};
-
-javascriptGenerator['sound_sounds_menu'] = function(block) {
-    const soundName = block.getFieldValue('SOUND_MENU');
-    return [`'${soundName}'`, javascriptGenerator.ORDER_ATOMIC];
-};
-
+    javascriptGenerator.forBlock['looks_say'] = function(block) {
+      const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
+      return `say(${message});\n`;
+    };
     
+    javascriptGenerator.forBlock['looks_thinkforsecs'] = function(block) {
+        const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
+        const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || '2';
+        return `await think(${message}, ${secs});\n`;
+    };
+    
+    javascriptGenerator.forBlock['looks_think'] = function(block) {
+        const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
+        return `think(${message});\n`;
+    };
+
+    javascriptGenerator.forBlock['looks_changesizeby'] = function(block) {
+        const change = javascriptGenerator.valueToCode(block, 'CHANGE', javascriptGenerator.ORDER_ATOMIC) || '10';
+        return `changeSizeBy(${change});\n`;
+    };
+
+    javascriptGenerator.forBlock['looks_setsizeto'] = function(block) {
+        const size = javascriptGenerator.valueToCode(block, 'SIZE', javascriptGenerator.ORDER_ATOMIC) || '100';
+        return `setSizeTo(${size});\n`;
+    };
+
+    javascriptGenerator.forBlock['looks_nextcostume'] = function(block) {
+        return 'nextCostume();\n';
+    };
+
+    javascriptGenerator.forBlock['sound_playuntildone'] = function(block) {
+        const sound = block.getFieldValue('SOUND_MENU');
+        return `await playSound('${sound}');\n`;
+    };
+    
+    javascriptGenerator.forBlock['control_wait'] = function(block) {
+        const duration = javascriptGenerator.valueToCode(block, 'DURATION', javascriptGenerator.ORDER_ATOMIC) || '1';
+        return `await wait(${duration});\n`;
+    };
+    
+    javascriptGenerator.forBlock['control_repeat'] = function(block) {
+        const times = javascriptGenerator.valueToCode(block, 'TIMES', javascriptGenerator.ORDER_ATOMIC) || '10';
+        const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
+        return `for (let i = 0; i < ${times}; i++) {\n${substack}}\n`;
+    };
+    
+    javascriptGenerator.forBlock['control_forever'] = function(block) {
+        const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
+        return `while (true) {\n${substack} await wait(0.03);\n}\n`; // Small delay to prevent freezing
+    };
+
+    javascriptGenerator.forBlock['sensing_touchingmouse'] = function(block) {
+        return ['isTouching("mouse-pointer")', javascriptGenerator.ORDER_ATOMIC];
+    };
+
+    javascriptGenerator.forBlock['operator_random'] = function(block) {
+        const from = javascriptGenerator.valueToCode(block, 'FROM', javascriptGenerator.ORDER_ATOMIC) || 1;
+        const to = javascriptGenerator.valueToCode(block, 'TO', javascriptGenerator.ORDER_ATOMIC) || 10;
+        return [`getRandom(${from}, ${to})`, javascriptGenerator.ORDER_FUNCTION_CALL];
+    };
+    
+    javascriptGenerator.forBlock['pen_clear'] = function(block) {
+        return `penClear();\n`;
+    };
+    
+    javascriptGenerator.forBlock['pen_stamp'] = function(block) {
+        return '// stamp is not implemented yet\n'; // Placeholder for stamp functionality
+    };
+    
+    javascriptGenerator.forBlock['pen_penDown'] = function(block) {
+        return 'setPen(true);\n';
+    };
+
+    javascriptGenerator.forBlock['pen_penUp'] = function(block) {
+        return 'setPen(false);\n';
+    };
+
+    javascriptGenerator.forBlock['pen_setPenColorToColor'] = function(block) {
+        const color = javascriptGenerator.valueToCode(block, 'COLOR', javascriptGenerator.ORDER_ATOMIC) || "'#000000'";
+        return `setPenColor(${color});\n`;
+    };
+    
+    javascriptGenerator.forBlock['pen_changePenSizeBy'] = function(block) {
+        return '// changePenSizeBy not implemented yet\n'; 
+    };
+
+    javascriptGenerator.forBlock['pen_setPenSizeTo'] = function(block) {
+        return '// setPenSizeTo not implemented yet\n';
+    };
+}
