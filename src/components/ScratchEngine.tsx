@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -10,30 +9,42 @@ import {
   User as UserIcon, Video, Volume2, Plus, Trash2, Move, Ghost
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 
-// 1. ASSET LIBRARIES
-// PRO TIP: In a real app, move these images to your /public/ folder to avoid all fetch errors
-const SPRITE_LIBRARY = [
-  { id: 'cat', name: 'Cat', emoji: '🐱', url: 'https://cdn.pixabay.com/photo/2012/04/01/18/55/cat-24052_960_720.png' },
-  { id: 'ghost', name: 'Ghost', emoji: '👻', url: 'https://cdn.pixabay.com/photo/2012/04/18/13/22/ghost-37013_960_720.png' },
-  { id: 'rocket', name: 'Rocket', emoji: '🚀', url: 'https://cdn.pixabay.com/photo/2012/04/10/23/04/spaceship-26830_960_720.png' }
-];
-
-const BACKDROP_LIBRARY = [
-  { id: 'white', name: 'Plain', color: '#FFFFFF', img: null },
-  { id: 'blue', name: 'Sky', color: '#e0f2fe', img: 'https://cdn.pixabay.com/photo/2016/11/18/15/44/background-1835438_960_720.png' },
-  { id: 'stars', name: 'Space', color: '#0f172a', img: 'https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg' }
-];
+// 1. ASSET LIBRARIES are now fetched from Firebase
 
 export default function ScratchEngine() {
   const blocklyRef = useRef<HTMLDivElement>(null);
   const canvasParentRef = useRef<HTMLDivElement>(null);
   const [workspace, setWorkspace] = useState<any>(null);
-  const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
-  const [activeBackdrop, setActiveBackdrop] = useState(BACKDROP_LIBRARY[0]);
-  const [isVideoOn, setIsVideoOn] = useState(false);
   const { toast } = useToast();
+
+  const firestore = useFirestore();
+
+  // 1. Fetch Sprites from Firebase
+  const spriteQuery = useMemoFirebase(() => 
+      firestore ? query(collection(firestore, 'scratch_assets'), where('type', '==', 'sprite')) : null, 
+  [firestore]);
+  const { data: dbSprites } = useCollection<any>(spriteQuery);
+
+  // 2. Fetch Backdrops from Firebase
+  const backdropQuery = useMemoFirebase(() => 
+      firestore ? query(collection(firestore, 'scratch_assets'), where('type', '==', 'backdrop')) : null, 
+  [firestore]);
+  const { data: dbBackdrops } = useCollection<any>(backdropQuery);
+
+  // Fallback to defaults if DB is empty
+  const sprites = dbSprites?.length ? dbSprites : [
+    { id: 'cat', emoji: '🐱', url: 'https://cdn.pixabay.com/photo/2012/04/01/18/55/cat-24052_960_720.png', name: 'Cat' }
+  ];
+  const backdrops = dbBackdrops?.length ? dbBackdrops : [
+    { id: 'white', color: '#FFFFFF', name: 'Plain', img: null }
+  ];
+
+  const [activeSprite, setActiveSprite] = useState(sprites[0]);
+  const [activeBackdrop, setActiveBackdrop] = useState(backdrops[0]);
+  const [isVideoOn, setIsVideoOn] = useState(false);
   
   // Internal Engine State
   const engineState = useRef({
@@ -43,6 +54,20 @@ export default function ScratchEngine() {
     size: 80,
     sayText: ""
   });
+
+  // Update active sprite/backdrop if the list changes and the current one disappears
+  useEffect(() => {
+    if (sprites.length > 0 && !sprites.find(s => s.id === activeSprite.id)) {
+      setActiveSprite(sprites[0]);
+    }
+  }, [sprites, activeSprite]);
+
+  useEffect(() => {
+    if (backdrops.length > 0 && !backdrops.find(b => b.id === activeBackdrop.id)) {
+      setActiveBackdrop(backdrops[0]);
+    }
+  }, [backdrops, activeBackdrop]);
+
 
   // --- 2. BLOCKLY SETUP (ZELOS) ---
   useEffect(() => {
@@ -108,10 +133,12 @@ export default function ScratchEngine() {
         p.imageMode(p.CENTER);
         
         // SAFE LOADING: Fetch images with Error Callbacks to prevent crash
-        p.loadImage(activeSprite.url, 
-            img => spriteImg = img,
-            () => console.log("Sprite Load Failed (CORS)")
-        );
+        if (activeSprite.url) {
+          p.loadImage(activeSprite.url, 
+              img => spriteImg = img,
+              () => console.log("Sprite Load Failed (CORS)")
+          );
+        }
         if (activeBackdrop.img) {
             p.loadImage(activeBackdrop.img, img => bgImg = img, () => console.log("Backdrop Load Failed"));
         }
@@ -179,7 +206,7 @@ export default function ScratchEngine() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#F0F2F5] font-sans">
+    <div className="flex flex-col h-screen bg-[#F0F2F5]">
       {/* HEADER */}
       <div className="bg-[#4C97FF] p-3 flex justify-between items-center text-white shadow-md px-6">
         <div className="flex items-center gap-3">
@@ -205,12 +232,17 @@ export default function ScratchEngine() {
           
           <div ref={canvasParentRef} className="rounded-2xl overflow-hidden shadow-2xl border-[6px] border-white bg-white w-[480px] h-[360px]" />
 
-          {/* ASSET SELECTORS */}
+          {/* ASSET MANAGEMENT PANELS */}
           <div className="grid grid-cols-2 gap-3">
+            
+            {/* Sprite Selector */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-              <span className="text-[10px] font-black uppercase text-slate-400 mb-3 block">Characters</span>
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[10px] font-black uppercase text-slate-400 flex items-center gap-1"><UserIcon className="w-3 h-3"/> Sprites</span>
+                <Plus className="w-4 h-4 text-blue-500 cursor-pointer"/>
+              </div>
               <div className="flex gap-2 flex-wrap">
-                {SPRITE_LIBRARY.map(s => (
+                {sprites.map(s => (
                   <button key={s.id} onClick={() => setActiveSprite(s)}
                     className={`w-14 h-14 text-3xl rounded-2xl border-2 transition-all ${activeSprite.id === s.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100 bg-slate-50'}`}
                   >
@@ -220,10 +252,13 @@ export default function ScratchEngine() {
               </div>
             </div>
 
+            {/* Backdrop Selector */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-              <span className="text-[10px] font-black uppercase text-slate-400 mb-3 block">Backdrops</span>
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[10px] font-black uppercase text-slate-400 flex items-center gap-1"><ImageIcon className="w-3 h-3"/> Backdrops</span>
+              </div>
               <div className="flex gap-2 flex-wrap">
-                {BACKDROP_LIBRARY.map(b => (
+                {backdrops.map(b => (
                   <button key={b.id} onClick={() => setActiveBackdrop(b)}
                     className={`w-12 h-12 rounded-xl border-4 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500' : 'border-white shadow-sm'}`}
                     style={{ backgroundColor: b.color }}
@@ -231,28 +266,31 @@ export default function ScratchEngine() {
                 ))}
               </div>
             </div>
+
           </div>
 
-          {/* VIDEO CONTROLS */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-             <div className="flex items-center gap-3">
-                <div className="bg-purple-100 p-2 rounded-lg"><Video className="w-5 h-5 text-purple-600"/></div>
-                <span className="font-bold text-slate-600">Video Sensing</span>
-             </div>
-             <button 
-              onClick={() => setIsVideoOn(!isVideoOn)}
-              className={`px-6 py-2 rounded-full text-xs font-black transition-all ${isVideoOn ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}
-             >
-               {isVideoOn ? 'ON' : 'OFF'}
-             </button>
+          {/* SENSING & SOUND CONTROLS */}
+          <div className="bg-white p-4 rounded-2xl border border-slate-100 space-y-3">
+            <div className="flex justify-between items-center">
+               <div className="flex items-center gap-2">
+                  <Video className="w-4 h-4 text-purple-500" />
+                  <span className="text-xs font-bold text-slate-600">Video Sensing</span>
+               </div>
+               <button 
+                onClick={() => setIsVideoOn(!isVideoOn)}
+                className={`px-6 py-2 rounded-full text-xs font-black transition-all ${isVideoOn ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}
+               >
+                 {isVideoOn ? 'ON' : 'OFF'}
+               </button>
+            </div>
           </div>
 
-          {/* HUD PROPERTIES */}
+          {/* PROPERTIES HUD */}
           <div className="bg-slate-900 p-6 rounded-[30px] text-white shadow-xl">
-             <div className="grid grid-cols-3 text-center">
-                <div><p className="text-[10px] text-slate-500 uppercase">X</p><p className="font-mono font-bold text-lg">{engineState.current.x}</p></div>
-                <div><p className="text-[10px] text-slate-500 uppercase">Y</p><p className="font-mono font-bold text-lg">{engineState.current.y}</p></div>
-                <div><p className="text-[10px] text-slate-500 uppercase">Size</p><p className="font-mono font-bold text-lg">{engineState.current.size}</p></div>
+             <div className="grid grid-cols-3 text-center gap-2">
+                <div><p className="text-[8px] uppercase text-slate-500">X Position</p><p className="font-mono font-bold text-lg">{engineState.current.x}</p></div>
+                <div><p className="text-[8px] uppercase text-slate-500">Y Position</p><p className="font-mono font-bold text-lg">{engineState.current.y}</p></div>
+                <div><p className="text-[8px] uppercase text-slate-500">Direction</p><p className="font-mono font-bold text-lg">{engineState.current.direction}°</p></div>
              </div>
           </div>
         </div>
