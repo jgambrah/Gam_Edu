@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -10,33 +11,84 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-// 1. ASSET LIBRARIES are now fetched from Firebase
+// --- ADD ASSET MODAL ---
+function AddAssetModal({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded: () => void }) {
+    const firestore = useFirestore();
+    const [form, setForm] = useState({ name: '', emoji: '', url: '', color: '#FFFFFF' });
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleSave = async () => {
+        if (!firestore || !form.name) {
+            alert("Name is required.");
+            return;
+        }
+        await addDoc(collection(firestore, 'scratch_assets'), {
+            ...form,
+            type: type,
+            createdAt: serverTimestamp()
+        });
+        onAdded(); // This will trigger forceRefetch
+        setIsOpen(false); // Close the dialog
+        alert(`${type} Added Successfully!`);
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <button className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center hover:bg-blue-100 text-blue-600 transition-colors">
+                    <Plus className="w-5 h-5" />
+                </button>
+            </DialogTrigger>
+            <DialogContent className="bg-white rounded-[30px]">
+                <DialogHeader>
+                    <DialogTitle>Add New {type}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 p-4">
+                    <Input placeholder="Name (e.g. Dragon)" onChange={e => setForm({...form, name: e.target.value})} />
+                    {type === 'sprite' && <Input placeholder="Emoji (e.g. 🐉)" onChange={e => setForm({...form, emoji: e.target.value})} />}
+                    <Input placeholder="Image URL (or leave blank)" onChange={e => setForm({...form, url: e.target.value})} />
+                    {type === 'backdrop' && (
+                        <div className="flex items-center gap-4">
+                            <Label>Background Color</Label>
+                            <input type="color" defaultValue="#FFFFFF" onChange={e => setForm({...form, color: e.target.value})} />
+                        </div>
+                    )}
+                    <Button onClick={handleSave} className="w-full bg-blue-600 rounded-2xl h-12">Save to Library</Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 export default function ScratchEngine() {
   const blocklyRef = useRef<HTMLDivElement>(null);
   const canvasParentRef = useRef<HTMLDivElement>(null);
   const [workspace, setWorkspace] = useState<any>(null);
   const { toast } = useToast();
-
+  
   const firestore = useFirestore();
 
   // 1. Fetch Sprites from Firebase
   const spriteQuery = useMemoFirebase(() => 
       firestore ? query(collection(firestore, 'scratch_assets'), where('type', '==', 'sprite')) : null, 
   [firestore]);
-  const { data: dbSprites } = useCollection<any>(spriteQuery);
+  const { data: dbSprites, forceRefetch: refetchSprites } = useCollection<any>(spriteQuery);
 
   // 2. Fetch Backdrops from Firebase
   const backdropQuery = useMemoFirebase(() => 
       firestore ? query(collection(firestore, 'scratch_assets'), where('type', '==', 'backdrop')) : null, 
   [firestore]);
-  const { data: dbBackdrops } = useCollection<any>(backdropQuery);
+  const { data: dbBackdrops, forceRefetch: refetchBackdrops } = useCollection<any>(backdropQuery);
 
   // Fallback to defaults if DB is empty
   const sprites = dbSprites?.length ? dbSprites : [
-    { id: 'cat', emoji: '🐱', url: 'https://cdn.pixabay.com/photo/2012/04/01/18/55/cat-24052_960_720.png', name: 'Cat' }
+    { id: 'cat', emoji: '🐱', url: '/assets/cat.png', name: 'Cat' }
   ];
   const backdrops = dbBackdrops?.length ? dbBackdrops : [
     { id: 'white', color: '#FFFFFF', name: 'Plain', img: null }
@@ -45,7 +97,8 @@ export default function ScratchEngine() {
   const [activeSprite, setActiveSprite] = useState(sprites[0]);
   const [activeBackdrop, setActiveBackdrop] = useState(backdrops[0]);
   const [isVideoOn, setIsVideoOn] = useState(false);
-  
+  const p5Instance = useRef<p5 | null>(null);
+
   // Internal Engine State
   const engineState = useRef({
     x: 0,
@@ -55,7 +108,7 @@ export default function ScratchEngine() {
     sayText: ""
   });
 
-  // Update active sprite/backdrop if the list changes and the current one disappears
+   // Update active sprite/backdrop if the list changes and the current one disappears
   useEffect(() => {
     if (sprites.length > 0 && !sprites.find(s => s.id === activeSprite.id)) {
       setActiveSprite(sprites[0]);
@@ -69,35 +122,37 @@ export default function ScratchEngine() {
   }, [backdrops, activeBackdrop]);
 
 
-  // --- 2. BLOCKLY SETUP (ZELOS) ---
+  // --- 2. BLOCKLY SETUP (ZELOS STYLE) ---
   useEffect(() => {
     if (!blocklyRef.current) return;
 
-    // Define Scratch-style Blocks
+    // Define Custom Blocks
     Blockly.Blocks['motion_move'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
         this.appendField("steps");
-        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setColour("#4C97FF");
       }
     };
 
-    Blockly.Blocks['looks_say'] = {
+    Blockly.Blocks['speech_speak'] = {
       init: function(this: Blockly.Block) {
-        this.appendValueInput("TEXT").setCheck("String").appendField("say");
-        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+        this.appendValueInput("TEXT").setCheck("String").appendField("speak");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setColour("#9966FF");
       }
     };
 
-    // Define JavaScript Generators
+    // Generators
     javascriptGenerator.forBlock['motion_move'] = (block) => {
       const steps = javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0';
       return `move(${steps});\n`;
     };
 
-    javascriptGenerator.forBlock['looks_say'] = (block) => {
+    javascriptGenerator.forBlock['speech_speak'] = (block) => {
       const text = javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''";
       return `say(${text});\n`;
     };
@@ -110,7 +165,7 @@ export default function ScratchEngine() {
             <block type="motion_move"><value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
           </category>
           <category name="Looks" colour="#9966FF">
-             <block type="looks_say"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
+             <block type="speech_speak"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
           </category>
         </xml>
       `,
@@ -128,28 +183,24 @@ export default function ScratchEngine() {
       let bgImg: p5.Image | null = null;
       let capture: any;
 
-      p.setup = () => {
-        p.createCanvas(480, 360).parent(canvasParentRef.current!);
-        p.imageMode(p.CENTER);
-        
-        // SAFE LOADING: Fetch images with Error Callbacks to prevent crash
+      p.preload = () => {
         if (activeSprite.url) {
-          p.loadImage(activeSprite.url, 
-              img => spriteImg = img,
-              () => console.log("Sprite Load Failed (CORS)")
-          );
+          p.loadImage(activeSprite.url, img => spriteImg = img, () => console.log("Sprite Load Failed"));
         }
         if (activeBackdrop.img) {
-            p.loadImage(activeBackdrop.img, img => bgImg = img, () => console.log("Backdrop Load Failed"));
+          p.loadImage(activeBackdrop.img, img => bgImg = img, () => console.log("Backdrop Load Failed"));
         }
       };
 
+      p.setup = () => {
+        p.createCanvas(480, 360).parent(canvasParentRef.current!);
+        p.imageMode(p.CENTER);
+      };
+
       p.draw = () => {
-        // 1. Draw Background
         if (bgImg) p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
         else p.background(activeBackdrop.color);
 
-        // 2. Video Sensing
         if (isVideoOn) {
             if (!capture) { capture = p.createCapture(p.VIDEO); capture.hide(); }
             p.push(); p.translate(p.width, 0); p.scale(-1, 1);
@@ -157,7 +208,6 @@ export default function ScratchEngine() {
             p.pop();
         }
 
-        // 3. Draw Sprite (Centered Coordinate System)
         p.push();
         const screenX = p.width/2 + engineState.current.x;
         const screenY = p.height/2 - engineState.current.y;
@@ -170,7 +220,6 @@ export default function ScratchEngine() {
             p.text(activeSprite.emoji, 0, 0);
         }
 
-        // 4. Speech Bubble
         if (engineState.current.sayText) {
             p.fill(255); p.stroke(200); p.rect(20, -80, 100, 40, 10);
             p.fill(0); p.noStroke(); p.textSize(12);
@@ -188,7 +237,6 @@ export default function ScratchEngine() {
   const runCode = () => {
     const code = javascriptGenerator.workspaceToCode(workspace);
     
-    // Commands used by the generator
     const move = (steps: number) => engineState.current.x += steps;
     const say = (text: string) => {
         engineState.current.sayText = text;
@@ -235,11 +283,10 @@ export default function ScratchEngine() {
           {/* ASSET MANAGEMENT PANELS */}
           <div className="grid grid-cols-2 gap-3">
             
-            {/* Sprite Selector */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-[10px] font-black uppercase text-slate-400 flex items-center gap-1"><UserIcon className="w-3 h-3"/> Sprites</span>
-                <Plus className="w-4 h-4 text-blue-500 cursor-pointer"/>
+                <AddAssetModal type="sprite" onAdded={refetchSprites} />
               </div>
               <div className="flex gap-2 flex-wrap">
                 {sprites.map(s => (
@@ -252,10 +299,10 @@ export default function ScratchEngine() {
               </div>
             </div>
 
-            {/* Backdrop Selector */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-[10px] font-black uppercase text-slate-400 flex items-center gap-1"><ImageIcon className="w-3 h-3"/> Backdrops</span>
+                <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />
               </div>
               <div className="flex gap-2 flex-wrap">
                 {backdrops.map(b => (
@@ -269,28 +316,24 @@ export default function ScratchEngine() {
 
           </div>
 
-          {/* SENSING & SOUND CONTROLS */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-100 space-y-3">
-            <div className="flex justify-between items-center">
-               <div className="flex items-center gap-2">
-                  <Video className="w-4 h-4 text-purple-500" />
-                  <span className="text-xs font-bold text-slate-600">Video Sensing</span>
-               </div>
-               <button 
-                onClick={() => setIsVideoOn(!isVideoOn)}
-                className={`px-6 py-2 rounded-full text-xs font-black transition-all ${isVideoOn ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}
-               >
-                 {isVideoOn ? 'ON' : 'OFF'}
-               </button>
-            </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
+             <div className="flex items-center gap-3">
+                <div className="bg-purple-100 p-2 rounded-lg"><Video className="w-5 h-5 text-purple-600"/></div>
+                <span className="font-bold text-slate-600">Video Sensing</span>
+             </div>
+             <button 
+              onClick={() => setIsVideoOn(!isVideoOn)}
+              className={`px-6 py-2 rounded-full text-xs font-black transition-all ${isVideoOn ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}
+             >
+               {isVideoOn ? 'ON' : 'OFF'}
+             </button>
           </div>
 
-          {/* PROPERTIES HUD */}
-          <div className="bg-slate-900 p-6 rounded-[30px] text-white shadow-xl">
+          <div className="bg-slate-800 p-4 rounded-2xl text-white">
              <div className="grid grid-cols-3 text-center gap-2">
-                <div><p className="text-[8px] uppercase text-slate-500">X Position</p><p className="font-mono font-bold text-lg">{engineState.current.x}</p></div>
-                <div><p className="text-[8px] uppercase text-slate-500">Y Position</p><p className="font-mono font-bold text-lg">{engineState.current.y}</p></div>
-                <div><p className="text-[8px] uppercase text-slate-500">Direction</p><p className="font-mono font-bold text-lg">{engineState.current.direction}°</p></div>
+                <div><p className="text-[8px] uppercase text-slate-500">X</p><p className="font-mono font-bold text-lg">{engineState.current.x}</p></div>
+                <div><p className="text-[8px] uppercase text-slate-500">Y</p><p className="font-mono font-bold text-lg">{engineState.current.y}</p></div>
+                <div><p className="text-[8px] uppercase text-slate-500">Size</p><p className="font-mono font-bold text-lg">{engineState.current.size}</p></div>
              </div>
           </div>
         </div>
