@@ -17,6 +17,18 @@ Blockly.Blocks['motion_move'] = {
   }
 };
 
+// VIDEO SENSING BLOCK
+Blockly.Blocks['video_toggle'] = {
+  init: function(this: Blockly.Block) {
+    this.appendDummyInput()
+        .appendField("turn video")
+        .appendField(new Blockly.FieldDropdown([["on","ON"], ["off","OFF"]]), "STATE");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#CF63CF"); // Sensing Purple
+  }
+};
+
 // Define a "Speak" Block (TTS)
 Blockly.Blocks['speech_speak'] = {
   init: function(this: Blockly.Block) {
@@ -25,7 +37,7 @@ Blockly.Blocks['speech_speak'] = {
         .appendField("speak");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(160); // Speech Purple
+    this.setColour("#FF6680"); // Sound Pink
   }
 };
 
@@ -40,4 +52,10 @@ javascriptGenerator.forBlock['motion_move'] = function(block) {
 javascriptGenerator.forBlock['speech_speak'] = function(block) {
   const text = javascriptGenerator.valueToCode(block, 'TEXT', javascriptGenerator.ORDER_ATOMIC) || "''";
   return `speakText(${text});\n`;
+};
+
+// GENERATORS
+javascriptGenerator.forBlock['video_toggle'] = function(block) {
+  const state = block.getFieldValue('STATE');
+  return `toggleVideo("${state}");\n`;
 };
