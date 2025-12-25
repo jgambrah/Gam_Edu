@@ -19,7 +19,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRole } from '@/context/role-context';
 
-
 function AddAssetModal({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded: () => void }) {
     const firestore = useFirestore();
     const [form, setForm] = useState({ name: '', emoji: '', url: '', color: '#4C97FF' });
@@ -88,7 +87,7 @@ export default function ScratchEngine() {
       { id: 'cat', emoji: '🐱', url: '/assets/cat.png', name: 'Cat' }
     ];
     const backdrops = dbBackdrops?.length ? dbBackdrops : [
-      { id: 'white', color: '#FFFFFF', name: 'Plain' }
+      { id: 'white', color: '#FFFFFF', name: 'Plain', img: null }
     ];
 
   const [activeSprite, setActiveSprite] = useState(sprites[0]);
@@ -166,23 +165,30 @@ const engineState = useRef({
     }
   
     const sketch = (p: p5) => {
-      let spriteImg: p5.Image;
+      let spriteImg: p5.Image | null = null;
       let bgImg: p5.Image | null = null;
       let capture: any;
   
       p.setup = () => {
         p.createCanvas(480, 360).parent(canvasParentRef.current!);
         p.imageMode(p.CENTER);
+        p.textAlign(p.CENTER, p.CENTER);
+
+        // Use a try-catch style approach for loading
+        if (activeSprite.url && activeSprite.url.startsWith('http')) {
+            p.loadImage(activeSprite.url, 
+                img => { spriteImg = img; },
+                () => { 
+                  console.warn("CORS blocked image. Falling back to Emoji.");
+                  spriteImg = null; // Forces emoji fallback in draw()
+                }
+            );
+        }
         
-        // SAFE LOADING: Fetch images with Error Callbacks to prevent crash
-        p.loadImage(activeSprite.url, 
-            img => spriteImg = img,
-            (err) => { console.error("Sprite Load Failed:", err); }
-        );
         if (activeBackdrop.img) {
             p.loadImage(activeBackdrop.img, 
-                img => bgImg = img,
-                (err) => { console.error("Backdrop Load Failed:", err); }
+                img => { bgImg = img; },
+                () => { bgImg = null; }
             );
         }
       };
@@ -237,7 +243,6 @@ const engineState = useRef({
     if (!workspace) return;
     const code = javascriptGenerator.workspaceToCode(workspace);
     
-    // Commands used by the generator
     const move = (steps: number) => {
       engineState.current.x += steps;
     };
@@ -293,7 +298,7 @@ const engineState = useRef({
         <div className="w-[520px] p-4 flex flex-col gap-4 bg-slate-50 border-l overflow-y-auto z-10 shadow-inner">
           <div ref={canvasParentRef} className="rounded-2xl overflow-hidden shadow-2xl border-[6px] border-white bg-white w-[480px] h-[360px]" />
           
-            <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {/* Sprite Panel */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                 <div className="flex justify-between items-center mb-3">
