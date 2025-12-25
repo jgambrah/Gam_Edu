@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'cdn.pixabay.com' },
       { protocol: 'https', hostname: 'cdn-icons-png.flaticon.com' },
       { protocol: 'https', hostname: 'img.freepik.com' },
-      { protocol: 'https://t3.ftcdn.net' },
+      { protocol: 'https', hostname: 't3.ftcdn.net' },
       { protocol: 'https', hostname: 'openclipart.org' },
       { protocol: 'https', hostname: 'raw.githubusercontent.com' },
       { protocol: 'https', hostname: 'wallpaperaccess.com' },
