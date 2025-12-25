@@ -80,6 +80,7 @@ const toolboxCategories = {
         colour: '#9966FF',
         contents: [
           { kind: 'block', type: 'looks_say' },
+          { kind: 'block', type: 'looks_nextcostume' },
           { kind: 'block', type: 'looks_changesizeby' },
         ],
       },
@@ -311,7 +312,8 @@ export default function ScratchEngine() {
     penColor: '#000000',
     penSize: 2,
     shouldClearPen: false, // Flag to trigger clearing
-    isJunior: true 
+    isJunior: true,
+    costumeIndex: 0,
   });
 
   const [sounds] = useState([
@@ -402,8 +404,14 @@ export default function ScratchEngine() {
     Blockly.Blocks['pen_penup'] = { init: function() { this.appendDummyInput().appendField("pen up"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
     Blockly.Blocks['pen_setcolor'] = { init: function(this: Blockly.Block) { this.appendValueInput('COLOR').setCheck('Colour').appendField('set pen color to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
     Blockly.Blocks['pen_setsize'] = { init: function(this: Blockly.Block) { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
-    Blockly.Blocks['colour_random'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField('random colour'); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); } };
-    Blockly.Blocks['colour_rgb'] = { init: function(this: Blockly.Block) { this.appendValueInput("RED").setCheck("Number").appendField("colour with red"); this.appendValueInput("GREEN").setCheck("Number").appendField("green"); this.appendValueInput("BLUE").setCheck("Number").appendField("blue"); this.setInputsInline(true); this.setOutput(true, "Colour"); this.setColour('%{BKY_COLOUR_HUE}'); } };
+    Blockly.Blocks['looks_nextcostume'] = {
+      init: function(this: Blockly.Block) {
+        this.appendDummyInput().appendField("next costume");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour("#9966FF");
+      }
+    };
     
     // --- JAVASCRIPT GENERATORS ---
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
@@ -428,8 +436,7 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['pen_penup'] = () => `setPen(false);\n`;
     javascriptGenerator.forBlock['pen_setcolor'] = (b: any) => `setPenColor(${javascriptGenerator.valueToCode(b, 'COLOR', 0) || "'#000000'"});\n`;
     javascriptGenerator.forBlock['pen_setsize'] = (b: any) => `setPenSize(${javascriptGenerator.valueToCode(b, 'SIZE', 0) || 1});\n`;
-    javascriptGenerator.forBlock['colour_random'] = () => `randomColor();\n`;
-    javascriptGenerator.forBlock['colour_rgb'] = (b: any) => `rgbToHex(${javascriptGenerator.valueToCode(b, 'RED', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'GREEN', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'BLUE', 0) || 0});\n`;
+    javascriptGenerator.forBlock['looks_nextcostume'] = () => `nextCostume();\n`;
     
     const ws = Blockly.inject(blocklyRef.current, {
         renderer: 'zelos',
@@ -448,33 +455,25 @@ export default function ScratchEngine() {
   
     const sketch = (p: p5) => {
       let extraCanvas: p5.Graphics;
-      let spriteImg: p5.Image | null = null;
+      let loadedImages: p5.Image[] = [];
       let bgImg: p5.Image | null = null;
       let capture: p5.Element | null = null;
   
+      p.preload = () => {
+          if (activeSprite.costumes && activeSprite.costumes.length > 0) {
+              loadedImages = activeSprite.costumes.map((url: string) => p.loadImage(url));
+          }
+          if (activeBackdrop.img) {
+              bgImg = p.loadImage(activeBackdrop.img);
+          }
+      };
+
       p.setup = () => {
         p.createCanvas(480, 360).parent(canvasParentRef.current!);
         extraCanvas = p.createGraphics(480, 360);
         extraCanvas.clear();
         p.imageMode(p.CENTER);
         p.textAlign(p.CENTER, p.CENTER);
-      
-        if (activeSprite.costumes && activeSprite.costumes[0] && activeSprite.costumes[0].startsWith('http')) {
-            p.loadImage(activeSprite.costumes[0], 
-                img => { spriteImg = img; },
-                (err) => { 
-                  console.error("Sprite Load Failed:", err);
-                  spriteImg = null;
-                }
-            );
-        }
-        
-        if (activeBackdrop.img) {
-            p.loadImage(activeBackdrop.img, 
-                img => { bgImg = img; },
-                () => { bgImg = null; }
-            );
-        }
       };
   
       p.draw = () => {
@@ -485,20 +484,16 @@ export default function ScratchEngine() {
           p.background(activeBackdrop.color || '#F0F9FF');
         }
 
-        // NEW: Check if we need to clear the pen layer
         if (engineState.current.shouldClearPen) {
             extraCanvas.clear();
             engineState.current.shouldClearPen = false;
         }
 
-        // 2. Draw the Pen Layer on top of the background
         p.image(extraCanvas, p.width/2, p.height/2);
 
-        // 3. Logic: If pen is down, draw a line on extraCanvas
         if (engineState.current.isPenDown) {
             extraCanvas.stroke(engineState.current.penColor || '#000');
             extraCanvas.strokeWeight(engineState.current.penSize || 2);
-            // Draw from old position to new position
             extraCanvas.line(
                 p.width/2 + engineState.current.prevX, 
                 p.height/2 - engineState.current.prevY,
@@ -507,11 +502,9 @@ export default function ScratchEngine() {
             );
         }
         
-        // Update "previous" position for the next frame
         engineState.current.prevX = engineState.current.x;
         engineState.current.prevY = engineState.current.y;
 
-        // 4. VIDEO SENSING LAYER
         if (isVideoOn) {
           if (!capture) {
             capture = p.createCapture(p.VIDEO);
@@ -531,14 +524,15 @@ export default function ScratchEngine() {
           }
         }
       
-        // 5. Draw Sprite
         p.push();
         const screenX = p.width/2 + engineState.current.x;
         const screenY = p.height/2 - engineState.current.y;
         p.translate(screenX, screenY);
         
-        if (spriteImg) {
-            p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
+        const currentCostume = loadedImages[engineState.current.costumeIndex];
+
+        if (currentCostume) {
+            p.image(currentCostume, 0, 0, engineState.current.size, engineState.current.size);
         } else {
             p.textSize(engineState.current.size * 0.8);
             p.text(activeSprite.emoji || "🐱", 0, 0);
@@ -557,56 +551,35 @@ export default function ScratchEngine() {
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
   const runCode = async () => {
-    // Generate code and wrap it in an async function
     const rawCode = javascriptGenerator.workspaceToCode(workspace);
     
-    // Scoped helper functions
-    const move = (steps: number) => { engineState.current.x += steps; };
-    const turn = (degrees: number) => { engineState.current.direction += degrees; };
-    const goTo = (x: number, y: number) => { engineState.current.x = x; engineState.current.y = y; };
-    const changeSizeBy = (change: number) => { engineState.current.size += change; };
-    
-    const say = (text: string) => {
-      engineState.current.sayText = text;
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-      // Bubbles disappear after 2 seconds
-      setTimeout(() => { 
-        if (engineState.current) engineState.current.sayText = "";
-      }, 2000);
-    };
-  
-    const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
-
-    const toggleVideo = (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON');
-
-    const randomColor = () => `#${Math.floor(Math.random()*16777215).toString(16)}`;
-
-    const rgbToHex = (r: number, g: number, b: number) => `#${[r,g,b].map(x => {
-        const hex = x.toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-    }).join('')}`;
-  
-    // Execution environment (Injects variables and sensing data)
     const context = {
-        move,
-        turn,
-        goTo,
-        changeSizeBy,
-        say,
-        wait,
-        toggleVideo,
-        mouseX: p5Instance.current?.mouseX || 0,
-        mouseY: p5Instance.current?.mouseY || 0,
+        move: (steps: number) => { engineState.current.x += steps; },
+        turn: (degrees: number) => { engineState.current.direction += degrees; },
+        goTo: (x: number, y: number) => { engineState.current.x = x; engineState.current.y = y; },
+        changeSizeBy: (change: number) => { engineState.current.size += change; },
+        say: (text: string) => {
+            engineState.current.sayText = text;
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+            setTimeout(() => { 
+                if (engineState.current) engineState.current.sayText = "";
+            }, 2000);
+        },
+        wait: (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000)),
+        toggleVideo: (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON'),
         setPen: (isDown: boolean) => { engineState.current.isPenDown = isDown; },
         penClear: () => { engineState.current.shouldClearPen = true; },
         setPenColor: (color: string) => { engineState.current.penColor = color; },
         setPenSize: (size: number) => { engineState.current.penSize = Math.max(1, size); },
-        randomColor,
-        rgbToHex
+        nextCostume: () => {
+          const numCostumes = activeSprite.costumes?.length || 1;
+          engineState.current.costumeIndex = (engineState.current.costumeIndex + 1) % numCostumes;
+        },
+        mouseX: p5Instance.current?.mouseX || 0,
+        mouseY: p5Instance.current?.mouseY || 0,
     };
   
     try {
-      // Create an Async function to allow 'await wait()'
       const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
       const runner = new AsyncFunction(...Object.keys(context), rawCode);
       await runner(...Object.values(context));
