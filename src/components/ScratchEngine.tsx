@@ -268,53 +268,55 @@ const ScratchEngine = () => {
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
-            
+    
             p.preload = () => {
                 const newImages: { [key: string]: p5.Image } = {};
                 const assetsToLoad: { key: string; url: string }[] = [];
-
+    
                 sprites.forEach(sprite => {
                     if (sprite.costumes) {
                         sprite.costumes.forEach((url, index) => {
-                            if (url) {
+                            if (url && url.startsWith('http')) { // Only load actual URLs
                                 assetsToLoad.push({ key: `${sprite.id}-${index}`, url });
                             }
                         });
                     }
                 });
-
+    
                 backdrops.forEach(backdrop => {
-                    if (backdrop.url) {
+                    if (backdrop.url && backdrop.url.startsWith('http')) {
                         assetsToLoad.push({ key: backdrop.id, url: backdrop.url });
                     }
                 });
-
+    
                 if (assetsToLoad.length === 0) {
                     setIsLoading(false);
                     return;
                 }
-                
+    
                 setIsLoading(true);
                 let loadedCount = 0;
+                const tempImages: { [key: string]: p5.Image } = {};
+    
                 assetsToLoad.forEach(({ key, url }) => {
                     p.loadImage(url, img => {
-                        newImages[key] = img;
+                        tempImages[key] = img;
                         loadedCount++;
                         if (loadedCount === assetsToLoad.length) {
-                            setLoadedImages(prev => ({...prev, ...newImages}));
+                            setLoadedImages(prev => ({...prev, ...tempImages}));
                             setIsLoading(false);
                         }
                     }, err => {
                         console.error(`Failed to load image: ${url}`, err);
                         loadedCount++;
                         if (loadedCount === assetsToLoad.length) {
-                            setLoadedImages(prev => ({...prev, ...newImages}));
+                             setLoadedImages(prev => ({...prev, ...tempImages}));
                             setIsLoading(false);
                         }
                     });
                 });
             };
-
+    
             p.setup = () => {
                 const container = p5ContainerRef.current!;
                 const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
@@ -399,7 +401,7 @@ const ScratchEngine = () => {
         return () => {
             p5Instance.remove();
         };
-    }, [activeSprite, activeBackdrop, sprites, backdrops]); // Re-run sketch if active items change
+    }, [sprites, backdrops, activeSprite, activeBackdrop]); // Re-run sketch if any assets change
 
     const handleReset = () => {
         engineState.current = {
@@ -502,5 +504,3 @@ const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
 };
 
 export default ScratchEngine;
-
-    
