@@ -1,28 +1,12 @@
+// This file has been deprecated and its functionality moved.
+// The primary coding club page is now located at /dashboard/senior-academy
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-'use client';
-
-import dynamic from 'next/dynamic';
-import { Loader2 } from 'lucide-react';
-import ScratchEngine from '@/components/ScratchEngine';
-
-// Use dynamic import to safely load the heavy Blockly/p5 components
-const ScratchEngineWithLoading = dynamic(
-  () => import('@/components/ScratchEngine'), 
-  { 
-    ssr: false, 
-    loading: () => (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-900">
-        <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
-        <p className="text-white font-bold">Initializing Studio...</p>
-      </div>
-    )
-  }
-);
-
-export default function CodingClubPage() {
-  return (
-    <main className="h-screen w-full">
-      <ScratchEngineWithLoading />
-    </main>
-  );
+export default function DeprecatedCodingClubPage() {
+    const router = useRouter();
+    useEffect(() => {
+        router.replace('/dashboard/senior-academy');
+    }, [router]);
+    return null; // Render nothing as it will redirect
 }
