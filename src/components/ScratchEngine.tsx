@@ -133,6 +133,41 @@ export default function ScratchEngine() {
         this.setColour(230); // Motion Blue
       }
     };
+    
+    // --- NEW BLOCK DEFINITIONS ---
+    Blockly.Blocks['motion_turnright'] = {
+      init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
+    };
+    Blockly.Blocks['motion_goto'] = {
+        init: function(this: Blockly.Block) { this.appendValueInput("X").setCheck("Number").appendField("go to x:"); this.appendValueInput("Y").setCheck("Number").appendField("y:"); this.setInputsInline(true); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
+    };
+    Blockly.Blocks['looks_changesizeby'] = {
+        init: function(this: Blockly.Block) { this.appendValueInput("CHANGE").setCheck("Number").appendField("change size by"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#9966FF"); }
+    };
+    Blockly.Blocks['sound_play'] = {
+        init: function(this: Blockly.Block) { this.appendValueInput("SOUND").setCheck("String").appendField("play sound"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#D65DB1"); }
+    };
+    Blockly.Blocks['control_repeat'] = {
+        init: function(this: Blockly.Block) { this.appendValueInput("TIMES").setCheck("Number").appendField("repeat"); this.appendStatementInput("DO").appendField("do"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#FFAB19"); }
+    };
+    Blockly.Blocks['control_forever'] = {
+        init: function(this: Blockly.Block) { this.appendDummyInput().appendField("forever"); this.appendStatementInput("DO"); this.setPreviousStatement(true, null); this.setColour("#FFAB19"); }
+    };
+    Blockly.Blocks['sensing_touchingmouse'] = {
+        init: function(this: Blockly.Block) { this.appendDummyInput().appendField("touching mouse-pointer?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
+    };
+    Blockly.Blocks['sensing_mousedown'] = {
+        init: function(this: Blockly.Block) { this.appendDummyInput().appendField("mouse down?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
+    };
+    Blockly.Blocks['operator_add'] = {
+        init: function(this: Blockly.Block) { this.appendValueInput("A").setCheck("Number"); this.appendValueInput("B").setCheck("Number").appendField("+"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
+    };
+    Blockly.Blocks['operator_random'] = {
+        init: function(this: Blockly.Block) { this.appendValueInput("FROM").setCheck("Number").appendField("pick random from"); this.appendValueInput("TO").setCheck("Number").appendField("to"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
+    };
+    Blockly.Blocks['operator_equals'] = {
+        init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
+    };
 
     // Custom Say Block
     Blockly.Blocks['looks_say'] = {
@@ -271,7 +306,7 @@ export default function ScratchEngine() {
             p.loadImage(activeSprite.url, 
                 img => { spriteImg = img; },
                 (err) => { 
-                  console.error("Sprite Load Failed:", err);
+                  console.warn("CORS blocked image. Falling back to Emoji.");
                   spriteImg = null; // Forces emoji fallback in draw()
                 }
             );
@@ -286,66 +321,65 @@ export default function ScratchEngine() {
       };
   
       p.draw = () => {
-          // 1. Draw Background
-          if (bgImg) {
-            p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
-          } else {
-            p.background(activeBackdrop.color || '#F0F9FF');
+        // 1. Draw Background
+        if (bgImg) {
+          p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
+        } else {
+          p.background(activeBackdrop.color || '#F0F9FF');
+        }
+      
+        // 2. NEW: VIDEO SENSING LAYER
+        if (isVideoOn) {
+          if (!capture) {
+            capture = p.createCapture(p.VIDEO);
+            (capture as any).size(480, 360);
+            capture.hide(); // Hide the extra video element below the canvas
           }
-
-          // 2. NEW: VIDEO SENSING LAYER
-          if (isVideoOn) {
-            if (!capture) {
-              capture = p.createCapture(p.VIDEO);
-              (capture as any).size(480, 360);
-              capture.hide(); // Hide the extra video element below the canvas
-            }
-            p.push();
-            p.translate(p.width, 0); 
-            p.scale(-1, 1); // Mirror the video so it feels natural
-            p.tint(255, 120); // Make it ghostly/transparent like Scratch
-            p.image(capture, p.width/2, p.height/2, p.width, p.height);
-            p.pop();
-          } else {
-            // If video is turned off, stop the stream to save battery/cpu
-            const stream = (capture?.elt as HTMLVideoElement)?.srcObject as MediaStream;
-            stream?.getTracks().forEach(track => track.stop());
-            capture = null;
-          }
-        
-          // 3. Draw Sprite (as before)
           p.push();
-          const screenX = p.width/2 + engineState.current.x;
-          const screenY = p.height/2 - engineState.current.y;
-          p.translate(screenX, screenY);
-          
-          if (spriteImg) {
-              p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
-          } else {
-              // MAGICAL FALLBACK: Big Emojis for Juniors
-              p.textSize(engineState.current.size * 0.8);
-              p.text(activeSprite.emoji || "🐱", 0, 0);
-          }
-        
-          // 4. MAGIC SPEECH BUBBLE (Visual Fix)
-          if (engineState.current.sayText) {
-              p.push();
-              p.fill(255);
-              p.stroke('#4C97FF');
-              p.strokeWeight(4);
-              // Draw a rounded bubble
-              p.rect(-60, -110, 120, 50, 20);
-              // Draw the little tail
-              p.triangle(-10, -60, 10, -60, 0, -40);
-              
-              p.noStroke();
-              p.fill('#2D3748');
-              p.textSize(16);
-              p.text(engineState.current.sayText, 0, -85);
-              p.pop();
-          }
+          p.translate(p.width, 0); 
+          p.scale(-1, 1); // Mirror the video so it feels natural
+          p.tint(255, 120); // Make it ghostly/transparent like Scratch
+          p.image(capture, p.width/2, p.height/2, p.width, p.height);
           p.pop();
-        };
+        } else {
+          // If video is turned off, stop the stream to save battery/cpu
+          const stream = (capture?.elt as HTMLVideoElement)?.srcObject as MediaStream;
+          stream?.getTracks().forEach(track => track.stop());
+          capture = null;
+        }
+      
+        // 3. Draw Sprite (as before)
+        p.push();
+        const screenX = p.width/2 + engineState.current.x;
+        const screenY = p.height/2 - engineState.current.y;
+        p.translate(screenX, screenY);
+        
+        if (spriteImg) {
+            p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
+        } else {
+            p.textSize(engineState.current.size * 0.8);
+            p.text(activeSprite.emoji || "🐱", 0, 0);
+        }
+      
+        // 4. MAGIC SPEECH BUBBLE (Visual Fix)
+        if (engineState.current.sayText) {
+            p.push();
+            p.fill(255);
+            p.stroke('#4C97FF');
+            p.strokeWeight(4);
+            // Draw a rounded bubble
+            p.rect(-60, -110, 120, 50, 20);
+            // Draw the little tail
+            p.triangle(-10, -60, 10, -60, 0, -40);
+            
+            p.noStroke();
+            p.fill('#2D3748');
+            p.textSize(16);
+            p.text(engineState.current.sayText, 0, -85);
+            p.pop();
+        }
+        p.pop();
+      };
     };
   
     p5Instance.current = new p5(sketch);
