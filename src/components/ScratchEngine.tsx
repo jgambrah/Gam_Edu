@@ -120,8 +120,6 @@ export default function ScratchEngine() {
     if (!blocklyRef.current) return;
 
     // --- BLOCK DEFINITIONS ---
-    
-    // Custom Move Block
     Blockly.Blocks['motion_move'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("STEPS")
@@ -134,7 +132,6 @@ export default function ScratchEngine() {
       }
     };
     
-    // --- NEW BLOCK DEFINITIONS ---
     Blockly.Blocks['motion_turnright'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
     };
@@ -168,8 +165,6 @@ export default function ScratchEngine() {
     Blockly.Blocks['operator_equals'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
     };
-
-    // Custom Say Block
     Blockly.Blocks['looks_say'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("TEXT")
@@ -180,8 +175,6 @@ export default function ScratchEngine() {
         this.setColour("#9966FF"); // Looks Purple
       }
     };
-
-    // VIDEO SENSING BLOCK
     Blockly.Blocks['video_toggle'] = {
       init: function(this: Blockly.Block) {
         this.appendDummyInput()
@@ -192,18 +185,13 @@ export default function ScratchEngine() {
         this.setColour("#CF63CF"); // Sensing Purple
       }
     };
-
-    // 1. Control: Wait (Seconds)
     Blockly.Blocks['control_wait'] = {
       init: function(this: Blockly.Block) {
-        this.appendValueInput("DURATION").setCheck("Number").appendField("wait");
-        this.appendField("seconds");
+        this.appendValueInput("DURATION").setCheck("Number").appendField("wait").appendField("seconds");
         this.setPreviousStatement(true, null); this.setNextStatement(true, null);
         this.setColour("#FFAB19");
       }
     };
-
-    // 2. Events: When Flag Clicked (Visual only for now)
     Blockly.Blocks['event_whenflagclicked'] = {
       init: function(this: Blockly.Block) {
         this.appendDummyInput().appendField("when flag clicked 🚩");
@@ -212,31 +200,23 @@ export default function ScratchEngine() {
       }
     };
 
-
     // --- JAVASCRIPT GENERATORS ---
-
-    javascriptGenerator.forBlock['motion_move'] = (block: any) => {
-      const steps = javascriptGenerator.valueToCode(block, 'STEPS', (javascriptGenerator as any).ORDER_ATOMIC) || '0';
-      return `move(${steps});\n`;
-    };
-
-    javascriptGenerator.forBlock['looks_say'] = (block: any) => {
-      const text = javascriptGenerator.valueToCode(block, 'TEXT', (javascriptGenerator as any).ORDER_ATOMIC) || "''";
-      return `say(${text});\n`;
-    };
-
-    // GENERATORS
-    javascriptGenerator.forBlock['video_toggle'] = function(block) {
-      const state = block.getFieldValue('STATE');
-      return `toggleVideo("${state}");\n`;
-    };
-
-    javascriptGenerator.forBlock['control_wait'] = (block: any) => {
-      const duration = javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1';
-      return `await wait(${duration});\n`; // We use async/await for smooth timing
-    };
-
-    javascriptGenerator.forBlock['event_whenflagclicked'] = () => ""; // The runner starts execution
+    javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
+    javascriptGenerator.forBlock['looks_say'] = (block: any) => `say(${javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''"});\n`;
+    javascriptGenerator.forBlock['video_toggle'] = (block: any) => `toggleVideo("${block.getFieldValue('STATE')}");\n`;
+    javascriptGenerator.forBlock['control_wait'] = (block: any) => `await wait(${javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1'});\n`;
+    javascriptGenerator.forBlock['event_whenflagclicked'] = () => "";
+    javascriptGenerator.forBlock['motion_turnright'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['motion_goto'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['looks_changesizeby'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['sound_play'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['control_repeat'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['control_forever'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['sensing_touchingmouse'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['sensing_mousedown'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['operator_add'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['operator_random'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['operator_equals'] = (block: any) => `\n`;
 
 
     const toolbox = `
@@ -300,7 +280,7 @@ export default function ScratchEngine() {
         p.createCanvas(480, 360).parent(canvasParentRef.current!);
         p.imageMode(p.CENTER);
         p.textAlign(p.CENTER, p.CENTER);
-  
+      
         // Use a try-catch style approach for loading
         if (activeSprite.url && activeSprite.url.startsWith('http')) {
             p.loadImage(activeSprite.url, 
@@ -343,9 +323,10 @@ export default function ScratchEngine() {
           p.pop();
         } else {
           // If video is turned off, stop the stream to save battery/cpu
-          const stream = (capture?.elt as HTMLVideoElement)?.srcObject as MediaStream;
-          stream?.getTracks().forEach(track => track.stop());
-          capture = null;
+          if (capture) {
+            (capture as any).stop();
+            capture = null;
+          }
         }
       
         // 3. Draw Sprite (as before)
@@ -359,24 +340,6 @@ export default function ScratchEngine() {
         } else {
             p.textSize(engineState.current.size * 0.8);
             p.text(activeSprite.emoji || "🐱", 0, 0);
-        }
-      
-        // 4. MAGIC SPEECH BUBBLE (Visual Fix)
-        if (engineState.current.sayText) {
-            p.push();
-            p.fill(255);
-            p.stroke('#4C97FF');
-            p.strokeWeight(4);
-            // Draw a rounded bubble
-            p.rect(-60, -110, 120, 50, 20);
-            // Draw the little tail
-            p.triangle(-10, -60, 10, -60, 0, -40);
-            
-            p.noStroke();
-            p.fill('#2D3748');
-            p.textSize(16);
-            p.text(engineState.current.sayText, 0, -85);
-            p.pop();
         }
         p.pop();
       };
@@ -400,17 +363,13 @@ export default function ScratchEngine() {
     const move = (steps: number) => { engineState.current.x += steps; };
     
     const say = (text: string) => {
-        // 1. Show bubble on screen
-        engineState.current.sayText = text;
-        // 2. Browser Voice Engine
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        window.speechSynthesis.speak(utterance);
-        // 3. Auto-hide bubble after 3 seconds
-        setTimeout(() => {
-            if(engineState.current) engineState.current.sayText = ""
-        }, 3000);
-      };
+      engineState.current.sayText = text;
+      window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+      // Bubbles disappear after 2 seconds
+      setTimeout(() => { 
+        if (engineState.current) engineState.current.sayText = "";
+      }, 2000);
+    };
   
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
   
@@ -465,51 +424,51 @@ export default function ScratchEngine() {
           </div>
 
           {/* MAGIC MIRROR (VIDEO SENSING) */}
-            <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
-              <div className="flex items-center gap-3">
-                 <div className="bg-purple-100 p-3 rounded-2xl">
-                    <Video className="w-6 h-6 text-purple-600" />
-                 </div>
-                 <div>
-                    <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest leading-none mb-1">Magic Mirror</p>
-                    <p className="text-sm font-bold text-slate-700">Video Sensing</p>
-                 </div>
+          <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-purple-100 p-3 rounded-2xl">
+                  <Video className="w-6 h-6 text-purple-600" />
               </div>
-              <button 
-                onClick={() => setIsVideoOn(!isVideoOn)}
-                className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${
-                  isVideoOn 
-                    ? 'bg-purple-500 text-white shadow-[0_4px_0_#7e22ce]' 
-                    : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
-                }`}
-              >
-                {isVideoOn ? 'ON' : 'OFF'}
-              </button>
+              <div>
+                  <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest leading-none mb-1">Magic Mirror</p>
+                  <p className="text-sm font-bold text-slate-700">Video Sensing</p>
+              </div>
             </div>
+            <button 
+              onClick={() => setIsVideoOn(!isVideoOn)}
+              className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${
+                isVideoOn 
+                  ? 'bg-purple-500 text-white shadow-[0_4px_0_#7e22ce]' 
+                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+              }`}
+            >
+              {isVideoOn ? 'ON' : 'OFF'}
+            </button>
+          </div>
 
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <span className="text-[10px] font-black uppercase text-pink-400 mb-3 block">Sound Library</span>
-                <div className="flex gap-2">
-                    {sounds.map(s => (
-                    <button 
-                        key={s.id} 
-                        onClick={() => new Audio(s.url).play()}
-                        className="p-3 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors"
-                    >
-                        {s.emoji} <span className="text-[10px] font-bold text-pink-600">{s.id}</span>
-                    </button>
-                    ))}
-                </div>
-            </div>
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              <span className="text-[10px] font-black uppercase text-pink-400 mb-3 block">Sound Library</span>
+              <div className="flex gap-2">
+                  {sounds.map(s => (
+                  <button 
+                      key={s.id} 
+                      onClick={() => new Audio(s.url).play()}
+                      className="p-3 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors"
+                  >
+                      {s.emoji} <span className="text-[10px] font-bold text-pink-600">{s.id}</span>
+                  </button>
+                  ))}
+              </div>
+          </div>
 
           {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
-               <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4">
                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
                   {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
-               </div>
-               <div className="flex gap-3 flex-wrap">
+              </div>
+              <div className="flex gap-3 flex-wrap">
                   {SPRITE_LIBRARY.map(s => (
                     <button 
                       key={s.id} 
@@ -519,15 +478,15 @@ export default function ScratchEngine() {
                       {s.emoji}
                     </button>
                   ))}
-               </div>
+              </div>
             </div>
             
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
-               <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-4">
                   <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
                   {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
-               </div>
-               <div className="flex gap-3 flex-wrap">
+              </div>
+              <div className="flex gap-3 flex-wrap">
                     {BACKDROP_LIBRARY.map(b => (
                         <button 
                         key={b.id} 
@@ -536,7 +495,7 @@ export default function ScratchEngine() {
                         style={{ backgroundColor: b.color, backgroundImage: `url(${b.img})`, backgroundSize: 'cover' }}
                         />
                     ))}
-               </div>
+              </div>
             </div>
           </div>
         </div>
