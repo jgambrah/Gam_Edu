@@ -29,6 +29,7 @@ import {
   Eraser,
   Undo2,
   Redo2,
+  Loader2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth, useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
@@ -42,7 +43,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import confetti from 'canvas-confetti';
 import { Badge } from '@/components/ui/badge';
 import { useRole } from '@/context/role-context';
-import { registerCustomBlocks } from '@/lib/blockly/custom-blocks';
+import { registerCustomBlocks } from '@/lib/blockly/custom-blocks.ts';
 
 registerCustomBlocks();
 
@@ -72,8 +73,8 @@ const SPRITE_LIBRARY = [
 ];
 const DEFAULT_BACKDROPS = [
   { id: 'blue-sky', name: 'Blue Sky', color: '#87CEEB', url: '' },
-  { id: 'space', name: 'Space', color: '#000033', url: 'https://www.publicdomainpictures.net/pictures/170000/nahled/simple-star-field-background.jpg' },
-  { id: 'grid', name: 'Grid', color: '#FFFFFF', url: 'https://www.publicdomainpictures.net/pictures/20000/nahled/white-grid-paper.jpg' }
+  { id: 'space', name: 'Space', color: '#000033', url: 'https://cdn.pixabay.com/photo/2016/10/20/18/35/earth-1756274_960_720.jpg' },
+  { id: 'grid', name: 'Grid', color: '#FFFFFF', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Grid_from_the_Noun_Project.svg/2000px-Grid_from_the_Noun_Project.svg.png' }
 ];
 
 const SOUND_LIBRARY = [
@@ -92,8 +93,7 @@ const ScratchEngine = () => {
     const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
     const [activeBackdrop, setActiveBackdrop] = useState(DEFAULT_BACKDROPS[0]);
     const [loadedImages, setLoadedImages] = useState<{ [key: string]: p5.Image }>({});
-    const [bgImg, setBgImg] = useState<p5.Image | null>(null);
-
+    
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -268,40 +268,47 @@ const ScratchEngine = () => {
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
-            const tempImages: { [key: string]: p5.Image } = {};
-
+            
             const preloadAssets = () => {
                 setIsLoading(true);
-                const allAssets: { key: string, url: string }[] = [];
+                const newImages: { [key: string]: p5.Image } = {};
+                const assetsToLoad: { key: string; url: string }[] = [];
 
                 sprites.forEach(sprite => {
-                    sprite.costumes?.forEach((url, index) => {
-                        if (url) allAssets.push({ key: `${sprite.id}-${index}`, url });
-                    });
+                    if (sprite.costumes) {
+                        sprite.costumes.forEach((url, index) => {
+                            if (url) { // Check if URL is not empty
+                                assetsToLoad.push({ key: `${sprite.id}-${index}`, url });
+                            }
+                        });
+                    }
                 });
+
                 backdrops.forEach(backdrop => {
-                    if (backdrop.url) allAssets.push({ key: backdrop.id, url: backdrop.url });
+                    if (backdrop.url) { // Check if URL is not empty
+                        assetsToLoad.push({ key: backdrop.id, url: backdrop.url });
+                    }
                 });
-                
-                if(allAssets.length === 0) {
+
+                if (assetsToLoad.length === 0) {
                     setIsLoading(false);
                     return;
                 }
-
+                
                 let loadedCount = 0;
                 allAssets.forEach(({ key, url }) => {
                     p.loadImage(url, img => {
-                        tempImages[key] = img;
+                        newImages[key] = img;
                         loadedCount++;
                         if (loadedCount === allAssets.length) {
-                            setLoadedImages(tempImages);
+                            setLoadedImages(prev => ({...prev, ...newImages}));
                             setIsLoading(false);
                         }
                     }, err => {
                         console.error(`Failed to load image: ${url}`, err);
-                        loadedCount++; // Still increment to not block loading forever
+                        loadedCount++;
                         if (loadedCount === allAssets.length) {
-                            setLoadedImages(tempImages);
+                            setLoadedImages(prev => ({...prev, ...newImages}));
                             setIsLoading(false);
                         }
                     });
@@ -342,7 +349,7 @@ const ScratchEngine = () => {
                         p.height / 2 - engineState.current.y
                     );
                 }
-                p.image(penLayer, 0, 0); // Draw at (0,0) as it's a separate canvas layer
+                p.image(penLayer, 0, 0);
 
                 // Sprite
                 const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
@@ -393,7 +400,7 @@ const ScratchEngine = () => {
         return () => {
             p5Instance.remove();
         };
-    }, [activeSprite, activeBackdrop]); 
+    }, [activeSprite.id, activeBackdrop.id]);
 
     const handleReset = () => {
         engineState.current = {
@@ -401,12 +408,11 @@ const ScratchEngine = () => {
             size: 100, message: '', messageDuration: 0,
             isPenDown: false, penColor: '#000000', shouldClear: true, costumeIndex: 0
         };
-        // The draw loop will handle the rest
     };
 
 
     const handleSpriteSelect = (sprite: any) => {
-        engineState.current.costumeIndex = 0; // Reset costume on sprite change
+        engineState.current.costumeIndex = 0;
         setActiveSprite(sprite);
     };
 
@@ -414,8 +420,6 @@ const ScratchEngine = () => {
         setActiveBackdrop(backdrop);
     };
     
-    // This is a placeholder since the original component had these variables but they weren't defined.
-    // Replace with your actual logic for fetching these.
     const canEdit = false;
     const refetchAssets = () => {};
     
@@ -429,6 +433,7 @@ const ScratchEngine = () => {
                 
                 {/* Stage */}
                 <div className="relative aspect-video bg-white border border-gray-300 rounded" ref={p5ContainerRef}>
+                    {isLoading && <div className="absolute inset-0 bg-black/20 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-white" /></div>}
                     <div className="absolute top-2 right-2 flex gap-2">
                         <Button size="icon" onClick={runCode} className="bg-green-500 hover:bg-green-600"><Play className="h-5 w-5"/></Button>
                         <Button size="icon" variant="destructive" onClick={handleReset}><Square className="h-5 w-5"/></Button>
@@ -495,5 +500,3 @@ const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
 };
 
 export default ScratchEngine;
-
-      
