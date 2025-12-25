@@ -1,4 +1,5 @@
-import './globals.css'; // Make sure this path is correct
+
+import './globals.css';
 
 export default function RootLayout({
   children,
@@ -7,7 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="antialiased">
+        {/* If your Sidebar is a component, it should be used here 
+            or inside the dashboard/layout.tsx */}
         {children}
       </body>
     </html>
