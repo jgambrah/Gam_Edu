@@ -28,3 +28,16 @@ Blockly.Blocks['speech_speak'] = {
     this.setColour(160); // Speech Purple
   }
 };
+
+const javascriptGenerator = Blockly.getGenerator('javascript');
+
+javascriptGenerator.forBlock['motion_move'] = function(block) {
+  const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '0';
+  // We use a global 'sprite' object provided to the p5 context
+  return `sprite.move(${steps});\n`;
+};
+
+javascriptGenerator.forBlock['speech_speak'] = function(block) {
+  const text = javascriptGenerator.valueToCode(block, 'TEXT', javascriptGenerator.ORDER_ATOMIC) || "''";
+  return `speakText(${text});\n`;
+};
