@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -16,7 +15,7 @@ import {
   Video,
   PlusCircle,
   Ghost,
-  MousePointer2,
+  MousePointer,
   Plus,
   Trash2,
   FolderOpen,
@@ -79,14 +78,15 @@ const SOUND_LIBRARY = [
   { 
     id: 'meow', 
     label: 'Meow 🐱', 
-    url: 'https://cdn.freesound.org/previews/256/256339_4030635-lq.mp3' 
+    url: 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2T" // Placeholder
   },
   { 
     id: 'pop', 
     label: 'Pop 🎈', 
-    url: 'https://cdn.freesound.org/previews/511/511484_10825312-lq.mp3' 
+    url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' // Placeholder
   }
 ];
+
 
 const ScratchEngine = () => {
     const { toast } = useToast();
@@ -155,7 +155,7 @@ const ScratchEngine = () => {
                 ]},
                 { kind: 'category', name: 'Sensing', colour: '#4CBFE6', contents: [{ kind: 'block', type: 'sensing_touchingmouse' }] },
                 { kind: 'category', name: 'Operators', colour: '#40BF4A', contents: [{ kind: 'block', type: 'operator_random' }] },
-                { kind: 'category', 'name': 'Pen', 'colour': '#00B295', 'contents': [
+                { kind: 'category', name: 'Pen', colour: '#00B295', contents: [
                     { 'kind': 'block', 'type': 'pen_clear' },
                     { 'kind': 'block', 'type': 'pen_stamp' },
                     { 'kind': 'block', 'type': 'pen_penDown' },
@@ -271,49 +271,61 @@ const ScratchEngine = () => {
     
     // P5.js sketch setup
     useEffect(() => {
-        if (!p5ContainerRef.current) return;
+        if (typeof window === 'undefined') return;
         
+        if (!p5ContainerRef.current) return;
+
+        // Cleanup previous p5 instance if it exists
+        if (p5InstanceRef.current) {
+            p5InstanceRef.current.remove();
+        }
+
         let p5Instance: p5;
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
             
-            const preloadAssets = () => {
-                // Preload costumes for the active sprite
-                if (activeSprite.costumes && activeSprite.costumes.length > 0) {
-                     activeSprite.costumes.forEach((url, index) => {
-                        const key = `${activeSprite.id}-${index}`;
-                        if (!loadedImages[key]) {
-                           p.loadImage(url, img => {
-                               setLoadedImages(prev => ({...prev, [key]: img}));
-                           }, err => {
-                               console.error(`Failed to load costume: ${url}`, err);
-                           });
-                        }
-                    });
-                }
-                // Preload backdrop image
-                if (activeBackdrop.url && !loadedImages[activeBackdrop.id]) {
-                    p.loadImage(activeBackdrop.url, img => {
-                         setLoadedImages(prev => ({...prev, [activeBackdrop.id]: img}));
-                    });
-                }
+            p.preload = () => {
+                // Preload costumes for all sprites
+                sprites.forEach(sprite => {
+                    if (sprite.costumes) {
+                        sprite.costumes.forEach((url, index) => {
+                            const key = `${sprite.id}-${index}`;
+                            if (!loadedImages[key]) {
+                               p.loadImage(url, img => {
+                                   setLoadedImages(prev => ({...prev, [key]: img}));
+                               }, err => {
+                                   console.error(`Failed to load costume: ${url}`, err);
+                               });
+                            }
+                        });
+                    }
+                });
+                // Preload all backdrop images
+                backdrops.forEach(backdrop => {
+                    if (backdrop.url && !loadedImages[backdrop.id]) {
+                        p.loadImage(backdrop.url, img => {
+                             setLoadedImages(prev => ({...prev, [backdrop.id]: img}));
+                        }, err => {
+                            console.error(`Failed to load backdrop: ${backdrop.url}`, err);
+                        });
+                    }
+                });
             };
-            
+
             p.setup = () => {
                 const container = p5ContainerRef.current!;
                 const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
                 canvas.parent(container);
                 penLayer = p.createGraphics(p.width, p.height);
                 p.frameRate(30);
-                preloadAssets();
             };
-    
+
             p.draw = () => {
                 // Background
                 const bg = loadedImages[activeBackdrop.id];
                 if (bg) {
-                    p.background(bg);
+                    p.image(bg, 0, 0, p.width, p.height);
                 } else {
                     p.background(activeBackdrop.color || '#FFFFFF');
                 }
@@ -334,7 +346,7 @@ const ScratchEngine = () => {
                         p.height / 2 - engineState.current.y
                     );
                 }
-                p.image(penLayer, p.width/2, p.height/2);
+                p.image(penLayer, 0, 0);
 
                 // Sprite
                 const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
@@ -379,15 +391,12 @@ const ScratchEngine = () => {
             };
         };
         
-        if (p5Instance.current) {
-            p5Instance.current.remove();
-        }
         p5Instance.current = new p5(sketch);
         
         return () => {
             p5Instance.current?.remove();
         };
-    }, [activeSprite, activeBackdrop, loadedImages]); // Re-run sketch if active items or loaded images change
+    }, [activeSprite, activeBackdrop]); // Removed loadedImages dependency to avoid re-running on image load
 
     const handleReset = () => {
         engineState.current = {
@@ -458,11 +467,3 @@ const ScratchEngine = () => {
                                 </button>
                             ))}
                              {canEdit && <AddAssetModal type="backdrop" onAdded={refetchAssets} />}
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </div>
-        </div>
-    );
-};
-

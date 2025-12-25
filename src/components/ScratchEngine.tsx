@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -15,7 +16,7 @@ import {
   Video,
   PlusCircle,
   Ghost,
-  MousePointer2,
+  MousePointer,
   Plus,
   Trash2,
   FolderOpen,
@@ -75,17 +76,28 @@ const DEFAULT_BACKDROPS = [
 ];
 
 const SOUND_LIBRARY = [
-  { 
-    id: 'meow', 
-    label: 'Meow 🐱', 
-    url: 'https://cdn.freesound.org/previews/256/256339_4030635-lq.mp3' 
-  },
-  { 
-    id: 'pop', 
-    label: 'Pop 🎈', 
-    url: 'https://cdn.freesound.org/previews/511/511484_10825312-lq.mp3' 
-  }
+  { id: 'meow', label: 'Meow 🐱', url: 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjU2LjEwMAAAAAAAAAAAAAAA//uA' },
+  { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
 ];
+
+const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop' | 'sound'; onAdded: () => void }) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="flex flex-col items-center justify-center bg-slate-200 rounded-lg p-2 text-slate-500 hover:bg-slate-300">
+          <Plus className="h-6 w-6" />
+          <span className="text-xs mt-1">Add New</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add New {type.charAt(0).toUpperCase() + type.slice(1)}</DialogTitle>
+        </DialogHeader>
+        {/* Add form fields for adding a new asset */}
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const ScratchEngine = () => {
     const { toast } = useToast();
@@ -96,8 +108,7 @@ const ScratchEngine = () => {
     const [backdrops, setBackdrops] = useState(DEFAULT_BACKDROPS);
     const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
     const [activeBackdrop, setActiveBackdrop] = useState(DEFAULT_BACKDROPS[0]);
-    const [loadedImages, setLoadedImages] = useState<{ [key: string]: p5.Image }>({});
-    const [bgImg, setBgImg] = useState<p5.Image | null>(null);
+    const [loadedImages, setLoadedImages] = useState<any>({});
 
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -110,8 +121,8 @@ const ScratchEngine = () => {
         y: 0,
         prevX: 0,
         prevY: 0,
-        direction: 90, // 0 is right, 90 is up
-        size: 100, // percentage
+        direction: 90,
+        size: 100, 
         message: '',
         messageDuration: 0,
         isPenDown: false,
@@ -120,9 +131,8 @@ const ScratchEngine = () => {
         costumeIndex: 0
     });
 
-    // Blockly state
     const blocklyDivRef = useRef<HTMLDivElement>(null);
-    const [xml, setXml] = useState('');
+    const [xml, setXml] = useState<string>('');
     const [generatedCode, setGeneratedCode] = useState('');
 
     const { workspace } = useBlocklyWorkspace({
@@ -154,7 +164,7 @@ const ScratchEngine = () => {
                 ]},
                 { kind: 'category', name: 'Sensing', colour: '#4CBFE6', contents: [{ kind: 'block', type: 'sensing_touchingmouse' }] },
                 { kind: 'category', name: 'Operators', colour: '#40BF4A', contents: [{ kind: 'block', type: 'operator_random' }] },
-                { kind: 'category', 'name': 'Pen', 'colour': '#00B295', 'contents': [
+                { kind: 'category', name: 'Pen', colour: '#00B295', contents: [
                     { 'kind': 'block', 'type': 'pen_clear' },
                     { 'kind': 'block', 'type': 'pen_stamp' },
                     { 'kind': 'block', 'type': 'pen_penDown' },
@@ -175,7 +185,6 @@ const ScratchEngine = () => {
         const code = javascriptGenerator.workspaceToCode(workspace);
         setGeneratedCode(code);
         
-        // Define context for the sandboxed execution
         const context = {
             move: (steps: number) => {
                 const angle = (engineState.current.direction - 90) * (Math.PI / 180);
@@ -196,7 +205,6 @@ const ScratchEngine = () => {
                 }
             },
             think: (message: string, duration?: number) => {
-                // For now, think behaves the same as say but could have a different UI
                 engineState.current.message = message;
                  if (duration) {
                     setTimeout(() => {
@@ -242,7 +250,6 @@ const ScratchEngine = () => {
                 }
             },
             isTouching: (object: string) => {
-                 // Placeholder for collision detection
                 return false;
             },
             getRandom: (min: number, max: number) => {
@@ -250,9 +257,6 @@ const ScratchEngine = () => {
             }
         };
         
-        // This is a safer way to execute the generated code
-        // It avoids the direct use of `eval` or `new Function` if possible,
-        // but for this dynamic scenario, `new Function` is a common approach.
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const func = new AsyncFunction(...Object.keys(context), `try { ${code} } catch(e) { console.error('Execution Error:', e); }`);
 
@@ -270,41 +274,42 @@ const ScratchEngine = () => {
     
     // P5.js sketch setup
     useEffect(() => {
-        if (!p5ContainerRef.current) return;
-        
+        if (typeof window === 'undefined' || !p5ContainerRef.current) return;
+
         let p5Instance: p5;
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
             
             p.preload = () => {
-                // Preload costumes for all sprites
                 sprites.forEach(sprite => {
                     if (sprite.costumes) {
                         sprite.costumes.forEach((url, index) => {
                             const key = `${sprite.id}-${index}`;
-                            if (!loadedImages[key]) {
+                            if (!loadedImages[key] && url) {
                                 p.loadImage(url, img => {
-                                    setLoadedImages(prev => ({ ...prev, [key]: img }));
-                                }, err => {
-                                    console.error(`Failed to load costume for ${sprite.name}: ${url}`, err);
-                                });
+                                   setLoadedImages(prev => ({...prev, [key]: img}));
+                                }, err => console.error(`Failed to load costume ${url}:`, err));
                             }
                         });
+                    } else if (sprite.url) {
+                         const key = sprite.id;
+                         if (!loadedImages[key]) {
+                            p.loadImage(sprite.url, img => {
+                                setLoadedImages(prev => ({...prev, [key]: img}));
+                            }, err => console.error(`Failed to load sprite ${sprite.name}:`, err));
+                         }
                     }
                 });
-                // Preload all backdrop images
                 backdrops.forEach(backdrop => {
                     if (backdrop.url && !loadedImages[backdrop.id]) {
                         p.loadImage(backdrop.url, img => {
-                            setLoadedImages(prev => ({ ...prev, [backdrop.id]: img }));
-                        }, err => {
-                            console.error(`Failed to load backdrop: ${backdrop.url}`, err);
-                        });
+                             setLoadedImages(prev => ({...prev, [backdrop.id]: img}));
+                        }, err => console.error(`Failed to load backdrop: ${backdrop.url}`, err));
                     }
                 });
             };
-            
+
             p.setup = () => {
                 const container = p5ContainerRef.current!;
                 const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
@@ -312,18 +317,15 @@ const ScratchEngine = () => {
                 penLayer = p.createGraphics(p.width, p.height);
                 p.frameRate(30);
             };
-    
+
             p.draw = () => {
-                // Background
                 const bg = loadedImages[activeBackdrop.id];
                 if (bg) {
-                    p.imageMode(p.CORNER);
-                    p.image(bg, 0, 0, p.width, p.height);
+                    p.background(bg);
                 } else {
                     p.background(activeBackdrop.color || '#FFFFFF');
                 }
 
-                // Pen drawing
                 if (engineState.current.shouldClear) {
                     penLayer.clear();
                     engineState.current.shouldClear = false;
@@ -331,7 +333,7 @@ const ScratchEngine = () => {
 
                 if (engineState.current.isPenDown) {
                     penLayer.stroke(engineState.current.penColor);
-                    penLayer.strokeWeight(4); // You can make this dynamic later
+                    penLayer.strokeWeight(4);
                     penLayer.line(
                         p.width / 2 + engineState.current.prevX,
                         p.height / 2 - engineState.current.prevY,
@@ -341,18 +343,17 @@ const ScratchEngine = () => {
                 }
                 p.image(penLayer, 0, 0);
 
-                // Sprite
-                const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
-                const currentCostumeImage = loadedImages[costumeKey];
+                const costumeKey = activeSprite.costumes ? `${activeSprite.id}-${engineState.current.costumeIndex}` : activeSprite.id;
+                const currentImage = loadedImages[costumeKey];
 
                 p.push();
                 p.translate(p.width / 2 + engineState.current.x, p.height / 2 - engineState.current.y);
                 p.rotate(p.radians(engineState.current.direction - 90));
                 p.scale(engineState.current.size / 100);
 
-                if (currentCostumeImage) {
+                if (currentImage) {
                     p.imageMode(p.CENTER);
-                    p.image(currentCostumeImage, 0, 0);
+                    p.image(currentImage, 0, 0, currentImage.width * 0.15, currentImage.height * 0.15); // Adjust size if necessary
                 } else {
                     p.textAlign(p.CENTER, p.CENTER);
                     p.textSize(50);
@@ -360,18 +361,16 @@ const ScratchEngine = () => {
                 }
                 p.pop();
 
-                // Speech bubble
                 if (engineState.current.message) {
                     p.fill(255);
                     p.stroke(0);
-                    p.rect(p.width / 2 + engineState.current.x + 40, p.height / 2 - engineState.current.y - 60, 120, 40, 10);
+                    p.rect(p.width / 2 + engineState.current.x + 40, p.height / 2 - engineState.current.y - 60, p.textWidth(engineState.current.message) + 20, 30, 10);
                     p.fill(0);
                     p.noStroke();
                     p.textAlign(p.CENTER, p.CENTER);
-                    p.text(engineState.current.message, p.width / 2 + engineState.current.x + 100, p.height / 2 - engineState.current.y - 45);
+                    p.text(engineState.current.message, p.width / 2 + engineState.current.x + 40 + (p.textWidth(engineState.current.message) + 20) / 2, p.height / 2 - engineState.current.y - 45);
                 }
 
-                // Update prev positions
                 engineState.current.prevX = engineState.current.x;
                 engineState.current.prevY = engineState.current.y;
             };
@@ -379,20 +378,19 @@ const ScratchEngine = () => {
             p.windowResized = () => {
                 if (p5ContainerRef.current) {
                     p.resizeCanvas(p5ContainerRef.current.offsetWidth, p5ContainerRef.current.offsetHeight);
-                    penLayer.resizeCanvas(p.width, p.height);
+                    if (penLayer) penLayer.resizeCanvas(p.width, p.height);
                 }
             };
         };
         
-        if (p5Instance.current) {
-            p5Instance.current.remove();
-        }
-        p5Instance.current = new p5(sketch);
+        // Clean up previous instance
+        p5InstanceRef.current?.remove();
+        p5InstanceRef.current = new p5(sketch, p5ContainerRef.current!);
         
         return () => {
-            p5Instance.current?.remove();
+            p5InstanceRef.current?.remove();
         };
-    }, [activeSprite, activeBackdrop, loadedImages]); // Re-run sketch if active items or loaded images change
+    }, [activeSprite, activeBackdrop, sprites, backdrops, loadedImages]);
 
     const handleReset = () => {
         engineState.current = {
@@ -400,12 +398,10 @@ const ScratchEngine = () => {
             size: 100, message: '', messageDuration: 0,
             isPenDown: false, penColor: '#000000', shouldClear: true, costumeIndex: 0
         };
-        // The draw loop will handle the rest
     };
 
-
     const handleSpriteSelect = (sprite: any) => {
-        engineState.current.costumeIndex = 0; // Reset costume on sprite change
+        engineState.current.costumeIndex = 0; 
         setActiveSprite(sprite);
     };
 
@@ -413,8 +409,6 @@ const ScratchEngine = () => {
         setActiveBackdrop(backdrop);
     };
     
-    // This is a placeholder since the original component had these variables but they weren't defined.
-    // Replace with your actual logic for fetching these.
     const canEdit = false;
     const refetchAssets = () => {};
     const [setLogs] = useState<string[]>([]);
@@ -471,5 +465,6 @@ const ScratchEngine = () => {
     );
 };
 
+export default ScratchEngine;
 
-```
+    
