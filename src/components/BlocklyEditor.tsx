@@ -14,7 +14,6 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Loader2, Code2, FolderOpen, Save, RotateCcw, Play } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useSound from 'use-sound';
 import confetti from 'canvas-confetti';
 
 // --- IMPORTS FOR PLUGINS ---
@@ -228,7 +227,6 @@ export default function BlocklyEditor() {
   const { toast } = useToast();
   const { user } = useAuth();
   const firestore = useFirestore();
-  const [playSuccess] = useSound('/sounds/success.mp3'); 
 
   const blocklyDivRef = useRef<HTMLDivElement>(null);
 
@@ -316,7 +314,6 @@ export default function BlocklyEditor() {
       new Function('customLogger', wrappedCode)(customLogger);
 
       if (outputCount > 0) {
-        playSuccess && playSuccess();
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       } else {
          setLogs(prev => [...prev, "ℹ️ Code ran successfully (No Output)."]);
