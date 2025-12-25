@@ -67,6 +67,7 @@ export default function ScratchEngine() {
   const canvasParentRef = useRef<HTMLDivElement>(null);
   const [workspace, setWorkspace] = useState<any>(null);
   const p5Instance = useRef<p5 | null>(null);
+  const [isVideoOn, setIsVideoOn] = useState(false);
   
   const firestore = useFirestore();
   const { role } = useRole();
@@ -99,8 +100,6 @@ export default function ScratchEngine() {
 
   const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
   const [activeBackdrop, setActiveBackdrop] = useState(BACKDROP_LIBRARY[0]);
-  const [isVideoOn, setIsVideoOn] = useState(false);
-  const { toast } = useToast();
   
   // Use 'engineState' everywhere
   const engineState = useRef({
@@ -127,8 +126,8 @@ export default function ScratchEngine() {
       init: function(this: Blockly.Block) {
         this.appendValueInput("STEPS")
             .setCheck("Number")
-            .appendField("move");
-        this.appendField("steps");
+            .appendField("move")
+            .appendField("steps");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(230); // Motion Blue
@@ -271,8 +270,8 @@ export default function ScratchEngine() {
         if (activeSprite.url && activeSprite.url.startsWith('http')) {
             p.loadImage(activeSprite.url, 
                 img => { spriteImg = img; },
-                () => { 
-                  console.warn("CORS blocked image. Falling back to Emoji.");
+                (err) => { 
+                  console.error("Sprite Load Failed:", err);
                   spriteImg = null; // Forces emoji fallback in draw()
                 }
             );
@@ -309,12 +308,9 @@ export default function ScratchEngine() {
             p.pop();
           } else {
             // If video is turned off, stop the stream to save battery/cpu
-            if (capture) {
-                const stream = (capture.elt as HTMLVideoElement).srcObject as MediaStream;
-                stream?.getTracks().forEach(track => track.stop());
-                capture.remove();
-                capture = null;
-            }
+            const stream = (capture?.elt as HTMLVideoElement)?.srcObject as MediaStream;
+            stream?.getTracks().forEach(track => track.stop());
+            capture = null;
           }
         
           // 3. Draw Sprite (as before)
@@ -363,6 +359,7 @@ export default function ScratchEngine() {
 
   const runCode = async () => {
     // Generate code and wrap it in an async function
+    if (!workspace) return;
     const rawCode = javascriptGenerator.workspaceToCode(workspace);
     
     // Scoped helper functions
@@ -379,7 +376,7 @@ export default function ScratchEngine() {
         setTimeout(() => {
             if(engineState.current) engineState.current.sayText = ""
         }, 3000);
-    };
+      };
   
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
   
