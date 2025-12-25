@@ -49,6 +49,18 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 't3.ftcdn.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'openclipart.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'wallpaperaccess.com',
+      }
     ],
   },
   experimental: {
@@ -60,3 +72,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+  
