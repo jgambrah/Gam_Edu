@@ -85,19 +85,20 @@ export default function ScratchEngine() {
     const { data: dbBackdrops, forceRefetch: refetchBackdrops } = useCollection<any>(backdropQuery);
 
     // Fallback to defaults if DB is empty
-    const sprites = dbSprites?.length ? dbSprites : [
+    const SPRITE_LIBRARY = dbSprites?.length ? dbSprites : [
       { id: 'cat', emoji: '🐱', url: '/assets/sprites/cat.png', name: 'Cat' },
       { id: 'dog', emoji: '🐶', url: 'https://openclipart.org/image/2400px/svg_to_png/219213/Dog-Icon.png', name: 'Dog' },
       { id: 'rocket', emoji: '🚀', url: 'https://openclipart.org/image/2400px/svg_to_png/190875/Rocket-Icon.png', name: 'Rocket' },
     ];
-    const backdrops = dbBackdrops?.length ? dbBackdrops : [
+    const BACKDROP_LIBRARY = dbBackdrops?.length ? dbBackdrops : [
       { id: 'white', color: '#FFFFFF', name: 'Plain', img: null },
       { id: 'blue-sky', color: '#87CEEB', name: 'Sky', img: null },
       { id: 'space', color: '#000033', name: 'Space', img: 'https://cdn.pixabay.com/photo/2016/10/20/18/35/earth-1756274_960_720.jpg' },
+      { id: 'jungle', color: '#228B22', name: 'Jungle', img: 'https://wallpaperaccess.com/full/1744011.jpg' }
     ];
 
-  const [activeSprite, setActiveSprite] = useState(sprites[0]);
-  const [activeBackdrop, setActiveBackdrop] = useState(backdrops[0]);
+  const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
+  const [activeBackdrop, setActiveBackdrop] = useState(BACKDROP_LIBRARY[0]);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const { toast } = useToast();
   
@@ -249,7 +250,7 @@ export default function ScratchEngine() {
             p5Instance.current.remove();
         }
     };
-  }, [activeSprite, activeBackdrop, isVideoOn]);
+  }, [activeSprite, activeBackdrop]);
 
   const runCode = () => {
     if (!workspace) return;
@@ -275,6 +276,7 @@ export default function ScratchEngine() {
     };
   
     try {
+      // Create the runner
       const runner = new Function('move', 'say', code);
       runner(move, say);
     } catch (e) {
@@ -284,71 +286,73 @@ export default function ScratchEngine() {
 
   return (
     <div className="flex flex-col h-screen bg-[#F0F2F5] overflow-hidden">
-        {/* 1. Header is separate and stays at the top */}
-        <div className="bg-[#4C97FF] p-3 flex justify-between items-center text-white z-50 shadow-md">
-           <h1 className="text-xl font-black italic ml-4">ACADEMY STUDIO</h1>
-           <div className="flex gap-2">
-             <Button onClick={runCode} className="bg-[#4dc94d] rounded-full h-10 px-8">▶ GO</Button>
-             <Button onClick={() => window.location.reload()} variant="destructive" className="h-10 w-10">■</Button>
-           </div>
-        </div>
-
-        <div className="flex flex-1 overflow-hidden relative">
-          {/* 2. Coding Workspace (Left Side) */}
-          <div className="flex-1 h-full relative bg-white">
-            {/* Visual Guide for students */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-10 flex flex-col items-center">
-                <MousePointer2 className="w-20 h-20 mb-4" />
-                <p className="text-4xl font-black uppercase">Drag Blocks Here</p>
-            </div>
-            <div ref={blocklyRef} className="absolute inset-0 w-full h-full" />
+      {/* 1. Header is separate and stays at the top */}
+      <div className="bg-[#4C97FF] p-3 flex justify-between items-center text-white z-50 shadow-md">
+         <h1 className="text-xl font-black italic ml-4">ACADEMY STUDIO</h1>
+         <div className="flex gap-2">
+           <Button onClick={runCode} className="bg-[#4dc94d] rounded-full h-10 px-8">▶ GO</Button>
+           <Button onClick={() => window.location.reload()} variant="destructive" className="h-10 w-10">■</Button>
+         </div>
+      </div>
+  
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* 2. Coding Workspace (Left Side) */}
+        <div className="flex-1 h-full relative bg-white">
+          {/* Visual Guide for students */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-10 flex flex-col items-center">
+              <MousePointer2 className="w-20 h-20 mb-4" />
+              <p className="text-4xl font-black uppercase">Drag Blocks Here</p>
           </div>
-
-          {/* 3. Stage & Assets (Right Side) - This stays completely separate */}
-          <div className="w-[520px] p-4 flex flex-col gap-4 bg-[#F0F9FF] border-l-4 border-white overflow-y-auto z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.05)]">
+          <div ref={blocklyRef} className="absolute inset-0 w-full h-full" />
+        </div>
+  
+        {/* 3. Stage & Assets (Right Side) - This stays completely separate */}
+        <div className="w-[520px] p-4 flex flex-col gap-4 bg-[#F0F9FF] border-l-4 border-white overflow-y-auto z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.05)]">
+            {/* The Stage */}
             <div className="relative group">
                 <div ref={canvasParentRef} className="rounded-[40px] overflow-hidden shadow-2xl border-[10px] border-white bg-white w-[480px] h-[360px]" />
                 <Badge className="absolute top-4 left-4 bg-pink-500 text-white border-none shadow-lg">LIVE STAGE</Badge>
             </div>
 
+            {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
-                 <div className="flex justify-between items-center mb-4">
-                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
-                    {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
-                 </div>
-                 <div className="flex gap-3 flex-wrap">
-                    {sprites.map(s => (
-                      <button 
-                        key={s.id} 
-                        onClick={() => setActiveSprite(s)}
-                        className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
-                      >
-                        {s.emoji}
-                      </button>
-                    ))}
-                 </div>
-              </div>
-              
-              <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
-                 <div className="flex justify-between items-center mb-4">
-                    <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
-                    {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
-                 </div>
-                 <div className="flex gap-3 flex-wrap">
-                    {backdrops.map(b => (
-                      <button 
-                        key={b.id} 
-                        onClick={() => setActiveBackdrop(b)}
-                        className={`w-12 h-12 rounded-[16px] border-4 transition-all ${activeBackdrop.id === b.id ? 'border-pink-500 shadow-md scale-105' : 'border-white'}`}
-                        style={{ backgroundColor: b.color }}
-                      />
-                    ))}
-                 </div>
-              </div>
+                <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
+                   <div className="flex justify-between items-center mb-4">
+                      <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
+                      {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
+                   </div>
+                   <div className="flex gap-3 flex-wrap">
+                      {SPRITE_LIBRARY.map(s => (
+                        <button 
+                          key={s.id} 
+                          onClick={() => setActiveSprite(s)}
+                          className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
+                        >
+                          {s.emoji}
+                        </button>
+                      ))}
+                   </div>
+                </div>
+                
+                <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
+                   <div className="flex justify-between items-center mb-4">
+                      <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
+                      {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
+                   </div>
+                   <div className="flex gap-3 flex-wrap">
+                      {BACKDROP_LIBRARY.map(b => (
+                        <button 
+                          key={b.id} 
+                          onClick={() => setActiveBackdrop(b)}
+                          className={`w-12 h-12 rounded-[16px] border-4 transition-all ${activeBackdrop.id === b.id ? 'border-pink-500 shadow-md scale-105' : 'border-white'}`}
+                          style={{ backgroundColor: b.color }}
+                        />
+                      ))}
+                   </div>
+                </div>
             </div>
-          </div>
         </div>
+      </div>
     </div>
   );
 }
