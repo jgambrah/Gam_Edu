@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -175,6 +174,7 @@ export default function ScratchEngine() {
     const sketch = (p: p5) => {
       let spriteImg: p5.Image | null = null;
       let bgImg: p5.Image | null = null;
+      let capture: p5.Element | null = null;
   
       p.setup = () => {
         p.createCanvas(480, 360).parent(canvasParentRef.current!);
@@ -201,15 +201,38 @@ export default function ScratchEngine() {
       };
   
       p.draw = () => {
-        // 1. Draw Colorful Backdrop
+        // 1. Draw Background
         if (bgImg) {
           p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
         } else {
-          // Junior Rainbow Gradient if no image
-          p.background(activeBackdrop.color || '#FFDEE9');
+          p.background(activeBackdrop.color || '#F0F9FF');
+        }
+
+        // 2. NEW: VIDEO SENSING LAYER
+        if (isVideoOn) {
+          if (!capture) {
+            capture = p.createCapture(p.VIDEO);
+            (capture as p5.Element).size(480, 360);
+            capture.hide(); // Hide the extra video element below the canvas
+          }
+          p.push();
+          p.translate(p.width, 0); 
+          p.scale(-1, 1); // Mirror the video so it feels natural
+          p.tint(255, 120); // Make it ghostly/transparent like Scratch
+          p.image(capture, p.width/2, p.height/2, p.width, p.height);
+          p.pop();
+        } else {
+          // If video is turned off, stop the stream to save battery/cpu
+          if (capture) {
+            (capture.elt as HTMLVideoElement).pause();
+            const stream = (capture.elt as HTMLVideoElement).srcObject as MediaStream;
+            stream?.getTracks().forEach(track => track.stop());
+            capture.remove();
+            capture = null;
+          }
         }
       
-        // 2. Draw Sprite with "Bubbly" Effects
+        // 3. Draw Sprite (as before)
         p.push();
         const screenX = p.width/2 + engineState.current.x;
         const screenY = p.height/2 - engineState.current.y;
@@ -218,12 +241,11 @@ export default function ScratchEngine() {
         if (spriteImg) {
             p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
         } else {
-            // MAGICAL FALLBACK: Big Emojis for Juniors
             p.textSize(engineState.current.size * 0.8);
             p.text(activeSprite.emoji || "🐱", 0, 0);
         }
       
-        // 3. MAGIC SPEECH BUBBLE (Visual Fix)
+        // 4. MAGIC SPEECH BUBBLE (Visual Fix)
         if (engineState.current.sayText) {
             p.push();
             p.fill(255);
@@ -251,7 +273,7 @@ export default function ScratchEngine() {
             p5Instance.current.remove();
         }
     };
-  }, [activeSprite, activeBackdrop]);
+  }, [activeSprite, activeBackdrop, isVideoOn]);
 
   const runCode = () => {
     if (!workspace) return;
@@ -317,63 +339,62 @@ export default function ScratchEngine() {
           </div>
           
           {/* MAGIC MIRROR (VIDEO SENSING) */}
-          <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
+            <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
             <div className="flex items-center gap-3">
-               <div className="bg-purple-100 p-3 rounded-2xl">
-                  <Video className="w-6 h-6 text-purple-600" />
-               </div>
-               <div>
-                  <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest leading-none mb-1">Magic Mirror</p>
-                  <p className="text-sm font-bold text-slate-700">Video Sensing</p>
-               </div>
+                <div className="bg-purple-100 p-3 rounded-2xl">
+                    <Video className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                    <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest leading-none mb-1">Magic Mirror</p>
+                    <p className="text-sm font-bold text-slate-700">Video Sensing</p>
+                </div>
             </div>
             <button 
-              onClick={() => setIsVideoOn(!isVideoOn)}
-              className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${
+                onClick={() => setIsVideoOn(!isVideoOn)}
+                className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${
                 isVideoOn 
-                  ? 'bg-purple-500 text-white shadow-[0_4px_0_#7e22ce]' 
-                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
-              }`}
+                    ? 'bg-purple-500 text-white shadow-[0_4px_0_#7e22ce]' 
+                    : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                }`}
             >
-              {isVideoOn ? 'ON' : 'OFF'}
+                {isVideoOn ? 'ON' : 'OFF'}
             </button>
-          </div>
+            </div>
 
           {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
-               <div className="flex justify-between items-center mb-4">
-                  <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
-                  {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
-               </div>
-               <div className="flex gap-3 flex-wrap">
-                  {SPRITE_LIBRARY.map(s => (
-                    <button 
-                      key={s.id} 
-                      onClick={() => setActiveSprite(s)}
-                      className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
-                    >
-                      {s.emoji}
-                    </button>
-                  ))}
-               </div>
+                <div className="flex justify-between items-center mb-4">
+                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
+                    {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
+                </div>
+                <div className="flex gap-3 flex-wrap">
+                    {SPRITE_LIBRARY.map(s => (
+                        <button 
+                        key={s.id} 
+                        onClick={() => setActiveSprite(s)}
+                        className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
+                        >
+                        {s.emoji}
+                        </button>
+                    ))}
+                </div>
             </div>
-            
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
-               <div className="flex justify-between items-center mb-4">
-                  <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
-                  {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
-               </div>
-               <div className="flex gap-3 flex-wrap">
-                  {BACKDROP_LIBRARY.map(b => (
-                    <button 
-                      key={b.id} 
-                      onClick={() => setActiveBackdrop(b)}
-                      className={`w-12 h-12 rounded-[16px] border-4 transition-all ${activeBackdrop.id === b.id ? 'border-pink-500 shadow-md scale-105' : 'border-white'}`}
-                      style={{ backgroundColor: b.color }}
-                    />
-                  ))}
-               </div>
+                <div className="flex justify-between items-center mb-4">
+                    <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
+                    {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
+                </div>
+                <div className="flex gap-3 flex-wrap">
+                    {BACKDROP_LIBRARY.map(b => (
+                        <button 
+                        key={b.id} 
+                        onClick={() => setActiveBackdrop(b)}
+                        className={`w-12 h-12 rounded-[16px] border-4 transition-all ${activeBackdrop.id === b.id ? 'border-pink-500 shadow-md scale-105' : 'border-white'}`}
+                        style={{ backgroundColor: b.color }}
+                        />
+                    ))}
+                </div>
             </div>
           </div>
         </div>
