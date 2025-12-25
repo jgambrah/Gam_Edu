@@ -119,7 +119,9 @@ export default function ScratchEngine() {
     // Custom Move Block
     Blockly.Blocks['motion_move'] = {
       init: function(this: Blockly.Block) {
-        this.appendValueInput("STEPS").setCheck("Number").appendField("move");
+        this.appendValueInput("STEPS")
+            .setCheck("Number")
+            .appendField("move");
         this.appendField("steps");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -130,10 +132,24 @@ export default function ScratchEngine() {
     // Custom Say Block
     Blockly.Blocks['looks_say'] = {
       init: function(this: Blockly.Block) {
-        this.appendValueInput("TEXT").setCheck("String").appendField("say");
+        this.appendValueInput("TEXT")
+            .setCheck("String")
+            .appendField("say");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour("#9966FF"); // Looks Purple
+      }
+    };
+
+    // VIDEO SENSING BLOCK
+    Blockly.Blocks['video_toggle'] = {
+      init: function(this: Blockly.Block) {
+        this.appendDummyInput()
+            .appendField("turn video")
+            .appendField(new Blockly.FieldDropdown([["on","ON"], ["off","OFF"]]), "STATE");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour("#CF63CF"); // Sensing Purple
       }
     };
 
@@ -169,7 +185,13 @@ export default function ScratchEngine() {
       return `say(${text});\n`;
     };
 
-    javascriptGenerator.forBlock['control_wait'] = (block) => {
+    // GENERATORS
+    javascriptGenerator.forBlock['video_toggle'] = function(block) {
+      const state = block.getFieldValue('STATE');
+      return `toggleVideo("${state}");\n`;
+    };
+
+    javascriptGenerator.forBlock['control_wait'] = (block: any) => {
       const duration = javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1';
       return `await wait(${duration});\n`; // We use async/await for smooth timing
     };
@@ -333,34 +355,42 @@ export default function ScratchEngine() {
     };
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
-  const runCode = () => {
-    const code = javascriptGenerator.workspaceToCode(workspace);
+  const runCode = async () => {
+    // Generate code and wrap it in an async function
+    const rawCode = javascriptGenerator.workspaceToCode(workspace);
     
-    const move = (steps: number) => {
-      engineState.current.x += steps;
+    // Scoped helper functions
+    const move = (steps: number) => { engineState.current.x += steps; };
+    
+    const say = (text: string) => {
+      engineState.current.sayText = text;
+      window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+      // Bubbles disappear after 2 seconds
+      setTimeout(() => {
+        if (engineState.current) {
+          engineState.current.sayText = ""
+        }
+      }, 2000);
     };
   
-    const say = (text: string) => {
-        // 1. Show bubble on screen
-        engineState.current.sayText = text;
-        // 2. Browser Voice Engine
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        window.speechSynthesis.speak(utterance);
-        // 3. Auto-hide bubble after 3 seconds
-        setTimeout(() => {
-          if (engineState.current) {
-            engineState.current.sayText = "";
-          }
-        }, 3000);
+    const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
+  
+    // Execution environment (Injects variables and sensing data)
+    const context = {
+      move,
+      say,
+      wait,
+      mouseX: p5Instance.current?.mouseX || 0,
+      mouseY: p5Instance.current?.mouseY || 0,
     };
   
     try {
-      // Create the runner
-      const runner = new Function('move', 'say', code);
-      runner(move, say);
+      // Create an Async function to allow 'await wait()'
+      const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+      const runner = new AsyncFunction(...Object.keys(context), rawCode);
+      await runner(...Object.values(context));
     } catch (e) {
-      console.error(e);
+      console.error("Execution Error:", e);
     }
   };
 
@@ -387,11 +417,12 @@ export default function ScratchEngine() {
   
         {/* 3. Stage & Assets */}
         <div className="w-[520px] p-4 flex flex-col gap-4 bg-[#F0F9FF] border-l-4 border-white overflow-y-auto z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.05)]">
+          {/* The Stage */}
           <div className="relative group">
             <div ref={canvasParentRef} className="rounded-[40px] overflow-hidden shadow-2xl border-[10px] border-white bg-white w-[480px] h-[360px]" />
             <Badge className="absolute top-4 left-4 bg-pink-500 text-white border-none shadow-lg">LIVE STAGE</Badge>
           </div>
-          
+
           {/* MAGIC MIRROR (VIDEO SENSING) */}
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
             <div className="flex items-center gap-3">
@@ -414,7 +445,7 @@ export default function ScratchEngine() {
                 {isVideoOn ? 'ON' : 'OFF'}
             </button>
             </div>
-
+        
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
                 <div className="flex justify-between items-center mb-4">
