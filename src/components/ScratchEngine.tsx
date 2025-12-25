@@ -7,11 +7,11 @@ import { javascriptGenerator } from 'blockly/javascript';
 import p5 from 'p5';
 import { 
   Play, Square, Image as ImageIcon, 
-  User as UserIcon, Video, Volume2, Plus, Trash2, Move, Ghost, Mic
+  User as UserIcon, Video, Volume2, Plus, Trash2, Move, Ghost
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, addDoc, serverTimestamp, getDocs, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -19,9 +19,10 @@ import { Label } from '@/components/ui/label';
 import { useRole } from '@/context/role-context';
 import { Badge } from '@/components/ui/badge';
 
-// 1. ASSET LIBRARIES
+
+// 1. ASSET LIBRARIES (Using known stable URLs or fallbacks)
 const SPRITE_LIBRARY = [
-  { id: 'cat', name: 'Cat', emoji: '🐱', url: 'https://raw.githubusercontent.com/LLK/scratch-render/develop/test/fixtures/mouse.png' },
+  { id: 'cat', name: 'Cat', emoji: '🐱', url: 'https://cdn.pixabay.com/photo/2012/04/01/18/55/cat-24052_960_720.png' },
   { id: 'ghost', name: 'Ghost', emoji: '👻', url: 'https://cdn.pixabay.com/photo/2012/04/18/13/22/ghost-37013_960_720.png' },
   { id: 'rocket', name: 'Rocket', emoji: '🚀', url: 'https://cdn.pixabay.com/photo/2012/04/10/23/04/spaceship-26830_960_720.png' }
 ];
@@ -29,7 +30,7 @@ const SPRITE_LIBRARY = [
 const BACKDROP_LIBRARY = [
   { id: 'white', name: 'Plain', color: '#FFFFFF', img: null },
   { id: 'blue', name: 'Sky', color: '#e0f2fe', img: 'https://cdn.pixabay.com/photo/2016/11/18/15/44/background-1835438_960_720.png' },
-  { id: 'stars', name: 'Space', color: '#0f172a', img: 'https://img.freepik.com/free-vector/space-background-with-stars_23-2148906354.jpg' }
+  { id: 'stars', name: 'Space', color: '#0f172a', img: 'https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg' }
 ];
 
 // --- ADD ASSET MODAL ---
@@ -79,7 +80,6 @@ function AddAssetModal({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
     );
 }
 
-
 export default function ScratchEngine() {
   const blocklyRef = useRef<HTMLDivElement>(null);
   const canvasParentRef = useRef<HTMLDivElement>(null);
@@ -87,7 +87,6 @@ export default function ScratchEngine() {
   
   const firestore = useFirestore();
   const { role } = useRole();
-
   const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
   // 1. Fetch Sprites from Firebase
@@ -109,20 +108,23 @@ export default function ScratchEngine() {
   const [activeSprite, setActiveSprite] = useState(sprites[0]);
   const [activeBackdrop, setActiveBackdrop] = useState(backdrops[0]);
   const [isVideoOn, setIsVideoOn] = useState(false);
-  const p5Instance = useRef<p5 | null>(null);
   const { toast } = useToast();
-  
-  const engineState = useRef({
+  const p5Instance = useRef<p5 | null>(null);
+
+  // Internal Engine State
+  const spriteState = useRef({
     x: 0,
     y: 0,
-    direction: 90,
+    rotation: 0,
     size: 80,
     sayText: ""
   });
 
+  // --- 2. BLOCKLY SETUP (ZELOS) ---
   useEffect(() => {
     if (!blocklyRef.current) return;
 
+    // Define Custom Blocks
     Blockly.Blocks['motion_move'] = {
       init: function() {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
@@ -132,20 +134,21 @@ export default function ScratchEngine() {
       }
     };
 
-    Blockly.Blocks['speech_speak'] = {
+    Blockly.Blocks['looks_say'] = {
       init: function() {
-        this.appendValueInput("TEXT").setCheck("String").appendField("speak");
+        this.appendValueInput("TEXT").setCheck("String").appendField("say");
         this.setPreviousStatement(true, null); this.setNextStatement(true, null);
         this.setColour("#9966FF");
       }
     };
 
+    // Define JavaScript Generators
     javascriptGenerator.forBlock['motion_move'] = (block) => {
       const steps = javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0';
       return `move(${steps});\n`;
     };
 
-    javascriptGenerator.forBlock['speech_speak'] = (block) => {
+    javascriptGenerator.forBlock['looks_say'] = (block) => {
       const text = javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''";
       return `say(${text});\n`;
     };
@@ -167,9 +170,10 @@ export default function ScratchEngine() {
     return () => ws.dispose();
   }, []);
 
+  // --- 3. P5.JS STAGE ENGINE ---
   useEffect(() => {
     if (!canvasParentRef.current) return;
-
+    
     if (p5Instance.current) p5Instance.current.remove();
 
     const sketch = (p: p5) => {
@@ -177,10 +181,7 @@ export default function ScratchEngine() {
       let bgImg: p5.Image | null = null;
       let capture: any;
 
-      p.setup = () => {
-        p.createCanvas(480, 360).parent(canvasParentRef.current!);
-        p.imageMode(p.CENTER);
-        
+      p.preload = () => {
         p.loadImage(activeSprite.url, 
             img => spriteImg = img,
             (err) => { console.error("Sprite Load Failed:", err); }
@@ -193,33 +194,45 @@ export default function ScratchEngine() {
         }
       };
 
+      p.setup = () => {
+        p.createCanvas(480, 360).parent(canvasParentRef.current!);
+        p.imageMode(p.CENTER);
+        p.angleMode(p.DEGREES);
+      };
+
       p.draw = () => {
-        if (bgImg) p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
-        else p.background(activeBackdrop.color);
+        if (bgImg) {
+          p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
+        } else {
+          p.background(activeBackdrop.color);
+        }
 
         if (isVideoOn) {
             if (!capture) { capture = p.createCapture(p.VIDEO); capture.hide(); }
-            p.push(); p.translate(p.width, 0); p.scale(-1, 1);
-            p.tint(255, 120); p.image(capture, p.width/2, p.height/2, p.width, p.height);
+            p.push();
+            p.translate(p.width, 0); p.scale(-1, 1);
+            p.tint(255, 120); 
+            p.image(capture, p.width/2, p.height/2, p.width, p.height);
             p.pop();
         }
 
         p.push();
-        const screenX = p.width/2 + engineState.current.x;
-        const screenY = p.height/2 - engineState.current.y;
+        const screenX = p.width/2 + spriteState.current.x;
+        const screenY = p.height/2 - spriteState.current.y;
         p.translate(screenX, screenY);
+        p.rotate(spriteState.current.rotation);
         
         if (spriteImg) {
-            p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
+          p.image(spriteImg, 0, 0, spriteState.current.size, spriteState.current.size);
         } else {
-            p.textSize(60); p.textAlign(p.CENTER, p.CENTER);
-            p.text(activeSprite.emoji, 0, 0);
+          p.textSize(50); p.textAlign(p.CENTER, p.CENTER);
+          p.text(activeSprite.emoji, 0, 0);
         }
 
-        if (engineState.current.sayText) {
+        if (spriteState.current.sayText) {
             p.fill(255); p.stroke(200); p.rect(20, -80, 100, 40, 10);
             p.fill(0); p.noStroke(); p.textSize(12);
-            p.text(engineState.current.sayText, 70, -60);
+            p.text(spriteState.current.sayText, 70, -60);
         }
         p.pop();
       };
@@ -230,15 +243,21 @@ export default function ScratchEngine() {
     return () => instance.remove();
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
+  // --- 4. EXECUTION ENGINE ---
   const runCode = () => {
     const code = javascriptGenerator.workspaceToCode(workspace);
     
-    const move = (steps: number) => engineState.current.x += steps;
+    const move = (steps: number) => {
+      const rad = (spriteState.current.direction - 90) * Math.PI / 180;
+      spriteState.current.x += steps * Math.cos(rad);
+      spriteState.current.y += steps * Math.sin(rad);
+    };
+    
     const say = (text: string) => {
-        engineState.current.sayText = text;
+        spriteState.current.sayText = text;
         const u = new SpeechSynthesisUtterance(text);
         window.speechSynthesis.speak(u);
-        setTimeout(() => engineState.current.sayText = "", 3000);
+        setTimeout(() => spriteState.current.sayText = "", 3000);
     };
 
     try {
@@ -251,21 +270,28 @@ export default function ScratchEngine() {
 
   return (
     <div className="flex flex-col h-full bg-[#F0F2F5] overflow-hidden">
-      <div className="flex flex-1 overflow-hidden">
-        <div ref={blocklyRef} className="flex-1 h-full border-r border-slate-200 bg-white" />
-        <div className="w-[520px] p-4 flex flex-col gap-4 bg-slate-100 overflow-y-auto border-l">
-          
+      <div className="flex flex-1 overflow-hidden relative">
+        <div className="flex-1 h-full relative bg-white">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-5 flex flex-col items-center">
+            <Ghost className="w-20 h-20 mb-4" />
+            <p className="text-4xl font-black uppercase">Drag Blocks Here</p>
+          </div>
+          <div ref={blocklyRef} className="absolute inset-0 w-full h-full" />
+        </div>
+        
+        <div className="w-[520px] p-4 flex flex-col gap-4 bg-slate-50 border-l overflow-y-auto z-10 shadow-inner">
           <div ref={canvasParentRef} className="rounded-2xl overflow-hidden shadow-2xl border-[6px] border-white bg-white w-[480px] h-[360px]" />
-
+          
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <div className="flex justify-between items-center mb-3">
-                <span className="text-[10px] font-black uppercase text-slate-400">Characters</span>
+                <span className="text-[10px] font-black uppercase text-slate-400">Sprites</span>
                 {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
               </div>
               <div className="flex gap-2 flex-wrap">
                 {sprites.map(s => (
-                  <button key={s.id} onClick={() => setActiveSprite(s)}
+                  <button 
+                    key={s.id} onClick={() => setActiveSprite(s)}
                     className={`w-14 h-14 text-3xl rounded-2xl border-2 transition-all ${activeSprite.id === s.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100 bg-slate-50'}`}
                   >
                     {s.emoji || '📦'}
@@ -274,23 +300,24 @@ export default function ScratchEngine() {
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-[10px] font-black uppercase text-slate-400">Backdrops</span>
-                 {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
+                {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
               </div>
               <div className="flex gap-2 flex-wrap">
                 {backdrops.map(b => (
-                  <button key={b.id} onClick={() => setActiveBackdrop(b)}
-                    className={`w-10 h-10 rounded-lg border-4 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500' : 'border-white shadow-sm'}`}
+                  <button 
+                    key={b.id} onClick={() => setActiveBackdrop(b)}
+                    className={`w-12 h-12 rounded-xl border-4 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500' : 'border-white shadow-sm'}`}
                     style={{ backgroundColor: b.color }}
                   />
                 ))}
               </div>
             </div>
           </div>
-          
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+
+          <div className="bg-white p-4 rounded-2xl border border-slate-100 space-y-3">
             <div className="flex justify-between items-center">
                <div className="flex items-center gap-3">
                   <div className="bg-purple-100 p-2 rounded-lg"><Video className="w-5 h-5 text-purple-600"/></div>
@@ -303,24 +330,7 @@ export default function ScratchEngine() {
                  {isVideoOn ? 'ON' : 'OFF'}
                </button>
             </div>
-            <hr />
-            <div className="flex justify-between items-center">
-               <div className="flex items-center gap-3">
-                  <div className="bg-pink-100 p-2 rounded-lg"><Volume2 className="w-5 h-5 text-pink-600"/></div>
-                  <span className="font-bold text-slate-600">Audio Feedback</span>
-               </div>
-               <Badge className="bg-pink-100 text-pink-600 border-none">Active</Badge>
-            </div>
           </div>
-
-          <div className="bg-slate-800 p-6 rounded-[30px] text-white shadow-xl">
-             <div className="grid grid-cols-3 text-center">
-                <div><p className="text-[10px] text-slate-500 uppercase">X</p><p className="font-mono font-bold text-lg">{engineState.current.x}</p></div>
-                <div><p className="text-[10px] text-slate-500 uppercase">Y</p><p className="font-mono font-bold text-lg">{engineState.current.y}</p></div>
-                <div><p className="text-[10px] text-slate-500 uppercase">Size</p><p className="font-mono font-bold text-lg">{engineState.current.size}</p></div>
-             </div>
-          </div>
-
         </div>
       </div>
     </div>
