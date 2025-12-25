@@ -7,22 +7,22 @@ import { javascriptGenerator } from 'blockly/javascript';
 import p5 from 'p5';
 import { 
   Play, Square, Image as ImageIcon, 
-  User as UserIcon, Video, Volume2, Plus, Trash2, Ghost 
+  User as UserIcon, Video, Volume2, Plus, Trash2, Ghost, MousePointer2 
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 // 1. ASSET LIBRARIES
 const DEFAULT_SPRITES = [
-  { id: 'cat', name: 'Cat', emoji: '🐱', url: 'https://cdn.pixabay.com/photo/2012/04/01/18/55/cat-24052_960_720.png' },
+  { id: 'cat', name: 'Cat', emoji: '🐱', url: 'https://raw.githubusercontent.com/LLK/scratch-render/develop/test/fixtures/mouse.png' },
   { id: 'ghost', name: 'Ghost', emoji: '👻', url: 'https://cdn.pixabay.com/photo/2012/04/18/13/22/ghost-37013_960_720.png' },
-  { id: 'rocket', name: 'Rocket', emoji: '🚀', url: 'https://cdn.pixabay.com/photo/2012/04/10/23/04/spaceship-26830_960_720.png' }
+  { id: 'rocket', name: 'Rocket', emoji: '🚀', url: 'https://openclipart.org/download/216413/rocket-ship.svg' }
 ];
 
 const DEFAULT_BACKDROPS = [
   { id: 'white', name: 'Plain', color: '#FFFFFF', img: null },
-  { id: 'blue', name: 'Sky', color: '#e0f2fe', img: 'https://cdn.pixabay.com/photo/2016/11/18/15/44/background-1835438_960_720.png' },
-  { id: 'stars', name: 'Space', color: '#0f172a', img: 'https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg' }
+  { id: 'blue', name: 'Sky', color: '#e0f2fe', img: 'https://wallpaperaccess.com/full/1595162.jpg' },
+  { id: 'stars', name: 'Space', color: '#0f172a', img: 'https://img.freepik.com/free-vector/space-background-with-stars_23-2148906354.jpg' }
 ];
 
 export default function ScratchEngine() {
@@ -31,23 +31,24 @@ export default function ScratchEngine() {
   const [workspace, setWorkspace] = useState<any>(null);
   const [activeSprite, setActiveSprite] = useState(DEFAULT_SPRITES[0]);
   const [activeBackdrop, setActiveBackdrop] = useState(DEFAULT_BACKDROPS[0]);
-  const [videoEnabled, setVideoEnabled] = useState(false);
+  const [isVideoOn, setIsVideoOn] = useState(false);
   const { toast } = useToast();
   const p5Instance = useRef<p5 | null>(null);
 
   // Internal Engine State
-  const spriteState = useRef({
+  const engineState = useRef({
     x: 0,
     y: 0,
-    rotation: 0,
+    direction: 90,
     size: 80,
     sayText: ""
   });
 
-  // --- BLOCKLY SETUP ---
+  // --- 2. BLOCKLY SETUP (ZELOS) ---
   useEffect(() => {
     if (!blocklyRef.current) return;
 
+    // Define Custom Blocks
     Blockly.Blocks['motion_move'] = {
       init: function() {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
@@ -65,6 +66,7 @@ export default function ScratchEngine() {
       }
     };
 
+    // Define JavaScript Generators
     javascriptGenerator.forBlock['motion_move'] = (block) => {
       const steps = javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0';
       return `move(${steps});\n`;
@@ -74,9 +76,9 @@ export default function ScratchEngine() {
       const text = javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''";
       return `say(${text});\n`;
     };
-    
+
     const ws = Blockly.inject(blocklyRef.current, {
-        renderer: 'zelos', // This activates the rounded Scratch UI
+        renderer: 'zelos',
         toolbox: `
           <xml>
             <category name="Motion" colour="#4C97FF">
@@ -96,90 +98,79 @@ export default function ScratchEngine() {
     return () => ws.dispose();
   }, []);
 
-  // --- P5.JS STAGE ENGINE ---
-    useEffect(() => {
-        if (!canvasParentRef.current) return;
+  // --- 3. P5.JS STAGE ENGINE ---
+  useEffect(() => {
+    if (!canvasParentRef.current) return;
+    
+    if (p5Instance.current) p5Instance.current.remove();
+
+    const sketch = (p: p5) => {
+      let spriteImg: p5.Image;
+      let bgImg: p5.Image | null = null;
+      let capture: any;
+
+      p.setup = () => {
+        p.createCanvas(480, 360).parent(canvasParentRef.current!);
+        p.imageMode(p.CENTER);
         
-        // CRITICAL: Remove the old canvas before making a new one
-        if (p5Instance.current) {
-            p5Instance.current.remove();
+        p.loadImage(activeSprite.url, 
+            img => spriteImg = img,
+            (err) => { console.error("Sprite Load Failed:", err); }
+        );
+        if (activeBackdrop.img) {
+            p.loadImage(activeBackdrop.img, 
+                img => bgImg = img,
+                (err) => { console.error("Backdrop Load Failed:", err); }
+            );
+        }
+      };
+
+      p.draw = () => {
+        if (bgImg) p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
+        else p.background(activeBackdrop.color);
+
+        if (isVideoOn) {
+            if (!capture) { capture = p.createCapture(p.VIDEO); capture.hide(); }
+            p.push(); p.translate(p.width, 0); p.scale(-1, 1);
+            p.tint(255, 120); p.image(capture, p.width/2, p.height/2, p.width, p.height);
+            p.pop();
         }
 
-        const sketch = (p: p5) => {
-            let spriteImg: p5.Image;
-            let bgImg: p5.Image | null = null;
-            let capture: any;
+        p.push();
+        const screenX = p.width/2 + engineState.current.x;
+        const screenY = p.height/2 - engineState.current.y;
+        p.translate(screenX, screenY);
+        
+        if (spriteImg) {
+            p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
+        } else {
+            p.textSize(60); p.textAlign(p.CENTER, p.CENTER);
+            p.text(activeSprite.emoji, 0, 0);
+        }
 
-            p.preload = () => {
-                // Safe Load: If fetch fails, we use p.rect as fallback
-                p.loadImage(activeSprite.url, 
-                    img => spriteImg = img,
-                    (err) => { console.error("Sprite Load Failed:", err); }
-                );
-                if (activeBackdrop.img) {
-                    p.loadImage(activeBackdrop.img, 
-                        img => bgImg = img,
-                        (err) => { console.error("Backdrop Load Failed:", err); }
-                    );
-                }
-            };
+        if (engineState.current.sayText) {
+            p.fill(255); p.stroke(200); p.rect(20, -80, 100, 40, 10);
+            p.fill(0); p.noStroke(); p.textSize(12);
+            p.text(engineState.current.sayText, 70, -60);
+        }
+        p.pop();
+      };
+    };
 
-            p.setup = () => {
-                p.createCanvas(480, 360).parent(canvasParentRef.current!);
-                p.imageMode(p.CENTER);
-                p.angleMode(p.DEGREES);
-            };
+    p5Instance.current = new p5(sketch);
+    return () => p5Instance.current?.remove();
+  }, [activeSprite, activeBackdrop, isVideoOn]);
 
-            p.draw = () => {
-                // 1. Draw Background or Video
-                if (videoEnabled && capture) {
-                    p.push();
-                    p.translate(p.width, 0);
-                    p.scale(-1, 1); // Mirror video
-                    p.image(capture, p.width/2, p.height/2, p.width, p.height);
-                    p.pop();
-                } else if (bgImg) {
-                    p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
-                } else {
-                    p.background(activeBackdrop.color);
-                }
-
-                // 2. Draw Sprite
-                p.push();
-                p.translate(p.width/2 + spriteState.current.x, p.height/2 - spriteState.current.y);
-                p.rotate(spriteState.current.rotation);
-                
-                if (spriteImg) {
-                    p.image(spriteImg, 0, 0, spriteState.current.size, spriteState.current.size);
-                } else {
-                    p.textSize(50); p.textAlign(p.CENTER, p.CENTER);
-                    p.text(activeSprite.emoji, 0, 0);
-                }
-
-                // 3. Speech Bubble
-                if (spriteState.current.sayText) {
-                    p.fill(255); p.stroke(200); p.rect(20, -80, 100, 40, 10);
-                    p.fill(0); p.noStroke(); p.textSize(12);
-                    p.text(spriteState.current.sayText, 70, -60);
-                }
-                p.pop();
-            };
-        };
-
-        p5Instance.current = new p5(sketch);
-    }, [activeSprite, activeBackdrop, videoEnabled]);
-
-  // --- 4. EXECUTION ENGINE ---
+  // --- 4. ENGINE CONTROLS ---
   const runCode = () => {
     const code = javascriptGenerator.workspaceToCode(workspace);
     
-    // Commands used by the generator
-    const move = (steps: number) => spriteState.current.x += steps;
+    const move = (steps: number) => engineState.current.x += steps;
     const say = (text: string) => {
-        spriteState.current.sayText = text;
+        engineState.current.sayText = text;
         const u = new SpeechSynthesisUtterance(text);
         window.speechSynthesis.speak(u);
-        setTimeout(() => spriteState.current.sayText = "", 3000);
+        setTimeout(() => engineState.current.sayText = "", 3000);
     };
 
     try {
@@ -206,61 +197,48 @@ export default function ScratchEngine() {
       <div className="flex-1 h-full relative bg-white">
         {/* Visual Guide for students */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-10 flex flex-col items-center">
-            <Ghost className="w-20 h-20 mb-4" />
+            <MousePointer2 className="w-20 h-20 mb-4" />
             <p className="text-4xl font-black uppercase">Drag Blocks Here</p>
         </div>
         <div ref={blocklyRef} className="absolute inset-0 w-full h-full" />
       </div>
 
-      {/* 3. Stage & Assets (Right Side) */}
+      {/* 3. Stage & Assets (Right Side) - This stays completely separate */}
       <div className="w-[520px] p-4 flex flex-col gap-4 bg-slate-50 border-l overflow-y-auto z-10 shadow-inner">
-        <div ref={canvasParentRef} className="rounded-xl shadow-2xl border-4 border-white bg-white" />
+        <div ref={canvasParentRef} className="rounded-2xl overflow-hidden shadow-2xl border-[6px] border-white bg-white w-[480px] h-[360px]" />
         
-        {/* Asset Library Panels */}
-        <div className="grid grid-cols-2 gap-4">
-            {/* SPRITE SELECTOR */}
-            <div className="bg-white p-4 rounded-xl shadow-sm">
-            <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Select Sprite</p>
-            <div className="flex gap-2">
-                {DEFAULT_SPRITES.map(s => (
+        <div className="grid grid-cols-2 gap-3">
+          {/* SPRITES */}
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+            <span className="text-[10px] font-black uppercase text-slate-400 mb-3 block">Characters</span>
+            <div className="flex gap-2 flex-wrap">
+              {DEFAULT_SPRITES.map(s => (
                 <button 
-                    key={s.id}
-                    onClick={() => setActiveSprite(s)}
-                    className={`w-12 h-12 text-2xl rounded-lg border-2 transition-all ${activeSprite.id === s.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100'}`}
+                    key={s.id} 
+                    onClick={() => setActiveSprite(s)} 
+                    className={`w-14 h-14 text-3xl rounded-2xl border-2 transition-all ${activeSprite.id === s.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100'}`}
                 >
                     {s.emoji}
                 </button>
-                ))}
+              ))}
             </div>
-            </div>
+          </div>
 
-            {/* BACKDROP SELECTOR */}
-            <div className="bg-white p-4 rounded-xl shadow-sm">
-            <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Select Backdrop</p>
-            <div className="flex gap-2">
-                {DEFAULT_BACKDROPS.map(b => (
+          {/* BACKDROPS */}
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+            <span className="text-[10px] font-black uppercase text-slate-400 mb-3 block">Backdrops</span>
+            <div className="flex gap-2 flex-wrap">
+              {DEFAULT_BACKDROPS.map(b => (
                 <button 
-                    key={b.id}
+                    key={b.id} 
                     onClick={() => setActiveBackdrop(b)}
-                    className={`w-10 h-10 rounded-md border-2 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500 shadow-md' : 'border-slate-200'}`}
+                    className={`w-12 h-12 rounded-xl border-4 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500' : 'border-white'}`}
                     style={{ backgroundColor: b.color }}
                 />
-                ))}
+              ))}
             </div>
-            </div>
+          </div>
         </div>
-
-        {/* VIDEO CONTROL */}
-        <div className="bg-white p-3 rounded-xl flex justify-between items-center">
-            <span className="text-xs font-bold text-slate-600">Video Sensing</span>
-            <button 
-            onClick={() => setVideoEnabled(!videoEnabled)}
-            className={`px-4 py-1 rounded-full text-[10px] font-black uppercase transition-all ${videoEnabled ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'}`}
-            >
-            {videoEnabled ? 'ON' : 'OFF'}
-            </button>
-        </div>
-
       </div>
     </div>
   </div>
