@@ -1,5 +1,4 @@
 
-      
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -32,7 +31,7 @@ import {
   Redo2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useAuth, useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { doc, getDoc, setDoc, serverTimestamp, addDoc, collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,7 +42,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import confetti from 'canvas-confetti';
 import { Badge } from '@/components/ui/badge';
 import { useRole } from '@/context/role-context';
-import '@/lib/blockly/custom-blocks'; // Ensure this path is correct
+import { registerCustomBlocks } from '@/lib/blockly/custom-blocks'; // Ensure this path is correct
+
+registerCustomBlocks();
 
 // --- 1. ASSET LIBRARIES ---
 const SPRITE_LIBRARY = [
@@ -60,13 +61,13 @@ const SPRITE_LIBRARY = [
     id: 'ghost', 
     name: 'Ghost', 
     emoji: '👻', 
-    url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' 
+    costumes: ['data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7']
   },
   { 
     id: 'rocket', 
     name: 'Rocket', 
     emoji: '🚀', 
-    url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' 
+    costumes: ['data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7']
   }
 ];
 const DEFAULT_BACKDROPS = [
@@ -76,9 +77,9 @@ const DEFAULT_BACKDROPS = [
 ];
 
 const SOUND_LIBRARY = [
-  { id: 'meow', label: 'Meow 🐱', url: 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2' },
-  { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
-];
+      { id: 'meow', label: 'Meow 🐱', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' },
+      { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
+    ];
 
 
 const ScratchEngine = () => {
@@ -165,7 +166,8 @@ const ScratchEngine = () => {
         initialXml: '<xml xmlns="https://developers.google.com/blockly/xml"><block type="event_whenflagclicked" id="entry_point" x="100" y="100"></block></xml>'
     });
 
-    const runCode = async () => {
+    const runCode = useCallback(async () => {
+        if (!workspace) return;
         const code = javascriptGenerator.workspaceToCode(workspace);
         setGeneratedCode(code);
         
@@ -260,55 +262,62 @@ const ScratchEngine = () => {
                 variant: "destructive",
             });
         }
-    };
+    }, [workspace, activeSprite, sprites, toast]);
     
     // P5.js sketch setup
     useEffect(() => {
-        if (typeof window === 'undefined') return;
-        
-        if (!p5ContainerRef.current) return;
-
-        // Cleanup previous p5 instance if it exists
-        if (p5InstanceRef.current) {
-            p5InstanceRef.current.remove();
+        if (typeof window === 'undefined' || !p5ContainerRef.current) {
+            return;
         }
 
         let p5Instance: p5;
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
+            let loadedImages: { [key: string]: p5.Image } = {};
+            let assetsToLoad = 0;
+            let assetsLoaded = 0;
 
-            const preloadAssets = () => {
+            const assetLoaded = () => {
+                assetsLoaded++;
+                if (assetsLoaded === assetsToLoad) {
+                    setIsLoading(false);
+                }
+            };
+            
+            p.preload = () => {
                 sprites.forEach(sprite => {
                     if (sprite.costumes) {
                         sprite.costumes.forEach((url, index) => {
                             const key = `${sprite.id}-${index}`;
                             if (!loadedImages[key]) {
-                               p.loadImage(url, img => {
-                                   setLoadedImages(prev => ({...prev, [key]: img}));
-                               }, err => {
-                                   console.error(`Failed to load costume: ${url}`, err);
-                               });
+                                assetsToLoad++;
+                                loadedImages[key] = p.loadImage(url, assetLoaded, () => {
+                                    console.error(`Failed to load costume: ${url}`);
+                                    assetLoaded();
+                                });
                             }
                         });
                     }
                 });
                 backdrops.forEach(backdrop => {
                     if (backdrop.url && !loadedImages[backdrop.id]) {
-                        p.loadImage(backdrop.url, img => {
-                             setLoadedImages(prev => ({...prev, [backdrop.id]: img}));
+                        assetsToLoad++;
+                        loadedImages[backdrop.id] = p.loadImage(backdrop.url, assetLoaded, () => {
+                            console.error(`Failed to load backdrop: ${backdrop.url}`);
+                            assetLoaded();
                         });
                     }
                 });
+                if (assetsToLoad === 0) setIsLoading(false);
             };
-            
+
             p.setup = () => {
                 const container = p5ContainerRef.current!;
                 const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
                 canvas.parent(container);
                 penLayer = p.createGraphics(p.width, p.height);
                 p.frameRate(30);
-                preloadAssets();
             };
     
             p.draw = () => {
@@ -336,7 +345,7 @@ const ScratchEngine = () => {
                         p.height / 2 - engineState.current.y
                     );
                 }
-                p.image(penLayer, p.width/2, p.height/2);
+                p.image(penLayer, 0, 0); // Draw at (0,0) as it's a separate canvas layer
 
                 // Sprite
                 const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
@@ -381,12 +390,13 @@ const ScratchEngine = () => {
             };
         };
         
-        p5Instance.current = new p5(sketch);
+        p5Instance = new p5(sketch, p5ContainerRef.current);
+        p5InstanceRef.current = p5Instance;
         
         return () => {
-            p5Instance.current?.remove();
+            p5Instance.remove();
         };
-    }, [activeSprite, activeBackdrop, loadedImages]);
+    }, [activeSprite, activeBackdrop]); // Re-run sketch if active items change
 
     const handleReset = () => {
         engineState.current = {
@@ -411,7 +421,6 @@ const ScratchEngine = () => {
     // Replace with your actual logic for fetching these.
     const canEdit = false;
     const refetchAssets = () => {};
-    const [setLogs] = useState<string[]>([]);
     
     return (
         <div className="flex h-full bg-gray-100">
@@ -489,5 +498,3 @@ const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
 };
 
 export default ScratchEngine;
-
-    

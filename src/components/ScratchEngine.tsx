@@ -42,7 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import confetti from 'canvas-confetti';
 import { Badge } from '@/components/ui/badge';
 import { useRole } from '@/context/role-context';
-import { registerCustomBlocks } from '@/lib/blockly/custom-blocks'; // Import the registration function
+import { registerCustomBlocks } from '@/lib/blockly/custom-blocks';
 
 // Register the custom blocks and their generators
 registerCustomBlocks();
@@ -62,13 +62,13 @@ const SPRITE_LIBRARY = [
     id: 'ghost', 
     name: 'Ghost', 
     emoji: '👻', 
-    url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' 
+    costumes: ['data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7']
   },
   { 
     id: 'rocket', 
     name: 'Rocket', 
     emoji: '🚀', 
-    url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' 
+    costumes: ['data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'] 
   }
 ];
 const DEFAULT_BACKDROPS = [
@@ -78,8 +78,8 @@ const DEFAULT_BACKDROPS = [
 ];
 
 const SOUND_LIBRARY = [
-    { id: 'meow', label: 'Meow 🐱', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' },
-    { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
+  { id: 'meow', label: 'Meow 🐱', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' },
+  { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
 ];
 
 
@@ -92,7 +92,8 @@ const ScratchEngine = () => {
     const [backdrops, setBackdrops] = useState(DEFAULT_BACKDROPS);
     const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
     const [activeBackdrop, setActiveBackdrop] = useState(DEFAULT_BACKDROPS[0]);
-    const [loadedImages, setLoadedImages] = useState<{ [key: string]: p5.Image }>({});
+    const [loadedImages, setLoadedImages] = useState<{[key: string]: p5.Image}>({});
+    const [bgImg, setBgImg] = useState<p5.Image | null>(null);
 
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -117,13 +118,13 @@ const ScratchEngine = () => {
 
     // Blockly state
     const blocklyDivRef = useRef<HTMLDivElement>(null);
-    const [xml, setXml] = useState<string>('');
+    const [xml, setXml] = useState('');
     const [generatedCode, setGeneratedCode] = useState('');
 
     const { workspace } = useBlocklyWorkspace({
         ref: blocklyDivRef,
         toolboxConfiguration: {
-            kind: 'category',
+            kind: 'categoryToolbox',
             contents: [
                 { kind: 'category', name: 'Events', colour: '#FFD500', contents: [ { kind: 'block', type: 'event_whenflagclicked' } ] },
                 { kind: 'category', name: 'Motion', colour: '#4C97FF', contents: [
@@ -167,7 +168,6 @@ const ScratchEngine = () => {
     });
 
     const runCode = useCallback(async () => {
-        if (!workspace) return;
         const code = javascriptGenerator.workspaceToCode(workspace);
         setGeneratedCode(code);
         
@@ -256,128 +256,121 @@ const ScratchEngine = () => {
                 variant: "destructive",
             });
         }
-    }, [workspace, activeSprite.id, sprites, toast]);
+    }, [workspace, activeSprite, sprites, toast]);
     
     // P5.js sketch setup
     useEffect(() => {
-        if (typeof window === 'undefined' || !p5ContainerRef.current) return;
+        if (typeof window === 'undefined') return;
         
-        // Cleanup previous p5 instance if it exists
-        if (p5InstanceRef.current) {
-            p5InstanceRef.current.remove();
-        }
+        let p5Instance: p5;
+        if (p5ContainerRef.current) {
+            // Cleanup previous instance
+            if(p5InstanceRef.current) {
+                p5InstanceRef.current.remove();
+            }
 
-        const p5Instance = new p5((p: p5) => {
-            let penLayer: p5.Graphics;
-            const loadedImages: { [key: string]: p5.Image } = {};
-
-            const preloadAssets = () => {
-                sprites.forEach(sprite => {
-                    if (sprite.costumes) {
-                        sprite.costumes.forEach((url, index) => {
-                            const key = `${sprite.id}-${index}`;
-                            if (!loadedImages[key]) {
-                               p.loadImage(url, img => {
-                                   loadedImages[key] = img;
-                               }, err => {
-                                   console.error(`Failed to load costume: ${url}`, err);
-                               });
-                            }
-                        });
+            const sketch = (p: p5) => {
+                let penLayer: p5.Graphics;
+    
+                p.preload = () => {
+                    sprites.forEach(sprite => {
+                        if (sprite.costumes) {
+                            sprite.costumes.forEach((url, index) => {
+                                const key = `${sprite.id}-${index}`;
+                                if (!loadedImages[key]) {
+                                   loadedImages[key] = p.loadImage(url);
+                                }
+                            });
+                        }
+                    });
+                    backdrops.forEach(backdrop => {
+                        if (backdrop.url && !loadedImages[backdrop.id]) {
+                            loadedImages[backdrop.id] = p.loadImage(backdrop.url);
+                        }
+                    });
+                };
+                
+                p.setup = () => {
+                    const container = p5ContainerRef.current!;
+                    const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
+                    canvas.parent(container);
+                    penLayer = p.createGraphics(p.width, p.height);
+                    p.frameRate(30);
+                };
+        
+                p.draw = () => {
+                    // Background
+                    const bg = loadedImages[activeBackdrop.id];
+                    if (bg) {
+                        p.background(bg);
+                    } else {
+                        p.background(activeBackdrop.color || '#FFFFFF');
                     }
-                });
-                backdrops.forEach(backdrop => {
-                    if (backdrop.url && !loadedImages[backdrop.id]) {
-                        p.loadImage(backdrop.url, img => {
-                            loadedImages[backdrop.id] = img;
-                        }, err => {
-                            console.error(`Failed to load backdrop: ${backdrop.url}`, err);
-                        });
+    
+                    // Pen drawing
+                    if (engineState.current.shouldClear) {
+                        penLayer.clear();
+                        engineState.current.shouldClear = false;
                     }
-                });
+    
+                    if (engineState.current.isPenDown) {
+                        penLayer.stroke(engineState.current.penColor);
+                        penLayer.strokeWeight(4); // You can make this dynamic later
+                        penLayer.line(
+                            p.width / 2 + engineState.current.prevX,
+                            p.height / 2 - engineState.current.prevY,
+                            p.width / 2 + engineState.current.x,
+                            p.height / 2 - engineState.current.y
+                        );
+                    }
+                    p.image(penLayer, 0, 0);
+    
+                    // Sprite
+                    const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
+                    const currentCostumeImage = loadedImages[costumeKey];
+    
+                    p.push();
+                    p.translate(p.width / 2 + engineState.current.x, p.height / 2 - engineState.current.y);
+                    p.rotate(p.radians(engineState.current.direction - 90));
+                    p.scale(engineState.current.size / 100);
+    
+                    if (currentCostumeImage) {
+                        p.imageMode(p.CENTER);
+                        p.image(currentCostumeImage, 0, 0);
+                    } else {
+                        p.textAlign(p.CENTER, p.CENTER);
+                        p.textSize(50);
+                        p.text(activeSprite.emoji, 0, 0);
+                    }
+                    p.pop();
+    
+                    // Speech bubble
+                    if (engineState.current.message) {
+                        p.fill(255);
+                        p.stroke(0);
+                        p.rect(p.width / 2 + engineState.current.x + 40, p.height / 2 - engineState.current.y - 60, 120, 40, 10);
+                        p.fill(0);
+                        p.noStroke();
+                        p.textAlign(p.CENTER, p.CENTER);
+                        p.text(engineState.current.message, p.width / 2 + engineState.current.x + 100, p.height / 2 - engineState.current.y - 45);
+                    }
+    
+                    // Update prev positions
+                    engineState.current.prevX = engineState.current.x;
+                    engineState.current.prevY = engineState.current.y;
+                };
+    
+                p.windowResized = () => {
+                    if (p5ContainerRef.current) {
+                        p.resizeCanvas(p5ContainerRef.current.offsetWidth, p5ContainerRef.current.offsetHeight);
+                        penLayer.resizeCanvas(p.width, p.height);
+                    }
+                };
             };
             
-            p.setup = () => {
-                const container = p5ContainerRef.current!;
-                const canvas = p.createCanvas(container.offsetWidth, container.offsetHeight);
-                canvas.parent(container);
-                penLayer = p.createGraphics(p.width, p.height);
-                p.frameRate(30);
-                preloadAssets();
-            };
-    
-            p.draw = () => {
-                // Background
-                const bg = loadedImages[activeBackdrop.id];
-                if (bg) {
-                    p.image(bg, 0, 0, p.width, p.height);
-                } else {
-                    p.background(activeBackdrop.color || '#FFFFFF');
-                }
+            p5InstanceRef.current = new p5(sketch);
+        }
 
-                // Pen drawing
-                if (engineState.current.shouldClear) {
-                    penLayer.clear();
-                    engineState.current.shouldClear = false;
-                }
-
-                if (engineState.current.isPenDown) {
-                    penLayer.stroke(engineState.current.penColor);
-                    penLayer.strokeWeight(4); // You can make this dynamic later
-                    penLayer.line(
-                        p.width / 2 + engineState.current.prevX,
-                        p.height / 2 - engineState.current.prevY,
-                        p.width / 2 + engineState.current.x,
-                        p.height / 2 - engineState.current.y
-                    );
-                }
-                p.image(penLayer, 0, 0);
-
-                // Sprite
-                const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
-                const currentCostumeImage = loadedImages[costumeKey];
-
-                p.push();
-                p.translate(p.width / 2 + engineState.current.x, p.height / 2 - engineState.current.y);
-                p.rotate(p.radians(engineState.current.direction - 90));
-                p.scale(engineState.current.size / 100);
-
-                if (currentCostumeImage) {
-                    p.imageMode(p.CENTER);
-                    p.image(currentCostumeImage, 0, 0);
-                } else {
-                    p.textAlign(p.CENTER, p.CENTER);
-                    p.textSize(50);
-                    p.text(activeSprite.emoji, 0, 0);
-                }
-                p.pop();
-
-                // Speech bubble
-                if (engineState.current.message) {
-                    p.fill(255);
-                    p.stroke(0);
-                    p.rect(p.width / 2 + engineState.current.x + 40, p.height / 2 - engineState.current.y - 60, 120, 40, 10);
-                    p.fill(0);
-                    p.noStroke();
-                    p.textAlign(p.CENTER, p.CENTER);
-                    p.text(engineState.current.message, p.width / 2 + engineState.current.x + 100, p.height / 2 - engineState.current.y - 45);
-                }
-
-                // Update prev positions
-                engineState.current.prevX = engineState.current.x;
-                engineState.current.prevY = engineState.current.y;
-            };
-
-            p.windowResized = () => {
-                if (p5ContainerRef.current) {
-                    p.resizeCanvas(p5ContainerRef.current.offsetWidth, p5ContainerRef.current.offsetHeight);
-                    penLayer.resizeCanvas(p.width, p.height);
-                }
-            };
-        }, p5ContainerRef.current);
-        
-        p5InstanceRef.current = p5Instance;
-        
         return () => {
             p5InstanceRef.current?.remove();
         };
@@ -406,6 +399,7 @@ const ScratchEngine = () => {
     // Replace with your actual logic for fetching these.
     const canEdit = false;
     const refetchAssets = () => {};
+    const [setLogs] = useState<string[]>([]);
     
     return (
         <div className="flex h-full bg-gray-100">
@@ -483,4 +477,3 @@ const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
 };
 
 export default ScratchEngine;
-
