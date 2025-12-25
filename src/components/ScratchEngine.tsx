@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -142,22 +143,46 @@ export default function ScratchEngine() {
       return `say(${text});\n`;
     };
 
+    const toolbox = `
+  <xml>
+    <category name="Events" colour="#FFD500">
+      <block type="event_whenflagclicked"></block>
+    </category>
+    <category name="Motion" colour="#4C97FF">
+      <block type="motion_move"><value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+      <block type="motion_turnright"><value name="DEGREES"><shadow type="math_number"><field name="NUM">15</field></shadow></value></block>
+      <block type="motion_goto"><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+    </category>
+    <category name="Looks" colour="#9966FF">
+      <block type="looks_say"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
+      <block type="looks_changesizeby"><value name="CHANGE"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+    </category>
+    <category name="Sound" colour="#D65DB1">
+      <block type="sound_play"><value name="SOUND"><shadow type="text"><field name="TEXT">meow</field></shadow></value></block>
+    </category>
+    <category name="Control" colour="#FFAB19">
+      <block type="control_wait"><value name="DURATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+      <block type="control_repeat"><value name="TIMES"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+      <block type="control_forever"></block>
+      <block type="control_if"></block>
+    </category>
+    <category name="Sensing" colour="#4CBFE6">
+      <block type="sensing_touchingmouse"></block>
+      <block type="sensing_mousedown"></block>
+    </category>
+    <category name="Operators" colour="#40BF4A">
+      <block type="operator_add"></block>
+      <block type="operator_random"><value name="FROM"><shadow type="math_number"><field name="NUM">1</field></shadow></value><value name="TO"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+      <block type="operator_equals"></block>
+    </category>
+    <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
+    <category name="My Blocks" colour="#FF6680" custom="PROCEDURE"></category>
+  </xml>
+`;
+
     const ws = Blockly.inject(blocklyRef.current, {
         renderer: 'zelos', // This activates the rounded Scratch UI
-        toolbox: `
-          <xml>
-            <category name="Motion" colour="#4C97FF">
-              <block type="motion_move">
-                <value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
-              </block>
-            </category>
-            <category name="Looks" colour="#9966FF">
-               <block type="looks_say">
-                 <value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value>
-               </block>
-            </category>
-          </xml>
-        `,
+        toolbox: toolbox,
       });
     setWorkspace(ws);
     return () => ws.dispose();
@@ -186,7 +211,7 @@ export default function ScratchEngine() {
             p.loadImage(activeSprite.url, 
                 img => { spriteImg = img; },
                 (err) => { 
-                  console.error("Sprite Load Failed:", err);
+                  console.warn("CORS blocked image. Falling back to Emoji.");
                   spriteImg = null; // Forces emoji fallback in draw()
                 }
             );
@@ -201,69 +226,70 @@ export default function ScratchEngine() {
       };
   
       p.draw = () => {
-        // 1. Draw Background
-        if (bgImg) {
-          p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
-        } else {
-          p.background(activeBackdrop.color || '#F0F9FF');
-        }
+          // 1. Draw Colorful Backdrop
+          if (bgImg) {
+            p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
+          } else {
+            // Junior Rainbow Gradient if no image
+            p.background(activeBackdrop.color || '#FFDEE9');
+          }
 
-        // 2. NEW: VIDEO SENSING LAYER
-        if (isVideoOn) {
-          if (!capture) {
-            capture = p.createCapture(p.VIDEO);
-            (capture as p5.Element).size(480, 360);
-            capture.hide(); // Hide the extra video element below the canvas
-          }
-          p.push();
-          p.translate(p.width, 0); 
-          p.scale(-1, 1); // Mirror the video so it feels natural
-          p.tint(255, 120); // Make it ghostly/transparent like Scratch
-          p.image(capture, p.width/2, p.height/2, p.width, p.height);
-          p.pop();
-        } else {
-          // If video is turned off, stop the stream to save battery/cpu
-          if (capture) {
-            (capture.elt as HTMLVideoElement).pause();
-            const stream = (capture.elt as HTMLVideoElement).srcObject as MediaStream;
-            stream?.getTracks().forEach(track => track.stop());
-            capture.remove();
-            capture = null;
-          }
-        }
-      
-        // 3. Draw Sprite (as before)
-        p.push();
-        const screenX = p.width/2 + engineState.current.x;
-        const screenY = p.height/2 - engineState.current.y;
-        p.translate(screenX, screenY);
-        
-        if (spriteImg) {
-            p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
-        } else {
-            p.textSize(engineState.current.size * 0.8);
-            p.text(activeSprite.emoji || "🐱", 0, 0);
-        }
-      
-        // 4. MAGIC SPEECH BUBBLE (Visual Fix)
-        if (engineState.current.sayText) {
+          // 2. NEW: VIDEO SENSING LAYER
+          if (isVideoOn) {
+            if (!capture) {
+              capture = p.createCapture(p.VIDEO);
+              (capture as p5.Element).size(480, 360);
+              capture.hide(); // Hide the extra video element below the canvas
+            }
             p.push();
-            p.fill(255);
-            p.stroke('#4C97FF');
-            p.strokeWeight(4);
-            // Draw a rounded bubble
-            p.rect(-60, -110, 120, 50, 20);
-            // Draw the little tail
-            p.triangle(-10, -60, 10, -60, 0, -40);
-            
-            p.noStroke();
-            p.fill('#2D3748');
-            p.textSize(16);
-            p.text(engineState.current.sayText, 0, -85);
+            p.translate(p.width, 0); 
+            p.scale(-1, 1); // Mirror the video so it feels natural
+            p.tint(255, 120); // Make it ghostly/transparent like Scratch
+            p.image(capture, p.width/2, p.height/2, p.width, p.height);
             p.pop();
-        }
-        p.pop();
-      };
+          } else {
+            // If video is turned off, stop the stream to save battery/cpu
+            if (capture) {
+                const stream = (capture.elt as HTMLVideoElement).srcObject as MediaStream;
+                stream?.getTracks().forEach(track => track.stop());
+                capture.remove();
+                capture = null;
+            }
+          }
+        
+          // 3. Draw Sprite (as before)
+          p.push();
+          const screenX = p.width/2 + engineState.current.x;
+          const screenY = p.height/2 - engineState.current.y;
+          p.translate(screenX, screenY);
+          
+          if (spriteImg) {
+              p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
+          } else {
+              // MAGICAL FALLBACK: Big Emojis for Juniors
+              p.textSize(engineState.current.size * 0.8);
+              p.text(activeSprite.emoji || "🐱", 0, 0);
+          }
+        
+          // 4. MAGIC SPEECH BUBBLE (Visual Fix)
+          if (engineState.current.sayText) {
+              p.push();
+              p.fill(255);
+              p.stroke('#4C97FF');
+              p.strokeWeight(4);
+              // Draw a rounded bubble
+              p.rect(-60, -110, 120, 50, 20);
+              // Draw the little tail
+              p.triangle(-10, -60, 10, -60, 0, -40);
+              
+              p.noStroke();
+              p.fill('#2D3748');
+              p.textSize(16);
+              p.text(engineState.current.sayText, 0, -85);
+              p.pop();
+          }
+          p.pop();
+        };
     };
   
     p5Instance.current = new p5(sketch);
