@@ -198,6 +198,31 @@ const toolboxCategories = {
           { kind: 'block', type: 'colour_blend' },
         ],
       },
+      // ✍️ PEN
+      {
+        kind: 'category',
+        name: 'Pen',
+        colour: '#00B295',
+        contents: [
+          { kind: 'block', type: 'pen_clear' },
+          { kind: 'block', type: 'pen_pendown' },
+          { kind: 'block', type: 'pen_penup' },
+          {
+            kind: 'block',
+            type: 'pen_setcolor',
+            inputs: {
+              COLOR: { shadow: { type: 'colour_picker' } }
+            }
+          },
+          {
+            kind: 'block',
+            type: 'pen_setsize',
+            inputs: {
+              SIZE: { shadow: { type: 'math_number', fields: { NUM: 1 } } }
+            }
+          },
+        ],
+      },
       { kind: 'sep' },
       // 📦 VARIABLES
       {
@@ -366,8 +391,7 @@ export default function ScratchEngine() {
     Blockly.Blocks['control_wait'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("DURATION").setCheck("Number").appendField("wait").appendField("seconds");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
+        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
         this.setColour("#FFAB19");
       }
     };
@@ -609,24 +633,28 @@ export default function ScratchEngine() {
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
 
     const toggleVideo = (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON');
+
+    const randomColor = () => `#${Math.floor(Math.random()*16777215).toString(16)}`;
+
+    const rgbToHex = (r: number, g: number, b: number) => `#${[r,g,b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    }).join('')}`;
   
     // Execution environment (Injects variables and sensing data)
     const context = {
-      move,
-      say,
-      wait,
-      toggleVideo,
-      mouseX: p5Instance.current?.mouseX || 0,
-      mouseY: p5Instance.current?.mouseY || 0,
-      setPen: (isDown: boolean) => { 
-        engineState.current.isPenDown = isDown; 
-      },
-      penClear: () => {
-        engineState.current.shouldClearPen = true; 
-      },
-      setPenColor: (color: string) => {
-        engineState.current.penColor = color;
-      }
+        move,
+        say,
+        wait,
+        toggleVideo,
+        mouseX: p5Instance.current?.mouseX || 0,
+        mouseY: p5Instance.current?.mouseY || 0,
+        setPen: (isDown: boolean) => { engineState.current.isPenDown = isDown; },
+        penClear: () => { engineState.current.shouldClearPen = true; },
+        setPenColor: (color: string) => { engineState.current.penColor = color; },
+        setPenSize: (size: number) => { engineState.current.penSize = Math.max(1, size); },
+        randomColor,
+        rgbToHex
     };
   
     try {
