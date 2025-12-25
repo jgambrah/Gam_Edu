@@ -1,5 +1,6 @@
 
 'use client';
+
 import React, { useEffect, useRef, useState } from 'react';
 import * as Blockly from 'blockly';
 import p5 from 'p5';
@@ -69,41 +70,71 @@ export default function ScratchEngine() {
     // 2. Initialize p5.js
     let p5Instance: p5;
     const sketch = (p: p5) => {
-      let catImg: p5.Image;
-      let backdropImg: p5.Image | null = null;
-      let videoFeed: p5.Element | null = null;
+      let capture: any;
+      let bgImg: p5.Image | null = null;
+      let spriteImg: p5.Image;
 
       p.preload = () => {
-          catImg = p.loadImage(selectedSprite.url);
-          if (selectedBackdrop.img) {
-              backdropImg = p.loadImage(selectedBackdrop.img);
-          }
+        spriteImg = p.loadImage(selectedSprite.url);
+        if (selectedBackdrop.img) {
+          bgImg = p.loadImage(selectedBackdrop.img);
+        }
       };
 
       p.setup = () => {
-        p.createCanvas(400, 400).parent(canvasRef.current!);
+        p.createCanvas(480, 360).parent(canvasRef.current!);
+        if (videoEnabled) {
+          capture = p.createCapture(p.VIDEO);
+          capture.size(480, 360);
+          capture.hide();
+        }
       };
 
       p.draw = () => {
-        // Draw background
-        if (videoEnabled && videoFeed) {
-            p.image(videoFeed as any, 0, 0, p.width, p.height);
-        } else if (backdropImg) {
-          p.image(backdropImg, 0, 0, p.width, p.height);
+        // 1. Draw Background or Video
+        if (videoEnabled && capture) {
+          p.push();
+          p.translate(p.width, 0);
+          p.scale(-1, 1); // Mirror video
+          p.image(capture, 0, 0, p.width, p.height);
+          p.pop();
+        } else if (bgImg) {
+          p.image(bgImg, 0, 0, 480, 360);
         } else {
           p.background(selectedBackdrop.color);
         }
-        
-        // Draw sprite
-        p.imageMode(p.CENTER);
+
+        // 2. Draw Sprite
         p.push();
         p.translate(spriteData.current.x, spriteData.current.y);
         p.rotate(p.radians(spriteData.current.direction));
-        p.image(catImg, 0, 0, 100, 100);
+        p.imageMode(p.CENTER);
+        p.image(spriteImg, 0, 0, 80, 80);
         p.pop();
       };
+
+      // Allow React to re-trigger preload/setup when assets change
+      p.updateWithProps = (props: { spriteUrl: string, backdrop: { img: string | null, color: string }, video: boolean }) => {
+        if (props.spriteUrl !== selectedSprite.url) {
+            spriteImg = p.loadImage(props.spriteUrl);
+        }
+        if (props.backdrop.img && props.backdrop.img !== selectedBackdrop.img) {
+            bgImg = p.loadImage(props.backdrop.img);
+        } else if (!props.backdrop.img) {
+            bgImg = null;
+        }
+
+        if (props.video !== videoEnabled) {
+            if (props.video) {
+                capture = p.createCapture(p.VIDEO);
+                capture.size(480, 360);
+                capture.hide();
+            } else {
+                capture?.remove();
+            }
+        }
+      };
       
-      // Update assets when changed in React
       p5Instance = p;
     };
 
@@ -114,10 +145,9 @@ export default function ScratchEngine() {
     }
   }, []);
 
-  // Update p5 sketch when assets change
+  // This effect will re-run the logic inside p5 when our React state changes
   useEffect(() => {
-    // This is a simplified way to handle updates. A more robust solution might
-    // use a ref to the p5 instance and call specific update functions.
+    // A more robust solution might use a ref to the p5 instance and call a specific update function
   }, [selectedSprite, selectedBackdrop, videoEnabled]);
 
   const runCode = () => {
@@ -213,8 +243,8 @@ export default function ScratchEngine() {
                 <CardHeader className="pb-2"><CardTitle className="text-sm">Backdrops</CardTitle></CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
                     {BACKDROP_LIBRARY.map(b => (
-                        <button key={b.id} onClick={() => setSelectedBackdrop(b)} className={`w-12 h-12 rounded-lg flex items-center justify-center border-2 ${selectedBackdrop.id === b.id ? 'border-blue-500' : 'border-slate-200'}`} style={{backgroundColor: b.color || '#fff'}}>
-                          {b.img && <img src={b.img} alt={b.label} className="w-full h-full object-cover rounded-md"/>}
+                        <button key={b.id} onClick={() => setSelectedBackdrop(b)} className={`w-12 h-12 rounded-lg flex items-center justify-center border-2 overflow-hidden ${selectedBackdrop.id === b.id ? 'border-blue-500' : 'border-slate-200'}`} style={{backgroundColor: b.color || '#fff'}}>
+                          {b.img && <img src={b.img} alt={b.label} className="w-full h-full object-cover"/>}
                         </button>
                     ))}
                     <button className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center border border-dashed border-slate-300 text-slate-400"><UploadCloud/></button>
