@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -8,6 +9,7 @@ import {
   Play, Square, Image as ImageIcon, 
   User as UserIcon, Video, Volume2, Plus, Trash2 
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 // 1. ASSET LIBRARIES (Using known stable URLs or fallbacks)
 const SPRITE_LIBRARY = [
