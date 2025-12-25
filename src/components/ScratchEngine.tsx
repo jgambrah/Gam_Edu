@@ -8,7 +8,7 @@ import { javascriptGenerator } from 'blockly/javascript';
 import p5 from 'p5';
 import { 
   Play, Square, Image as ImageIcon, 
-  User as UserIcon, Video, Volume2, Plus, Trash2, Move, Ghost, MousePointer2, PlusCircle
+  User as UserIcon, Video, PlusCircle, Ghost, MousePointer2, Plus
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -102,6 +102,7 @@ export default function ScratchEngine() {
   const [isVideoOn, setIsVideoOn] = useState(false);
   const { toast } = useToast();
   
+  // Use 'engineState' everywhere
   const engineState = useRef({
     x: 0,
     y: 0,
@@ -110,6 +111,11 @@ export default function ScratchEngine() {
     sayText: "",
     isJunior: true // Helps trigger the colorful theme
   });
+
+  const [sounds] = useState([
+    { id: 'meow', emoji: '🐱', url: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3' },
+    { id: 'pop', emoji: '🎈', url: 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3' },
+  ]);
 
   useEffect(() => {
     if (!blocklyRef.current) return;
@@ -265,7 +271,7 @@ export default function ScratchEngine() {
         if (activeSprite.url && activeSprite.url.startsWith('http')) {
             p.loadImage(activeSprite.url, 
                 img => { spriteImg = img; },
-                (err) => { 
+                () => { 
                   console.warn("CORS blocked image. Falling back to Emoji.");
                   spriteImg = null; // Forces emoji fallback in draw()
                 }
@@ -363,14 +369,16 @@ export default function ScratchEngine() {
     const move = (steps: number) => { engineState.current.x += steps; };
     
     const say = (text: string) => {
-      engineState.current.sayText = text;
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-      // Bubbles disappear after 2 seconds
-      setTimeout(() => {
-        if (engineState.current) {
-          engineState.current.sayText = ""
-        }
-      }, 2000);
+        // 1. Show bubble on screen
+        engineState.current.sayText = text;
+        // 2. Browser Voice Engine
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        // 3. Auto-hide bubble after 3 seconds
+        setTimeout(() => {
+            if(engineState.current) engineState.current.sayText = ""
+        }, 3000);
     };
   
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
@@ -408,6 +416,7 @@ export default function ScratchEngine() {
       <div className="flex flex-1 overflow-hidden relative">
         {/* 2. Coding Workspace */}
         <div className="flex-1 h-full relative bg-white">
+          {/* Visual Guide for students */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-10 flex flex-col items-center">
               <MousePointer2 className="w-20 h-20 mb-4" />
               <p className="text-4xl font-black uppercase">Drag Blocks Here</p>
@@ -415,8 +424,9 @@ export default function ScratchEngine() {
           <div ref={blocklyRef} className="absolute inset-0 w-full h-full" />
         </div>
   
-        {/* 3. Stage & Assets */}
+        {/* RIGHT: STAGE & ASSETS (Separated with high z-index) */}
         <div className="w-[520px] p-4 flex flex-col gap-4 bg-[#F0F9FF] border-l-4 border-white overflow-y-auto z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.05)]">
+          
           {/* The Stage */}
           <div className="relative group">
             <div ref={canvasParentRef} className="rounded-[40px] overflow-hidden shadow-2xl border-[10px] border-white bg-white w-[480px] h-[360px]" />
@@ -425,60 +435,77 @@ export default function ScratchEngine() {
 
           {/* MAGIC MIRROR (VIDEO SENSING) */}
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
-            <div className="flex items-center gap-3">
-                <div className="bg-purple-100 p-3 rounded-2xl">
+              <div className="flex items-center gap-3">
+                 <div className="bg-purple-100 p-3 rounded-2xl">
                     <Video className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
+                 </div>
+                 <div>
                     <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest leading-none mb-1">Magic Mirror</p>
                     <p className="text-sm font-bold text-slate-700">Video Sensing</p>
-                </div>
-            </div>
-            <button 
+                 </div>
+              </div>
+              <button 
                 onClick={() => setIsVideoOn(!isVideoOn)}
                 className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${
-                isVideoOn 
+                  isVideoOn 
                     ? 'bg-purple-500 text-white shadow-[0_4px_0_#7e22ce]' 
                     : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
                 }`}
-            >
+              >
                 {isVideoOn ? 'ON' : 'OFF'}
-            </button>
+              </button>
             </div>
-        
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
-                <div className="flex justify-between items-center mb-4">
-                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
-                    {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
-                </div>
-                <div className="flex gap-3 flex-wrap">
-                    {SPRITE_LIBRARY.map(s => (
-                        <button 
+
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                <span className="text-[10px] font-black uppercase text-pink-400 mb-3 block">Sound Library</span>
+                <div className="flex gap-2">
+                    {sounds.map(s => (
+                    <button 
                         key={s.id} 
-                        onClick={() => setActiveSprite(s)}
-                        className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
-                        >
-                        {s.emoji}
-                        </button>
+                        onClick={() => new Audio(s.url).play()}
+                        className="p-3 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors"
+                    >
+                        {s.emoji} <span className="text-[10px] font-bold text-pink-600">{s.id}</span>
+                    </button>
                     ))}
                 </div>
             </div>
+
+          {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
+               <div className="flex justify-between items-center mb-4">
+                  <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
+                  {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
+               </div>
+               <div className="flex gap-3 flex-wrap">
+                  {SPRITE_LIBRARY.map(s => (
+                    <button 
+                      key={s.id} 
+                      onClick={() => setActiveSprite(s)}
+                      className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
+                    >
+                      {s.emoji}
+                    </button>
+                  ))}
+               </div>
+            </div>
+            
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
-                <div className="flex justify-between items-center mb-4">
-                    <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
-                    {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
-                </div>
-                <div className="flex gap-3 flex-wrap">
+               <div className="flex justify-between items-center mb-4">
+                  <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
+                  {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
+               </div>
+               <div className="flex gap-3 flex-wrap">
                     {BACKDROP_LIBRARY.map(b => (
                         <button 
                         key={b.id} 
                         onClick={() => setActiveBackdrop(b)}
                         className={`w-12 h-12 rounded-[16px] border-4 transition-all ${activeBackdrop.id === b.id ? 'border-pink-500 shadow-md scale-105' : 'border-white'}`}
-                        style={{ backgroundColor: b.color }}
+                        style={{ backgroundColor: b.color, backgroundImage: `url(${b.img})`, backgroundSize: 'cover' }}
                         />
                     ))}
-                </div>
+               </div>
             </div>
           </div>
         </div>
