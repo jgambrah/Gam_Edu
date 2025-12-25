@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Code, Bot, Rocket, Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -12,51 +13,43 @@ import ScratchEngine from '@/components/ScratchEngine';
 export default function CodingClubPage() {
   return (
     <div className="space-y-6">
-       <Card className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-0">
+      <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-3xl">
             <Code className="h-8 w-8" />
             <span>Coding Club</span>
           </CardTitle>
-          <CardDescription className="text-indigo-100">
+          <CardDescription className="text-blue-200">
             From visual blocks to real-world Python, start your coding adventure here.
           </CardDescription>
         </CardHeader>
       </Card>
 
       <Tabs defaultValue="game-lab" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-auto">
-          <TabsTrigger value="game-lab" className="flex flex-col gap-2 p-4 h-full">
-            <Gamepad2 />
-            <span className="font-bold">Block-Based Game Lab</span>
-            <span className="text-xs font-normal text-muted-foreground">Create games with visual blocks</span>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="game-lab" className="flex-grow flex justify-center items-center gap-2">
+            <Gamepad2 className="h-5 w-5" /> Game Lab
           </TabsTrigger>
-          <TabsTrigger value="logic-lab" className="flex flex-col gap-2 p-4 h-full">
-            <Bot />
-            <span className="font-bold">Logic Lab</span>
-            <span className="text-xs font-normal text-muted-foreground">Learn Python logic puzzles</span>
+          <TabsTrigger value="logic-lab" className="flex-grow flex justify-center items-center gap-2">
+            <Bot className="h-5 w-5" /> Logic Lab
           </TabsTrigger>
-          <TabsTrigger value="python-academy" className="flex flex-col gap-2 p-4 h-full">
-            <Rocket />
-            <span className="font-bold">Python Pro Academy</span>
-            <span className="text-xs font-normal text-muted-foreground">Master text-based Python</span>
+          <TabsTrigger value="python-academy" className="flex-grow flex justify-center items-center gap-2">
+            <Rocket className="h-5 w-5" /> Python Academy
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="game-lab" className="mt-6">
+        <TabsContent value="game-lab" className="mt-4">
           <Card>
             <CardHeader>
-                <CardTitle>Block-Based Game Lab</CardTitle>
-                <CardDescription>Build your own games and animations by dragging and dropping code blocks, just like Scratch!</CardDescription>
+              <CardTitle>Block-Based Game Lab</CardTitle>
+              <CardDescription>Build your own games and animations by dragging and dropping code blocks, just like Scratch!</CardDescription>
             </CardHeader>
-            <CardContent>
-                 <div className="w-full rounded-lg overflow-hidden border">
-                    <ScratchEngine />
-                </div>
+            <CardContent className="h-[600px]">
+              <ScratchEngine />
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="logic-lab">
-            <Card className="text-center p-8">
+        <TabsContent value="logic-lab" className="mt-4">
+             <Card className="text-center p-8">
                 <CardHeader>
                     <Bot className="mx-auto h-12 w-12 text-slate-400 mb-4"/>
                     <CardTitle>Logic Lab</CardTitle>
@@ -69,8 +62,8 @@ export default function CodingClubPage() {
                 </CardContent>
             </Card>
         </TabsContent>
-        <TabsContent value="python-academy">
-             <Card className="text-center p-8">
+        <TabsContent value="python-academy" className="mt-4">
+            <Card className="text-center p-8">
                 <CardHeader>
                     <Rocket className="mx-auto h-12 w-12 text-slate-400 mb-4"/>
                     <CardTitle>Python Pro Academy</CardTitle>

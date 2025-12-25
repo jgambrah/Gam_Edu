@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -42,47 +43,68 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import confetti from 'canvas-confetti';
 import { Badge } from '@/components/ui/badge';
 import { useRole } from '@/context/role-context';
-
-// Import custom block definitions
 import '@/lib/blockly/custom-blocks'; // Ensure this path is correct
 
 // --- 1. ASSET LIBRARIES ---
 const SPRITE_LIBRARY = [
-      { id: 'cat', name: 'Cat', emoji: '🐱', costumes: [
-        'https://api.scratch.mit.edu/internalapi/asset/b7853f557e4433722f86233346394526.svg/get/',
-        'https://api.scratch.mit.edu/internalapi/asset/2e9063c64a36371b63574b5379e43d70.svg/get/'
-      ] },
-      { id: 'ghost', name: 'Ghost', emoji: '👻', url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' },
-      { id: 'rocket', name: 'Rocket', emoji: '🚀', url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' }
-    ];
-    const DEFAULT_BACKDROPS = [
-      { id: 'blue-sky', name: 'Blue Sky', color: '#87CEEB', url: '' },
-      { id: 'space', name: 'Space', color: '#000033', url: 'https://www.publicdomainpictures.net/pictures/170000/nahled/simple-star-field-background.jpg' },
-      { id: 'grid', name: 'Grid', color: '#FFFFFF', url: 'https://www.publicdomainpictures.net/pictures/20000/nahled/white-grid-paper.jpg' }
-    ];
+  { 
+    id: 'cat', 
+    name: 'Cat', 
+    emoji: '🐱', 
+    costumes: [
+      'https://api.scratch.mit.edu/internalapi/asset/b7853f557e4433722f86233346394526.svg/get/',
+      'https://api.scratch.mit.edu/internalapi/asset/2e9063c64a36371b63574b5379e43d70.svg/get/'
+    ]
+  },
+  { 
+    id: 'ghost', 
+    name: 'Ghost', 
+    emoji: '👻', 
+    url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' 
+  },
+  { 
+    id: 'rocket', 
+    name: 'Rocket', 
+    emoji: '🚀', 
+    url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' 
+  }
+];
+const DEFAULT_BACKDROPS = [
+  { id: 'blue-sky', name: 'Blue Sky', color: '#87CEEB', url: '' },
+  { id: 'space', name: 'Space', color: '#000033', url: 'https://www.publicdomainpictures.net/pictures/170000/nahled/simple-star-field-background.jpg' },
+  { id: 'grid', name: 'Grid', color: '#FFFFFF', url: 'https://www.publicdomainpictures.net/pictures/20000/nahled/white-grid-paper.jpg' }
+];
 
-    const SOUND_LIBRARY = [
-      { id: 'meow', label: 'Meow 🐱', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' },
-      { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
-    ];
+const SOUND_LIBRARY = [
+  { 
+    id: 'meow', 
+    label: 'Meow 🐱', 
+    url: 'https://cdn.freesound.org/previews/256/256339_4030635-lq.mp3' 
+  },
+  { 
+    id: 'pop', 
+    label: 'Pop 🎈', 
+    url: 'https://cdn.freesound.org/previews/511/511484_10825312-lq.mp3' 
+  }
+];
 
 const ScratchEngine = () => {
     const { toast } = useToast();
     const { user } = useUser();
     const firestore = useFirestore();
 
-    const [sprites, setSprites] = useState(DEFAULT_SPRITES);
+    const [sprites, setSprites] = useState(SPRITE_LIBRARY);
     const [backdrops, setBackdrops] = useState(DEFAULT_BACKDROPS);
-    const [activeSprite, setActiveSprite] = useState(DEFAULT_SPRITES[0]);
+    const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
     const [activeBackdrop, setActiveBackdrop] = useState(DEFAULT_BACKDROPS[0]);
-    const [loadedImages, setLoadedImages] = useState({});
-    const [bgImg, setBgImg] = useState(null);
+    const [loadedImages, setLoadedImages] = useState<{ [key: string]: p5.Image }>({});
+    const [bgImg, setBgImg] = useState<p5.Image | null>(null);
 
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    const p5ContainerRef = useRef(null);
-    const p5InstanceRef = useRef(null);
+    const p5ContainerRef = useRef<HTMLDivElement>(null);
+    const p5InstanceRef = useRef<p5 | null>(null);
 
     const engineState = useRef({
         x: 0,
@@ -100,7 +122,7 @@ const ScratchEngine = () => {
     });
 
     // Blockly state
-    const blocklyDivRef = useRef(null);
+    const blocklyDivRef = useRef<HTMLDivElement>(null);
     const [xml, setXml] = useState('');
     const [generatedCode, setGeneratedCode] = useState('');
 
@@ -255,9 +277,9 @@ const ScratchEngine = () => {
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
-            let loadedCostumes: { [key: string]: p5.Image } = {};
-
+            
             const preloadAssets = () => {
+                // Preload costumes for the active sprite
                 if (activeSprite.costumes && activeSprite.costumes.length > 0) {
                      activeSprite.costumes.forEach((url, index) => {
                         const key = `${activeSprite.id}-${index}`;
@@ -270,12 +292,11 @@ const ScratchEngine = () => {
                         }
                     });
                 }
-                if (activeBackdrop.url) {
-                    if (!loadedImages[activeBackdrop.id]) {
-                        p.loadImage(activeBackdrop.url, img => {
-                             setLoadedImages(prev => ({...prev, [activeBackdrop.id]: img}));
-                        });
-                    }
+                // Preload backdrop image
+                if (activeBackdrop.url && !loadedImages[activeBackdrop.id]) {
+                    p.loadImage(activeBackdrop.url, img => {
+                         setLoadedImages(prev => ({...prev, [activeBackdrop.id]: img}));
+                    });
                 }
             };
             
@@ -357,13 +378,16 @@ const ScratchEngine = () => {
                 }
             };
         };
-
+        
+        if (p5Instance.current) {
+            p5Instance.current.remove();
+        }
         p5Instance.current = new p5(sketch);
         
         return () => {
             p5Instance.current?.remove();
         };
-    }, [activeSprite, activeBackdrop]); // Re-run sketch if active items change
+    }, [activeSprite, activeBackdrop, loadedImages]); // Re-run sketch if active items or loaded images change
 
     const handleReset = () => {
         engineState.current = {
@@ -391,68 +415,54 @@ const ScratchEngine = () => {
     const [setLogs] = useState<string[]>([]);
     
     return (
-        
+        <div className="flex h-full bg-gray-100">
             {/* Left: Blockly */}
-            
-                
-            
+            <div className="w-2/3 h-full relative" ref={blocklyDivRef} style={{ resize: 'horizontal', overflow: 'auto' }}/>
 
             {/* Right: Stage, Sprites, etc. */}
-            
+            <div className="w-1/3 flex flex-col p-2 gap-2">
                 
                 {/* Stage */}
-                
-                    
-                        
-                            
-                        
-                        
-                            
-                        
-                    
-                
+                <div className="relative aspect-video bg-white border border-gray-300 rounded" ref={p5ContainerRef}>
+                    <div className="absolute top-2 right-2 flex gap-2">
+                        <Button size="icon" onClick={runCode} className="bg-green-500 hover:bg-green-600"><Play className="h-5 w-5"/></Button>
+                        <Button size="icon" variant="destructive" onClick={handleReset}><Square className="h-5 w-5"/></Button>
+                    </div>
+                </div>
 
                 {/* Tabs for Sprites/Backdrops */}
-                
+                <Tabs defaultValue="sprites" className="flex-1 flex flex-col min-h-0">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="sprites">Sprites</TabsTrigger>
+                        <TabsTrigger value="backdrops">Backdrops</TabsTrigger>
+                    </TabsList>
                     
-                        
-                            Sprites
-                        
-                        
-                            Backdrops
-                        
+                    <TabsContent value="sprites" className="flex-1 overflow-y-auto">
+                        <div className="p-2 grid grid-cols-3 gap-2">
+                            {sprites.map(sprite => (
+                                <button key={sprite.id} onClick={() => handleSpriteSelect(sprite)} className={`p-2 rounded-lg border-2 ${activeSprite.id === sprite.id ? 'border-blue-500 bg-blue-100' : 'border-transparent bg-slate-100'}`}>
+                                    <div className="text-4xl">{sprite.emoji}</div>
+                                    <p className="text-xs">{sprite.name}</p>
+                                </button>
+                            ))}
+                            {canEdit && <AddAssetModal type="sprite" onAdded={refetchAssets} />}
+                        </div>
+                    </TabsContent>
                     
-                    
-                        
-                            
-                                {sprites.map(sprite => (
-                                    
-                                        
-                                            {sprite.emoji}
-                                            
-                                        
-                                    
-                                ))}
-                                {canEdit && }
-                            
-                        
-                    
-                    
-                        
-                             
-                                {backdrops.map(backdrop => (
-                                    
-                                        
-                                            
-                                            
-                                        
-                                    
-                                ))}
-                             {canEdit && }
-                        
-                    
-                
-            
-        
+                    <TabsContent value="backdrops" className="flex-1 overflow-y-auto">
+                         <div className="p-2 grid grid-cols-3 gap-2">
+                            {backdrops.map(backdrop => (
+                                <button key={backdrop.id} onClick={() => handleBackdropSelect(backdrop)} className={`p-2 rounded-lg border-2 flex flex-col items-center ${activeBackdrop.id === backdrop.id ? 'border-blue-500' : 'border-transparent'}`}>
+                                    <div className="w-16 h-12 rounded" style={{backgroundColor: backdrop.color}} />
+                                    <p className="text-xs mt-1">{backdrop.name}</p>
+                                </button>
+                            ))}
+                             {canEdit && <AddAssetModal type="backdrop" onAdded={refetchAssets} />}
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </div>
     );
 };
+
