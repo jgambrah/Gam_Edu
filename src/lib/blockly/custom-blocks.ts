@@ -1,48 +1,54 @@
-// /lib/blockly/custom-blocks.ts
-import * as Blockly from 'blockly';
+
+import * as Blockly from 'blockly/core';
 import { javascriptGenerator } from 'blockly/javascript';
 
 export const registerCustomBlocks = () => {
+    // Check if blocks are already registered to prevent errors on hot reloads
+    if ((Blockly as any).__customBlocksRegistered) {
+        return;
+    }
+    (Blockly as any).__customBlocksRegistered = true;
+
     const customBlocks = [
         {
-            "type": "event_whenflagclicked",
-            "message0": "when 🏁 clicked",
-            "nextStatement": null,
-            "colour": "#FFD500",
-            "tooltip": "This block starts the script when the green flag is clicked.",
-            "helpUrl": ""
+          "type": "event_whenflagclicked",
+          "message0": "when 🏁 clicked",
+          "nextStatement": null,
+          "colour": "#FFD500",
+          "tooltip": "This block starts the script when the green flag is clicked.",
+          "helpUrl": ""
         },
         {
-            "type": "motion_move",
-            "message0": "move %1 steps",
-            "args0": [
-                {
-                    "type": "input_value",
-                    "name": "STEPS",
-                    "check": "Number"
-                }
-            ],
-            "previousStatement": null,
-            "nextStatement": null,
-            "colour": "#4C97FF",
-            "tooltip": "Moves the sprite forward in the direction it is facing.",
-            "helpUrl": ""
+          "type": "motion_move",
+          "message0": "move %1 steps",
+          "args0": [
+            {
+              "type": "input_value",
+              "name": "STEPS",
+              "check": "Number"
+            }
+          ],
+          "previousStatement": null,
+          "nextStatement": null,
+          "colour": "#4C97FF",
+          "tooltip": "Moves the sprite forward in the direction it is facing.",
+          "helpUrl": ""
         },
         {
-            "type": "motion_turnright",
-            "message0": "turn ↻ %1 degrees",
-            "args0": [
-                {
-                    "type": "input_value",
-                    "name": "DEGREES",
-                    "check": "Number"
-                }
-            ],
-            "previousStatement": null,
-            "nextStatement": null,
-            "colour": "#4C97FF",
-            "tooltip": "Turns the sprite to the right.",
-            "helpUrl": ""
+          "type": "motion_turnright",
+          "message0": "turn ↻ %1 degrees",
+          "args0": [
+            {
+              "type": "input_value",
+              "name": "DEGREES",
+              "check": "Number"
+            }
+          ],
+          "previousStatement": null,
+          "nextStatement": null,
+          "colour": "#4C97FF",
+          "tooltip": "Turns the sprite to the right.",
+          "helpUrl": ""
         },
         {
             "type": "looks_sayforsecs",
@@ -138,12 +144,16 @@ export const registerCustomBlocks = () => {
             "colour": "#CF63CF",
             "tooltip": "Plays a sound and waits until it finishes.",
             "helpUrl": ""
-        },
+          },
         {
             "type": "control_wait",
             "message0": "wait %1 seconds",
             "args0": [
-              { "type": "input_value", "name": "DURATION", "check": "Number" }
+              {
+                "type": "input_value",
+                "name": "DURATION",
+                "check": "Number"
+              }
             ],
             "previousStatement": null,
             "nextStatement": null,
@@ -155,8 +165,15 @@ export const registerCustomBlocks = () => {
             "type": "control_repeat",
             "message0": "repeat %1 %2",
             "args0": [
-              { "type": "input_value", "name": "TIMES", "check": "Number" },
-              { "type": "input_statement", "name": "SUBSTACK" }
+              {
+                "type": "input_value",
+                "name": "TIMES",
+                "check": "Number"
+              },
+              {
+                "type": "input_statement",
+                "name": "SUBSTACK"
+              }
             ],
             "previousStatement": null,
             "nextStatement": null,
@@ -168,7 +185,10 @@ export const registerCustomBlocks = () => {
             "type": "control_forever",
             "message0": "forever %1",
             "args0": [
-              { "type": "input_statement", "name": "SUBSTACK" }
+              {
+                "type": "input_statement",
+                "name": "SUBSTACK"
+              }
             ],
             "previousStatement": null,
             "colour": "#FFAB19",
@@ -258,8 +278,8 @@ export const registerCustomBlocks = () => {
             ],
             "previousStatement": null,
             "nextStatement": null,
-            "colour": "#00B25B",
-            "tooltip": "Changes the pen size by the specified amount.",
+            "colour": "#00B295",
+            "tooltip": "Changes the pen size.",
             "helpUrl": ""
           },
           {
@@ -275,122 +295,121 @@ export const registerCustomBlocks = () => {
             "previousStatement": null,
             "nextStatement": null,
             "colour": "#00B295",
-            "tooltip": "Sets the pen size to the specified amount.",
+            "tooltip": "Sets the pen size.",
             "helpUrl": ""
           }
-    ];
+      ];
 
     Blockly.defineBlocksWithJsonArray(customBlocks);
 
     // Generator stubs for the new blocks
-    (javascriptGenerator as any)['event_whenflagclicked'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['event_whenflagclicked'] = function(block: Blockly.Block) {
       return ''; // This is a starter block, so it generates no code by itself.
     };
 
-    (javascriptGenerator as any)['motion_move'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['motion_move'] = function(block: Blockly.Block) {
       const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '10';
       return `await move(${steps});\n`;
     };
 
-    (javascriptGenerator as any)['motion_turnright'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['motion_turnright'] = function(block: Blockly.Block) {
       const degrees = javascriptGenerator.valueToCode(block, 'DEGREES', javascriptGenerator.ORDER_ATOMIC) || '15';
       return `turn(${degrees});\n`;
     };
 
-    (javascriptGenerator as any)['looks_sayforsecs'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['looks_sayforsecs'] = function(block: Blockly.Block) {
       const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
       const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || '2';
       return `await say(${message}, ${secs});\n`;
     };
 
-    (javascriptGenerator as any)['looks_say'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['looks_say'] = function(block: Blockly.Block) {
       const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
       return `say(${message});\n`;
     };
     
-    (javascriptGenerator as any)['looks_thinkforsecs'] = function(block: Blockly.Block) {
-      const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
-      const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || '2';
-      return `await think(${message}, ${secs});\n`;
+    (javascriptGenerator as any).forBlock['looks_thinkforsecs'] = function(block: Blockly.Block) {
+        const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
+        const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || '2';
+        return `await think(${message}, ${secs});\n`;
     };
     
-    (javascriptGenerator as any)['looks_think'] = function(block: Blockly.Block) {
-      const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
-      return `think(${message});\n`;
+    (javascriptGenerator as any).forBlock['looks_think'] = function(block: Blockly.Block) {
+        const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
+        return `think(${message});\n`;
     };
 
-    (javascriptGenerator as any)['looks_changesizeby'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['looks_changesizeby'] = function(block: Blockly.Block) {
         const change = javascriptGenerator.valueToCode(block, 'CHANGE', javascriptGenerator.ORDER_ATOMIC) || '10';
         return `changeSizeBy(${change});\n`;
     };
-      
-    (javascriptGenerator as any)['looks_setsizeto'] = function(block: Blockly.Block) {
+
+    (javascriptGenerator as any).forBlock['looks_setsizeto'] = function(block: Blockly.Block) {
         const size = javascriptGenerator.valueToCode(block, 'SIZE', javascriptGenerator.ORDER_ATOMIC) || '100';
         return `setSizeTo(${size});\n`;
     };
 
-    (javascriptGenerator as any)['looks_nextcostume'] = function(block: Blockly.Block) {
-        return `nextCostume();\n`;
+    (javascriptGenerator as any).forBlock['looks_nextcostume'] = function(block: Blockly.Block) {
+        return 'nextCostume();\n';
+    };
+
+    (javascriptGenerator as any).forBlock['sound_playuntildone'] = function(block: Blockly.Block) {
+        const sound = block.getFieldValue('SOUND_MENU');
+        return `await playSound('${sound}');\n`;
     };
     
-    (javascriptGenerator as any)['sound_playuntildone'] = function(block: Blockly.Block) {
-        const sound = `'${block.getFieldValue('SOUND_MENU')}'`;
-        return `await playSound(${sound});\n`;
-    };
-    
-    (javascriptGenerator as any)['control_wait'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['control_wait'] = function(block: Blockly.Block) {
         const duration = javascriptGenerator.valueToCode(block, 'DURATION', javascriptGenerator.ORDER_ATOMIC) || '1';
         return `await wait(${duration});\n`;
     };
     
-    (javascriptGenerator as any)['control_repeat'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['control_repeat'] = function(block: Blockly.Block) {
         const times = javascriptGenerator.valueToCode(block, 'TIMES', javascriptGenerator.ORDER_ATOMIC) || '10';
-        const branch = javascriptGenerator.statementToCode(block, 'SUBSTACK');
-        return `for (let i = 0; i < ${times}; i++) {\n${branch}}\n`;
+        const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
+        return `for (let i = 0; i < ${times}; i++) {\n${substack}}\n`;
     };
     
-    (javascriptGenerator as any)['control_forever'] = function(block: Blockly.Block) {
-        const branch = javascriptGenerator.statementToCode(block, 'SUBSTACK');
-        return `while (true) {\n${branch} await new Promise(r => setTimeout(r, 16));\n}\n`; // a small delay to avoid freezing browser
+    (javascriptGenerator as any).forBlock['control_forever'] = function(block: Blockly.Block) {
+        const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
+        return `while (true) {\n${substack} await wait(0.03);\n}\n`; // Small delay to prevent freezing
     };
-    
-    (javascriptGenerator as any)['sensing_touchingmouse'] = function(block: Blockly.Block) {
+
+    (javascriptGenerator as any).forBlock['sensing_touchingmouse'] = function(block: Blockly.Block) {
         return ['isTouching("mouse-pointer")', javascriptGenerator.ORDER_ATOMIC];
     };
-    
-    (javascriptGenerator as any)['operator_random'] = function(block: Blockly.Block) {
-        const from = javascriptGenerator.valueToCode(block, 'FROM', javascriptGenerator.ORDER_ATOMIC) || '1';
-        const to = javascriptGenerator.valueToCode(block, 'TO', javascriptGenerator.ORDER_ATOMIC) || '10';
+
+    (javascriptGenerator as any).forBlock['operator_random'] = function(block: Blockly.Block) {
+        const from = javascriptGenerator.valueToCode(block, 'FROM', javascriptGenerator.ORDER_ATOMIC) || 1;
+        const to = javascriptGenerator.valueToCode(block, 'TO', javascriptGenerator.ORDER_ATOMIC) || 10;
         return [`getRandom(${from}, ${to})`, javascriptGenerator.ORDER_FUNCTION_CALL];
     };
     
-    (javascriptGenerator as any)['pen_clear'] = function(block: Blockly.Block) {
-        return 'penClear();\n';
+    (javascriptGenerator as any).forBlock['pen_clear'] = function(block: Blockly.Block) {
+        return `penClear();\n`;
+    };
+    
+    (javascriptGenerator as any).forBlock['pen_stamp'] = function(block: Blockly.Block) {
+        return '// stamp is not implemented yet\n'; // Placeholder for stamp functionality
+    };
+    
+    (javascriptGenerator as any).forBlock['pen_penDown'] = function(block: Blockly.Block) {
+        return 'setPen(true);\n';
     };
 
-    (javascriptGenerator as any)['pen_stamp'] = function(block: Blockly.Block) {
-        return '/* stamp not implemented */\n'; // Placeholder
-    };
-      
-    (javascriptGenerator as any)['pen_penDown'] = function(block: Blockly.Block) {
-        return `setPen(true);\n`;
+    (javascriptGenerator as any).forBlock['pen_penUp'] = function(block: Blockly.Block) {
+        return 'setPen(false);\n';
     };
 
-    (javascriptGenerator as any)['pen_penUp'] = function(block: Blockly.Block) {
-        return `setPen(false);\n`;
-    };
-
-    (javascriptGenerator as any)['pen_setPenColorToColor'] = function(block: Blockly.Block) {
+    (javascriptGenerator as any).forBlock['pen_setPenColorToColor'] = function(block: Blockly.Block) {
         const color = javascriptGenerator.valueToCode(block, 'COLOR', javascriptGenerator.ORDER_ATOMIC) || "'#000000'";
         return `setPenColor(${color});\n`;
     };
-
-    (javascriptGenerator as any)['pen_changePenSizeBy'] = function(block: Blockly.Block) {
-        return ''; // Placeholder
+    
+    (javascriptGenerator as any).forBlock['pen_changePenSizeBy'] = function(block: Blockly.Block) {
+        return '// changePenSizeBy not implemented yet\n'; 
     };
 
-    (javascriptGenerator as any)['pen_setPenSizeTo'] = function(block: Blockly.Block) {
-        return ''; // Placeholder
+    (javascriptGenerator as any).forBlock['pen_setPenSizeTo'] = function(block: Blockly.Block) {
+        return '// setPenSizeTo not implemented yet\n';
     };
-};
-
+}

@@ -1,7 +1,13 @@
+
 import * as Blockly from 'blockly/core';
 import { javascriptGenerator } from 'blockly/javascript';
 
 export const registerCustomBlocks = () => {
+    if ((Blockly as any).__customBlocksRegistered) {
+        return;
+    }
+    (Blockly as any).__customBlocksRegistered = true;
+    
     const customBlocks = [
         {
           "type": "event_whenflagclicked",
@@ -406,5 +412,3 @@ export const registerCustomBlocks = () => {
         return '// setPenSizeTo not implemented yet\n';
     };
 }
-
-      
