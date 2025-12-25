@@ -1,8 +1,9 @@
 
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as Blockly from 'blockly';
+import 'blockly/blocks';
 import { javascriptGenerator } from 'blockly/javascript';
 import p5 from 'p5';
 import { 
@@ -70,7 +71,7 @@ export default function ScratchEngine() {
   const { role } = useRole();
   const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-  // 1. Fetch Sprites from Firebase
+    // 1. Fetch Sprites from Firebase
     const spriteQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'scratch_assets'), where('type', '==', 'sprite')) : null, 
     [firestore]);
@@ -84,10 +85,14 @@ export default function ScratchEngine() {
 
     // Fallback to defaults if DB is empty
     const sprites = dbSprites?.length ? dbSprites : [
-      { id: 'cat', emoji: '🐱', url: '/assets/cat.png', name: 'Cat' }
+      { id: 'cat', emoji: '🐱', url: '/assets/sprites/cat.png', name: 'Cat' },
+      { id: 'dog', emoji: '🐶', url: 'https://openclipart.org/image/2400px/svg_to_png/219213/Dog-Icon.png', name: 'Dog' },
+      { id: 'rocket', emoji: '🚀', url: 'https://openclipart.org/image/2400px/svg_to_png/190875/Rocket-Icon.png', name: 'Rocket' },
     ];
     const backdrops = dbBackdrops?.length ? dbBackdrops : [
-      { id: 'white', color: '#FFFFFF', name: 'Plain', img: null }
+      { id: 'white', color: '#FFFFFF', name: 'Plain', img: null },
+      { id: 'blue-sky', color: '#87CEEB', name: 'Sky', img: null },
+      { id: 'space', color: '#000033', name: 'Space', img: 'https://cdn.pixabay.com/photo/2016/10/20/18/35/earth-1756274_960_720.jpg' },
     ];
 
   const [activeSprite, setActiveSprite] = useState(sprites[0]);
@@ -95,21 +100,18 @@ export default function ScratchEngine() {
   const [isVideoOn, setIsVideoOn] = useState(false);
   const { toast } = useToast();
   
-  // Use 'engineState' everywhere
-const engineState = useRef({
-  x: 0,
-  y: 0,
-  direction: 90,
-  size: 100,
-  sayText: "",
-  isJunior: true // Helps trigger the colorful theme
-});
+  const engineState = useRef({
+    x: 0,
+    y: 0,
+    direction: 90,
+    size: 100,
+    sayText: "",
+    isJunior: true // Helps trigger the colorful theme
+  });
 
-  // --- 2. BLOCKLY SETUP (ZELOS) ---
   useEffect(() => {
     if (!blocklyRef.current) return;
 
-    // Define Scratch-style Blocks
     Blockly.Blocks['motion_move'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
@@ -127,7 +129,6 @@ const engineState = useRef({
       }
     };
 
-    // Define JavaScript Generators
     javascriptGenerator.forBlock['motion_move'] = (block: any) => {
       const steps = javascriptGenerator.valueToCode(block, 'STEPS', (javascriptGenerator as any).ORDER_ATOMIC) || '0';
       return `move(${steps});\n`;
@@ -155,11 +156,9 @@ const engineState = useRef({
     return () => ws.dispose();
   }, []);
 
-  // --- 3. P5.JS STAGE ENGINE ---
   useEffect(() => {
     if (!canvasParentRef.current) return;
     
-    // CRITICAL: Remove the old canvas before making a new one
     if (p5Instance.current) {
       p5Instance.current.remove();
     }
@@ -174,13 +173,12 @@ const engineState = useRef({
         p.imageMode(p.CENTER);
         p.textAlign(p.CENTER, p.CENTER);
 
-        // Use a try-catch style approach for loading
         if (activeSprite.url && activeSprite.url.startsWith('http')) {
             p.loadImage(activeSprite.url, 
                 img => { spriteImg = img; },
-                () => { 
-                  console.warn("CORS blocked image. Falling back to Emoji.");
-                  spriteImg = null; // Forces emoji fallback in draw()
+                (err) => { 
+                  console.error("Sprite Load Failed:", err);
+                  spriteImg = null; 
                 }
             );
         }
@@ -194,19 +192,15 @@ const engineState = useRef({
       };
   
       p.draw = () => {
-        // 1. Draw Background
-        if (bgImg) p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
-        else p.background(activeBackdrop.color);
-
-        // 2. Video Sensing
-        if (isVideoOn) {
-            if (!capture) { capture = p.createCapture(p.VIDEO); capture.hide(); }
-            p.push(); p.translate(p.width, 0); p.scale(-1, 1);
-            p.tint(255, 120); p.image(capture, p.width/2, p.height/2, p.width, p.height);
-            p.pop();
+        // 1. Draw Colorful Backdrop
+        if (bgImg) {
+          p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
+        } else {
+          // Junior Rainbow Gradient if no image
+          p.background(activeBackdrop.color || '#FFDEE9');
         }
 
-        // 3. Draw Sprite (Centered Coordinate System)
+        // 2. Draw Sprite with "Bubbly" Effects
         p.push();
         const screenX = p.width/2 + engineState.current.x;
         const screenY = p.height/2 - engineState.current.y;
@@ -215,22 +209,34 @@ const engineState = useRef({
         if (spriteImg) {
             p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
         } else {
-            p.textSize(60); p.textAlign(p.CENTER, p.CENTER);
-            p.text(activeSprite.emoji, 0, 0);
+            // MAGICAL FALLBACK: Big Emojis for Juniors
+            p.textSize(engineState.current.size * 0.8);
+            p.text(activeSprite.emoji || "🐱", 0, 0);
         }
 
-        // 4. Speech Bubble
+        // 3. MAGIC SPEECH BUBBLE (Visual Fix)
         if (engineState.current.sayText) {
-            p.fill(255); p.stroke(200); p.rect(20, -80, 100, 40, 10);
-            p.fill(0); p.noStroke(); p.textSize(12);
-            p.text(engineState.current.sayText, 70, -60);
+            p.push();
+            p.fill(255);
+            p.stroke('#4C97FF');
+            p.strokeWeight(4);
+            // Draw a rounded bubble
+            p.rect(-60, -110, 120, 50, 20);
+            // Draw the little tail
+            p.triangle(-10, -60, 10, -60, 0, -40);
+            
+            p.noStroke();
+            p.fill('#2D3748');
+            p.textSize(16);
+            p.text(engineState.current.sayText, 0, -85);
+            p.pop();
         }
         p.pop();
       };
     };
   
     p5Instance.current = new p5(sketch);
-    // Cleanup function to remove p5 instance on component unmount
+
     return () => {
         if (p5Instance.current) {
             p5Instance.current.remove();
@@ -238,7 +244,6 @@ const engineState = useRef({
     };
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
-  // --- 4. ENGINE CONTROLS ---
   const runCode = () => {
     if (!workspace) return;
     const code = javascriptGenerator.workspaceToCode(workspace);
@@ -263,12 +268,10 @@ const engineState = useRef({
     };
   
     try {
-      // Create the runner
       const runner = new Function('move', 'say', code);
       runner(move, say);
     } catch (e) {
       console.error(e);
-      toast({ title: "Code Error", variant: "destructive" });
     }
   };
 
@@ -299,14 +302,14 @@ const engineState = useRef({
           <div ref={canvasParentRef} className="rounded-2xl overflow-hidden shadow-2xl border-[6px] border-white bg-white w-[480px] h-[360px]" />
           
           <div className="grid grid-cols-2 gap-3">
-            {/* Sprite Panel */}
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              {/* SPRITES */}
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                 <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] font-black uppercase text-slate-400">Sprites</span>
-                    {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
+                  <span className="text-[10px] font-black uppercase text-slate-400">Characters</span>
+                  {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                    {sprites.map(s => (
+                  {sprites.map(s => (
                     <button 
                         key={s.id} 
                         onClick={() => setActiveSprite(s)} 
@@ -314,31 +317,31 @@ const engineState = useRef({
                     >
                         {s.emoji}
                     </button>
-                    ))}
+                  ))}
                 </div>
-            </div>
+              </div>
 
-            {/* Backdrop Panel */}
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              {/* BACKDROPS */}
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                 <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] font-black uppercase text-slate-400">Backdrops</span>
-                    {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
+                  <span className="text-[10px] font-black uppercase text-slate-400">Backdrops</span>
+                  {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                    {backdrops.map(b => (
+                  {backdrops.map(b => (
                     <button 
                         key={b.id} 
                         onClick={() => setActiveBackdrop(b)}
-                        className={`w-12 h-12 rounded-xl border-4 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500 shadow-md' : 'border-white shadow-sm'}`}
+                        className={`w-12 h-12 rounded-xl border-4 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500 shadow-md' : 'border-white'}`}
                         style={{ backgroundColor: b.color }}
                     />
-                    ))}
+                  ))}
                 </div>
-            </div>
+              </div>
             </div>
 
-          {/* VIDEO CONTROLS */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
+           {/* VIDEO CONTROLS */}
+           <div className="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
              <div className="flex items-center gap-3">
                 <div className="bg-purple-100 p-2 rounded-lg"><Video className="w-5 h-5 text-purple-600"/></div>
                 <span className="font-bold text-slate-600">Video Sensing</span>
@@ -350,19 +353,8 @@ const engineState = useRef({
                {isVideoOn ? 'ON' : 'OFF'}
              </button>
           </div>
-
-           {/* HUD PROPERTIES */}
-           <div className="bg-slate-900 p-6 rounded-[30px] text-white shadow-xl">
-             <div className="grid grid-cols-3 text-center">
-                <div><p className="text-[10px] text-slate-500 uppercase">X</p><p className="font-mono font-bold text-lg">{engineState.current.x}</p></div>
-                <div><p className="text-[10px] text-slate-500 uppercase">Y</p><p className="font-mono font-bold text-lg">{engineState.current.y}</p></div>
-                <div><p className="text-[10px] text-slate-500 uppercase">Size</p><p className="font-mono font-bold text-lg">{engineState.current.size}</p></div>
-             </div>
-          </div>
         </div>
       </div>
     </div>
   );
 }
-
-    
