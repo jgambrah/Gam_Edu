@@ -20,6 +20,211 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRole } from '@/context/role-context';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { Loader2, Code2, FolderOpen, Save, RotateCcw } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import confetti from 'canvas-confetti';
+
+// --- IMPORTS FOR PLUGINS ---
+import { installAllBlocks as installColourBlocks } from '@blockly/field-colour';
+import multiLineEditor from '@blockly/field-multilineinput';
+
+// Register the plugins
+installColourBlocks({
+  javascript: javascriptGenerator,
+});
+
+
+// --- 1. DEFINE CUSTOM BLOCKS (Optional) ---
+Blockly.Blocks['get_science_fact'] = {
+  init: function(this: Blockly.Block) {
+    this.appendDummyInput().appendField("🧪 get science fact");
+    this.setOutput(true, 'String');
+    this.setColour(230);
+    this.setTooltip("Fetches a random science fact.");
+  }
+};
+
+javascriptGenerator.forBlock['get_science_fact'] = function(block: Blockly.Block) {
+  const facts = [
+      "The mitochondria is the powerhouse of the cell.",
+      "Honey never spoils.",
+      "Octopuses have three hearts.",
+      "Bananas are curved because they grow towards the sun.",
+      "Water can boil and freeze at the same time."
+  ];
+  const code = `[${facts.map(f => `'${f}'`).join(',')}] [Math.floor(Math.random() * ${facts.length})]`;
+  return [code, javascriptGenerator.ORDER_ATOMIC];
+};
+
+// --- 2. EXHAUSTIVE TOOLBOX CONFIGURATION ---
+const toolboxCategories = {
+    kind: 'categoryToolbox',
+    contents: [
+      // 🟢 LOGIC
+      {
+        kind: 'category',
+        name: 'Logic',
+        colour: '%{BKY_LOGIC_HUE}',
+        contents: [
+          { kind: 'block', type: 'controls_if' },
+          { kind: 'block', type: 'logic_compare' },
+          { kind: 'block', type: 'logic_operation' },
+          { kind: 'block', type: 'logic_negate' },
+          { kind: 'block', type: 'logic_boolean' },
+          { kind: 'block', type: 'logic_null' },
+          { kind: 'block', type: 'logic_ternary' },
+        ],
+      },
+      // 🔄 LOOPS
+      {
+        kind: 'category',
+        name: 'Loops',
+        colour: '%{BKY_LOOPS_HUE}',
+        contents: [
+          { 
+            kind: 'block', 
+            type: 'controls_repeat_ext', 
+            inputs: { TIMES: { shadow: { type: 'math_number', fields: { NUM: 10 } } } } 
+          },
+          { kind: 'block', type: 'controls_whileUntil' },
+          { 
+            kind: 'block', 
+            type: 'controls_for',
+            inputs: { 
+                FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+                TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
+                BY: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+            }
+          },
+          { kind: 'block', type: 'controls_forEach' },
+          { kind: 'block', type: 'controls_flow_statements' },
+        ],
+      },
+      // 🧮 MATH
+      {
+        kind: 'category',
+        name: 'Math',
+        colour: '%{BKY_MATH_HUE}',
+        contents: [
+          { kind: 'block', type: 'math_number', fields: { NUM: 123 } },
+          { kind: 'block', type: 'math_arithmetic', 
+            inputs: { 
+                A: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+                B: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+            }
+          },
+          { kind: 'block', type: 'math_single' },
+          { kind: 'block', type: 'math_trig' },
+          { kind: 'block', type: 'math_constant' },
+          { kind: 'block', type: 'math_number_property' },
+          { kind: 'block', type: 'math_round' },
+          { kind: 'block', type: 'math_on_list' },
+          { kind: 'block', type: 'math_modulo' },
+          { 
+            kind: 'block', 
+            type: 'math_constrain',
+            inputs: { 
+                LOW: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+                HIGH: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
+            }
+          },
+          { kind: 'block', type: 'math_random_int' },
+          { kind: 'block', type: 'math_random_float' },
+          { kind: 'block', type: 'math_atan2' },
+        ],
+      },
+      // 📝 TEXT
+      {
+        kind: 'category',
+        name: 'Text',
+        colour: '%{BKY_TEXTS_HUE}',
+        contents: [
+          { kind: 'block', type: 'text' },
+          { kind: 'block', type: 'text_join' },
+          { 
+            kind: 'block', 
+            type: 'text_append',
+            inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: '' } } } }
+          },
+          { kind: 'block', type: 'text_length' },
+          { kind: 'block', type: 'text_isEmpty' },
+          { kind: 'block', type: 'text_indexOf' },
+          { kind: 'block', type: 'text_charAt' },
+          { kind: 'block', type: 'text_getSubstring' },
+          { kind: 'block', type: 'text_changeCase' },
+          { kind: 'block', type: 'text_trim' },
+          { 
+            kind: 'block', 
+            type: 'text_print', 
+            inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: 'Hello World' } } } }
+          },
+          { 
+            kind: 'block', 
+            type: 'text_prompt_ext', 
+            inputs: { TEXT: { shadow: { type: 'text', fields: { TEXT: 'What is your name?' } } } }
+          },
+        ],
+      },
+      // 📋 LISTS
+      {
+        kind: 'category',
+        name: 'Lists',
+        colour: '%{BKY_LISTS_HUE}',
+        contents: [
+          { kind: 'block', type: 'lists_create_with' },
+          { kind: 'block', type: 'lists_repeat' },
+          { kind: 'block', type: 'lists_length' },
+          { kind: 'block', type: 'lists_isEmpty' },
+          { kind: 'block', type: 'lists_indexOf' },
+          { kind: 'block', type: 'lists_getIndex' },
+          { kind: 'block', type: 'lists_setIndex' },
+          { kind: 'block', type: 'lists_getSublist' },
+          { kind: 'block', type: 'lists_split' },
+          { kind: 'block', type: 'lists_sort' },
+          { kind: 'block', type: 'lists_reverse' },
+        ],
+      },
+      // 🎨 COLOUR (REQUIRES PLUGIN)
+      {
+        kind: 'category',
+        name: 'Colour',
+        colour: '%{BKY_COLOUR_HUE}',
+        contents: [
+          { kind: 'block', type: 'colour_picker' },
+          { kind: 'block', type: 'colour_random' },
+          { kind: 'block', type: 'colour_rgb' },
+          { kind: 'block', type: 'colour_blend' },
+        ],
+      },
+      { kind: 'sep' },
+      // 📦 VARIABLES
+      {
+        kind: 'category',
+        name: 'Variables',
+        colour: '%{BKY_VARIABLES_HUE}',
+        custom: 'VARIABLE',
+      },
+      // ⚙️ FUNCTIONS / PROCEDURES
+      {
+        kind: 'category',
+        name: 'Functions',
+        colour: '%{BKY_PROCEDURES_HUE}',
+        custom: 'PROCEDURE',
+      },
+      { kind: 'sep' },
+      // 🚀 EXTRAS
+      {
+        kind: 'category',
+        name: 'Extra',
+        colour: '230',
+        contents: [
+          { kind: 'block', type: 'get_science_fact' },
+        ],
+      },
+    ]
+};
 
 function AddAssetModal({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded: () => void }) {
     const firestore = useFirestore();
@@ -106,15 +311,16 @@ export default function ScratchEngine() {
   const engineState = useRef({
     x: 0,
     y: 0,
-    prevX: 0, // For pen
-    prevY: 0, // For pen
+    prevX: 0,
+    prevY: 0,
     direction: 90,
     size: 100,
     sayText: "",
     isPenDown: false,
     penColor: '#000000',
     penSize: 2,
-    isJunior: true // Helps trigger the colorful theme
+    shouldClearPen: false, // Flag to trigger clearing
+    isJunior: true 
   });
 
   const [sounds] = useState([
@@ -134,7 +340,7 @@ export default function ScratchEngine() {
             .appendField("steps");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour(230); // Motion Blue
+        this.setColour(230);
       }
     };
     Blockly.Blocks['looks_say'] = {
@@ -142,9 +348,10 @@ export default function ScratchEngine() {
         this.appendValueInput("TEXT").setCheck("String").appendField("say");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour("#9966FF"); // Looks Purple
+        this.setColour("#9966FF");
       }
     };
+    
     Blockly.Blocks['video_toggle'] = {
       init: function(this: Blockly.Block) {
         this.appendDummyInput()
@@ -152,9 +359,10 @@ export default function ScratchEngine() {
             .appendField(new Blockly.FieldDropdown([["on","ON"], ["off","OFF"]]), "STATE");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour("#CF63CF"); // Sensing Purple
+        this.setColour("#CF63CF");
       }
     };
+    
     Blockly.Blocks['control_wait'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("DURATION").setCheck("Number").appendField("wait").appendField("seconds");
@@ -163,55 +371,63 @@ export default function ScratchEngine() {
         this.setColour("#FFAB19");
       }
     };
+    
     Blockly.Blocks['event_whenflagclicked'] = {
-        init: function(this: Blockly.Block) {
-            this.appendDummyInput().appendField("when flag clicked 🚩");
-            this.setNextStatement(true, null);
-            this.setColour("#FFD500");
-        }
+      init: function(this: Blockly.Block) {
+        this.appendDummyInput().appendField("when flag clicked 🚩");
+        this.setNextStatement(true, null);
+        this.setColour("#FFD500");
+      }
     };
+    
     Blockly.Blocks['motion_turnright'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
+      init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
     };
+    
     Blockly.Blocks['motion_goto'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("X").setCheck("Number").appendField("go to x:"); this.appendValueInput("Y").setCheck("Number").appendField("y:"); this.setInputsInline(true); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
+      init: function(this: Blockly.Block) { this.appendValueInput("X").setCheck("Number").appendField("go to x:"); this.appendValueInput("Y").setCheck("Number").appendField("y:"); this.setInputsInline(true); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
     };
+    
     Blockly.Blocks['looks_changesizeby'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("CHANGE").setCheck("Number").appendField("change size by"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#9966FF"); }
+      init: function(this: Blockly.Block) { this.appendValueInput("CHANGE").setCheck("Number").appendField("change size by"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#9966FF"); }
     };
+    
     Blockly.Blocks['sound_play'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("SOUND").setCheck("String").appendField("play sound"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#D65DB1"); }
+      init: function(this: Blockly.Block) { this.appendValueInput("SOUND").setCheck("String").appendField("play sound"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#D65DB1"); }
     };
+    
     Blockly.Blocks['control_if'] = {
-        init: function(this: Blockly.Block) {
-          this.appendValueInput("IF0").setCheck("Boolean").appendField("if");
-          this.appendStatementInput("DO0").appendField("then");
-          this.setPreviousStatement(true, null);
-          this.setNextStatement(true, null);
-          this.setColour("#FFAB19");
-        }
+      init: function(this: Blockly.Block) { this.appendValueInput("IF0").setCheck("Boolean").appendField("if"); this.appendStatementInput("DO0").appendField("then"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#FFAB19"); }
     };
+    
     Blockly.Blocks['control_repeat'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("TIMES").setCheck("Number").appendField("repeat"); this.appendStatementInput("DO").appendField("do"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#FFAB19"); }
+      init: function(this: Blockly.Block) { this.appendValueInput("TIMES").setCheck("Number").appendField("repeat"); this.appendStatementInput("DO").appendField("do"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#FFAB19"); }
     };
+    
     Blockly.Blocks['control_forever'] = {
-        init: function(this: Blockly.Block) { this.appendDummyInput().appendField("forever"); this.appendStatementInput("DO"); this.setPreviousStatement(true, null); this.setColour("#FFAB19"); }
+      init: function(this: Blockly.Block) { this.appendDummyInput().appendField("forever"); this.appendStatementInput("DO"); this.setPreviousStatement(true, null); this.setColour("#FFAB19"); }
     };
+    
     Blockly.Blocks['sensing_touchingmouse'] = {
-        init: function(this: Blockly.Block) { this.appendDummyInput().appendField("touching mouse-pointer?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
+      init: function(this: Blockly.Block) { this.appendDummyInput().appendField("touching mouse-pointer?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
     };
+    
     Blockly.Blocks['sensing_mousedown'] = {
-        init: function(this: Blockly.Block) { this.appendDummyInput().appendField("mouse down?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
+      init: function(this: Blockly.Block) { this.appendDummyInput().appendField("mouse down?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
     };
+    
     Blockly.Blocks['operator_add'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").setCheck("Number").appendField("+"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
+      init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").setCheck("Number").appendField("+"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
     };
+    
     Blockly.Blocks['operator_random'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("FROM").setCheck("Number").appendField("pick random from"); this.appendValueInput("TO").setCheck("Number").appendField("to"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
+      init: function(this: Blockly.Block) { this.appendValueInput("FROM").setCheck("Number").appendField("pick random from"); this.appendValueInput("TO").setCheck("Number").appendField("to"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
     };
+    
     Blockly.Blocks['operator_equals'] = {
-        init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
+      init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
     };
+    
     Blockly.Blocks['pen_clear'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("erase all"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
     Blockly.Blocks['pen_pendown'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("pen down"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
     Blockly.Blocks['pen_penup'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("pen up"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
@@ -219,6 +435,7 @@ export default function ScratchEngine() {
     Blockly.Blocks['pen_setsize'] = { init: function(this: Blockly.Block) { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
     Blockly.Blocks['colour_random'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField('random colour'); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); } };
     Blockly.Blocks['colour_rgb'] = { init: function(this: Blockly.Block) { this.appendValueInput("RED").setCheck("Number").appendField("colour with red"); this.appendValueInput("GREEN").setCheck("Number").appendField("green"); this.appendValueInput("BLUE").setCheck("Number").appendField("blue"); this.setInputsInline(true); this.setOutput(true, "Colour"); this.setColour('%{BKY_COLOUR_HUE}'); } };
+    
 
     // --- JAVASCRIPT GENERATORS ---
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
@@ -248,68 +465,9 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['colour_rgb'] = (b: any) => `rgbToHex(${javascriptGenerator.valueToCode(b, 'RED', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'GREEN', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'BLUE', 0) || 0});\n`;
     
 
-    const toolbox = `
-      <xml>
-        <category name="Events" colour="#FFD500">
-          <block type="event_whenflagclicked"></block>
-        </category>
-        <category name="Motion" colour="#4C97FF">
-          <block type="motion_move"><value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-          <block type="motion_turnright"><value name="DEGREES"><shadow type="math_number"><field name="NUM">15</field></shadow></value></block>
-          <block type="motion_goto"><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
-        </category>
-        <category name="Looks" colour="#9966FF">
-          <block type="looks_say"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
-          <block type="looks_changesizeby"><value name="CHANGE"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-        </category>
-        <category name="Sound" colour="#D65DB1">
-          <block type="sound_play"><value name="SOUND"><shadow type="text"><field name="TEXT">meow</field></shadow></value></block>
-        </category>
-        <category name="Control" colour="#FFAB19">
-          <block type="control_wait"><value name="DURATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
-          <block type="control_repeat"><value name="TIMES"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-          <block type="control_forever"></block>
-          <block type="control_if"></block>
-        </category>
-        <category name="Sensing" colour="#4CBFE6">
-          <block type="sensing_touchingmouse"></block>
-          <block type="sensing_mousedown"></block>
-          <block type="video_toggle"></block>
-        </category>
-        <category name="Operators" colour="#40BF4A">
-          <block type="operator_add"></block>
-          <block type="operator_random"><value name="FROM"><shadow type="math_number"><field name="NUM">1</field></shadow></value><value name="TO"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-          <block type="operator_equals"></block>
-        </category>
-        <category name="Pen" colour="#00B295">
-          <block type="pen_clear"></block>
-          <block type="pen_pendown"></block>
-          <block type="pen_penup"></block>
-          <block type="pen_setcolor">
-            <value name="COLOR">
-              <shadow type="colour_picker"></shadow>
-            </value>
-          </block>
-          <block type="pen_setsize">
-            <value name="SIZE">
-              <shadow type="math_number"><field name="NUM">1</field></shadow>
-            </value>
-          </block>
-        </category>
-        <category name="Colour" colour="%{BKY_COLOUR_HUE}">
-            <block type="colour_picker"></block>
-            <block type="colour_random"></block>
-            <block type="colour_rgb"></block>
-        </category>
-        <sep></sep>
-        <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
-        <category name="My Blocks" colour="#FF6680" custom="PROCEDURE"></category>
-      </xml>
-    `;
-
     const ws = Blockly.inject(blocklyRef.current, {
         renderer: 'zelos',
-        toolbox: toolbox,
+        toolbox: toolboxCategories,
       });
     setWorkspace(ws);
     return () => ws.dispose();
@@ -361,13 +519,20 @@ export default function ScratchEngine() {
           p.background(activeBackdrop.color || '#F0F9FF');
         }
 
-        // 2. Draw the Pen Layer
+        // NEW: Check if we need to clear the pen layer
+        if (engineState.current.shouldClearPen) {
+            extraCanvas.clear();
+            engineState.current.shouldClearPen = false;
+        }
+
+        // 2. Draw the Pen Layer on top of the background
         p.image(extraCanvas, p.width/2, p.height/2);
 
-        // 3. Logic: If pen is down, draw on extraCanvas
+        // 3. Logic: If pen is down, draw a line on extraCanvas
         if (engineState.current.isPenDown) {
             extraCanvas.stroke(engineState.current.penColor || '#000');
             extraCanvas.strokeWeight(engineState.current.penSize || 2);
+            // Draw from old position to new position
             extraCanvas.line(
                 p.width/2 + engineState.current.prevX, 
                 p.height/2 - engineState.current.prevY,
@@ -426,7 +591,7 @@ export default function ScratchEngine() {
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
   const runCode = async () => {
-    if (!workspace) return;
+    // Generate code and wrap it in an async function
     const rawCode = javascriptGenerator.workspaceToCode(workspace);
     
     // Scoped helper functions
@@ -435,14 +600,16 @@ export default function ScratchEngine() {
     const say = (text: string) => {
       engineState.current.sayText = text;
       window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+      // Bubbles disappear after 2 seconds
       setTimeout(() => { 
         if (engineState.current) engineState.current.sayText = "";
       }, 2000);
     };
   
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
-    const toggleVideo = (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON');
 
+    const toggleVideo = (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON');
+  
     // Execution environment (Injects variables and sensing data)
     const context = {
       move,
@@ -451,9 +618,19 @@ export default function ScratchEngine() {
       toggleVideo,
       mouseX: p5Instance.current?.mouseX || 0,
       mouseY: p5Instance.current?.mouseY || 0,
+      setPen: (isDown: boolean) => { 
+        engineState.current.isPenDown = isDown; 
+      },
+      penClear: () => {
+        engineState.current.shouldClearPen = true; 
+      },
+      setPenColor: (color: string) => {
+        engineState.current.penColor = color;
+      }
     };
   
     try {
+      // Create an Async function to allow 'await wait()'
       const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
       const runner = new AsyncFunction(...Object.keys(context), rawCode);
       await runner(...Object.values(context));
