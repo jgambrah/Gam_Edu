@@ -1,9 +1,28 @@
-export default function TestPage() {
+// src/app/page.tsx
+'use client';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function RootPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // This ensures the redirect happens only on the client-side after the page has loaded
+    router.push('/dashboard/senior-academy');
+  }, [router]);
+
   return (
-    <div style={{ padding: '50px', background: 'blue', color: 'white', height: '100vh' }}>
-      <h1>THE ROOT PAGE IS WORKING</h1>
-      <p>If you see this Blue screen, your files are in the right place.</p>
-      <a href="/dashboard/senior-academy" style={{ color: 'yellow' }}>Click here to test the Studio Link</a>
+    <div style={{ 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      background: '#0f172a', 
+      color: 'white' 
+    }}>
+      <h1 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '20px' }}>SYSTEM ONLINE</h1>
+      <p style={{ color: '#94a3b8' }}>Redirecting to dashboard...</p>
     </div>
-  )
+  );
 }
