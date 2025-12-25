@@ -19,10 +19,24 @@ import { Label } from '@/components/ui/label';
 import { useRole } from '@/context/role-context';
 import { Badge } from '@/components/ui/badge';
 
+// 1. ASSET LIBRARIES
+// PRO TIP: In a real app, move these images to your /public/ folder to avoid all fetch errors
+const SPRITE_LIBRARY = [
+  { id: 'cat', name: 'Cat', emoji: '🐱', url: 'https://raw.githubusercontent.com/LLK/scratch-render/develop/test/fixtures/mouse.png' }, // Fallback to a stable PNG
+  { id: 'ghost', name: 'Ghost', emoji: '👻', url: 'https://cdn.pixabay.com/photo/2012/04/18/13/22/ghost-37013_960_720.png' },
+  { id: 'rocket', name: 'Rocket', emoji: '🚀', url: 'https://cdn.pixabay.com/photo/2012/04/10/23/04/spaceship-26830_960_720.png' }
+];
+
+const BACKDROP_LIBRARY = [
+  { id: 'white', name: 'Plain', color: '#FFFFFF', img: null },
+  { id: 'blue', name: 'Sky', color: '#e0f2fe', img: 'https://cdn.pixabay.com/photo/2016/11/18/15/44/background-1835438_960_720.png' },
+  { id: 'stars', name: 'Space', color: '#0f172a', img: 'https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616_960_720.jpg' }
+];
+
 // --- ADD ASSET MODAL ---
 function AddAssetModal({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded: () => void }) {
     const firestore = useFirestore();
-    const [form, setForm] = useState({ name: '', emoji: '', url: '', color: '#FFFFFF' });
+    const [form, setForm] = useState({ name: '', emoji: '', url: '', color: '#4C97FF' });
     const [isOpen, setIsOpen] = useState(false);
 
     const handleSave = async () => {
@@ -48,13 +62,11 @@ function AddAssetModal({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
                 </button>
             </DialogTrigger>
             <DialogContent className="bg-white rounded-[30px]">
-                <DialogHeader>
-                    <DialogTitle>Add New {type}</DialogTitle>
-                </DialogHeader>
+                <DialogHeader><DialogTitle>Add New {type}</DialogTitle></DialogHeader>
                 <div className="space-y-4 p-4">
                     <Input placeholder="Name (e.g. Dragon)" onChange={e => setForm({...form, name: e.target.value})} />
                     {type === 'sprite' && <Input placeholder="Emoji (e.g. 🐉)" onChange={e => setForm({...form, emoji: e.target.value})} />}
-                    <Input placeholder="Image URL (e.g. /assets/dragon.png)" onChange={e => setForm({...form, url: e.target.value})} />
+                    <Input placeholder="Image URL (or leave blank to use Emoji)" onChange={e => setForm({...form, url: e.target.value})} />
                     {type === 'backdrop' && (
                         <div className="flex items-center gap-4">
                             <Label>Background Color</Label>
@@ -68,14 +80,11 @@ function AddAssetModal({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
     );
 }
 
-
 export default function ScratchEngine() {
   const blocklyRef = useRef<HTMLDivElement>(null);
   const canvasParentRef = useRef<HTMLDivElement>(null);
   const [workspace, setWorkspace] = useState<any>(null);
-  const [isVideoOn, setIsVideoOn] = useState(false);
-  const p5Instance = useRef<p5 | null>(null);
-  const { toast } = useToast();
+  
   const firestore = useFirestore();
   const { role } = useRole();
 
@@ -94,17 +103,16 @@ export default function ScratchEngine() {
   const { data: dbBackdrops, forceRefetch: refetchBackdrops } = useCollection<any>(backdropQuery);
 
   // Fallback to defaults if DB is empty
-  const sprites = dbSprites?.length ? dbSprites : [
-    { id: 'cat', emoji: '🐱', url: '/assets/sprites/cat.png', name: 'Cat' }
-  ];
-  const backdrops = dbBackdrops?.length ? dbBackdrops : [
-    { id: 'white', color: '#FFFFFF', name: 'Plain', img: null }
-  ];
-  
+  const sprites = dbSprites?.length ? dbSprites : SPRITE_LIBRARY;
+  const backdrops = dbBackdrops?.length ? dbBackdrops : BACKDROP_LIBRARY;
+
   const [activeSprite, setActiveSprite] = useState(sprites[0]);
   const [activeBackdrop, setActiveBackdrop] = useState(backdrops[0]);
+  const [isVideoOn, setIsVideoOn] = useState(false);
+  const p5Instance = useRef<p5 | null>(null);
+  const { toast } = useToast();
   
-  // Internal Engine State (Shared between Blockly and p5)
+  // Internal Engine State
   const engineState = useRef({
     x: 0,
     y: 0,
@@ -113,48 +121,37 @@ export default function ScratchEngine() {
     sayText: ""
   });
 
-  // --- 2. BLOCKLY DEFINITIONS (ZELOS) ---
+  // --- 2. BLOCKLY SETUP (ZELOS STYLE) ---
   useEffect(() => {
     if (!blocklyRef.current) return;
 
+    // Define Custom Blocks
     Blockly.Blocks['motion_move'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
         this.appendField("steps");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
+        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
         this.setColour("#4C97FF");
       }
     };
-    Blockly.Blocks['speech_speak'] = {
+
+    Blockly.Blocks['looks_say'] = {
       init: function(this: Blockly.Block) {
-        this.appendValueInput("TEXT").setCheck("String").appendField("speak");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour("#FF6680");
+        this.appendValueInput("TEXT").setCheck("String").appendField("say");
+        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+        this.setColour("#9966FF");
       }
     };
-     Blockly.Blocks['video_toggle'] = {
-      init: function(this: Blockly.Block) {
-        this.appendDummyInput()
-            .appendField("turn video")
-            .appendField(new Blockly.FieldDropdown([["on","ON"], ["off","OFF"]]), "STATE");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour("#CF63CF"); // Sensing Purple
-      }
-    };
-    javascriptGenerator.forBlock['motion_move'] = (block) => {
-      const steps = javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0';
+
+    // Define JavaScript Generators
+    javascriptGenerator.forBlock['motion_move'] = (block: Blockly.Block) => {
+      const steps = javascriptGenerator.valueToCode(block, 'STEPS', (javascriptGenerator as any).ORDER_ATOMIC) || '0';
       return `move(${steps});\n`;
     };
-    javascriptGenerator.forBlock['speech_speak'] = (block) => {
-      const text = javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''";
-      return `speakText(${text});\n`;
-    };
-    javascriptGenerator.forBlock['video_toggle'] = function(block) {
-      const state = block.getFieldValue('STATE');
-      return `toggleVideo("${state}");\n`;
+
+    javascriptGenerator.forBlock['looks_say'] = (block: Blockly.Block) => {
+      const text = javascriptGenerator.valueToCode(block, 'TEXT', (javascriptGenerator as any).ORDER_ATOMIC) || "''";
+      return `say(${text});\n`;
     };
 
     const ws = Blockly.inject(blocklyRef.current, {
@@ -165,10 +162,7 @@ export default function ScratchEngine() {
             <block type="motion_move"><value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
           </category>
           <category name="Looks" colour="#9966FF">
-             <block type="speech_speak"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
-          </category>
-           <category name="Sensing" colour="#CF63CF">
-            <block type="video_toggle"></block>
+             <block type="looks_say"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
           </category>
         </xml>
       `,
@@ -177,79 +171,64 @@ export default function ScratchEngine() {
     return () => ws.dispose();
   }, []);
 
-  // --- 3. P5.JS STAGE ENGINE ---
+  // --- 3. P5.JS STAGE ENGINE (UPDATED) ---
   useEffect(() => {
     if (!canvasParentRef.current) return;
+
+    // CRITICAL: Remove the old canvas before making a new one
+    if (p5Instance.current) p5Instance.current.remove();
 
     const sketch = (p: p5) => {
       let spriteImg: p5.Image;
       let bgImg: p5.Image | null = null;
       let capture: any;
 
-      p.preload = () => {
-        p.loadImage(activeSprite.url, img => spriteImg = img, () => console.log("Sprite Load Failed"));
-        if (activeBackdrop.img) {
-          p.loadImage(activeBackdrop.img, img => bgImg = img, () => console.log("Backdrop Load Failed"));
-        }
-      };
-
       p.setup = () => {
         p.createCanvas(480, 360).parent(canvasParentRef.current!);
         p.imageMode(p.CENTER);
+        
+        // Load selected assets immediately
+        p.loadImage(activeSprite.url, img => spriteImg = img);
+        if (activeBackdrop.img) {
+          p.loadImage(activeBackdrop.img, img => bgImg = img);
+        }
       };
 
       p.draw = () => {
+        // Background logic
         if (bgImg) p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
         else p.background(activeBackdrop.color);
 
-        if (isVideoOn) {
-          if (!capture) { capture = p.createCapture(p.VIDEO); capture.hide(); }
-          p.push();
-          p.translate(p.width, 0); p.scale(-1, 1);
-          p.tint(255, 120); p.image(capture, p.width/2, p.height/2, p.width, p.height);
-          p.pop();
-        }
-        
+        // Sprite logic
         p.push();
-        const screenX = p.width/2 + engineState.current.x;
-        const screenY = p.height/2 - engineState.current.y;
-        p.translate(screenX, screenY);
-        
-        if (spriteImg) {
-          p.image(spriteImg, 0, 0, engineState.current.size, engineState.current.size);
-        } else {
-          p.textSize(60); p.textAlign(p.CENTER, p.CENTER);
-          p.text(activeSprite.emoji, 0, 0);
-        }
-
-        if (engineState.current.sayText) {
-            p.fill(255); p.stroke(200); p.rect(20, -80, 100, 40, 10);
-            p.fill(0); p.noStroke(); p.textSize(12);
-            p.text(engineState.current.sayText, 70, -60);
-        }
+        p.translate(p.width/2 + engineState.current.x, p.height/2 - engineState.current.y);
+        if (spriteImg) p.image(spriteImg, 0, 0, 80, 80);
+        else { p.textSize(50); p.textAlign(p.CENTER, p.CENTER); p.text(activeSprite.emoji, 0, 0); }
         p.pop();
       };
     };
 
-    const instance = new p5(sketch);
-    return () => instance.remove();
-  }, [activeSprite, activeBackdrop, isVideoOn]);
+    p5Instance.current = new p5(sketch);
+  }, [activeSprite, activeBackdrop]); // The engine restarts only when these change
 
-  // --- 4. ENGINE CONTROLS ---
+  // --- 4. EXECUTION ENGINE ---
   const runCode = () => {
     const code = javascriptGenerator.workspaceToCode(workspace);
-    const move = (steps: number) => engineState.current.x += steps;
+    
+    // Commands used by the generator
+    const move = (steps: number) => {
+      engineState.current.x += steps;
+    };
     const say = (text: string) => {
         engineState.current.sayText = text;
         const u = new SpeechSynthesisUtterance(text);
         window.speechSynthesis.speak(u);
         setTimeout(() => engineState.current.sayText = "", 3000);
     };
-    const toggleVideo = (state: string) => setIsVideoOn(state === 'ON');
 
     try {
-      const runner = new Function('move', 'say', 'toggleVideo', code);
-      runner(move, say, toggleVideo);
+      const runner = new Function('move', 'say', code);
+      runner(move, say);
     } catch (e) {
       toast({ title: "Code Error", variant: "destructive" });
     }
@@ -279,58 +258,47 @@ export default function ScratchEngine() {
 
         {/* 3. Stage & Assets (Right Side) - This stays completely separate */}
         <div className="w-[520px] p-4 flex flex-col gap-4 bg-slate-50 border-l overflow-y-auto z-10 shadow-inner">
-            <div ref={canvasParentRef} className="rounded-2xl overflow-hidden shadow-2xl border-[6px] border-white bg-white w-[480px] h-[360px]" />
+          <div ref={canvasParentRef} className="rounded-2xl overflow-hidden shadow-2xl border-[6px] border-white bg-white w-[480px] h-[360px]" />
+          
+            {/* ASSET MANAGEMENT PANELS */}
+          <div className="grid grid-cols-2 gap-3">
             
-            {/* Asset Library Panels */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-[10px] font-black uppercase text-slate-400">Sprites</span>
-                  {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {sprites.map(s => (
-                    <button 
-                      key={s.id}
-                      onClick={() => setActiveSprite(s)}
-                      className={`w-12 h-12 text-3xl rounded-xl border-2 transition-all ${activeSprite.id === s.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100 bg-slate-50'}`}
-                    >
-                      {s.emoji || '📦'}
-                    </button>
-                  ))}
-                </div>
+            {/* Sprite Panel */}
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[10px] font-black uppercase text-slate-400">Sprites</span>
+                {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
               </div>
-
-              <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-[10px] font-black uppercase text-slate-400">Backdrops</span>
-                  {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {backdrops.map(b => (
-                    <button 
-                      key={b.id}
-                      onClick={() => setActiveBackdrop(b)}
-                      className={`w-10 h-10 rounded-lg border-2 shadow-sm ${activeBackdrop.id === b.id ? 'border-blue-500' : 'border-white'}`}
-                      style={{ backgroundColor: b.color }}
-                    />
-                  ))}
-                </div>
+              <div className="flex gap-2 flex-wrap">
+                {sprites.map(s => (
+                  <button 
+                    key={s.id} onClick={() => setActiveSprite(s)}
+                    className={`w-14 h-14 text-3xl rounded-2xl border-2 transition-all ${activeSprite.id === s.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100 bg-slate-50'}`}
+                  >
+                    {s.emoji || '📦'}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="bg-purple-100 p-2 rounded-lg"><Video className="w-5 h-5 text-purple-600"/></div>
-                  <span className="font-bold text-slate-600">Video Sensing</span>
-                </div>
-                <button 
-                  onClick={() => setIsVideoOn(!isVideoOn)}
-                  className={`px-6 py-2 rounded-full text-xs font-black transition-all ${isVideoOn ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-400'}`}
-                >
-                  {isVideoOn ? 'ON' : 'OFF'}
-                </button>
+            {/* Backdrop Panel */}
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[10px] font-black uppercase text-slate-400">Backdrops</span>
+                {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {backdrops.map(b => (
+                  <button 
+                    key={b.id} onClick={() => setActiveBackdrop(b)}
+                    className={`w-10 h-10 rounded-lg border-4 transition-all ${activeBackdrop.id === b.id ? 'border-blue-500 shadow-md' : 'border-white'}`}
+                    style={{ backgroundColor: b.color }}
+                  />
+                ))}
+              </div>
             </div>
+
+          </div>
         </div>
       </div>
     </div>
