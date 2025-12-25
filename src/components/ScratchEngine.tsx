@@ -75,10 +75,10 @@ export default function ScratchEngine() {
       let spriteImg: p5.Image;
 
       p.preload = () => {
-        spriteImg = p.loadImage(selectedSprite.url);
-        if (selectedBackdrop.img) {
-          bgImg = p.loadImage(selectedBackdrop.img);
-        }
+          spriteImg = p.loadImage(selectedSprite.url);
+          if (selectedBackdrop.img) {
+              bgImg = p.loadImage(selectedBackdrop.img);
+          }
       };
 
       p.setup = () => {
@@ -115,10 +115,10 @@ export default function ScratchEngine() {
 
       // Allow React to re-trigger preload/setup when assets change
       p.updateWithProps = (props: { spriteUrl: string, backdrop: { img: string | null, color: string }, video: boolean }) => {
-        if (props.spriteUrl !== selectedSprite.url) {
+        if (props.spriteUrl !== spriteImg.canvas.toDataURL()) { // A bit hacky, but works for URL changes
             spriteImg = p.loadImage(props.spriteUrl);
         }
-        if (props.backdrop.img && props.backdrop.img !== selectedBackdrop.img) {
+        if (props.backdrop.img && props.backdrop.img !== bgImg?.canvas.toDataURL()) {
             bgImg = p.loadImage(props.backdrop.img);
         } else if (!props.backdrop.img) {
             bgImg = null;
@@ -143,10 +143,11 @@ export default function ScratchEngine() {
     return () => {
         p5Container.remove();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // This effect will re-run the logic inside p5 when our React state changes
-  useEffect(() => {
+   useEffect(() => {
     // A more robust solution might use a ref to the p5 instance and call a specific update function
   }, [selectedSprite, selectedBackdrop, videoEnabled]);
 
@@ -221,42 +222,57 @@ export default function ScratchEngine() {
         <div ref={blocklyRef} className="flex-1 h-full" />
         
         {/* Stage Area */}
-        <div className="w-[450px] bg-slate-200 p-4 border-l flex flex-col gap-4">
-          <div ref={canvasRef} className="rounded-lg shadow-2xl border-4 border-white bg-white overflow-hidden" />
-          
-          <div className="grid grid-cols-2 gap-4">
-              {/* --- SPRITE LIBRARY --- */}
-              <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm">Sprites</CardTitle></CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
+        <div className="w-[480px] bg-slate-200 p-4 border-l flex flex-col gap-4">
+            <div className="w-[480px] space-y-4">
+              {/* The Stage */}
+              <div ref={canvasRef} className="rounded-xl shadow-2xl border-4 border-white bg-white" />
+
+              {/* NEW: Selector Panels */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* SPRITE SELECTOR */}
+                <div className="bg-white p-4 rounded-xl shadow-sm">
+                  <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Select Sprite</p>
+                  <div className="flex gap-2">
                     {SPRITE_LIBRARY.map(s => (
-                        <button key={s.id} onClick={() => setSelectedSprite(s)} className={`w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border-2 ${selectedSprite.id === s.id ? 'border-blue-500' : 'border-slate-200'}`}>
-                            <span className="text-2xl">{s.emoji}</span>
-                        </button>
+                      <button 
+                        key={s.id}
+                        onClick={() => setSelectedSprite(s)}
+                        className={`w-12 h-12 text-2xl rounded-lg border-2 transition-all ${selectedSprite.id === s.id ? 'border-blue-500 bg-blue-50' : 'border-slate-100'}`}
+                      >
+                        {s.emoji}
+                      </button>
                     ))}
-                    <button className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center border border-dashed border-slate-300 text-slate-400"><Plus/></button>
-                </CardContent>
-              </Card>
+                  </div>
+                </div>
 
-              {/* --- BACKDROP LIBRARY --- */}
-               <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm">Backdrops</CardTitle></CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
+                {/* BACKDROP SELECTOR */}
+                <div className="bg-white p-4 rounded-xl shadow-sm">
+                  <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Select Backdrop</p>
+                  <div className="flex gap-2">
                     {BACKDROP_LIBRARY.map(b => (
-                        <button key={b.id} onClick={() => setSelectedBackdrop(b)} className={`w-12 h-12 rounded-lg flex items-center justify-center border-2 overflow-hidden ${selectedBackdrop.id === b.id ? 'border-blue-500' : 'border-slate-200'}`} style={{backgroundColor: b.color || '#fff'}}>
-                          {b.img && <img src={b.img} alt={b.label} className="w-full h-full object-cover"/>}
-                        </button>
+                      <button 
+                        key={b.id}
+                        onClick={() => setSelectedBackdrop(b)}
+                        className={`w-10 h-10 rounded-md border-2 transition-all ${selectedBackdrop.id === b.id ? 'border-blue-500 shadow-md' : 'border-slate-200'}`}
+                        style={{ backgroundColor: b.color }}
+                      />
                     ))}
-                    <button className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center border border-dashed border-slate-300 text-slate-400"><UploadCloud/></button>
-                </CardContent>
-              </Card>
-          </div>
-          {/* Video Sensing Button */}
-          <Button variant="outline" onClick={() => handleVideoToggle()} className="w-full">
-            <Camera className="w-4 h-4 mr-2"/> {videoEnabled ? 'Stop Video' : 'Start Video Sensing'}
-          </Button>
-          <video ref={videoRef} className="hidden"/>
+                  </div>
+                </div>
+              </div>
 
+              {/* VIDEO CONTROL */}
+              <div className="bg-white p-3 rounded-xl flex justify-between items-center">
+                <span className="text-xs font-bold text-slate-600">Video Sensing</span>
+                <button 
+                  onClick={() => setVideoEnabled(!videoEnabled)}
+                  className={`px-4 py-1 rounded-full text-[10px] font-black uppercase transition-all ${videoEnabled ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'}`}
+                >
+                  {videoEnabled ? 'ON' : 'OFF'}
+                </button>
+              </div>
+            </div>
+            <video ref={videoRef} className="hidden"/>
         </div>
       </div>
     </div>
