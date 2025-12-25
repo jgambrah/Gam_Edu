@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase/client-provider';
 import { Button } from '@/components/ui/button';
@@ -144,9 +145,9 @@ export default function LoginPage() {
               
               <div className="text-center text-sm mt-8">
                 <span className="text-slate-500">Don't have an account? </span>
-                <a href="#" className="font-semibold text-purple-700 hover:text-purple-600 hover:underline">
+                <Link href="/signup" className="font-semibold text-purple-700 hover:text-purple-600 hover:underline">
                   Sign Up
-                </a>
+                </Link>
               </div>
             </div>
           </div>
