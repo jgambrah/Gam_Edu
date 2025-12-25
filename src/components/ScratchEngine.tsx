@@ -111,9 +111,9 @@ export default function ScratchEngine() {
   const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
     const DEFAULT_SPRITES = [
-      { id: 'cat', name: 'Cat', emoji: '🐱', costumes: ['https://scratch.mit.edu/static/assets/e65c02b651b081e74f671c4c1cc3b3f7.svg', 'https://scratch.mit.edu/static/assets/40a1b6ce64b036574f8819e075841666.svg'] },
-      { id: 'ghost', name: 'Ghost', emoji: '👻', costumes: [] },
-      { id: 'rocket', name: 'Rocket', emoji: '🚀', costumes: [] }
+      { id: 'cat', name: 'Cat', emoji: '🐱', url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' },
+      { id: 'ghost', name: 'Ghost', emoji: '👻', url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' },
+      { id: 'rocket', name: 'Rocket', emoji: '🚀', url: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' }
     ];
     
     const SOUND_LIBRARY = [
@@ -141,7 +141,7 @@ export default function ScratchEngine() {
   const engineState = useRef({
     x: 0, y: 0, prevX: 0, prevY: 0,
     direction: 90, size: 100, sayText: "",
-    isPenDown: false, penColor: '#000000', penSize: 2,
+    isPenDown: false, penColor: '#000000', penSize: 4,
     shouldClear: false,
     costumeIndex: 0,
   });
@@ -173,7 +173,7 @@ export default function ScratchEngine() {
               { kind: 'block', type: 'motion_goto' },
             ],
           },
-          // 👀 LOOKS
+           // 👀 LOOKS
           {
             kind: 'category',
             name: 'Looks',
@@ -315,7 +315,7 @@ export default function ScratchEngine() {
     Blockly.Blocks['pen_setsize'] = { init: function(this: Blockly.Block) { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
     Blockly.Blocks['looks_nextcostume'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("next costume"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#9966FF"); } };
     
-    javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
+    javascriptGenerator.forBlock['motion_move'] = (block: any) => `await move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
     javascriptGenerator.forBlock['looks_say'] = (block: any) => `say(${javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''"});\n`;
     javascriptGenerator.forBlock['video_toggle'] = (block: any) => `toggleVideo("${block.getFieldValue('STATE')}");\n`;
     javascriptGenerator.forBlock['control_wait'] = (block: any) => `await wait(${javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1'});\n`;
@@ -361,18 +361,21 @@ export default function ScratchEngine() {
       let capture: p5.Element | null = null;
 
       p.preload = () => {
-          if (activeSprite.costumes && activeSprite.costumes.length > 0) {
-              activeSprite.costumes.forEach((url: string) => {
-                  try {
-                      loadedImages.push(p.loadImage(url));
-                  } catch (e) {
-                      console.error("Failed to load costume:", url, e);
-                  }
-              });
-          }
-           if (activeBackdrop.img && activeBackdrop.img.startsWith('http')) {
-              bgImg = p.loadImage(activeBackdrop.img);
-          }
+        // This is now robust; handles missing costumes array
+        const costumes = activeSprite?.costumes || [];
+        costumes.forEach((url: string) => {
+            try {
+                if (url && url.startsWith('http')) {
+                    loadedImages.push(p.loadImage(url));
+                }
+            } catch (e) {
+                console.error("Failed to load costume:", url, e);
+            }
+        });
+
+        if (activeBackdrop.img && activeBackdrop.img.startsWith('http')) {
+            bgImg = p.loadImage(activeBackdrop.img);
+        }
       };
   
       p.setup = () => {
@@ -384,14 +387,17 @@ export default function ScratchEngine() {
       };
   
       p.draw = () => {
+        // 1. Draw backdrop
         if (bgImg) p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
         else p.background(activeBackdrop.color || '#FFF');
         
+        // 2. Clear Pen Layer if needed
         if (engineState.current.shouldClear) {
             penLayer.clear();
             engineState.current.shouldClear = false;
         }
 
+        // 3. Draw Pen Trails
         if (engineState.current.isPenDown) {
             penLayer.stroke(engineState.current.penColor);
             penLayer.strokeWeight(engineState.current.penSize);
@@ -404,6 +410,7 @@ export default function ScratchEngine() {
         engineState.current.prevX = engineState.current.x;
         engineState.current.prevY = engineState.current.y;
         
+        // 4. Render Pen layer
         p.image(penLayer, p.width/2, p.height/2);
 
         if (isVideoOn) {
@@ -425,13 +432,16 @@ export default function ScratchEngine() {
           }
         }
       
+        // 5. Draw Sprite
         p.push();
         const screenX = p.width / 2 + engineState.current.x;
         const screenY = p.height / 2 - engineState.current.y;
         p.translate(screenX, screenY);
         p.rotate(p.radians(engineState.current.direction - 90));
         
-        const currentCostume = loadedImages[engineState.current.costumeIndex % loadedImages.length];
+        const currentCostume = loadedImages.length > 0 
+          ? loadedImages[engineState.current.costumeIndex % loadedImages.length] 
+          : null;
 
         if (currentCostume) {
             p.image(currentCostume, 0, 0, engineState.current.size, engineState.current.size);
@@ -453,50 +463,33 @@ export default function ScratchEngine() {
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
   const runCode = async () => {
-    const rawCode = javascriptGenerator.workspaceToCode(workspace);
+    const code = javascriptGenerator.workspaceToCode(workspace);
     
-    const context = {
-        move: (steps: number) => { 
-            const rad = (engineState.current.direction - 90) * (Math.PI / 180);
-            engineState.current.x += steps * Math.cos(rad);
-            engineState.current.y += steps * Math.sin(rad);
-        },
-        turn: (degrees: number) => { engineState.current.direction += degrees; },
-        goTo: (x: number, y: number) => { engineState.current.x = x; engineState.current.y = y; },
-        changeSizeBy: (change: number) => { engineState.current.size += change; },
-        say: (text: string) => {
-            engineState.current.sayText = text;
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-            setTimeout(() => { 
-                if (engineState.current) engineState.current.sayText = "";
-            }, 2000);
-        },
-        wait: (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000)),
-        toggleVideo: (state: 'ON' | 'OFF') => setIsVideoOn(state === 'ON'),
-        setPen: (isDown: boolean) => { engineState.current.isPenDown = isDown; },
-        penClear: () => { engineState.current.shouldClear = true; },
-        setPenColor: (color: string) => { engineState.current.penColor = color; },
-        setPenSize: (size: number) => { engineState.current.penSize = Math.max(1, size); },
-        nextCostume: () => { 
-          engineState.current.costumeIndex = (engineState.current.costumeIndex + 1);
-        },
-        isMouseDown: () => p5Instance.current?.mouseIsPressed,
-        isMouseTouching: () => {
-            const p = p5Instance.current;
-            if (!p) return false;
-            const d = p.dist(p.mouseX, p.mouseY, p.width/2 + engineState.current.x, p.height/2 - engineState.current.y);
-            return d < engineState.current.size / 2;
-        },
+    // Injectable Functions for Blocks
+    const move = (n: number) => { 
+        const rad = (engineState.current.direction * Math.PI) / 180;
+        engineState.current.x += Math.cos(rad) * n;
+        engineState.current.y += Math.sin(rad) * n;
     };
-  
+    const turn = (d: number) => engineState.current.direction += d;
+    const wait = (s: number) => new Promise(res => setTimeout(res, s * 1000));
+    const setPen = (down: boolean) => engineState.current.isPenDown = down;
+    const penClear = () => engineState.current.shouldClear = true;
+    
+    const playSound = (id: string) => {
+        const sound = SOUND_LIBRARY.find(s => s.id === id);
+        if (sound) new Audio(sound.url).play().catch(e => console.log("Audio play blocked"));
+    };
+
+    // Construct Async Runner
     try {
-      const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-      const runner = new AsyncFunction(...Object.keys(context), rawCode);
-      await runner(...Object.values(context));
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        const runner = new AsyncFunction('move', 'turn', 'wait', 'setPen', 'penClear', 'playSound', code);
+        await runner(move, turn, wait, setPen, penClear, playSound);
     } catch (e) {
-      console.error("Execution Error:", e);
+        toast({ title: "Check your blocks!", variant: "destructive" });
     }
-  };
+};
 
   return (
     <div className="flex flex-col h-screen bg-[#F0F2F5] overflow-hidden">
@@ -603,4 +596,3 @@ export default function ScratchEngine() {
   );
 }
 
-    
