@@ -159,7 +159,7 @@ const toolboxCategories = {
           },
         ],
       },
-      // 🎨 COLOUR
+      // 🎨 COLOUR (REQUIRES PLUGIN)
       {
         kind: 'category',
         name: 'Colour',
@@ -168,6 +168,7 @@ const toolboxCategories = {
           { kind: 'block', type: 'colour_picker' },
           { kind: 'block', type: 'colour_random' },
           { kind: 'block', type: 'colour_rgb' },
+          { kind: 'block', type: 'colour_blend' },
         ],
       },
       { kind: 'sep' },
@@ -265,9 +266,27 @@ export default function ScratchEngine() {
 
     // Fallback to defaults if DB is empty
     const SPRITE_LIBRARY = dbSprites?.length ? dbSprites : [
-      { id: 'cat', emoji: '🐱', url: '/assets/sprites/cat.png', name: 'Cat' },
-      { id: 'dog', emoji: '🐶', url: 'https://openclipart.org/image/2400px/svg_to_png/219213/Dog-Icon.png', name: 'Dog' },
-      { id: 'rocket', emoji: '🚀', url: 'https://openclipart.org/image/2400px/svg_to_png/190875/Rocket-Icon.png', name: 'Rocket' },
+      { 
+        id: 'cat', 
+        emoji: '🐱', 
+        name: 'Cat',
+        costumes: [
+            'https://scratch.mit.edu/static/assets/6727286395e546f3366f0766.svg', // Costume 1
+            'https://scratch.mit.edu/static/assets/fe5839352516c4f74d4458f335b80129.svg'  // Costume 2
+        ]
+      },
+      { 
+        id: 'dog', 
+        emoji: '🐶', 
+        name: 'Dog',
+        costumes: ['https://openclipart.org/image/2400px/svg_to_png/219213/Dog-Icon.png']
+      },
+      { 
+        id: 'rocket', 
+        emoji: '🚀', 
+        name: 'Rocket',
+        costumes: ['https://openclipart.org/image/2400px/svg_to_png/190875/Rocket-Icon.png']
+      },
     ];
     const BACKDROP_LIBRARY = dbBackdrops?.length ? dbBackdrops : [
       { id: 'white', color: '#FFFFFF', name: 'Plain', img: null },
@@ -305,36 +324,29 @@ export default function ScratchEngine() {
 
     // --- BLOCK DEFINITIONS ---
     Blockly.Blocks['motion_move'] = {
-      init: function(this: Blockly.Block) {
-        this.appendValueInput("STEPS")
-            .setCheck("Number")
-            .appendField("move")
-            .appendField("steps");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(230); // Motion Blue
-      }
+        init: function(this: Blockly.Block) {
+            this.appendValueInput("STEPS").setCheck("Number").appendField("move").appendField("steps");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230); // Motion Blue
+        }
     };
     Blockly.Blocks['looks_say'] = {
-      init: function(this: Blockly.Block) {
-        this.appendValueInput("TEXT").setCheck("String").appendField("say");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour("#9966FF");
-      }
+        init: function(this: Blockly.Block) {
+            this.appendValueInput("TEXT").setCheck("String").appendField("say");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour("#9966FF");
+        }
     };
-    
     Blockly.Blocks['video_toggle'] = {
-      init: function(this: Blockly.Block) {
-        this.appendDummyInput()
-            .appendField("turn video")
-            .appendField(new Blockly.FieldDropdown([["on","ON"], ["off","OFF"]]), "STATE");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour("#CF63CF"); // Sensing Purple
-      }
+        init: function(this: Blockly.Block) {
+            this.appendDummyInput().appendField("turn video").appendField(new Blockly.FieldDropdown([["on","ON"], ["off","OFF"]]), "STATE");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour("#CF63CF"); // Sensing Purple
+        }
     };
-    
     Blockly.Blocks['control_wait'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("DURATION").setCheck("Number").appendField("wait").appendField("seconds");
@@ -342,7 +354,6 @@ export default function ScratchEngine() {
         this.setColour("#FFAB19");
       }
     };
-    
     Blockly.Blocks['event_whenflagclicked'] = {
       init: function(this: Blockly.Block) {
         this.appendDummyInput().appendField("when flag clicked 🚩");
@@ -350,55 +361,42 @@ export default function ScratchEngine() {
         this.setColour("#FFD500");
       }
     };
-    
     Blockly.Blocks['motion_turnright'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
     };
-    
     Blockly.Blocks['motion_goto'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("X").setCheck("Number").appendField("go to x:"); this.appendValueInput("Y").setCheck("Number").appendField("y:"); this.setInputsInline(true); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
     };
-    
     Blockly.Blocks['looks_changesizeby'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("CHANGE").setCheck("Number").appendField("change size by"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#9966FF"); }
     };
-    
     Blockly.Blocks['sound_play'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("SOUND").setCheck("String").appendField("play sound"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#D65DB1"); }
     };
-    
     Blockly.Blocks['control_if'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("IF0").setCheck("Boolean").appendField("if"); this.appendStatementInput("DO0").appendField("then"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#FFAB19"); }
     };
-    
     Blockly.Blocks['control_repeat'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("TIMES").setCheck("Number").appendField("repeat"); this.appendStatementInput("DO").appendField("do"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#FFAB19"); }
     };
-    
     Blockly.Blocks['control_forever'] = {
       init: function(this: Blockly.Block) { this.appendDummyInput().appendField("forever"); this.appendStatementInput("DO"); this.setPreviousStatement(true, null); this.setColour("#FFAB19"); }
     };
-    
     Blockly.Blocks['sensing_touchingmouse'] = {
       init: function(this: Blockly.Block) { this.appendDummyInput().appendField("touching mouse-pointer?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
     };
-    
     Blockly.Blocks['sensing_mousedown'] = {
       init: function(this: Blockly.Block) { this.appendDummyInput().appendField("mouse down?"); this.setOutput(true, "Boolean"); this.setColour("#4CBFE6"); }
     };
-    
     Blockly.Blocks['operator_add'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").setCheck("Number").appendField("+"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
     };
-    
     Blockly.Blocks['operator_random'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("FROM").setCheck("Number").appendField("pick random from"); this.appendValueInput("TO").setCheck("Number").appendField("to"); this.setInputsInline(true); this.setOutput(true, "Number"); this.setColour("#40BF4A"); }
     };
-    
     Blockly.Blocks['operator_equals'] = {
       init: function(this: Blockly.Block) { this.appendValueInput("A"); this.appendValueInput("B").appendField("="); this.setInputsInline(true); this.setOutput(true, "Boolean"); this.setColour("#40BF4A"); }
     };
-    
     Blockly.Blocks['pen_clear'] = { init: function() { this.appendDummyInput().appendField("erase all"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
     Blockly.Blocks['pen_pendown'] = { init: function() { this.appendDummyInput().appendField("pen down"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
     Blockly.Blocks['pen_penup'] = { init: function() { this.appendDummyInput().appendField("pen up"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
@@ -407,7 +405,6 @@ export default function ScratchEngine() {
     Blockly.Blocks['colour_random'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField('random colour'); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); } };
     Blockly.Blocks['colour_rgb'] = { init: function(this: Blockly.Block) { this.appendValueInput("RED").setCheck("Number").appendField("colour with red"); this.appendValueInput("GREEN").setCheck("Number").appendField("green"); this.appendValueInput("BLUE").setCheck("Number").appendField("blue"); this.setInputsInline(true); this.setOutput(true, "Colour"); this.setColour('%{BKY_COLOUR_HUE}'); } };
     
-
     // --- JAVASCRIPT GENERATORS ---
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
     javascriptGenerator.forBlock['looks_say'] = (block: any) => `say(${javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''"});\n`;
@@ -434,7 +431,6 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['colour_random'] = () => `randomColor();\n`;
     javascriptGenerator.forBlock['colour_rgb'] = (b: any) => `rgbToHex(${javascriptGenerator.valueToCode(b, 'RED', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'GREEN', 0) || 0}, ${javascriptGenerator.valueToCode(b, 'BLUE', 0) || 0});\n`;
     
-
     const ws = Blockly.inject(blocklyRef.current, {
         renderer: 'zelos',
         toolbox: toolboxCategories,
@@ -463,8 +459,8 @@ export default function ScratchEngine() {
         p.imageMode(p.CENTER);
         p.textAlign(p.CENTER, p.CENTER);
       
-        if (activeSprite.url && activeSprite.url.startsWith('http')) {
-            p.loadImage(activeSprite.url, 
+        if (activeSprite.costumes && activeSprite.costumes[0] && activeSprite.costumes[0].startsWith('http')) {
+            p.loadImage(activeSprite.costumes[0], 
                 img => { spriteImg = img; },
                 (err) => { 
                   console.error("Sprite Load Failed:", err);
