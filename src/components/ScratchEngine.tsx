@@ -118,7 +118,8 @@ export default function ScratchEngine() {
       init: function(this: Blockly.Block) {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
         this.appendField("steps");
-        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setColour("#4C97FF");
       }
     };
@@ -126,7 +127,8 @@ export default function ScratchEngine() {
     Blockly.Blocks['looks_say'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("TEXT").setCheck("String").appendField("say");
-        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
         this.setColour("#9966FF");
       }
     };
@@ -164,7 +166,7 @@ export default function ScratchEngine() {
 
   useEffect(() => {
     if (!canvasParentRef.current) return;
-    
+  
     // CRITICAL: Remove the old canvas before making a new one
     if (p5Instance.current) {
       p5Instance.current.remove();
@@ -173,13 +175,12 @@ export default function ScratchEngine() {
     const sketch = (p: p5) => {
       let spriteImg: p5.Image | null = null;
       let bgImg: p5.Image | null = null;
-      let capture: any;
   
       p.setup = () => {
         p.createCanvas(480, 360).parent(canvasParentRef.current!);
         p.imageMode(p.CENTER);
         p.textAlign(p.CENTER, p.CENTER);
-
+  
         // Use a try-catch style approach for loading
         if (activeSprite.url && activeSprite.url.startsWith('http')) {
             p.loadImage(activeSprite.url, 
@@ -244,7 +245,7 @@ export default function ScratchEngine() {
     };
   
     p5Instance.current = new p5(sketch);
-
+  
     return () => {
         if (p5Instance.current) {
             p5Instance.current.remove();
@@ -308,49 +309,73 @@ export default function ScratchEngine() {
   
         {/* 3. Stage & Assets (Right Side) - This stays completely separate */}
         <div className="w-[520px] p-4 flex flex-col gap-4 bg-[#F0F9FF] border-l-4 border-white overflow-y-auto z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.05)]">
-            {/* The Stage */}
-            <div className="relative group">
-                <div ref={canvasParentRef} className="rounded-[40px] overflow-hidden shadow-2xl border-[10px] border-white bg-white w-[480px] h-[360px]" />
-                <Badge className="absolute top-4 left-4 bg-pink-500 text-white border-none shadow-lg">LIVE STAGE</Badge>
+          
+          {/* The Stage */}
+          <div className="relative group">
+            <div ref={canvasParentRef} className="rounded-[40px] overflow-hidden shadow-2xl border-[10px] border-white bg-white w-[480px] h-[360px]" />
+            <Badge className="absolute top-4 left-4 bg-pink-500 text-white border-none shadow-lg">LIVE STAGE</Badge>
+          </div>
+          
+          {/* MAGIC MIRROR (VIDEO SENSING) */}
+          <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
+            <div className="flex items-center gap-3">
+               <div className="bg-purple-100 p-3 rounded-2xl">
+                  <Video className="w-6 h-6 text-purple-600" />
+               </div>
+               <div>
+                  <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest leading-none mb-1">Magic Mirror</p>
+                  <p className="text-sm font-bold text-slate-700">Video Sensing</p>
+               </div>
             </div>
+            <button 
+              onClick={() => setIsVideoOn(!isVideoOn)}
+              className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${
+                isVideoOn 
+                  ? 'bg-purple-500 text-white shadow-[0_4px_0_#7e22ce]' 
+                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+              }`}
+            >
+              {isVideoOn ? 'ON' : 'OFF'}
+            </button>
+          </div>
 
-            {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
-            <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
-                   <div className="flex justify-between items-center mb-4">
-                      <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
-                      {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
-                   </div>
-                   <div className="flex gap-3 flex-wrap">
-                      {SPRITE_LIBRARY.map(s => (
-                        <button 
-                          key={s.id} 
-                          onClick={() => setActiveSprite(s)}
-                          className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
-                        >
-                          {s.emoji}
-                        </button>
-                      ))}
-                   </div>
-                </div>
-                
-                <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
-                   <div className="flex justify-between items-center mb-4">
-                      <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
-                      {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
-                   </div>
-                   <div className="flex gap-3 flex-wrap">
-                      {BACKDROP_LIBRARY.map(b => (
-                        <button 
-                          key={b.id} 
-                          onClick={() => setActiveBackdrop(b)}
-                          className={`w-12 h-12 rounded-[16px] border-4 transition-all ${activeBackdrop.id === b.id ? 'border-pink-500 shadow-md scale-105' : 'border-white'}`}
-                          style={{ backgroundColor: b.color }}
-                        />
-                      ))}
-                   </div>
-                </div>
+          {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
+               <div className="flex justify-between items-center mb-4">
+                  <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
+                  {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
+               </div>
+               <div className="flex gap-3 flex-wrap">
+                  {SPRITE_LIBRARY.map(s => (
+                    <button 
+                      key={s.id} 
+                      onClick={() => setActiveSprite(s)}
+                      className={`w-16 h-16 text-4xl rounded-[20px] transition-all transform hover:scale-110 ${activeSprite.id === s.id ? 'bg-blue-500 shadow-lg scale-105' : 'bg-slate-50'}`}
+                    >
+                      {s.emoji}
+                    </button>
+                  ))}
+               </div>
             </div>
+            
+            <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
+               <div className="flex justify-between items-center mb-4">
+                  <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
+                  {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
+               </div>
+               <div className="flex gap-3 flex-wrap">
+                  {BACKDROP_LIBRARY.map(b => (
+                    <button 
+                      key={b.id} 
+                      onClick={() => setActiveBackdrop(b)}
+                      className={`w-12 h-12 rounded-[16px] border-4 transition-all ${activeBackdrop.id === b.id ? 'border-pink-500 shadow-md scale-105' : 'border-white'}`}
+                      style={{ backgroundColor: b.color }}
+                    />
+                  ))}
+               </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
