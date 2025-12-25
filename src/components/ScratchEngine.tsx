@@ -106,9 +106,14 @@ export default function ScratchEngine() {
   const engineState = useRef({
     x: 0,
     y: 0,
+    prevX: 0, // For pen
+    prevY: 0, // For pen
     direction: 90,
     size: 100,
     sayText: "",
+    isPenDown: false,
+    penColor: '#000000',
+    penSize: 2,
     isJunior: true // Helps trigger the colorful theme
   });
 
@@ -151,11 +156,12 @@ export default function ScratchEngine() {
       }
     };
     Blockly.Blocks['control_wait'] = {
-        init: function(this: Blockly.Block) {
-            this.appendValueInput("DURATION").setCheck("Number").appendField("wait").appendField("seconds");
-            this.setPreviousStatement(true, null); this.setNextStatement(true, null);
-            this.setColour("#FFAB19");
-        }
+      init: function(this: Blockly.Block) {
+        this.appendValueInput("DURATION").setCheck("Number").appendField("wait").appendField("seconds");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour("#FFAB19");
+      }
     };
     Blockly.Blocks['event_whenflagclicked'] = {
         init: function(this: Blockly.Block) {
@@ -211,6 +217,8 @@ export default function ScratchEngine() {
     Blockly.Blocks['pen_penup'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField("pen up"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour("#00B295"); } };
     Blockly.Blocks['pen_setcolor'] = { init: function(this: Blockly.Block) { this.appendValueInput('COLOR').setCheck('Colour').appendField('set pen color to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
     Blockly.Blocks['pen_setsize'] = { init: function(this: Blockly.Block) { this.appendValueInput('SIZE').setCheck('Number').appendField('set pen size to'); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour('#00B295'); } };
+    Blockly.Blocks['colour_random'] = { init: function(this: Blockly.Block) { this.appendDummyInput().appendField('random colour'); this.setOutput(true, 'Colour'); this.setColour('%{BKY_COLOUR_HUE}'); } };
+    Blockly.Blocks['colour_rgb'] = { init: function(this: Blockly.Block) { this.appendValueInput("RED").setCheck("Number").appendField("colour with red"); this.appendValueInput("GREEN").setCheck("Number").appendField("green"); this.appendValueInput("BLUE").setCheck("Number").appendField("blue"); this.setInputsInline(true); this.setOutput(true, "Colour"); this.setColour('%{BKY_COLOUR_HUE}'); } };
 
     // --- JAVASCRIPT GENERATORS ---
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
@@ -266,6 +274,7 @@ export default function ScratchEngine() {
         <category name="Sensing" colour="#4CBFE6">
           <block type="sensing_touchingmouse"></block>
           <block type="sensing_mousedown"></block>
+          <block type="video_toggle"></block>
         </category>
         <category name="Operators" colour="#40BF4A">
           <block type="operator_add"></block>
@@ -314,12 +323,15 @@ export default function ScratchEngine() {
     }
   
     const sketch = (p: p5) => {
+      let extraCanvas: p5.Graphics;
       let spriteImg: p5.Image | null = null;
       let bgImg: p5.Image | null = null;
       let capture: p5.Element | null = null;
   
       p.setup = () => {
         p.createCanvas(480, 360).parent(canvasParentRef.current!);
+        extraCanvas = p.createGraphics(480, 360);
+        extraCanvas.clear();
         p.imageMode(p.CENTER);
         p.textAlign(p.CENTER, p.CENTER);
       
@@ -349,28 +361,46 @@ export default function ScratchEngine() {
           p.background(activeBackdrop.color || '#F0F9FF');
         }
 
-        // 2. NEW: VIDEO SENSING LAYER
+        // 2. Draw the Pen Layer
+        p.image(extraCanvas, p.width/2, p.height/2);
+
+        // 3. Logic: If pen is down, draw on extraCanvas
+        if (engineState.current.isPenDown) {
+            extraCanvas.stroke(engineState.current.penColor || '#000');
+            extraCanvas.strokeWeight(engineState.current.penSize || 2);
+            extraCanvas.line(
+                p.width/2 + engineState.current.prevX, 
+                p.height/2 - engineState.current.prevY,
+                p.width/2 + engineState.current.x,
+                p.height/2 - engineState.current.y
+            );
+        }
+        
+        // Update "previous" position for the next frame
+        engineState.current.prevX = engineState.current.x;
+        engineState.current.prevY = engineState.current.y;
+
+        // 4. VIDEO SENSING LAYER
         if (isVideoOn) {
           if (!capture) {
             capture = p.createCapture(p.VIDEO);
             (capture as any).size(480, 360);
-            capture.hide(); // Hide the extra video element below the canvas
+            capture.hide();
           }
           p.push();
           p.translate(p.width, 0); 
-          p.scale(-1, 1); // Mirror the video so it feels natural
-          p.tint(255, 120); // Make it ghostly/transparent like Scratch
+          p.scale(-1, 1);
+          p.tint(255, 120);
           p.image(capture, p.width/2, p.height/2, p.width, p.height);
           p.pop();
         } else {
-          // If video is turned off, stop the stream to save battery/cpu
           if (capture) {
             (capture as any).stop();
             capture = null;
           }
         }
-
-        // 3. Draw Sprite (as before)
+      
+        // 5. Draw Sprite
         p.push();
         const screenX = p.width/2 + engineState.current.x;
         const screenY = p.height/2 - engineState.current.y;
@@ -405,7 +435,6 @@ export default function ScratchEngine() {
     const say = (text: string) => {
       engineState.current.sayText = text;
       window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-      // Bubbles disappear after 2 seconds
       setTimeout(() => { 
         if (engineState.current) engineState.current.sayText = "";
       }, 2000);
@@ -425,7 +454,6 @@ export default function ScratchEngine() {
     };
   
     try {
-      // Create an Async function to allow 'await wait()'
       const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
       const runner = new AsyncFunction(...Object.keys(context), rawCode);
       await runner(...Object.values(context));
@@ -448,7 +476,6 @@ export default function ScratchEngine() {
       <div className="flex flex-1 overflow-hidden relative">
         {/* 2. Coding Workspace */}
         <div className="flex-1 h-full relative bg-white">
-          {/* Visual Guide for students */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-10 flex flex-col items-center">
               <MousePointer2 className="w-20 h-20 mb-4" />
               <p className="text-4xl font-black uppercase">Drag Blocks Here</p>
@@ -456,16 +483,14 @@ export default function ScratchEngine() {
           <div ref={blocklyRef} className="absolute inset-0 w-full h-full" />
         </div>
   
-        {/* RIGHT: STAGE & ASSETS (Separated with high z-index) */}
+        {/* RIGHT: STAGE & ASSETS */}
         <div className="w-[520px] p-4 flex flex-col gap-4 bg-[#F0F9FF] border-l-4 border-white overflow-y-auto z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.05)]">
           
-          {/* The Stage */}
           <div className="relative group">
             <div ref={canvasParentRef} className="rounded-[40px] overflow-hidden shadow-2xl border-[10px] border-white bg-white w-[480px] h-[360px]" />
             <Badge className="absolute top-4 left-4 bg-pink-500 text-white border-none shadow-lg">LIVE STAGE</Badge>
           </div>
 
-          {/* MAGIC MIRROR (VIDEO SENSING) */}
           <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-purple-100 flex justify-between items-center animate-in fade-in slide-in-from-right-4">
             <div className="flex items-center gap-3">
                <div className="bg-purple-100 p-3 rounded-2xl">
@@ -503,7 +528,6 @@ export default function ScratchEngine() {
               </div>
           </div>
 
-          {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
                <div className="flex justify-between items-center mb-4">
