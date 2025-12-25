@@ -133,7 +133,7 @@ export default function ScratchEngine() {
     };
     
     Blockly.Blocks['motion_turnright'] = {
-      init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
+        init: function(this: Blockly.Block) { this.appendValueInput("DEGREES").setCheck("Number").appendField("turn 👉"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
     };
     Blockly.Blocks['motion_goto'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("X").setCheck("Number").appendField("go to x:"); this.appendValueInput("Y").setCheck("Number").appendField("y:"); this.setInputsInline(true); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour(230); }
@@ -213,7 +213,7 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
     javascriptGenerator.forBlock['looks_say'] = (block: any) => `say(${javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''"});\n`;
     javascriptGenerator.forBlock['video_toggle'] = (block: any) => `toggleVideo("${block.getFieldValue('STATE')}");\n`;
-    javascriptGenerator.forBlock['control_wait'] = (block) => {
+    javascriptGenerator.forBlock['control_wait'] = (block: any) => {
         const duration = javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1';
         return `await wait(${duration});\n`; // We use async/await for smooth timing
     };
@@ -267,6 +267,22 @@ export default function ScratchEngine() {
         </category>
         <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
         <category name="My Blocks" colour="#FF6680" custom="PROCEDURE"></category>
+        <sep></sep>
+        <category name="Pen" colour="#00B295">
+          <block type="pen_clear"></block>
+          <block type="pen_pendown"></block>
+          <block type="pen_penup"></block>
+          <block type="pen_setcolor">
+            <value name="COLOR">
+              <shadow type="colour_picker"></shadow>
+            </value>
+          </block>
+          <block type="pen_setsize">
+            <value name="SIZE">
+              <shadow type="math_number"><field name="NUM">1</field></shadow>
+            </value>
+          </block>
+        </category>
       </xml>
     `;
 
