@@ -14,7 +14,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -269,8 +269,8 @@ export default function ScratchEngine() {
     const SPRITE_LIBRARY = dbSprites?.length ? dbSprites : [
       { 
         id: 'cat', 
-        emoji: '🐱', 
         name: 'Cat',
+        emoji: '🐱', 
         costumes: [
             'https://scratch.mit.edu/static/assets/6727286395e546f3366f0766.svg', // Costume 1
             'https://scratch.mit.edu/static/assets/fe5839352516c4f74d4458f335b80129.svg'  // Costume 2
@@ -278,14 +278,14 @@ export default function ScratchEngine() {
       },
       { 
         id: 'dog', 
-        emoji: '🐶', 
         name: 'Dog',
+        emoji: '🐶', 
         costumes: ['https://openclipart.org/image/2400px/svg_to_png/219213/Dog-Icon.png']
       },
       { 
         id: 'rocket', 
-        emoji: '🚀', 
         name: 'Rocket',
+        emoji: '🚀', 
         costumes: ['https://openclipart.org/image/2400px/svg_to_png/190875/Rocket-Icon.png']
       },
     ];
@@ -478,10 +478,9 @@ export default function ScratchEngine() {
   
       p.draw = () => {
         // 1. Draw Background
+        p.background(activeBackdrop.color || '#F0F9FF');
         if (bgImg) {
-          p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
-        } else {
-          p.background(activeBackdrop.color || '#F0F9FF');
+          p.image(bgImg, p.width / 2, p.height / 2, p.width, p.height);
         }
 
         if (engineState.current.shouldClearPen) {
@@ -489,16 +488,16 @@ export default function ScratchEngine() {
             engineState.current.shouldClearPen = false;
         }
 
-        p.image(extraCanvas, p.width/2, p.height/2);
+        p.image(extraCanvas, p.width / 2, p.height / 2);
 
         if (engineState.current.isPenDown) {
             extraCanvas.stroke(engineState.current.penColor || '#000');
             extraCanvas.strokeWeight(engineState.current.penSize || 2);
             extraCanvas.line(
-                p.width/2 + engineState.current.prevX, 
-                p.height/2 - engineState.current.prevY,
-                p.width/2 + engineState.current.x,
-                p.height/2 - engineState.current.y
+                p.width / 2 + engineState.current.prevX,
+                p.height / 2 - engineState.current.prevY,
+                p.width / 2 + engineState.current.x,
+                p.height / 2 - engineState.current.y
             );
         }
         
@@ -525,8 +524,8 @@ export default function ScratchEngine() {
         }
       
         p.push();
-        const screenX = p.width/2 + engineState.current.x;
-        const screenY = p.height/2 - engineState.current.y;
+        const screenX = p.width / 2 + engineState.current.x;
+        const screenY = p.height / 2 - engineState.current.y;
         p.translate(screenX, screenY);
         
         const currentCostume = loadedImages[engineState.current.costumeIndex];
