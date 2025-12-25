@@ -43,7 +43,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import confetti from 'canvas-confetti';
 import { Badge } from '@/components/ui/badge';
 import { useRole } from '@/context/role-context';
-import { registerCustomBlocks } from '@/lib/blockly/custom-blocks.ts';
+import { registerCustomBlocks } from '@/lib/blockly/custom-blocks';
 
 registerCustomBlocks();
 
@@ -256,7 +256,7 @@ const ScratchEngine = () => {
                 variant: "destructive",
             });
         }
-    }, [workspace, activeSprite, sprites, toast]);
+    }, [workspace, activeSprite.id, sprites, toast]);
     
     // P5.js sketch setup
     useEffect(() => {
@@ -269,15 +269,14 @@ const ScratchEngine = () => {
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
             
-            const preloadAssets = () => {
-                setIsLoading(true);
+            p.preload = () => {
                 const newImages: { [key: string]: p5.Image } = {};
                 const assetsToLoad: { key: string; url: string }[] = [];
 
                 sprites.forEach(sprite => {
                     if (sprite.costumes) {
                         sprite.costumes.forEach((url, index) => {
-                            if (url) { // Check if URL is not empty
+                            if (url) {
                                 assetsToLoad.push({ key: `${sprite.id}-${index}`, url });
                             }
                         });
@@ -285,7 +284,7 @@ const ScratchEngine = () => {
                 });
 
                 backdrops.forEach(backdrop => {
-                    if (backdrop.url) { // Check if URL is not empty
+                    if (backdrop.url) {
                         assetsToLoad.push({ key: backdrop.id, url: backdrop.url });
                     }
                 });
@@ -295,19 +294,20 @@ const ScratchEngine = () => {
                     return;
                 }
                 
+                setIsLoading(true);
                 let loadedCount = 0;
-                allAssets.forEach(({ key, url }) => {
+                assetsToLoad.forEach(({ key, url }) => {
                     p.loadImage(url, img => {
                         newImages[key] = img;
                         loadedCount++;
-                        if (loadedCount === allAssets.length) {
+                        if (loadedCount === assetsToLoad.length) {
                             setLoadedImages(prev => ({...prev, ...newImages}));
                             setIsLoading(false);
                         }
                     }, err => {
                         console.error(`Failed to load image: ${url}`, err);
                         loadedCount++;
-                        if (loadedCount === allAssets.length) {
+                        if (loadedCount === assetsToLoad.length) {
                             setLoadedImages(prev => ({...prev, ...newImages}));
                             setIsLoading(false);
                         }
@@ -321,7 +321,6 @@ const ScratchEngine = () => {
                 canvas.parent(container);
                 penLayer = p.createGraphics(p.width, p.height);
                 p.frameRate(30);
-                preloadAssets();
             };
     
             p.draw = () => {
@@ -349,7 +348,7 @@ const ScratchEngine = () => {
                         p.height / 2 - engineState.current.y
                     );
                 }
-                p.image(penLayer, 0, 0);
+                p.image(penLayer, 0, 0); // Draw at (0,0) as it's a separate canvas layer
 
                 // Sprite
                 const costumeKey = `${activeSprite.id}-${engineState.current.costumeIndex}`;
@@ -400,7 +399,7 @@ const ScratchEngine = () => {
         return () => {
             p5Instance.remove();
         };
-    }, [activeSprite.id, activeBackdrop.id]);
+    }, [activeSprite, activeBackdrop, sprites, backdrops]); // Re-run sketch if active items change
 
     const handleReset = () => {
         engineState.current = {
@@ -408,11 +407,12 @@ const ScratchEngine = () => {
             size: 100, message: '', messageDuration: 0,
             isPenDown: false, penColor: '#000000', shouldClear: true, costumeIndex: 0
         };
+        // The draw loop will handle the rest
     };
 
 
     const handleSpriteSelect = (sprite: any) => {
-        engineState.current.costumeIndex = 0;
+        engineState.current.costumeIndex = 0; // Reset costume on sprite change
         setActiveSprite(sprite);
     };
 
@@ -420,6 +420,8 @@ const ScratchEngine = () => {
         setActiveBackdrop(backdrop);
     };
     
+    // This is a placeholder since the original component had these variables but they weren't defined.
+    // Replace with your actual logic for fetching these.
     const canEdit = false;
     const refetchAssets = () => {};
     
@@ -500,3 +502,5 @@ const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
 };
 
 export default ScratchEngine;
+
+    
