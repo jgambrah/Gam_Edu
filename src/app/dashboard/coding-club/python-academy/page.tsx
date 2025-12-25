@@ -29,7 +29,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
-import useSound from 'use-sound';
 import { useRouter } from 'next/navigation';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
@@ -303,7 +302,6 @@ function PythonAcademy() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [playSuccess] = useSound('/sounds/success.mp3');
 
   // --- STATE ---
   const [allMissions, setAllMissions] = useState<Mission[]>([]);
@@ -633,7 +631,7 @@ function PythonAcademy() {
 
                             <div className="flex items-center justify-center gap-2 opacity-40">
                                 <Trophy className="h-3 w-3 text-yellow-500" />
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">+50 XP RECORDED</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">+50 ACADEMY XP EARNED</p>
                             </div>
                         </div>
                     </div>
