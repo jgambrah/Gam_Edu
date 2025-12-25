@@ -144,6 +144,15 @@ export default function ScratchEngine() {
     Blockly.Blocks['sound_play'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("SOUND").setCheck("String").appendField("play sound"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#D65DB1"); }
     };
+     Blockly.Blocks['control_if'] = {
+      init: function(this: Blockly.Block) {
+        this.appendValueInput("IF0").setCheck("Boolean").appendField("if");
+        this.appendStatementInput("DO0").appendField("then");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour("#FFAB19");
+      }
+    };
     Blockly.Blocks['control_repeat'] = {
         init: function(this: Blockly.Block) { this.appendValueInput("TIMES").setCheck("Number").appendField("repeat"); this.appendStatementInput("DO").appendField("do"); this.setPreviousStatement(true, null); this.setNextStatement(true, null); this.setColour("#FFAB19"); }
     };
@@ -204,12 +213,16 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['motion_move'] = (block: any) => `move(${javascriptGenerator.valueToCode(block, 'STEPS', 0) || '0'});\n`;
     javascriptGenerator.forBlock['looks_say'] = (block: any) => `say(${javascriptGenerator.valueToCode(block, 'TEXT', 0) || "''"});\n`;
     javascriptGenerator.forBlock['video_toggle'] = (block: any) => `toggleVideo("${block.getFieldValue('STATE')}");\n`;
-    javascriptGenerator.forBlock['control_wait'] = (block: any) => `await wait(${javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1'});\n`;
-    javascriptGenerator.forBlock['event_whenflagclicked'] = () => "";
+    javascriptGenerator.forBlock['control_wait'] = (block) => {
+        const duration = javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1';
+        return `await wait(${duration});\n`; // We use async/await for smooth timing
+    };
+    javascriptGenerator.forBlock['event_whenflagclicked'] = () => ""; // The runner starts execution
     javascriptGenerator.forBlock['motion_turnright'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['motion_goto'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['looks_changesizeby'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['sound_play'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['control_if'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['control_repeat'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['control_forever'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['sensing_touchingmouse'] = (block: any) => `\n`;
@@ -245,6 +258,7 @@ export default function ScratchEngine() {
         <category name="Sensing" colour="#4CBFE6">
           <block type="sensing_touchingmouse"></block>
           <block type="sensing_mousedown"></block>
+          <block type="video_toggle"></block>
         </category>
         <category name="Operators" colour="#40BF4A">
           <block type="operator_add"></block>
@@ -286,7 +300,7 @@ export default function ScratchEngine() {
             p.loadImage(activeSprite.url, 
                 img => { spriteImg = img; },
                 (err) => { 
-                  console.warn("CORS blocked image. Falling back to Emoji.");
+                  console.error("Sprite Load Failed:", err);
                   spriteImg = null; // Forces emoji fallback in draw()
                 }
             );
@@ -307,7 +321,7 @@ export default function ScratchEngine() {
         } else {
           p.background(activeBackdrop.color || '#F0F9FF');
         }
-      
+
         // 2. NEW: VIDEO SENSING LAYER
         if (isVideoOn) {
           if (!capture) {
@@ -328,7 +342,7 @@ export default function ScratchEngine() {
             capture = null;
           }
         }
-      
+
         // 3. Draw Sprite (as before)
         p.push();
         const screenX = p.width/2 + engineState.current.x;
@@ -372,7 +386,7 @@ export default function ScratchEngine() {
     };
   
     const wait = (seconds: number) => new Promise(res => setTimeout(res, seconds * 1000));
-  
+
     // Execution environment (Injects variables and sensing data)
     const context = {
       move,
@@ -464,11 +478,11 @@ export default function ScratchEngine() {
           {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
-              <div className="flex justify-between items-center mb-4">
+               <div className="flex justify-between items-center mb-4">
                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Characters</p>
                   {canEdit && <AddAssetModal type="sprite" onAdded={refetchSprites} />}
-              </div>
-              <div className="flex gap-3 flex-wrap">
+               </div>
+               <div className="flex gap-3 flex-wrap">
                   {SPRITE_LIBRARY.map(s => (
                     <button 
                       key={s.id} 
@@ -478,10 +492,10 @@ export default function ScratchEngine() {
                       {s.emoji}
                     </button>
                   ))}
-              </div>
+               </div>
             </div>
             
-            <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
+             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-pink-100">
               <div className="flex justify-between items-center mb-4">
                   <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Backdrops</p>
                   {canEdit && <AddAssetModal type="backdrop" onAdded={refetchBackdrops} />}
