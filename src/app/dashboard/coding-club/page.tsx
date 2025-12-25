@@ -43,7 +43,7 @@ export default function CodingClubPage() {
               <CardTitle>Block-Based Game Lab</CardTitle>
               <CardDescription>Build your own games and animations by dragging and dropping code blocks, just like Scratch!</CardDescription>
             </CardHeader>
-            <CardContent className="h-[600px]">
+            <CardContent className="h-[600px] w-full">
               <ScratchEngine />
             </CardContent>
           </Card>
