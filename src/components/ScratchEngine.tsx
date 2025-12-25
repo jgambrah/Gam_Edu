@@ -93,8 +93,8 @@ export default function ScratchEngine() {
     const BACKDROP_LIBRARY = dbBackdrops?.length ? dbBackdrops : [
       { id: 'white', color: '#FFFFFF', name: 'Plain', img: null },
       { id: 'blue-sky', color: '#87CEEB', name: 'Sky', img: null },
-      { id: 'space', color: '#000033', name: 'Space', img: 'https://cdn.pixabay.com/photo/2016/10/20/18/35/earth-1756274_960_720.jpg' },
-      { id: 'jungle', color: '#228B22', name: 'Jungle', img: 'https://wallpaperaccess.com/full/1744011.jpg' }
+      { id: 'space', color: '#000033', name: 'Space', img: 'https://wallpaperaccess.com/full/1744011.jpg' },
+      { id: 'jungle', color: '#228B22', name: 'Jungle', img: 'https://cdn.pixabay.com/photo/2016/10/20/18/35/earth-1756274_960_720.jpg' }
     ];
 
   const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
@@ -114,24 +114,50 @@ export default function ScratchEngine() {
   useEffect(() => {
     if (!blocklyRef.current) return;
 
+    // --- BLOCK DEFINITIONS ---
+    
+    // Custom Move Block
     Blockly.Blocks['motion_move'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
         this.appendField("steps");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour("#4C97FF");
+        this.setColour(230); // Motion Blue
       }
     };
 
+    // Custom Say Block
     Blockly.Blocks['looks_say'] = {
       init: function(this: Blockly.Block) {
         this.appendValueInput("TEXT").setCheck("String").appendField("say");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour("#9966FF");
+        this.setColour("#9966FF"); // Looks Purple
       }
     };
+
+    // 1. Control: Wait (Seconds)
+    Blockly.Blocks['control_wait'] = {
+      init: function(this: Blockly.Block) {
+        this.appendValueInput("DURATION").setCheck("Number").appendField("wait");
+        this.appendField("seconds");
+        this.setPreviousStatement(true, null); this.setNextStatement(true, null);
+        this.setColour("#FFAB19");
+      }
+    };
+
+    // 2. Events: When Flag Clicked (Visual only for now)
+    Blockly.Blocks['event_whenflagclicked'] = {
+      init: function(this: Blockly.Block) {
+        this.appendDummyInput().appendField("when flag clicked 🚩");
+        this.setNextStatement(true, null);
+        this.setColour("#FFD500");
+      }
+    };
+
+
+    // --- JAVASCRIPT GENERATORS ---
 
     javascriptGenerator.forBlock['motion_move'] = (block: any) => {
       const steps = javascriptGenerator.valueToCode(block, 'STEPS', (javascriptGenerator as any).ORDER_ATOMIC) || '0';
@@ -143,45 +169,53 @@ export default function ScratchEngine() {
       return `say(${text});\n`;
     };
 
+    javascriptGenerator.forBlock['control_wait'] = (block) => {
+      const duration = javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1';
+      return `await wait(${duration});\n`; // We use async/await for smooth timing
+    };
+
+    javascriptGenerator.forBlock['event_whenflagclicked'] = () => ""; // The runner starts execution
+
+
     const toolbox = `
-  <xml>
-    <category name="Events" colour="#FFD500">
-      <block type="event_whenflagclicked"></block>
-    </category>
-    <category name="Motion" colour="#4C97FF">
-      <block type="motion_move"><value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-      <block type="motion_turnright"><value name="DEGREES"><shadow type="math_number"><field name="NUM">15</field></shadow></value></block>
-      <block type="motion_goto"><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
-    </category>
-    <category name="Looks" colour="#9966FF">
-      <block type="looks_say"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
-      <block type="looks_changesizeby"><value name="CHANGE"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-    </category>
-    <category name="Sound" colour="#D65DB1">
-      <block type="sound_play"><value name="SOUND"><shadow type="text"><field name="TEXT">meow</field></shadow></value></block>
-    </category>
-    <category name="Control" colour="#FFAB19">
-      <block type="control_wait"><value name="DURATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
-      <block type="control_repeat"><value name="TIMES"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-      <block type="control_forever"></block>
-      <block type="control_if"></block>
-    </category>
-    <category name="Sensing" colour="#4CBFE6">
-      <block type="sensing_touchingmouse"></block>
-      <block type="sensing_mousedown"></block>
-    </category>
-    <category name="Operators" colour="#40BF4A">
-      <block type="operator_add"></block>
-      <block type="operator_random"><value name="FROM"><shadow type="math_number"><field name="NUM">1</field></shadow></value><value name="TO"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
-      <block type="operator_equals"></block>
-    </category>
-    <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
-    <category name="My Blocks" colour="#FF6680" custom="PROCEDURE"></category>
-  </xml>
-`;
+      <xml>
+        <category name="Events" colour="#FFD500">
+          <block type="event_whenflagclicked"></block>
+        </category>
+        <category name="Motion" colour="#4C97FF">
+          <block type="motion_move"><value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+          <block type="motion_turnright"><value name="DEGREES"><shadow type="math_number"><field name="NUM">15</field></shadow></value></block>
+          <block type="motion_goto"><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+        </category>
+        <category name="Looks" colour="#9966FF">
+          <block type="looks_say"><value name="TEXT"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
+          <block type="looks_changesizeby"><value name="CHANGE"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+        </category>
+        <category name="Sound" colour="#D65DB1">
+          <block type="sound_play"><value name="SOUND"><shadow type="text"><field name="TEXT">meow</field></shadow></value></block>
+        </category>
+        <category name="Control" colour="#FFAB19">
+          <block type="control_wait"><value name="DURATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+          <block type="control_repeat"><value name="TIMES"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+          <block type="control_forever"></block>
+          <block type="control_if"></block>
+        </category>
+        <category name="Sensing" colour="#4CBFE6">
+          <block type="sensing_touchingmouse"></block>
+          <block type="sensing_mousedown"></block>
+        </category>
+        <category name="Operators" colour="#40BF4A">
+          <block type="operator_add"></block>
+          <block type="operator_random"><value name="FROM"><shadow type="math_number"><field name="NUM">1</field></shadow></value><value name="TO"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+          <block type="operator_equals"></block>
+        </category>
+        <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
+        <category name="My Blocks" colour="#FF6680" custom="PROCEDURE"></category>
+      </xml>
+    `;
 
     const ws = Blockly.inject(blocklyRef.current, {
-        renderer: 'zelos', // This activates the rounded Scratch UI
+        renderer: 'zelos',
         toolbox: toolbox,
       });
     setWorkspace(ws);
@@ -191,7 +225,6 @@ export default function ScratchEngine() {
   useEffect(() => {
     if (!canvasParentRef.current) return;
   
-    // CRITICAL: Remove the old canvas before making a new one
     if (p5Instance.current) {
       p5Instance.current.remove();
     }
@@ -226,19 +259,18 @@ export default function ScratchEngine() {
       };
   
       p.draw = () => {
-          // 1. Draw Colorful Backdrop
+          // 1. Draw Background
           if (bgImg) {
             p.image(bgImg, p.width/2, p.height/2, p.width, p.height);
           } else {
-            // Junior Rainbow Gradient if no image
-            p.background(activeBackdrop.color || '#FFDEE9');
+            p.background(activeBackdrop.color || '#F0F9FF');
           }
 
           // 2. NEW: VIDEO SENSING LAYER
           if (isVideoOn) {
             if (!capture) {
               capture = p.createCapture(p.VIDEO);
-              (capture as p5.Element).size(480, 360);
+              (capture as any).size(480, 360);
               capture.hide(); // Hide the extra video element below the canvas
             }
             p.push();
@@ -302,7 +334,6 @@ export default function ScratchEngine() {
   }, [activeSprite, activeBackdrop, isVideoOn]);
 
   const runCode = () => {
-    if (!workspace) return;
     const code = javascriptGenerator.workspaceToCode(workspace);
     
     const move = (steps: number) => {
@@ -335,7 +366,7 @@ export default function ScratchEngine() {
 
   return (
     <div className="flex flex-col h-screen bg-[#F0F2F5] overflow-hidden">
-      {/* 1. Header is separate and stays at the top */}
+      {/* 1. Header */}
       <div className="bg-[#4C97FF] p-3 flex justify-between items-center text-white z-50 shadow-md">
          <h1 className="text-xl font-black italic ml-4">ACADEMY STUDIO</h1>
          <div className="flex gap-2">
@@ -345,9 +376,8 @@ export default function ScratchEngine() {
       </div>
   
       <div className="flex flex-1 overflow-hidden relative">
-        {/* 2. Coding Workspace (Left Side) */}
+        {/* 2. Coding Workspace */}
         <div className="flex-1 h-full relative bg-white">
-          {/* Visual Guide for students */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-10 flex flex-col items-center">
               <MousePointer2 className="w-20 h-20 mb-4" />
               <p className="text-4xl font-black uppercase">Drag Blocks Here</p>
@@ -355,10 +385,8 @@ export default function ScratchEngine() {
           <div ref={blocklyRef} className="absolute inset-0 w-full h-full" />
         </div>
   
-        {/* 3. Stage & Assets (Right Side) - This stays completely separate */}
+        {/* 3. Stage & Assets */}
         <div className="w-[520px] p-4 flex flex-col gap-4 bg-[#F0F9FF] border-l-4 border-white overflow-y-auto z-20 shadow-[-10px_0_20px_rgba(0,0,0,0.05)]">
-          
-          {/* The Stage */}
           <div className="relative group">
             <div ref={canvasParentRef} className="rounded-[40px] overflow-hidden shadow-2xl border-[10px] border-white bg-white w-[480px] h-[360px]" />
             <Badge className="absolute top-4 left-4 bg-pink-500 text-white border-none shadow-lg">LIVE STAGE</Badge>
@@ -387,7 +415,6 @@ export default function ScratchEngine() {
             </button>
             </div>
 
-          {/* ASSET SELECTORS (Colorful "Magic Card" style) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-5 rounded-[35px] shadow-sm border-b-8 border-blue-100">
                 <div className="flex justify-between items-center mb-4">
