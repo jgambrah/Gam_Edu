@@ -42,7 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import confetti from 'canvas-confetti';
 import { Badge } from '@/components/ui/badge';
 import { useRole } from '@/context/role-context';
-import { registerCustomBlocks } from '@/lib/blockly/custom-blocks'; // Ensure this path is correct
+import { registerCustomBlocks } from '@/lib/blockly/custom-blocks';
 
 registerCustomBlocks();
 
@@ -72,13 +72,13 @@ const SPRITE_LIBRARY = [
 ];
 const DEFAULT_BACKDROPS = [
   { id: 'blue-sky', name: 'Blue Sky', color: '#87CEEB', url: '' },
-  { id: 'space', name: 'Space', color: '#000033', url: 'https://www.publicdomainpictures.net/pictures/170000/nahled/simple-star-field-background.jpg' },
-  { id: 'grid', name: 'Grid', color: '#FFFFFF', url: 'https://www.publicdomainpictures.net/pictures/20000/nahled/white-grid-paper.jpg' }
+  { id: 'space', name: 'Space', color: '#000033', url: 'https://cdn.pixabay.com/photo/2016/10/20/18/35/earth-1756274_960_720.jpg' },
+  { id: 'grid', name: 'Grid', color: '#FFFFFF', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Grid_from_the_Noun_Project.svg/2000px-Grid_from_the_Noun_Project.svg.png' }
 ];
 
 const SOUND_LIBRARY = [
-      { id: 'meow', label: 'Meow 🐱', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' },
-      { id: 'pop', label: 'Pop 🎈', url: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAAABmRkFjVAAA' }
+      { id: 'meow', label: 'Meow 🐱', url: 'https://cdn.freesound.org/previews/256/256339_4030635-lq.mp3' },
+      { id: 'pop', label: 'Pop 🎈', url: 'https://cdn.freesound.org/previews/511/511484_10825312-lq.mp3' }
     ];
 
 
@@ -92,8 +92,7 @@ const ScratchEngine = () => {
     const [activeSprite, setActiveSprite] = useState(SPRITE_LIBRARY[0]);
     const [activeBackdrop, setActiveBackdrop] = useState(DEFAULT_BACKDROPS[0]);
     const [loadedImages, setLoadedImages] = useState<{ [key: string]: p5.Image }>({});
-    const [bgImg, setBgImg] = useState<p5.Image | null>(null);
-
+    
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -171,7 +170,6 @@ const ScratchEngine = () => {
         const code = javascriptGenerator.workspaceToCode(workspace);
         setGeneratedCode(code);
         
-        // Define context for the sandboxed execution
         const context = {
             move: (steps: number) => {
                 const angle = (engineState.current.direction - 90) * (Math.PI / 180);
@@ -182,7 +180,7 @@ const ScratchEngine = () => {
                 engineState.current.direction += degrees;
             },
             say: (message: string, duration?: number) => {
-                engineState.current.message = message;
+                engineState.current.message = String(message);
                 if (duration) {
                     setTimeout(() => {
                         if (engineState.current.message === message) {
@@ -192,8 +190,7 @@ const ScratchEngine = () => {
                 }
             },
             think: (message: string, duration?: number) => {
-                // For now, think behaves the same as say but could have a different UI
-                engineState.current.message = message;
+                engineState.current.message = String(message);
                  if (duration) {
                     setTimeout(() => {
                         if (engineState.current.message === message) {
@@ -238,7 +235,6 @@ const ScratchEngine = () => {
                 }
             },
             isTouching: (object: string) => {
-                 // Placeholder for collision detection
                 return false;
             },
             getRandom: (min: number, max: number) => {
@@ -246,9 +242,6 @@ const ScratchEngine = () => {
             }
         };
         
-        // This is a safer way to execute the generated code
-        // It avoids the direct use of `eval` or `new Function` if possible,
-        // but for this dynamic scenario, `new Function` is a common approach.
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         const func = new AsyncFunction(...Object.keys(context), `try { ${code} } catch(e) { console.error('Execution Error:', e); }`);
 
@@ -262,7 +255,7 @@ const ScratchEngine = () => {
                 variant: "destructive",
             });
         }
-    }, [workspace, activeSprite, sprites, toast]);
+    }, [workspace, activeSprite.id, sprites, toast]);
     
     // P5.js sketch setup
     useEffect(() => {
@@ -274,42 +267,51 @@ const ScratchEngine = () => {
 
         const sketch = (p: p5) => {
             let penLayer: p5.Graphics;
-            let loadedImages: { [key: string]: p5.Image } = {};
-            let assetsToLoad = 0;
-            let assetsLoaded = 0;
-
-            const assetLoaded = () => {
-                assetsLoaded++;
-                if (assetsLoaded === assetsToLoad) {
-                    setIsLoading(false);
-                }
-            };
             
             p.preload = () => {
+                const newImages: { [key: string]: p5.Image } = {};
+                const assetsToLoad: { key: string; url: string }[] = [];
+
                 sprites.forEach(sprite => {
                     if (sprite.costumes) {
                         sprite.costumes.forEach((url, index) => {
-                            const key = `${sprite.id}-${index}`;
-                            if (!loadedImages[key]) {
-                                assetsToLoad++;
-                                loadedImages[key] = p.loadImage(url, assetLoaded, () => {
-                                    console.error(`Failed to load costume: ${url}`);
-                                    assetLoaded();
-                                });
+                            if (url && !loadedImages[url]) {
+                                assetsToLoad.push({ key: `${sprite.id}-${index}`, url });
                             }
                         });
                     }
                 });
+
                 backdrops.forEach(backdrop => {
                     if (backdrop.url && !loadedImages[backdrop.id]) {
-                        assetsToLoad++;
-                        loadedImages[backdrop.id] = p.loadImage(backdrop.url, assetLoaded, () => {
-                            console.error(`Failed to load backdrop: ${backdrop.url}`);
-                            assetLoaded();
-                        });
+                        assetsToLoad.push({ key: backdrop.id, url: backdrop.url });
                     }
                 });
-                if (assetsToLoad === 0) setIsLoading(false);
+
+                if (assetsToLoad.length === 0) {
+                    setIsLoading(false);
+                    return;
+                }
+                
+                setIsLoading(true);
+                let loadedCount = 0;
+                assetsToLoad.forEach(({ key, url }) => {
+                    p.loadImage(url, img => {
+                        newImages[key] = img;
+                        loadedCount++;
+                        if (loadedCount === assetsToLoad.length) {
+                            setLoadedImages(prev => ({...prev, ...newImages}));
+                            setIsLoading(false);
+                        }
+                    }, err => {
+                        console.error(`Failed to load image: ${url}`, err);
+                        loadedCount++;
+                        if (loadedCount === assetsToLoad.length) {
+                            setLoadedImages(prev => ({...prev, ...newImages}));
+                            setIsLoading(false);
+                        }
+                    });
+                });
             };
 
             p.setup = () => {
@@ -396,7 +398,7 @@ const ScratchEngine = () => {
         return () => {
             p5Instance.remove();
         };
-    }, [activeSprite, activeBackdrop]); // Re-run sketch if active items change
+    }, [activeSprite, activeBackdrop, sprites, backdrops]); // Re-run sketch if active items change
 
     const handleReset = () => {
         engineState.current = {
@@ -432,6 +434,7 @@ const ScratchEngine = () => {
                 
                 {/* Stage */}
                 <div className="relative aspect-video bg-white border border-gray-300 rounded" ref={p5ContainerRef}>
+                    {isLoading && <div className="absolute inset-0 bg-black/20 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-white" /></div>}
                     <div className="absolute top-2 right-2 flex gap-2">
                         <Button size="icon" onClick={runCode} className="bg-green-500 hover:bg-green-600"><Play className="h-5 w-5"/></Button>
                         <Button size="icon" variant="destructive" onClick={handleReset}><Square className="h-5 w-5"/></Button>
@@ -498,3 +501,5 @@ const AddAssetModal = ({ type, onAdded }: { type: 'sprite' | 'backdrop', onAdded
 };
 
 export default ScratchEngine;
+
+    

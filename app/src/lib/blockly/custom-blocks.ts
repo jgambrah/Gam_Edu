@@ -2,11 +2,12 @@ import * as Blockly from 'blockly/core';
 import { javascriptGenerator } from 'blockly/javascript';
 
 export const registerCustomBlocks = () => {
+    // Check if blocks are already registered to prevent errors on hot reloads
     if ((Blockly as any).__customBlocksRegistered) {
         return;
     }
     (Blockly as any).__customBlocksRegistered = true;
-    
+
     const customBlocks = [
         {
           "type": "event_whenflagclicked",
@@ -301,113 +302,113 @@ export const registerCustomBlocks = () => {
     Blockly.defineBlocksWithJsonArray(customBlocks);
 
     // Generator stubs for the new blocks
-    javascriptGenerator.forBlock['event_whenflagclicked'] = function(block) {
+    javascriptGenerator.forBlock['event_whenflagclicked'] = function(block: Blockly.Block) {
       return ''; // This is a starter block, so it generates no code by itself.
     };
 
-    javascriptGenerator.forBlock['motion_move'] = function(block) {
+    javascriptGenerator.forBlock['motion_move'] = function(block: Blockly.Block) {
       const steps = javascriptGenerator.valueToCode(block, 'STEPS', javascriptGenerator.ORDER_ATOMIC) || '10';
       return `await move(${steps});\n`;
     };
 
-    javascriptGenerator.forBlock['motion_turnright'] = function(block) {
+    javascriptGenerator.forBlock['motion_turnright'] = function(block: Blockly.Block) {
       const degrees = javascriptGenerator.valueToCode(block, 'DEGREES', javascriptGenerator.ORDER_ATOMIC) || '15';
       return `turn(${degrees});\n`;
     };
 
-    javascriptGenerator.forBlock['looks_sayforsecs'] = function(block) {
+    javascriptGenerator.forBlock['looks_sayforsecs'] = function(block: Blockly.Block) {
       const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
       const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || '2';
       return `await say(${message}, ${secs});\n`;
     };
 
-    javascriptGenerator.forBlock['looks_say'] = function(block) {
+    javascriptGenerator.forBlock['looks_say'] = function(block: Blockly.Block) {
       const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hello!'";
       return `say(${message});\n`;
     };
     
-    javascriptGenerator.forBlock['looks_thinkforsecs'] = function(block) {
+    javascriptGenerator.forBlock['looks_thinkforsecs'] = function(block: Blockly.Block) {
         const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
         const secs = javascriptGenerator.valueToCode(block, 'SECS', javascriptGenerator.ORDER_ATOMIC) || '2';
         return `await think(${message}, ${secs});\n`;
     };
     
-    javascriptGenerator.forBlock['looks_think'] = function(block) {
+    javascriptGenerator.forBlock['looks_think'] = function(block: Blockly.Block) {
         const message = javascriptGenerator.valueToCode(block, 'MESSAGE', javascriptGenerator.ORDER_ATOMIC) || "'Hmm...'";
         return `think(${message});\n`;
     };
 
-    javascriptGenerator.forBlock['looks_changesizeby'] = function(block) {
+    javascriptGenerator.forBlock['looks_changesizeby'] = function(block: Blockly.Block) {
         const change = javascriptGenerator.valueToCode(block, 'CHANGE', javascriptGenerator.ORDER_ATOMIC) || '10';
         return `changeSizeBy(${change});\n`;
     };
 
-    javascriptGenerator.forBlock['looks_setsizeto'] = function(block) {
+    javascriptGenerator.forBlock['looks_setsizeto'] = function(block: Blockly.Block) {
         const size = javascriptGenerator.valueToCode(block, 'SIZE', javascriptGenerator.ORDER_ATOMIC) || '100';
         return `setSizeTo(${size});\n`;
     };
 
-    javascriptGenerator.forBlock['looks_nextcostume'] = function(block) {
+    javascriptGenerator.forBlock['looks_nextcostume'] = function(block: Blockly.Block) {
         return 'nextCostume();\n';
     };
 
-    javascriptGenerator.forBlock['sound_playuntildone'] = function(block) {
+    javascriptGenerator.forBlock['sound_playuntildone'] = function(block: Blockly.Block) {
         const sound = block.getFieldValue('SOUND_MENU');
         return `await playSound('${sound}');\n`;
     };
     
-    javascriptGenerator.forBlock['control_wait'] = function(block) {
+    javascriptGenerator.forBlock['control_wait'] = function(block: Blockly.Block) {
         const duration = javascriptGenerator.valueToCode(block, 'DURATION', javascriptGenerator.ORDER_ATOMIC) || '1';
         return `await wait(${duration});\n`;
     };
     
-    javascriptGenerator.forBlock['control_repeat'] = function(block) {
+    javascriptGenerator.forBlock['control_repeat'] = function(block: Blockly.Block) {
         const times = javascriptGenerator.valueToCode(block, 'TIMES', javascriptGenerator.ORDER_ATOMIC) || '10';
         const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
         return `for (let i = 0; i < ${times}; i++) {\n${substack}}\n`;
     };
     
-    javascriptGenerator.forBlock['control_forever'] = function(block) {
+    javascriptGenerator.forBlock['control_forever'] = function(block: Blockly.Block) {
         const substack = javascriptGenerator.statementToCode(block, 'SUBSTACK') || '';
         return `while (true) {\n${substack} await wait(0.03);\n}\n`; // Small delay to prevent freezing
     };
 
-    javascriptGenerator.forBlock['sensing_touchingmouse'] = function(block) {
+    javascriptGenerator.forBlock['sensing_touchingmouse'] = function(block: Blockly.Block) {
         return ['isTouching("mouse-pointer")', javascriptGenerator.ORDER_ATOMIC];
     };
 
-    javascriptGenerator.forBlock['operator_random'] = function(block) {
+    javascriptGenerator.forBlock['operator_random'] = function(block: Blockly.Block) {
         const from = javascriptGenerator.valueToCode(block, 'FROM', javascriptGenerator.ORDER_ATOMIC) || 1;
         const to = javascriptGenerator.valueToCode(block, 'TO', javascriptGenerator.ORDER_ATOMIC) || 10;
         return [`getRandom(${from}, ${to})`, javascriptGenerator.ORDER_FUNCTION_CALL];
     };
     
-    javascriptGenerator.forBlock['pen_clear'] = function(block) {
+    javascriptGenerator.forBlock['pen_clear'] = function(block: Blockly.Block) {
         return `penClear();\n`;
     };
     
-    javascriptGenerator.forBlock['pen_stamp'] = function(block) {
+    javascriptGenerator.forBlock['pen_stamp'] = function(block: Blockly.Block) {
         return '// stamp is not implemented yet\n'; // Placeholder for stamp functionality
     };
     
-    javascriptGenerator.forBlock['pen_penDown'] = function(block) {
+    javascriptGenerator.forBlock['pen_penDown'] = function(block: Blockly.Block) {
         return 'setPen(true);\n';
     };
 
-    javascriptGenerator.forBlock['pen_penUp'] = function(block) {
+    javascriptGenerator.forBlock['pen_penUp'] = function(block: Blockly.Block) {
         return 'setPen(false);\n';
     };
 
-    javascriptGenerator.forBlock['pen_setPenColorToColor'] = function(block) {
+    javascriptGenerator.forBlock['pen_setPenColorToColor'] = function(block: Blockly.Block) {
         const color = javascriptGenerator.valueToCode(block, 'COLOR', javascriptGenerator.ORDER_ATOMIC) || "'#000000'";
         return `setPenColor(${color});\n`;
     };
     
-    javascriptGenerator.forBlock['pen_changePenSizeBy'] = function(block) {
+    javascriptGenerator.forBlock['pen_changePenSizeBy'] = function(block: Blockly.Block) {
         return '// changePenSizeBy not implemented yet\n'; 
     };
 
-    javascriptGenerator.forBlock['pen_setPenSizeTo'] = function(block) {
+    javascriptGenerator.forBlock['pen_setPenSizeTo'] = function(block: Blockly.Block) {
         return '// setPenSizeTo not implemented yet\n';
     };
 }
