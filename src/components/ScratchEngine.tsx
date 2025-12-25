@@ -315,8 +315,8 @@ export default function ScratchEngine() {
   });
 
   const [sounds] = useState([
-    { id: 'meow', emoji: '🐱', url: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3' },
-    { id: 'pop', emoji: '🎈', url: 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3' },
+    { id: 'meow', emoji: '🐱', url: 'https://cdn.freesound.org/previews/131/131660_2398495-lq.mp3' },
+    { id: 'pop', emoji: '🎈', url: 'https://cdn.freesound.org/previews/20/20673_97964-lq.mp3' },
   ]);
 
   useEffect(() => {
@@ -349,7 +349,7 @@ export default function ScratchEngine() {
     };
     Blockly.Blocks['control_wait'] = {
       init: function(this: Blockly.Block) {
-        this.appendValueInput("DURATION").setCheck("Number").appendField("wait").appendField("seconds");
+        this.appendValueInput("DURATION").setCheck("Number").appendField("wait seconds");
         this.setPreviousStatement(true, null); this.setNextStatement(true, null);
         this.setColour("#FFAB19");
       }
@@ -411,18 +411,18 @@ export default function ScratchEngine() {
     javascriptGenerator.forBlock['video_toggle'] = (block: any) => `toggleVideo("${block.getFieldValue('STATE')}");\n`;
     javascriptGenerator.forBlock['control_wait'] = (block: any) => `await wait(${javascriptGenerator.valueToCode(block, 'DURATION', 0) || '1'});\n`;
     javascriptGenerator.forBlock['event_whenflagclicked'] = () => "";
-    javascriptGenerator.forBlock['motion_turnright'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['motion_goto'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['looks_changesizeby'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['sound_play'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['control_if'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['control_repeat'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['control_forever'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['motion_turnright'] = (block: any) => `turn(${javascriptGenerator.valueToCode(block, 'DEGREES', 0) || '0'});\n`;
+    javascriptGenerator.forBlock['motion_goto'] = (block: any) => `goTo(${javascriptGenerator.valueToCode(block, 'X', 0) || '0'}, ${javascriptGenerator.valueToCode(block, 'Y', 0) || '0'});\n`;
+    javascriptGenerator.forBlock['looks_changesizeby'] = (block: any) => `changeSizeBy(${javascriptGenerator.valueToCode(block, 'CHANGE', 0) || '10'});\n`;
+    javascriptGenerator.forBlock['sound_play'] = (block: any) => `playSound(${javascriptGenerator.valueToCode(block, 'SOUND', 0) || "'meow'"});\n`;
+    javascriptGenerator.forBlock['control_if'] = (block: any) => `if (${javascriptGenerator.valueToCode(block, 'IF0', 0)}) {\n${javascriptGenerator.statementToCode(block, 'DO0')}}\n`;
+    javascriptGenerator.forBlock['control_repeat'] = (block: any) => `for (let i = 0; i < ${javascriptGenerator.valueToCode(block, 'TIMES', 0)}; i++) {\n${javascriptGenerator.statementToCode(block, 'DO')}}\n`;
+    javascriptGenerator.forBlock['control_forever'] = (block: any) => `while (true) {\n${javascriptGenerator.statementToCode(block, 'DO')} await wait(0.01);\n}\n`;
     javascriptGenerator.forBlock['sensing_touchingmouse'] = (block: any) => `\n`;
     javascriptGenerator.forBlock['sensing_mousedown'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['operator_add'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['operator_random'] = (block: any) => `\n`;
-    javascriptGenerator.forBlock['operator_equals'] = (block: any) => `\n`;
+    javascriptGenerator.forBlock['operator_add'] = (block: any) => `(${javascriptGenerator.valueToCode(block, 'A', 0) || 0} + ${javascriptGenerator.valueToCode(block, 'B', 0) || 0})\n`;
+    javascriptGenerator.forBlock['operator_random'] = (block: any) => `(Math.random() * (${javascriptGenerator.valueToCode(block, 'TO', 0) || 10} - ${javascriptGenerator.valueToCode(block, 'FROM', 0) || 1}) + ${javascriptGenerator.valueToCode(block, 'FROM', 0) || 1})\n`;
+    javascriptGenerator.forBlock['operator_equals'] = (block: any) => `(${javascriptGenerator.valueToCode(block, 'A', 0) || 0} == ${javascriptGenerator.valueToCode(block, 'B', 0) || 0})\n`;
     javascriptGenerator.forBlock['pen_clear'] = () => `penClear();\n`;
     javascriptGenerator.forBlock['pen_pendown'] = () => `setPen(true);\n`;
     javascriptGenerator.forBlock['pen_penup'] = () => `setPen(false);\n`;
@@ -562,6 +562,9 @@ export default function ScratchEngine() {
     
     // Scoped helper functions
     const move = (steps: number) => { engineState.current.x += steps; };
+    const turn = (degrees: number) => { engineState.current.direction += degrees; };
+    const goTo = (x: number, y: number) => { engineState.current.x = x; engineState.current.y = y; };
+    const changeSizeBy = (change: number) => { engineState.current.size += change; };
     
     const say = (text: string) => {
       engineState.current.sayText = text;
@@ -586,6 +589,9 @@ export default function ScratchEngine() {
     // Execution environment (Injects variables and sensing data)
     const context = {
         move,
+        turn,
+        goTo,
+        changeSizeBy,
         say,
         wait,
         toggleVideo,
