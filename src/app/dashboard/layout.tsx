@@ -7,16 +7,13 @@ import { SidebarInset } from '@/components/ui/sidebar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    // The AppSidebar component now correctly wraps the main content area.
-    // It provides the consistent sidebar structure.
-    <AppSidebar>
-      {/* The SidebarInset handles the main content area, creating the correct
-          visual separation from the sidebar itself. */}
-      <SidebarInset>
-        {/* The children, which is the actual page content for each route,
-            is rendered inside the inset. */}
-        {children}
+    <div className="flex h-screen w-full overflow-hidden bg-background">
+      <AppSidebar />
+      <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          {children}
+        </main>
       </SidebarInset>
-    </AppSidebar>
+    </div>
   );
 }
