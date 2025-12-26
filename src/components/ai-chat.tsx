@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -42,7 +43,7 @@ export function AiChat() {
     try {
       const response = await campusAssistant({
         prompt: input,
-        role: role,
+        role: role || 'user',
         history: messages,
       });
 

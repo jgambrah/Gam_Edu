@@ -5,6 +5,7 @@ import React from 'react';
 import AppSidebar from '@/components/navigation/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 import Header from '@/components/navigation/header';
+import { AiChat } from '@/components/ai-chat'; // Import the new component
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {children}
           </main>
         </div>
+        <AiChat />
       </SidebarInset>
     </>
   );
