@@ -1,11 +1,13 @@
 
 'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import ScratchEngine from '@/components/ScratchEngine';
 import LogicLabPage from './logic-lab/page';
 import PythonAcademyPage from './python-academy/page';
-import { Code, Bot, Puzzle } from 'lucide-react';
+import { Code, Bot, Puzzle, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function CodingClubPage() {
   return (
@@ -35,10 +37,18 @@ export default function CodingClubPage() {
         </TabsList>
         <TabsContent value="scratch">
            <Card>
-              <CardContent className="p-0">
-                  <div className='h-[calc(100vh-230px)] w-full'>
-                      <ScratchEngine />
-                  </div>
+              <CardHeader>
+                <CardTitle>Launch Scratch</CardTitle>
+                <CardDescription>
+                  Click the button below to open the official MIT Scratch creative coding environment in a new tab. Let your imagination run wild!
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="text-center p-10">
+                <Link href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="bg-orange-500 hover:bg-orange-600">
+                    Open Scratch Editor <ExternalLink className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </CardContent>
            </Card>
         </TabsContent>
