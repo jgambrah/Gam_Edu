@@ -249,7 +249,7 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
-            path: '/dashboard/senior-academy',
+            path: '/dashboard/coding-club',
             title: 'Coding Club',
             icon: Code,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
