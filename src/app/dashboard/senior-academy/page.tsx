@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -734,8 +735,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     </Button>
                 </div>
             )}
-        </CardContent>
-    </Card>
+        </Card>
     );
 }
 
@@ -800,3 +800,4 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
+
