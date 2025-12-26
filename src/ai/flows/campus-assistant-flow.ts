@@ -103,31 +103,30 @@ const campusAssistantFlow = ai.defineFlow(
         try {
             const { firestore } = initializeFirebase()!;
             if (firestore) {
-                // Extract keywords from prompt (simple version for now)
-                const keywords = input.prompt.toLowerCase().replace(/what|is|a|an|the|of|explain|about/g, '').trim().split(' ');
+                const materialsRef = collection(firestore, 'learning_materials');
+                const promptText = input.prompt.toLowerCase().replace(/what|is|a|an|the|of|explain|about/g, '').trim();
+
+                // 1. Try to find an exact match for the topic title first
+                let q = query(materialsRef, where('topicTitle', '==', promptText), limit(1));
+                let querySnapshot = await getDocs(q);
+
+                // 2. If no exact match, search by keywords
+                if (querySnapshot.empty) {
+                    const keywords = promptText.split(' ');
+                    q = query(materialsRef, where('topicTitle', 'array-contains-any', keywords), limit(1));
+                    querySnapshot = await getDocs(q);
+                }
                 
-                // More targeted query: looks for a topic title that CONTAINS the keyword
-                const q = query(
-                    collection(firestore, 'learning_materials'), 
-                    where('courseId', '==', 'bs7-integrated-science'),
-                    // This is a basic "contains" query in Firestore. For real full-text, you'd use Algolia/Typesense.
-                    where('topicTitle', '>=', keywords[0]),
-                    where('topicTitle', '<=', keywords[0] + '\uf8ff'),
-                    limit(1)
-                );
-                
-                const querySnapshot = await getDocs(q);
                 if (!querySnapshot.empty) {
                     const docData = querySnapshot.docs[0].data();
                     contextDocument = docData.content || ''; // Pass the full, detailed content
                     console.log(`[CampusBot] Found context document for topic: ${docData.topicTitle}`);
                 } else {
-                    console.log(`[CampusBot] No specific document found for query: "${keywords[0]}"`);
+                    console.log(`[CampusBot] No specific document found for query: "${promptText}"`);
                 }
             }
         } catch (error) {
             console.error("[CampusBot] Error fetching context document:", error);
-            // Don't leak the error to the prompt, just log it.
         }
     }
 
