@@ -1,37 +1,43 @@
+
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, where, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Label } from '@/components/ui/label';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Input } from '@/components/ui/input';
+import { collection, query, orderBy, serverTimestamp, deleteDoc, doc, addDoc } from 'firebase/firestore';
 import { 
   Sigma, Languages, Microscope, BookOpen, 
-  Rocket, Volume2, Wand2, PenTool, Loader2
+  Rocket, Volume2, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon
 } from 'lucide-react';
-import 'katex/dist/katex.min.css';
-import { BlockMath } from 'react-katex';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import 'katex/dist/katex.min.css';
+import { BlockMath } from 'react-katex';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
 
 // Import AI actions
 import { generateSeniorEnglish, generateSeniorMath, generateSeniorLab } from '@/ai/flows/senior-actions';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 
-const CATEGORIES = [
-    'Early Childhood', 'Lower Primary', 'Upper Primary', 
-    'Junior Secondary (JHS)', 'Senior Secondary (SHS)'
-];
 
-const isJuniorLevel = (grade: string) => 
-    grade === 'Early Childhood' || grade === 'Lower Primary';
-
+// --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -40,403 +46,1245 @@ const speak = (text: string) => {
     window.speechSynthesis.speak(u);
 };
 
+// --- HELPER: LATEX CLEANER ---
 const cleanLatex = (formula: string = "") => {
     if (!formula) return "";
-    return formula.replace(/\$\$/g, '').replace(/\$/g, '').replace(/\\\[/g, '').replace(/\\\]/g, '').trim();
+    return formula
+        .replace(/\$\$/g, '')      
+        .replace(/\$/g, '')        
+        .replace(/\\\[/g, '')      
+        .replace(/\\\]/g, '')      
+        .trim();
 };
 
-function SafeMath({ formula }: { formula: string }) {
+// --- ROBUST MATH RENDERER ---
+function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (!mounted) return <div className="h-10 w-full animate-pulse bg-slate-100 rounded" />;
-  return <div className="math-container py-2 overflow-x-auto"><BlockMath math={cleanLatex(formula)} /></div>;
+
+  const cleaned = cleanLatex(formula);
+
+  try {
+    return block ? (
+      <div className="math-container py-2 overflow-x-auto">
+        <BlockMath math={cleaned} />
+      </div>
+    ) : (
+      <BlockMath math={cleaned} />
+    );
+  } catch (error) {
+    console.error("LaTeX Error:", error);
+    return <code className="text-red-500">{formula}</code>;
+  }
 }
 
+const CATEGORIES = [
+    'Early Childhood', 
+    'Lower Primary', 
+    'Upper Primary', 
+    'Junior Secondary (JHS)', 
+    'Senior Secondary (SHS)'
+];
+
+const isJuniorLevel = (grade: string) => 
+    grade === 'Early Childhood' || grade === 'Lower Primary';
+
+const juniorStyles = {
+    // English Storybook styles
+    storybook: "bg-[#FFFDE7] border-y-8 border-x-4 border-orange-200 rounded-[60px] p-8 shadow-[0_15px_0_#FFE082]",
+    storyText: "text-3xl font-bold text-orange-900 leading-relaxed font-serif",
+    
+    // Science Quest styles
+    questCard: "bg-gradient-to-b from-sky-400 to-blue-500 border-b-[12px] border-blue-700 rounded-[50px] text-white",
+    stepBubble: "w-16 h-16 rounded-full bg-white text-blue-600 flex items-center justify-center text-3xl shadow-lg border-4 border-blue-200",
+    
+    // Math Playground styles
+    card: "rounded-[60px] border-8 border-yellow-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100",
+    header: "p-10 text-center",
+    mathBox: "bg-sky-100 p-10 rounded-[50px] border-4 border-dashed border-sky-300 shadow-inner",
+    
+    // Global Elements
+    button: "h-24 px-12 bg-gradient-to-t from-pink-600 to-pink-400 hover:scale-105 text-3xl font-black text-white rounded-[40px] shadow-[0_12px_0_#9d174d] active:translate-y-2 active:shadow-none transition-all",
+    input: "h-28 text-7xl font-black text-center border-8 border-yellow-300 rounded-[40px] bg-white text-pink-500 shadow-inner"
+};
+
+
+// --- 1. ENGLISH MASTERY (FOLDER ORGANIZED) ---
+function EnglishMastery({ canEdit }: { canEdit: boolean }) {
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [activeStory, setActiveStory] = useState<any>(null);
+    const [answers, setAnswers] = useState<string[]>([]);
+    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+
+    const isJunior = isJuniorLevel(selectedGrade);
+
+    const storiesQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
+    [firestore]);
+    const { data: library, forceRefetch } = useCollection<any>(storiesQuery);
+
+    // Folder Logic for English
+    const folderStructure = useMemo(() => {
+        if (!library) return {};
+        const filtered = library.filter(s => (s.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+        return filtered.reduce((acc, s) => {
+            const category = s.category || s.genre || 'General Reading'; // Folder 1
+            const subTopic = s.subTopic || 'Standard Comprehension'; // Folder 2
+            if (!acc[category]) acc[category] = {};
+            if (!acc[category][subTopic]) acc[category][subTopic] = [];
+            acc[category][subTopic].push(s);
+            return acc;
+        }, {} as Record<string, Record<string, any[]>>);
+    }, [library, selectedGrade]);
+
+    const checkAnswers = () => {
+        let correct = 0;
+        activeStory.quiz.forEach((q: any, i: number) => {
+            if (answers[i]?.toLowerCase().trim() === q.answer.toLowerCase().trim()) correct++;
+        });
+        if (correct === activeStory.quiz.length) { confetti(); speak("Analysis complete! You have mastered this passage."); }
+        else { speak(`Keep investigating. You found ${correct} insights.`); }
+    };
+
+    return (
+        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
+            {/* SIDEBAR NAVIGATION */}
+            <div className="lg:col-span-1 space-y-4">
+                <div className="bg-indigo-900 p-4 rounded-3xl shadow-lg">
+                    <Label className="text-indigo-300 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
+                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                        <SelectTrigger className="bg-indigo-800 border-indigo-700 text-white rounded-2xl h-12">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                </div>
+
+                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                    <div className="p-2 space-y-2">
+                        {Object.keys(folderStructure).length === 0 ? (
+                            <div className="text-center py-20 text-slate-300">
+                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                                <p className="text-xs font-bold">No passages in this category yet.</p>
+                            </div>
+                        ) : (
+                            Object.entries(folderStructure).map(([cat, subs]) => (
+                                <Accordion key={cat} type="single" collapsible className="w-full">
+                                    <AccordionItem value={cat} className="border-none">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-50 rounded-2xl mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <BookOpen className="w-3 h-3 text-indigo-500" />
+                                                <span className="font-black text-indigo-900 text-xs uppercase">{cat}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-1 pl-4">
+                                            {Object.entries(subs).map(([subTitle, items]) => (
+                                                <Accordion key={subTitle} type="single" collapsible>
+                                                    <AccordionItem value={subTitle} className="border-none">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>
+                                                        <AccordionContent className="space-y-1">
+                                                            {items.map((item: any) => (
+                                                                <button key={item.id} onClick={() => { setActiveStory(item); setAnswers([]); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeStory?.id === item.id ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-slate-100 text-slate-600'}`}>{item.title}</button>
+                                                            ))}
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            ))}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            ))
+                        )}
+                    </div>
+                </ScrollArea>
+            </div>
+
+            {/* WORKSTATION */}
+            <div className="lg:col-span-3">
+                {activeStory ? (
+                    <Card className={`overflow-hidden bg-white ${isJunior ? juniorStyles.storybook : "rounded-[48px] border-none shadow-2xl animate-in zoom-in"}`}>
+                        <div className={isJunior ? "text-center mb-8" : "bg-indigo-600 p-10 text-white"}>
+                            {isJunior && <div className="text-7xl mb-4 animate-bounce">📖</div>}
+                            <CardTitle className={isJunior ? "text-5xl font-black text-orange-800" : "text-4xl font-black"}>
+                                {activeStory.title}
+                            </CardTitle>
+                            {isJunior && <p className="text-orange-400 font-black mt-2 uppercase tracking-widest">A Magic Tale</p>}
+                        </div>
+
+                        <CardContent className={isJunior ? "space-y-12" : "p-12 space-y-10"}>
+                            <p className={isJunior ? juniorStyles.storyText : "text-2xl leading-relaxed text-slate-700 font-serif whitespace-pre-wrap"}>
+                                {activeStory.content}
+                            </p>
+
+                            <div className={isJunior ? "bg-white/80 p-10 rounded-[50px] border-4 border-dashed border-orange-300 space-y-8" : "bg-slate-50 p-8 rounded-[32px] space-y-6 border-2 border-slate-100"}>
+                                <h3 className={isJunior ? "text-4xl font-black text-pink-500 text-center" : "text-2xl font-black text-indigo-900"}>
+                                    {isJunior ? "🌟 Discovery Questions 🌟" : "Critical Analysis Questions"}
+                                </h3>
+                                
+                                {activeStory.quiz.map((q: any, i: number) => (
+                                    <div key={i} className="space-y-4 text-center">
+                                        <p className={isJunior ? "text-2xl font-black text-blue-900" : "font-bold text-slate-800"}>
+                                            {isJunior ? `🌈 ${q.question}` : `${i + 1}. ${q.question}`}
+                                        </p>
+                                        <Input 
+                                            placeholder={isJunior ? "Tell me the secret..." : "Type analysis..."} 
+                                            value={answers[i] || ""} 
+                                            onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} 
+                                            className={isJunior ? juniorStyles.input : "h-14 rounded-2xl border-2"} 
+                                        />
+                                    </div>
+                                ))}
+                                <Button onClick={checkAnswers} className={isJunior ? juniorStyles.button : "w-full h-16 bg-indigo-600 font-black"}>
+                                    {isJunior ? "CHECK MY ANSWERS! 🏆" : "SUBMIT ANALYSIS"}
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ) : <div className="h-full flex flex-col items-center justify-center text-center">
+                         <div className={`p-10 rounded-full mb-6 ${isJunior ? 'bg-yellow-100 animate-pulse' : 'bg-slate-50'}`}>
+                            <BookOpen className={`w-20 h-20 ${isJunior ? 'text-yellow-500' : 'text-slate-100'}`} />
+                         </div>
+                         <h2 className="text-3xl font-black text-slate-300">Choose a Magic Book</h2>
+                    </div>}
+            </div>
+        </div>
+    );
+}
+
+// --- 2. ADVANCED MATH LAB ---
 function CounterDisplay({ count }: { count: number }) {
     const icons = ['🍎', '⭐', '🎈', '🐱', '🚗', '🍦'];
     const icon = icons[Math.floor(Math.random() * icons.length)];
+    // Cap at 20 so the screen doesn't get too messy
     const displayCount = Math.min(count, 20);
+
     return (
         <div className="flex flex-wrap justify-center gap-3 p-6 bg-white/50 rounded-3xl mt-4">
             {Array.from({ length: displayCount }).map((_, i) => (
-                <span key={i} className="text-4xl animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>{icon}</span>
+                <span key={i} className="text-4xl animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
+                    {icon}
+                </span>
             ))}
+            {count > 20 && <span className="text-xl font-black text-blue-400">... and more!</span>}
         </div>
     );
 }
 
-// --- SUB-COMPONENT: MATH LAB ---
-function MathLab({ selectedGrade }: { selectedGrade: string }) {
+function MathLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [problem, setProblem] = useState<any>(null);
     const [userInput, setUserInput] = useState("");
+    const [feedback, setFeedback] = useState<any>(null);
+
+    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
     const isJunior = isJuniorLevel(selectedGrade);
+    const theme = isJunior ? juniorStyles : null;
 
-    const { data: dbProblems } = useCollection<any>(useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, [firestore]));
+    const mathQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, 
+    [firestore]);
+    const { data: dbProblems, isLoading, forceRefetch } = useCollection<any>(mathQuery);
 
-    const folders = useMemo(() => {
+    const folderStructure = useMemo(() => {
         if (!dbProblems) return {};
-        return dbProblems.filter(p => p.gradeLevel === selectedGrade).reduce((acc, p) => {
-            const cat = p.category || 'Mathematics';
-            const sub = p.subTopic || 'Standard';
-            if (!acc[cat]) acc[cat] = {};
-            if (!acc[cat][sub]) acc[cat][sub] = [];
-            acc[cat][sub].push(p);
+        
+        const filtered = dbProblems.filter(p => (p.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+
+        return filtered.reduce((acc, p) => {
+            const subject = p.category || 'General Mathematics';
+            const sub = p.subTopic || 'Standard Practice';
+            
+            if (!acc[subject]) acc[subject] = {};
+            if (!acc[subject][sub]) acc[subject][sub] = [];
+            
+            acc[subject][sub].push(p);
             return acc;
-        }, {} as any);
+        }, {} as Record<string, Record<string, any[]>>);
     }, [dbProblems, selectedGrade]);
 
+    const checkAnswer = () => {
+        if (userInput.trim().toLowerCase() === problem.answer.toLowerCase().trim()) {
+            setFeedback({ ok: true, msg: "Logical match confirmed! Well done." });
+            confetti();
+            speak("Correct solution.");
+        } else {
+            setFeedback({ ok: false, msg: `Correction required. Expected: ${problem.answer}` });
+            speak("Review your derivation.");
+        }
+    };
+
     return (
-        <div className="grid lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-1">
-                <ScrollArea className="h-[60vh] bg-white rounded-3xl border p-2 shadow-inner">
-                    {Object.entries(folders).map(([cat, subs]: any) => (
-                        <Accordion key={cat} type="single" collapsible>
-                            <AccordionItem value={cat} className="border-none">
-                                <AccordionTrigger className="p-3 bg-slate-50 rounded-xl mb-1 text-xs font-black uppercase">{cat}</AccordionTrigger>
-                                <AccordionContent className="pl-4">
-                                    {Object.entries(subs).map(([sub, items]: any) => (
-                                        <Accordion key={sub} type="single" collapsible>
-                                            <AccordionItem value={sub} className="border-none">
-                                                <AccordionTrigger className="text-xs font-bold text-slate-400">{sub}</AccordionTrigger>
-                                                <AccordionContent className="space-y-1">
-                                                    {items.map((item: any) => (
-                                                        <button key={item.id} onClick={() => {setProblem(item); setUserInput("");}} className={`w-full text-left p-3 rounded-xl text-xs font-bold ${problem?.id === item.id ? 'bg-emerald-500 text-white' : 'hover:bg-slate-100'}`}>{item.title}</button>
-                                                    ))}
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        </Accordion>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    ))}
+        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in duration-500">
+            {/* SIDEBAR */}
+            <div className="lg:col-span-1 space-y-4">
+                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg border border-slate-700">
+                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">Student Category</Label>
+                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white font-bold rounded-2xl h-12">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                </div>
+                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                    <div className="space-y-2 p-2">
+                        {isLoading ? <Skeleton className="h-40 w-full" /> : Object.keys(folderStructure).length === 0 ? (
+                            <div className="text-center py-20 text-slate-300">
+                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                                <p className="text-xs font-bold">No questions in this category yet.</p>
+                            </div>
+                        ) : (
+                            Object.entries(folderStructure).map(([subject, subTopics]) => (
+                                <Accordion key={subject} type="single" collapsible className="w-full">
+                                    <AccordionItem value={subject} className="border-none">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-50 rounded-2xl mb-1 group">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                <span className="font-black text-slate-700 text-xs uppercase tracking-tight">{subject}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-1 pl-4 space-y-1">
+                                            {Object.entries(subTopics).map(([subTitle, items]) => (
+                                                <Accordion key={subTitle} type="single" collapsible>
+                                                    <AccordionItem value={subTitle} className="border-none">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-emerald-600">
+                                                            {subTitle} ({items.length})
+                                                        </AccordionTrigger>
+                                                        <AccordionContent className="space-y-1">
+                                                            {items.map((item: any) => (
+                                                                <button
+                                                                    key={item.id}
+                                                                    onClick={() => { setProblem(item); setFeedback(null); setUserInput(""); }}
+                                                                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-medium transition-all ${problem?.id === item.id ? 'bg-emerald-500 text-white shadow-md' : 'hover:bg-slate-100 text-slate-600'}`}
+                                                                >
+                                                                    {item.title}
+                                                                </button>
+                                                            ))}
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            ))}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            ))
+                        )}
+                    </div>
                 </ScrollArea>
             </div>
+
+            {/* MAIN STAGE */}
             <div className="lg:col-span-3">
                 {problem ? (
-                    <Card className={`overflow-hidden ${isJunior ? 'rounded-[60px] border-8 border-yellow-200 shadow-xl' : 'rounded-[40px] border-none shadow-2xl'}`}>
-                        <div className={`${isJunior ? 'bg-yellow-400' : 'bg-emerald-600'} p-8 text-white`}>
-                            <CardTitle className="text-3xl font-black">{isJunior && "🌈 "} {problem.title}</CardTitle>
+                    <Card className={isJunior ? theme?.card : "rounded-[48px] border-none shadow-2xl overflow-hidden bg-white"}>
+                        <div className={isJunior ? theme?.header : "bg-emerald-600 p-10 text-white"}>
+                            <div className="flex justify-between items-center">
+                                <CardTitle className={isJunior ? "text-5xl font-black text-blue-900" : "text-4xl font-black"}>
+                                    {isJunior && "🌈 "} {problem.title}
+                                </CardTitle>
+                                <Badge className={isJunior ? "bg-white text-pink-500 text-lg px-4" : "bg-emerald-400"}>
+                                    {problem.gradeLevel}
+                                </Badge>
+                            </div>
                         </div>
-                        <CardContent className="p-10 space-y-8 text-center">
-                            <div className={`${isJunior ? 'bg-sky-50' : 'bg-slate-900'} p-10 rounded-[32px] border-t-8 border-emerald-500`}>
-                                <div className={`${isJunior ? 'text-blue-600 text-6xl' : 'text-emerald-400 text-4xl'}`}>
+
+                        <CardContent className="p-12 space-y-10">
+                            <div className={isJunior ? theme?.mathBox : "bg-slate-900 p-12 rounded-[40px] shadow-inner border-t-8 border-emerald-500"}>
+                                <div className={isJunior ? "text-7xl text-blue-600 flex justify-center" : "text-5xl text-emerald-400"}>
                                     <SafeMath formula={problem.latexFormula} />
                                 </div>
-                                {isJunior && !isNaN(parseInt(problem.answer)) && <CounterDisplay count={parseInt(problem.answer)} />}
-                            </div>
-                            <p className="text-xl font-bold text-slate-600 italic">{isJunior ? "✨ " + problem.instruction : problem.instruction}</p>
-                            <Input value={userInput} onChange={e => setUserInput(e.target.value)} className="h-16 text-3xl text-center rounded-2xl" placeholder="Answer..." />
-                            <Button onClick={() => { confetti(); speak("Excellent!"); }} className="w-full h-16 bg-emerald-600 rounded-2xl font-black text-white">VERIFY</Button>
-                        </CardContent>
-                    </Card>
-                ) : <div className="h-96 flex flex-col items-center justify-center border-4 border-dashed rounded-[40px]"><Sigma className="w-20 h-20 text-slate-100" /></div>}
-            </div>
-        </div>
-    );
-}
-
-// --- SUB-COMPONENT: ENGLISH MASTERY ---
-function EnglishMastery({ selectedGrade }: { selectedGrade: string }) {
-    const firestore = useFirestore();
-    const [activeStory, setActiveStory] = useState<any>(null);
-    const [answers, setAnswers] = useState<string[]>([]);
-    const isJunior = isJuniorLevel(selectedGrade);
-
-    const { data: library } = useCollection<any>(useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, [firestore]));
-
-    const folders = useMemo(() => {
-        if (!library) return {};
-        return library.filter(s => s.gradeLevel === selectedGrade).reduce((acc, s) => {
-            const cat = s.category || 'Reading';
-            const sub = s.subTopic || 'Standard';
-            if (!acc[cat]) acc[cat] = {};
-            if (!acc[cat][sub]) acc[cat][sub] = [];
-            acc[cat][sub].push(s);
-            return acc;
-        }, {} as any);
-    }, [library, selectedGrade]);
-
-    return (
-        <div className="grid lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-1">
-                <ScrollArea className="h-[60vh] bg-white rounded-3xl border p-2">
-                    {Object.entries(folders).map(([cat, subs]: any) => (
-                        <Accordion key={cat} type="single" collapsible>
-                            <AccordionItem value={cat} className="border-none">
-                                <AccordionTrigger className="p-3 bg-slate-50 rounded-xl mb-1 text-xs font-black uppercase tracking-widest">{cat}</AccordionTrigger>
-                                <AccordionContent className="pl-4">
-                                    {Object.entries(subs).map(([sub, items]: any) => (
-                                        <Accordion key={sub} type="single" collapsible>
-                                            <AccordionItem value={sub} className="border-none">
-                                                <AccordionTrigger className="text-xs font-bold text-slate-400">{sub}</AccordionTrigger>
-                                                <AccordionContent className="space-y-1">
-                                                    {items.map((item: any) => (
-                                                        <button key={item.id} onClick={() => { setActiveStory(item); setAnswers([]); }} className={`w-full text-left p-3 rounded-xl text-xs font-bold ${activeStory?.id === item.id ? 'bg-indigo-600 text-white' : 'hover:bg-slate-100'}`}>{item.title}</button>
-                                                    ))}
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        </Accordion>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    ))}
-                </ScrollArea>
-            </div>
-            <div className="lg:col-span-3">
-                {activeStory ? (
-                    <Card className={`overflow-hidden bg-white ${isJunior ? 'rounded-[60px] border-y-8 border-orange-200 shadow-lg' : 'rounded-[40px] shadow-2xl'}`}>
-                        <div className={`${isJunior ? 'bg-orange-400' : 'bg-indigo-600'} p-8 text-white flex justify-between items-center`}>
-                            <CardTitle className="text-3xl font-black">{isJunior && "📖 "} {activeStory.title}</CardTitle>
-                            <Button variant="ghost" onClick={() => speak(activeStory.content)} className="text-white"><Volume2 /></Button>
-                        </div>
-                        <CardContent className="p-10 space-y-8">
-                            <p className={`whitespace-pre-wrap leading-relaxed text-slate-700 ${isJunior ? 'text-3xl font-bold font-serif' : 'text-xl'}`}>{activeStory.content}</p>
-                            <div className="bg-slate-50 p-8 rounded-[32px] border-2 space-y-6">
-                                <h3 className="text-xl font-black text-indigo-900">Comprehension Check</h3>
-                                {activeStory.quiz?.map((q: any, i: number) => (
-                                    <div key={i} className="space-y-2">
-                                        <p className="font-bold text-slate-800">{q.question}</p>
-                                        <Input value={answers[i] || ""} onChange={e => { const n = [...answers]; n[i] = e.target.value; setAnswers(n); }} className="h-12 rounded-xl" />
+                                {isJunior && !isNaN(parseInt(problem.answer)) && (
+                                    <div className="mt-8 border-t border-sky-200 pt-6">
+                                        <p className="text-center font-black text-sky-500 uppercase text-xs tracking-widest mb-2">Can you count them?</p>
+                                        <CounterDisplay count={parseInt(problem.answer)} />
                                     </div>
-                                ))}
-                                <Button onClick={() => { confetti(); speak("Good work!"); }} className="w-full h-14 bg-indigo-600 rounded-xl text-white font-bold">SUBMIT</Button>
+                                )}
                             </div>
+
+                            <div className="text-center space-y-8">
+                                <p className={isJunior ? "text-3xl font-black text-blue-800" : "text-2xl font-medium text-slate-600 italic"}>
+                                    {isJunior ? "✨ " + problem.instruction : `"${problem.instruction}"`}
+                                </p>
+                                <div className="flex flex-col items-center gap-6">
+                                    <Input 
+                                        value={userInput} 
+                                        onChange={e => setUserInput(e.target.value)} 
+                                        placeholder={isJunior ? "Type Number Here..." : "Enter Solution..."} 
+                                        className={isJunior 
+                                            ? juniorStyles.input 
+                                            : "h-20 text-4xl font-mono text-center border-4 border-slate-100 rounded-[24px] focus:border-emerald-500 shadow-inner"
+                                        }
+                                    />
+                                    <Button 
+                                        onClick={checkAnswer} 
+                                        className={isJunior ? theme?.button : "h-16 px-16 bg-emerald-600 hover:bg-emerald-700 text-xl font-black rounded-full"}
+                                    >
+                                        {isJunior ? "I'M FINISHED! 🚀" : "VERIFY ANSWER"}
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {feedback && (
+                                <div className={`p-8 rounded-[32px] border-2 flex items-center justify-center gap-4 animate-bounce ${feedback.ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                                    {feedback.ok ? <CheckCircle2 className="w-8 h-8" /> : <XCircle className="w-8 h-8" />}
+                                    <p className="text-xl font-black">{feedback.msg}</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
-                ) : <div className="h-96 flex flex-col items-center justify-center border-4 border-dashed rounded-[40px]"><Languages className="w-20 h-20 text-slate-100" /></div>}
+                ) : (
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
+                        <div className="p-8 bg-slate-50 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-200" /></div>
+                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">
+                            Select a topic from the <br /> {selectedGrade} library
+                        </h2>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-// --- SUB-COMPONENT: DISCOVERY LAB ---
-function DiscoveryLab({ selectedGrade }: { selectedGrade: string }) {
+// --- 3. DISCOVERY LAB (FOLDER ORGANIZED) ---
+function DiscoveryLab({ canEdit }: { canEdit: boolean }) {
     const firestore = useFirestore();
     const [lab, setLab] = useState<any>(null);
     const [stage, setStage] = useState<'hypothesis' | 'experiment' | 'conclusion'>('hypothesis');
+    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
+
     const isJunior = isJuniorLevel(selectedGrade);
+    const theme = isJunior ? juniorStyles : null;
 
-    const { data: dbLabs } = useCollection<any>(useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, [firestore]));
+    const labQuery = useMemoFirebase(() => 
+        firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
+    [firestore]);
+    const { data: dbLabs } = useCollection<any>(labQuery);
 
-    const folders = useMemo(() => {
+    const folderStructure = useMemo(() => {
         if (!dbLabs) return {};
-        return dbLabs.filter(l => l.gradeLevel === selectedGrade).reduce((acc, l) => {
-            const cat = l.category || 'Science';
-            const sub = l.subTopic || 'Standard';
-            if (!acc[cat]) acc[cat] = {};
-            if (!acc[cat][sub]) acc[cat][sub] = [];
-            acc[cat][sub].push(l);
+        const filtered = dbLabs.filter(l => (l.gradeLevel || 'Junior Secondary (JHS)') === selectedGrade);
+        return filtered.reduce((acc, l) => {
+            const category = l.category || 'Science Journal';
+            const subTopic = l.subTopic || 'Research Mission';
+            if (!acc[category]) acc[category] = {};
+            if (!acc[category][subTopic]) acc[category][subTopic] = [];
+            acc[category][subTopic].push(l);
             return acc;
-        }, {} as any);
+        }, {} as Record<string, Record<string, any[]>>);
     }, [dbLabs, selectedGrade]);
-
+    
     return (
-        <div className="grid lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-1">
-                <ScrollArea className="h-[60vh] bg-white rounded-3xl border p-2">
-                    {Object.entries(folders).map(([cat, subs]: any) => (
-                        <Accordion key={cat} type="single" collapsible>
-                            <AccordionItem value={cat} className="border-none">
-                                <AccordionTrigger className="p-3 bg-slate-50 rounded-xl mb-1 text-xs font-black uppercase tracking-widest">{cat}</AccordionTrigger>
-                                <AccordionContent className="pl-4">
-                                    {Object.entries(subs).map(([sub, items]: any) => (
-                                        <Accordion key={sub} type="single" collapsible>
-                                            <AccordionItem value={sub} className="border-none">
-                                                <AccordionTrigger className="text-xs font-bold text-slate-400">{sub}</AccordionTrigger>
-                                                <AccordionContent className="space-y-1">
-                                                    {items.map((item: any) => (
-                                                        <button key={item.id} onClick={() => { setLab(item); setStage('hypothesis'); }} className={`w-full text-left p-3 rounded-xl text-xs font-bold ${lab?.id === item.id ? 'bg-blue-600 text-white' : 'hover:bg-slate-100'}`}>{item.title}</button>
-                                                    ))}
-                                                </AccordionContent>
-                                            </AccordionItem>
-                                        </Accordion>
-                                    ))}
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    ))}
+        <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
+            {/* SIDEBAR NAVIGATION */}
+            <div className="lg:col-span-1 space-y-4">
+                <div className="bg-cyan-900 p-4 rounded-3xl shadow-lg">
+                    <Label className="text-cyan-300 text-[10px] uppercase font-black ml-2 mb-2 block">Research Level</Label>
+                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                        <SelectTrigger className="bg-cyan-800 border-cyan-700 text-white rounded-2xl h-12">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                    </Select>
+                </div>
+
+                <ScrollArea className="h-[70vh] rounded-3xl border-2 border-slate-100 bg-white p-2">
+                    <div className="p-2 space-y-2">
+                         {Object.keys(folderStructure).length === 0 ? (
+                            <div className="text-center py-20 text-slate-300">
+                                <FolderOpen className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                                <p className="text-xs font-bold">No labs in this category yet.</p>
+                            </div>
+                         ) : (
+                            Object.entries(folderStructure).map(([cat, subs]) => (
+                                <Accordion key={cat} type="single" collapsible className="w-full">
+                                    <AccordionItem value={cat} className="border-none">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-cyan-50 rounded-2xl mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <div className="text-lg">{cat === 'Life Science' ? '🧬' : cat === 'Physical Science' ? '🔬' : '🌍'}</div>
+                                                <span className="font-black text-cyan-900 text-xs uppercase">{cat}</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pt-1 pl-4">
+                                            {Object.entries(subs).map(([subTitle, items]) => (
+                                                <Accordion key={subTitle} type="single" collapsible>
+                                                    <AccordionItem value={subTitle} className="border-none">
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>
+                                                        <AccordionContent className="space-y-1">
+                                                            {items.map((item: any) => (
+                                                                <button key={item.id} onClick={() => { setLab(item); setStage('hypothesis'); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${lab?.id === item.id ? 'bg-cyan-600 text-white shadow-md' : 'hover:bg-cyan-50 text-slate-600'}`}>{item.title}</button>
+                                                            ))}
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            ))}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
+                            ))
+                        )}
+                    </div>
                 </ScrollArea>
             </div>
+
+            {/* WORKSTATION (Discovery View) */}
             <div className="lg:col-span-3">
                 {lab ? (
-                    <Card className={`overflow-hidden bg-white ${isJunior ? 'rounded-[60px] border-8 border-sky-200 shadow-xl' : 'rounded-[40px] shadow-2xl'}`}>
-                        <div className={`${isJunior ? 'bg-sky-400' : 'bg-blue-700'} p-8 text-white flex flex-col items-center`}>
-                            <div className="text-6xl mb-2">{lab.icon || '🔬'}</div>
-                            <CardTitle className="text-3xl font-black uppercase tracking-tighter">{lab.title}</CardTitle>
-                        </div>
-                        <CardContent className="p-10 space-y-8">
-                            <div className="flex gap-4 mb-4">
-                                {['hypothesis', 'experiment', 'conclusion'].map((s: any) => (
-                                    <div key={s} className={`flex-1 h-2 rounded-full ${stage === s ? 'bg-blue-500' : 'bg-slate-200'}`} />
-                                ))}
+                    <Card className={`overflow-hidden bg-white ${isJunior ? theme?.card : "rounded-[48px] shadow-2xl animate-in zoom-in"}`}>
+                        <div className={`grid md:grid-cols-3 ${isJunior ? 'min-h-[500px]' : 'min-h-[600px]'}`}>
+                            <div className={isJunior ? `p-10 space-y-8 ${theme?.questCard}` : `bg-slate-900 text-white p-10 space-y-8`}>
+                                <div className="flex flex-col gap-6">
+                                    {['hypothesis', 'experiment', 'conclusion'].map((s: any, i) => (
+                                        <div key={s} className={`flex items-center gap-4 transition-opacity ${stage === s ? 'opacity-100' : 'opacity-30'}`}>
+                                            <div className={isJunior ? theme?.stepBubble : "w-10 h-10 rounded-full flex items-center justify-center font-bold bg-blue-500"}>{i+1}</div>
+                                            <span className="font-black capitalize">{isJunior ? (s === 'hypothesis' ? 'The Big Question' : s === 'experiment' ? 'Let\'s Explore!' : 'What Happened?') : s}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <hr className="opacity-10" />
+                                <div className="space-y-2">
+                                    <p className={`text-[10px] font-black uppercase tracking-widest ${isJunior ? 'text-blue-200' : 'text-blue-400'}`}>Scientific Background</p>
+                                    <p className={`text-sm leading-relaxed italic ${isJunior ? 'opacity-80' : 'opacity-60'}`}>{lab.background}</p>
+                                </div>
                             </div>
-                            {stage === 'hypothesis' && (
-                                <div className="space-y-6 animate-in slide-in-from-right-4">
-                                    <h3 className="text-2xl font-black text-slate-800">{lab.question}</h3>
-                                    <div className="bg-blue-50 p-6 rounded-2xl border-2 border-blue-100">
-                                        <p className="font-bold text-blue-700 mb-4">{lab.hypothesisPrompt}</p>
-                                        <div className="grid gap-3">
-                                            {lab.hypothesisOptions?.map((opt: string) => (
-                                                <Button key={opt} variant="outline" className="bg-white border-2 h-auto py-4 font-bold rounded-2xl hover:bg-blue-600 hover:text-white" onClick={() => setStage('experiment')}>{opt}</Button>
-                                            ))}
+                            <div className="md:col-span-2 p-12 flex flex-col justify-center">
+                                {stage === 'hypothesis' && (
+                                    <div className="space-y-8 animate-in slide-in-from-right-4">
+                                        <h2 className={isJunior ? "text-5xl font-black text-blue-600 text-center" : "text-3xl font-black text-slate-800"}>
+                                            {isJunior ? '🤔 What is your Guess?' : lab.question}
+                                        </h2>
+                                        <div className={isJunior ? "p-10 bg-white rounded-[60px] border-8 border-blue-100 shadow-inner" : "p-8 bg-blue-50 rounded-[32px] border-2 border-blue-100"}>
+                                            {isJunior && <p className="text-blue-400 font-bold mb-6 text-center uppercase tracking-widest">Pick a card!</p>}
+                                            <div className={isJunior ? "grid grid-cols-1 gap-4" : "grid gap-3"}>
+                                                {lab.hypothesisOptions.map((opt: string) => (
+                                                    <Button 
+                                                        key={opt} 
+                                                        variant="outline" 
+                                                        className={isJunior 
+                                                            ? "h-24 text-2xl font-black border-4 border-blue-50 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white rounded-[35px] transition-all" 
+                                                            : "bg-white border-2 h-auto py-4 font-bold rounded-2xl"} 
+                                                        onClick={() => setStage('experiment')}
+                                                    >
+                                                        {isJunior && "✨ "} {opt}
+                                                    </Button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
-                            {stage === 'experiment' && (
-                                <div className="text-center space-y-8 animate-in zoom-in">
-                                    <h3 className="text-3xl font-black text-orange-500">Mission: Data Collection</h3>
-                                    <div className="text-[120px] py-10 animate-bounce">{lab.icon}</div>
-                                    <Button onClick={() => setStage('conclusion')} className="h-16 px-12 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-full shadow-lg">Observe Result</Button>
-                                </div>
-                            )}
-                            {stage === 'conclusion' && (
-                                <div className="space-y-6 animate-in slide-in-from-bottom-4">
-                                    <h3 className="text-3xl font-black text-green-700">Findings</h3>
-                                    <div className="p-8 bg-green-50 rounded-[40px] border-4 border-green-100">
-                                        <p className="text-2xl font-bold text-slate-800">{lab.conclusion}</p>
-                                        <p className="text-slate-600 leading-relaxed text-lg mt-4">{lab.explanation}</p>
+                                )}
+                                {stage === 'experiment' && (
+                                    <div className="text-center space-y-12 animate-in zoom-in">
+                                        <h2 className={isJunior ? "text-5xl font-black text-orange-500" : "text-3xl font-black text-slate-800"}>
+                                            {isJunior ? "🚀 Let's Try It!" : "Mission: Data Collection"}
+                                        </h2>
+                                        <div className={isJunior ? "text-[200px] hover:rotate-12 transition-transform cursor-pointer" : "text-[180px] py-10 animate-pulse"}>{lab.icon}</div>
+                                        <Button onClick={() => setStage('conclusion')} className={isJunior ? juniorStyles.button : "h-16 px-12 bg-orange-500 hover:bg-orange-600 text-xl font-black rounded-full shadow-xl"}>
+                                            {isJunior ? "SEE THE SECRET! 🔍" : "Observe Outcome"}
+                                        </Button>
                                     </div>
-                                    <Button onClick={() => { setLab(null); confetti(); }} className="w-full h-16 bg-green-600 rounded-full font-black text-xl text-white">Mission Complete! ✨</Button>
-                                </div>
-                            )}
-                        </CardContent>
+                                )}
+                                {stage === 'conclusion' && (
+                                    <div className="space-y-6 animate-in slide-in-from-bottom-4">
+                                        <h2 className={`font-black ${isJunior ? 'text-5xl text-green-800' : 'text-4xl text-green-700'}`}>Discovery Conclusion</h2>
+                                        <div className={`p-8 rounded-[40px] border-4 space-y-4 ${isJunior ? 'bg-green-50 border-green-200' : 'bg-green-50 border-green-100'}`}>
+                                            <p className={`font-bold ${isJunior ? 'text-3xl' : 'text-2xl'} text-slate-800`}>{lab.conclusion}</p>
+                                            <p className={`leading-relaxed ${isJunior ? 'text-2xl text-slate-600' : 'text-lg text-slate-600'}`}>{lab.explanation}</p>
+                                        </div>
+                                        <Button onClick={() => { setLab(null); confetti(); }} className={`w-full h-16 text-xl font-black rounded-2xl shadow-xl ${isJunior ? juniorStyles.button : 'bg-green-600 hover:bg-green-700'}`}>Complete Mission</Button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </Card>
-                ) : <div className="h-96 flex flex-col items-center justify-center border-4 border-dashed rounded-[40px]"><Microscope className="w-20 h-20 text-slate-100" /></div>}
+                ) : (
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
+                        <Microscope className="w-20 h-20 text-slate-100 mb-4" />
+                        <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">Select an Active Research Lab</h2>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-// --- SUB-COMPONENT: ADMIN CONSOLE ---
+// --- 4. ADMIN CONSOLE ---
 function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [mode, setMode] = useState<'ai' | 'manual'>('ai');
+    const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
     const [subject, setSubject] = useState<'math' | 'english' | 'science'>('math');
-    const [topic, setTopic] = useState("");
-    const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
     const [loading, setLoading] = useState(false);
 
-    const handleGenerate = async () => {
-        if (!topic) return;
+    // AI Form State
+    const [topic, setTopic] = useState("");
+    const [targetGrade, setTargetGrade] = useState('Junior Secondary (JHS)');
+    const [instructions, setInstructions] = useState('');
+    
+    // Manual Form State
+    const [manualData, setManualData] = useState<any>({
+        title: '',
+        category: '',
+        subTopic: '',
+        gradeLevel: 'Junior Secondary (JHS)',
+        latexFormula: '',
+        instruction: '',
+        answer: '',
+        content: '', // English
+        genre: '',   // English
+        quiz: [{ question: '', answer: '' }, { question: '', answer: '' }, { question: '', answer: '' }],
+        background: '', // Science
+        question: '',
+        hypothesisPrompt: '',
+        hypothesisOptions: ['', '', ''],
+        conclusion: '',
+        explanation: '',
+        icon: '🔬'
+    });
+
+    const handleAiGenerate = async () => {
+        if (!topic.trim()) return;
         setLoading(true);
-        const juniorPrompt = isJuniorLevel(targetGrade) ? ". Use simple language and whole numbers." : "";
-        const context = { topic, gradeLevel: targetGrade as any, instructions: juniorPrompt };
+        const isJunior = isJuniorLevel(targetGrade);
+        const systemInstructions = isJunior ? `${instructions}. Target audience: 5-7 year olds. Use simple words, short sentences, and LOTS of emojis. In math, make sure the answer is a whole number between 1 and 20 so it can be counted visually.` : instructions;
+        const context = { topic, gradeLevel: targetGrade as any, instructions: systemInstructions };
         let res;
         if (subject === 'math') res = await generateSeniorMath(context);
         else if (subject === 'english') res = await generateSeniorEnglish(context);
         else res = await generateSeniorLab(context);
 
-        if (res.success) {
-            await addDoc(collection(firestore!, subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs'), { ...res.data, gradeLevel: targetGrade, createdAt: serverTimestamp() });
-            toast({ title: "Module Published!" });
-            setTopic("");
+        if (res.success && res.data) {
+            await addDoc(collection(firestore!, subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs'), {
+                ...res.data,
+                gradeLevel: targetGrade, 
+                createdAt: serverTimestamp()
+            });
+            toast({ title: 'AI Success', description: `Added to ${targetGrade} library.` });
             onContentAdded();
+            setTopic("");
+        }
+        setLoading(false);
+    };
+
+    const handleManualSave = async () => {
+        if (!manualData.title || !manualData.category || !manualData.subTopic) {
+            toast({ title: "Filing Required", description: "You must provide a Category and Sub-Topic to place this in the correct folder.", variant: "destructive" });
+            return;
+        }
+        setLoading(true);
+        try {
+            const colName = subject === 'math' ? 'senior_math' : subject === 'english' ? 'senior_stories' : 'senior_labs';
+            await addDoc(collection(firestore!, colName), {
+                ...manualData,
+                createdAt: serverTimestamp()
+            });
+            toast({ title: "Saved", description: "Manual entry added to the folders." });
+            onContentAdded();
+            setManualData({ ...manualData, title: '', latexFormula: '', content: '', background: '', answer: '' });
+        } catch (e) {
+            toast({ title: "Error", description: "Failed to save manually.", variant: "destructive" });
         }
         setLoading(false);
     };
 
     return (
         <Card className="bg-slate-900 border-none rounded-[40px] text-white p-8 mb-12 shadow-2xl">
+            {/* Control Bar */}
             <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-black flex items-center gap-2"><PenTool className="text-yellow-400" /> Professor's Desk</h2>
-                <div className="flex bg-slate-800 p-1 rounded-2xl">
-                    <Button variant={mode === 'ai' ? 'secondary' : 'ghost'} size="sm" onClick={() => setMode('ai')}>AI Magic</Button>
-                    <Button variant={mode === 'manual' ? 'secondary' : 'ghost'} size="sm" onClick={() => setMode('manual')}>Manual</Button>
+                <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
+                    <Button variant={creationMode === 'ai' ? 'secondary' : 'ghost'} size="sm" onClick={() => setCreationMode('ai')}>AI Magic</Button>
+                    <Button variant={creationMode === 'manual' ? 'secondary' : 'ghost'} size="sm" onClick={() => setCreationMode('manual')}>Manual</Button>
                 </div>
             </div>
-            {mode === 'ai' ? (
+            
+            {creationMode === 'ai' ? (
                 <div className="flex flex-col md:flex-row gap-4 items-end">
-                    <div className="flex-1 space-y-2 w-full"><Label className="text-slate-400 text-[10px] font-black uppercase">Topic</Label><Input value={topic} onChange={e => setTopic(e.target.value)} className="h-14 bg-slate-800 border-slate-700 text-white" /></div>
-                    <div className="w-64 space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase">Grade</Label><Select value={targetGrade} onValueChange={setTargetGrade}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
-                    <div className="w-48 space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase">Subject</Label><Select value={subject} onValueChange={setSubject as any}><SelectTrigger className="capitalize"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="math">Math</SelectItem><SelectItem value="english">English</SelectItem><SelectItem value="science">Science</SelectItem></SelectContent></Select></div>
-                    <Button onClick={handleGenerate} disabled={loading} className="h-14 px-8 bg-indigo-600 font-black text-white">{loading ? <Loader2 className="animate-spin" /> : "GENERATE"}</Button>
+                    <div className="flex-1 space-y-2 w-full"><Label className="text-slate-400 text-[10px] font-black uppercase ml-2">Topic for AI</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Simultaneous Equations, Plant Cells..." className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl" /></div>
+                    <div className="w-full md:w-64 space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase ml-2">Target Grade</Label><Select value={targetGrade} onValueChange={setTargetGrade}><SelectTrigger className="h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+                    <div className="w-full md:w-48 space-y-2"><Label className="text-slate-400 text-[10px] font-black uppercase ml-2">Subject</Label><Select value={subject} onValueChange={setSubject as any}><SelectTrigger className="capitalize h-14 bg-slate-800 border-slate-700 text-white rounded-2xl"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="math">Math</SelectItem><SelectItem value="english">English</SelectItem><SelectItem value="science">Science</SelectItem></SelectContent></Select></div>
+                    <Button onClick={handleAiGenerate} disabled={loading || !topic} className="h-14 px-8 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-black min-w-[160px]">
+                        {loading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2 h-4 w-4"/> GENERATE</>}
+                    </Button>
                 </div>
             ) : (
-                <div className="text-center py-10 opacity-50 italic">Manual form active in Firestore...</div>
+                /* --- MANUAL ENTRY FORM --- */
+                <div className="space-y-6 animate-in slide-in-from-top-4">
+                    <div className="grid md:grid-cols-3 gap-4">
+                        <div className="space-y-2"><Label>Category (Main Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /></div>
+                        <div className="space-y-2"><Label>Sub-Topic (Sub Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Differentiation' : subject === 'english' ? 'e.g. Short Stories' : 'e.g. Plant Biology'} value={manualData.subTopic} onChange={e => setManualData({...manualData, subTopic: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /></div>
+                        <div className="space-y-2"><Label>Target Student Category</Label><Select value={manualData.gradeLevel} onValueChange={(v) => setManualData({...manualData, gradeLevel: v})}><SelectTrigger className="h-12 bg-slate-800 border-slate-700 text-white rounded-xl"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+                    </div>
+                    <Input placeholder="Problem/Passage Title" value={manualData.title} onChange={e => setManualData({...manualData, title: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl text-lg font-bold" />
+                    {subject === 'math' && <div className="grid md:grid-cols-2 gap-4"><div><Textarea placeholder="LaTeX Formula (e.g. \frac{x}{y})" value={manualData.latexFormula} onChange={e => setManualData({...manualData, latexFormula: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl font-mono" /><Input placeholder="Instruction (e.g. Solve for x)" value={manualData.instruction} onChange={e => setManualData({...manualData, instruction: e.target.value})} className="bg-slate-800 border-slate-700 text-white mt-2" /><Input placeholder="Final Answer" value={manualData.answer} onChange={e => setManualData({...manualData, answer: e.target.value})} className="bg-slate-800 border-slate-700 text-white mt-2" /></div><div className="bg-slate-950 p-6 rounded-2xl flex flex-col justify-center items-center border-2 border-dashed border-slate-800"><p className="text-[10px] font-black text-slate-600 uppercase mb-4 tracking-widest">Live Math Preview</p><div className="text-2xl text-emerald-400">{manualData.latexFormula ? <SafeMath formula={manualData.latexFormula} /> : <span className="opacity-20 italic text-sm">Formula will render here</span>}</div></div></div>}
+                    {subject === 'english' && <div className="space-y-4"><Textarea placeholder="Full Literary Passage Content..." value={manualData.content} onChange={e => setManualData({...manualData, content: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-48 rounded-xl" /><div className="grid grid-cols-3 gap-2">{[0,1,2].map(i => (<div key={i} className="p-3 bg-slate-800/50 rounded-xl space-y-2"><Label className="text-[9px] text-indigo-400 font-bold uppercase">Quiz Q{i+1}</Label><Input placeholder="Question" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].question} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], question: e.target.value}; setManualData({...manualData, quiz: n});}} /><Input placeholder="Answer" className="h-8 text-xs bg-slate-700 border-none text-white" value={manualData.quiz[i].answer} onChange={e => {const n = [...manualData.quiz]; n[i] = {...n[i], answer: e.target.value}; setManualData({...manualData, quiz: n});}} /></div>))}</div></div>}
+                    {subject === 'science' && <div className="grid md:grid-cols-2 gap-4"><Textarea placeholder="Experiment Background" value={manualData.background} onChange={e => setManualData({...manualData, background: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" /><Textarea placeholder="Hypothesis Prompt" value={manualData.hypothesisPrompt} onChange={e => setManualData({...manualData, hypothesisPrompt: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-32 rounded-xl" /><div className="md:col-span-2 grid grid-cols-3 gap-2">{manualData.hypothesisOptions.map((opt: string, i: number) => (<Input key={i} placeholder={`Option ${i+1}`} value={opt} onChange={e => {const n = [...manualData.hypothesisOptions]; n[i] = e.target.value; setManualData({...manualData, hypothesisOptions: n});}} className="bg-slate-800 border-slate-700 text-white h-10 rounded-lg" />))}<Input placeholder="Icon Emoji (e.g. 🔬)" value={manualData.icon} onChange={e => setManualData({...manualData, icon: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /><Input placeholder="Conclusion" value={manualData.conclusion} onChange={e => setManualData({...manualData, conclusion: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /><Textarea placeholder="Explanation" value={manualData.explanation} onChange={e => setManualData({...manualData, explanation: e.target.value})} className="md:col-span-2 bg-slate-800 border-slate-700 text-white h-24 rounded-xl" /></div>}
+                    <Button onClick={handleManualSave} disabled={loading} className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black shadow-xl">
+                        {loading ? <Loader2 className="animate-spin" /> : <><Save className="mr-2" /> PUBLISH MANUAL MISSION</>}
+                    </Button>
+                </div>
             )}
-        </Card>
+        </CardContent>
+    </Card>
     );
 }
 
-// --- MAIN PAGE (FIXED FOR HYDRATION) ---
+
+// --- MAIN PAGE ---
 export default function SeniorAcademyPage() {
-    const { role } = useRole();
-    const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
-    const [selectedGrade, setSelectedGrade] = useState('Junior Secondary (JHS)');
-    const [mounted, setMounted] = useState(false);
+    const { role, isRoleLoading } = useRole();
+    const canEdit = ['Teacher', 'Administrator', 'Director'].includes(role || '');
+    const firestore = useFirestore();
+    
+    // Memoize forceRefetch to prevent re-creation on every render
+    const { forceRefetch: forceMath } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_math') : null, [firestore]));
+    const { forceRefetch: forceEnglish } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_stories') : null, [firestore]));
+    const { forceRefetch: forceScience } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_labs') : null, [firestore]));
 
-    useEffect(() => { setMounted(true); }, []);
-
-    if (!mounted) {
-        return (
-            <div className="min-h-screen bg-[#F8FAFC] p-12 flex items-center justify-center font-sans">
-                <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-12 h-12 text-indigo-500 animate-spin" />
-                    <p className="text-slate-400 font-bold animate-pulse uppercase tracking-widest text-xs">Synchronizing Academy...</p>
-                </div>
-            </div>
-        );
+    const handleContentUpdate = useCallback(() => {
+        forceMath();
+        forceEnglish();
+        forceScience();
+    }, [forceMath, forceEnglish, forceScience]);
+    
+    if (isRoleLoading) {
+      return (
+          <div className="flex h-screen w-screen items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+      );
     }
-
+    
     return (
-        <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-12 font-sans">
-            <div className="max-w-7xl mx-auto space-y-12">
-                <header className="flex flex-col md:flex-row justify-between items-end gap-6">
-                    <div className="flex items-center gap-4">
-                        <div className="bg-slate-900 p-4 rounded-3xl shadow-xl"><Rocket className="h-8 w-8 text-white" /></div>
-                        <div>
-                            <h1 className="text-5xl font-black text-slate-900 tracking-tighter">Academy Studio</h1>
-                            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Academic Mastery Pathway</p>
-                        </div>
-                    </div>
-                    <div className="w-72 space-y-2">
-                        <Label className="text-[10px] font-black uppercase text-slate-400 ml-2 italic">Classroom Filter</Label>
-                        <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                            <SelectTrigger className="h-14 rounded-2xl bg-white border-2 shadow-sm font-bold"><SelectValue /></SelectTrigger>
-                            <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
-                </header>
+        <div className="space-y-8 p-1">
+            <Card className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-[48px] shadow-2xl border-b-8 border-slate-700">
+                <CardHeader className="p-10">
+                    <CardTitle className="text-5xl font-black flex items-center gap-4">
+                        <Rocket className="w-12 h-12 text-indigo-400" />
+                        <span>Senior Academy</span>
+                    </CardTitle>
+                    <CardDescription className="text-slate-400 text-lg max-w-2xl mt-2">
+                        Advanced, folder-organized learning modules for focused study in Mathematics, Literature, and Scientific Discovery, complete with AI-powered content generation for teachers.
+                    </CardDescription>
+                </CardHeader>
+            </Card>
 
-                {canEdit && <AdminConsole onContentAdded={() => {}} />}
+            <div className="space-y-12">
+                
+                {canEdit && <div className="mb-8"><AdminConsole onContentAdded={handleContentUpdate} /></div>}
 
                 <Tabs defaultValue="math" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 h-20 bg-white p-2 rounded-[24px] shadow-lg border border-slate-100 mb-12">
-                        <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-emerald-100 font-black"><Sigma className="mr-2 h-4 w-4"/> Math Lab</TabsTrigger>
-                        <TabsTrigger value="english" className="rounded-xl data-[state=active]:bg-indigo-100 font-black"><Languages className="mr-2 h-4 w-4"/> English</TabsTrigger>
-                        <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 font-black"><Microscope className="mr-2 h-4 w-4"/> Discovery</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-3 h-24 bg-white p-3 rounded-[32px] shadow-2xl border border-slate-100 mb-16">
+                        <TabsTrigger value="math" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                            <SigmaIcon className="w-6 h-6"/> Advanced Math Lab
+                        </TabsTrigger>
+                        <TabsTrigger value="english" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                            <LanguagesIcon className="w-6 h-6"/> English Mastery
+                        </TabsTrigger>
+                        <TabsTrigger value="science" className="h-full rounded-2xl text-lg font-bold flex items-center gap-2 data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all">
+                            <AtomIcon className="w-6 h-6"/> Discovery Lab
+                        </TabsTrigger>
                     </TabsList>
                     
-                    <TabsContent value="math" className="mt-0"><MathLab selectedGrade={selectedGrade} /></TabsContent>
-                    <TabsContent value="english" className="mt-0"><EnglishMastery selectedGrade={selectedGrade} /></TabsContent>
-                    <TabsContent value="science" className="mt-0"><DiscoveryLab selectedGrade={selectedGrade} /></TabsContent>
+                    <TabsContent value="math"><MathLab canEdit={canEdit} /></TabsContent>
+                    <TabsContent value="english"><EnglishMastery canEdit={canEdit} /></TabsContent>
+                    <TabsContent value="science"><DiscoveryLab canEdit={canEdit} /></TabsContent>
                 </Tabs>
             </div>
+             <style jsx global>{`
+                .math-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+                .katex-display { margin: 0 !important; }
+            `}</style>
         </div>
     );
 }
 
-// --- SELECT COMPONENT FALLBACK (Fixed for HTML nesting) ---
-function Select({ children, value, onValueChange }: any) {
-    return (
-        <select
-            value={value}
-            onChange={(e) => onValueChange(e.target.value)}
-            className="w-full h-14 rounded-2xl bg-white border-2 px-4 font-bold outline-none shadow-sm text-slate-800"
-        >
-            {children}
-        </select>
-    );
+```
+- src/app/login-by-pass/page.tsx:
+```tsx
+
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/firebase';
+import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, GraduationCap } from 'lucide-react';
+import Link from 'next/link';
+
+export default function LoginPage() {
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!auth) return;
+    setIsLoading(true);
+
+    try {
+      await initiateEmailSignIn(auth, email, password);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleBypassLogin = (userEmail: string) => {
+      setEmail(userEmail);
+      setPassword('password123'); // Default password for all test accounts
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+          <div className="mx-auto bg-primary-foreground p-3 rounded-full border mb-4 inline-block">
+            <GraduationCap className="h-8 w-8 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold">CampusConnect</CardTitle>
+          <CardDescription>Sign in to your account</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link href="/password-reset" className="text-sm underline">Forgot password?</Link>
+              </div>
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign In
+            </Button>
+            <div className="mt-4 text-center text-sm">
+              Don't have an account?{' '}
+              <Link href="/signup" className="underline">
+                Sign up
+              </Link>
+            </div>
+          </form>
+          
+           {/* Bypass Login for Testing */}
+            <div className="mt-6 border-t pt-4">
+                <p className="text-center text-xs text-muted-foreground mb-2">For testing purposes, log in as:</p>
+                <div className="grid grid-cols-2 gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleBypassLogin('director@sunnyside.com')}>Director</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleBypassLogin('teacher@sunnyside.com')}>Teacher</Button>
+                </div>
+            </div>
+
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
-function SelectTrigger({ children, className }: any) { return null; } 
-function SelectValue() { return null; } 
-function SelectContent({ children }: any) { return <>{children}</>; }
-function SelectItem({ value, children }: any) { return <option value={value}>{children}</option>; }
+
+```
+- src/middleware.ts:
+```ts
+
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  // If the user is on the root path, redirect them to the login page.
+  // This helps avoid the confusing `page.tsx` redirect which can cause issues.
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/login-by-pass', request.url));
+  }
+
+  // Allow all other requests to proceed as normal.
+  return NextResponse.next();
+}
+
+export const config = {
+  // Match only the root path.
+  matcher: ['/'],
+};
+
+```
+- src/hooks/use-auth.ts:
+```ts
+// This hook is deprecated and its logic has been moved into the main firebase/provider.tsx
+// It can be removed.
+export {};
+
+```
+- src/hooks/use-click-outside.ts:
+```ts
+import * as React from "react"
+
+export function useClickOutside<T extends HTMLElement>(
+  ref: React.RefObject<T>,
+  handler: (event: MouseEvent | TouchEvent) => void
+) {
+  React.useEffect(() => {
+    const listener = (event: MouseEvent | TouchEvent) => {
+      // Do nothing if clicking ref's element or descendent elements
+      if (!ref.current || ref.current.contains(event.target as Node)) {
+        return
+      }
+
+      handler(event)
+    }
+
+    document.addEventListener("mousedown", listener)
+    document.addEventListener("touchstart", listener)
+
+    return () => {
+      document.removeEventListener("mousedown", listener)
+      document.removeEventListener("touchstart", listener)
+    }
+  }, [ref, handler])
+}
+
+```
+- src/hooks/use-lock-body.ts:
+```ts
+import * as React from "react"
+
+// @see https://usehooks.com/useLockBodyScroll.
+export function useLockBody() {
+  React.useLayoutEffect((): (() => void) => {
+    const originalStyle: string = window.getComputedStyle(
+      document.body
+    ).overflow
+    document.body.style.overflow = "hidden"
+    return () => (document.body.style.overflow = originalStyle)
+  }, [])
+}
+
+```
+- src/hooks/use-media-query.ts:
+```ts
+import * as React from "react"
+
+export function useMediaQuery(query: string) {
+  const [value, setValue] = React.useState(false)
+
+  React.useEffect(() => {
+    function onChange(event: MediaQueryListEvent) {
+      setValue(event.matches)
+    }
+
+    const result = window.matchMedia(query)
+    result.addEventListener("change", onChange)
+    setValue(result.matches)
+
+    return () => result.removeEventListener("change", onChange)
+  }, [query])
+
+  return value
+}
+
+```
+- next-env.d.ts:
+```ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+/// <reference types="next/navigation-types/compat/image" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+
+```
+- postcss.config.mjs:
+```js
+/** @type {import('postcss').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+export default config;
+
+```
+- public/empty.txt:
+```
+This folder should not be empty, otherwise Firebase Hosting will not deploy it.
+
+```
+- src/ai/flows/placeholder.ts:
+```ts
+// This file is intentionally left blank.
+// It is used as a placeholder to ensure the flows directory is created.
+
+```
+- src/app/(auth)/login/page.tsx:
+```tsx
+
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/firebase'; // Adjust import based on your setup
+import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, GraduationCap } from 'lucide-react';
+import Link from 'next/link';
+
+export default function LoginPage() {
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!auth) return;
+    setIsLoading(true);
+
+    try {
+      await initiateEmailSignIn(auth, email, password);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleBypassLogin = (userEmail: string) => {
+      setEmail(userEmail);
+      setPassword('password123'); // Default password for all test accounts
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+          <div className="mx-auto bg-primary-foreground p-3 rounded-full border mb-4 inline-block">
+            <GraduationCap className="h-8 w-8 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold">CampusConnect</CardTitle>
+          <CardDescription>Sign in to your account</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link href="/password-reset" className="text-sm underline">Forgot password?</Link>
+              </div>
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign In
+            </Button>
+            <div className="mt-4 text-center text-sm">
+              Don't have an account?{' '}
+              <Link href="/signup" className="underline">
+                Sign up
+              </Link>
+            </div>
+          </form>
+          
+           {/* Bypass Login for Testing */}
+            <div className="mt-6 border-t pt-4">
+                <p className="text-center text-xs text-muted-foreground mb-2">For testing purposes, log in as:</p>
+                <div className="grid grid-cols-2 gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleBypassLogin('director@sunnyside.com')}>Director</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleBypassLogin('teacher@sunnyside.com')}>Teacher</Button>
+                </div>
+            </div>
+
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+```
+- src/app/(auth)/login/v2/page.tsx:
+```tsx
+
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/firebase'; // Adjust import based on your setup
+import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, GraduationCap } from 'lucide-react';
+import Link from 'next/link';
+
+export default function LoginPage() {
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!auth) return;
+    setIsLoading(true);
+
+    try {
+      await initiateEmailSignIn(auth, email, password);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleBypassLogin = (userEmail: string) => {
+      setEmail(userEmail);
+      setPassword('password123'); // Default password for all test accounts
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center">
+          <div className="mx-auto bg-primary-foreground p-3 rounded-full border mb-4 inline-block">
+            <GraduationCap className="h-8 w-8 text-primary" />
+          </div>
+          <CardTitle className="text-2xl font-bold">CampusConnect</CardTitle>
+          <CardDescription>Sign in to your account</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link href="/password-reset" className="text-sm underline">Forgot password?</Link>
+              </div>
+              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign In
+            </Button>
+            <div className="mt-4 text-center text-sm">
+              Don't have an account?{' '}
+              <Link href="/signup" className="underline">
+                Sign up
+              </Link>
+            </div>
+          </form>
+          
+           {/* Bypass Login for Testing */}
+            <div className="mt-6 border-t pt-4">
+                <p className="text-center text-xs text-muted-foreground mb-2">For testing purposes, log in as:</p>
+                <div className="grid grid-cols-2 gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleBypassLogin('director@sunnyside.com')}>Director</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleBypassLogin('teacher@sunnyside.com')}>Teacher</Button>
+                </div>
+            </div>
+
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+```
+- public/assets/junior/placeholder.txt:
+```
+This folder contains assets for the Junior Campus.
+
+```
+- public/images/placeholder.txt:
+```
+This folder is for static image assets.
+
+```
+- src/app/dashboard/senior-academy/AdminBlockManager.tsx:
+```tsx
+// This file is a placeholder. Logic can be added here if needed.
+// For now, it's not used in the Senior Academy page.
+
+const AdminBlockManager = () => null;
+export default AdminBlockManager;
+
+```
+- src/app/(auth)/layout.tsx:
+```tsx
+import { ReactNode } from 'react';
+
+export default function AuthLayout({ children }: { children: ReactNode }) {
+  // This layout can be used to wrap all auth-related pages (login, signup, etc.)
+  // For now, it just renders the children. You could add a shared header/footer here.
+  return <>{children}</>;
+}
+
+```
+- src/components/dashboard/senior-academy/AdminMissionCreator.tsx:
+```tsx
+// This file is a placeholder. Logic can be added here if needed.
+// For now, it's not used in the Senior Academy page.
+
+const AdminMissionCreator = () => null;
+export default AdminMissionCreator;
+
+```
