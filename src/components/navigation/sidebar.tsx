@@ -4,34 +4,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import {
-  LayoutDashboard,
-  Users,
-  UserCog,
-  GraduationCap,
-  BookOpen,
-  CalendarDays,
-  FileText,
-  Settings,
-  LogOut,
-  Wallet,
-  Megaphone,
-  Bus,
-  Library,
-  Beaker,
-  Code2,
-  BrainCircuit,
-  MessageSquare
-} from 'lucide-react';
+import { GraduationCap, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuth, useUser } from '@/firebase'; 
+import { useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context'; 
 import { signOut } from 'firebase/auth';
 import { auth } from '@/firebase/client-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
-import { SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarFooter } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarFooter } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronRight } from 'lucide-react';
 
@@ -90,7 +72,7 @@ export default function AppSidebar() {
   };
 
   return (
-    <>
+    <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
           <GraduationCap className="h-8 w-8 text-primary" />
@@ -169,6 +151,6 @@ export default function AppSidebar() {
           Sign Out
         </Button>
       </SidebarFooter>
-    </>
+    </Sidebar>
   );
 }
