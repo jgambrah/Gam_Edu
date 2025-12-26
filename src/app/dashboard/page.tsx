@@ -1,8 +1,12 @@
 
-// src/app/dashboard/page.tsx
-import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import DashboardClient from './dashboard-client';
+import DashboardLoading from './loading';
 
-export default function DashboardHome() {
-  // If someone just clicks "Dashboard", send them to the main Senior Academy page
-  redirect('/dashboard/senior-academy');
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardClient />
+    </Suspense>
+  );
 }

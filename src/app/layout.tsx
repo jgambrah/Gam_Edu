@@ -1,9 +1,10 @@
 
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { RoleProvider } from '@/context/role-context';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import ClientBoundary from './dashboard/client-boundary';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export default function RootLayout({
   children,
@@ -16,7 +17,9 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <RoleProvider>
             <SidebarProvider>
-              {children}
+              <ClientBoundary>
+                {children}
+              </ClientBoundary>
               <Toaster />
             </SidebarProvider>
           </RoleProvider>
