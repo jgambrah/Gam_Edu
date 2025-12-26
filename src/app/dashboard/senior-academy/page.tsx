@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -176,7 +177,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([cat, subs]) => (
                                 <Accordion key={cat} type="single" collapsible className="w-full">
                                     <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-indigo-50 rounded-2xl mb-1">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-indigo-50 rounded-2xl mb-1 group">
                                             <div className="flex items-center gap-2">
                                                 <BookOpen className="w-3 h-3 text-indigo-500" />
                                                 <span className="font-black text-indigo-900 text-xs uppercase">{cat}</span>
@@ -343,7 +344,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([subject, subTopics]) => (
                                 <Accordion key={subject} type="single" collapsible className="w-full">
                                     <AccordionItem value={subject} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-emerald-50 rounded-2xl mb-1 group">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-50 rounded-2xl mb-1 group">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                                                 <span className="font-black text-slate-700 text-xs uppercase tracking-tight">{subject}</span>
@@ -690,6 +691,7 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
             toast({ title: "Saved", description: "Manual entry added to the folders." });
             onContentAdded();
             setManualData({ ...manualData, title: '', latexFormula: '', content: '', background: '', answer: '' });
+            return;
         } catch (e) {
             toast({ title: "Error", description: "Failed to save manually.", variant: "destructive" });
         }
