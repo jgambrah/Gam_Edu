@@ -1,3 +1,4 @@
+
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { RoleProvider } from '@/context/role-context';
 import { SidebarProvider } from '@/components/ui/sidebar';

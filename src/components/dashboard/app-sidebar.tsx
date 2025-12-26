@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -31,7 +32,7 @@ import { auth } from '@/firebase/client-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
-import { SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarFooter } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarFooter } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 function isNavItemVisible(item: NavItem, role: UserRole | null) {
@@ -88,7 +89,7 @@ export default function AppSidebar() {
   };
 
   return (
-    <>
+    <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
           <GraduationCap className="h-8 w-8 text-primary" />
@@ -167,6 +168,6 @@ export default function AppSidebar() {
           Sign Out
         </Button>
       </SidebarFooter>
-    </>
+    </Sidebar>
   );
 }
