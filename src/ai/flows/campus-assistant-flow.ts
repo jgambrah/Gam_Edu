@@ -134,6 +134,8 @@ const campusAssistantFlow = ai.defineFlow(
     const compiledPrompt = ai.definePrompt({
       name: 'campusAssistantPrompt',
       prompt: promptTemplate,
+      input: { schema: CampusAssistantInputSchema },
+      output: { schema: CampusAssistantOutputSchema },
     });
 
     const { output } = await compiledPrompt({
