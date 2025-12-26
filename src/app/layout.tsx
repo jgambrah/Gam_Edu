@@ -5,6 +5,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import ClientBoundary from './dashboard/client-boundary';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import Script from 'next/script';
 
 export default function RootLayout({
   children,
@@ -13,7 +14,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+      </head>
       <body className="antialiased">
+        <Script 
+          src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js" 
+          strategy="beforeInteractive"
+        />
         <FirebaseClientProvider>
           <RoleProvider>
             <SidebarProvider>
