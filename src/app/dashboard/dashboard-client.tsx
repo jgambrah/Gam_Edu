@@ -18,7 +18,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { formatDistanceToNow, isThisMonth, format } from 'date-fns';
+import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import { FinancialRecord, AccountsPayableRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 
@@ -156,7 +156,7 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore])
   );
   const { data: classes, isLoading: classesLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore])
   );
   const { data: assignments, isLoading: assignmentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'assignments')) : null, [firestore])
@@ -946,4 +946,3 @@ export default function DashboardClient() {
   );
 }
 
-    
