@@ -81,7 +81,7 @@ function GraduateStudentForm({ setOpen, students }: { setOpen: (open: boolean) =
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {students.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                {students.map(s => <SelectItem key={s.id || s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
               </SelectContent>
             </Select>
             <FormMessage />
