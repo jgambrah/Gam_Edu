@@ -240,12 +240,14 @@ export default function DashboardClient() {
       const today = new Date();
       return dueDate && dueDate.toDateString() === today.toDateString();
     }).length || 0;
+    const totalBooks = libraryItems?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
     const availableBooks = libraryItems?.filter(l => l.status === 'Available').length || 0;
     const overdueBooks = libraryItems?.filter(l => l.status === 'Borrowed' && l.dueDate?.toDate?.() < new Date()).length || 0;
     
     return {
       pendingLeave,
       todayAssignments,
+      totalBooks,
       availableBooks,
       overdueBooks
     };
@@ -838,7 +840,7 @@ export default function DashboardClient() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard 
               title="Total Books" 
-              value={libraryItems?.length || 0} 
+              value={stats.totalBooks} 
               icon={BookMarked} 
               link="/dashboard/library"
               isLoading={isLoading}
@@ -945,4 +947,3 @@ export default function DashboardClient() {
     </div>
   );
 }
-
