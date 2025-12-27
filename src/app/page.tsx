@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, GraduationCap, Lock, Mail } from 'lucide-react';
+import { Loader2, GraduationCap, Lock, Mail, CheckCircle } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import Link from 'next/link';
@@ -72,8 +72,7 @@ export default function LoginPage() {
     }
   };
 
-  // Show a loading state while checking auth status
-  if (isUserLoading) {
+  if (isUserLoading || user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -81,70 +80,86 @@ export default function LoginPage() {
     );
   }
 
-  // Prevent rendering form if user is logged in and redirect is happening
-  if (user) {
-    return null;
-  }
-
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
-      <Card className="w-full max-w-sm shadow-lg">
-        <CardHeader className="text-center">
-          <div className="mx-auto bg-primary-foreground p-3 rounded-full border mb-4 inline-block">
-            <GraduationCap className="h-8 w-8 text-primary" />
-          </div>
-          <CardTitle className="text-2xl font-bold">Welcome Back!</CardTitle>
-          <CardDescription>Sign in to your CampusConnect account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignIn} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  className="pl-10"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link href="/password-reset" className="text-sm font-medium text-primary hover:underline">
-                        Forgot password?
-                    </Link>
+      <div className="grid w-full max-w-6xl grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl shadow-2xl bg-white">
+        {/* Left Column: Feature Highlight */}
+        <div className="bg-indigo-700 p-12 text-white flex-col justify-between hidden md:flex">
+            <div>
+                <div className="flex items-center gap-3 mb-6">
+                    <GraduationCap className="h-10 w-10 text-indigo-300" />
+                    <h1 className="text-3xl font-bold">CampusConnect</h1>
                 </div>
-                <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                        id="password"
-                        type="password"
-                        className="pl-10"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                <h2 className="text-2xl font-semibold leading-tight">Experience the next generation of AI-driven education management.</h2>
+                <p className="mt-2 text-indigo-200">Personalized learning, automated administration, and seamless communication in one platform.</p>
+                <ul className="mt-8 space-y-4">
+                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">AI-Powered Tutoring</span> & Learning Paths</span></li>
+                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">Automated Payroll</span> & Tax Calculation</span></li>
+                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">Integrated Student Billing</span> & Payments</span></li>
+                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">HR & Staff</span> Leave Management</span></li>
+                </ul>
+            </div>
+            <p className="text-xs text-indigo-300 mt-12">© 2025 GAM IT Solutions. All rights reserved.</p>
+        </div>
+
+        {/* Right Column: Login Form */}
+        <div className="p-12 flex flex-col justify-center">
+             <Card className="border-none shadow-none">
+                <CardHeader className="text-left p-0 mb-8">
+                    <CardTitle className="text-3xl font-bold text-slate-900">Welcome Back</CardTitle>
+                    <CardDescription>Enter your credentials to access your account</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        className="pl-10 h-12"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
-                    />
-                </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
-            </Button>
-            <div className="mt-4 text-center text-sm">
-              Don't have an account?{' '}
-              <Link href="/signup" className="underline font-semibold">
-                Sign up
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+                        />
+                    </div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="password">Password</Label>
+                            <Link href="/password-reset" className="text-sm font-medium text-indigo-600 hover:underline">
+                                Forgot password?
+                            </Link>
+                        </div>
+                        <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input
+                                id="password"
+                                type="password"
+                                className="pl-10 h-12"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </div>
+                    <Button type="submit" className="w-full h-12 bg-indigo-700 hover:bg-indigo-800" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Sign In
+                    </Button>
+                    <div className="mt-4 text-center text-sm">
+                    Don't have an account?{' '}
+                    <Link href="/signup" className="underline font-semibold text-indigo-600">
+                        Sign Up
+                    </Link>
+                    </div>
+                </form>
+                </CardContent>
+            </Card>
+        </div>
+      </div>
     </main>
   );
 }
