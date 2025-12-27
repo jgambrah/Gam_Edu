@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { LibraryItem, libraryItemSchema } from '@/lib/types';
-import { Loader2, PlusCircle, BookCheck, AlertTriangle } from 'lucide-react';
+import { Loader2, PlusCircle, BookCheck, AlertTriangle, Library as LibraryIcon, Book, CheckCircle, AlertCircle as AlertCircleIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format, addDays } from 'date-fns';
+import { format, addDays, isPast } from 'date-fns';
 import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
@@ -101,6 +101,21 @@ function LibraryItemForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   );
 }
 
+// --- Stat Card Component ---
+function StatCard({ title, value, icon: Icon }: { title: string; value: string | number; icon: React.ElementType }) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <Icon className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{value}</div>
+        </CardContent>
+      </Card>
+    );
+}
+
 // --- Main Library Page ---
 export default function LibraryPage() {
   const { role } = useRole();
@@ -116,6 +131,22 @@ export default function LibraryPage() {
 
   const libraryQuery = useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore]);
   const { data: libraryItems, isLoading } = useCollection<LibraryItem>(libraryQuery);
+
+  const libraryStats = useMemo(() => {
+    if (!libraryItems) {
+      return { total: 0, available: 0, borrowed: 0, overdue: 0 };
+    }
+    const total = libraryItems.reduce((sum, item) => sum + item.quantity, 0);
+    const available = libraryItems
+      .filter(item => item.status === 'Available')
+      .reduce((sum, item) => sum + item.quantity, 0);
+    const borrowed = libraryItems
+      .filter(item => item.status === 'Borrowed' || item.status === 'Pending Return')
+      .reduce((sum, item) => sum + item.quantity, 0);
+    const overdue = libraryItems.filter(item => item.status === 'Borrowed' && item.dueDate && isPast(item.dueDate.toDate())).length;
+
+    return { total, available, borrowed, overdue };
+  }, [libraryItems]);
 
   const filteredItems = useMemo(() => {
     if (!libraryItems) return [];
@@ -196,7 +227,7 @@ export default function LibraryPage() {
     <div className="space-y-6">
         <div className="flex items-center justify-between">
             <div>
-                <h1 className="text-3xl font-bold">Library</h1>
+                <h1 className="text-3xl font-bold flex items-center gap-2"><LibraryIcon className="text-primary"/> Library</h1>
                 <p className="text-muted-foreground">Catalog, borrow, and manage library resources.</p>
             </div>
             {canManage && (
@@ -208,6 +239,15 @@ export default function LibraryPage() {
                 </div>
             )}
         </div>
+        
+        {canManage && (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard title="Total Items" value={libraryStats.total} icon={Book} />
+                <StatCard title="Available" value={libraryStats.available} icon={CheckCircle} />
+                <StatCard title="Borrowed" value={libraryStats.borrowed} icon={BookCheck} />
+                <StatCard title="Overdue" value={libraryStats.overdue} icon={AlertTriangle} />
+            </div>
+        )}
 
         {canBorrow && myBorrowedItems.length > 0 && (
             <Card>
