@@ -179,10 +179,10 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
                <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
                     <SelectContent>
-                        {/* FIX 1: Unique key insurance + Single span child */}
+                        {/* FIX 1: Pass a SINGLE string child to SelectItem to avoid key warnings in SelectItemText */}
                         {teachers.map((t, idx) => (
                           <SelectItem key={`${t.id}-${idx}`} value={t.uid}>
-                            <span>{t.firstName} {t.lastName}</span>
+                            {`${t.firstName} ${t.lastName}`}
                           </SelectItem>
                         ))}
                     </SelectContent>
@@ -319,10 +319,10 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                             <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                          {/* FIX 2: Composite unique key + single child wrapping */}
+                                                          {/* FIX 2: Again, pass a SINGLE string child to SelectItem */}
                                                           {teachers?.map((t, idx) => (
                                                             <SelectItem key={`${t.id}-${idx}`} value={t.uid || t.id}>
-                                                              <span>{t.firstName} {t.lastName}</span>
+                                                              {`${t.firstName} ${t.lastName}`}
                                                             </SelectItem>
                                                           ))}
                                                         </SelectContent>
@@ -403,7 +403,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                     {enrolledStudents.map((s, idx) => (
                                       <li key={`${s.id}-${idx}`} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
                                         <UserCircle className="h-5 w-5"/>
-                                        {s.firstName} {s.lastName}
+                                        {/* Single string node for simplicity */}
+                                        {`${s.firstName} ${s.lastName}`}
                                       </li>
                                     ))}
                                 </ul>
