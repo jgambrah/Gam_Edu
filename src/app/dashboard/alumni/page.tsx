@@ -72,31 +72,39 @@ function GraduateStudentForm({ setOpen, students }: { setOpen: (open: boolean) =
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField control={form.control} name="studentId" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Active Student</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <FormField
+          control={form.control}
+          name="studentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Active Student</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a student to graduate" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {students.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="graduationYear"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Graduation Year</FormLabel>
               <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a student to graduate" />
-                </SelectTrigger>
+                <Input type="number" {...field} />
               </FormControl>
-              <SelectContent>
-                {students.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="graduationYear" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Graduation Year</FormLabel>
-            <FormControl>
-              <Input type="number" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button type="submit" disabled={isSubmitting} className="w-full">
           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Graduate Student
         </Button>
