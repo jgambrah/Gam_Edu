@@ -15,9 +15,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings } from 'lucide-react';
 import { navItems } from '@/lib/data';
-import { useFirebase, useUser } from '@/firebase';
+import { useFirebase, useUser } from '@/firebase'; 
 import { signOut } from 'firebase/auth';
-import { useRole } from '@/context/role-context';
+import { useRole } from '@/context/role-context'; 
 import NotificationBell from './notifications'; // Import the new component
 
 export default function Header() {
@@ -34,7 +34,7 @@ export default function Header() {
         // Add a small delay to ensure state clears, then redirect
         setTimeout(() => {
           router.push('/');
-        }, 300);
+        }, 100);
     }
   };
   

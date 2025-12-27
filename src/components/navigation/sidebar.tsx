@@ -58,7 +58,7 @@ export default function AppSidebar() {
        // Add a small delay to ensure state clears, then redirect
       setTimeout(() => {
         router.push('/');
-      }, 300);
+      }, 100);
     }
   };
 
