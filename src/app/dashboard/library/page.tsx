@@ -19,8 +19,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+
 
 // --- Form for adding new library items ---
 function LibraryItemForm({ setOpen }: { setOpen: (open: boolean) => void }) {
@@ -107,6 +109,7 @@ export default function LibraryPage() {
   const { toast } = useToast();
   const [isFormOpen, setFormOpen] = useState(false);
   const [filter, setFilter] = useState('');
+  const [activeTab, setActiveTab] = useState('catalog');
 
   const canManage = ['Librarian', 'Administrator', 'Director'].includes(role || '');
   const canBorrow = ['Student', 'Teacher'].includes(role || '');
@@ -135,6 +138,11 @@ export default function LibraryPage() {
       if (!user || !libraryItems) return [];
       return libraryItems.filter(item => item.currentHolderId === user.uid);
   }, [libraryItems, user]);
+  
+  const pendingRequests = useMemo(() => {
+      if (!libraryItems) return [];
+      return libraryItems.filter(item => item.status === 'Requested');
+  }, [libraryItems]);
 
   const handleRequestBorrow = (item: LibraryItem) => {
     if (!user) return;
@@ -145,7 +153,7 @@ export default function LibraryPage() {
     updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
         status: 'Requested',
         currentHolderId: user.uid,
-        currentHolderName: user.email // or display name
+        currentHolderName: user.displayName || user.email,
     });
     toast({ title: 'Request Sent', description: `Your request to borrow "${item.name}" has been sent for approval.`});
   }
@@ -156,6 +164,32 @@ export default function LibraryPage() {
     });
     toast({ title: 'Return Initiated', description: `"${item.name}" is now pending return confirmation from the librarian.`});
   }
+  
+  const handleApproveRequest = async (item: LibraryItem) => {
+    const dueDate = addDays(new Date(), 14); // Set due date to 14 days from now
+    try {
+        await updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
+            status: 'Borrowed',
+            dueDate: dueDate,
+        });
+        toast({ title: "Approved", description: `${item.name} has been issued.`});
+    } catch(e) {
+        toast({ variant: 'destructive', title: "Error", description: "Failed to approve request." });
+    }
+  };
+
+  const handleRejectRequest = async (item: LibraryItem) => {
+    try {
+        await updateDocumentNonBlocking(doc(firestore, 'library', item.id), {
+            status: 'Available',
+            currentHolderId: '',
+            currentHolderName: ''
+        });
+        toast({ title: "Rejected", description: `Request for ${item.name} has been rejected.`});
+    } catch(e) {
+        toast({ variant: 'destructive', title: "Error", description: "Failed to reject request." });
+    }
+  };
 
 
   return (
@@ -167,7 +201,6 @@ export default function LibraryPage() {
             </div>
             {canManage && (
                 <div className='flex gap-2'>
-                    <Button variant="outline"><AlertTriangle className="mr-2 h-4 w-4"/>Check Overdue & Apply Fines</Button>
                     <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
                         <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Add New Item</Button></DialogTrigger>
                         <DialogContent><DialogHeader><DialogTitle>Add New Item to Catalog</DialogTitle><DialogDescription>Fill out the form to add a new item.</DialogDescription></DialogHeader><LibraryItemForm setOpen={setFormOpen} /></DialogContent>
@@ -201,22 +234,23 @@ export default function LibraryPage() {
       
         <Card>
             <CardHeader>
-                <CardTitle>Library Catalog</CardTitle>
-                <div className='mt-2'>
+                <Tabs defaultValue="catalog" value={activeTab} onValueChange={setActiveTab}>
+                    <TabsList>
+                        <TabsTrigger value="catalog">Library Catalog</TabsTrigger>
+                        {canManage && <TabsTrigger value="requests">Pending Requests <Badge className="ml-2">{pendingRequests.length}</Badge></TabsTrigger>}
+                    </TabsList>
+                </Tabs>
+                <div className='mt-4'>
                     <Input placeholder="Search by title or author..." value={filter} onChange={e => setFilter(e.target.value)} />
                 </div>
             </CardHeader>
             <CardContent>
-                {isLoading ? <div className='flex justify-center p-8'><Loader2 className="h-8 w-8 animate-spin" /></div> : (
+                {isLoading ? <div className='flex justify-center p-8'><Loader2 className="h-8 w-8 animate-spin" /></div> : 
+                activeTab === 'catalog' ? (
                      <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Author</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Location</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead></TableHead>
+                                <TableHead>Name</TableHead><TableHead>Author</TableHead><TableHead>Category</TableHead><TableHead>Location</TableHead><TableHead>Status</TableHead><TableHead></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -233,6 +267,23 @@ export default function LibraryPage() {
                                    </TableCell>
                                </TableRow>
                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <Table>
+                        <TableHeader><TableRow><TableHead>Item</TableHead><TableHead>Requested By</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {pendingRequests.map(item => (
+                                <TableRow key={item.id}>
+                                    <TableCell>{item.name}</TableCell>
+                                    <TableCell>{item.currentHolderName || 'N/A'}</TableCell>
+                                    <TableCell className="space-x-2">
+                                        <Button size="sm" variant="default" onClick={() => handleApproveRequest(item)}>Approve</Button>
+                                        <Button size="sm" variant="destructive" onClick={() => handleRejectRequest(item)}>Reject</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {pendingRequests.length === 0 && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No pending requests.</TableCell></TableRow>}
                         </TableBody>
                     </Table>
                 )}
