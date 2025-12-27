@@ -178,18 +178,17 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
             <FormItem>
               <FormLabel>Assign Teacher (Optional)</FormLabel>
                <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                    <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a teacher" />
-                        </SelectTrigger>
-                    </FormControl>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
                     <SelectContent>
                         <SelectGroup>
-                            {teachers.map((t, idx) => (
-                              <SelectItem key={`create-teacher-${t.id}-${idx}`} value={t.uid}>
-                                <span key={`text-${t.id}-${idx}`}>{`${t.firstName} ${t.lastName}`}</span>
-                              </SelectItem>
-                            ))}
+                            {teachers.map((t, idx) => {
+                              const fullName = `${t.firstName} ${t.lastName}`;
+                              return (
+                                <SelectItem key={`create-teacher-${t.id}-${idx}`} value={t.uid}>
+                                  {fullName}
+                                </SelectItem>
+                              );
+                            })}
                         </SelectGroup>
                     </SelectContent>
                 </Select>
@@ -245,6 +244,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
             const entry = classTimetable.find(e => e.subjectId === subjectId);
             const teacher = teachers.find(t => t.uid === entry?.teacherId);
             return {
+                subjectId,
                 subjectName: subject?.name || 'Unknown Subject',
                 teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Not Assigned',
             };
@@ -316,8 +316,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                 </CardHeader>
                                 <CardContent>
                                     <Form {...form}>
-                                        <form key={`update-form-${classData.id}`} onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
-                                            <FormField key={`${classData.id}-teacher-field`} control={form.control} name="teacherId" render={({ field }) => (
+                                        <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
+                                            <FormField control={form.control} name="teacherId" render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Class Teacher</FormLabel>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value || undefined} disabled={!canManage}>
@@ -326,20 +326,23 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                         </FormControl>
                                                         <SelectContent>
                                                             <SelectGroup>
-                                                              {teachers?.map((t, idx) => (
-                                                                <SelectItem key={`detail-teacher-${t.id}-${idx}`} value={t.uid || t.id}>
-                                                                  <span key={`text-detail-${t.id}-${idx}`}>{`${t.firstName} ${t.lastName}`}</span>
-                                                                </SelectItem>
-                                                              ))}
+                                                              {teachers?.map((t) => {
+                                                                const fullName = `${t.firstName} ${t.lastName}`;
+                                                                return (
+                                                                  <SelectItem key={t.uid || t.id} value={t.uid || t.id}>
+                                                                    {fullName}
+                                                                  </SelectItem>
+                                                                );
+                                                              })}
                                                             </SelectGroup>
                                                         </SelectContent>
                                                     </Select>
                                                 </FormItem>
                                             )}/>
-                                            <FormField key={`${classData.id}-capacity-field`} control={form.control} name="capacity" render={({ field }) => (
+                                            <FormField control={form.control} name="capacity" render={({ field }) => (
                                                 <FormItem><FormLabel>Class Capacity</FormLabel><FormControl><Input type="number" {...field} disabled={!canManage} /></FormControl></FormItem>
                                             )}/>
-                                            <FormField key={`${classData.id}-desc-field`} control={form.control} name="description" render={({ field }) => (
+                                            <FormField control={form.control} name="description" render={({ field }) => (
                                                 <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea {...field} disabled={!canManage} /></FormControl></FormItem>
                                             )}/>
                                             {canManage && <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}Save Changes</Button>}
@@ -385,8 +388,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                 <TableRow><TableHead>Subject</TableHead><TableHead>Teacher</TableHead></TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {subjectTeachers.map((st, idx) => (
-                                                    <TableRow key={`sub-row-${st.subjectName}-${idx}`}>
+                                                {subjectTeachers.map((st) => (
+                                                    <TableRow key={`${st.subjectId}-${classData.id}`}>
                                                       <TableCell>{st.subjectName}</TableCell>
                                                       <TableCell>{st.teacherName}</TableCell>
                                                     </TableRow>
@@ -408,8 +411,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                             <div className="max-h-96 overflow-y-auto pr-2">
                             {enrolledStudents.length > 0 ? (
                                 <ul className="space-y-2">
-                                    {enrolledStudents.map((s, idx) => (
-                                      <li key={`student-list-${s.id}-${idx}`} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+                                    {enrolledStudents.map((s) => (
+                                      <li key={s.uid || s.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
                                         <UserCircle className="h-5 w-5"/>
                                         {s.firstName} {s.lastName}
                                       </li>
@@ -515,8 +518,8 @@ export default function AcademicsPageContent() {
             </div>
           ) : classes && classes.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {classes.map((c, idx) => (
-                <Dialog key={`class-dialog-${c.id}-${idx}`} onOpenChange={(open) => !open && setSelectedClass(null)}>
+              {classes.map((c) => (
+                <Dialog key={c.id} onOpenChange={(open) => !open && setSelectedClass(null)}>
                   <DialogTrigger asChild>
                     <Card className="cursor-pointer hover:border-primary transition-colors h-full" onClick={() => setSelectedClass(c)}>
                       <CardHeader>
@@ -554,4 +557,3 @@ export default function AcademicsPageContent() {
   );
 }
 
-    
