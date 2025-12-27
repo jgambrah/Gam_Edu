@@ -180,7 +180,7 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
                <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
                     <SelectContent>
-                        {teachers.map(t => <SelectItem key={t.uid} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
+                        {teachers.map(t => <SelectItem key={t.id} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
                     </SelectContent>
                 </Select>
               <FormMessage />
