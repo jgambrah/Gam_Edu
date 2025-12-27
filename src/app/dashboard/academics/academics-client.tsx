@@ -179,12 +179,16 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
                <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
                     <SelectContent>
-                        {/* FIX 1: Pass a SINGLE string child to SelectItem to avoid key warnings in SelectItemText */}
-                        {teachers.map((t, idx) => (
-                          <SelectItem key={`${t.id}-${idx}`} value={t.uid}>
-                            {`${t.firstName} ${t.lastName}`}
-                          </SelectItem>
-                        ))}
+                        {teachers.map((t) => {
+                          // GUARANTEED FIX: Create a single string variable. 
+                          // Passing this ensures SelectItemText receives ONE child, not a list.
+                          const fullName = `${t.firstName} ${t.lastName}`;
+                          return (
+                            <SelectItem key={t.id} value={t.uid}>
+                              {fullName}
+                            </SelectItem>
+                          );
+                        })}
                     </SelectContent>
                 </Select>
               <FormMessage />
@@ -319,12 +323,14 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                             <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                          {/* FIX 2: Again, pass a SINGLE string child to SelectItem */}
-                                                          {teachers?.map((t, idx) => (
-                                                            <SelectItem key={`${t.id}-${idx}`} value={t.uid || t.id}>
-                                                              {`${t.firstName} ${t.lastName}`}
-                                                            </SelectItem>
-                                                          ))}
+                                                          {teachers?.map((t) => {
+                                                            const fullName = `${t.firstName} ${t.lastName}`;
+                                                            return (
+                                                              <SelectItem key={t.id} value={t.uid || t.id}>
+                                                                {fullName}
+                                                              </SelectItem>
+                                                            );
+                                                          })}
                                                         </SelectContent>
                                                     </Select>
                                                 </FormItem>
@@ -378,7 +384,6 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                 <TableRow><TableHead>Subject</TableHead><TableHead>Teacher</TableHead></TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {/* FIX 3: Robust key for table rows */}
                                                 {subjectTeachers.map((st, idx) => (
                                                     <TableRow key={`row-${st.subjectName}-${idx}`}><TableCell>{st.subjectName}</TableCell><TableCell>{st.teacherName}</TableCell></TableRow>
                                                 ))}
@@ -399,12 +404,10 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                             <div className="max-h-96 overflow-y-auto pr-2">
                             {enrolledStudents.length > 0 ? (
                                 <ul className="space-y-2">
-                                    {/* FIX 4: Robust key for list items */}
-                                    {enrolledStudents.map((s, idx) => (
-                                      <li key={`${s.id}-${idx}`} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+                                    {enrolledStudents.map((s) => (
+                                      <li key={s.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
                                         <UserCircle className="h-5 w-5"/>
-                                        {/* Single string node for simplicity */}
-                                        {`${s.firstName} ${s.lastName}`}
+                                        {s.firstName} {s.lastName}
                                       </li>
                                     ))}
                                 </ul>
@@ -508,8 +511,8 @@ export default function AcademicsPageContent() {
             </div>
           ) : classes && classes.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {classes.map((c, idx) => (
-                <Dialog key={`${c.id}-${idx}`} onOpenChange={(open) => !open && setSelectedClass(null)}>
+              {classes.map((c) => (
+                <Dialog key={c.id} onOpenChange={(open) => !open && setSelectedClass(null)}>
                   <DialogTrigger asChild>
                     <Card className="cursor-pointer hover:border-primary transition-colors h-full" onClick={() => setSelectedClass(c)}>
                       <CardHeader>
