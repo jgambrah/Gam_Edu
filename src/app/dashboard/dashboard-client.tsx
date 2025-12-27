@@ -12,7 +12,7 @@ import {
   ClipboardCheck, TrendingUp, Bell, FileText, Bus,
   CreditCard, DollarSign, Receipt, Package, Award,
   MessageSquare, Clock, AlertCircle, CheckCircle2,
-  UserCheck, BookMarked, Briefcase, BarChart3, Activity
+  UserCheck, BookMarked, Briefcase, BarChart3, Activity, Landmark
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
@@ -156,7 +156,7 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore])
   );
   const { data: classes, isLoading: classesLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore])
+    useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
   );
   const { data: assignments, isLoading: assignmentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'assignments')) : null, [firestore])
@@ -175,10 +175,10 @@ export default function DashboardClient() {
 
   // --- NEW: FINANCIAL DATA FETCHING ---
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<FinancialRecord>(
-    useMemoFirebase(() => (firestore && isFinance) ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance])
+    useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector)) ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector])
   );
   const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(
-    useMemoFirebase(() => (firestore && isFinance) ? query(collection(firestore, 'accountsPayable'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance])
+    useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector)) ? query(collection(firestore, 'accountsPayable'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector])
   );
 
   const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading || payablesLoading;
@@ -945,5 +945,3 @@ export default function DashboardClient() {
     </div>
   );
 }
-
-    
