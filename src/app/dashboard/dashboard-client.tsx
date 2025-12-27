@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
   PlusCircle, PenSquare, FilePen, BookOpen, Calendar,
@@ -19,7 +18,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { formatDistanceToNow, isThisMonth, parseISO } from 'date-fns';
+import { formatDistanceToNow, isThisMonth, format } from 'date-fns';
 import { FinancialRecord, AccountsPayableRecord } from '@/lib/types';
 
 
@@ -156,7 +155,7 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore])
   );
   const { data: classes, isLoading: classesLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore])
   );
   const { data: assignments, isLoading: assignmentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'assignments')) : null, [firestore])
@@ -945,3 +944,5 @@ export default function DashboardClient() {
     </div>
   );
 }
+
+    
