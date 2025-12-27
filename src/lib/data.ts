@@ -411,7 +411,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/reports',
     title: 'Reporting & Analytics',
     icon: BarChart,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
+    roles: ['Director', 'Administrator', 'Teacher'],
      subItems: [
       {
         path: '/dashboard/reports/academics',
@@ -596,3 +596,5 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
+
+    
