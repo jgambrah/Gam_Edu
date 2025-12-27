@@ -220,7 +220,7 @@ export default function DashboardClient() {
         activities.push(...financialRecords.map(p => ({
             type: 'Payment',
             title: 'Payment Received',
-            description: `GH₵${p.amountPaid.toFixed(2)} from ${p.studentName} for ${p.type}`,
+            description: `GH₵${(p.amountPaid || 0).toFixed(2)} from ${p.studentName} for ${p.type}`,
             time: p.createdAt, 
             icon: CheckCircle2,
             iconColor: 'text-emerald-600'
