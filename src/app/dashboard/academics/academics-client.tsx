@@ -187,8 +187,7 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
                         <SelectGroup>
                             {teachers.map((t, idx) => (
                               <SelectItem key={`create-teacher-${t.id}-${idx}`} value={t.uid}>
-                                {/* FIX: Wrap in span with unique key to satisfy Radix cloned children requirements */}
-                                <span key={`text-${t.id}-${idx}`}>{t.firstName} {t.lastName}</span>
+                                <span key={`text-${t.id}-${idx}`}>{`${t.firstName} ${t.lastName}`}</span>
                               </SelectItem>
                             ))}
                         </SelectGroup>
@@ -329,7 +328,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                             <SelectGroup>
                                                               {teachers?.map((t, idx) => (
                                                                 <SelectItem key={`detail-teacher-${t.id}-${idx}`} value={t.uid || t.id}>
-                                                                  <span key={`text-detail-${t.id}-${idx}`}>{t.firstName} {t.lastName}</span>
+                                                                  <span key={`text-detail-${t.id}-${idx}`}>{`${t.firstName} ${t.lastName}`}</span>
                                                                 </SelectItem>
                                                               ))}
                                                             </SelectGroup>
@@ -554,3 +553,5 @@ export default function AcademicsPageContent() {
     </div>
   );
 }
+
+    
