@@ -1,5 +1,4 @@
 
-
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -136,7 +135,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/my-children',
             title: 'My Children',
             icon: ListOrdered,
-            roles: ['Parent', 'Student'],
+            roles: ['Parent'],
         },
         {
             path: '/dashboard/academics/subjects',
@@ -515,7 +514,7 @@ export const MOCK_CHART_OF_ACCOUNTS: ChartOfAccount[] = [
     { accountId: '4020', name: 'Library Fines', type: 'Revenue', isControlAccount: false, parentAccountId: '4000' },
     { accountId: '5000', name: 'Operating Expenses', type: 'Expense', isControlAccount: true },
     { accountId: '5010', name: 'Salaries Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
-    { accountId: '5020', name: 'Utilities Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
+    { accountId: '5020', name: 'Utilities Expense', isControlAccount: false, type: 'Expense', parentAccountId: '5000' },
     { accountId: '5030', name: 'Maintenance Expense', type: 'Expense', isControlAccount: false, parentAccountId: '5000' },
     { accountId: '1000', name: 'Current Assets', type: 'Asset', isControlAccount: true },
     { accountId: '2000', name: 'Current Liabilities', type: 'Liability', isControlAccount: true },
