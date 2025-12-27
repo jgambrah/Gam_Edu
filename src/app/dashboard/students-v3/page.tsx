@@ -24,12 +24,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class } from '@/lib/types';
+import { MigrateStudentIds } from './migrate-student-ids';
 
 // --- ROBUST ID GENERATION ---
 async function generateNextStudentId(firestore: any): Promise<string> {
@@ -184,6 +185,13 @@ export default function StudentsV3Page() {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
+  
+  const formatStudentIdDisplay = (student: Student): string => {
+    if (student.studentId && /^SS-\d{4}-\d{4}$/.test(student.studentId)) {
+        return student.studentId;
+    }
+    return 'ID Pending';
+  };
 
   const filteredStudents = students.filter(s => {
     const first = (s.firstName || '').toLowerCase();
@@ -202,6 +210,8 @@ export default function StudentsV3Page() {
   return (
     <div className="space-y-6 p-6">
       
+      <MigrateStudentIds />
+
       <Card className="border-t-4 border-t-green-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -263,7 +273,7 @@ export default function StudentsV3Page() {
                         <TableBody>
                             {filteredStudents.map((s) => (
                                 <TableRow key={s.id}>
-                                    <TableCell className="font-mono text-xs">{s.studentId || 'N/A'}</TableCell>
+                                    <TableCell className="font-mono text-xs">{formatStudentIdDisplay(s)}</TableCell>
                                     <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                     <TableCell>{s.email}</TableCell>
                                     <TableCell>
