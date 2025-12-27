@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -178,10 +177,14 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
             <FormItem>
               <FormLabel>Assign Teacher (Optional)</FormLabel>
                <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
+                    <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a teacher" />
+                        </SelectTrigger>
+                    </FormControl>
                     <SelectContent>
-                        {teachers.map((t) => (
-                          <SelectItem key={t.uid || t.id} value={t.uid}>
+                        {teachers.map((t, index) => (
+                          <SelectItem key={`teacher-${t.uid || t.id}-${index}`} value={t.uid}>
                             {t.firstName} {t.lastName}
                           </SelectItem>
                         ))}
@@ -320,8 +323,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                             <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            {teachers?.map((t) => (
-                                                              <SelectItem key={t.uid || t.id} value={t.uid || t.id}>
+                                                            {teachers?.map((t, index) => (
+                                                              <SelectItem key={`teacher-detail-${t.uid || t.id}-${index}`} value={t.uid || t.id}>
                                                                 {t.firstName} {t.lastName}
                                                               </SelectItem>
                                                             ))}
