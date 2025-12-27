@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useRole } from "@/context/role-context";
@@ -16,6 +17,9 @@ export default function GradebookPage() {
         if (!loading && role === 'Parent') {
             router.replace('/dashboard/my-children');
         }
+        if (!loading && role === 'Student') {
+            router.replace('/dashboard/my-children');
+        }
     }, [role, loading, router]);
     
     if (loading) {
@@ -26,26 +30,13 @@ export default function GradebookPage() {
         )
     }
 
-    if (role === 'Parent') {
+    if (role === 'Parent' || role === 'Student') {
         return (
              <Card>
                 <CardHeader>
                     <CardTitle>Redirecting...</CardTitle>
                     <CardDescription>
-                        Parents should view grades under "My Children". Redirecting you now.
-                    </CardDescription>
-                </CardHeader>
-            </Card>
-        );
-    }
-    
-    if (role === 'Student') {
-         return (
-             <Card>
-                <CardHeader>
-                    <CardTitle>Gradebook Access</CardTitle>
-                    <CardDescription>
-                        Please view your grades and report cards under the "Report Cards" section.
+                        You should view grades under the "My Children" or "Report Cards" section. Redirecting you now.
                     </CardDescription>
                 </CardHeader>
             </Card>
@@ -69,3 +60,4 @@ export default function GradebookPage() {
         </Card>
     );
 }
+
