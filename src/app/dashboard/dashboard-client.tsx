@@ -19,6 +19,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { formatDistanceToNow } from 'date-fns';
 
 // Simple Stat Card Component
 function StatCard({ 
@@ -138,7 +139,7 @@ export default function DashboardClient() {
 
   // Data Fetching
   const { data: students, isLoading: studentsLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'students'), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore])
   );
   const { data: staff, isLoading: staffLoading } = useCollection(
     useMemoFirebase(() => firestore ? collection(firestore, 'staff') : null, [firestore])
@@ -150,13 +151,16 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? collection(firestore, 'assignments') : null, [firestore])
   );
   const { data: announcements, isLoading: announcementsLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'announcements_v2') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(5)) : null, [firestore])
   );
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'leaveRequests') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'leaveRequests'), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore])
   );
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(
     useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore])
+  );
+  const { data: financialRecords, isLoading: paymentsLoading } = useCollection(
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), where('amountPaid', '>', 0), orderBy('amountPaid', 'desc'), limit(5)) : null, [firestore])
   );
 
   const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading;
@@ -168,6 +172,56 @@ export default function DashboardClient() {
   const isParent = role === 'Parent';
   const isFinance = role === 'Accountant';
   const isLibrarian = role === 'Librarian';
+
+  // LIVE ACTIVITY FEED
+  const recentActivity = useMemo(() => {
+    const activities = [];
+    if (students) {
+        activities.push(...students.map(s => ({
+            type: 'New Student',
+            title: 'New Student Enrolled',
+            description: `${s.firstName} ${s.lastName} was added.`,
+            time: s.createdAt,
+            icon: UserCheck,
+            iconColor: 'text-green-600'
+        })));
+    }
+    if (leaveRequests) {
+        activities.push(...leaveRequests.map(r => ({
+            type: 'Leave Request',
+            title: `Leave Request from ${r.staffName}`,
+            description: `${r.leaveType} for reason: ${r.reason.substring(0,30)}...`,
+            time: r.createdAt,
+            icon: Calendar,
+            iconColor: 'text-blue-600'
+        })));
+    }
+    if (announcements) {
+        activities.push(...announcements.map(a => ({
+            type: 'Announcement',
+            title: 'New Announcement Posted',
+            description: a.title,
+            time: a.publishedAt,
+            icon: Bell,
+            iconColor: 'text-purple-600'
+        })));
+    }
+    if (financialRecords) {
+        activities.push(...financialRecords.map(p => ({
+            type: 'Payment',
+            title: 'Payment Received',
+            description: `GH₵${p.amountPaid.toFixed(2)} from ${p.studentName} for ${p.type}`,
+            time: p.createdAt, // Assuming createdAt is payment date
+            icon: CheckCircle2,
+            iconColor: 'text-emerald-600'
+        })));
+    }
+    
+    // Sort all collected activities by time
+    return activities.sort((a,b) => (b.time?.seconds || 0) - (a.time?.seconds || 0)).slice(0, 5);
+
+  }, [students, leaveRequests, announcements, financialRecords]);
+
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -344,34 +398,17 @@ export default function DashboardClient() {
                 <CardDescription>Latest updates across the system</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <ActivityItem 
-                  title="New Student Enrolled"
-                  description="John Doe added to Grade 10A"
-                  time="2 hours ago"
-                  icon={UserCheck}
-                  iconColor="text-green-600"
-                />
-                <ActivityItem 
-                  title="Leave Request"
-                  description="Sarah Johnson requested 3 days leave"
-                  time="5 hours ago"
-                  icon={Calendar}
-                  iconColor="text-blue-600"
-                />
-                <ActivityItem 
-                  title="Payment Received"
-                  description="Tuition payment for Michael Brown"
-                  time="1 day ago"
-                  icon={CheckCircle2}
-                  iconColor="text-green-600"
-                />
-                <ActivityItem 
-                  title="New Announcement"
-                  description="Sports day scheduled for next week"
-                  time="2 days ago"
-                  icon={Bell}
-                  iconColor="text-purple-600"
-                />
+                  {recentActivity.length === 0 && <p className="text-sm text-muted-foreground">No recent activities.</p>}
+                  {recentActivity.map((item, index) => (
+                      <ActivityItem 
+                        key={index}
+                        title={item.title}
+                        description={item.description}
+                        time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : 'Just now'}
+                        icon={item.icon}
+                        iconColor={item.iconColor}
+                      />
+                  ))}
               </CardContent>
             </Card>
           </div>
@@ -549,7 +586,7 @@ export default function DashboardClient() {
               </CardHeader>
               <CardContent>
                 {announcementsLoading ? <Loader2 className="animate-spin"/> : (
-                  announcements?.slice(0, 3).map(a => (
+                  (announcements || []).slice(0, 3).map(a => (
                     <ActivityItem 
                       key={a.id}
                       title={a.title}
