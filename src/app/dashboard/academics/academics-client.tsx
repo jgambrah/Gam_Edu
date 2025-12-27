@@ -376,8 +376,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                 <TableRow><TableHead>Subject</TableHead><TableHead>Teacher</TableHead></TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {subjectTeachers.map(st => (
-                                                    <TableRow key={st.subjectName}><TableCell>{st.subjectName}</TableCell><TableCell>{st.teacherName}</TableCell></TableRow>
+                                                {subjectTeachers.map((st, idx) => (
+                                                    <TableRow key={`${st.subjectName}-${idx}`}><TableCell>{st.subjectName}</TableCell><TableCell>{st.teacherName}</TableCell></TableRow>
                                                 ))}
                                             </TableBody>
                                         </Table>
@@ -536,7 +536,3 @@ export default function AcademicsPageContent() {
     </div>
   );
 }
-
-    
-    
-    
