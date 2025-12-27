@@ -180,16 +180,11 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
                <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
                     <SelectContent>
-                        <SelectGroup>
-                            {teachers.map((t, idx) => {
-                              const fullName = `${t.firstName} ${t.lastName}`;
-                              return (
-                                <SelectItem key={`create-teacher-${t.id}-${idx}`} value={t.uid}>
-                                  {fullName}
-                                </SelectItem>
-                              );
-                            })}
-                        </SelectGroup>
+                        {teachers.map((t) => (
+                          <SelectItem key={t.uid || t.id} value={t.uid}>
+                            {t.firstName} {t.lastName}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
               <FormMessage />
@@ -325,16 +320,11 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                             <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            <SelectGroup>
-                                                              {teachers?.map((t) => {
-                                                                const fullName = `${t.firstName} ${t.lastName}`;
-                                                                return (
-                                                                  <SelectItem key={t.uid || t.id} value={t.uid || t.id}>
-                                                                    {fullName}
-                                                                  </SelectItem>
-                                                                );
-                                                              })}
-                                                            </SelectGroup>
+                                                            {teachers?.map((t) => (
+                                                              <SelectItem key={t.uid || t.id} value={t.uid || t.id}>
+                                                                {t.firstName} {t.lastName}
+                                                              </SelectItem>
+                                                            ))}
                                                         </SelectContent>
                                                     </Select>
                                                 </FormItem>
@@ -556,4 +546,3 @@ export default function AcademicsPageContent() {
     </div>
   );
 }
-
