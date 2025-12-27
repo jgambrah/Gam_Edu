@@ -87,6 +87,11 @@ service cloud.firestore {
         allow read: if isSignedIn();
         allow write: if isAdmin();
     }
+    
+    // Rule for the student ID counter
+    match /counters/{counterId} {
+        allow read, write: if isAdmin();
+    }
 
     // Students and Parents can be managed by admins, but can read their own profiles
     match /students/{studentId} {
