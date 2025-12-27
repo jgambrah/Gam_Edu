@@ -21,6 +21,7 @@ import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Student, graduateStudentSchema, editAlumniSchema, AlumniDetails } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import { z } from 'zod';
 
 // --- Form for Graduating a student ---
 function GraduateStudentForm({ setOpen, students }: { setOpen: (open: boolean) => void, students: Student[] }) {
@@ -81,7 +82,7 @@ function GraduateStudentForm({ setOpen, students }: { setOpen: (open: boolean) =
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {students.map(s => <SelectItem key={s.id || s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                {students.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
               </SelectContent>
             </Select>
             <FormMessage />
