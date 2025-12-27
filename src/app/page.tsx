@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, GraduationCap, Lock, Mail, CheckCircle } from 'lucide-react';
+import { Loader2, GraduationCap, Lock, Mail, BrainCircuit, Banknote, CreditCard, UserCog } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import Link from 'next/link';
@@ -93,10 +93,10 @@ export default function LoginPage() {
                 <h2 className="text-2xl font-semibold leading-tight">Experience the next generation of AI-driven education management.</h2>
                 <p className="mt-2 text-indigo-200">Personalized learning, automated administration, and seamless communication in one platform.</p>
                 <ul className="mt-8 space-y-4">
-                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">AI-Powered Tutoring</span> & Learning Paths</span></li>
-                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">Automated Payroll</span> & Tax Calculation</span></li>
-                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">Integrated Student Billing</span> & Payments</span></li>
-                    <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" /><span><span className="font-semibold">HR & Staff</span> Leave Management</span></li>
+                    <li className="flex items-start gap-3"><BrainCircuit className="h-5 w-5 text-indigo-300 mt-1 flex-shrink-0" /><span><span className="font-semibold">AI-Powered Tutoring</span> & Learning Paths</span></li>
+                    <li className="flex items-start gap-3"><Banknote className="h-5 w-5 text-indigo-300 mt-1 flex-shrink-0" /><span><span className="font-semibold">Automated Payroll</span> & Tax Calculation</span></li>
+                    <li className="flex items-start gap-3"><CreditCard className="h-5 w-5 text-indigo-300 mt-1 flex-shrink-0" /><span><span className="font-semibold">Integrated Student Billing</span> & Payments</span></li>
+                    <li className="flex items-start gap-3"><UserCog className="h-5 w-5 text-indigo-300 mt-1 flex-shrink-0" /><span><span className="font-semibold">HR & Staff</span> Leave Management</span></li>
                 </ul>
             </div>
             <p className="text-xs text-indigo-300 mt-12">© 2025 GAM IT Solutions. All rights reserved.</p>
