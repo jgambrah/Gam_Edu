@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -284,6 +285,14 @@ function StudentGradesDetail({
     );
 }
 
+// Helper to format the student ID
+function formatStudentIdDisplay(student: Student): string {
+  if (student.studentId) {
+    return student.studentId;
+  }
+  return 'ID Pending';
+}
+
 // --- MAIN PAGE ---
 export default function GradebookManager() {
   const { user, isUserLoading } = useUser();
@@ -456,7 +465,7 @@ export default function GradebookManager() {
                                             </div>
                                             <div className="text-left">
                                                 <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
-                                                <p className="text-xs text-muted-foreground">ID: {student.studentId || student.id.slice(0,6)}</p>
+                                                <p className="text-xs text-muted-foreground">ID: {formatStudentIdDisplay(student)}</p>
                                             </div>
                                         </div>
 

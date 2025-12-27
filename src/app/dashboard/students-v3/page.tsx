@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { 
   collection, 
   getDocs, 
@@ -13,7 +13,6 @@ import {
   deleteDoc, 
   serverTimestamp, 
   addDoc,
-  query,
   runTransaction
 } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
@@ -30,56 +29,61 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { UserRole, Student, Class } from '@/lib/types';
+import type { Student, Class } from '@/lib/types';
 
+// --- ROBUST ID GENERATION ---
+async function generateNextStudentId(firestore: any): Promise<string> {
+  const counterRef = doc(firestore, 'counters', 'students');
+  
+  const newIdNumber = await runTransaction(firestore, async (transaction) => {
+    const counterDoc = await transaction.get(counterRef);
+    if (!counterDoc.exists()) {
+      transaction.set(counterRef, { currentId: 1 });
+      return 1;
+    }
+    const newId = (counterDoc.data().currentId || 0) + 1;
+    transaction.update(counterRef, { currentId: newId });
+    return newId;
+  });
+  
+  const year = new Date().getFullYear();
+  const paddedNumber = String(newIdNumber).padStart(4, '0');
+  
+  return `SS-${year}-${paddedNumber}`;
+}
 
 export default function StudentsV3Page() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
-  // Data State
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
-  const [statusMsg, setStatusMsg] = useState("Initializing...");
-  const [isInitializing, setIsInitializing] = useState(false);
   
-  // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
 
-  // Form State
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
-  // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen) { 
-        setIsSubmitting(false); 
-        setSelectedClassId(''); 
-        setSelectedGender(''); 
-    }
-    if (editingStudent) { 
-        setIsSubmitting(false); 
-        setSelectedClassId(editingStudent.classId || ''); 
-        setSelectedGender(editingStudent.gender || ''); 
+    if (isAddOpen || editingStudent) {
+        setIsSubmitting(false);
+        setSelectedClassId(editingStudent?.classId || ''); 
+        setSelectedGender(editingStudent?.gender || ''); 
     }
   }, [isAddOpen, editingStudent]);
 
-
-  // --- 1. DIRECT DATA FETCH ---
   const loadData = useCallback(async () => {
-    if (isUserLoading) return;
-    if (!user || !firestore) { setIsLoading(false); setStatusMsg("Not Connected"); return; }
+    if (isUserLoading || !firestore) return;
     setIsLoading(true);
-    setStatusMsg("Fetching Data...");
+
     try {
         const [classSnap, studentSnap] = await Promise.all([
             getDocs(collection(firestore, 'classes')),
@@ -89,11 +93,8 @@ export default function StudentsV3Page() {
         const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
         setClasses(classList);
         setStudents(studentList);
-        setStatusMsg("Ready");
     } catch (err: any) {
-        console.error("Load Error:", err);
-        setStatusMsg("Error loading data");
-        toast({ variant: 'destructive', title: "Error", description: err.message });
+        toast({ variant: 'destructive', title: "Error", description: "Could not load data." });
     } finally {
         setIsLoading(false);
     }
@@ -101,7 +102,6 @@ export default function StudentsV3Page() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  // --- 2. ADD STUDENT (WITH NEW ID LOGIC) ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting || !firestore) return;
@@ -110,37 +110,18 @@ export default function StudentsV3Page() {
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries());
 
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const email = formData.get('email') as string;
-      const password = "password123";
-
       try {
-          // --- GENERATE NEW STUDENT ID ---
-          let newStudentId: string;
-          const counterRef = doc(firestore, 'counters', 'students');
-          
-          const newIdNumber = await runTransaction(firestore, async (transaction) => {
-              const counterDoc = await transaction.get(counterRef);
-              if (!counterDoc.exists()) {
-                  transaction.set(counterRef, { currentId: 1 });
-                  return 1;
-              }
-              const newId = counterDoc.data().currentId + 1;
-              transaction.update(counterRef, { currentId: newId });
-              return newId;
+          const newStudentId = await generateNextStudentId(firestore);
+
+          const result = await createNewUser(values.email as string, "password123", 'Student', { 
+              firstName: values.firstName as string, 
+              lastName: values.lastName as string 
           });
-          
-          const year = new Date().getFullYear();
-          newStudentId = `SS-${year}-${String(newIdNumber).padStart(4, '0')}`;
-          
-          // --- CONTINUE WITH USER CREATION ---
-          const result = await createNewUser(email, password, 'Student', { firstName, lastName });
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              studentId: newStudentId, // Save the new ID
+              studentId: newStudentId,
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
@@ -153,7 +134,7 @@ export default function StudentsV3Page() {
               createdAt: serverTimestamp()
           });
 
-          toast({ title: "Success", description: "Student added." });
+          toast({ title: "Success", description: `Student added with ID: ${newStudentId}.` });
           setIsAddOpen(false);
           loadData();
 
@@ -164,7 +145,6 @@ export default function StudentsV3Page() {
       }
   };
 
-  // --- 3. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting || !firestore) return;
@@ -184,7 +164,7 @@ export default function StudentsV3Page() {
             usesBusService: values.usesBusService === 'on',
         });
 
-        toast({ title: "Updated", description: "Student saved." });
+        toast({ title: "Updated", description: "Student details saved." });
         setEditingStudent(null);
         loadData();
     } catch (error: any) {
@@ -194,7 +174,6 @@ export default function StudentsV3Page() {
     }
   };
 
-  // --- 4. DELETE STUDENT ---
   const handleDelete = async (id: string) => {
     if (!firestore || !confirm("Delete this student profile?")) return;
     try {
@@ -284,7 +263,7 @@ export default function StudentsV3Page() {
                         <TableBody>
                             {filteredStudents.map((s) => (
                                 <TableRow key={s.id}>
-                                    <TableCell className="font-mono text-xs">{s.studentId}</TableCell>
+                                    <TableCell className="font-mono text-xs">{s.studentId || 'N/A'}</TableCell>
                                     <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                     <TableCell>{s.email}</TableCell>
                                     <TableCell>
@@ -310,29 +289,20 @@ export default function StudentsV3Page() {
         </CardContent>
       </Card>
 
-      {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
                 </div>
                 <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
-                
                 <div className="space-y-2">
                     <Label>Class</Label>
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {(classes || []).length === 0 ? (
-                                <SelectItem value="none" disabled>No classes found</SelectItem>
-                            ) : (
-                                (classes || []).map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))
-                            )}
+                            {classes.map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
                         </SelectContent>
                     </Select>
                 </div>
@@ -360,7 +330,6 @@ export default function StudentsV3Page() {
         </DialogContent>
       </Dialog>
 
-      {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle><DialogDescription>Modify the student's profile.</DialogDescription></DialogHeader>
             {editingStudent && (
@@ -375,9 +344,7 @@ export default function StudentsV3Page() {
                         <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>
-                                {(classes || []).map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                ))}
+                                {classes.map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
                             </SelectContent>
                         </Select>
                     </div>
@@ -399,3 +366,12 @@ export default function StudentsV3Page() {
                     <DialogFooter>
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
