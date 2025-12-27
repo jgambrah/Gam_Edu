@@ -362,7 +362,7 @@ export const navItems: NavItem[] = [
         icon: Wallet,
         roles: ['Director', 'Administrator', 'Accountant'],
       },
-       {
+      {
         path: '/dashboard/finance/reconciliation',
         title: 'Reconciliation',
         icon: RefreshCcw,
