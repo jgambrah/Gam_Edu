@@ -171,7 +171,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/academics/gradebook',
             title: 'Gradebook',
             icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director', 'Parent'],
+            roles: ['Teacher', 'Administrator', 'Director'],
         },
         {
             path: '/dashboard/academics/analytics',

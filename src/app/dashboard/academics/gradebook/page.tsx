@@ -14,10 +14,7 @@ export default function GradebookPage() {
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading && role === 'Parent') {
-            router.replace('/dashboard/my-children');
-        }
-        if (!loading && role === 'Student') {
+        if (!loading && (role === 'Parent' || role === 'Student')) {
             router.replace('/dashboard/my-children');
         }
     }, [role, loading, router]);
@@ -36,7 +33,7 @@ export default function GradebookPage() {
                 <CardHeader>
                     <CardTitle>Redirecting...</CardTitle>
                     <CardDescription>
-                        You should view grades under the "My Children" or "Report Cards" section. Redirecting you now.
+                        Please view grades under the "My Children" or "Report Cards" section. Redirecting you now.
                     </CardDescription>
                 </CardHeader>
             </Card>
@@ -60,4 +57,3 @@ export default function GradebookPage() {
         </Card>
     );
 }
-
