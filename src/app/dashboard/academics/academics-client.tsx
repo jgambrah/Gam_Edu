@@ -30,7 +30,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import {
     AlertDialog,
@@ -45,9 +44,9 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import React, { useState, useMemo, useEffect } from 'react';
-import { collection, doc, query, where, updateDoc, onSnapshot, setDoc, deleteDoc } from 'firebase/firestore';
-import { Loader2, PlusCircle, User, Users, Ratio, BookOpen, UserCircle, CalendarCheck, Trash2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { collection, doc, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
+import { Loader2, PlusCircle, User, Users, Ratio, BookOpen, UserCircle, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
 import {
@@ -61,7 +60,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DailyAttendanceSheet } from '../attendance/daily-attendance-sheet';
 import { Subject, TimetableEntry } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const classFormSchema = z.object({
   name: z.string().min(1, { message: 'Class name is required.' }),
@@ -180,7 +179,11 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
                <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
                     <SelectContent>
-                        {teachers.map(t => <SelectItem key={t.id} value={t.uid}>{t.firstName} {t.lastName}</SelectItem>)}
+                        {teachers.map(t => (
+                          <SelectItem key={t.id} value={t.uid}>
+                            {`${t.firstName} ${t.lastName}`}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
               <FormMessage />
@@ -317,7 +320,7 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                         <SelectContent>
                                                           {teachers?.map((t) => (
                                                             <SelectItem key={t.id} value={t.uid || t.id}>
-                                                              {t.firstName} {t.lastName}
+                                                              {`${t.firstName} ${t.lastName}`}
                                                             </SelectItem>
                                                           ))}
                                                         </SelectContent>
@@ -534,5 +537,6 @@ export default function AcademicsPageContent() {
   );
 }
 
+    
     
     
