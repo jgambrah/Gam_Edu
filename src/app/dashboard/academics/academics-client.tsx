@@ -52,6 +52,7 @@ import { useRole } from '@/context/role-context';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -176,19 +177,21 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
           render={({ field }) => (
             <FormItem>
               <FormLabel>Assign Teacher (Optional)</FormLabel>
-               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger></FormControl>
+               <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+                    <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a teacher" />
+                        </SelectTrigger>
+                    </FormControl>
                     <SelectContent>
-                        {teachers.map((t) => {
-                          // GUARANTEED FIX: Create a single string variable. 
-                          // Passing this ensures SelectItemText receives ONE child, not a list.
-                          const fullName = `${t.firstName} ${t.lastName}`;
-                          return (
-                            <SelectItem key={t.id} value={t.uid}>
-                              {fullName}
-                            </SelectItem>
-                          );
-                        })}
+                        <SelectGroup>
+                            {teachers.map((t, idx) => (
+                              <SelectItem key={`create-teacher-${t.id}-${idx}`} value={t.uid}>
+                                {/* FIX: Wrap in span with unique key to satisfy Radix cloned children requirements */}
+                                <span key={`text-${t.id}-${idx}`}>{t.firstName} {t.lastName}</span>
+                              </SelectItem>
+                            ))}
+                        </SelectGroup>
                     </SelectContent>
                 </Select>
               <FormMessage />
@@ -314,23 +317,22 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                 </CardHeader>
                                 <CardContent>
                                     <Form {...form}>
-                                        <form key={classData.id} onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
+                                        <form key={`update-form-${classData.id}`} onSubmit={form.handleSubmit(onUpdate)} className="space-y-4">
                                             <FormField key={`${classData.id}-teacher-field`} control={form.control} name="teacherId" render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Class Teacher</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canManage}>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value || undefined} disabled={!canManage}>
                                                         <FormControl>
                                                             <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                          {teachers?.map((t) => {
-                                                            const fullName = `${t.firstName} ${t.lastName}`;
-                                                            return (
-                                                              <SelectItem key={t.id} value={t.uid || t.id}>
-                                                                {fullName}
-                                                              </SelectItem>
-                                                            );
-                                                          })}
+                                                            <SelectGroup>
+                                                              {teachers?.map((t, idx) => (
+                                                                <SelectItem key={`detail-teacher-${t.id}-${idx}`} value={t.uid || t.id}>
+                                                                  <span key={`text-detail-${t.id}-${idx}`}>{t.firstName} {t.lastName}</span>
+                                                                </SelectItem>
+                                                              ))}
+                                                            </SelectGroup>
                                                         </SelectContent>
                                                     </Select>
                                                 </FormItem>
@@ -385,7 +387,10 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                             </TableHeader>
                                             <TableBody>
                                                 {subjectTeachers.map((st, idx) => (
-                                                    <TableRow key={`row-${st.subjectName}-${idx}`}><TableCell>{st.subjectName}</TableCell><TableCell>{st.teacherName}</TableCell></TableRow>
+                                                    <TableRow key={`sub-row-${st.subjectName}-${idx}`}>
+                                                      <TableCell>{st.subjectName}</TableCell>
+                                                      <TableCell>{st.teacherName}</TableCell>
+                                                    </TableRow>
                                                 ))}
                                             </TableBody>
                                         </Table>
@@ -404,8 +409,8 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                             <div className="max-h-96 overflow-y-auto pr-2">
                             {enrolledStudents.length > 0 ? (
                                 <ul className="space-y-2">
-                                    {enrolledStudents.map((s) => (
-                                      <li key={s.id} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+                                    {enrolledStudents.map((s, idx) => (
+                                      <li key={`student-list-${s.id}-${idx}`} className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
                                         <UserCircle className="h-5 w-5"/>
                                         {s.firstName} {s.lastName}
                                       </li>
@@ -511,8 +516,8 @@ export default function AcademicsPageContent() {
             </div>
           ) : classes && classes.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {classes.map((c) => (
-                <Dialog key={c.id} onOpenChange={(open) => !open && setSelectedClass(null)}>
+              {classes.map((c, idx) => (
+                <Dialog key={`class-dialog-${c.id}-${idx}`} onOpenChange={(open) => !open && setSelectedClass(null)}>
                   <DialogTrigger asChild>
                     <Card className="cursor-pointer hover:border-primary transition-colors h-full" onClick={() => setSelectedClass(c)}>
                       <CardHeader>
