@@ -154,7 +154,7 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore])
   );
   const { data: classes, isLoading: classesLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore])
+    useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
   );
   const { data: assignments, isLoading: assignmentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'assignments')) : null, [firestore])
@@ -163,18 +163,12 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(5)) : null, [firestore])
   );
   
-  // CONDITIONAL FETCH: Only fetch leave requests if the user is a staff member.
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection(
-    useMemoFirebase(() => {
-        if (firestore && isStaffUser) {
-            return query(collection(firestore, 'leaveRequests'), orderBy('createdAt', 'desc'), limit(5));
-        }
-        return null;
-    }, [firestore, isStaffUser])
+    useMemoFirebase(() => (firestore && isStaffUser) ? query(collection(firestore, 'leaveRequests'), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser])
   );
   
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore])
+    useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore])
   );
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), where('amountPaid', '>', 0), orderBy('amountPaid', 'desc'), limit(5)) : null, [firestore])
@@ -621,6 +615,72 @@ export default function DashboardClient() {
       );
     }
     
+    // PARENT DASHBOARD
+    if (isParent) {
+      const myStudents = students?.filter(s => profile?.studentIds?.includes(s.uid)) || [];
+      const myStudentIds = myStudents.map(s => s.uid);
+      const myAssignments = assignments?.filter(a => myStudents.some(s => s.classId === a.classId)) || [];
+      
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+             <Card>
+                <CardHeader>
+                    <CardTitle>My Children</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {myStudents.map(student => (
+                    <Link href="/dashboard/my-children" key={student.uid}>
+                      <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
+                        <p className="font-semibold">{student.firstName} {student.lastName}</p>
+                        <Badge variant="secondary">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</Badge>
+                      </div>
+                    </Link>
+                  ))}
+                </CardContent>
+            </Card>
+             <Card>
+              <CardHeader><CardTitle>Upcoming Deadlines</CardTitle></CardHeader>
+              <CardContent>
+                {myAssignments.slice(0, 3).map(a => (
+                   <ActivityItem 
+                    key={a.id}
+                    title={a.title}
+                    description={`For ${classes?.find(c => c.id === a.classId)?.name}`}
+                    time={`Due: ${a.dueDate.toDate().toLocaleDateString()}`}
+                    icon={FileText}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+           <div className="space-y-6">
+              <QuickActionCard 
+                title="My Bills" 
+                description="View and pay school fees"
+                icon={Banknote} 
+                link="/dashboard/my-bills"
+              />
+              <Card>
+                <CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader>
+                <CardContent>
+                  {announcements?.slice(0, 2).map(a => (
+                     <ActivityItem 
+                      key={a.id}
+                      title={a.title}
+                      description={a.content.substring(0, 50) + '...'}
+                      time={a.publishedAt?.toDate().toLocaleDateString()}
+                      icon={Bell}
+                      iconColor='text-purple-600'
+                    />
+                  ))}
+                </CardContent>
+              </Card>
+           </div>
+        </div>
+      )
+    }
+
     // FINANCE STAFF DASHBOARD
     if (isFinance) {
       return (
