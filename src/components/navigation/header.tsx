@@ -31,8 +31,11 @@ export default function Header() {
   const handleLogout = async () => {
     if (auth) {
         await signOut(auth);
+        // Add a small delay to ensure state clears, then redirect
+        setTimeout(() => {
+          router.push('/');
+        }, 300);
     }
-    router.push('/');
   };
   
   const getInitials = (email?: string | null) => {

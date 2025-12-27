@@ -2,14 +2,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { GraduationCap, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@/firebase'; 
+import { useFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context'; 
 import { signOut } from 'firebase/auth';
-import { auth } from '@/firebase/client-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
@@ -48,15 +47,18 @@ function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boole
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useUser();
+  const { auth } = useFirebase();
   const { role, profile, loading } = useRole(); 
 
   const handleSignOut = async () => {
-    try {
+    if (auth) {
       await signOut(auth);
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Error signing out:', error);
+       // Add a small delay to ensure state clears, then redirect
+      setTimeout(() => {
+        router.push('/');
+      }, 300);
     }
   };
 
