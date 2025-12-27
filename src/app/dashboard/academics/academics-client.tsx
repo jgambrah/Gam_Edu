@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,7 +52,6 @@ import { useRole } from '@/context/role-context';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -183,11 +183,17 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        {teachers.map((t, index) => (
-                          <SelectItem key={`teacher-${t.uid || t.id}-${index}`} value={t.uid}>
-                            {t.firstName} {t.lastName}
-                          </SelectItem>
-                        ))}
+                        {teachers.map((t, index) => {
+                          const teacherKey = `teacher-${t.uid || t.id}-${index}`;
+                          const teacherValue = t.uid || t.id || '';
+                          const teacherName = `${t.firstName} ${t.lastName}`;
+                          
+                          return (
+                            <SelectItem key={teacherKey} value={teacherValue}>
+                              {teacherName}
+                            </SelectItem>
+                          );
+                        })}
                     </SelectContent>
                 </Select>
               <FormMessage />
@@ -323,11 +329,17 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
                                                             <SelectTrigger><SelectValue placeholder="Select a teacher" /></SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            {teachers?.map((t, index) => (
-                                                              <SelectItem key={`teacher-detail-${t.uid || t.id}-${index}`} value={t.uid || t.id}>
-                                                                {t.firstName} {t.lastName}
-                                                              </SelectItem>
-                                                            ))}
+                                                            {teachers?.map((t, index) => {
+                                                              const teacherKey = `teacher-detail-${t.uid || t.id}-${index}`;
+                                                              const teacherValue = t.uid || t.id || '';
+                                                              const teacherName = `${t.firstName} ${t.lastName}`;
+                                                              
+                                                              return (
+                                                                <SelectItem key={teacherKey} value={teacherValue}>
+                                                                  {teacherName}
+                                                                </SelectItem>
+                                                              );
+                                                            })}
                                                         </SelectContent>
                                                     </Select>
                                                 </FormItem>
