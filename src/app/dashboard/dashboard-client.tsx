@@ -148,7 +148,7 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
   );
   const { data: assignments, isLoading: assignmentsLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'assignments') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'assignments'), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore])
   );
   const { data: announcements, isLoading: announcementsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(5)) : null, [firestore])
@@ -159,11 +159,11 @@ export default function DashboardClient() {
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(
     useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore])
   );
-  const { data: financialRecords, isLoading: paymentsLoading } = useCollection(
+    const { data: financialRecords, isLoading: paymentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), where('amountPaid', '>', 0), orderBy('amountPaid', 'desc'), limit(5)) : null, [firestore])
   );
 
-  const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading;
+  const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading;
   
   // Role checks
   const isAdminOrDirector = role === 'Administrator' || role === 'Director';
@@ -350,7 +350,11 @@ export default function DashboardClient() {
                       <XAxis dataKey="name" fontSize={12} />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
-                      <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="students" radius={[4, 4, 0, 0]}>
+                        {enrollmentData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill="hsl(var(--primary))" />
+                        ))}
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 )}
@@ -597,6 +601,226 @@ export default function DashboardClient() {
                     />
                   ))
                 )}
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      );
+    }
+    
+    // FINANCE STAFF DASHBOARD
+    if (isFinance) {
+      return (
+        <>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard 
+              title="Monthly Revenue" 
+              value="GHS 45,000" 
+              icon={DollarSign} 
+              link="/dashboard/finance/accounting"
+              isLoading={isLoading}
+              trend={{ value: 12.3, isPositive: true }}
+            />
+            <StatCard 
+              title="Pending Payments" 
+              value="23" 
+              icon={CreditCard}
+              link="/dashboard/finance/accounting"
+              isLoading={isLoading}
+              badge="Action Required"
+            />
+            <StatCard 
+              title="Expenses This Month" 
+              value="GHS 32,000" 
+              icon={Receipt}
+              link="/dashboard/finance/accounting"
+              isLoading={isLoading}
+            />
+            <StatCard 
+              title="Outstanding Invoices" 
+              value="12" 
+              icon={FileText}
+              link="/dashboard/finance/accounting"
+              isLoading={isLoading}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Financial management tools</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <QuickActionCard 
+                  title="Record Payment" 
+                  description="Process tuition payment"
+                  icon={CreditCard} 
+                  link="/dashboard/finance/accounting"
+                />
+                <QuickActionCard 
+                  title="Generate Invoice" 
+                  description="Create new invoice"
+                  icon={Receipt} 
+                  link="/dashboard/finance/accounting"
+                />
+                <QuickActionCard 
+                  title="View Reports" 
+                  description="Financial analytics"
+                  icon={BarChart3} 
+                  link="/dashboard/finance/accounting"
+                />
+                <QuickActionCard 
+                  title="Manage Payroll" 
+                  description="Process staff salaries"
+                  icon={Banknote} 
+                  link="/dashboard/finance/payroll"
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Revenue vs Expenses</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={[
+                    { month: 'Jul', revenue: 45000, expenses: 32000 },
+                    { month: 'Aug', revenue: 48000, expenses: 35000 },
+                    { month: 'Sep', revenue: 52000, expenses: 38000 },
+                    { month: 'Oct', revenue: 47000, expenses: 33000 },
+                    { month: 'Nov', revenue: 50000, expenses: 36000 },
+                    { month: 'Dec', revenue: 45000, expenses: 32000 }
+                  ]}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" fontSize={12} />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="expenses" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Transactions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ActivityItem 
+                title="Tuition Payment Received"
+                description="John Doe - GHS 2,500"
+                time="2 hours ago"
+                icon={CheckCircle2}
+                iconColor="text-green-600"
+              />
+              <ActivityItem 
+                title="Utility Bill Paid"
+                description="Electricity - GHS 1,200"
+                time="1 day ago"
+                icon={Receipt}
+                iconColor="text-red-600"
+              />
+              <ActivityItem 
+                title="Salary Disbursed"
+                description="Staff payroll processed"
+                time="3 days ago"
+                icon={Banknote}
+                iconColor="text-blue-600"
+              />
+            </CardContent>
+          </Card>
+        </>
+      );
+    }
+
+    // LIBRARIAN DASHBOARD
+    if (isLibrarian) {
+      return (
+        <>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard 
+              title="Total Books" 
+              value={libraryItems?.length || 0} 
+              icon={BookMarked} 
+              link="/dashboard/library"
+              isLoading={isLoading}
+            />
+            <StatCard 
+              title="Available" 
+              value={stats.availableBooks} 
+              icon={CheckCircle2}
+              link="/dashboard/library"
+              isLoading={isLoading}
+            />
+            <StatCard 
+              title="Currently Borrowed" 
+              value={libraryItems?.filter(l => l.status === 'Borrowed').length || 0} 
+              icon={BookOpen}
+              link="/dashboard/library"
+              isLoading={isLoading}
+            />
+            <StatCard 
+              title="Overdue" 
+              value={stats.overdueBooks} 
+              icon={AlertCircle}
+              link="/dashboard/library"
+              isLoading={isLoading}
+              badge={stats.overdueBooks > 0 ? "Action Required" : undefined}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Library management tools</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <QuickActionCard 
+                  title="Add Book" 
+                  description="Register new book"
+                  icon={PlusCircle} 
+                  link="/dashboard/library"
+                />
+                <QuickActionCard 
+                  title="Issue Book" 
+                  description="Lend to student"
+                  icon={BookOpen} 
+                  link="/dashboard/library"
+                />
+                <QuickActionCard 
+                  title="Receive Book" 
+                  description="Check-in returned book"
+                  icon={Package} 
+                  link="/dashboard/library"
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ActivityItem 
+                    title="Book Borrowed"
+                    description="'The Great Gatsby' by Student A"
+                    time="1 hour ago"
+                    icon={BookOpen}
+                    iconColor="text-blue-600"
+                />
+                 <ActivityItem 
+                    title="Book Returned"
+                    description="'1984' by Student B"
+                    time="3 hours ago"
+                    icon={CheckCircle2}
+                    iconColor="text-green-600"
+                />
               </CardContent>
             </Card>
           </div>
