@@ -1,10 +1,21 @@
+
 'use client';
 
 import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRole } from '@/context/role-context';
-import ReportCardManager from './report-card-manager';
-import StudentParentReportCardView from './student-parent-view';
 import { Loader2 } from 'lucide-react';
+
+const ReportCardManager = dynamic(
+  () => import('./report-card-manager'),
+  { loading: () => <Loader2 className="mx-auto h-8 w-8 animate-spin" /> }
+);
+
+const StudentParentReportCardView = dynamic(
+  () => import('./student-parent-view'),
+  { loading: () => <Loader2 className="mx-auto h-8 w-8 animate-spin" /> }
+);
+
 
 function ReportCardPageContent() {
   const { role, isRoleLoading } = useRole();
