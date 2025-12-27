@@ -85,7 +85,14 @@ function GraduateStudentForm({ setOpen, students }: { setOpen: (open: boolean) =
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {students.map(s => <SelectItem key={s.id} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}
+                  {students.map(s => (
+                    <SelectItem 
+                      key={s.uid || s.id} 
+                      value={s.uid || s.id || ''}
+                    >
+                      {s.firstName} {s.lastName}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -132,7 +139,7 @@ function EditAlumniDetailsForm({ setOpen, alumnus }: { setOpen: (open: boolean) 
       if (!firestore) return;
       setIsSubmitting(true);
       try {
-        const studentRef = doc(firestore, 'students', alumnus.uid);
+        const studentRef = doc(firestore, 'students', alumnus.uid || alumnus.id);
         await updateDocumentNonBlocking(studentRef, {
           alumniDetails: values,
         });
@@ -223,38 +230,50 @@ export default function AlumniPage() {
         <CardHeader><CardTitle>Alumni Directory</CardTitle></CardHeader>
         <CardContent>
           {isLoading ? <div className='flex justify-center p-8'><Loader2 className="h-8 w-8 animate-spin" /></div> : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Alumnus Name</TableHead>
-                  <TableHead>Graduation Year</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Current Status</TableHead>
-                  <TableHead>Mentor?</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {alumni.map(alumnus => (
-                  <TableRow key={alumnus.uid}>
-                    <TableCell className="font-medium">{alumnus.firstName} {alumnus.lastName}</TableCell>
-                    <TableCell>{alumnus.graduationYear}</TableCell>
-                    <TableCell>
-                      <Link href={`mailto:${alumnus.email}`} className="text-blue-600 hover:underline">{alumnus.email}</Link>
-                    </TableCell>
-                    <TableCell>{alumnus.alumniDetails?.currentOccupation} at {alumnus.alumniDetails?.employer}</TableCell>
-                    <TableCell>
-                      <Badge variant={alumnus.alumniDetails?.mentorshipWillingness ? 'default' : 'secondary'}>
-                        {alumnus.alumniDetails?.mentorshipWillingness ? 'Yes' : 'No'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="outline" size="sm" onClick={() => setEditingAlumnus(alumnus)}>Edit</Button>
-                    </TableCell>
+            alumni.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No alumni yet. Graduate your first student to build the directory.
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Alumnus Name</TableHead>
+                    <TableHead>Graduation Year</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Current Status</TableHead>
+                    <TableHead>Mentor?</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {alumni.map(alumnus => (
+                    <TableRow key={alumnus.uid || alumnus.id}>
+                      <TableCell className="font-medium">{alumnus.firstName} {alumnus.lastName}</TableCell>
+                      <TableCell>{alumnus.graduationYear || 'N/A'}</TableCell>
+                      <TableCell>
+                        {alumnus.email ? (
+                          <Link href={`mailto:${alumnus.email}`} className="text-blue-600 hover:underline">{alumnus.email}</Link>
+                        ) : 'N/A'}
+                      </TableCell>
+                      <TableCell>
+                        {alumnus.alumniDetails?.currentOccupation && alumnus.alumniDetails?.employer
+                          ? `${alumnus.alumniDetails.currentOccupation} at ${alumnus.alumniDetails.employer}`
+                          : alumnus.alumniDetails?.currentOccupation || 'Not specified'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={alumnus.alumniDetails?.mentorshipWillingness ? 'default' : 'secondary'}>
+                          {alumnus.alumniDetails?.mentorshipWillingness ? 'Yes' : 'No'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm" onClick={() => setEditingAlumnus(alumnus)}>Edit</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )
           )}
         </CardContent>
       </Card>
