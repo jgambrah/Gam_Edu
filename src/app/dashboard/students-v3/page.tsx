@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -12,7 +13,8 @@ import {
   deleteDoc, 
   serverTimestamp, 
   addDoc,
-  query
+  query,
+  runTransaction
 } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -28,100 +30,120 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import type { UserRole, Student, Class } from '@/lib/types';
 
-// --- TYPE DEFINITIONS ---
-type Student = {
-  id: string;
-  uid: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  classId: string;
-  gender?: string;
-  address?: string;
-  dateOfBirth?: string;
-  enrollmentStatus?: string;
-  usesBusService?: boolean;
-};
-
-type Class = {
-    id: string;
-    name: string;
-};
 
 export default function StudentsV3Page() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
-  // --- STATE ---
+  // Data State
+  const [students, setStudents] = useState<Student[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [statusMsg, setStatusMsg] = useState("Initializing...");
+  const [isInitializing, setIsInitializing] = useState(false);
+  
+  // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
+
+  // Form State
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
-  
-  // --- DATA FETCHING (REFACTORED) ---
-  const studentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
-  const { data: students, isLoading: isLoadingStudents, forceRefetch: refetchStudents } = useCollection<Student>(studentsQuery);
 
-  const classesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]);
-  const { data: classes, isLoading: isLoadingClasses, forceRefetch: refetchClasses } = useCollection<Class>(classesQuery);
-
-  const isLoading = isLoadingStudents || isLoadingClasses;
-
-  // --- SAFE FILTER LOGIC ---
-  const filteredStudents = (students || []).filter(s => {
-    const first = (s.firstName || '').toLowerCase();
-    const last = (s.lastName || '').toLowerCase();
-    const email = (s.email || '').toLowerCase();
-    const term = searchTerm.toLowerCase().trim();
-    const sClassId = s.classId || 'unassigned';
-
-    const matchesSearch = term === '' || first.includes(term) || last.includes(term) || email.includes(term);
-    const matchesClass = classFilter === 'all' || sClassId === classFilter;
-    return matchesSearch && matchesClass;
-  });
-
-  const getClassName = (classId: string) => {
-    return classes?.find(c => c.id === classId)?.name || classId || 'Unassigned';
-  };
-  
   // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen) { setIsSubmitting(false); setSelectedClassId(''); setSelectedGender(''); }
-    if (editingStudent) { setIsSubmitting(false); setSelectedClassId(editingStudent.classId || ''); setSelectedGender(editingStudent.gender || ''); }
+    if (isAddOpen) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(''); 
+        setSelectedGender(''); 
+    }
+    if (editingStudent) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(editingStudent.classId || ''); 
+        setSelectedGender(editingStudent.gender || ''); 
+    }
   }, [isAddOpen, editingStudent]);
 
 
-  // --- CRUD FUNCTIONS ---
+  // --- 1. DIRECT DATA FETCH ---
+  const loadData = useCallback(async () => {
+    if (isUserLoading) return;
+    if (!user || !firestore) { setIsLoading(false); setStatusMsg("Not Connected"); return; }
+    setIsLoading(true);
+    setStatusMsg("Fetching Data...");
+    try {
+        const [classSnap, studentSnap] = await Promise.all([
+            getDocs(collection(firestore, 'classes')),
+            getDocs(collection(firestore, 'students'))
+        ]);
+        const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
+        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+        setClasses(classList);
+        setStudents(studentList);
+        setStatusMsg("Ready");
+    } catch (err: any) {
+        console.error("Load Error:", err);
+        setStatusMsg("Error loading data");
+        toast({ variant: 'destructive', title: "Error", description: err.message });
+    } finally {
+        setIsLoading(false);
+    }
+  }, [user, isUserLoading, firestore, toast]);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  // --- 2. ADD STUDENT (WITH NEW ID LOGIC) ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isSubmitting) return;
+      if (isSubmitting || !firestore) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries());
-      
+
       const firstName = formData.get('firstName') as string;
       const lastName = formData.get('lastName') as string;
       const email = formData.get('email') as string;
+      const password = "password123";
 
       try {
-          const result = await createNewUser(email, "password123", 'Student', { firstName, lastName });
+          // --- GENERATE NEW STUDENT ID ---
+          let newStudentId: string;
+          const counterRef = doc(firestore, 'counters', 'students');
+          
+          const newIdNumber = await runTransaction(firestore, async (transaction) => {
+              const counterDoc = await transaction.get(counterRef);
+              if (!counterDoc.exists()) {
+                  transaction.set(counterRef, { currentId: 1 });
+                  return 1;
+              }
+              const newId = counterDoc.data().currentId + 1;
+              transaction.update(counterRef, { currentId: newId });
+              return newId;
+          });
+          
+          const year = new Date().getFullYear();
+          newStudentId = `SS-${year}-${String(newIdNumber).padStart(4, '0')}`;
+          
+          // --- CONTINUE WITH USER CREATION ---
+          const result = await createNewUser(email, password, 'Student', { firstName, lastName });
           if ('error' in result) throw new Error(result.error);
-
-          if (!firestore) {
-            throw new Error("Database not available");
-          }
 
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
+              studentId: newStudentId, // Save the new ID
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
               classId: selectedClassId,
               gender: selectedGender,
               dateOfBirth: values.dateOfBirth,
@@ -133,7 +155,7 @@ export default function StudentsV3Page() {
 
           toast({ title: "Success", description: "Student added." });
           setIsAddOpen(false);
-          refetchStudents(); 
+          loadData();
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -142,6 +164,7 @@ export default function StudentsV3Page() {
       }
   };
 
+  // --- 3. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting || !firestore) return;
@@ -163,7 +186,7 @@ export default function StudentsV3Page() {
 
         toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
-        refetchStudents(); 
+        loadData();
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -171,22 +194,31 @@ export default function StudentsV3Page() {
     }
   };
 
+  // --- 4. DELETE STUDENT ---
   const handleDelete = async (id: string) => {
-    if (!firestore) return;
-    if (!confirm("Delete this student profile?")) return;
+    if (!firestore || !confirm("Delete this student profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'students', id));
         toast({ title: "Deleted", description: "Profile removed." });
-        refetchStudents(); 
+        loadData();
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
-  
-  const handleRefresh = () => {
-    refetchStudents();
-    refetchClasses();
-  };
+
+  const filteredStudents = students.filter(s => {
+    const first = (s.firstName || '').toLowerCase();
+    const last = (s.lastName || '').toLowerCase();
+    const email = (s.email || '').toLowerCase();
+    const studentId = (s.studentId || '').toLowerCase();
+    
+    const term = searchTerm.toLowerCase().trim();
+    const sClassId = s.classId || 'unassigned';
+
+    const matchesSearch = term === '' || first.includes(term) || last.includes(term) || email.includes(term) || studentId.includes(term);
+    const matchesClass = classFilter === 'all' || sClassId === classFilter;
+    return matchesSearch && matchesClass;
+  });
 
   return (
     <div className="space-y-6 p-6">
@@ -198,11 +230,11 @@ export default function StudentsV3Page() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    Found: {students?.length || 0} | Showing: {filteredStudents.length}
+                    Found: {students.length} | Showing: {filteredStudents.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
+                <Button variant="outline" onClick={loadData} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
@@ -216,9 +248,9 @@ export default function StudentsV3Page() {
                 <div className="relative flex-grow">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input 
-                        placeholder="Search name or email..." 
+                        placeholder="Search name, email, or student ID..." 
                         className="pl-8" 
-                        value={searchTerm} 
+                        value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)} 
                     />
                 </div>
@@ -226,7 +258,7 @@ export default function StudentsV3Page() {
                     <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All Classes</SelectItem>
-                        {(classes || []).map(c => (
+                        {classes.map(c => (
                             <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                         ))}
                     </SelectContent>
@@ -242,31 +274,22 @@ export default function StudentsV3Page() {
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p className="font-medium">No students visible.</p>
-                    
-                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs text-left text-yellow-800 w-full max-w-xs">
-                        <p><strong>Debug Stats:</strong></p>
-                        <p>Total Fetched: {students?.length || 0}</p>
-                        <p>Search Term: "{searchTerm}"</p>
-                        <p>Class Filter: "{classFilter}"</p>
-                        {(students?.length || 0) > 0 && <p className="mt-2">Data exists but filters are hiding it.</p>}
-                    </div>
                 </div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead>Services</TableHead><TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
+                            <TableRow><TableHead>Student ID</TableHead><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead>Services</TableHead><TableHead className="text-right">Actions</TableHead></TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredStudents.map((s) => (
                                 <TableRow key={s.id}>
+                                    <TableCell className="font-mono text-xs">{s.studentId}</TableCell>
                                     <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
                                     <TableCell>{s.email}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">
-                                            {getClassName(s.classId)}
+                                            {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
                                         </Badge>
                                     </TableCell>
                                      <TableCell>
@@ -312,7 +335,6 @@ export default function StudentsV3Page() {
                             )}
                         </SelectContent>
                     </Select>
-                    {(classes || []).length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please use a Debug/Initialize button if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -377,12 +399,3 @@ export default function StudentsV3Page() {
                     <DialogFooter>
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
                             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            )}
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}

@@ -176,6 +176,10 @@
           "type": "string",
           "description": "Unique identifier for the student (matches Firebase Auth UID)."
         },
+        "studentId": {
+          "type": "string",
+          "description": "A formatted, sequential student ID (e.g., SS-2024-0001)."
+        },
         "firstName": {
           "type": "string",
           "description": "First name of the student."
@@ -241,6 +245,7 @@
       },
       "required": [
         "uid",
+        "studentId",
         "firstName",
         "lastName",
         "email",

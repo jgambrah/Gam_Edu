@@ -457,7 +457,7 @@ export default function GradebookManager() {
                                             </div>
                                             <div className="text-left">
                                                 <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
-                                                <p className="text-xs text-muted-foreground">ID: {student.id.slice(0,6)}</p>
+                                                <p className="text-xs text-muted-foreground">ID: {student.studentId || student.id.slice(0,6)}</p>
                                             </div>
                                         </div>
 
@@ -516,4 +516,3 @@ export default function GradebookManager() {
       )}
     </div>
   );
-}
