@@ -136,13 +136,13 @@ export default function LibraryPage() {
     if (!libraryItems) {
       return { total: 0, available: 0, borrowed: 0, overdue: 0 };
     }
-    const total = libraryItems.reduce((sum, item) => sum + item.quantity, 0);
+    const total = libraryItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
     const available = libraryItems
       .filter(item => item.status === 'Available')
-      .reduce((sum, item) => sum + item.quantity, 0);
+      .reduce((sum, item) => sum + (item.quantity || 0), 0);
     const borrowed = libraryItems
       .filter(item => item.status === 'Borrowed' || item.status === 'Pending Return')
-      .reduce((sum, item) => sum + item.quantity, 0);
+      .reduce((sum, item) => sum + (item.quantity || 0), 0);
     const overdue = libraryItems.filter(item => item.status === 'Borrowed' && item.dueDate && isPast(item.dueDate.toDate())).length;
 
     return { total, available, borrowed, overdue };
