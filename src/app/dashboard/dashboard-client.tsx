@@ -241,7 +241,7 @@ export default function DashboardClient() {
       return dueDate && dueDate.toDateString() === today.toDateString();
     }).length || 0;
     const totalBooks = libraryItems?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
-    const availableBooks = libraryItems?.filter(l => l.status === 'Available').length || 0;
+    const availableBooks = libraryItems?.reduce((sum, item) => item.status === 'Available' ? sum + (item.quantity || 0) : sum, 0) || 0;
     const overdueBooks = libraryItems?.filter(l => l.status === 'Borrowed' && l.dueDate?.toDate?.() < new Date()).length || 0;
     
     return {
@@ -854,7 +854,7 @@ export default function DashboardClient() {
             />
             <StatCard 
               title="Currently Borrowed" 
-              value={libraryItems?.filter(l => l.status === 'Borrowed').length || 0} 
+              value={libraryItems?.filter(l => l.status === 'Borrowed').reduce((acc, item) => acc + item.quantity, 0) || 0} 
               icon={BookOpen}
               link="/dashboard/library"
               isLoading={isLoading}
