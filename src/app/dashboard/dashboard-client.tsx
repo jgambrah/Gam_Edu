@@ -137,6 +137,15 @@ export default function DashboardClient() {
   const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
 
+  // Role checks
+  const isAdminOrDirector = role === 'Administrator' || role === 'Director';
+  const isTeacher = role === 'Teacher';
+  const isStudent = role === 'Student';
+  const isParent = role === 'Parent';
+  const isFinance = role === 'Accountant';
+  const isLibrarian = role === 'Librarian';
+  const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || ['Cook', 'Transport Staff'].includes(role || '');
+
   // Data Fetching
   const { data: students, isLoading: studentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'students')) : null, [firestore])
@@ -153,25 +162,25 @@ export default function DashboardClient() {
   const { data: announcements, isLoading: announcementsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(5)) : null, [firestore])
   );
+  
+  // CONDITIONAL FETCH: Only fetch leave requests if the user is a staff member.
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'leaveRequests'), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore])
+    useMemoFirebase(() => {
+        if (firestore && isStaffUser) {
+            return query(collection(firestore, 'leaveRequests'), orderBy('createdAt', 'desc'), limit(5));
+        }
+        return null;
+    }, [firestore, isStaffUser])
   );
+  
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore])
   );
-    const { data: financialRecords, isLoading: paymentsLoading } = useCollection(
+  const { data: financialRecords, isLoading: paymentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), where('amountPaid', '>', 0), orderBy('amountPaid', 'desc'), limit(5)) : null, [firestore])
   );
 
   const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading;
-  
-  // Role checks
-  const isAdminOrDirector = role === 'Administrator' || role === 'Director';
-  const isTeacher = role === 'Teacher';
-  const isStudent = role === 'Student';
-  const isParent = role === 'Parent';
-  const isFinance = role === 'Accountant';
-  const isLibrarian = role === 'Librarian';
 
   // LIVE ACTIVITY FEED
   const recentActivity = useMemo(() => {
@@ -506,7 +515,7 @@ export default function DashboardClient() {
                       <XAxis dataKey="name" fontSize={12} />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
-                      <Bar dataKey="students" radius={[4, 4, 0, 0]}>
+                      <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}>
                         {enrollmentData.filter(e => classes?.find(c => c.name === e.name && c.teacherId === user?.uid)).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill="hsl(var(--primary))" />
                         ))}
@@ -578,7 +587,7 @@ export default function DashboardClient() {
                   title="Learning Materials" 
                   description="Access course content"
                   icon={BookOpen} 
-                  link="/dashboard/resources"
+                  link="/dashboard/academics/learning-materials"
                 />
                 <QuickActionCard 
                   title="My Grades" 
@@ -856,3 +865,5 @@ export default function DashboardClient() {
     </div>
   );
 }
+
+    
