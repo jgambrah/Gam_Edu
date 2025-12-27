@@ -4,7 +4,7 @@
 import { useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
@@ -12,14 +12,16 @@ import {
   ClipboardCheck, TrendingUp, Bell, FileText, Bus,
   CreditCard, DollarSign, Receipt, Package, Award,
   MessageSquare, Clock, AlertCircle, CheckCircle2,
-  UserCheck, BookMarked, Briefcase, BarChart3
+  UserCheck, BookMarked, Briefcase, BarChart3, Activity
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isThisMonth, parseISO } from 'date-fns';
+import { FinancialRecord, AccountsPayableRecord } from '@/lib/types';
+
 
 // Simple Stat Card Component
 function StatCard({ 
@@ -146,7 +148,7 @@ export default function DashboardClient() {
   const isLibrarian = role === 'Librarian';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || ['Cook', 'Transport Staff'].includes(role || '');
 
-  // Data Fetching
+  // --- DATA FETCHING ---
   const { data: students, isLoading: studentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'students')) : null, [firestore])
   );
@@ -168,15 +170,20 @@ export default function DashboardClient() {
   );
   
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore])
-  );
-  const { data: financialRecords, isLoading: paymentsLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'financialRecords'), where('amountPaid', '>', 0), orderBy('amountPaid', 'desc'), limit(5)) : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore])
   );
 
-  const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading;
+  // --- NEW: FINANCIAL DATA FETCHING ---
+  const { data: financialRecords, isLoading: paymentsLoading } = useCollection<FinancialRecord>(
+    useMemoFirebase(() => (firestore && isFinance) ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance])
+  );
+  const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(
+    useMemoFirebase(() => (firestore && isFinance) ? query(collection(firestore, 'accountsPayable'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance])
+  );
 
-  // LIVE ACTIVITY FEED
+  const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading || payablesLoading;
+
+  // --- LIVE ACTIVITY FEED ---
   const recentActivity = useMemo(() => {
     const activities = [];
     if (students) {
@@ -214,19 +221,18 @@ export default function DashboardClient() {
             type: 'Payment',
             title: 'Payment Received',
             description: `GH₵${p.amountPaid.toFixed(2)} from ${p.studentName} for ${p.type}`,
-            time: p.createdAt, // Assuming createdAt is payment date
+            time: p.createdAt, 
             icon: CheckCircle2,
             iconColor: 'text-emerald-600'
         })));
     }
     
-    // Sort all collected activities by time
     return activities.sort((a,b) => (b.time?.seconds || 0) - (a.time?.seconds || 0)).slice(0, 5);
 
   }, [students, leaveRequests, announcements, financialRecords]);
 
 
-  // Calculate stats
+  // --- STATS CALCULATIONS ---
   const stats = useMemo(() => {
     const pendingLeave = leaveRequests?.filter(l => l.status === 'Pending').length || 0;
     const todayAssignments = assignments?.filter(a => {
@@ -261,6 +267,45 @@ export default function DashboardClient() {
     }, {} as Record<string, number>);
     return Object.entries(roles).map(([name, value]) => ({ name, value }));
   }, [staff]);
+  
+  // --- NEW: FINANCIAL STATS ---
+  const financeStats = useMemo(() => {
+    if (!financialRecords || !accountsPayable) return { monthlyRevenue: 0, pendingPayments: 0, monthlyExpenses: 0, outstandingInvoices: 0, chartData: [] };
+    
+    let monthlyRevenue = 0;
+    let monthlyExpenses = 0;
+    const revenueByDay: Record<string, number> = {};
+    const expensesByDay: Record<string, number> = {};
+
+    financialRecords.forEach(rec => {
+        if (rec.createdAt && isThisMonth(rec.createdAt.toDate())) {
+            monthlyRevenue += (rec.amountPaid || 0);
+            const day = format(rec.createdAt.toDate(), 'MMM dd');
+            revenueByDay[day] = (revenueByDay[day] || 0) + (rec.amountPaid || 0);
+        }
+    });
+
+    accountsPayable.forEach(bill => {
+        if (bill.paidAt && isThisMonth(bill.paidAt.toDate())) {
+            monthlyExpenses += bill.amount;
+            const day = format(bill.paidAt.toDate(), 'MMM dd');
+            expensesByDay[day] = (expensesByDay[day] || 0) + bill.amount;
+        }
+    });
+    
+    const pendingPayments = financialRecords.filter(r => r.status === 'Unpaid' || r.status === 'Overdue').length;
+    const outstandingInvoices = accountsPayable.filter(b => b.status === 'Unpaid').length;
+
+    // Combine data for chart
+    const allDays = new Set([...Object.keys(revenueByDay), ...Object.keys(expensesByDay)]);
+    const chartData = Array.from(allDays).sort().map(day => ({
+        month: day,
+        revenue: revenueByDay[day] || 0,
+        expenses: expensesByDay[day] || 0,
+    }));
+
+    return { monthlyRevenue, pendingPayments, monthlyExpenses, outstandingInvoices, chartData };
+  }, [financialRecords, accountsPayable]);
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -687,32 +732,32 @@ export default function DashboardClient() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard 
               title="Monthly Revenue" 
-              value="GHS 45,000" 
+              value={`GH₵ ${financeStats.monthlyRevenue.toFixed(2)}`}
               icon={DollarSign} 
               link="/dashboard/finance/accounting"
               isLoading={isLoading}
               trend={{ value: 12.3, isPositive: true }}
             />
             <StatCard 
-              title="Pending Payments" 
-              value="23" 
+              title="Pending Student Payments" 
+              value={financeStats.pendingPayments} 
               icon={CreditCard}
-              link="/dashboard/finance/accounting"
+              link="/dashboard/accounts"
               isLoading={isLoading}
-              badge="Action Required"
+              badge={financeStats.pendingPayments > 0 ? "Action Required" : undefined}
             />
             <StatCard 
               title="Expenses This Month" 
-              value="GHS 32,000" 
+              value={`GH₵ ${financeStats.monthlyExpenses.toFixed(2)}`} 
               icon={Receipt}
               link="/dashboard/finance/accounting"
               isLoading={isLoading}
             />
             <StatCard 
-              title="Outstanding Invoices" 
-              value="12" 
+              title="Outstanding Vendor Bills" 
+              value={financeStats.outstandingInvoices}
               icon={FileText}
-              link="/dashboard/finance/accounting"
+              link="/dashboard/finance/procurement"
               isLoading={isLoading}
             />
           </div>
@@ -726,20 +771,14 @@ export default function DashboardClient() {
               <CardContent className="space-y-3">
                 <QuickActionCard 
                   title="Record Payment" 
-                  description="Process tuition payment"
+                  description="Process student fee payment"
                   icon={CreditCard} 
-                  link="/dashboard/finance/accounting"
+                  link="/dashboard/accounts"
                 />
                 <QuickActionCard 
-                  title="Generate Invoice" 
-                  description="Create new invoice"
-                  icon={Receipt} 
-                  link="/dashboard/finance/accounting"
-                />
-                <QuickActionCard 
-                  title="View Reports" 
-                  description="Financial analytics"
-                  icon={BarChart3} 
+                  title="Pay Vendor Bill" 
+                  description="Process accounts payable"
+                  icon={Landmark} 
                   link="/dashboard/finance/accounting"
                 />
                 <QuickActionCard 
@@ -753,25 +792,18 @@ export default function DashboardClient() {
 
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>Revenue vs Expenses</CardTitle>
+                <CardTitle>Cash Flow This Month</CardTitle>
               </CardHeader>
               <CardContent className="h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={[
-                    { month: 'Jul', revenue: 45000, expenses: 32000 },
-                    { month: 'Aug', revenue: 48000, expenses: 35000 },
-                    { month: 'Sep', revenue: 52000, expenses: 38000 },
-                    { month: 'Oct', revenue: 47000, expenses: 33000 },
-                    { month: 'Nov', revenue: 50000, expenses: 36000 },
-                    { month: 'Dec', revenue: 45000, expenses: 32000 }
-                  ]}>
+                  <BarChart data={financeStats.chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" fontSize={12} />
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="expenses" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="revenue" fill="#22c55e" name="Revenue" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="expenses" fill="#ef4444" name="Expenses" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -783,27 +815,16 @@ export default function DashboardClient() {
               <CardTitle>Recent Transactions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <ActivityItem 
-                title="Tuition Payment Received"
-                description="John Doe - GHS 2,500"
-                time="2 hours ago"
-                icon={CheckCircle2}
-                iconColor="text-green-600"
-              />
-              <ActivityItem 
-                title="Utility Bill Paid"
-                description="Electricity - GHS 1,200"
-                time="1 day ago"
-                icon={Receipt}
-                iconColor="text-red-600"
-              />
-              <ActivityItem 
-                title="Salary Disbursed"
-                description="Staff payroll processed"
-                time="3 days ago"
-                icon={Banknote}
-                iconColor="text-blue-600"
-              />
+              {recentActivity.filter(a => a.type === 'Payment').slice(0,3).map((item, index) => (
+                <ActivityItem 
+                  key={index}
+                  title={item.title}
+                  description={item.description}
+                  time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : 'Just now'}
+                  icon={item.icon}
+                  iconColor={item.iconColor}
+                />
+              ))}
             </CardContent>
           </Card>
         </>
@@ -924,3 +945,5 @@ export default function DashboardClient() {
     </div>
   );
 }
+
+    
