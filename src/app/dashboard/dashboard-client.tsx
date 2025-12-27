@@ -154,7 +154,7 @@ export default function DashboardClient() {
     useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore])
   );
   const { data: classes, isLoading: classesLoading } = useCollection(
-    useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore])
+    useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore])
   );
   const { data: assignments, isLoading: assignmentsLoading } = useCollection(
     useMemoFirebase(() => firestore ? query(collection(firestore, 'assignments')) : null, [firestore])
@@ -353,9 +353,9 @@ export default function DashboardClient() {
                       <XAxis dataKey="name" fontSize={12} />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
-                      <Bar dataKey="students" radius={[4, 4, 0, 0]}>
+                      <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}>
                         {enrollmentData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill="hsl(var(--primary))" />
+                            <Cell key={`cell-${index}`} fill="hsl(var(--primary))" />
                         ))}
                       </Bar>
                     </BarChart>
@@ -509,7 +509,7 @@ export default function DashboardClient() {
                       <XAxis dataKey="name" fontSize={12} />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
-                      <Bar dataKey="students" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}>
+                      <Bar dataKey="students" radius={[4, 4, 0, 0]}>
                         {enrollmentData.filter(e => classes?.find(c => c.name === e.name && c.teacherId === user?.uid)).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill="hsl(var(--primary))" />
                         ))}
@@ -618,7 +618,6 @@ export default function DashboardClient() {
     // PARENT DASHBOARD
     if (isParent) {
       const myStudents = students?.filter(s => profile?.studentIds?.includes(s.uid)) || [];
-      const myStudentIds = myStudents.map(s => s.uid);
       const myAssignments = assignments?.filter(a => myStudents.some(s => s.classId === a.classId)) || [];
       
       return (
@@ -925,5 +924,3 @@ export default function DashboardClient() {
     </div>
   );
 }
-
-    
