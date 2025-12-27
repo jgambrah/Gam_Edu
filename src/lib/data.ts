@@ -298,13 +298,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/hr',
     title: 'Human Resources',
     icon: UserCog,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
     subItems: [
         {
             path: '/dashboard/leave-management',
             title: 'Leave Management',
             icon: Plane,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
         },
         {
             path: '/dashboard/staff/performance',
