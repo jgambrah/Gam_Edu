@@ -1,14 +1,21 @@
 
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import AppSidebar from '@/components/navigation/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 import Header from '@/components/navigation/header';
 import { AiChat } from '@/components/ai-chat';
-import { useUser } from '@/firebase'; // Import the useUser hook
+import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
+
+// Dynamically import the sidebar
+const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
+  loading: () => <div className="w-64 h-full bg-slate-100 animate-pulse" />, // Simple placeholder
+  ssr: false,
+});
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -37,7 +44,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <>
-      <AppSidebar />
+      <Suspense fallback={<div className="w-64 h-full bg-slate-100 animate-pulse" />}>
+        <AppSidebar />
+      </Suspense>
       {/* The main content area that will fill the remaining space */}
       <SidebarInset>
         <div className="flex h-screen flex-col overflow-hidden">
