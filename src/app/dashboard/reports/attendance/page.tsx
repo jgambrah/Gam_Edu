@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Users, Loader2 } from 'lucide-react';
+import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Users, Loader2, AlertCircle } from 'lucide-react';
 import { Class, AttendanceRecord, Student } from '@/lib/types';
 import Link from 'next/link';
 import { useUser } from '@/firebase/provider';
@@ -28,6 +28,26 @@ const COLORS = {
     Late: '#f97316',
     Excused: '#64748b'
 };
+
+// Helper component for when student data is missing
+function StudentCell({ student, studentId }: { student?: Student; studentId: string }) {
+    if (student) {
+        return <StudentDisplay student={student} variant="list" />;
+    }
+    
+    // Fallback when student not found
+    return (
+        <div className="flex flex-col">
+            <span className="font-medium text-red-600 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                Unknown Student
+            </span>
+            <span className="text-xs text-muted-foreground font-mono">
+                UID: {studentId.slice(0, 8)}...
+            </span>
+        </div>
+    );
+}
 
 export default function AttendanceReportsPage() {
     const { role } = useRole();
@@ -84,14 +104,17 @@ export default function AttendanceReportsPage() {
     const filteredData = useMemo(() => {
         if (!attendanceRecords || !students || !classes) return [];
     
+        // Create lookup maps for efficient searching
+        const studentMap = new Map(students.map(s => [s.uid, s]));
         const classMap = new Map(classes.map(c => [c.id, c.name]));
     
         let data = attendanceRecords.map(record => {
-            // Robust lookup directly inside the map function
-            const student = students.find(s => s.uid === record.studentId);
+            // Use the map for O(1) lookup instead of find() which is O(n)
+            const student = studentMap.get(record.studentId);
+            
             return {
                 ...record,
-                student: student, // This will be the student object or undefined
+                student: student, // Will be Student object or undefined
                 className: classMap.get(record.classId) || 'Unknown Class'
             };
         });
@@ -103,9 +126,14 @@ export default function AttendanceReportsPage() {
             data = data.filter(record => record.status === selectedStatus);
         }
         
-        return data.sort((a,b) => b.date.seconds - a.date.seconds);
+        return data.sort((a, b) => b.date.seconds - a.date.seconds);
     
     }, [attendanceRecords, selectedClassId, selectedStatus, students, classes]);
+
+    // Count missing students for warning
+    const missingStudentsCount = useMemo(() => {
+        return filteredData.filter(record => !record.student).length;
+    }, [filteredData]);
 
     const summaryData = useMemo(() => {
         const dataForSummary = filteredData; 
@@ -218,6 +246,20 @@ export default function AttendanceReportsPage() {
                 </CardContent>
             </Card>
 
+            {/* Warning for missing students */}
+            {!isLoading && missingStudentsCount > 0 && (
+                <Card className="border-orange-300 bg-orange-50">
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-2 text-orange-800">
+                            <AlertCircle className="h-5 w-5" />
+                            <p className="text-sm font-medium">
+                                Warning: {missingStudentsCount} attendance record(s) reference students that no longer exist or have been deleted.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {isLoading ? <div className="py-20 flex justify-center items-center"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
                 (filteredData.length === 0) ? (
                      <div className="text-center py-20 bg-muted rounded-lg">
@@ -274,7 +316,10 @@ export default function AttendanceReportsPage() {
                                             {filteredData.map(record => (
                                                 <TableRow key={record.id}>
                                                     <TableCell>
-                                                        <StudentDisplay student={record.student} variant="list" />
+                                                        <StudentCell 
+                                                            student={record.student} 
+                                                            studentId={record.studentId} 
+                                                        />
                                                     </TableCell>
                                                     <TableCell>{record.className}</TableCell>
                                                     <TableCell>{format(record.date.toDate(), 'PPP')}</TableCell>
