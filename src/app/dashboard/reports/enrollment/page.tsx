@@ -12,6 +12,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Ba
 import { FileText, Printer, Users } from 'lucide-react';
 import { Class, Student } from '@/lib/types';
 import Link from 'next/link';
+import { formatStudentId } from '@/lib/student-utils';
 
 const GENDER_COLORS = {
     Male: '#3b82f6', // blue-500
@@ -143,12 +144,13 @@ export default function EnrollmentReportsPage() {
                         <CardHeader><CardTitle>Student Roster</CardTitle></CardHeader>
                         <CardContent>
                              <Table>
-                                <TableHeader><TableRow><TableHead>First Name</TableHead><TableHead>Last Name</TableHead><TableHead>Class</TableHead><TableHead>Gender</TableHead></TableRow></TableHeader>
+                                <TableHeader><TableRow><TableHead>First Name</TableHead><TableHead>Last Name</TableHead><TableHead>Student ID</TableHead><TableHead>Class</TableHead><TableHead>Gender</TableHead></TableRow></TableHeader>
                                 <TableBody>
                                     {students?.map(s => (
                                         <TableRow key={s.id}>
                                             <TableCell>{s.firstName}</TableCell>
                                             <TableCell>{s.lastName}</TableCell>
+                                            <TableCell className="font-mono text-xs">{formatStudentId(s)}</TableCell>
                                             <TableCell>{classes?.find(c => c.id === s.classId)?.name || 'N/A'}</TableCell>
                                             <TableCell>{s.gender}</TableCell>
                                         </TableRow>

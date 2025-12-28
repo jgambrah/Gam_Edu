@@ -1,8 +1,10 @@
+
 'use client';
 
 import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { Assessment, Student } from '@/lib/types';
+import { formatStudentId } from '@/lib/student-utils';
 
 // Helper for Grading
 function getGrade(percentage: number) {
@@ -204,7 +206,7 @@ export const HTMLReportCard = ({
             <div className="flex justify-between mb-6 text-sm border p-4 rounded-lg bg-gray-50">
                 <div className="space-y-2">
                     <div className="flex gap-2"><span className="font-bold w-24">Name:</span> <span className="uppercase">{student.firstName} {student.lastName}</span></div>
-                    <div className="flex gap-2"><span className="font-bold w-24">Student ID:</span> <span className="uppercase">{student.id.slice(0, 8)}</span></div>
+                    <div className="flex gap-2"><span className="font-bold w-24">Student ID:</span> <span className="uppercase font-mono">{formatStudentId(student)}</span></div>
                 </div>
                 <div className="space-y-2 text-right">
                     <div className="flex gap-2 justify-end"><span className="font-bold">Academic Year:</span> <span>{year}</span></div>

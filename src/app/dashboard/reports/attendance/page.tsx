@@ -3,22 +3,24 @@
 
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Users, Loader2 } from 'lucide-react';
 import { Class, AttendanceRecord, Student } from '@/lib/types';
 import Link from 'next/link';
+import { useUser } from '@/firebase/provider';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
+import { StudentDisplay } from '@/components/student-display';
 
 const COLORS = {
     Present: '#22c55e',
@@ -32,7 +34,7 @@ export default function AttendanceReportsPage() {
     const firestore = useFirestore();
     const { user } = useUser();
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
-        from: startOfDay(new Date()),
+        from: startOfDay(new Date(new Date().setDate(new Date().getDate() - 30))),
         to: endOfDay(new Date()),
       });
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
@@ -87,13 +89,9 @@ export default function AttendanceReportsPage() {
 
         let data = attendanceRecords.map(record => {
             const student = studentMap.get(record.studentId);
-            const displayName = student 
-                ? `${student.firstName} ${student.lastName}` 
-                : (record.studentName || 'Unknown Student');
-
             return {
                 ...record,
-                studentName: displayName,
+                student: student,
                 className: classMap.get(record.classId) || 'Unknown Class'
             }
         });
@@ -270,13 +268,14 @@ export default function AttendanceReportsPage() {
                                                 <TableHead>Class</TableHead>
                                                 <TableHead>Date</TableHead>
                                                 <TableHead>Status</TableHead>
-                                                <TableHead>Notes</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {filteredData.map(record => (
                                                 <TableRow key={record.id}>
-                                                    <TableCell className="font-medium">{record.studentName}</TableCell>
+                                                    <TableCell>
+                                                        <StudentDisplay student={record.student} variant="list" />
+                                                    </TableCell>
                                                     <TableCell>{record.className}</TableCell>
                                                     <TableCell>{format(record.date.toDate(), 'PPP')}</TableCell>
                                                     <TableCell>
@@ -284,7 +283,6 @@ export default function AttendanceReportsPage() {
                                                             {record.status}
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell className="text-muted-foreground">{record.notes}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>

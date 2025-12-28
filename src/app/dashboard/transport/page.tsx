@@ -19,6 +19,7 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { addDoc, collection, doc, updateDoc, writeBatch, query, where } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { StudentDisplay } from '@/components/student-display';
 
 // --- Student Assignment Dialog ---
 
@@ -119,8 +120,8 @@ function StudentAssignmentDialog({ route, students, open, onOpenChange, onAssign
                 {assignedStudents.map(({student, stop}) => (
                     <div key={student?.uid} className="flex justify-between items-center p-2 border rounded-md">
                         <div>
-                            <p className="font-medium">{student?.firstName} {student?.lastName}</p>
-                            <p className="text-sm text-muted-foreground">{stop.name}</p>
+                            {student && <StudentDisplay student={student} variant="compact" />}
+                            <p className="text-sm text-muted-foreground ml-1">{stop.name}</p>
                         </div>
                         <Button variant="ghost" size="sm" onClick={() => handleUnassign(student!.uid)}>Unassign</Button>
                     </div>
@@ -398,7 +399,7 @@ export default function TransportPage() {
                             {stop.assignedStudentIds?.length > 0 ? (
                                 stop.assignedStudentIds.map(studentId => {
                                     const student = students?.find(s => s.uid === studentId);
-                                    return <div key={studentId} className="flex items-center gap-2 text-sm"><User className="h-4 w-4"/>{student ? `${student.firstName} ${student.lastName}` : 'Unknown Student'}</div>
+                                    return <div key={studentId} className="flex items-center gap-2 text-sm"><StudentDisplay student={student} variant="compact" /></div>
                                 })
                             ) : <p className="text-xs text-muted-foreground italic">No students assigned to this stop.</p>}
                         </div>
@@ -428,7 +429,7 @@ export default function TransportPage() {
                         <TableBody>
                             {subscribedStudents.map(student => (
                                 <TableRow key={student.uid}>
-                                    <TableCell>{student.firstName} {student.lastName}</TableCell>
+                                    <TableCell><StudentDisplay student={student} variant="list" /></TableCell>
                                     <TableCell>{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</TableCell>
                                 </TableRow>
                             ))}
