@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { BookText, FileUp, Type, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRole } from '@/context/role-context';
+import { StudentDisplay } from '@/components/student-display';
 
 export default function StudentAssignmentsView() {
   const { user, isUserLoading } = useUser();

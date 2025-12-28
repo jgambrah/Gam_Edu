@@ -24,6 +24,7 @@ import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { StudentDisplay } from '@/components/student-display';
 
 // Schema matches your data structure
 const attendanceRecordSchema = z.object({
@@ -49,6 +50,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [students, setStudents] = useState<Student[]>([]);
     const [studentsLoaded, setStudentsLoaded] = useState(false);
     
     const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
@@ -82,6 +84,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const studentQuery = query(collection(firestore, 'students'), where('classId', '==', selectedClassId));
             const studentSnapshot = await getDocs(studentQuery);
             const studentList = studentSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id, id: doc.id })) as Student[];
+            setStudents(studentList);
 
             if (studentList.length === 0) {
                 toast({ title: 'No Students', description: 'No students found in this class.' });
@@ -109,9 +112,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     classId: selectedClassId,
                     status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
                     notes: existingRecord?.notes || '',
-                    // Capture flags safely
                     usesBusService: student.usesBusService ? "true" : "false",
-                    usesCanteen: student.usesCanteen !== false ? "true" : "false", // Default to true unless explicitly false
+                    usesCanteen: student.usesCanteen !== false ? "true" : "false",
                 };
             });
 
@@ -155,16 +157,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
             const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
             
-            // Get all parents to search locally for better performance
             const parentsSnap = await getDocs(collection(firestore, 'parents'));
             const allParents = parentsSnap.docs.map(d => ({ ...d.data(), id: d.id })) as (Parent & {id: string})[];
-
 
             let billsCount = 0;
             let absenceNotificationsCount = 0;
             const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
-            // Re-fetch students to be safe
             const studentDocs = await getDocs(query(collection(firestore, 'students'), where('classId', '==', selectedClassId)));
             const studentMap = new Map(studentDocs.docs.map(d => [d.id, d.data() as Student]));
 
@@ -173,10 +172,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 const studentInfo = studentMap.get(record.studentId);
                 if (!studentInfo) continue;
                 
-                // BILLING RULE: Only if Present or Late
                 if (record.status === 'Present' || record.status === 'Late') {
                     
-                    // A. Canteen Bill (Default: Everyone, unless usesCanteen is false)
                     if (canteenRate > 0 && studentInfo.usesCanteen !== false) {
                         const billRef = doc(firestore, 'financialRecords', `canteen-${record.studentId}-${dateStr}`);
                         batch.set(billRef, {
@@ -194,7 +191,6 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                         billsCount++;
                     }
 
-                    // B. Transport Bill (Only if subscribed)
                     if (transportRate > 0 && studentInfo.usesBusService) {
                         const billRef = doc(firestore, 'financialRecords', `transport-${record.studentId}-${dateStr}`);
                         batch.set(billRef, {
@@ -213,15 +209,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     }
                 }
 
-                // NOTIFICATION RULE: Only if Absent
                 if (record.status === 'Absent') {
-                    // Find parent(s) linked to this student
                     const parentsToNotify = allParents.filter(p => p.studentIds?.includes(record.studentId));
 
                     for (const parent of parentsToNotify) {
                          const notificationRef = doc(collection(firestore, 'notifications'));
                          batch.set(notificationRef, {
-                            userId: parent.id, // The parent's UID
+                            userId: parent.id,
                             title: "Student Absence Notification",
                             message: `Dear Parent, please be advised that ${record.studentName} was marked absent from school today, ${format(selectedDate, 'PPP')}. If this is unexpected, please contact the school office.`,
                             read: false,
@@ -282,22 +276,20 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                              <ScrollArea className="h-[500px] w-full pr-4">
                                 <div className="space-y-4">
                                     {fields.map((field, index) => {
-                                        // Dynamic Visual Logic
+                                        const student = students.find(s => s.uid === field.studentId);
                                         const currentStatus = form.watch(`records.${index}.status`);
-                                        const willBillCanteen = (currentStatus === 'Present' || currentStatus === 'Late') && field.usesCanteen !== "false";
-                                        const willBillBus = (currentStatus === 'Present' || currentStatus === 'Late') && field.usesBusService === "true";
+                                        const willBillCanteen = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesCanteen !== false;
+                                        const willBillBus = (currentStatus === 'Present' || currentStatus === 'Late') && student?.usesBusService;
 
                                         return (
                                         <Card key={field.id} className={`p-4 transition-colors ${currentStatus === 'Absent' ? 'bg-red-50' : 'bg-white'}`}>
-                                            <input type="hidden" {...form.register(`records.${index}.studentName`)} defaultValue={field.studentName} />
                                             <input type="hidden" {...form.register(`records.${index}.studentId`)} defaultValue={field.studentId} />
                                             <input type="hidden" {...form.register(`records.${index}.classId`)} defaultValue={field.classId} />
                                             
                                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-                                                <div className="flex flex-col md:col-span-1">
-                                                    <p className="font-bold text-slate-700">{field.studentName}</p>
+                                                <div className="md:col-span-1">
+                                                    {student && <StudentDisplay student={student} variant="list" />}
                                                     <div className="flex gap-2 mt-1">
-                                                        {/* INDICATORS: Tell the user EXACTLY what will happen */}
                                                         {willBillCanteen && (
                                                             <Badge variant="secondary" className="bg-orange-100 text-orange-700 text-[10px] gap-1 border-orange-200">
                                                                 <Utensils className="h-3 w-3"/> Billed

@@ -56,6 +56,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ApplicationTracker } from '@/components/dashboard/admissions/application-tracker';
 import { Badge } from '@/components/ui/badge';
+import { StudentDisplay } from '@/components/student-display';
+import { generateNextStudentId } from '@/lib/student-utils';
 
 
 function ParentApplicationForm({ onSuccess }: { onSuccess: () => void }) {
@@ -185,21 +187,17 @@ function AdminApplicationDashboard() {
     const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     
-    // NEW: Real Classes State
     const [availableClasses, setAvailableClasses] = useState<{id: string, name: string, capacity: number, currentStudents: number}[]>([]);
     
-    // Dialog State
     const [selectedApp, setSelectedApp] = useState<any>(null);
     const [decision, setDecision] = useState<'Approve' | 'Reject' | null>(null);
     const [assignedClass, setAssignedClass] = useState('');
     const [rejectionReason, setRejectionReason] = useState('');
     const [processing, setProcessing] = useState(false);
 
-    // AI State
     const [aiThinking, setAiThinking] = useState(false);
     const [aiReasoning, setAiReasoning] = useState<string | null>(null);
 
-    // 1. Fetch Applications (Real-time)
     useEffect(() => {
         if (!firestore) return;
         const q = query(collection(firestore, 'admissionApplications'), where('status', '==', 'Pending Review'));
@@ -211,7 +209,6 @@ function AdminApplicationDashboard() {
         return () => unsubscribe();
     }, [firestore]);
 
-    // 2. Fetch REAL Classes from 'classes' collection
     useEffect(() => {
         if (!firestore) return;
         const fetchClasses = async () => {
@@ -225,7 +222,7 @@ function AdminApplicationDashboard() {
                 return {
                     id: doc.id,
                     name: doc.data().name || doc.id,
-                    capacity: doc.data().capacity || 30, // Default if missing
+                    capacity: doc.data().capacity || 30,
                     currentStudents: currentStudents,
                 };
             });
@@ -234,7 +231,6 @@ function AdminApplicationDashboard() {
         fetchClasses();
     }, [firestore]);
 
-    // 3. AI Placement Handler
     const handleAskAI = async () => {
         if (!selectedApp || availableClasses.length === 0) return;
         setAiThinking(true);
@@ -278,38 +274,31 @@ function AdminApplicationDashboard() {
                     setProcessing(false);
                     return;
                 }
+                
+                const newStudentId = await generateNextStudentId(firestore);
+                const [firstName, ...lastName] = selectedApp.student.fullName.split(' ');
+
+                const studentData = {
+                    uid: selectedApp.submittedByParentId, // TEMPORARY - will be replaced by Auth UID
+                    studentId: newStudentId,
+                    firstName: firstName,
+                    lastName: lastName.join(' '),
+                    email: selectedApp.parent1.email, // Use parent email temporarily
+                    classId: assignedClass,
+                    gender: selectedApp.student.gender,
+                    dateOfBirth: selectedApp.student.dateOfBirth,
+                    address: selectedApp.student.address,
+                    enrollmentStatus: 'Active',
+                };
+                
+                // For now, let's just add to students collection. Auth user creation would be next.
+                await addDoc(collection(firestore, 'students'), studentData);
 
                 await updateDoc(appRef, {
                     status: 'Admitted',
                     assignedClassId: assignedClass,
                     reviewedBy: user.uid,
                     reviewedAt: timestamp
-                });
-
-                const studentData = {
-                    uid: selectedApp.submittedByParentId,
-                    fullName: selectedApp.student.fullName,
-                    grade: selectedApp.student.desiredGrade,
-                    classId: assignedClass,
-                    parentId: selectedApp.submittedByParentId,
-                    enrollmentDate: timestamp,
-                    gender: selectedApp.student.gender,
-                    address: selectedApp.student.address,
-                };
-                await addDoc(collection(firestore, 'students'), studentData);
-
-                const classRef = doc(firestore, 'classes', assignedClass);
-                const classSnap = await getDoc(classRef);
-                if (classSnap.exists()) {
-                     await updateDoc(classRef, { currentStudents: (classSnap.data().currentStudents || 0) + 1 });
-                }
-
-                await addDoc(collection(firestore, 'notifications'), {
-                    userId: selectedApp.submittedByParentId,
-                    title: 'Application Accepted! 🎉',
-                    message: `Congratulations! ${selectedApp.student.fullName} has been accepted into ${selectedApp.student.desiredGrade}. Assigned Class: ${availableClasses.find(c => c.id === assignedClass)?.name || assignedClass}.`,
-                    read: false,
-                    createdAt: timestamp
                 });
 
                 toast({ title: "Approved", description: "Student enrolled and parent notified." });
@@ -321,15 +310,6 @@ function AdminApplicationDashboard() {
                     reviewedBy: user.uid,
                     reviewedAt: timestamp
                 });
-
-                await addDoc(collection(firestore, 'notifications'), {
-                    userId: selectedApp.submittedByParentId,
-                    title: 'Application Update',
-                    message: `Regarding the application for ${selectedApp.student.fullName}: We regret to inform you that the application was not successful.`,
-                    read: false,
-                    createdAt: timestamp
-                });
-
                 toast({ variant: "default", title: "Rejected", description: "Application status updated." });
             }
 
@@ -347,23 +327,19 @@ function AdminApplicationDashboard() {
         }
     };
     
-    // --- AI Screener Logic ---
     const getAiFlags = (app: any) => {
         const flags = [];
 
-        // 1. Age Mismatch Check
         const dob = app.student.dateOfBirth?.toDate ? app.student.dateOfBirth.toDate() : null;
         if(dob) {
             const age = differenceInYears(new Date(), dob);
             const gradeNum = parseInt(app.student.desiredGrade.replace(/\D/g, ''), 10);
             
-            // Simple rule: age should be around grade number + 5
             if (gradeNum && (age < gradeNum + 4 || age > gradeNum + 7)) {
                 flags.push({type: 'warning', text: `AI Flag: Age Mismatch (Age ${age} for ${app.student.desiredGrade})`});
             }
         }
 
-        // 2. Capacity Check
         const targetClasses = availableClasses.filter(c => c.name.includes(app.student.desiredGrade));
         if (targetClasses.length > 0 && targetClasses.every(c => c.currentStudents >= c.capacity)) {
             flags.push({type: 'info', text: 'AI Flag: Waitlist Recommended (Class Full)'});
@@ -497,7 +473,6 @@ function ParentDashboard() {
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(true);
     
-    // We need available classes here to display the assigned class name.
     const { data: availableClasses } = useCollection<any>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
 
 
@@ -608,5 +583,3 @@ export default function AdmissionsPage() {
         </Card>
     );
 }
-
-    

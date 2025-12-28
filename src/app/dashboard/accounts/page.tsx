@@ -37,6 +37,10 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { StudentDisplay } from '@/components/student-display';
+import { StudentSearchInput } from '@/components/student-search';
+import { searchStudent } from '@/lib/student-utils';
+import { StudentSelect } from '@/components/StudentSelect';
 
 // --- Types ---
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
@@ -345,7 +349,11 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
         </div>
 
         <FormField control={form.control} name="studentId" render={({ field }) => (
-            <FormItem><FormLabel>Student</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a student"/></SelectTrigger></FormControl><SelectContent>{students.map(s => <SelectItem key={s.uid} value={s.uid}>{s.firstName} {s.lastName}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+            <FormItem>
+                <FormLabel>Student</FormLabel>
+                <StudentSelect students={students} value={field.value} onValueChange={field.onChange} />
+                <FormMessage />
+            </FormItem>
         )}/>
         
         {!isOpeningBalance && (
@@ -761,7 +769,7 @@ export default function AccountsPage() {
       };
     }).filter(sf => 
         (sf.ledger.length > 0 || searchTerm) && 
-        (sf.student.firstName + " " + sf.student.lastName).toLowerCase().includes(searchTerm.toLowerCase())
+        searchStudent(sf.student, searchTerm)
     );
   }, [records, students, searchTerm]);
 
@@ -821,17 +829,16 @@ export default function AccountsPage() {
       </div>
 
       <Card>
-        <CardHeader><Input placeholder="Search by student name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="max-w-sm"/></CardHeader>
+        <CardHeader>
+            <StudentSearchInput value={searchTerm} onChange={setSearchTerm}/>
+        </CardHeader>
         <CardContent>
             {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                 <div className="space-y-4">
                     {studentFinancials.map(({ student, balance, hasOverdue, ledger }) => (
                          <Collapsible key={student.uid} className="border rounded-lg">
                             <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
-                                <div className="flex items-center gap-3">
-                                    <Avatar><AvatarFallback>{student.firstName.charAt(0)}{student.lastName.charAt(0)}</AvatarFallback></Avatar>
-                                    <div className="text-left"><p className="font-semibold">{student.firstName} {student.lastName}</p><p className="text-sm text-muted-foreground">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</p></div>
-                                </div>
+                                <StudentDisplay student={student} variant="full" showAvatar />
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
                                         <p className="text-sm text-muted-foreground">Balance</p>
@@ -840,7 +847,7 @@ export default function AccountsPage() {
                                     <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                 </div>
                             </CollapsibleTrigger>
-                             <CollapsibleContent className="p-4 bg-slate-50 border-t">
+                             <CollapsibleContent className="p-4 bg-slate-50/50 border-t">
                                 <div className="border rounded-md overflow-hidden bg-white">
                                  <Table>
                                     <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead><TableHead className="text-right">Run. Bal</TableHead><TableHead className="w-[120px] text-right">Actions</TableHead></TableRow></TableHeader>
