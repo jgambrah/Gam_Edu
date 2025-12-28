@@ -43,7 +43,7 @@ function StudentCell({ student, studentId }: { student?: Student; studentId: str
                 Unknown Student
             </span>
             <span className="text-xs text-muted-foreground font-mono">
-                UID: {studentId.slice(0, 8)}...
+                UID: {studentId ? studentId.slice(0, 8) : 'N/A'}...
             </span>
         </div>
     );
@@ -101,22 +101,18 @@ export default function AttendanceReportsPage() {
     const isLoading = isLoadingClasses || isLoadingAttendance || isLoadingStudents;
 
     // --- DATA PROCESSING & FILTERING ---
+    const studentMap = useMemo(() => {
+        if (!students) return new Map<string, Student>();
+        return new Map(students.map(s => [s.uid, s]));
+    }, [students]);
+
     const filteredData = useMemo(() => {
-        if (!attendanceRecords || !students || !classes) return [];
-    
-        // Create lookup maps for efficient searching
-        const studentMap = new Map(students.map(s => [s.uid, s]));
-        const classMap = new Map(classes.map(c => [c.id, c.name]));
-    
+        if (!attendanceRecords || !classes) return [];
+
         let data = attendanceRecords.map(record => {
-            // Use the map for O(1) lookup instead of find() which is O(n)
             const student = studentMap.get(record.studentId);
-            
-            return {
-                ...record,
-                student: student, // Will be Student object or undefined
-                className: classMap.get(record.classId) || 'Unknown Class'
-            };
+            const className = classes.find(c => c.id === record.classId)?.name || 'Unknown Class';
+            return { ...record, student, className };
         });
     
         if (selectedClassId !== 'all') {
@@ -128,7 +124,7 @@ export default function AttendanceReportsPage() {
         
         return data.sort((a, b) => b.date.seconds - a.date.seconds);
     
-    }, [attendanceRecords, selectedClassId, selectedStatus, students, classes]);
+    }, [attendanceRecords, selectedClassId, selectedStatus, classes, studentMap]);
 
     // Count missing students for warning
     const missingStudentsCount = useMemo(() => {
