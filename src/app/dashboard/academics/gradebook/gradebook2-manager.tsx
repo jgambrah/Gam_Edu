@@ -27,7 +27,7 @@ import { GenerateReportCard } from './report-card-pdf';
 // Types
 import { Assessment, FinancialRecord, Class, Student, Subject } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
-import { formatStudentId } from '@/lib/student-utils';
+import { searchStudent } from '@/lib/student-utils';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {

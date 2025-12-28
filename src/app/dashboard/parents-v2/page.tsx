@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { UserRole } from '@/lib/types';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { StudentSearchInput } from '@/components/student-search';
+import { searchStudent } from '@/lib/student-utils';
 
 
 // --- TYPE DEFINITIONS ---
@@ -164,15 +166,12 @@ export default function ParentsPage() {
         </CardHeader>
         
         <CardContent className="space-y-4">
-            <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                    placeholder="Search parents..." 
-                    className="pl-8 max-w-sm" 
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                />
-            </div>
+            <StudentSearchInput 
+              value={searchTerm}
+              onChange={setSearchTerm}
+              className="max-w-sm"
+              placeholder="Search parents..."
+            />
 
             {isLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-pink-500"/></div>
