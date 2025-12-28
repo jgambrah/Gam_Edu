@@ -83,19 +83,19 @@ export default function AttendanceReportsPage() {
     // --- DATA PROCESSING & FILTERING ---
     const filteredData = useMemo(() => {
         if (!attendanceRecords || !students || !classes) return [];
-
+    
         const classMap = new Map(classes.map(c => [c.id, c.name]));
-        const studentMap = new Map(students.map(s => [s.uid, s])); // Create map inside useMemo
-
+    
         let data = attendanceRecords.map(record => {
-            const student = studentMap.get(record.studentId);
+            // Robust lookup directly inside the map function
+            const student = students.find(s => s.uid === record.studentId);
             return {
                 ...record,
-                student: student,
+                student: student, // This will be the student object or undefined
                 className: classMap.get(record.classId) || 'Unknown Class'
-            }
+            };
         });
-
+    
         if (selectedClassId !== 'all') {
             data = data.filter(record => record.classId === selectedClassId);
         }
@@ -104,7 +104,7 @@ export default function AttendanceReportsPage() {
         }
         
         return data.sort((a,b) => b.date.seconds - a.date.seconds);
-
+    
     }, [attendanceRecords, selectedClassId, selectedStatus, students, classes]);
 
     const summaryData = useMemo(() => {
