@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,10 +22,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AssessmentFeedbackForm } from '../../assessments/assessment-feedback-form';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { GenerateReportCard } from './report-card-pdf'; // Import the new component
+import { GenerateReportCard } from './report-card-pdf';
 
 // Types
 import { Assessment, FinancialRecord, Class, Student, Subject } from '@/lib/types';
+import { StudentDisplay } from '@/components/student-display';
+import { formatStudentId } from '@/lib/student-utils';
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
@@ -285,14 +286,6 @@ function StudentGradesDetail({
     );
 }
 
-// Helper to format the student ID
-function formatStudentIdDisplay(student: Student): string {
-  if (student.studentId) {
-    return student.studentId;
-  }
-  return 'ID Pending';
-}
-
 // --- MAIN PAGE ---
 export default function GradebookManager() {
   const { user, isUserLoading } = useUser();
@@ -463,10 +456,7 @@ export default function GradebookManager() {
                                             <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${rank <= 3 ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400' : 'bg-slate-100 text-slate-500'}`}>
                                                 {rank}
                                             </div>
-                                            <div className="text-left">
-                                                <p className="font-semibold text-slate-800">{student.firstName} {student.lastName}</p>
-                                                <p className="text-xs text-muted-foreground">ID: {formatStudentIdDisplay(student)}</p>
-                                            </div>
+                                            <StudentDisplay student={student} variant="list" />
                                         </div>
 
                                         <div className="flex items-center gap-3">

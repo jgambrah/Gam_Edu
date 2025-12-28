@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -27,10 +26,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
+import { StudentSearchInput } from '@/components/student-search';
+import { StudentDisplay } from '@/components/student-display';
+import { searchStudent, formatStudentId } from '@/lib/student-utils';
 
 // --- ROBUST ID GENERATION ---
 async function generateNextStudentId(firestore: any): Promise<string> {
@@ -186,25 +188,12 @@ export default function StudentsV3Page() {
     }
   };
   
-  const formatStudentIdDisplay = (student: Student): string => {
-    if (student.studentId && /^SS-\d{4}-\d{4}$/.test(student.studentId)) {
-        return student.studentId;
-    }
-    return 'ID Pending';
-  };
-
   const filteredStudents = students.filter(s => {
-    const first = (s.firstName || '').toLowerCase();
-    const last = (s.lastName || '').toLowerCase();
-    const email = (s.email || '').toLowerCase();
-    const studentId = (s.studentId || '').toLowerCase();
-    
     const term = searchTerm.toLowerCase().trim();
-    const sClassId = s.classId || 'unassigned';
-
-    const matchesSearch = term === '' || first.includes(term) || last.includes(term) || email.includes(term) || studentId.includes(term);
-    const matchesClass = classFilter === 'all' || sClassId === classFilter;
-    return matchesSearch && matchesClass;
+    if (classFilter !== 'all' && s.classId !== classFilter) {
+      return false;
+    }
+    return searchStudent(s, term);
   });
 
   return (
@@ -234,15 +223,11 @@ export default function StudentsV3Page() {
         
         <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-grow">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                        placeholder="Search name, email, or student ID..." 
-                        className="pl-8" 
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)} 
-                    />
-                </div>
+                <StudentSearchInput 
+                  value={searchTerm} 
+                  onChange={setSearchTerm} 
+                  className="flex-grow"
+                />
                 <Select value={classFilter} onValueChange={setClassFilter}>
                     <SelectTrigger className="w-full sm:w-[280px]"><SelectValue placeholder="Filter by Class" /></SelectTrigger>
                     <SelectContent>
@@ -268,13 +253,20 @@ export default function StudentsV3Page() {
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
-                            <TableRow><TableHead>Student ID</TableHead><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Class</TableHead><TableHead>Services</TableHead><TableHead className="text-right">Actions</TableHead></TableRow>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Student ID</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Class</TableHead>
+                                <TableHead>Services</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredStudents.map((s) => (
                                 <TableRow key={s.id}>
-                                    <TableCell className="font-mono text-xs">{formatStudentIdDisplay(s)}</TableCell>
-                                    <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
+                                    <TableCell><StudentDisplay student={s} variant="list" /></TableCell>
+                                    <TableCell className="font-mono text-xs">{formatStudentId(s)}</TableCell>
                                     <TableCell>{s.email}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">
@@ -307,12 +299,19 @@ export default function StudentsV3Page() {
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Smith"/></div>
                 </div>
                 <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="john.smith@school.com"/></div>
+                
                 <div className="space-y-2">
                     <Label>Class</Label>
                     <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                         <SelectTrigger><SelectValue placeholder="Assign a class" /></SelectTrigger>
                         <SelectContent>
-                            {classes.map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
+                            {classes.length === 0 ? (
+                                <SelectItem value="none" disabled>No classes found</SelectItem>
+                            ) : (
+                                classes.map(c => (
+                                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                ))
+                            )}
                         </SelectContent>
                     </Select>
                 </div>
@@ -354,7 +353,7 @@ export default function StudentsV3Page() {
                         <Select value={selectedClassId} onValueChange={setSelectedClassId}>
                             <SelectTrigger><SelectValue placeholder="Class" /></SelectTrigger>
                             <SelectContent>
-                                {classes.map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
+                                {(classes || []).map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
                             </SelectContent>
                         </Select>
                     </div>
