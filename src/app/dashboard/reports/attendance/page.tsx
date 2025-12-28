@@ -84,11 +84,10 @@ export default function AttendanceReportsPage() {
     const filteredData = useMemo(() => {
         if (!attendanceRecords || !students) return [];
 
-        const studentMap = new Map(students.map(s => [s.uid, s]));
         const classMap = new Map(classes?.map(c => [c.id, c.name]));
 
         let data = attendanceRecords.map(record => {
-            const student = studentMap.get(record.studentId);
+            const student = students.find(s => s.uid === record.studentId);
             return {
                 ...record,
                 student: student,
