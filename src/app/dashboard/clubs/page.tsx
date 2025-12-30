@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 const clubModules = [
   {
-    path: 'https://studio.google.com/your-early-years-project-url',
+    path: 'https://nursery-bloom-early-english-explorer-296289880836.us-west1.run.app',
     title: 'Early Years',
     icon: Rabbit,
     description: 'Explore foundational literacy and numeracy in a fun, interactive environment.',

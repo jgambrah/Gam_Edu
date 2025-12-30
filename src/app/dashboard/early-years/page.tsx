@@ -1,10 +1,10 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
-import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 export default function EarlyYearsRedirectPage() {
   return (
@@ -17,7 +17,7 @@ export default function EarlyYearsRedirectPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Link href="https://studio.google.com/your-early-years-project-url" target="_blank" rel="noopener noreferrer">
+                <Link href="https://nursery-bloom-early-english-explorer-296289880836.us-west1.run.app" target="_blank" rel="noopener noreferrer">
                     <Button>
                         Open Early Years Hub <ExternalLink className="ml-2 h-4 w-4"/>
                     </Button>
