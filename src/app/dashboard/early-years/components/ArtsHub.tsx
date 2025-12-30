@@ -1,11 +1,17 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ARTS_DATA } from '../constants';
-import { generateLessonImage, generateTTS } from '../services/gemini';
 import { playRawPcm } from '../services/audio';
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { generateLessonImage } from '../services/gemini';
+import { 
+    generateTTSAction, 
+    generateArtDetailsAction 
+} from '@/ai/flows/junior-actions';
+
 
 type ArtsTab = 'studio' | 'colors' | 'shapes' | 'texture';
 
@@ -23,19 +29,20 @@ const ArtsHub: React.FC = () => {
     }
     setPlaying(true);
     try {
-      const base64 = await generateTTS(text, 'Kore');
-      if (base64) {
-        const source = await playRawPcm(base64);
+      const result = await generateTTSAction({text, voice: 'Kore'});
+      if (result.success && result.data) {
+        const source = await playRawPcm(result.data);
         if (source) {
           currentSourceRef.current = source;
           source.onended = () => { setPlaying(false); currentSourceRef.current = null; };
         } else { setPlaying(false); }
-      } else { setPlaying(false); }
+      } else { 
+          setPlaying(false); 
+          throw new Error(result.error);
+      }
     } catch (err: any) {
       setPlaying(false);
-      if (err.message === 'QUOTA_EXCEEDED') {
-        setErrorMsg('Tutor is resting! Check your API key.');
-      }
+       setErrorMsg('Tutor is resting! Check your API key.');
     }
   }, []);
 
@@ -303,7 +310,7 @@ const ColorGarden: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =>
            <button onClick={() => setIndex(i => (i + 1) % items.length)} className="w-14 h-14 bg-green-100 text-green-500 rounded-full flex items-center justify-center hover:bg-green-200 transition-all shadow-md active:scale-90"><i className="fas fa-chevron-right fa-xl"></i></button>
         </div>
       </div>
-      {isAdminOpen && (<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300"><div className="flex justify-between items-center mb-6"><h3 className="text-2xl font-black text-gray-800 tracking-tight">Add Nature Item</h3><button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><i className="fas fa-times"></i></button></div><form onSubmit={handleAddItems} className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Object Name</label><div className="flex gap-2"><input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Butterfly" className="flex-grow px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-lg font-bold" /><button type="button" onClick={handleMagicPrompt} disabled={!newName || isGenerating} className="w-12 h-12 bg-green-100 text-green-500 rounded-2xl flex items-center justify-center hover:bg-green-200 disabled:opacity-50">{isGenerating ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-wand-magic-sparkles"></i>}</button></div></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Main Color</label><select value={newColor} onChange={(e) => setNewColor(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 bg-white font-bold"><option>Red</option><option>Blue</option><option>Yellow</option><option>Green</option><option>Purple</option><option>Orange</option></select></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Image Prompt</label><textarea required value={newPrompt} onChange={(e) => setNewPrompt(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-sm font-medium h-24 resize-none" /></div><button type="submit" className="w-full py-5 bg-green-500 text-white font-black text-xl rounded-2xl shadow-xl hover:bg-green-600 transition-all">Add to Garden! 🌿</button></form></div></div>)}
+      {isAdminOpen && (<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300"><div className="flex justify-between items-center mb-6"><h3 className="text-2xl font-black text-gray-800 tracking-tight">Add Nature Item</h3><button onClick={() => setIsAdminOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600"><i className="fas fa-times"></i></button></div><form onSubmit={handleAddItem} className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Object Name</label><div className="flex gap-2"><input type="text" required value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Butterfly" className="flex-grow px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-lg font-bold" /><button type="button" onClick={handleMagicPrompt} disabled={!newName || isGenerating} className="w-12 h-12 bg-green-100 text-green-500 rounded-2xl flex items-center justify-center hover:bg-green-200 disabled:opacity-50">{isGenerating ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-wand-magic-sparkles"></i>}</button></div></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Main Color</label><select value={newColor} onChange={(e) => setNewColor(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 bg-white font-bold"><option>Red</option><option>Blue</option><option>Yellow</option><option>Green</option><option>Purple</option><option>Orange</option></select></div><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Image Prompt</label><textarea required value={newPrompt} onChange={(e) => setNewPrompt(e.target.value)} className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100 focus:border-green-300 focus:outline-none text-sm font-medium h-24 resize-none" /></div><button type="submit" className="w-full py-5 bg-green-500 text-white font-black text-xl rounded-2xl shadow-xl hover:bg-green-600 transition-all">Add to Garden! 🌿</button></form></div></div>)}
     </div>
   );
 };
@@ -323,10 +330,10 @@ const ShapeWorld: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
   const handleMagicFill = async () => {
     if (!newName) return;
     setIsMagicLoading(true);
-    const details = await generateArtDetails(newName, 'shapes');
-    if (details) {
-      setNewDesc(details.description);
-      setNewParts(details.parts);
+    const result = await generateArtDetailsAction({ item: newName, type: 'shapes' });
+    if (result.success && result.data) {
+      setNewDesc(result.data.description);
+      setNewParts(result.data.parts);
     }
     setIsMagicLoading(false);
   };
@@ -414,10 +421,10 @@ const TextureBin: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
   const handleMagicFill = async () => {
     if (!newName) return;
     setIsMagicLoading(true);
-    const details = await generateArtDetails(newName, 'textures');
-    if (details) {
-      setNewPrompt(details.prompt);
-      setNewDesc(details.description);
+    const result = await generateArtDetailsAction({ item: newName, type: 'textures' });
+    if (result.success && result.data) {
+      setNewPrompt(result.data.prompt);
+      setNewDesc(result.data.description);
     }
     setIsMagicLoading(false);
   };

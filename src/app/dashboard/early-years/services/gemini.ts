@@ -1,8 +1,8 @@
 
 'use client';
 
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+// This file is being deprecated. All AI logic is being moved to server actions
+// in /src/ai/flows/ to prevent server-side modules from being bundled in the client.
 
 export async function generateLessonImage(prompt: string): Promise<string> {
     const seed = prompt.split("").reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
