@@ -509,6 +509,4 @@ export const ARTS_DATA = {
   textureBin: [
     { name: 'Fluffy Cloud', prompt: 'Extreme close up, macro shot of soft white cotton ball texture, nursery style', description: "Wow, it's so soft and fluffy, like a cloud!"},
     { name: 'Bumpy Log', prompt: 'Macro photo of tree bark texture, nursery style', description: "This feels bumpy and rough, like a tree!"},
-    { name: 'Smooth Stone', prompt: 'A smooth grey river stone, glossy, nursery style', description: "This is so smooth and cool, like a stone from the river!"}
-  ]
-};
+    { name: 'Smooth Stone', prompt: 'A smooth grey river stone, glossy
