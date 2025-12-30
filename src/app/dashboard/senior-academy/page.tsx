@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -8,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, serverTimestamp, deleteDoc, doc, addDoc } from 'firebase/firestore';
 import { 
   Sigma, Languages, Microscope, BookOpen, 
-  Rocket, Volume2, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon
+  Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -156,10 +155,10 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
             {/* SIDEBAR NAVIGATION */}
             <div className="lg:col-span-1 space-y-4">
-                <div className="bg-indigo-900 p-4 rounded-3xl shadow-lg">
-                    <Label className="text-indigo-300 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
+                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg">
+                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-indigo-800 border-indigo-700 text-white rounded-2xl h-12">
+                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white rounded-2xl h-12">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
@@ -187,7 +186,9 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                             {Object.entries(subs).map(([subTitle, items]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-indigo-600">
+                                                            {subTitle}
+                                                        </AccordionTrigger>
                                                         <AccordionContent className="space-y-1">
                                                             {items.map((item: any) => (
                                                                 <button key={item.id} onClick={() => { setActiveStory(item); setAnswers([]); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeStory?.id === item.id ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-slate-600'}`}>{item.title}</button>
@@ -248,7 +249,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                     </Card>
                 ) : <div className="h-full flex flex-col items-center justify-center text-center">
                          <div className={`p-10 rounded-full mb-6 ${isJunior ? 'bg-yellow-100 animate-pulse' : 'bg-slate-50'}`}>
-                            <BookOpen className={`w-20 h-20 ${isJunior ? 'text-yellow-500' : 'text-slate-100'}`} />
+                            <BookOpen className={`w-20 h-20 ${isJunior ? 'text-yellow-500' : 'text-slate-200'}`} />
                          </div>
                          <h2 className="text-3xl font-black text-slate-300">Choose a Magic Book</h2>
                     </div>}
@@ -344,7 +345,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([subject, subTopics]) => (
                                 <Accordion key={subject} type="single" collapsible className="w-full">
                                     <AccordionItem value={subject} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-slate-50 rounded-2xl mb-1 group">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-emerald-50 rounded-2xl mb-1 group">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                                                 <span className="font-black text-slate-700 text-xs uppercase tracking-tight">{subject}</span>
@@ -802,4 +803,4 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-
+```
