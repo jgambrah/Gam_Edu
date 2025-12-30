@@ -219,7 +219,7 @@ export const navItems: NavItem[] = [
         },
         {
             path: '/dashboard/junior-academy',
-            title: 'Junior Academy',
+            title: 'Junior Campus',
             icon: GraduationCap,
             roles: ['Student', 'Parent', 'Teacher', 'Administrator', 'Director'],
         },
