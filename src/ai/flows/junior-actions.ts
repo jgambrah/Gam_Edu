@@ -3,6 +3,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import wav from 'wav';
 
 // --- STORY GENERATOR ---
 const StorySchema = z.object({
@@ -162,4 +163,49 @@ export async function generateWordDetails(word: string) {
     console.error("Word Details Generation Error:", error);
     return { success: false, error: "Could not analyze word." };
   }
+}
+
+// --- TTS HELPER ---
+async function toWav(pcmData: Buffer): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const writer = new wav.Writer({ channels: 1, sampleRate: 24000, bitDepth: 16 });
+        const chunks: Buffer[] = [];
+        writer.on('data', (chunk) => chunks.push(chunk));
+        writer.on('end', () => resolve(Buffer.concat(chunks).toString('base64')));
+        writer.on('error', reject);
+        writer.write(pcmData);
+        writer.end();
+    });
+}
+
+// --- TTS ACTION ---
+const TTSInputSchema = z.object({
+    text: z.string(),
+    voice: z.enum(['Puck', 'Algenib', 'Achernar', 'Enif']),
+});
+
+export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
+    try {
+        const { media } = await ai.generate({
+            model: 'googleai/gemini-2.5-flash-preview-tts',
+            config: {
+                responseModalities: ['AUDIO'],
+                speechConfig: {
+                    voiceConfig: { prebuiltVoiceConfig: { voiceName: input.voice } },
+                },
+            },
+            prompt: input.text,
+        });
+
+        if (!media || !media.url) throw new Error("No audio returned from TTS.");
+
+        const audioBuffer = Buffer.from(media.url.substring(media.url.indexOf(',') + 1), 'base64');
+        const wavBase64 = await toWav(audioBuffer);
+
+        return { success: true, data: wavBase64 };
+
+    } catch (error: any) {
+        console.error("TTS Generation Error:", error);
+        return { success: false, error: error.message || "Failed to generate speech." };
+    }
 }
