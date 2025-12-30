@@ -1,19 +1,18 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { generateTTSAction } from '@/ai/flows/junior-actions'; // Correctly import the server action
+import { generateTTSAction } from '@/ai/flows/junior-actions';
+import { useToast } from '@/hooks/use-toast';
 
 const TutorSession: React.FC = () => {
   const { user } = useUser();
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isTutorSpeaking, setIsTutorSpeaking] = useState(false);
+  const { toast } = useToast();
 
-  // This is a placeholder now. In a real scenario, this would
-  // be a more complex state management for a real-time session.
   const handleStartSession = () => {
     setIsSessionActive(true);
     speakWelcome();
@@ -25,12 +24,23 @@ const TutorSession: React.FC = () => {
   
   const speakWelcome = async () => {
     setIsTutorSpeaking(true);
-    const text = `Hello ${user?.displayName || 'friend'}! Let's learn together.`;
+    const text = `Hello ${user?.displayName || 'friend'}! I am still under development, but I am excited to learn with you soon.`;
     try {
-        // This is a simplified interaction using a server action
-        await generateTTSAction({ text, voice: 'Kore' });
-    } catch(e) {
+        const result = await generateTTSAction({ text, voice: 'Puck' });
+        if (!result.success) {
+            throw new Error(result.error);
+        }
+        // In a real scenario, you'd use the result.data (the audio) here.
+        // For now, we'll just show a toast.
+        toast({ title: "AI Tutor says hello!", description: "Real-time audio coming soon." });
+
+    } catch(e: any) {
         console.error("TTS Failed", e);
+        toast({
+            variant: "destructive",
+            title: "Audio Feature Offline",
+            description: "The AI Tutor's voice is currently unavailable. Please check your API key setup."
+        });
     } finally {
         setIsTutorSpeaking(false);
     }
@@ -56,7 +66,7 @@ const TutorSession: React.FC = () => {
         )}
 
         <div className="mt-8 text-center text-sm text-muted-foreground p-4 bg-slate-50 rounded-lg">
-            <p><strong>Note:</strong> The real-time audio connection logic has been temporarily disabled to resolve a build issue. This component is now a placeholder.</p>
+            <p><strong>Note:</strong> Real-time audio features are currently in development. This is a placeholder for the live tutoring experience.</p>
         </div>
     </div>
   );

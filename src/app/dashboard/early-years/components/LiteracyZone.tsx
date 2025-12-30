@@ -3,13 +3,36 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { PHONICS_DATA, INITIAL_WORDS, VOWELS_CONSONANTS, DICTION_DATA, READING_DATA, SENTENCE_DATA, HIDDEN_WORDS_DATA, GRAMMAR_DATA, OPPOSITES_DATA, BLENDS_DATA, RHYMES_DATA, MISSING_LETTERS_DATA, STORYTELLING_DATA, THEME_VOCAB_DATA } from '../constants';
-import { generateLessonImage, generateTTS, generateRhyme, generateSongVideo } from '../services/gemini';
+import { generateLessonImage } from '../services/gemini';
 import { playRawPcm } from '../services/audio';
 import { z } from 'zod';
-import { generateWordDetails, generateMissingLetterChallenge, generateSentence, generateRhymingWords, generateStorytellingScene, generateThemedVocab, generateDictionDetails, generateBlendsExample } from '@/ai/flows/junior-actions';
-
+import { 
+  generateWordDetails, 
+  generateMissingLetterChallenge, 
+  generateSentence, 
+  generateRhymingWords, 
+  generateStorytellingScene, 
+  generateThemedVocab, 
+  generateDictionDetails, 
+  generateBlendsExample,
+  generateTTSAction,
+} from '@/ai/flows/junior-actions';
 
 type LiteracyTab = 'alphabet' | 'blends' | 'rhymes' | 'words' | 'missing-letters' | 'building' | 'grammar' | 'reading' | 'sentences' | 'hidden-words' | 'opposites' | 'storytelling' | 'themes' | 'diction' | 'writing' | 'songs';
+
+const playSound = async (text: string) => {
+    if (!text) return;
+    try {
+        const result = await generateTTSAction({ text, voice: 'Kore' });
+        if (result.success && result.data) {
+            await playRawPcm(result.data);
+        } else {
+            console.error("TTS generation failed:", result.error);
+        }
+    } catch (e) {
+        console.error("Audio playback error:", e);
+    }
+};
 
 const LiteracyZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<LiteracyTab>('alphabet');
@@ -59,10 +82,10 @@ const LiteracyZone: React.FC = () => {
         <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-pink-50 min-w-max">
           {(['alphabet', 'blends', 'rhymes', 'words', 'missing-letters', 'building', 'grammar', 'reading', 'sentences', 'hidden-words', 'opposites', 'storytelling', 'themes', 'diction', 'writing', 'songs'] as LiteracyTab[]).map((tab) => (
             <button
-              key={tab.id}
+              key={tab}
               onClick={() => setActiveTab(tab)}
               className={`min-w-[100px] px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
-                activeTab === tab.id ? `${tabColors[tab]} text-white shadow-xl scale-110 -translate-y-1` : 'text-gray-300 hover:bg-gray-50'
+                activeTab === tab ? `${tabColors[tab]} text-white shadow-xl scale-110 -translate-y-1` : 'text-gray-300 hover:bg-gray-50'
               }`}
             >
               <i className={`fas ${tabIcons[tab]} text-lg`}></i>
@@ -108,14 +131,14 @@ const StorytellingModule: React.FC = () => {
   useEffect(() => { fetchVisual(); }, [index, data]);
   const fetchVisual = async () => { setLoading(true); const url = await generateLessonImage(current.prompt); setImageUrl(url); setLoading(false); };
   
-  const playQuestion = async (q: string) => { await playRawPcm(await generateTTS(q) || ''); };
+  const playQuestion = async (q: string) => { await playSound(q); };
 
   const generateWithAi = async () => {
     if (!aiTopic) return; setIsAiLoading(true);
     try {
       const result = await generateStorytellingScene(aiTopic);
-      if(result) {
-        setData(prev => [...prev, result]);
+      if(result.success && result.data) {
+        setData(prev => [...prev, result.data!]);
         setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -126,8 +149,8 @@ const StorytellingModule: React.FC = () => {
       <button onClick={() => setIsTeacherDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase tracking-widest"><i className="fas fa-magic"></i> AI Story Prompt</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[600px] animate-in zoom-in duration-500">
         <h3 className="text-4xl font-black text-blue-600 mb-8 uppercase tracking-tighter text-center">Look & Tell a Story! 🗨️</h3>
-        <div className="w-full max-w-2xl aspect-video bg-blue-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group" onClick={async () => playRawPcm(await generateTTS(`Let's look at this picture of ${current.title}! What do you see?`) || '')}>
-          {loading ? <div className="w-16 h-16 border-8 border-blue-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-105" />}
+        <div className="w-full max-w-2xl aspect-video bg-blue-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group" onClick={async () => playSound(`Let's look at this picture of ${current.title}! What do you see?`)}>
+          {loading ? <div className="w-16 h-16 border-8 border-blue-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-105" alt={current.title} />}
         </div>
         <div className="w-full space-y-4">
            <p className="text-xl font-bold text-gray-400 uppercase tracking-widest text-center">Guided Questions:</p>
@@ -161,14 +184,14 @@ const ThemeVocabModule: React.FC = () => {
   useEffect(() => { fetchVisual(); }, [index, data]);
   const fetchVisual = async () => { setLoading(true); const url = await generateLessonImage(current.prompt); setImageUrl(url); setLoading(false); };
   
-  const playWord = async (word: string) => { await playRawPcm(await generateTTS(word) || ''); };
+  const playWord = async (word: string) => { await playSound(word); };
 
   const generateWithAi = async () => {
     if (!aiTheme) return; setIsAiLoading(true);
     try {
       const result = await generateThemedVocab(aiTheme);
-      if(result){
-        setData(prev => [...prev, result]);
+      if(result.success && result.data){
+        setData(prev => [...prev, result.data!]);
         setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTheme('');
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -183,8 +206,8 @@ const ThemeVocabModule: React.FC = () => {
            {data.map((t, i) => (<button key={i} onClick={() => setIndex(i)} className={`px-6 py-2 rounded-2xl font-black text-xl uppercase transition-all whitespace-nowrap ${index === i ? 'bg-rose-500 text-white scale-110 shadow-lg' : 'bg-rose-50 text-rose-300'}`}>{t.name}</button>))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center w-full">
-           <div onClick={async () => playRawPcm(await generateTTS(`This is ${current.name}! Let's learn some ${current.name} words.`) || '')} className="relative w-full aspect-square bg-rose-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center overflow-hidden cursor-pointer group">
-              {loading ? <div className="w-16 h-16 border-8 border-rose-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 transition-transform group-hover:scale-105" />}
+           <div onClick={async () => playSound(`This is ${current.name}! Let's learn some ${current.name} words.`)} className="relative w-full aspect-square bg-rose-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center overflow-hidden cursor-pointer group">
+              {loading ? <div className="w-16 h-16 border-8 border-rose-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 transition-transform group-hover:scale-105" alt={current.name} />}
               <div className="absolute inset-0 bg-rose-500/0 group-hover:bg-rose-500/5 flex items-center justify-center"><i className="fas fa-volume-high text-white text-5xl opacity-0 group-hover:opacity-100 drop-shadow-lg"></i></div>
            </div>
            <div className="space-y-6">
@@ -226,9 +249,9 @@ const MissingLettersModule: React.FC = () => {
     setSelectedOption(opt);
     if (opt === current.missing) {
       setAnswered(true);
-      await playRawPcm(await generateTTS(`Yes! The missing letter is ${opt}! You spelled ${current.word}!`) || '');
+      await playSound(`Yes! The missing letter is ${opt}! You spelled ${current.word}!`);
     } else {
-      await playRawPcm(await generateTTS(`Try again! That sound is different.`) || '');
+      await playSound(`Try again! That sound is different.`);
     }
   };
 
@@ -236,8 +259,8 @@ const MissingLettersModule: React.FC = () => {
     if (!aiWord) return; setIsAiLoading(true);
     try {
       const result = await generateMissingLetterChallenge(aiWord);
-      if(result) {
-        setData(prev => [...prev, result]);
+      if(result.success && result.data) {
+        setData(prev => [...prev, result.data!]);
         setIsTeacherDrawerOpen(false); setIndex(data.length); setAiWord('');
       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -250,13 +273,13 @@ const MissingLettersModule: React.FC = () => {
         <h3 className="text-4xl font-black text-emerald-600 mb-8 uppercase tracking-tighter">Complete the Word! 🧩</h3>
         <div className="flex gap-4 mb-12">
           {current.word.split('').map((char, i) => (
-            <div key={i} className={`w-20 h-28 md:w-28 md:h-40 rounded-3xl flex items-center justify-center border-8 transition-all text-6xl font-black ${char === current.missing ? (answered ? 'bg-emerald-500 text-white border-white scale-110 shadow-xl' : 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed') : 'bg-white border-emerald-50 text-emerald-600 shadow-md'}`}>
+            <div key={i} className={`w-20 h-28 md:w-28 md:h-40 rounded-3xl flex items-center justify-center border-8 transition-all text-6xl font-black ${char === current.missing ? (answered ? 'bg-emerald-500 text-white border-white scale-110 shadow-xl' : 'bg-emerald-50 border-emerald-100 text-emerald-200 border-dashed animate-pulse') : 'bg-white border-emerald-50 text-emerald-600 shadow-md'}`}>
               {char === current.missing ? (answered ? char : '?') : char}
             </div>
           ))}
         </div>
         <div className="w-64 h-64 bg-emerald-50 rounded-[3rem] border-8 border-white shadow-inner mb-10 overflow-hidden">
-           {loading ? <div className="absolute inset-0 flex items-center justify-center"><i className="fas fa-magic text-emerald-300 text-4xl"></i></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" />}
+           {loading ? <div className="absolute inset-0 flex items-center justify-center"><i className="fas fa-magic text-emerald-300 text-4xl"></i></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6" alt={current.word} />}
         </div>
         {!answered ? (
           <div className="flex gap-6">
@@ -289,14 +312,14 @@ const BlendsModule: React.FC = () => {
 
   useEffect(() => { fetchVisual(); }, [index, wordIndex, data]);
   const fetchVisual = async () => { setLoading(true); const url = await generateLessonImage(currentWord.prompt); setImageUrl(url); setLoading(false); };
-  const playSound = async () => { await playRawPcm(await generateTTS(`Let's learn the sound... ${current.blend.toUpperCase()}! ${current.blend} is for ${currentWord.word}.`) || ''); };
+  const handleSound = async () => { await playSound(`Let's learn the sound... ${current.blend.toUpperCase()}! ${current.blend} is for ${currentWord.word}.`); };
 
   const generateWithAi = async () => {
     if (!aiBlend) return; setIsAiLoading(true);
     try {
         const result = await generateBlendsExample(aiBlend);
-        if(result) {
-            setData(prev => [...prev, result]);
+        if(result.success && result.data) {
+            setData(prev => [...prev, result.data!]);
             setIsTeacherDrawerOpen(false); setIndex(data.length); setWordIndex(0); setAiBlend('');
         }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -311,13 +334,13 @@ const BlendsModule: React.FC = () => {
           {data.map((b, i) => (<button key={i} onClick={() => { setIndex(i); setWordIndex(0); }} className={`px-6 py-2 rounded-xl font-black text-xl uppercase transition-all ${index === i ? 'bg-orange-500 text-white scale-110 shadow-lg' : 'bg-orange-50 text-orange-300'}`}>{b.blend}</button>))}
         </div>
         <div className="text-center mb-8"><h4 className="text-6xl font-black text-orange-500 mb-2 uppercase tracking-tighter">{currentWord.word}</h4><p className="text-gray-400 font-bold uppercase tracking-widest text-sm">Features the {current.blend.toUpperCase()} {current.type}</p></div>
-        <div onClick={playSound} className="relative w-80 h-80 bg-orange-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
-          {loading ? <div className="w-16 h-16 border-8 border-orange-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 drop-shadow-xl transition-transform group-hover:scale-105" />}
+        <div onClick={handleSound} className="relative w-80 h-80 bg-orange-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
+          {loading ? <div className="w-16 h-16 border-8 border-orange-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 drop-shadow-xl transition-transform group-hover:scale-105" alt={currentWord.word} />}
           <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/10 transition-colors flex items-center justify-center"><i className="fas fa-volume-high text-white text-5xl opacity-0 group-hover:opacity-100 drop-shadow-lg"></i></div>
         </div>
         <div className="flex items-center gap-8">
           <button onClick={() => setWordIndex(i => (i === 0 ? current.words.length - 1 : i - 1))} className="w-14 h-14 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center hover:bg-orange-200 shadow-md active:scale-90"><i className="fas fa-chevron-left fa-xl"></i></button>
-          <button onClick={playSound} className="px-10 py-4 bg-orange-500 text-white font-black rounded-2xl shadow-xl">LISTEN SOUND</button>
+          <button onClick={handleSound} className="px-10 py-4 bg-orange-500 text-white font-black rounded-2xl shadow-xl">LISTEN SOUND</button>
           <button onClick={() => setWordIndex(i => (i + 1) % current.words.length)} className="w-14 h-14 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center hover:bg-orange-200 shadow-md active:scale-90"><i className="fas fa-chevron-right fa-xl"></i></button>
         </div>
       </div>
@@ -342,14 +365,14 @@ const RhymesModule: React.FC = () => {
 
   useEffect(() => { fetchVisual(); }, [index, wordIndex, data]);
   const fetchVisual = async () => { setLoading(true); const url = await generateLessonImage(currentWord.prompt); setImageUrl(url); setLoading(false); };
-  const playSound = async () => { await playRawPcm(await generateTTS(`${currentWord.word} rhymes with ${current.words.find(w => w.word !== currentWord.word)?.word || 'it'}. They both end with ${current.ending}!`) || ''); };
+  const handleSound = async () => { await playSound(`${currentWord.word} rhymes with ${current.words.find(w => w.word !== currentWord.word)?.word || 'it'}. They both end with ${current.ending}!`); };
 
   const generateWithAi = async () => {
     if (!aiEnding) return; setIsAiLoading(true);
     try {
        const result = await generateRhymingWords(aiEnding);
-       if(result) {
-          setData(prev => [...prev, result]);
+       if(result.success && result.data) {
+          setData(prev => [...prev, result.data!]);
           setIsTeacherDrawerOpen(false); setIndex(data.length); setWordIndex(0); setAiEnding('');
        }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
@@ -365,8 +388,8 @@ const RhymesModule: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center w-full">
            <div className="flex flex-col items-center">
-              <div onClick={playSound} className="relative w-64 h-64 bg-cyan-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-6 overflow-hidden cursor-pointer group">
-                {loading ? <div className="w-12 h-12 border-8 border-cyan-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 drop-shadow-xl transition-transform group-hover:scale-105" />}
+              <div onClick={handleSound} className="relative w-64 h-64 bg-cyan-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-6 overflow-hidden cursor-pointer group">
+                {loading ? <div className="w-12 h-12 border-8 border-cyan-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-6 drop-shadow-xl transition-transform group-hover:scale-105" alt={currentWord.word}/>}
               </div>
               <h4 className="text-5xl font-black text-cyan-600 uppercase tracking-tighter">{currentWord.word}</h4>
            </div>
@@ -377,7 +400,7 @@ const RhymesModule: React.FC = () => {
                     <button key={i} onClick={() => setWordIndex(i)} className={`py-4 px-6 rounded-2xl font-black text-xl border-4 transition-all ${wordIndex === i ? 'bg-cyan-500 text-white border-white shadow-xl translate-x-2' : 'bg-white border-cyan-50 text-cyan-300'}`}>{w.word}</button>
                  ))}
               </div>
-              <button onClick={playSound} className="w-full py-4 bg-cyan-600 text-white font-black rounded-2xl shadow-xl uppercase tracking-widest">CHECK RHYME</button>
+              <button onClick={handleSound} className="w-full py-4 bg-cyan-600 text-white font-black rounded-2xl shadow-xl uppercase tracking-widest">CHECK RHYME</button>
            </div>
         </div>
         <div className="flex gap-4 mt-12"><button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} className="w-14 h-14 bg-cyan-100 text-cyan-500 rounded-full flex items-center justify-center hover:bg-cyan-200"><i className="fas fa-arrow-left fa-xl"></i></button><button onClick={() => setIndex(i => (i + 1) % data.length)} className="w-14 h-14 bg-cyan-100 text-cyan-500 rounded-full flex items-center justify-center hover:bg-cyan-200"><i className="fas fa-arrow-right fa-xl"></i></button></div>
@@ -398,6 +421,4 @@ const HiddenWordsModule: React.FC = () => <div>Hidden Words Module</div>;
 const OppositesModule: React.FC = () => <div>Opposites Module</div>;
 const DictionModule: React.FC = () => <div>Diction Module</div>;
 const WritingModule: React.FC = () => <div>Writing Module</div>;
-const SongsModule: React.FC = () => <div>Songs Module</div>;
-
-export default LiteracyZone;
+const SongsModule: React.FC = () => <div>Songs
