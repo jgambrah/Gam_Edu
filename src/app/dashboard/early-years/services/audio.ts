@@ -93,4 +93,6 @@ export function createBlob(data: Float32Array): { data: string; mimeType: string
   }
   return {
     data: encode(new Uint8Array(int16.buffer)),
-    mimeType: 'audio/pcm;rate=16
+    mimeType: 'audio/pcm;rate=16000',
+  };
+}
