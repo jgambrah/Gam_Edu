@@ -1,10 +1,10 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ArrowLeft } from "lucide-react";
 
 export default function EarlyYearsRedirectPage() {
   return (
@@ -23,6 +23,12 @@ export default function EarlyYearsRedirectPage() {
                     </Button>
                 </Link>
             </CardContent>
+            <CardFooter className="flex flex-col items-center justify-center text-sm text-muted-foreground pt-6 border-t">
+                <div className="flex items-center gap-2">
+                    <ArrowLeft className="h-4 w-4" />
+                    <p>When you are finished, simply close the new browser tab to return to CampusConnect.</p>
+                </div>
+            </CardFooter>
         </Card>
     </div>
   );
