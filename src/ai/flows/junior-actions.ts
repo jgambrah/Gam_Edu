@@ -181,7 +181,7 @@ async function toWav(pcmData: Buffer): Promise<string> {
 // --- TTS ACTION ---
 const TTSInputSchema = z.object({
     text: z.string(),
-    voice: z.enum(['Puck', 'Algenib', 'Achernar', 'Enif']),
+    voice: z.enum(['Puck', 'Algenib', 'Achernar', 'Enif', 'Kore']),
 });
 
 export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
@@ -208,4 +208,61 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
         console.error("TTS Generation Error:", error);
         return { success: false, error: error.message || "Failed to generate speech." };
     }
+}
+
+
+// --- IMAGE GENERATION ACTION ---
+export const generateLessonImageAction = async (prompt: string): Promise<string | null> => {
+    try {
+      const { media } = await ai.generate({
+        model: 'googleai/imagen-4.0-fast-generate-001',
+        prompt,
+      });
+  
+      if (media && media.url) {
+        return media.url;
+      }
+      return null;
+    } catch (error) {
+      console.error("Image generation error:", error);
+      return null;
+    }
+};
+
+// --- Dummy Server Actions (replace with actual AI flows) ---
+export async function generateArtDetailsAction(input: { item: string, type: 'shapes' | 'textures' }): Promise<any> {
+    // This is a placeholder. Implement the actual Genkit flow here.
+    return { success: true, data: { description: 'Generated description', parts: ['Circle'], prompt: 'Generated prompt' } };
+}
+
+export async function generateNumeracyTask(input: { task: string, topic: string }): Promise<any> {
+    return { success: true, data: { question: `What is 1+1?`, answer: 2, options: [1,2,3] } };
+}
+
+export async function generateDictionDetails(word: string): Promise<any> {
+    return { success: true, data: { syllables: 'AP-PLE', instruction: 'Say it loud!' } };
+}
+
+export async function generateStorytellingScene(topic: string): Promise<any> {
+    return { success: true, data: { title: topic, prompt: `A picture of ${topic}`, questions: [`What is the ${topic}?`] } };
+}
+
+export async function generateThemedVocab(theme: string): Promise<any> {
+    return { success: true, data: { name: theme, words: ['one', 'two'], prompt: `A picture of ${theme}` } };
+}
+
+export async function generateMissingLetterChallenge(word: string): Promise<any> {
+    return { success: true, data: { word: 'D_G', missing: 'O', options: ['A','E','I','O'], prompt: 'A dog' } };
+}
+
+export async function generateSentence(topic: string): Promise<any> {
+    return { success: true, data: { text: `The ${topic} is big.` } };
+}
+
+export async function generateRhymingWords(ending: string): Promise<any> {
+    return { success: true, data: { ending, words: [{word: `c${ending}`}, {word: `b${ending}`}] } };
+}
+
+export async function generateBlendsExample(blend: string): Promise<any> {
+    return { success: true, data: { blend, words: [{word: `${blend}ip`}]} };
 }
