@@ -8,81 +8,70 @@ import Link from 'next/link';
 
 const clubModules = [
   {
-    path: 'https://nursery-bloom-early-english-explorer-296289880836.us-west1.run.app',
+    path: '/dashboard/early-years',
     title: 'Early Years',
     icon: Rabbit,
     description: 'Explore foundational literacy and numeracy in a fun, interactive environment.',
-    isExternal: true,
   },
   {
     path: '/dashboard/junior-academy',
     title: 'Junior Campus',
     icon: GraduationCap,
     description: 'Engaging activities for phonics, math, science, and creative arts for young learners.',
-    isExternal: false,
   },
   {
     path: '/dashboard/senior-academy',
     title: 'Senior Academy',
     icon: Rocket,
     description: 'Advanced modules for Math, English, and Science for secondary students.',
-    isExternal: false,
   },
   {
     path: '/dashboard/study-club',
     title: 'Study Club (AI Tutor)',
     icon: BrainCircuit,
     description: 'Get personalized help with any subject from your AI-powered study partner.',
-    isExternal: false,
   },
   {
     path: '/dashboard/maths-club-v2',
     title: 'Maths Club',
     icon: Sigma,
     description: 'Practice problems, track progress, and compete on the leaderboard.',
-    isExternal: false,
   },
   {
     path: '/dashboard/science-club-v2',
     title: 'Science Club',
     icon: FlaskConical,
     description: 'Explore scientific concepts with facts, quizzes, and AI-led lessons.',
-    isExternal: false,
   },
   {
     path: '/dashboard/ela-club',
     title: 'ELA Club',
     icon: BookOpenCheck,
     description: 'Improve reading, writing, and grammar with interactive drills and challenges.',
-    isExternal: false,
   },
   {
     path: '/dashboard/coding-club',
     title: 'Coding Club',
     icon: Code,
     description: 'Learn to code with visual blocks, Python puzzles, and the Scratch editor.',
-    isExternal: false,
   },
    {
     path: '/dashboard/think-tank',
     title: 'Think Tank',
     icon: BrainCircuit,
     description: 'Sharpen your mind with daily logic puzzles and critical analysis.',
-    isExternal: false,
   },
   {
     path: '/dashboard/game-zone',
     title: 'Game Zone',
     icon: Gamepad2,
     description: 'Create and play engaging learning games using the Kahoot! platform.',
-    isExternal: false,
   },
   {
     path: '/dashboard/live-classroom',
     title: 'Live Classroom',
     icon: Clapperboard,
     description: 'Join or conduct real-time virtual classes with video and chat.',
-    isExternal: false,
   },
 ];
 
@@ -103,7 +92,7 @@ export default function CodingClubPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {clubModules.map((mod) => (
-          <Link key={mod.path} href={mod.path} target={mod.isExternal ? '_blank' : '_self'} rel={mod.isExternal ? "noopener noreferrer" : ""}>
+          <Link key={mod.path} href={mod.path} passHref>
             <Card className="h-full hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col">
               <CardHeader>
                   <div className="flex items-center gap-4">
@@ -118,7 +107,7 @@ export default function CodingClubPage() {
               </CardContent>
               <CardFooter>
                  <Button variant="ghost" className="w-full justify-start text-primary p-0">
-                    {mod.isExternal ? 'Open in AI Studio' : 'Enter Club'}
+                    Enter Club
                     <ExternalLink className="ml-2 h-3 w-3"/>
                   </Button>
               </CardFooter>
