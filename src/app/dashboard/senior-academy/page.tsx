@@ -155,10 +155,10 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
         <div className="grid lg:grid-cols-4 gap-8 animate-in fade-in">
             {/* SIDEBAR NAVIGATION */}
             <div className="lg:col-span-1 space-y-4">
-                <div className="bg-slate-900 p-4 rounded-3xl shadow-lg">
-                    <Label className="text-slate-400 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
+                <div className="bg-indigo-900 p-4 rounded-3xl shadow-lg">
+                    <Label className="text-indigo-300 text-[10px] uppercase font-black ml-2 mb-2 block">English Level</Label>
                     <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white rounded-2xl h-12">
+                        <SelectTrigger className="bg-indigo-800 border-indigo-700 text-white rounded-2xl h-12">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>{CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
@@ -249,7 +249,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                     </Card>
                 ) : <div className="h-full flex flex-col items-center justify-center text-center">
                          <div className={`p-10 rounded-full mb-6 ${isJunior ? 'bg-yellow-100 animate-pulse' : 'bg-slate-50'}`}>
-                            <BookOpen className={`w-20 h-20 ${isJunior ? 'text-yellow-500' : 'text-slate-200'}`} />
+                            <BookOpen className={`w-20 h-20 ${isJunior ? 'text-yellow-500' : 'text-slate-100'}`} />
                          </div>
                          <h2 className="text-3xl font-black text-slate-300">Choose a Magic Book</h2>
                     </div>}
@@ -441,7 +441,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
                         <div className="p-8 bg-slate-50 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-200" /></div>
                         <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
@@ -692,7 +692,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
             toast({ title: "Saved", description: "Manual entry added to the folders." });
             onContentAdded();
             setManualData({ ...manualData, title: '', latexFormula: '', content: '', background: '', answer: '' });
-            return;
         } catch (e) {
             toast({ title: "Error", description: "Failed to save manually.", variant: "destructive" });
         }
