@@ -7,7 +7,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, serverTimestamp, deleteDoc, doc, addDoc } from 'firebase/firestore';
 import { 
   Sigma, Languages, Microscope, BookOpen, 
-  Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon
+  Rocket, Wand2, PenTool, Loader2, Save, Trash2, Library, Brain, CheckCircle2, XCircle, PlusCircle, Sparkles, FolderOpen, Atom as AtomIcon, Languages as LanguagesIcon, Sigma as SigmaIcon
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
@@ -441,7 +441,7 @@ function MathLab({ canEdit }: { canEdit: boolean }) {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[500px]">
+                    <div className="h-full flex flex-col items-center justify-center bg-white rounded-[48px] border-4 border-dashed border-slate-100 min-h-[600px]">
                         <div className="p-8 bg-slate-50 rounded-full mb-6"><Sigma className="w-20 h-20 text-slate-200" /></div>
                         <h2 className="text-2xl font-black text-slate-300 uppercase tracking-widest text-center">
                             Select a topic from the <br /> {selectedGrade} library
@@ -802,4 +802,5 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
+
 ```
