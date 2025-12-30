@@ -802,5 +802,4 @@ export default function SeniorAcademyPage() {
         </div>
     );
 }
-
 ```

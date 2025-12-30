@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { NUMERACY_DATA, ADDITION_DATA, SUBTRACTION_DATA, NUMBER_WORDS_DATA, TIME_DATA, MEASUREMENT_DATA, TENS_UNITS_DATA, GROUPING_DATA, SEQUENCE_DATA, NUM_COMPARISON_DATA, COUNTING_TASK_DATA, NUMBER_BONDS_DATA, SPATIAL_DATA, MONEY_DATA } from '../constants';
 import { generateLessonImage, generateTTS, generateNumeracyTask } from '../services/gemini';
 import { playRawPcm } from '../services/audio';
@@ -13,22 +13,32 @@ type MathTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words
 const NumeracyZone: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MathTab>('numbers');
   const [playing, setPlaying] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const currentSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  const playFeedbackSound = async (text: string) => {
+  const playFeedbackSound = useCallback(async (text: string) => {
+    if (!text) return;
+    setErrorMsg('');
     if (currentSourceRef.current) {
       try { currentSourceRef.current.stop(); } catch (e) {}
     }
     setPlaying(true);
-    const base64 = await generateTTS(text, 'Kore');
-    if (base64) {
-      const source = await playRawPcm(base64);
-      if (source) {
-        currentSourceRef.current = source;
-        source.onended = () => { setPlaying(false); currentSourceRef.current = null; };
+    try {
+      const base64 = await generateTTS(text, 'Kore');
+      if (base64) {
+        const source = await playRawPcm(base64);
+        if (source) {
+          currentSourceRef.current = source;
+          source.onended = () => { setPlaying(false); currentSourceRef.current = null; };
+        } else { setPlaying(false); }
       } else { setPlaying(false); }
-    } else { setPlaying(false); }
-  };
+    } catch (err: any) {
+      setPlaying(false);
+      if (err.message === 'QUOTA_EXCEEDED') {
+        setErrorMsg('Tutor is resting! Check your API key.');
+      }
+    }
+  }, []);
 
   const tabs: {id: MathTab, icon: string}[] = [
     { id: 'numbers', icon: 'fa-1' },
@@ -150,7 +160,7 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) 
              <button key={pos} onClick={() => handleChoice(pos)} className={`px-8 py-4 rounded-2xl font-black text-xl transition-all border-4 ${answered && pos === current.position ? 'bg-green-500 text-white border-white scale-110 shadow-xl' : 'bg-blue-50 text-blue-500 border-white hover:bg-blue-100'}`}>{pos.toUpperCase()}</button>
            ))}
         </div>
-        {answered && <button onClick={() => setIndex(p => (p + 1) % data.length)} className="mt-12 px-12 py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl animate-bounce uppercase">Find Another! 🔍</button>}
+        {answered && <button onClick={() => setIndex(p => (p + 1) % data.length)} className="mt-12 px-12 py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl animate-bounce">Find Another! 🔍</button>}
       </div>
       {isDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6">AI Position Maker</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Main Object (e.g. Teddy Bear)</label><input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="e.g. Red Ball" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTopic} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE SCENE'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
     </div>
@@ -487,10 +497,10 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
     if (!aiTopic) return; setIsAiLoading(true);
     const resultSchema = z.object({ value: z.number(), word: z.string(), prompt: z.string() });
     try {
-      const { output } = await ai.generate({
-        prompt: `Generate a visual counting prompt for number ${index + 1} with theme "${aiTopic}".`,
-        output: { schema: resultSchema }
-      });
+        const { output } = await ai.generate({
+            prompt: `Generate a visual counting prompt for number ${index + 1} with theme "${aiTopic}".`,
+            output: { schema: resultSchema }
+        });
       if (output) {
         setData(prev => prev.map((item, i) => i === index ? { ...item, ...output } : item));
         setIsDrawerOpen(false); setAiTopic('');
@@ -500,7 +510,7 @@ const NumbersMainModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
 
   return (
     <div className="relative">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-purple-200 text-purple-500 px-4 py-2 rounded-full font-bold shadow-sm uppercase z-10"><i className="fas fa-magic"></i> Custom Theme</button>
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-purple-200 text-purple-500 px-4 py-2 rounded-full font-bold shadow-sm uppercase tracking-widest z-10"><i className="fas fa-magic"></i> Custom Theme</button>
       <div className="w-full flex flex-col items-center bg-white p-10 rounded-[4rem] shadow-2xl border-8 border-purple-100 animate-in zoom-in duration-500 min-h-[550px]">
         <h2 className="text-9xl font-black text-purple-600 mb-2 drop-shadow-xl">{current.value}</h2>
         <p className="text-3xl font-bold text-gray-400 italic mb-10">{current.wordName || current.word || current.value}</p>
@@ -652,7 +662,7 @@ const NumberWordsModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
         <div onClick={handleLearn} className="w-80 h-80 bg-purple-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">{loading ? <div className="w-16 h-16 border-8 border-purple-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110" />}</div>
         <div className="flex gap-6"><button onClick={() => setIndex(p => (p === 0 ? items.length - 1 : p - 1))} className="w-14 h-14 bg-purple-100 text-purple-50 rounded-full flex items-center justify-center hover:bg-purple-200 active:scale-90 shadow-md"><i className="fas fa-arrow-left text-xl"></i></button><button onClick={handleLearn} className="px-10 py-3 bg-purple-500 text-white font-black rounded-2xl shadow-xl uppercase">Teach Me!</button><button onClick={() => setIndex(p => (p + 1) % items.length)} className="w-14 h-14 bg-purple-100 text-purple-50 rounded-full flex items-center justify-center hover:bg-purple-200 active:scale-90 shadow-md"><i className="fas fa-arrow-right text-xl"></i></button></div>
       </div>
-      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-purple-50"><h3 className="text-3xl font-black text-purple-600 mb-6">AI Word Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme Topic</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. Stars" className="w-full px-6 py-4 rounded-2xl border-2 border-purple-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-purple-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'MAGIC THEME'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 font-bold uppercase text-[10px]">Close</button></div></div></div>}
+      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-purple-50"><h3 className="text-3xl font-black text-purple-600 mb-6">AI Word Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme Topic</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. Stars" className="w-full px-6 py-4 rounded-2xl border-2 border-purple-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-purple-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'MAGIC THEME'}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 font-bold uppercase text-[10px]">Close</button></div></div></div>}
     </div>
   );
 };
@@ -689,7 +699,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col items-center relative">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-orange-200 text-orange-500 px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-widest z-10"><i className="fas fa-plus"></i> Add Sum</button>
+      <button onClick={() => setIsTeacherDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-orange-200 text-orange-500 px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-widest z-10"><i className="fas fa-plus"></i> Add Sum</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center min-h-[600px] animate-in slide-in-from-bottom duration-500">
         <h3 className="text-4xl font-black text-orange-500 mb-10 uppercase tracking-tighter">Addition ➕</h3>
         <div className="flex flex-col md:flex-row items-center gap-10 mb-12">
@@ -710,7 +720,7 @@ const AdditionModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
         <div className="flex flex-wrap justify-center gap-3">{Array.from({length: 11}).map((_, i) => (<button key={i} onClick={() => handleAnswer(i)} className={`w-14 h-14 rounded-2xl font-black text-xl transition-all border-4 ${userAnswer === i ? (i === correct ? 'bg-green-500 text-white border-white' : 'bg-red-500 text-white border-white') : 'bg-orange-50 text-orange-400 border-white'}`}>{i}</button>))}</div>
         {userAnswer === correct && (<button onClick={() => setIndex(i => (i + 1) % data.length)} className="mt-12 px-12 py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl animate-bounce uppercase">Next Sum! 🚀</button>)}
       </div>
-      {isDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-orange-50"><h3 className="text-3xl font-black text-orange-600 mb-6">Addition AI</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme Subject</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. Toys" className="w-full px-6 py-4 rounded-2xl border-2 border-orange-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-orange-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE ADDITION'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
+      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-orange-50"><h3 className="text-3xl font-black text-orange-600 mb-6">Addition AI</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme Subject</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. Toys" className="w-full px-6 py-4 rounded-2xl border-2 border-orange-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-orange-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE ADDITION'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
     </div>
   );
 };
@@ -766,7 +776,7 @@ const SubtractionModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
         <div className="flex flex-wrap justify-center gap-3">{Array.from({length: 11}).map((_, i) => (<button key={i} onClick={() => handleAnswer(i)} className={`w-14 h-14 rounded-2xl font-black text-xl transition-all border-4 ${userAnswer === i ? (i === correct ? 'bg-green-500 text-white border-white' : 'bg-red-500 text-white border-white') : 'bg-red-50 text-red-400'}`}>{i}</button>))}</div>
         {userAnswer === correct && (<button onClick={() => setIndex(i => (i + 1) % data.length)} className="mt-12 px-12 py-4 bg-green-500 text-white font-black rounded-3xl shadow-xl uppercase">Next Sum! 🚀</button>)}
       </div>
-      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-red-50"><h3 className="text-3xl font-black text-red-600 mb-6">Subtraction AI</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme Subject</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. Cookies" className="w-full px-6 py-4 rounded-2xl border-2 border-red-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-red-500 shadow-xl">CREATE SUBTRACTION</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
+      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-red-50"><h3 className="text-3xl font-black text-red-600 mb-6">Subtraction AI</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme Subject</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. Cookies" className="w-full px-6 py-4 rounded-2xl border-2 border-red-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-red-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE SUBTRACTION'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
     </div>
   );
 };
@@ -786,7 +796,6 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
   useEffect(() => { fetchVisual(); setAnswered(false); }, [index, data]);
   const fetchVisual = async () => { setLoading(true); const url = await generateLessonImage(current.prompt); setImageUrl(url); setLoading(false); };
   const handleAnswer = (val: number) => { if (val === current.hour) { setAnswered(true); onSound(`Yes! It is ${current.phrase}!`); } else onSound(`Look at the short hand! What number is it on?`); };
-  
   const generateWithAi = async () => {
     if (!aiSetting) return; setIsAiLoading(true);
     const resultSchema = z.object({ hour: z.number(), minute: z.literal(0), phrase: z.string(), prompt: z.string() });
@@ -814,7 +823,7 @@ const TellingTimeModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
         <div className="flex gap-6">{options.map(opt => (<button key={opt} onClick={() => handleAnswer(opt)} className={`px-12 py-5 rounded-3xl font-black text-4xl transition-all border-4 ${answered && opt === current.hour ? 'bg-green-500 text-white border-white scale-110 shadow-xl' : 'bg-blue-50 text-blue-500 border-white hover:bg-blue-100'}`}>{opt}:00</button>))}</div>
         {answered && (<button onClick={() => setIndex(i => (i + 1) % data.length)} className="mt-12 px-10 py-4 bg-green-500 text-white font-black rounded-2xl shadow-lg uppercase">Next Clock! 🕒</button>)}
       </div>
-      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6">Time AI Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Target Hour</label><input type="number" min="1" max="12" value={aiSetting} onChange={(e) => setAiSetting(e.target.value)} placeholder="1-12" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 focus:border-blue-500 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiSetting} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">CREATE TIME</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
+      {isDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6">Time AI Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Target Hour</label><input type="number" min="1" max="12" value={aiSetting} onChange={(e) => setAiSetting(e.target.value)} placeholder="1-12" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiSetting} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">CREATE TIME</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
     </div>
   );
 };
@@ -837,13 +846,13 @@ const MeasurementModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
   
   const generateWithAi = async () => {
     if (!aiTheme) return; setIsAiLoading(true);
-    const resultSchema = z.object({ q: z.string(), category: z.string(), options: z.array(z.object({ label: z.string(), prompt: z.string(), size: z.enum(['lg', 'sm']) })), correct: z.number() });
+    const resultSchema = z.object({ q: z.string(), category: z.string(), items: z.array(z.object({ label: z.string(), prompt: z.string(), size: z.enum(['lg', 'sm']) })), correct: z.number() });
     try {
       const { output } = await ai.generate({ 
         prompt: `Generate a ${subTab} comparison for theme "${aiTheme}".`,
         output: { schema: resultSchema }
       });
-      if(output) {
+      if(output){
         setData((prev: any) => ({ ...prev, [subTab]: [...prev[subTab], output] }));
         setIsTeacherDrawerOpen(false); setIndex(data[subTab].length); setAiTheme('');
       }
@@ -856,7 +865,7 @@ const MeasurementModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound
         <div className="flex gap-4 mb-10 p-2 bg-emerald-50 rounded-2xl">{(['weight', 'height'] as const).map(t => (<button key={t} onClick={() => { setSubTab(t); setIndex(0); }} className={`px-8 py-2 rounded-xl font-black text-xs uppercase transition-all ${subTab === t ? 'bg-emerald-500 text-white shadow-md' : 'text-emerald-300'}`}>{t}</button>))}</div>
         <h3 className="text-4xl font-black text-emerald-600 mb-12 uppercase tracking-tighter">{current.q}</h3>
         <div className="flex flex-wrap justify-center gap-12 items-end">
-          {current.items.map((item, idx) => (<button key={idx} onClick={() => handleChoice(idx)} className={`flex flex-col items-center group transition-all ${answered && idx === current.correct ? 'scale-110' : ''}`}><div className={`${opt.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28'} bg-emerald-50 rounded-[3rem] border-8 flex items-center justify-center mb-4 transition-all overflow-hidden ${answered && idx === current.correct ? 'border-green-400 shadow-2xl' : 'border-white hover:border-emerald-200 shadow-xl'}`}>{imageUrls[idx] ? <img src={imageUrls[idx]!} className="w-full h-full object-cover p-6" /> : <i className="fas fa-shapes text-emerald-100 text-6xl animate-pulse"></i>}</div><span className="font-black uppercase text-sm tracking-widest text-emerald-400">{item.label}</span></button>))}
+          {current.items.map((item, idx) => (<button key={idx} onClick={() => handleChoice(idx)} className={`flex flex-col items-center group transition-all ${answered && idx === current.correct ? 'scale-110' : ''}`}><div className={`${item.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28'} bg-emerald-50 rounded-[3rem] border-8 flex items-center justify-center mb-4 transition-all overflow-hidden ${answered && idx === current.correct ? 'border-green-400 shadow-2xl' : 'border-white hover:border-emerald-200 shadow-xl'}`}>{imageUrls[idx] ? <img src={imageUrls[idx]!} className="w-full h-full object-cover p-6" /> : <i className="fas fa-shapes text-emerald-100 text-6xl animate-pulse"></i>}</div><span className="font-black uppercase text-sm tracking-widest text-emerald-400">{item.label}</span></button>))}
         </div>
         {answered && (<button onClick={() => { setIndex(i => (i + 1) % data[subTab].length); setAnswered(false); }} className="mt-12 px-12 py-4 bg-green-500 text-white font-black rounded-3xl shadow-lg uppercase">Next! 🚀</button>)}
       </div>
@@ -914,13 +923,13 @@ const ShapesModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =
 const ComparisonGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => {
   const [level, setLevel] = useState(0);
   const [answered, setAnswered] = useState(false);
-  const [data, setData] = useState(NUMERACY_DATA.comparisons);
+  const [comparisonList, setComparisonList] = useState(NUMERACY_DATA.comparisons);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isMagicLoading, setIsMagicLoading] = useState(false);
   const [newName, setNewName] = useState('');
   const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
-  const currentLevel = data[level];
-  useEffect(() => { fetchVisuals(); }, [level, data]);
+  const currentLevel = comparisonList[level];
+  useEffect(() => { fetchVisuals(); }, [level, comparisonList]);
   const fetchVisuals = async () => { const urls = await Promise.all(currentLevel.options.map(opt => generateLessonImage(opt.prompt))); setImageUrls(urls); };
   const handleChoice = (idx: number) => { if (answered) return; if (idx === currentLevel.correct) { setAnswered(true); onSound(`Yes! That is correct!`); } else onSound(`Oh, let's try again!`); };
   
@@ -933,8 +942,8 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
           output: { schema: resultSchema }
       });
       if(output){
-        setData(prev => [...prev, output]);
-        setIsAdminOpen(false); setLevel(data.length); setNewName('');
+        setComparisonList(prev => [...prev, output]);
+        setIsAdminOpen(false); setLevel(comparisonList.length); setNewName('');
       }
     } catch (e) { console.error(e); } finally { setIsMagicLoading(false); }
   };
@@ -947,7 +956,7 @@ const ComparisonGame: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
         <div className="flex flex-wrap justify-center gap-12 items-end">
           {currentLevel.options.map((opt, idx) => (<button key={idx} onClick={() => handleChoice(idx)} className={`flex flex-col items-center group transition-all ${answered && idx === currentLevel.correct ? 'scale-110' : ''}`}><div className={`${opt.size === 'lg' ? 'w-56 h-56' : 'w-28 h-28'} bg-orange-50 rounded-[3rem] border-8 flex items-center justify-center mb-4 transition-all overflow-hidden ${answered && idx === currentLevel.correct ? 'border-green-400 shadow-2xl' : 'border-white hover:border-orange-200 shadow-xl'}`}>{imageUrls[idx] ? <img src={imageUrls[idx]!} className="w-full h-full object-cover p-6 drop-shadow-lg" /> : <i className="fas fa-shapes text-orange-200"></i>}</div><span className="font-black uppercase text-sm tracking-widest">{opt.label}</span></button>))}
         </div>
-        {answered && (<button onClick={() => { setLevel(p => (p+1)%data.length); setAnswered(false); }} className="mt-12 px-12 py-4 bg-green-500 text-white font-black rounded-3xl shadow-xl animate-bounce">NEXT <i className="fas fa-arrow-right"></i></button>)}
+        {answered && (<button onClick={() => { setLevel(p => (p+1)%comparisonList.length); setAnswered(false); }} className="mt-12 px-12 py-4 bg-green-500 text-white font-black rounded-3xl shadow-xl animate-bounce">NEXT <i className="fas fa-arrow-right"></i></button>)}
       </div>
       {isAdminOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-orange-50"><h3 className="text-3xl font-black text-gray-800 tracking-tight">AI Comparison</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Compare Topic</label><input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Big Elephant/Small Ant" className="w-full px-5 py-3 rounded-2xl border-2 border-gray-100" /></div><button onClick={generateWithAi} disabled={isMagicLoading || !newName} className="w-full py-5 bg-orange-500 text-white font-black rounded-2xl shadow-xl">{isMagicLoading ? <i className="fas fa-spinner fa-spin"></i> : 'MAGIC CREATE'}</button><button onClick={() => setIsAdminOpen(false)} className="w-full py-2 text-gray-400">Close</button></div></div></div>}
     </div>
@@ -1107,5 +1116,3 @@ const NumberMagicPen: React.FC = () => {
 };
 
 export default NumeracyZone;
-
-    

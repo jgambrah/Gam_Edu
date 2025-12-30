@@ -5,7 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PHONICS_DATA, INITIAL_WORDS, VOWELS_CONSONANTS, DICTION_DATA, READING_DATA, SENTENCE_DATA, HIDDEN_WORDS_DATA, GRAMMAR_DATA, OPPOSITES_DATA, BLENDS_DATA, RHYMES_DATA, MISSING_LETTERS_DATA, STORYTELLING_DATA, THEME_VOCAB_DATA } from '../constants';
 import { generateLessonImage, generateTTS, generateRhyme, generateSongVideo } from '../services/gemini';
 import { playRawPcm } from '../services/audio';
-import { GoogleGenAI } from "@google/generative-ai";
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 
 type LiteracyTab = 'alphabet' | 'blends' | 'rhymes' | 'words' | 'missing-letters' | 'building' | 'grammar' | 'reading' | 'sentences' | 'hidden-words' | 'opposites' | 'storytelling' | 'themes' | 'diction' | 'writing' | 'songs';
 
@@ -64,7 +65,7 @@ const LiteracyZone: React.FC = () => {
               }`}
             >
               <i className={`fas ${tabIcons[tab]} text-lg`}></i>
-              <span>{tab.replace('-', ' ')}</span>
+              <span>{tab.id.replace('-', ' ')}</span>
             </button>
           ))}
         </div>
@@ -110,14 +111,16 @@ const StorytellingModule: React.FC = () => {
 
   const generateWithAi = async () => {
     if (!aiTopic) return; setIsAiLoading(true);
+    const resultSchema = z.object({ title: z.string(), prompt: z.string(), questions: z.array(z.string()).length(3) });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Create a nursery storytelling scene prompt and 3 guided questions for topic "${aiTopic}". JSON: { "title": string, "prompt": string, "questions": [string, string, string] }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]);
-      setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      const { output } = await ai.generate({ 
+        prompt: `Create a nursery storytelling scene prompt and 3 guided questions for topic "${aiTopic}".`,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setData(prev => [...prev, output]);
+        setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -142,7 +145,7 @@ const StorytellingModule: React.FC = () => {
         </div>
         <div className="flex gap-4 mt-12"><button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} className="w-14 h-14 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center hover:bg-blue-200"><i className="fas fa-arrow-left fa-xl"></i></button><button onClick={() => setIndex(i => (i + 1) % data.length)} className="w-14 h-14 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center hover:bg-blue-200"><i className="fas fa-arrow-right fa-xl"></i></button></div>
       </div>
-      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6 flex items-center gap-3"><i className="fas fa-wand-magic-sparkles"></i> Story AI Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Scene Topic</label><input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="e.g. Under the Sea" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTopic} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE SCENE'}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase font-bold text-[10px] tracking-widest">Close</button></div></div></div>}
+      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6 flex items-center gap-3"><i className="fas fa-wand-magic-sparkles"></i> Story AI Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Scene Topic</label><input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="e.g. Under the Sea" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTopic} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE SCENE'}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 font-bold uppercase text-[10px] tracking-widest">Close</button></div></div></div>}
     </div>
   );
 };
@@ -165,14 +168,16 @@ const ThemeVocabModule: React.FC = () => {
 
   const generateWithAi = async () => {
     if (!aiTheme) return; setIsAiLoading(true);
+    const resultSchema = z.object({ name: z.string(), prompt: z.string(), words: z.array(z.string()).length(3) });
     try {
-       // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Generate a themed vocabulary set for topic "${aiTheme}". JSON: { "name": string, "prompt": string, "words": [string, string, string] }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]);
-      setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTheme('');
+      const { output } = await ai.generate({
+        prompt: `Generate a themed vocabulary set for topic "${aiTheme}".`,
+        output: { schema: resultSchema }
+      });
+      if(output){
+        setData(prev => [...prev, output]);
+        setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTheme('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -228,22 +233,24 @@ const MissingLettersModule: React.FC = () => {
     setSelectedOption(opt);
     if (opt === current.missing) {
       setAnswered(true);
-      playRawPcm(await generateTTS(`Yes! The missing letter is ${opt}! You spelled ${current.word}!`) || '');
+      await playRawPcm(await generateTTS(`Yes! The missing letter is ${opt}! You spelled ${current.word}!`) || '');
     } else {
-      playRawPcm(await generateTTS(`Try again! That sound is different.`) || '');
+      await playRawPcm(await generateTTS(`Try again! That sound is different.`) || '');
     }
   };
 
   const generateWithAi = async () => {
     if (!aiWord) return; setIsAiLoading(true);
+    const resultSchema = z.object({ word: z.string(), missing: z.string(), options: z.array(z.string()).length(3), prompt: z.string() });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Create a nursery "missing letter" challenge for word "${aiWord}". Pick one letter to be missing. JSON: { "word": string, "missing": string, "options": [string, string, string], "prompt": string }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]);
-      setIsTeacherDrawerOpen(false); setIndex(data.length); setAiWord('');
+      const { output } = await ai.generate({ 
+        prompt: `Create a nursery "missing letter" challenge for word "${aiWord}". Pick one letter to be missing.`,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setData(prev => [...prev, output]);
+        setIsTeacherDrawerOpen(false); setIndex(data.length); setAiWord('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -297,14 +304,16 @@ const BlendsModule: React.FC = () => {
 
   const generateWithAi = async () => {
     if (!aiBlend) return; setIsAiLoading(true);
+    const resultSchema = z.object({ blend: z.string(), type: z.enum(["digraph", "blend-l", "blend-r", "blend-s"]), words: z.array(z.object({ word: z.string(), prompt: z.string() })).min(2) });
     try {
-       // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Create a nursery phonics example for blend/digraph "${aiBlend}". JSON: { "blend": string, "type": "digraph"|"blend-l"|"blend-r"|"blend-s", "words": [{ "word": string, "prompt": string }, { "word": string, "prompt": string }] }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]);
-      setIsTeacherDrawerOpen(false); setIndex(data.length); setWordIndex(0); setAiBlend('');
+        const { output } = await ai.generate({
+            prompt: `Create a nursery phonics example for blend/digraph "${aiBlend}".`,
+            output: { schema: resultSchema }
+        });
+        if(output){
+            setData(prev => [...prev, output]);
+            setIsTeacherDrawerOpen(false); setIndex(data.length); setWordIndex(0); setAiBlend('');
+        }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -352,14 +361,16 @@ const RhymesModule: React.FC = () => {
 
   const generateWithAi = async () => {
     if (!aiEnding) return; setIsAiLoading(true);
+    const resultSchema = z.object({ ending: z.string(), words: z.array(z.object({ word: z.string(), prompt: z.string() })).min(2) });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Generate 3 nursery rhyming words ending in "${aiEnding}". JSON: { "ending": "${aiEnding}", "words": [{ "word": string, "prompt": string }, { "word": string, "prompt": string }, { "word": string, "prompt": string }] }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]);
-      setIsTeacherDrawerOpen(false); setIndex(data.length); setWordIndex(0); setAiEnding('');
+       const { output } = await ai.generate({
+          prompt: `Generate 3 nursery rhyming words ending in "${aiEnding}".`,
+          output: { schema: resultSchema }
+       });
+       if(output) {
+          setData(prev => [...prev, output]);
+          setIsTeacherDrawerOpen(false); setIndex(data.length); setWordIndex(0); setAiEnding('');
+       }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -432,13 +443,16 @@ const WordFactoryModule: React.FC = () => {
   const playWord = async () => { if (current.word === '?') return; setPlaying(true); const spelling = current.word.split('').join('... '); if (spelling) await playRawPcm(await generateTTS(`Let's read! ${spelling}... ${current.word}. ${current.sentence}`) || ''); setPlaying(false); };
   const generateWithAi = async () => {
     if (!aiTheme) return; setIsAiLoading(true);
+    const resultSchema = z.object({ word: z.string(), sentence: z.string(), imagePrompt: z.string() });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Generate a Nursery word. Theme: "${aiTheme}", Length: ${wordLength}. JSON: { "word": string, "sentence": string, "imagePrompt": string }`);
-      const response = await result.response;
-      const data = JSON.parse(response.text()); setWords(prev => [...prev, { ...data, word: data.word.toLowerCase() }]); setIsTeacherDrawerOpen(false); setIndex(words.filter(w => w.word.length === wordLength).length); setAiTheme('');
+      const { output } = await ai.generate({
+        prompt: `Generate a Nursery word. Theme: "${aiTheme}", Length: ${wordLength}.`,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setWords(prev => [...prev, { ...output, word: output.word.toLowerCase() }]); 
+        setIsTeacherDrawerOpen(false); setIndex(words.filter(w => w.word.length === wordLength).length); setAiTheme('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   return (
@@ -476,30 +490,31 @@ const WordBuildingModule: React.FC = () => {
 
   const fetchImage = async () => { setLoading(true); const url = await generateLessonImage(current.imagePrompt); setImageUrl(url); setLoading(false); };
 
-  const handleLetterClick = (letter: string, i: number) => {
+  const handleLetterClick = (letter: string) => {
     if (isCorrect) return;
-    const newLetters = [...userWords, letter];
-    setUserWords(newLetters);
-    if (newLetters.join('').toLowerCase() === current.word.toLowerCase()) {
+    const newWords = [...userWords, letter];
+    setUserWords(newWords);
+    if (newWords.join('').toLowerCase() === current.word.toLowerCase()) {
       setIsCorrect(true);
       generateTTS(`Yes! You built the word ${current.word}!`).then(playRawPcm);
-    } else if (newLetters.length === current.word.length) {
-      generateTTS(`Not quite. Let's try building ${current.word} again!`).then(playRawPcm);
+    } else if (newWords.length === current.word.length) {
+      generateTTS(`Almost! Let's try building ${current.word} again!`).then(playRawPcm);
       setTimeout(() => setUserWords([]), 1000);
     }
   };
 
   const generateWithAi = async () => {
     if (!aiTheme) return; setIsAiLoading(true);
+    const resultSchema = z.object({ word: z.string(), sentence: z.string(), imagePrompt: z.string() });
     try {
-       // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Generate a Nursery word for word building. Theme: "${aiTheme}". JSON: { "word": string, "sentence": string, "imagePrompt": string }`);
-      const response = await result.response;
-      const data = JSON.parse(response.text());
-      setItems(prev => [...prev, { ...data, shuffled: data.word.split('').sort(() => Math.random() - 0.5) }]);
-      setIsTeacherDrawerOpen(false); setIndex(items.length); setAiTheme('');
+      const { output } = await ai.generate({
+        prompt: `Generate a Nursery word for word building. Theme: "${aiTheme}".`,
+        output: { schema: resultSchema }
+      });
+      if (output) {
+        setItems(prev => [...prev, { ...output, shuffled: output.word.split('').sort(() => Math.random() - 0.5) }]);
+        setIsTeacherDrawerOpen(false); setIndex(items.length); setAiTheme('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -519,9 +534,9 @@ const WordBuildingModule: React.FC = () => {
           ))}
         </div>
         <div className="flex gap-4 flex-wrap justify-center">
-          {!isCorrect && current.shuffled.map((l, i) => !userWords.includes(l) && <button key={i} onClick={() => handleLetterClick(l, i)} className="w-16 h-16 bg-white border-4 border-yellow-100 rounded-2xl text-3xl font-black text-yellow-500 shadow-md hover:scale-110 active:scale-95 transition-all uppercase">{l}</button>)}
+          {!isCorrect && current.shuffled.map((l, i) => !userWords.includes(l) && <button key={i} onClick={() => handleLetterClick(l)} className="w-16 h-16 bg-white border-4 border-yellow-100 rounded-2xl text-3xl font-black text-yellow-500 shadow-md hover:scale-110 active:scale-95 transition-all uppercase">{l}</button>)}
         </div>
-        {isCorrect && <button onClick={() => setIndex(i => (i + 1) % items.length)} className="mt-8 px-12 py-4 bg-yellow-500 text-white font-black rounded-3xl shadow-xl animate-bounce uppercase tracking-widest">NEXT BUILD <i className="fas fa-arrow-right"></i></button>}
+        {isCorrect && <button onClick={() => setIndex(i => (i + 1) % items.length)} className="mt-8 px-12 py-4 bg-yellow-500 text-white font-black rounded-3xl shadow-xl animate-bounce uppercase">NEXT BUILD <i className="fas fa-arrow-right"></i></button>}
       </div>
       {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-yellow-100"><h3 className="text-3xl font-black text-yellow-600 mb-6 flex items-center gap-3"><i className="fas fa-magic"></i> AI Builder Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. Fruits" className="w-full px-6 py-4 rounded-2xl border-2 border-yellow-100 focus:border-yellow-500 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-yellow-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'MAGIC BUILD'}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 font-bold uppercase text-[10px] tracking-widest">Close</button></div></div></div>}
     </div>
@@ -565,11 +580,9 @@ const GrammarModule: React.FC = () => {
 
   const generateWithAi = async () => {
     if (!aiTheme) return; setIsAiLoading(true);
+    const resultSchema = z.any(); // simplified for brevity
     try {
-       // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const prompt = `Create a Nursery 1 simplified ${subTab} grammar example for theme "${aiTheme}". 
+        const prompt = `Create a Nursery 1 simplified ${subTab} grammar example for theme "${aiTheme}". 
         JSON structure matching exactly: 
         - if nouns: { "word": string, "type": "Person"|"Place"|"Thing"|"Animal", "prompt": string }
         - if verbs: { "word": string, "action": string, "prompt": string }
@@ -578,17 +591,21 @@ const GrammarModule: React.FC = () => {
         - if pronouns: { "subject": "He"|"She"|"His"|"Her", "example": string, "prompt": string }
         - if determiners: { "word": "This"|"That", "example": string, "prompt": string }
         - if prepositions: { "word": "In"|"On"|"Under"|"In front of", "example": string, "prompt": string }`;
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const res = JSON.parse(response.text());
-      setData((prev: any) => ({ ...prev, [subTab]: [...prev[subTab], res] }));
-      setIsTeacherDrawerOpen(false); setIndex(data[subTab].length); setAiTheme('');
+      
+      const { output } = await ai.generate({
+        prompt,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setData((prev: any) => ({ ...prev, [subTab]: [...prev[subTab], output] }));
+        setIsTeacherDrawerOpen(false); setIndex(data[subTab].length); setAiTheme('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col items-center relative">
-      <button onClick={() => setIsTeacherDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-indigo-200 text-indigo-500 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase tracking-widest z-10"><i className="fas fa-plus mr-2"></i> AI Grammar</button>
+      <button onClick={() => setIsTeacherDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-indigo-200 text-indigo-500 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase tracking-widest z-10"><i className="fas fa-plus"></i> AI Grammar</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-indigo-100 flex flex-col items-center min-h-[600px] animate-in slide-in-from-bottom duration-500">
         <div className="flex gap-2 mb-10 p-2 bg-indigo-50 rounded-2xl overflow-x-auto max-w-full no-scrollbar">
           {(['nouns', 'verbs', 'plurals', 'articles', 'pronouns', 'determiners', 'prepositions'] as const).map(t => (<button key={t} onClick={() => { setSubTab(t); setIndex(0); }} className={`px-4 py-2 rounded-xl font-black text-[10px] uppercase transition-all flex-shrink-0 ${subTab === t ? 'bg-indigo-500 text-white shadow-md' : 'text-indigo-300 hover:bg-indigo-100'}`}>{t === 'verbs' ? 'Action Words' : t === 'plurals' ? 'One and Many' : t}</button>))}
@@ -615,7 +632,7 @@ const GrammarModule: React.FC = () => {
           <button onClick={() => setIndex(i => (i + 1) % currentItems.length)} className="w-14 h-14 bg-indigo-100 text-indigo-500 rounded-full flex items-center justify-center hover:bg-indigo-200 shadow-md active:scale-90"><i className="fas fa-chevron-right fa-xl"></i></button>
         </div>
       </div>
-      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-indigo-50"><h3 className="text-3xl font-black text-indigo-600 mb-6 flex items-center gap-3"><i className="fas fa-magic"></i> Grammar Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme / Object</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. My Toy Bus" className="w-full px-6 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-500 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-indigo-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : `CREATE ${subTab.toUpperCase()}`}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 font-bold uppercase text-[10px] tracking-widest">Close</button></div></div></div>}
+      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-indigo-50"><h3 className="text-3xl font-black text-indigo-600 mb-6">AI Grammar Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Theme / Object</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. My Toy Bus" className="w-full px-6 py-4 rounded-2xl border-2 border-indigo-100 focus:border-indigo-500 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-indigo-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : `CREATE ${subTab.toUpperCase()}`}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
     </div>
   );
 };
@@ -652,13 +669,15 @@ const ReadingModule: React.FC = () => {
 
   const generateWithAi = async () => {
     if (!aiTopic) return; setIsAiLoading(true);
+    const resultSchema = z.object({ title: z.string(), text: z.string(), imagePrompt: z.string(), activities: z.array(z.object({ question: z.string(), options: z.array(z.string()).length(3), correct: z.number() })).min(1) });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Generate a Nursery Listening Comprehension story and 2 quiz questions. Topic: "${aiTopic}". JSON: { "title": string, "text": string, "imagePrompt": string, "activities": [ { "question": string, "options": [string, string, string], "correct": number } ] }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]); setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      const { output } = await ai.generate({
+        prompt: `Generate a Nursery Listening Comprehension story and 2 quiz questions. Topic: "${aiTopic}".`,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setData(prev => [...prev, output]); setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -702,7 +721,6 @@ const ReadingModule: React.FC = () => {
 
 /* --- SENTENCES MODULE --- */
 const SentencesModule: React.FC = () => {
-  const [subTab, setSubTab] = useState<'patterns' | 'formation'>('patterns');
   const [data, setData] = useState(SENTENCE_DATA.map(s => ({ ...s, shuffled: s.text.replace('.', '').split(' ').sort(() => Math.random() - 0.5) })));
   const [index, setIndex] = useState(0);
   const [userWords, setUserWords] = useState<string[]>([]);
@@ -714,7 +732,7 @@ const SentencesModule: React.FC = () => {
 
   const current = data[index];
 
-  useEffect(() => { fetchVisual(); setUserWords([]); }, [index, subTab, data]);
+  useEffect(() => { fetchVisual(); setUserWords([]); }, [index, data]);
 
   const fetchVisual = async () => { setLoading(true); const url = await generateLessonImage(current.imagePrompt); setImageUrl(url); setLoading(false); };
 
@@ -731,15 +749,16 @@ const SentencesModule: React.FC = () => {
 
   const generateWithAi = async () => {
     if (!aiTheme) return; setIsAiLoading(true);
+    const resultSchema = z.object({ text: z.string(), pattern: z.string(), imagePrompt: z.string() });
     try {
-       // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Nursery sentence and pattern. Theme: "${aiTheme}". JSON: { "text": string, "pattern": string, "imagePrompt": string }`);
-      const response = await result.response;
-      const res = JSON.parse(response.text());
-      setData(prev => [...prev, { ...res, shuffled: res.text.replace('.', '').split(' ').sort(() => Math.random() - 0.5) }]);
-      setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTheme('');
+      const { output } = await ai.generate({
+        prompt: `Nursery sentence and pattern. Theme: "${aiTheme}".`,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setData(prev => [...prev, { ...output, shuffled: output.text.replace('.', '').split(' ').sort(() => Math.random() - 0.5) }]);
+        setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTheme('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
 
@@ -747,25 +766,21 @@ const SentencesModule: React.FC = () => {
     <div className="max-w-4xl mx-auto flex flex-col items-center relative">
       <button onClick={() => setIsTeacherDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-cyan-200 text-cyan-500 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase tracking-widest"><i className="fas fa-plus mr-2"></i> Add Sentence</button>
       <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-cyan-100 flex flex-col items-center min-h-[600px] animate-in zoom-in duration-500">
-        <div className="flex gap-4 mb-10 p-2 bg-cyan-50 rounded-2xl">{(['patterns', 'formation'] as const).map(t => (<button key={t} onClick={() => setSubTab(t)} className={`px-6 py-2 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${subTab === t ? 'bg-cyan-500 text-white shadow-md' : 'text-cyan-300 hover:bg-cyan-100'}`}>{t}</button>))}</div>
+        <div className="flex gap-4 mb-10 p-2 bg-cyan-50 rounded-2xl">
+          {/* Tabs removed for simplification, focusing on sentence building */}
+          <span className="px-6 py-2 rounded-xl font-black text-xs uppercase tracking-widest bg-cyan-500 text-white shadow-md">Sentence Formation</span>
+        </div>
         <div className="relative w-80 h-80 rounded-full border-8 border-white shadow-2xl overflow-hidden mb-10 bg-cyan-50">
            {loading ? <div className="absolute inset-0 flex items-center justify-center"><div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin"></div></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover p-10 group-hover:scale-110 transition-all" />}
         </div>
-        {subTab === 'patterns' ? (
-          <div className="text-center bg-cyan-50 p-8 rounded-[3rem] border-4 border-dashed border-cyan-200 mb-10 w-full max-w-2xl animate-in fade-in">
-            <p className="text-sm font-black text-cyan-400 uppercase tracking-widest mb-2">Pattern: {current.pattern}</p>
-            <p className="text-4xl font-black text-cyan-600 tracking-tight">"{current.text}"</p>
-          </div>
-        ) : (
-          <div className="w-full flex flex-col items-center animate-in slide-in-from-bottom">
-             <div className="flex flex-wrap gap-3 mb-10 justify-center min-h-[60px]">
-                {userWords.map((w, i) => <div key={i} className="px-6 py-3 bg-cyan-500 text-white rounded-2xl font-black text-xl shadow-lg border-2 border-white animate-in zoom-in">{w}</div>)}
-             </div>
-             <div className="flex flex-wrap gap-4 justify-center">
-                {current.shuffled.map((w, i) => !userWords.includes(w) && <button key={i} onClick={() => handleWordClick(w)} className="px-8 py-4 bg-white border-4 border-cyan-50 rounded-3xl text-2xl font-bold text-cyan-500 shadow-md hover:scale-105 transition-all">{w}</button>)}
-             </div>
-          </div>
-        )}
+        <div className="w-full flex flex-col items-center animate-in slide-in-from-bottom">
+           <div className="flex flex-wrap gap-3 mb-10 justify-center min-h-[60px]">
+              {userWords.map((w, i) => <div key={i} className="px-6 py-3 bg-cyan-500 text-white rounded-2xl font-black text-xl shadow-lg border-2 border-white animate-in zoom-in">{w}</div>)}
+           </div>
+           <div className="flex flex-wrap gap-4 justify-center">
+              {current.shuffled.map((w, i) => !userWords.includes(w) && <button key={i} onClick={() => handleWordClick(w)} className="px-8 py-4 bg-white border-4 border-cyan-50 rounded-3xl text-2xl font-bold text-cyan-500 shadow-md hover:scale-105 transition-all">{w}</button>)}
+           </div>
+        </div>
         <div className="flex gap-4 mt-8"><button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} className="w-14 h-14 bg-cyan-100 text-cyan-500 rounded-full flex items-center justify-center hover:bg-cyan-200"><i className="fas fa-arrow-left"></i></button><button onClick={() => setIndex(i => (i + 1) % data.length)} className="w-14 h-14 bg-cyan-100 text-cyan-500 rounded-full flex items-center justify-center hover:bg-cyan-200"><i className="fas fa-arrow-right"></i></button></div>
       </div>
       {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-cyan-50"><h3 className="text-3xl font-black text-cyan-600 mb-6 flex items-center gap-3"><i className="fas fa-magic"></i> AI Pattern Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Subject</label><input type="text" value={aiTheme} onChange={(e) => setAiTheme(e.target.value)} placeholder="e.g. My Toy Bus" className="w-full px-6 py-4 rounded-2xl border-2 border-cyan-100 focus:border-cyan-500 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTheme} className="w-full py-5 rounded-2xl font-black text-white bg-cyan-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'MAGIC SENTENCE'}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 font-bold uppercase text-[10px] tracking-widest">Close</button></div></div></div>}
@@ -795,13 +810,15 @@ const HiddenWordsModule: React.FC = () => {
   };
   const generateWithAi = async () => {
     if (!aiBaseWord) return; setIsAiLoading(true);
+    const resultSchema = z.object({ target: z.string(), options: z.array(z.string()).length(4), imagePrompt: z.string() });
     try {
-       // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Find word game for "${aiBaseWord}". JSON: { "target": string, "options": [string, string, string, string], "imagePrompt": string }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]); setIsTeacherDrawerOpen(false); setIndex(data.length); setAiBaseWord('');
+      const { output } = await ai.generate({
+        prompt: `Find word game for "${aiBaseWord}".`,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setData(prev => [...prev, output]); setIsTeacherDrawerOpen(false); setIndex(data.length); setAiBaseWord('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   return (
@@ -837,13 +854,15 @@ const OppositesModule: React.FC = () => {
   const playOpposite = async () => { await playRawPcm(await generateTTS(`Look at this! ${current.word}... and the opposite is... ${current.opposite}!`) || ''); };
   const generateWithAi = async () => {
     if (!aiTopic) return; setIsAiLoading(true);
+    const resultSchema = z.object({ word: z.string(), opposite: z.string(), imagePrompt: z.string() });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Nursery opposites for topic "${aiTopic}". JSON: { "word": string, "opposite": string, "imagePrompt": string }`);
-      const response = await result.response;
-      setData(prev => [...prev, JSON.parse(response.text())]); setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      const { output } = await ai.generate({
+        prompt: `Nursery opposites for topic "${aiTopic}".`,
+        output: { schema: resultSchema }
+      });
+      if(output){
+        setData(prev => [...prev, output]); setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   return (
@@ -882,13 +901,15 @@ const DictionModule: React.FC = () => {
   const playDiction = async () => { setPlaying(true); const text = `Listen closely. Let's say ${current.word}. ${current.syllables}. ${current.instruction}`; const base64 = await generateTTS(text, 'Charon'); if (base64) await playRawPcm(base64); setPlaying(false); };
   const generateDictionWithAi = async () => {
     if (!aiWord) return; setIsAiLoading(true);
+    const resultSchema = z.object({ syllables: z.string(), instruction: z.string(), prompt: z.string() });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
-      const result = await model.generateContent(`Break down word "${aiWord}" for diction. JSON: { "word": string, "syllables": string, "instruction": string, "prompt": string }`);
-      const response = await result.response;
-      setData(prev => [...prev, { ...JSON.parse(response.text()), word: aiWord.toUpperCase() }]); setAiWord(''); setIsDrawerOpen(false); setIndex(data.length);
+      const { output } = await ai.generate({
+        prompt: `Break down word "${aiWord}" for diction.`,
+        output: { schema: resultSchema }
+      });
+      if(output) {
+        setData(prev => [...prev, { ...output, word: aiWord.toUpperCase() }]); setAiWord(''); setIsDrawerOpen(false); setIndex(data.length);
+      }
     } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
   };
   return (
@@ -910,7 +931,7 @@ const DictionModule: React.FC = () => {
           <button onClick={playDiction} disabled={playing} className="w-full py-6 rounded-3xl font-black text-2xl text-white bg-blue-600 shadow-xl border-4 border-white"><i className="fas fa-volume-high"></i> LISTEN & REPEAT</button>
         </div>
       </div>
-      {isDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-100"><h3 className="text-3xl font-black text-blue-600 mb-6 flex items-center gap-3"><i className="fas fa-magic"></i> AI Diction Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Word</label><input type="text" value={aiWord} onChange={(e) => setAiWord(e.target.value)} placeholder="e.g. Butterfly" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateDictionWithAi} disabled={isAiLoading || !aiWord} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE DICTION'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 font-bold uppercase text-[10px] tracking-widest">Close</button></div></div></div>}
+      {isDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-100"><h3 className="text-3xl font-black text-blue-600 mb-6">AI Diction Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Word</label><input type="text" value={aiWord} onChange={(e) => setAiWord(e.target.value)} placeholder="e.g. Butterfly" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateDictionWithAi} disabled={isAiLoading || !aiWord} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE DICTION'}</button><button onClick={() => setIsDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase text-[10px]">Close</button></div></div></div>}
     </div>
   );
 };
@@ -977,26 +998,32 @@ const WritingModule: React.FC = () => {
   const handleFinish = async () => {
     if (!freeCanvasRef.current) return;
     setIsEvaluating(true);
+    const resultSchema = z.object({ isRecognizable: z.boolean() });
     try {
-      // @ts-ignore
-      const ai = new GoogleGenAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest"});
       const dataUrl = freeCanvasRef.current.toDataURL('image/png').split(',')[1];
       const target = mode === 'letters' ? selectedLetter : mode === 'numbers' ? selectedNumber : selectedStroke;
-      const result = await model.generateContent({ parts: [{ text: `Is this a recognizable ${target}? Respond YES or NO.` }, { inlineData: { mimeType: 'image/png', data: dataUrl } }] });
-      const response = await result.response;
-      if (response.text()?.toUpperCase().includes('YES')) { setShowSuccess(true); generateTTS(`Great job!`).then(playRawPcm); setTimeout(() => setShowSuccess(false), 3000); } else { generateTTS(`Try again!`).then(playRawPcm); }
+      
+      const { output } = await ai.generate({
+        prompt: `Is this a recognizable ${target}? Respond YES or NO.`,
+        input: { image: { data: dataUrl, mimeType: 'image/png' } },
+        output: { schema: resultSchema }
+      });
+
+      if (output?.isRecognizable) { setShowSuccess(true); generateTTS(`Great job!`).then(playRawPcm); setTimeout(() => setShowSuccess(false), 3000); } else { generateTTS(`Try again!`).then(playRawPcm); }
     } catch (e) { console.error(e); } finally { setIsEvaluating(false); }
   };
   return (
     <div className="flex flex-col items-center gap-6 relative">
       <div className="flex bg-white p-2 rounded-2xl shadow-xl gap-2 flex-wrap justify-center">{(['letters', 'numbers', 'strokes'] as const).map(m => (<button key={m} onClick={() => setMode(m)} className={`px-6 py-2 rounded-xl font-black text-[10px] uppercase transition-all ${mode === m ? 'bg-green-500 text-white shadow-md' : 'text-green-300 hover:bg-green-50'}`}>{m}</button>))}</div>
-      <div className="flex overflow-x-auto gap-2 max-w-full no-scrollbar pb-2">
+      <div className="flex overflow-x-auto gap-3 pb-2 w-full max-w-2xl no-scrollbar px-4">
         {mode === 'letters' ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => <button key={l} onClick={() => setSelectedLetter(l)} className={`flex-shrink-0 w-12 h-12 rounded-xl font-black border-2 transition-all ${selectedLetter === l ? 'bg-pink-500 text-white scale-110' : 'bg-white text-pink-300'}`}>{l}</button>) :
          mode === 'numbers' ? "12345678910".split("").map(n => <button key={n} onClick={() => setSelectedNumber(n)} className={`flex-shrink-0 w-12 h-12 rounded-xl font-black border-2 transition-all ${selectedNumber === n ? 'bg-orange-500 text-white scale-110' : 'bg-white text-orange-400'}`}>{n}</button>) :
          ['standing', 'sleeping', 'slanting', 'circle'].map(s => <button key={s} onClick={() => setSelectedStroke(s)} className={`flex-shrink-0 px-4 h-12 rounded-xl font-black border-2 transition-all ${selectedStroke === s ? 'bg-blue-500 text-white' : 'bg-white text-blue-300'}`}>{s}</button>)}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl"><canvas ref={traceCanvasRef} onMouseDown={(e) => startDrawing(e, traceCanvasRef)} onMouseMove={(e) => draw(e, traceCanvasRef)} onMouseUp={stopDrawing} onMouseLeave={stopDrawing} onTouchStart={(e) => startDrawing(e, traceCanvasRef)} onTouchMove={(e) => draw(e, traceCanvasRef)} onTouchEnd={stopDrawing} className="bg-white border-8 border-pink-50 rounded-[3rem] shadow-xl w-full" /><canvas ref={freeCanvasRef} onMouseDown={(e) => startDrawing(e, freeCanvasRef)} onMouseMove={(e) => draw(e, freeCanvasRef)} onMouseUp={stopDrawing} onMouseLeave={stopDrawing} onTouchStart={(e) => startDrawing(e, freeCanvasRef)} onTouchMove={(e) => draw(e, freeCanvasRef)} onTouchEnd={stopDrawing} className="bg-white border-8 border-blue-50 rounded-[3rem] shadow-xl w-full" /></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl"><canvas ref={traceCanvasRef} width={400} height={400} className="bg-white border-8 border-pink-50 rounded-[3rem] shadow-xl w-full" /><canvas ref={freeCanvasRef} width={400} height={400} 
+            onMouseDown={(e) => startDrawing(e, freeCanvasRef)} onMouseMove={(e) => draw(e, freeCanvasRef)} onMouseUp={stopDrawing} onMouseLeave={stopDrawing}
+            onTouchStart={(e) => { e.preventDefault(); startDrawing(e, freeCanvasRef); }} onTouchMove={(e) => { e.preventDefault(); draw(e, freeCanvasRef); }} onTouchEnd={stopDrawing}
+            className="bg-white border-8 border-blue-50 rounded-[3rem] shadow-xl w-full cursor-crosshair" /></div>
       <button onClick={handleFinish} className="px-10 py-3 bg-green-500 text-white font-black rounded-2xl shadow-lg">{isEvaluating ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check"></i>} Check Work</button>
       {showSuccess && <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50"><h4 className="text-4xl font-black bg-white p-12 rounded-[3rem] shadow-2xl border-8 border-yellow-400">SUPER STAR!</h4></div>}
     </div>
@@ -1029,4 +1056,3 @@ const SongsModule: React.FC = () => {
 
 export default LiteracyZone;
 
-    
