@@ -115,5 +115,3 @@ export default function JuniorAcademyPage() {
     </div>
   );
 }
-
-    
