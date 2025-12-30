@@ -145,6 +145,12 @@ export const MISSING_LETTERS_DATA = [
   { word: 'PEN', missing: 'E', options: ['A', 'E', 'U'], prompt: 'A bright blue pen, nursery style' },
 ];
 
+export const SENTENCE_DATA = [
+  { text: "The cat sat.", pattern: 'CVC', imagePrompt: 'A cat sitting on a mat, nursery style' },
+  { text: "A big red bug.", pattern: 'CVC', imagePrompt: 'A large red ladybug on a leaf, nursery style' },
+  { text: "I can run.", pattern: 'CVC', imagePrompt: 'A child happily running in a field, nursery style' }
+];
+
 export const STORYTELLING_DATA = [
   {
     title: 'A Day at the Park',
@@ -461,7 +467,7 @@ export const SCIENCE_DATA = {
       { name: 'Square', prompt: 'A toy block', icon: 'fa-square', explanation: 'A square has four sides that are all the same!' }
     ],
     sizes: [
-      { pair: 'Big and Small', items: [{ label: 'Big Bear', prompt: 'A giant teddy bear', key: 'big' }, { label: 'Small Bear', prompt: 'A tiny teddy bear', key: 'small' }], explanation: 'Look! One bear is big and one bear is small!' },
+      { pair: 'Big and Small', items: [{ label: 'Big Bear', prompt: 'a giant huge friendly cartoon teddy bear, nursery style' }, { label: 'Small Bear', prompt: 'a very tiny little cartoon teddy bear, nursery style' }], explanation: 'Look! One bear is big and one bear is small!' },
       { pair: 'Long and Short', items: [{ label: 'Long Snake', prompt: 'A very long snake', key: 'long' }, { label: 'Short Snake', prompt: 'A very short snake', key: 'short' }], explanation: 'One snake is very long and the other is short!' }
     ],
     feelings: [
