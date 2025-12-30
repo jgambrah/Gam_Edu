@@ -2,25 +2,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { PHONICS_DATA, INITIAL_WORDS, VOWELS_CONSONANTS, DICTION_DATA, READING_DATA, SENTENCE_DATA, HIDDEN_WORDS_DATA, GRAMMAR_DATA, OPPOSITES_DATA, BLENDS_DATA, RHYMES_DATA, MISSING_LETTERS_DATA, STORYTELLING_DATA, THEME_VOCAB_DATA } from '../constants';
-import { generateLessonImage } from '../services/gemini';
-import { playRawPcm } from '../services/audio';
-import { 
-  generateTTSAction, 
-  generateArtDetailsAction, 
-  generateNumeracyTask,
-  generateDictionDetails,
-  generateStorytellingScene,
-  generateThemedVocab,
-  generateMissingLetterChallenge,
-  generateSentence,
-  generateRhymingWords,
-  generateBlendsExample,
-  generateJuniorStory, 
-  generateJuniorScience, 
-  generateWordDetails, 
-  generatePhonicsChallenge 
-} from '@/ai/flows/junior-actions';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useRole } from '@/context/role-context';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +14,22 @@ import {
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { 
+    generateTTSAction, 
+    generateArtDetailsAction, 
+    generateNumeracyTask,
+    generateDictionDetails,
+    generateStorytellingScene,
+    generateThemedVocab,
+    generateMissingLetterChallenge,
+    generateSentence,
+    generateRhymingWords,
+    generateBlendsExample,
+    generateJuniorStory, 
+    generateJuniorScience, 
+    generateWordDetails, 
+    generatePhonicsChallenge 
+} from '@/app/dashboard/early-years/actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -39,6 +39,16 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { PHONICS_DATA, INITIAL_WORDS, VOWELS_CONSONANTS, DICTION_DATA, READING_DATA, SENTENCE_DATA, HIDDEN_WORDS_DATA, GRAMMAR_DATA, OPPOSITES_DATA, BLENDS_DATA, RHYMES_DATA, MISSING_LETTERS_DATA, STORYTELLING_DATA, THEME_VOCAB_DATA } from '../constants';
+
+// --- HELPER: TEXT TO SPEECH ---
+const speak = async (text: string, rate = 0.9) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    // Simulate audio generation and playback
+    console.log(`Speaking: ${text}`);
+};
+
 
 type LiteracyTab = 'alphabet' | 'blends' | 'rhymes' | 'words' | 'missing-letters' | 'building' | 'grammar' | 'reading' | 'sentences' | 'hidden-words' | 'opposites' | 'storytelling' | 'themes' | 'diction' | 'writing' | 'songs';
 
@@ -125,66 +135,97 @@ const LiteracyZone: React.FC = () => {
   );
 };
 
-/* --- STORYTELLING MODULE --- */
-const StorytellingModule: React.FC = () => {
-  const [data, setData] = useState(STORYTELLING_DATA);
-  const [index, setIndex] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isTeacherDrawerOpen, setIsTeacherDrawerOpen] = useState(false);
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [aiTopic, setAiTopic] = useState('');
-  const current = data[index];
-
-  useEffect(() => { fetchVisual(); }, [index, data]);
-  const fetchVisual = async () => { setLoading(true); const url = await generateLessonImageAction(current.prompt); setImageUrl(url.data); setLoading(false); };
-  
-  const playQuestion = async (q: string) => { 
-    const result = await generateTTSAction({text: q, voice: "Kore"}); 
-    if(result.success && result.data) await playRawPcm(result.data) 
-  };
-
-  const generateWithAi = async () => {
-    if (!aiTopic) return; setIsAiLoading(true);
-    try {
-      const result = await generateStorytellingScene(aiTopic);
-      if(result.success && result.data) {
-        setData(prev => [...prev, result.data!]);
-        setIsTeacherDrawerOpen(false); setIndex(data.length); setAiTopic('');
-      }
-    } catch (e) { console.error(e); } finally { setIsAiLoading(false); }
-  };
-
-  return (
-    <div className="max-w-4xl mx-auto flex flex-col items-center relative">
-      <button onClick={() => setIsTeacherDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-600 px-4 py-2 rounded-full font-black text-[10px] shadow-sm uppercase tracking-widest"><i className="fas fa-magic"></i> AI Story Prompt</button>
-      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[600px] animate-in zoom-in duration-500">
-        <h3 className="text-4xl font-black text-blue-600 mb-8 uppercase tracking-tighter text-center">Look & Tell a Story! 🗨️</h3>
-        <div className="w-full max-w-2xl aspect-video bg-blue-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group" onClick={() => generateTTSAction({text: `Let's look at this picture of ${current.title}! What do you see?`, voice: "Kore"}).then(res => res.success && res.data && playRawPcm(res.data))}>
-          {loading ? <div className="w-16 h-16 border-8 border-blue-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} alt={current.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />}
+/* --- ALPHABET MODULE --- */
+const AlphabetModule: React.FC = () => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const currentItem = PHONICS_DATA[currentIndex];
+    
+    const playSound = () => speak(`Big ${currentItem.upper}, little ${currentItem.lower}. ${currentItem.upper} is for ${currentItem.word}.`);
+    
+    return (
+        <div className="max-w-2xl mx-auto p-12 bg-white rounded-[4rem] shadow-2xl border-8 border-pink-100 flex flex-col items-center relative overflow-hidden animate-in zoom-in duration-500">
+            <div className="flex gap-8 items-end mb-12">
+                <div className="text-center"><p className="text-xs font-black text-pink-300 uppercase mb-2">Upper</p><h2 className="text-9xl font-black text-pink-500 drop-shadow-lg">{currentItem.upper}</h2></div>
+                <div className="text-center"><p className="text-xs font-black text-pink-300 uppercase mb-2">Lower</p><h2 className="text-7xl font-black text-pink-400 drop-shadow-md">{currentItem.lower}</h2></div>
+            </div>
+            <div className="w-72 h-72 bg-pink-50 rounded-[3rem] overflow-hidden shadow-inner flex items-center justify-center relative mb-12 border-4 border-white group cursor-pointer" onClick={playSound}>
+                <p className="text-6xl">{currentItem.word}</p>
+            </div>
+            <div className="flex gap-6 items-center">
+                <button onClick={() => setCurrentIndex(p => (p === 0 ? PHONICS_DATA.length - 1 : p - 1))} className="w-16 h-16 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center hover:bg-pink-100 shadow-md active:scale-90"><i className="fas fa-chevron-left text-2xl"></i></button>
+                <button onClick={playSound} className="w-24 h-24 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-xl border-4 border-white active:scale-95 transition-all"><i className="fas fa-volume-high text-4xl"></i></button>
+                <button onClick={() => setCurrentIndex(p => (p + 1) % PHONICS_DATA.length)} className="w-16 h-16 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center hover:bg-pink-100 shadow-md active:scale-90"><i className="fas fa-chevron-right text-2xl"></i></button>
+            </div>
         </div>
-        <div className="w-full space-y-4">
-           <p className="text-xl font-bold text-gray-400 uppercase tracking-widest text-center">Guided Questions:</p>
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {current.questions.map((q, i) => (
-                <button key={i} onClick={() => playQuestion(q)} className="p-6 bg-blue-50 border-4 border-white rounded-3xl text-blue-700 font-bold shadow-md hover:bg-blue-100 transition-all flex items-center gap-3">
-                   <i className="fas fa-volume-high text-blue-300"></i>
-                   <span className="text-sm">{q}</span>
-                </button>
-              ))}
-           </div>
-        </div>
-        <div className="flex gap-4 mt-12"><button onClick={() => setIndex(i => (i === 0 ? data.length - 1 : i - 1))} className="w-14 h-14 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center hover:bg-blue-200"><i className="fas fa-arrow-left fa-xl"></i></button><button onClick={() => setIndex(i => (i + 1) % data.length)} className="w-14 h-14 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center hover:bg-blue-200"><i className="fas fa-arrow-right fa-xl"></i></button></div>
-      </div>
-      {isTeacherDrawerOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"><div className="bg-white rounded-[3rem] p-10 max-w-md w-full shadow-2xl border-8 border-blue-50"><h3 className="text-3xl font-black text-blue-600 mb-6 flex items-center gap-3"><i className="fas fa-magic"></i> Story AI Assistant</h3><div className="space-y-6"><div><label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Scene Topic</label><input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="e.g. Under the Sea" className="w-full px-6 py-4 rounded-2xl border-2 border-blue-100 outline-none font-bold" /></div><button onClick={generateWithAi} disabled={isAiLoading || !aiTopic} className="w-full py-5 rounded-2xl font-black text-white bg-blue-500 shadow-xl">{isAiLoading ? <i className="fas fa-spinner fa-spin"></i> : 'CREATE SCENE'}</button><button onClick={() => setIsTeacherDrawerOpen(false)} className="w-full py-2 text-gray-400 uppercase font-bold text-[10px] tracking-widest">Close</button></div></div></div>}
-    </div>
-  );
+    );
 };
 
-/* --- DUMMY COMPONENTS FOR OTHER TABS --- */
-const AlphabetModule: React.FC = () => <div>Alphabet Module Placeholder</div>;
-const BlendsModule: React.FC = () => <div>Blends Module Placeholder</div>;
-const RhymesModule: React.FC = () => <div>Rhymes Module Placeholder</div>;
+/* --- BLENDS & DIGRAPHS MODULE --- */
+const BlendsModule: React.FC = () => {
+    const [index, setIndex] = useState(0);
+    const [wordIndex, setWordIndex] = useState(0);
+    const current = BLENDS_DATA[index];
+    const currentWord = current.words[wordIndex];
+
+    const playSound = () => speak(`Let's learn the sound... ${current.blend.toUpperCase()}! ${current.blend} is for ${currentWord.word}.`);
+
+    return (
+        <div className="max-w-4xl mx-auto p-12 bg-white rounded-[4rem] shadow-2xl border-8 border-orange-100 flex flex-col items-center animate-in slide-in-from-bottom duration-500">
+            <h3 className="text-4xl font-black text-orange-600 mb-4 uppercase tracking-tighter">Phonemic Blends! ✨</h3>
+            <div className="flex gap-4 mb-8 flex-wrap justify-center">
+                {BLENDS_DATA.map((b, i) => (<button key={i} onClick={() => { setIndex(i); setWordIndex(0); }} className={`px-6 py-2 rounded-xl font-black text-xl uppercase transition-all ${index === i ? 'bg-orange-500 text-white scale-110 shadow-lg' : 'bg-orange-50 text-orange-300'}`}>{b.blend}</button>))}
+            </div>
+            <div className="text-center mb-8"><h4 className="text-6xl font-black text-orange-500 mb-2 uppercase tracking-tighter">{currentWord.word}</h4><p className="text-gray-400 font-bold uppercase tracking-widest text-sm">Features the {current.blend.toUpperCase()} {current.type}</p></div>
+            <div onClick={playSound} className="relative w-80 h-80 bg-orange-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden cursor-pointer group">
+                <p className="text-5xl">{currentWord.word}</p>
+            </div>
+            <div className="flex items-center gap-8">
+                <button onClick={() => setWordIndex(i => (i === 0 ? current.words.length - 1 : i - 1))} className="w-14 h-14 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center hover:bg-orange-200"><i className="fas fa-chevron-left fa-xl"></i></button>
+                <button onClick={playSound} className="px-10 py-4 bg-orange-500 text-white font-black rounded-2xl shadow-xl">LISTEN SOUND</button>
+                <button onClick={() => setWordIndex(i => (i + 1) % current.words.length)} className="w-14 h-14 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center hover:bg-orange-200"><i className="fas fa-chevron-right fa-xl"></i></button>
+            </div>
+        </div>
+    );
+};
+
+/* --- RHYMES MODULE --- */
+const RhymesModule: React.FC = () => {
+    const [index, setIndex] = useState(0);
+    const [wordIndex, setWordIndex] = useState(0);
+    const current = RHYMES_DATA[index];
+    const currentWord = current.words[wordIndex];
+
+    const playSound = () => speak(`${currentWord.word} rhymes with ${current.words.find(w => w.word !== currentWord.word)?.word || 'it'}. They both end with ${current.ending}!`);
+
+    return (
+        <div className="max-w-4xl mx-auto p-12 bg-white rounded-[4rem] shadow-2xl border-8 border-cyan-100 flex flex-col items-center animate-in slide-in-from-bottom duration-500">
+            <h3 className="text-4xl font-black text-cyan-600 mb-4 uppercase tracking-tighter">Rhyme Fun! 🔄</h3>
+            <div className="flex gap-4 mb-8 flex-wrap justify-center">
+                {RHYMES_DATA.map((r, i) => (<button key={i} onClick={() => { setIndex(i); setWordIndex(0); }} className={`px-6 py-2 rounded-xl font-black text-xl uppercase transition-all ${index === i ? 'bg-cyan-500 text-white scale-110 shadow-lg' : 'bg-cyan-50 text-cyan-300'}`}>-{r.ending}</button>))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center w-full">
+                <div className="flex flex-col items-center">
+                    <div onClick={playSound} className="relative w-64 h-64 bg-cyan-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-6 overflow-hidden cursor-pointer group">
+                        <p className="text-5xl">{currentWord.word}</p>
+                    </div>
+                    <h4 className="text-5xl font-black text-cyan-600 uppercase tracking-tighter">{currentWord.word}</h4>
+                </div>
+                <div className="space-y-6">
+                    <p className="text-2xl font-bold text-gray-400 italic">"Listen! What rhymes with <span className="text-cyan-500">{currentWord.word}</span>?"</p>
+                    <div className="grid grid-cols-1 gap-3">
+                        {current.words.map((w, i) => (
+                            <button key={i} onClick={() => setWordIndex(i)} className={`py-4 px-6 rounded-2xl font-black text-xl border-4 transition-all ${wordIndex === i ? 'bg-cyan-500 text-white border-white shadow-xl translate-x-2' : 'bg-white border-cyan-50 text-cyan-300'}`}>{w.word}</button>
+                        ))}
+                    </div>
+                    <button onClick={playSound} className="w-full py-4 bg-cyan-600 text-white font-black rounded-2xl shadow-xl">CHECK RHYME</button>
+                </div>
+            </div>
+            <div className="flex gap-4 mt-12"><button onClick={() => setIndex(i => (i === 0 ? RHYMES_DATA.length - 1 : i - 1))} className="w-14 h-14 bg-cyan-100 text-cyan-500 rounded-full flex items-center justify-center hover:bg-cyan-200"><i className="fas fa-arrow-left fa-xl"></i></button><button onClick={() => setIndex(i => (i + 1) % RHYMES_DATA.length)} className="w-14 h-14 bg-cyan-100 text-cyan-500 rounded-full flex items-center justify-center hover:bg-cyan-200"><i className="fas fa-arrow-right fa-xl"></i></button></div>
+        </div>
+    );
+};
+
+// --- DUMMY COMPONENTS FOR OTHER TABS ---
 const WordFactoryModule: React.FC = () => <div>Word Factory Placeholder</div>;
 const MissingLettersModule: React.FC = () => <div>Missing Letters Placeholder</div>;
 const WordBuildingModule: React.FC = () => <div>Word Building Placeholder</div>;
@@ -197,5 +238,6 @@ const ThemeVocabModule: React.FC = () => <div>Theme Vocab Placeholder</div>;
 const DictionModule: React.FC = () => <div>Diction Module Placeholder</div>;
 const WritingModule: React.FC = () => <div>Writing Module Placeholder</div>;
 const SongsModule: React.FC = () => <div>Songs Module Placeholder</div>;
+const StorytellingModule: React.FC = () => <div>Storytelling Module Placeholder</div>;
 
 export default LiteracyZone;
