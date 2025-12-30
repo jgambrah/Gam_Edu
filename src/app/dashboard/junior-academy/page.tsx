@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { generateJuniorStory, generateJuniorScience, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
 import { Loader2, BookOpen, FlaskConical, Mic, Volume2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function JuniorAcademyPage() {
   const [activeTab, setActiveTab] = useState('story');
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState<any>(null);
+  const { toast } = useToast();
 
   const loadContent = async (category: string) => {
     setLoading(true);
@@ -26,8 +29,19 @@ export default function JuniorAcademyPage() {
 
       if (result.success) {
         setContent(result.data);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'AI Error',
+          description: result.error || 'Failed to load content.',
+        });
       }
-    } catch (e) {
+    } catch (e: any) {
+      toast({
+        variant: 'destructive',
+        title: 'An Error Occurred',
+        description: e.message || 'Please try again later.',
+      });
       console.error(e);
     } finally {
       setLoading(false);
@@ -101,3 +115,5 @@ export default function JuniorAcademyPage() {
     </div>
   );
 }
+
+    
