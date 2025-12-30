@@ -240,6 +240,11 @@ export const GRAMMAR_DATA = {
   ]
 };
 
+export const HIDDEN_WORDS_DATA = [
+  { target: 'SUN', options: ['RUN', 'FUN', 'SUN', 'SON'], imagePrompt: 'A vibrant outdoor scene with a smiling sun, but other objects representing the option words are hidden or subtly placed: a child running, friends having fun, a father and son together.' },
+  { target: 'CAR', options: ['CAT', 'CAP', 'CAN', 'CAR'], imagePrompt: 'A busy street scene. A red toy car is prominent. A cat is peeking from a window, a boy is wearing a cap, and someone is holding a soda can.' },
+];
+
 export const OPPOSITES_DATA = [
   { word: 'Happy', opposite: 'Sad', imagePrompt: 'A split screen: left side a smiling cartoon child, right side a sad cartoon child, nursery style' },
   { word: 'Big', opposite: 'Small', imagePrompt: 'A split screen: left side a huge blue elephant, right side a tiny little mouse, nursery style' },
@@ -449,12 +454,6 @@ export const SCIENCE_DATA = {
     { name: 'Red Car', type: 'Road', prompt: 'A bright red toy car on a road, nursery style', icon: 'fa-car' },
     { name: 'Airplane', type: 'Air', prompt: 'A blue airplane flying in the sky, nursery style', icon: 'fa-plane' },
     { name: 'Big Boat', type: 'Water', prompt: 'A large ship on the ocean, nursery style', icon: 'fa-ship' }
-  ],
-  animals: [
-    { type: 'Domestic', name: 'Cow', prompt: 'A happy black and white cow on a farm, nursery style', icon: 'fa-cow', sound: 'Moo!', fact: 'Cows give us healthy milk to drink!' },
-    { type: 'Wild', name: 'Lion', prompt: 'A brave little lion with a big mane, nursery style', icon: 'fa-paw', sound: 'Roar!', fact: 'Lions are called kings of the jungle!' },
-    { type: 'Birds', name: 'Parrot', prompt: 'A colorful green and red parrot, nursery style', icon: 'fa-dove', sound: 'Squawk!', fact: 'Parrots can learn to copy sounds!' },
-    { type: 'Insects', name: 'Ladybug', prompt: 'A tiny red ladybug with black spots, nursery style', icon: 'fa-bug', sound: 'Buzz!', fact: 'Ladybugs are very good for gardens!' }
   ],
   properties: {
     colors: [
