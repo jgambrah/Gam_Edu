@@ -1,86 +1,98 @@
 
 'use client';
 
-// Decode Base64 string to a Uint8Array.
-export const decode = (base64: string): Uint8Array => {
-    if (typeof window === 'undefined') return new Uint8Array(0);
-    const binaryString = window.atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
-};
+let globalAudioCtx: AudioContext | null = null;
 
-// Decode raw PCM audio data into an AudioBuffer.
-export const decodeAudioData = async (
-    rawData: Uint8Array,
-    audioContext: AudioContext,
-    sampleRate: number,
-    numChannels: number,
-): Promise<AudioBuffer> => {
-    const audioBuffer = audioContext.createBuffer(numChannels, rawData.length / 2, sampleRate);
-    const pcmData = new Float32Array(rawData.buffer);
-    for (let channel = 0; channel < numChannels; channel++) {
-        const nowBuffering = audioBuffer.getChannelData(channel);
-        for (let i = 0; i < audioBuffer.length; i++) {
-            nowBuffering[i] = pcmData[i * 2 + channel] / 32767;
-        }
-    }
-    return audioBuffer;
-};
+export function getAudioContext(): AudioContext {
+  if (!globalAudioCtx) {
+    globalAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+  }
+  return globalAudioCtx;
+}
 
-// Play an AudioBuffer and return the source node.
-export const playAudioBuffer = (
-    audioBuffer: AudioBuffer,
-    audioContext: AudioContext
-): AudioBufferSourceNode => {
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioContext.destination);
-    source.start();
-    return source;
-};
+export function decode(base64: string): Uint8Array {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
 
+export function encode(bytes: Uint8Array): string {
+  let binary = '';
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
 
 /**
- * Creates a Blob from raw PCM audio data.
- * The server expects the audio input in a specific format, and creating a Blob
- * with the correct MIME type is a reliable way to send it.
- * @param pcmData Raw PCM audio data as a Float32Array.
- * @returns A Blob object representing the audio data.
+ * Decodes raw 16-bit PCM data into an AudioBuffer.
+ * Handles potential alignment issues by slicing the buffer to ensure
+ * the Int16Array constructor doesn't throw if byteOffset is odd.
  */
-export const createBlob = (pcmData: Float32Array): Blob => {
-    return new Blob([pcmData.buffer], { type: 'audio/l16; rate=16000' });
-};
+export async function decodeAudioData(
+  data: Uint8Array,
+  ctx: AudioContext,
+  sampleRate: number = 24000,
+  numChannels: number = 1,
+): Promise<AudioBuffer> {
+  // Ensure the data length is even for 16-bit PCM (2 bytes per sample)
+  const lengthInBytes = Math.floor(data.byteLength / 2) * 2;
+  
+  // Create a clean, aligned copy of the data
+  const alignedBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + lengthInBytes);
+  const pcmData = new Int16Array(alignedBuffer);
+  
+  const frameCount = pcmData.length / numChannels;
+  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
 
+  for (let channel = 0; channel < numChannels; channel++) {
+    const channelData = buffer.getChannelData(channel);
+    for (let i = 0; i < frameCount; i++) {
+      // Normalize 16-bit signed PCM [-32768, 32767] to [-1.0, 1.0]
+      channelData[i] = pcmData[i * numChannels + channel] / 32768.0;
+    }
+  }
+  return buffer;
+}
 
 /**
- * Decodes a base64 string representing raw PCM audio data, plays it,
- * and returns the AudioBufferSourceNode.
- * @param base64 The base64 encoded audio string.
- * @returns The AudioBufferSourceNode for the playing audio, or null on error.
+ * Unified helper to play raw PCM base64 audio.
+ * Ensures the AudioContext is resumed and handles source lifecycle.
  */
 export async function playRawPcm(base64: string): Promise<AudioBufferSourceNode | null> {
-    if (typeof window === 'undefined' || !base64) return null;
-    try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const pcmData = decode(base64);
-        
-        // Convert Uint8Array to Int16Array, then to Float32Array
-        const int16Data = new Int16Array(pcmData.buffer);
-        const float32Data = new Float32Array(int16Data.length);
-        for(let i = 0; i < int16Data.length; i++) {
-            float32Data[i] = int16Data[i] / 32768.0;
-        }
-
-        const audioBuffer = audioContext.createBuffer(1, float32Data.length, 24000);
-        audioBuffer.getChannelData(0).set(float32Data);
-        
-        return playAudioBuffer(audioBuffer, audioContext);
-    } catch (error) {
-        console.error("Failed to play raw PCM:", error);
-        return null;
+  try {
+    const ctx = getAudioContext();
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
     }
+
+    const bytes = decode(base64);
+    const audioBuffer = await decodeAudioData(bytes, ctx, 24000, 1);
+    
+    const source = ctx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(ctx.destination);
+    source.start();
+    return source;
+  } catch (error) {
+    console.error("Error playing audio:", error);
+    return null;
+  }
+}
+
+export function createBlob(data: Float32Array): { data: string; mimeType: string } {
+  const l = data.length;
+  const int16 = new Int16Array(l);
+  for (let i = 0; i < l; i++) {
+    int16[i] = data[i] * 32768;
+  }
+  return {
+    data: encode(new Uint8Array(int16.buffer)),
+    mimeType: 'audio/pcm;rate=16000',
+  };
 }
