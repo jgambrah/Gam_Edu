@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc } from 'firebase/firestore';
@@ -512,9 +513,7 @@ function ABCKingdom() {
         ctx.lineTo(x, y); ctx.stroke();
     };
 
-    const stopDrawing = () => {
-        setIsTracing(false);
-    };
+    const stopDrawing = () => { setIsTracing(false); };
 
     const resetTracingCanvas = () => {
         const canvas = traceCanvasRef.current;
@@ -676,6 +675,8 @@ function MathPlayground() {
     const icon = icons[Math.floor(Math.random() * icons.length)];
     let a, b, ans, options: any[] = [];
     let displayPrompt = "";
+    let timeParts = { hour: 0, minute: 0 };
+
 
     switch (mode) {
       case 'add':
@@ -729,13 +730,16 @@ function MathPlayground() {
         break;
       case 'time':
         const hr = Math.floor(Math.random() * 12) + 1;
-        a = `${hr}:00`; ans = `${hr} o'clock`;
-        options = [ans, `${(hr % 12) + 1} o'clock`, `${hr === 1 ? 12 : hr - 1} o'clock`].sort(() => Math.random() - 0.5);
-        displayPrompt = `The clock says...`;
+        const min = Math.random() > 0.5 ? 30 : 0;
+        timeParts = { hour: hr, minute: min };
+        a = `${hr}:${String(min).padStart(2, '0')}`;
+        ans = min === 30 ? `Half past ${hr}` : `${hr} o'clock`;
+        options = [ans, `${(hr % 12) + 1} o'clock`, `${hr}:${min === 30 ? '00' : '30'}`].sort(() => Math.random() - 0.5);
+        displayPrompt = `What time is it?`;
         break;
     }
 
-    setQuestion({ a, b, icon, ans, options, displayPrompt });
+    setQuestion({ a, b, icon, ans, options, displayPrompt, timeParts });
     setFeedback("");
   }, [mode]);
 
@@ -820,8 +824,10 @@ function MathPlayground() {
             
              {mode === 'time' && (
                 <div className="w-32 h-32 rounded-full border-4 border-slate-800 flex items-center justify-center mb-6 relative bg-white">
-                    <div className="absolute top-2/4 left-2/4 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" style={{ transform: `rotate(${(question.a.split(':')[0] % 12) * 30}deg)` }}></div>
-                    <div className="absolute top-2/4 left-2/4 w-1 h-8 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom"></div>
+                    <div className="absolute top-1/2 left-1/2 w-1 h-12 bg-slate-800 rounded -translate-x-1/2 -translate-y-full origin-bottom" 
+                        style={{ transform: `translateX(-50%) translateY(-100%) rotate(${(question.timeParts.hour % 12) * 30 + (question.timeParts.minute / 60) * 30}deg)` }}></div>
+                    <div className="absolute top-1/2 left-1/2 w-1 h-16 bg-slate-500 rounded -translate-x-1/2 -translate-y-full origin-bottom" 
+                        style={{ transform: `translateX(-50%) translateY(-100%) rotate(${question.timeParts.minute * 6}deg)` }}></div>
                     <div className="absolute top-2">12</div>
                     <div className="absolute bottom-2">6</div>
                     <div className="absolute left-2">9</div>
@@ -1954,7 +1960,10 @@ export default function JuniorCampusPage() {
     <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
       <div className="max-w-6xl mx-auto mb-8 flex items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200">
         <div className="bg-yellow-400 p-3 rounded-2xl shadow-inner"><Rabbit className="h-10 w-10 text-white" /></div>
-        <div><h1 className="text-4xl font-extrabold text-slate-800">Junior Campus</h1><p className="text-slate-500 font-medium">Learn, Play, and Grow!</p></div>
+        <div>
+          <h1 className="text-4xl font-extrabold text-slate-800">Junior Campus</h1>
+          <p className="text-slate-500 font-medium">Core Skills Academy for Primary Learners</p>
+        </div>
       </div>
       <div className="max-w-6xl mx-auto">
         <Tabs defaultValue="coach" className="w-full">
@@ -1985,3 +1994,4 @@ export default function JuniorCampusPage() {
     </div>
   );
 }
+
