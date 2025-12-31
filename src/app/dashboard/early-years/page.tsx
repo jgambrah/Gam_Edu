@@ -56,7 +56,7 @@ export default function EarlyYearsEmbeddedPage() {
     );
   }
 
-  const externalAppUrl = `https://nursery-bloom.web.app/?token=${magicTicket}`;
+  const externalAppUrl = `https://nursery-bloom-early-english-explorer-296289880836.us-west1.run.app/?token=${magicTicket}`;
 
   return (
     <div style={{ width: '100%', height: 'calc(100vh - 150px)', overflow: 'hidden', borderRadius: '1rem' }}>
