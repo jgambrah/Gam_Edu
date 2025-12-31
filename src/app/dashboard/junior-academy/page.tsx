@@ -11,10 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Loader2, Volume2, Star, Rabbit, Rocket, Wand2, Mic, ArrowRight, 
-  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, GraduationCap, Languages, Sigma
+  Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge, generateLessonImageAction as generateLessonImage, generateTTSAction, generateRhymingWords, generateBlendsExample } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -24,80 +24,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { PHONICS_DATA, INITIAL_WORDS, VOWELS_CONSONANTS, DICTION_DATA, READING_DATA, SENTENCE_DATA, HIDDEN_WORDS_DATA, GRAMMAR_DATA, OPPOSITES_DATA, BLENDS_DATA, RHYMES_DATA, MISSING_LETTERS_DATA, STORYTELLING_DATA, THEME_VOCAB_DATA } from '../early-years/constants';
-import { playRawPcm } from '../early-years/services/audio';
-
-type LiteracyTab = 'alphabet' | 'blends' | 'rhymes' | 'words' | 'missing-letters' | 'building' | 'grammar' | 'reading' | 'sentences' | 'hidden-words' | 'opposites' | 'storytelling' | 'themes' | 'diction' | 'writing' | 'songs';
-
-const LiteracyZone: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<LiteracyTab>('alphabet');
-
-  const tabIcons: Record<LiteracyTab, string> = {
-    alphabet: 'fa-font',
-    blends: 'fa-layer-group',
-    rhymes: 'fa-repeat',
-    words: 'fa-book-open',
-    'missing-letters': 'fa-underline',
-    building: 'fa-hammer',
-    grammar: 'fa-spell-check',
-    reading: 'fa-book-reader',
-    sentences: 'fa-list-ol',
-    'hidden-words': 'fa-magnifying-glass',
-    opposites: 'fa-arrows-left-right',
-    storytelling: 'fa-comment-dots',
-    themes: 'fa-tags',
-    diction: 'fa-mouth',
-    writing: 'fa-pen-nib',
-    songs: 'fa-music',
-  };
-
-  const tabColors: Record<LiteracyTab, string> = {
-    alphabet: 'bg-pink-500',
-    blends: 'bg-orange-600',
-    rhymes: 'bg-cyan-600',
-    words: 'bg-orange-500',
-    'missing-letters': 'bg-emerald-600',
-    building: 'bg-yellow-500',
-    grammar: 'bg-indigo-500',
-    reading: 'bg-emerald-500',
-    sentences: 'bg-cyan-500',
-    'hidden-words': 'bg-rose-500',
-    opposites: 'bg-purple-500',
-    storytelling: 'bg-blue-600',
-    themes: 'bg-rose-600',
-    diction: 'bg-blue-500',
-    writing: 'bg-green-500',
-    songs: 'bg-yellow-500',
-  };
-
-  return (
-    <div className="flex flex-col items-center max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
-      {/* Tab Switcher - Scrollable */}
-      <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
-        <div className="flex justify-start md:justify-center gap-3 bg-white p-4 rounded-[3rem] shadow-2xl border-4 border-pink-50 min-w-max">
-          {(['alphabet', 'blends', 'rhymes', 'words', 'missing-letters', 'building', 'grammar', 'reading', 'sentences', 'hidden-words', 'opposites', 'storytelling', 'themes', 'diction', 'writing', 'songs'] as LiteracyTab[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`min-w-[100px] px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 ${
-                activeTab === tab ? `${tabColors[tab]} text-white shadow-xl scale-110 -translate-y-1` : 'text-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <i className={`fas ${tabIcons[tab]} text-lg`}></i>
-              <span>{tab.replace('-', ' ')}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full px-4">
-        {activeTab === 'alphabet' && <ABCKingdom />}
-        {activeTab === 'phonics' && <PhonicsForest />}
-        {activeTab === 'coach' && <VoiceCoach canEdit={false} />}
-      </div>
-    </div>
-  );
-};
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -263,7 +189,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
                         >
-                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i * 0.1}s`}}></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
+                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i*0.1}s`}}></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
                         </button>
                         
                         <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
@@ -1073,6 +999,7 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
+                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -1745,7 +1672,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
 
              <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg">
                 <div className="flex items-center gap-3">
-                    <Star className="text-yellow-300 fill-yellow-300" />
+                    <Star className="text-yellow-400 fill-yellow-400" />
                     <span className="font-bold text-lg">{dbQuests?.[currentQuestIdx]?.instruction || "Let your imagination run wild!"}</span>
                 </div>
                 <Button size="sm" variant="secondary" onClick={() => setCurrentQuestIdx((prev) => (prev + 1) % (dbQuests?.length || 1))}>New Quest</Button>
@@ -2026,24 +1953,32 @@ export default function JuniorCampusPage() {
   return (
     <div className="min-h-screen bg-[#F0F9FF] p-4 md:p-8 font-sans">
       <div className="max-w-6xl mx-auto mb-8 flex items-center gap-4 bg-white p-6 rounded-3xl shadow-sm border-b-4 border-slate-200">
-        <div className="bg-blue-500 p-3 rounded-2xl shadow-inner"><GraduationCap className="h-10 w-10 text-white" /></div>
-        <div><h1 className="text-4xl font-extrabold text-slate-800">Junior Campus</h1><p className="text-slate-500 font-medium">Core Skills Academy for Primary Learners</p></div>
+        <div className="bg-yellow-400 p-3 rounded-2xl shadow-inner"><Rabbit className="h-10 w-10 text-white" /></div>
+        <div><h1 className="text-4xl font-extrabold text-slate-800">Junior Campus</h1><p className="text-slate-500 font-medium">Learn, Play, and Grow!</p></div>
       </div>
       <div className="max-w-6xl mx-auto">
-        <Tabs defaultValue="literacy" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto">
-                <TabsTrigger value="literacy" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Languages className="w-5 h-5"/> Literacy</TabsTrigger>
-                <TabsTrigger value="numeracy" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Sigma className="w-5 h-5"/> Numeracy</TabsTrigger>
-                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
-                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art & Creativity</TabsTrigger>
+        <Tabs defaultValue="coach" className="w-full">
+            <TabsList className="grid w-full grid-cols-8 h-24 bg-white p-2 rounded-2xl shadow-sm border-2 border-slate-100 mb-8 overflow-x-auto">
+                <TabsTrigger value="coach" className="rounded-xl data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Mic className="w-5 h-5"/> Coach</TabsTrigger>
+                <TabsTrigger value="phonics" className="rounded-xl data-[state=active]:bg-teal-100 data-[state=active]:text-teal-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Music className="w-5 h-5"/> Phonics</TabsTrigger>
+                <TabsTrigger value="abc" className="rounded-xl data-[state=active]:bg-green-100 data-[state=active]:text-green-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Brain className="w-5 h-5"/> ABCs</TabsTrigger>
+                <TabsTrigger value="math" className="rounded-xl data-[state=active]:bg-orange-100 data-[state=active]:text-orange-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Calculator className="w-5 h-5"/> Math</TabsTrigger>
+                <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-100 data-[state=active]:text-purple-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><BookOpen className="w-5 h-5"/> Stories</TabsTrigger>
+                <TabsTrigger value="science" className="rounded-xl data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Atom className="w-5 h-5"/> Science</TabsTrigger>
+                <TabsTrigger value="art" className="rounded-xl data-[state=active]:bg-cyan-100 data-[state=active]:text-cyan-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Palette className="w-5 h-5"/> Art</TabsTrigger>
+                <TabsTrigger value="rewards" className="rounded-xl data-[state=active]:bg-yellow-100 data-[state=active]:text-yellow-700 font-bold flex flex-col items-center gap-1 text-xs md:text-sm"><Trophy className="w-5 h-5"/> Rewards</TabsTrigger>
             </TabsList>
             
             {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
-                <TabsContent value="literacy" className="mt-0"><LiteracyZone /></TabsContent>
-                <TabsContent value="numeracy" className="mt-0"><MathPlayground /></TabsContent>
+                <TabsContent value="coach" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-pink-200"><VoiceCoach canEdit={canEdit} /></div></TabsContent>
+                <TabsContent value="phonics" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-teal-200"><PhonicsForest /></div></TabsContent>
+                <TabsContent value="abc" className="mt-0"><div className="bg-gradient-to-b from-green-50 to-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200"><ABCKingdom /></div></TabsContent>
+                <TabsContent value="math" className="mt-0"><div className="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-orange-200 relative"><MathPlayground /></div></TabsContent>
+                <TabsContent value="stories" className="mt-0"><StorySpark canEdit={canEdit} /></TabsContent>
                 <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
-                <TabsContent value="art" className="mt-0"><ArtStudio canEdit={canEdit} /></TabsContent>
+                <TabsContent value="art" className="mt-0"><div className="bg-slate-100 p-8 rounded-3xl shadow-xl border-b-8 border-slate-300"><ArtStudio canEdit={canEdit} /></div></TabsContent>
+                <TabsContent value="rewards" className="mt-0"><StickerBook /></TabsContent>
             </div>
         </Tabs>
       </div>
