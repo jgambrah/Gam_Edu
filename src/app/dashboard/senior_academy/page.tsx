@@ -176,7 +176,7 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                             Object.entries(folderStructure).map(([cat, subs]) => (
                                 <Accordion key={cat} type="single" collapsible className="w-full">
                                     <AccordionItem value={cat} className="border-none">
-                                        <AccordionTrigger className="hover:no-underline p-3 bg-indigo-50 rounded-2xl mb-1">
+                                        <AccordionTrigger className="hover:no-underline p-3 bg-indigo-50 rounded-2xl mb-1 group">
                                             <div className="flex items-center gap-2">
                                                 <BookOpen className="w-3 h-3 text-indigo-500" />
                                                 <span className="font-black text-indigo-900 text-xs uppercase">{cat}</span>
@@ -186,7 +186,9 @@ function EnglishMastery({ canEdit }: { canEdit: boolean }) {
                                             {Object.entries(subs).map(([subTitle, items]) => (
                                                 <Accordion key={subTitle} type="single" collapsible>
                                                     <AccordionItem value={subTitle} className="border-none">
-                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2">{subTitle}</AccordionTrigger>
+                                                        <AccordionTrigger className="text-[11px] font-bold text-slate-500 py-2 hover:text-indigo-600">
+                                                            {subTitle}
+                                                        </AccordionTrigger>
                                                         <AccordionContent className="space-y-1">
                                                             {items.map((item: any) => (
                                                                 <button key={item.id} onClick={() => { setActiveStory(item); setAnswers([]); }} className={`w-full text-left p-3 rounded-xl text-xs font-medium transition-all ${activeStory?.id === item.id ? 'bg-indigo-600 text-white shadow-md' : 'hover:bg-indigo-50 text-slate-600'}`}>{item.title}</button>
@@ -698,7 +700,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
 
     return (
         <Card className="bg-slate-900 border-none rounded-[40px] text-white p-8 mb-12 shadow-2xl">
-            {/* Control Bar */}
             <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-black flex items-center gap-2"><PenTool className="text-yellow-400" /> Professor's Desk</h2>
                 <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
@@ -717,7 +718,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     </Button>
                 </div>
             ) : (
-                /* --- MANUAL ENTRY FORM --- */
                 <div className="space-y-6 animate-in slide-in-from-top-4">
                     <div className="grid md:grid-cols-3 gap-4">
                         <div className="space-y-2"><Label>Category (Main Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /></div>
@@ -735,11 +735,9 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     </Button>
                 </div>
             )}
-        </CardContent>
-    </Card>
+        </Card>
     );
 }
-
 
 // --- MAIN PAGE ---
 export default function SeniorAcademyPage() {

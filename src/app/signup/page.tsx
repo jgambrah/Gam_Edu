@@ -98,7 +98,7 @@ export default function SignUpPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link href="/password-reset" className="text-sm">
+                <Link href="/password-reset" className="text-sm text-indigo-600 hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -116,7 +116,7 @@ export default function SignUpPage() {
             </Button>
             <div className="mt-4 text-center text-sm">
               Already have an account?{' '}
-              <Link href="/" className="underline">
+              <Link href="/" className="underline font-semibold text-indigo-600">
                 Sign in
               </Link>
             </div>
