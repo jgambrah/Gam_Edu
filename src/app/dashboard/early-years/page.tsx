@@ -2,11 +2,18 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowLeft } from "lucide-react";
 
 export default function EarlyYearsRedirectPage() {
+
+  const externalUrl = "https://nursery-bloom-early-english-explorer-296289880836.us-west1.run.app";
+
+  const handleOpenHub = () => {
+    const windowFeatures = "width=1280,height=800,location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes";
+    window.open(externalUrl, "_blank", windowFeatures);
+  };
+
   return (
     <div className="flex items-center justify-center p-8">
         <Card className="max-w-lg text-center">
@@ -17,16 +24,14 @@ export default function EarlyYearsRedirectPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Link href="https://nursery-bloom-early-english-explorer-296289880836.us-west1.run.app" target="_blank" rel="noopener noreferrer">
-                    <Button>
-                        Open Early Years Hub <ExternalLink className="ml-2 h-4 w-4"/>
-                    </Button>
-                </Link>
+                <Button onClick={handleOpenHub}>
+                    Open Early Years Hub <ExternalLink className="ml-2 h-4 w-4"/>
+                </Button>
             </CardContent>
             <CardFooter className="flex flex-col items-center justify-center text-sm text-muted-foreground pt-6 border-t">
                 <div className="flex items-center gap-2">
                     <ArrowLeft className="h-4 w-4" />
-                    <p>When you are finished, simply close the new browser tab to return to CampusConnect.</p>
+                    <p>The application will open in a new window. When you are finished, simply close the new window to return to CampusConnect.</p>
                 </div>
             </CardFooter>
         </Card>
