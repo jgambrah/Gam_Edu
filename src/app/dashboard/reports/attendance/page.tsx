@@ -101,18 +101,33 @@ export default function AttendanceReportsPage() {
     const isLoading = isLoadingClasses || isLoadingAttendance || isLoadingStudents;
 
     // --- DATA PROCESSING & FILTERING ---
-    const studentMap = useMemo(() => {
-        if (!students) return new Map<string, Student>();
-        return new Map(students.map(s => [s.uid, s]));
-    }, [students]);
-
     const filteredData = useMemo(() => {
-        if (!attendanceRecords || !classes) return [];
-
+        if (!attendanceRecords || !students || !classes) return [];
+    
+        // Create MULTIPLE lookup maps to handle different ID formats
+        const studentMapByUid = new Map(students.map(s => [s.uid, s]));
+        const studentMapById = new Map(students.map(s => [s.id, s]));
+        const classMap = new Map(classes.map(c => [c.id, c.name]));
+    
         let data = attendanceRecords.map(record => {
-            const student = studentMap.get(record.studentId);
-            const className = classes.find(c => c.id === record.classId)?.name || 'Unknown Class';
-            return { ...record, student, className };
+            // Try multiple lookup strategies
+            let student = studentMapByUid.get(record.studentId) || 
+                         studentMapById.get(record.studentId);
+            
+            // If still not found, try a fallback search
+            if (!student) {
+                student = students.find(s => 
+                    s.uid === record.studentId || 
+                    s.id === record.studentId ||
+                    s.studentId === record.studentId // In case it's using the formatted ID
+                );
+            }
+            
+            return {
+                ...record,
+                student: student,
+                className: classMap.get(record.classId) || 'Unknown Class'
+            };
         });
     
         if (selectedClassId !== 'all') {
@@ -124,7 +139,7 @@ export default function AttendanceReportsPage() {
         
         return data.sort((a, b) => b.date.seconds - a.date.seconds);
     
-    }, [attendanceRecords, selectedClassId, selectedStatus, classes, studentMap]);
+    }, [attendanceRecords, selectedClassId, selectedStatus, students, classes]);
 
     // Count missing students for warning
     const missingStudentsCount = useMemo(() => {
@@ -357,3 +372,5 @@ export default function AttendanceReportsPage() {
         </div>
     );
 }
+
+    
