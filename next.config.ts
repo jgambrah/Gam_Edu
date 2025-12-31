@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
         "genkit", 
         "@genkit-ai", 
         "@opentelemetry/sdk-node",
-        "@grpc/grpc-js"
+        "@grpc/grpc-js",
+        "jsonwebtoken"
     ],
     webpack: (config, { isServer }) => {
         if (!isServer) {
