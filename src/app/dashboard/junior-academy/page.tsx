@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc } from 'firebase/firestore';
@@ -14,7 +14,7 @@ import {
   Save, Trash2, Library, Calculator, Brain, BookOpen, Atom, Music, Palette, Trophy, Gift, Check, CheckCircle2, XCircle, Type, PlusCircle, PenSquare, FileText, Search, AlertTriangle, ShieldCheck, Activity, BrainCircuit, MessageSquare, Clapperboard, Users, Lightbulb, Microscope, Sparkles, Database, PenTool, Eraser, GraduationCap, Languages, Sigma
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge } from '@/ai/flows/junior-actions';
+import { generateJuniorStory, generateJuniorScience, generateWordDetails, generatePhonicsChallenge, generateLessonImageAction as generateLessonImage, generateTTSAction, generateRhymingWords, generateBlendsExample } from '@/ai/flows/junior-actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -91,45 +91,13 @@ const LiteracyZone: React.FC = () => {
       </div>
 
       <div className="w-full px-4">
-        {activeTab === 'alphabet' && <AlphabetModule />}
-        {activeTab === 'blends' && <BlendsModule />}
-        {activeTab === 'rhymes' && <RhymesModule />}
-        {activeTab === 'words' && <WordFactoryModule />}
-        {activeTab === 'missing-letters' && <MissingLettersModule />}
-        {activeTab === 'building' && <WordBuildingModule />}
-        {activeTab === 'grammar' && <GrammarModule />}
-        {activeTab === 'reading' && <ReadingModule />}
-        {activeTab === 'sentences' && <SentencesModule />}
-        {activeTab === 'hidden-words' && <HiddenWordsModule />}
-        {activeTab === 'opposites' && <OppositesModule />}
-        {activeTab === 'storytelling' && <StorytellingModule />}
-        {activeTab === 'themes' && <ThemeVocabModule />}
-        {activeTab === 'diction' && <DictionModule />}
-        {activeTab === 'writing' && <WritingModule />}
-        {activeTab === 'songs' && <SongsModule />}
+        {activeTab === 'alphabet' && <ABCKingdom />}
+        {activeTab === 'phonics' && <PhonicsForest />}
+        {activeTab === 'coach' && <VoiceCoach canEdit={false} />}
       </div>
     </div>
   );
 };
-
-// --- DUMMY COMPONENTS (To be implemented) ---
-const WordFactoryModule: React.FC = () => <div>Word Factory Module</div>;
-const MissingLettersModule: React.FC = () => <div>Missing Letters Module</div>;
-const WordBuildingModule: React.FC = () => <div>Word Building Module</div>;
-const GrammarModule: React.FC = () => <div>Grammar Module</div>;
-const ReadingModule: React.FC = () => <div>Reading Module</div>;
-const SentencesModule: React.FC = () => <div>Sentences Module</div>;
-const HiddenWordsModule: React.FC = () => <div>Hidden Words Module</div>;
-const OppositesModule: React.FC = () => <div>Opposites Module</div>;
-const StorytellingModule: React.FC = () => <div>Storytelling Module</div>;
-const ThemeVocabModule: React.FC = () => <div>Theme Vocab Module</div>;
-const DictionModule: React.FC = () => <div>Diction Module</div>;
-const WritingModule: React.FC = () => <div>Writing Module</div>;
-const SongsModule: React.FC = () => <div>Songs Module</div>;
-const BlendsModule: React.FC = () => <div>Blends Module</div>;
-const RhymesModule: React.FC = () => <div>Rhymes Module</div>;
-const AlphabetModule: React.FC = () => <div>Alphabet Module</div>;
-
 
 // --- HELPER: TEXT TO SPEECH ---
 const speak = (text: string, rate = 0.9) => {
@@ -295,7 +263,7 @@ function VoiceCoach({ canEdit }: { canEdit: boolean }) {
                             disabled={isListening}
                             className={`h-32 w-32 rounded-full flex items-center justify-center shadow-2xl transition-all transform hover:scale-110 active:scale-95 ${isListening ? 'bg-red-500 animate-pulse ring-8 ring-red-100' : 'bg-gradient-to-tr from-pink-500 to-rose-500 ring-8 ring-pink-50'}`}
                         >
-                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${'i' * 0.1}s`}}></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
+                            {isListening ? <div className="flex gap-1">{[1,2,3].map(i => <div key={i} className="w-2 h-8 bg-white rounded-full animate-bounce" style={{animationDelay: `${i * 0.1}s`}}></div>)}</div> : <Mic className="h-16 w-16 text-white" />}
                         </button>
                         
                         <div className={`px-8 py-4 rounded-3xl font-black text-xl shadow-sm border-2 ${feedback.color} bg-white transition-colors`}>
@@ -706,8 +674,8 @@ function ABCKingdom() {
                                             className="touch-none cursor-crosshair"
                                             onMouseDown={startTracing}
                                             onMouseMove={draw}
-                                            onMouseUp={stopTracing}
-                                            onMouseLeave={stopTracing}
+                                            onMouseUp={stopDrawing}
+                                            onMouseLeave={stopDrawing}
                                             onTouchStart={startTracing}
                                             onTouchMove={draw}
                                             onTouchEnd={stopTracing}
@@ -749,7 +717,7 @@ function ABCKingdom() {
                                                         speak("Try again");
                                                     }
                                                 }}
-                                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-green-400 hover:bg-green-50 transition-all shadow-md"
+                                                className="h-24 bg-white border-4 border-slate-100 rounded-3xl text-5xl font-black text-slate-700 hover:border-green-400 hover:bg-green-50 transition-all"
                                             >
                                                 {char}
                                             </button>
@@ -1105,7 +1073,6 @@ function StorySpark({ canEdit }: { canEdit: boolean }) {
                                 className="text-lg h-12 rounded-xl flex-1"
                             />
                             
-                            {/* Word Count Control for Admin/Director */}
                             {isAdminOrDirector && (
                                 <div className="flex items-center gap-2 bg-purple-50 px-3 rounded-xl border border-purple-100">
                                     <Type className="w-4 h-4 text-purple-500" />
@@ -1605,7 +1572,7 @@ function ScienceWorld({ canEdit }: { canEdit: boolean }) {
                             <h4 className="font-black text-slate-800 leading-tight">{s.title}</h4>
                             <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Discovery</p>
                             {canEdit && (
-                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-200 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
+                                <Button size="icon" variant="ghost" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDeleteDiscovery(s.id); }}>
                                     <Trash2 className="w-4 w-4"/>
                                 </Button>
                             )}
@@ -1776,7 +1743,7 @@ function ArtStudio({ canEdit }: { canEdit: boolean }) {
                 <Button variant={activeTab === 'shapes' ? 'default' : 'ghost'} onClick={() => setActiveTab('shapes')} className="rounded-xl">Shape Quest</Button>
             </div>
 
-             <div className="bg-cyan-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg">
+             <div className="bg-indigo-600 p-4 rounded-2xl text-white flex justify-between items-center shadow-lg">
                 <div className="flex items-center gap-3">
                     <Star className="text-yellow-300 fill-yellow-300" />
                     <span className="font-bold text-lg">{dbQuests?.[currentQuestIdx]?.instruction || "Let your imagination run wild!"}</span>
@@ -2074,9 +2041,9 @@ export default function JuniorCampusPage() {
             {/* CONTENT AREAS */}
             <div className="min-h-[500px]">
                 <TabsContent value="literacy" className="mt-0"><LiteracyZone /></TabsContent>
-                <TabsContent value="numeracy" className="mt-0"><div>Numeracy Zone</div></TabsContent>
-                <TabsContent value="science" className="mt-0"><div>Science Zone</div></TabsContent>
-                <TabsContent value="art" className="mt-0"><div>Art Zone</div></TabsContent>
+                <TabsContent value="numeracy" className="mt-0"><MathPlayground /></TabsContent>
+                <TabsContent value="science" className="mt-0"><ScienceWorld canEdit={canEdit} /></TabsContent>
+                <TabsContent value="art" className="mt-0"><ArtStudio canEdit={canEdit} /></TabsContent>
             </div>
         </Tabs>
       </div>
