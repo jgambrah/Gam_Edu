@@ -25,6 +25,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
+import { billMultipleStudents } from '@/lib/billing';
 
 // Schema matches your data structure
 const attendanceRecordSchema = z.object({
@@ -55,6 +56,9 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     
     const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    
+    // --- NEW: State for billing progress ---
+    const [billingProgress, setBillingProgress] = useState<string | null>(null);
 
     // Fetch Classes
     const classesQuery = useMemoFirebase(() => {
@@ -112,8 +116,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     classId: selectedClassId,
                     status: (existingRecord?.status || 'Present') as "Present" | "Absent" | "Late" | "Excused",
                     notes: existingRecord?.notes || '',
-                    usesBusService: student.usesBusService ? "true" : "false",
-                    usesCanteen: student.usesCanteen !== false ? "true" : "false",
+                    usesBusService: String(student.usesBusService || false),
+                    usesCanteen: String(student.usesCanteen !== false),
                 };
             });
 
@@ -135,10 +139,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore) return;
         setIsLoading(true);
+        setBillingProgress(null);
         
         const batch = writeBatch(firestore);
         
-        // 1. Save Attendance
+        // 1. Save Attendance records
         data.records.forEach(record => {
             const recordRef = record.id ? doc(firestore, 'attendance', record.id) : doc(collection(firestore, 'attendance'));
             const { usesBusService, usesCanteen, id, ...dataToSave } = record; 
@@ -149,92 +154,39 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }, { merge: true });
         });
 
-        // 2. Billing and Notifications
-        try {
-            // Get Rates
-            const canteenSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
-            const transportSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
-            const canteenRate = canteenSnap.exists() ? Number(canteenSnap.data().dailyRate) : 0;
-            const transportRate = transportSnap.exists() ? Number(transportSnap.data().dailyRate) : 0;
+        await batch.commit();
+        toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
+
+        // 2. Start robust billing process
+        const studentsToBill = data.records
+            .filter(r => r.status === 'Present' || r.status === 'Late')
+            .map(r => students.find(s => s.uid === r.studentId))
+            .filter((s): s is Student => s !== undefined);
+
+        if (studentsToBill.length > 0) {
+            const billingResult = await billMultipleStudents(
+                firestore,
+                studentsToBill,
+                selectedDate,
+                (current, total, name) => {
+                    setBillingProgress(`Billing ${current}/${total}: ${name}`);
+                }
+            );
             
-            const parentsSnap = await getDocs(collection(firestore, 'parents'));
-            const allParents = parentsSnap.docs.map(d => ({ ...d.data(), id: d.id })) as (Parent & {id: string})[];
-
-            let billsCount = 0;
-            let absenceNotificationsCount = 0;
-            const dateStr = format(selectedDate, 'yyyy-MM-dd');
-
-            const studentDocs = await getDocs(query(collection(firestore, 'students'), where('classId', '==', selectedClassId)));
-            const studentMap = new Map(studentDocs.docs.map(d => [d.id, d.data() as Student]));
-
-            for (const record of data.records) {
-                
-                const studentInfo = studentMap.get(record.studentId);
-                if (!studentInfo) continue;
-                
-                if (record.status === 'Present' || record.status === 'Late') {
-                    
-                    if (canteenRate > 0 && studentInfo.usesCanteen !== false) {
-                        const billRef = doc(firestore, 'financialRecords', `canteen-${record.studentId}-${dateStr}`);
-                        batch.set(billRef, {
-                            studentId: record.studentId,
-                            studentName: record.studentName,
-                            classId: record.classId,
-                            type: 'Canteen Fee',
-                            description: `Lunch for ${dateStr}`,
-                            billedAmount: canteenRate,
-                            amountPaid: 0,
-                            status: 'Unpaid',
-                            dueDate: selectedDate,
-                            createdAt: serverTimestamp()
-                        }, { merge: true });
-                        billsCount++;
-                    }
-
-                    if (transportRate > 0 && studentInfo.usesBusService) {
-                        const billRef = doc(firestore, 'financialRecords', `transport-${record.studentId}-${dateStr}`);
-                        batch.set(billRef, {
-                            studentId: record.studentId,
-                            studentName: record.studentName,
-                            classId: record.classId,
-                            type: 'Transport Fee',
-                            description: `Bus Ride for ${dateStr}`,
-                            billedAmount: transportRate,
-                            amountPaid: 0,
-                            status: 'Unpaid',
-                            dueDate: selectedDate,
-                            createdAt: serverTimestamp()
-                        }, { merge: true });
-                        billsCount++;
-                    }
-                }
-
-                if (record.status === 'Absent') {
-                    const parentsToNotify = allParents.filter(p => p.studentIds?.includes(record.studentId));
-
-                    for (const parent of parentsToNotify) {
-                         const notificationRef = doc(collection(firestore, 'notifications'));
-                         batch.set(notificationRef, {
-                            userId: parent.id,
-                            title: "Student Absence Notification",
-                            message: `Dear Parent, please be advised that ${record.studentName} was marked absent from school today, ${format(selectedDate, 'PPP')}. If this is unexpected, please contact the school office.`,
-                            read: false,
-                            createdAt: serverTimestamp()
-                         });
-                         absenceNotificationsCount++;
-                    }
-                }
+            toast({
+                title: 'Billing Complete',
+                description: `✅ ${billingResult.successful} billed successfully. ❌ ${billingResult.failed} failed. Total: GH₵${billingResult.totalBilled.toFixed(2)}`
+            });
+            
+            if (billingResult.errors.length > 0) {
+                console.error("Billing Errors:", billingResult.errors);
             }
-
-            await batch.commit();
-            toast({ title: 'Success', description: `Attendance saved. ${billsCount} bills generated. ${absenceNotificationsCount} absence notifications sent.` });
-
-        } catch (error: any) {
-            console.error("Billing/Notification Error:", error);
-            toast({ variant: 'destructive', title: 'Error', description: error.message });
-        } finally {
-            setIsLoading(false);
+        } else {
+            toast({ title: 'Billing Skipped', description: 'No students were marked as present or late.'});
         }
+        
+        setIsLoading(false);
+        setBillingProgress(null);
     }
 
     return (
@@ -352,6 +304,9 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                              </ScrollArea>
                             {fields.length > 0 && (
                                 <div className="pt-4 border-t mt-4">
+                                    {billingProgress && (
+                                        <div className="text-sm text-muted-foreground text-center mb-2 animate-pulse">{billingProgress}</div>
+                                    )}
                                     <Button type="submit" className="w-full h-12 text-lg font-bold bg-indigo-600 hover:bg-indigo-700" disabled={isLoading}>
                                         {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin"/> : <Check className="mr-2 h-5 w-5"/>}
                                         Confirm Attendance & Generate Bills
