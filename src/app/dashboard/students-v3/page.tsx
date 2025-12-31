@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -26,7 +27,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
@@ -133,6 +134,7 @@ export default function StudentsV3Page() {
               dateOfBirth: values.dateOfBirth,
               address: values.address,
               usesBusService: values.usesBusService === 'on',
+              usesCanteen: values.usesCanteen === 'on', // Added canteen flag
               enrollmentStatus: 'Active',
               createdAt: serverTimestamp()
           });
@@ -165,6 +167,7 @@ export default function StudentsV3Page() {
             dateOfBirth: values.dateOfBirth,
             address: values.address,
             usesBusService: values.usesBusService === 'on',
+            usesCanteen: values.usesCanteen === 'on', // Added canteen flag
         });
 
         toast({ title: "Updated", description: "Student details saved." });
@@ -274,7 +277,10 @@ export default function StudentsV3Page() {
                                         </Badge>
                                     </TableCell>
                                      <TableCell>
-                                        {s.usesBusService && <Bus className="h-4 w-4 text-muted-foreground" title="Uses Bus Service" />}
+                                        <div className="flex items-center gap-2">
+                                          {s.usesBusService && <Bus className="h-4 w-4 text-muted-foreground" title="Uses Bus Service" />}
+                                          {s.usesCanteen && <Utensils className="h-4 w-4 text-muted-foreground" title="Uses Canteen" />}
+                                        </div>
                                      </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
@@ -326,9 +332,15 @@ export default function StudentsV3Page() {
                     </div>
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="123 School Lane"/></div>
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="usesBusService" name="usesBusService" />
-                    <Label htmlFor="usesBusService">This student uses the bus service</Label>
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="usesBusService" name="usesBusService" />
+                        <Label htmlFor="usesBusService">Subscribed to Bus Service</Label>
+                    </div>
+                     <div className="flex items-center space-x-2">
+                        <Checkbox id="usesCanteen" name="usesCanteen" defaultChecked={true} />
+                        <Label htmlFor="usesCanteen">Subscribed to Canteen</Label>
+                    </div>
                 </div>
                 <DialogFooter>
                     <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isSubmitting}>
@@ -368,9 +380,15 @@ export default function StudentsV3Page() {
                         </div>
                     </div>
                     <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingStudent.address} /></div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="editUsesBusService" name="usesBusService" defaultChecked={editingStudent.usesBusService} />
-                        <Label htmlFor="editUsesBusService">This student uses the bus service</Label>
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="editUsesBusService" name="usesBusService" defaultChecked={editingStudent.usesBusService} />
+                            <Label htmlFor="editUsesBusService">Uses Bus Service</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="editUsesCanteen" name="usesCanteen" defaultChecked={editingStudent.usesCanteen !== false} />
+                            <Label htmlFor="editUsesCanteen">Uses Canteen</Label>
+                        </div>
                     </div>
                     <DialogFooter>
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -384,3 +402,4 @@ export default function StudentsV3Page() {
     </div>
   );
 }
+
