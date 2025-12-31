@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 
 // Function to generate a secure random token on the client-side
 function generateMagicTicket() {
+  if (typeof window === 'undefined') return null;
   const array = new Uint32Array(8);
   window.crypto.getRandomValues(array);
   let token = '';
@@ -19,23 +20,15 @@ function generateMagicTicket() {
 
 export default function EarlyYearsEmbeddedPage() {
   const { user, isUserLoading } = useUser();
-  const [magicTicket, setMagicTicket] = useState<string | null>(null);
+  // Generate the token immediately. We only need it once.
+  const [magicTicket] = useState(generateMagicTicket());
 
-  useEffect(() => {
-    // Generate the token only once when the component mounts
-    if (!magicTicket) {
-      setMagicTicket(generateMagicTicket());
-    }
-  }, [magicTicket]);
-
-  const externalAppUrl = `https://nursery-bloom.web.app/?token=${magicTicket}`;
-
-  if (isUserLoading || !magicTicket) {
+  if (isUserLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center p-8 text-center">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <Loader2 className="h-6 w-6 animate-spin" />
-          <p>Generating secure connection...</p>
+          <p>Authenticating session...</p>
         </div>
       </div>
     );
@@ -51,14 +44,27 @@ export default function EarlyYearsEmbeddedPage() {
        </Card>
     );
   }
+  
+  if (!magicTicket) {
+     return (
+      <div className="flex h-full w-full items-center justify-center p-8 text-center">
+        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <p>Generating secure connection...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const externalAppUrl = `https://nursery-bloom.web.app/?token=${magicTicket}`;
 
   return (
-    <div style={{ width: '100%', height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: 'calc(100vh - 150px)', overflow: 'hidden', borderRadius: '1rem' }}>
         <iframe
             src={externalAppUrl}
             style={{ width: '100%', height: '100%', border: 'none' }}
             title="Early Years Learning Hub"
-            allow="microphone" // Request microphone permissions for speech features
+            allow="microphone"
         />
     </div>
   );
