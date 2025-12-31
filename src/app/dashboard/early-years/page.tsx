@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { ExternalLink, ArrowLeft, Loader2 } from "lucide-react";
@@ -29,13 +30,13 @@ export default function EarlyYearsRedirectPage() {
 
     setIsLoading(true);
     try {
-        // 1. Generate a secure, short-lived token
+        // 1. Generate a secure, short-lived token from the server action
         const token = await generateSecureToken(user.uid);
         
-        // 2. Construct the URL with the token
+        // 2. Construct the URL with the token as a query parameter
         const secureUrl = `${externalUrl}?token=${token}`;
 
-        // 3. Open the URL in a new popup window
+        // 3. Open the URL in a new popup window without the browser chrome
         const windowFeatures = "width=1280,height=800,location=no,toolbar=no,menubar=no,scrollbars=yes,resizable=yes";
         window.open(secureUrl, "EarlyYearsHub", windowFeatures);
 
