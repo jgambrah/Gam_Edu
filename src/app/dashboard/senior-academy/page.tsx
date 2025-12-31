@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -700,7 +701,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
 
     return (
         <Card className="bg-slate-900 border-none rounded-[40px] text-white p-8 mb-12 shadow-2xl">
-            {/* Control Bar */}
             <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-black flex items-center gap-2"><PenTool className="text-yellow-400" /> Professor's Desk</h2>
                 <div className="flex bg-slate-800 p-1 rounded-2xl border border-slate-700">
@@ -719,7 +719,6 @@ function AdminConsole({ onContentAdded }: { onContentAdded: () => void }) {
                     </Button>
                 </div>
             ) : (
-                /* --- MANUAL ENTRY FORM --- */
                 <div className="space-y-6 animate-in slide-in-from-top-4">
                     <div className="grid md:grid-cols-3 gap-4">
                         <div className="space-y-2"><Label>Category (Main Folder)</Label><Input placeholder={subject === 'math' ? 'e.g. Algebra' : subject === 'english' ? 'e.g. Narrative' : 'e.g. Life Science'} value={manualData.category} onChange={e => setManualData({...manualData, category: e.target.value})} className="bg-slate-800 border-slate-700 text-white h-12 rounded-xl" /></div>

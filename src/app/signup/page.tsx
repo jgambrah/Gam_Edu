@@ -91,9 +91,16 @@ export default function SignUpPage() {
                 type="email" 
                 placeholder="you@example.com" 
                 value={email}
-                onChange={(e) => setEmail(e.targem_passwords_a_lot_of_characters
-                  <a href="#">Forgot password?</a>
-                </div>
+                onChange={(e) => setEmail(e.target.value)}
+                required 
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link href="/password-reset" className="text-sm">
+                  Forgot password?
+                </Link>
               </div>
               <Input 
                 id="password" 
