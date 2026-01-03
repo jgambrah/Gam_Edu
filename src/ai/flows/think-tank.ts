@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -238,9 +239,9 @@ export async function generateCrosswordAction(topic: string) {
     CREATE THE PUZZLE NOW with 4-6 words. Each clue MUST have: number, clue, answer, row, col.
     `;
     
-    try {
+      try {
         const { text } = await ai.generate({
-          model: 'googleai/gemini-1.5-flash',
+          model: 'googleai/gemini-1.5-flash-latest',
           prompt,
           config: { temperature: 0.7, maxOutputTokens: 4096 },
         });
@@ -365,4 +366,5 @@ export async function generateCrosswordAction(topic: string) {
     
 
     
+
 
