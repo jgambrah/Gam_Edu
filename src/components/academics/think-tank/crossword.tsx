@@ -62,7 +62,7 @@ const CrosswordPuzzle = () => {
   
   useEffect(() => {
     generatePuzzleWithAI('Science'); // Generate a default puzzle on initial load
-  }, [generatePuzzleWithAI]);
+  }, []);
 
 
   // Check if puzzle is complete
@@ -376,3 +376,5 @@ const CrosswordPuzzle = () => {
 };
 
 export default CrosswordPuzzle;
+
+    
