@@ -135,7 +135,7 @@ export async function runDebateTurn(input: z.infer<typeof DebateTurnInputSchema>
     }
 }
 
-// --- NEW: THE DETECTIVE DESK ACTION ---
+// --- DETECTIVE DESK ACTION ---
 const DetectiveSchema = z.object({
   scenario: z.string().describe("The text, headline, or statement to analyze."),
   question: z.string().describe("The specific question to ask the student."),
@@ -183,5 +183,78 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
   } catch (error: any) {
     console.error("AI Error:", error);
     throw new Error(error.message);
+  }
+}
+
+// --- NEW: CROSSWORD PUZZLE GENERATION ACTION ---
+const CrosswordClueSchema = z.object({
+  number: z.number(),
+  clue: z.string(),
+  answer: z.string(),
+  row: z.number(),
+  col: z.number(),
+});
+
+const CrosswordPuzzleSchema = z.object({
+  title: z.string(),
+  grid: z.array(z.array(z.string())),
+  clues: z.object({
+    across: z.array(CrosswordClueSchema),
+    down: z.array(CrosswordClueSchema),
+  }),
+});
+
+export async function generateCrosswordAction(topic: string) {
+  try {
+    const prompt = `Create a crossword puzzle about "${topic}" for educational purposes. 
+                
+    IMPORTANT: Return ONLY valid JSON, no other text or markdown. The response must be parseable JSON.
+    
+    The JSON must have this exact structure:
+    {
+      "title": "Puzzle title",
+      "grid": [
+        ["L", "E", "A", "R", "N", ""],
+        ["", "", "", "", "", "C"],
+        ["", "C", "O", "D", "E", "O"],
+        ["", "", "", "", "", "D"],
+        ["", "", "", "", "", "E"]
+      ],
+      "clues": {
+        "across": [
+          { "number": 1, "clue": "Acquire knowledge", "answer": "LEARN", "row": 0, "col": 0 },
+          { "number": 2, "clue": "Programming instructions", "answer": "CODE", "row": 2, "col": 1 }
+        ],
+        "down": [
+          { "number": 3, "clue": "A sequence of instructions", "answer": "CODE", "row": 1, "col": 5 }
+        ]
+      }
+    }
+    
+    Requirements:
+    - Create 4-6 words total.
+    - Each word should be 4-8 letters long.
+    - Grid should be rectangular (5-10 rows, 5-10 columns).
+    - Use empty strings "" for black squares.
+    - Make clues educational and age-appropriate.
+    - Ensure all words intersect properly.
+    - Number clues sequentially starting from 1.
+    - Return ONLY the JSON object, nothing else.`;
+
+    const { output } = await ai.generate({
+      prompt,
+      output: { schema: CrosswordPuzzleSchema },
+      config: { temperature: 0.9, maxOutputTokens: 2048 },
+    });
+    
+    if (!output) {
+      throw new Error('AI did not return a valid puzzle structure.');
+    }
+    
+    return output;
+  } catch (error) {
+    console.error("Error in generateCrosswordAction:", error);
+    // Return null or re-throw to be handled by the client
+    return null;
   }
 }

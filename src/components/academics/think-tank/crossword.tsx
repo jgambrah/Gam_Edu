@@ -1,7 +1,11 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Check, RotateCcw, Lightbulb, Sparkles, RefreshCw } from 'lucide-react';
+import { generateCrosswordAction } from '@/ai/flows/think-tank';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const CrosswordPuzzle = () => {
   const [currentPuzzle, setCurrentPuzzle] = useState<any>(null);
@@ -12,162 +16,75 @@ const CrosswordPuzzle = () => {
   const [completed, setCompleted] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [studentInterest, setStudentInterest] = useState('');
-  const [showInterestInput, setShowInterestInput] = useState(true);
-  const [apiKey, setApiKey] = useState('');
-  const [showApiInput, setShowApiInput] = useState(true);
 
   // Sample puzzle for initial display
   const samplePuzzle = {
     id: 'sample',
     title: "Sample Puzzle - Science",
     grid: [
-      ['E', 'N', 'E', 'R', 'G', 'Y'],
-      ['', '', '', '', '', ''],
-      ['', '', 'A', 'T', 'O', 'M'],
-      ['', '', '', '', '', ''],
-      ['C', 'E', 'L', 'L', '', ''],
+      ['E', 'N', 'E', 'R', 'G', 'Y', '', '', '', ''],
+      ['', '', 'V', '', '', '', '', '', '', ''],
+      ['', '', 'O', '', '', 'A', 'T', 'O', 'M', ''],
+      ['', '', 'L', '', '', '', '', '', '', ''],
+      ['C', 'E', 'L', 'L', '', '', '', '', '', ''],
+      ['', '', 'U', '', '', '', '', '', '', ''],
+      ['', '', 'T', '', '', '', '', '', '', ''],
+      ['', '', 'I', '', '', '', '', '', '', ''],
+      ['', '', 'O', '', '', '', '', '', '', ''],
+      ['', '', 'N', '', '', '', '', '', '', ''],
     ],
     clues: {
       across: [
         { number: 1, clue: "The capacity to do work", answer: "ENERGY", row: 0, col: 0 },
-        { number: 3, clue: "Smallest unit of matter", answer: "ATOM", row: 2, col: 2 },
+        { number: 3, clue: "Smallest unit of matter", answer: "ATOM", row: 2, col: 5 },
         { number: 5, clue: "Basic unit of life", answer: "CELL", row: 4, col: 0 },
       ],
-      down: []
+      down: [
+        { number: 2, clue: "Change in species over time", answer: "EVOLUTION", row: 0, col: 2 },
+      ]
     }
+  };
+  
+  const loadPuzzle = (puzzleData: any) => {
+    setCurrentPuzzle(puzzleData);
+    const rows = puzzleData.grid.length;
+    const cols = puzzleData.grid[0].length;
+    setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    setShowHints({});
+    setCompleted(false);
+    setSelectedCell(null);
   };
 
   useEffect(() => {
-    setCurrentPuzzle(samplePuzzle);
-    const rows = samplePuzzle.grid.length;
-    const cols = samplePuzzle.grid[0].length;
-    setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    loadPuzzle(samplePuzzle);
   }, []);
 
-  const generatePuzzleWithGemini = async () => {
-    if (!apiKey.trim()) {
-      alert('Please enter your Gemini API key first!');
-      return;
-    }
-
+  const generatePuzzleWithAI = async () => {
     if (!studentInterest.trim()) {
       alert('Please enter your interest or topic!');
       return;
     }
-
     setIsGenerating(true);
-
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `Create a crossword puzzle about "${studentInterest}" for educational purposes. 
-                
-IMPORTANT: Return ONLY valid JSON, no other text or markdown. The response must be parseable JSON.
-
-The JSON must have this exact structure:
-{
-  "title": "Puzzle title",
-  "grid": [
-    ["L", "E", "A", "R", "N"],
-    ["", "", "", "", ""],
-    ["", "C", "O", "D", "E"]
-  ],
-  "clues": {
-    "across": [
-      {
-        "number": 1,
-        "clue": "Acquire knowledge",
-        "answer": "LEARN",
-        "row": 0,
-        "col": 0
-      }
-    ],
-    "down": [
-      {
-        "number": 2,
-        "clue": "Programming instructions",
-        "answer": "CODE",
-        "row": 2,
-        "col": 1
-      }
-    ]
-  }
-}
-
-Requirements:
-- Create 4-6 words total
-- Each word should be 4-8 letters long
-- Grid should be rectangular (5-10 rows, 5-10 columns)
-- Use empty strings "" for black squares
-- Make clues educational and age-appropriate
-- Ensure all words intersect properly
-- Number clues sequentially starting from 1
-- Return ONLY the JSON object, nothing else`
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.9,
-              maxOutputTokens: 2048,
-            }
-          })
-        }
-      );
-
-      const data = await response.json();
-      
-      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-        let jsonText = data.candidates[0].content.parts[0].text;
-        
-        // Clean up the response
-        jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        
-        const puzzleData = JSON.parse(jsonText);
-        
-        // Validate puzzle structure
-        if (!puzzleData.grid || !puzzleData.clues || !puzzleData.title) {
-          throw new Error('Invalid puzzle structure');
-        }
-
-        const newPuzzle = {
-          id: Date.now(),
-          title: puzzleData.title,
-          grid: puzzleData.grid,
-          clues: puzzleData.clues
-        };
-
-        setCurrentPuzzle(newPuzzle);
-        const rows = newPuzzle.grid.length;
-        const cols = newPuzzle.grid[0].length;
-        setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
-        setShowHints({});
-        setCompleted(false);
-        setSelectedCell(null);
-        setShowInterestInput(false);
-        
+      const puzzleData = await generateCrosswordAction(studentInterest);
+      if (puzzleData) {
+        loadPuzzle({ id: Date.now(), ...puzzleData });
       } else {
-        throw new Error('No valid response from Gemini');
+        throw new Error('AI did not return a valid puzzle.');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error generating puzzle:', error);
-      alert('Failed to generate puzzle. Please check your API key and try again. Error: ' + error.message);
+      alert('Failed to generate puzzle. Please try again.');
     } finally {
       setIsGenerating(false);
     }
   };
 
   useEffect(() => {
-    if (!currentPuzzle || userGrid.length === 0) return;
+    if (!currentPuzzle || !userGrid.length) return;
     
     const isComplete = currentPuzzle.grid.every((row: string[], i: number) =>
-      row.every((cell, j) => cell === '' || (userGrid[i] && userGrid[i][j] && userGrid[i][j].toUpperCase() === cell))
+      row.every((cell, j) => cell === '' || (userGrid[i]?.[j]?.toUpperCase() === cell))
     );
     setCompleted(isComplete);
   }, [userGrid, currentPuzzle]);
@@ -283,40 +200,6 @@ Requirements:
           </h1>
           <p className="text-center text-gray-600 mb-6">Generate custom puzzles based on your interests!</p>
 
-          {/* API Key Input */}
-          {showApiInput && (
-            <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-              <h3 className="font-bold text-yellow-900 mb-2">🔑 Setup Required</h3>
-              <p className="text-sm text-yellow-800 mb-3">
-                Get your FREE Gemini API key from: <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-blue-600 underline">Google AI Studio</a>
-              </p>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Paste your Gemini API key here"
-                className="w-full p-2 border-2 border-yellow-400 rounded mb-2"
-              />
-              <button
-                onClick={() => setShowApiInput(false)}
-                disabled={!apiKey.trim()}
-                className="w-full px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                Save API Key
-              </button>
-            </div>
-          )}
-
-          {!showApiInput && (
-            <button
-              onClick={() => setShowApiInput(true)}
-              className="mb-4 text-sm text-indigo-600 hover:underline"
-            >
-              Change API Key
-            </button>
-          )}
-
-          {/* Interest Input */}
           <div className="mb-6 p-4 bg-indigo-50 border-2 border-indigo-300 rounded-lg">
             <h3 className="font-bold text-indigo-900 mb-2">What would you like to learn about?</h3>
             <div className="flex gap-2">
@@ -326,11 +209,11 @@ Requirements:
                 onChange={(e) => setStudentInterest(e.target.value)}
                 placeholder="e.g., Space, Animals, Sports, History..."
                 className="flex-1 p-2 border-2 border-indigo-300 rounded"
-                onKeyPress={(e) => e.key === 'Enter' && generatePuzzleWithGemini()}
+                onKeyPress={(e) => e.key === 'Enter' && generatePuzzleWithAI()}
               />
               <button
-                onClick={generatePuzzleWithGemini}
-                disabled={isGenerating || !apiKey.trim()}
+                onClick={generatePuzzleWithAI}
+                disabled={isGenerating}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isGenerating ? (
@@ -361,7 +244,7 @@ Requirements:
               <div className="inline-block bg-gray-100 p-2 sm:p-4 rounded-lg shadow-inner overflow-x-auto">
                 {currentPuzzle.grid.map((row: string[], i: number) => (
                   <div key={i} className="flex">
-                    {row.map((cell, j) => {
+                    {row.map((cell: string, j: number) => {
                       const clueNum = getClueNumber(i, j);
                       const isSelected = selectedCell?.row === i && selectedCell?.col === j;
                       const isCorrect = cell !== '' && userGrid[i] && userGrid[i][j] && userGrid[i][j].toUpperCase() === cell;
@@ -427,7 +310,7 @@ Requirements:
                     🎉 Congratulations! You've completed the puzzle!
                   </p>
                   <button
-                    onClick={() => setShowInterestInput(true)}
+                    onClick={generatePuzzleWithAI}
                     className="mt-3 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                   >
                     Generate Another Puzzle
