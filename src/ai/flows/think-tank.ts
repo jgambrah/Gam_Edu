@@ -211,20 +211,23 @@ const CrosswordPuzzleSchema = z.object({
 
 export async function generateCrosswordAction(topic: string) {
   const prompt = `
-  Create a crossword puzzle about "${topic}" for educational purposes.
+  You are a crossword puzzle generator. Create a crossword puzzle about "${topic}".
 
-  CRITICAL REQUIREMENTS:
-  1. Every clue MUST include: number, clue, answer, row, col
-  2. "row" and "col" indicate where the word STARTS in the grid (0-indexed)
-  3. Include both "across" and "down" arrays (use empty [] if no down clues)
+  STRICT REQUIREMENTS - YOU MUST FOLLOW EXACTLY:
   
-  Example of CORRECT format:
+  1. Return ONLY a JSON object, no other text
+  2. EVERY clue must have ALL 5 properties: number, clue, answer, row, col
+  3. "row" and "col" indicate where the word STARTS in the grid (0-indexed)
+  
+  4. Complete example response:
   {
     "title": "Science Puzzle",
     "grid": [
       ["C", "E", "L", "L"],
-      ["", "", "", ""],
-      ["A", "T", "O", "M"]
+      ["", "A", "", ""],
+      ["", "T", "", ""],
+      ["", "O", "", ""],
+      ["", "M", "", ""]
     ],
     "clues": {
       "across": [
@@ -234,57 +237,72 @@ export async function generateCrosswordAction(topic: string) {
           "answer": "CELL",
           "row": 0,
           "col": 0
-        },
-        {
-          "number": 3,
-          "clue": "Smallest unit of matter",
-          "answer": "ATOM",
-          "row": 2,
-          "col": 0
         }
       ],
       "down": [
         {
-          "number": 1,
-          "clue": "Element symbol Ca",
-          "answer": "CA",
-          "row": 0,
-          "col": 0
+          "number": 2,
+          "clue": "Smallest unit of matter",
+          "answer": "ATOM",
+          "row": 1,
+          "col": 1
         }
       ]
     }
   }
-
-  Rules:
-  - Grid uses uppercase letters and empty strings "" for black squares.
-  - Create 4-6 words (4-8 letters each).
-  - All clues must be educational.
-  - MUST include row and col for EVERY clue.
-  - Return ONLY valid JSON, no markdown.
+  
+  CREATE THE PUZZLE NOW with 4-6 words. Each clue MUST have: number, clue, answer, row, col.
   `;
 
   try {
-    const { output } = await ai.generate({
-        prompt,
-        output: { schema: CrosswordPuzzleSchema },
-        config: { temperature: 0.8, maxOutputTokens: 4096 },
+    // Use text generation instead of structured output
+    const { text } = await ai.generate({
+      prompt,
+      config: { temperature: 0.7, maxOutputTokens: 4096 },
     });
+
+    // Parse and validate manually
+    let jsonText = text.replace(/```json\n?/gi, '').replace(/```/g, '').trim();
     
-    if (!output) {
-      throw new Error('AI response did not return any parsable output.');
+    // Extract JSON if there's extra text
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonText = jsonMatch[0];
     }
-    
-    // Fallback in case AI still forgets the down property.
-    if (!output.clues.down) {
-        output.clues.down = [];
+
+    const output = JSON.parse(jsonText);
+
+    // Validate and fix structure
+    if (!output.clues) output.clues = { across: [], down: [] };
+    if (!output.clues.across) output.clues.across = [];
+    if (!output.clues.down) output.clues.down = [];
+
+    // Filter out incomplete clues
+    output.clues.across = output.clues.across.filter((clue: any) => 
+      clue.number !== undefined &&
+      clue.clue &&
+      clue.answer &&
+      clue.row !== undefined &&
+      clue.col !== undefined
+    );
+
+    output.clues.down = output.clues.down.filter((clue: any) => 
+      clue.number !== undefined &&
+      clue.clue &&
+      clue.answer &&
+      clue.row !== undefined &&
+      clue.col !== undefined
+    );
+
+    // Ensure we have at least some valid clues
+    if (output.clues.across.length === 0 && output.clues.down.length === 0) {
+      throw new Error('No valid clues generated');
     }
 
     return output;
 
   } catch (error) {
-    console.error("Error in generateCrosswordAction:", error);
-    // Re-throw the error so the client-side can handle it
-    throw error;
+    console.error('Puzzle generation failed:', error);
+    throw new Error('Failed to generate valid crossword puzzle. Please try again.');
   }
 }
-
