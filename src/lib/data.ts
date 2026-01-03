@@ -467,98 +467,6 @@ export const navItems: NavItem[] = [
   },
 ];
 
-export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
-  {
-    id: "science-2",
-    title: "Basic Science",
-    topic: "Science",
-    grid: [
-      ["C", "O", "M", "P", "O", "U", "N", "D"],
-      ["", "L", "", "", "", "", "", ""],
-      ["", "E", "", "", "", "", "", ""],
-      ["", "M", "", "", "", "", "", ""],
-      ["A", "T", "O", "M", "", "", "", ""],
-      ["", "", "", "", "", "", "", ""],
-    ],
-    clues: {
-      across: [
-        { number: 1, clue: "Two or more elements chemically bonded", answer: "COMPOUND", row: 0, col: 0 },
-        { number: 5, clue: "The smallest unit of an element", answer: "ATOM", row: 4, col: 0 }
-      ],
-      down: [
-        { number: 2, clue: "A fundamental substance", answer: "ELEMENT", row: 0, col: 1 }
-      ]
-    }
-  },
-  {
-    id: 'geo-1',
-    title: 'Geography Basics',
-    topic: 'Geography',
-    grid: [
-      ["R", "", "O", "", "E"],
-      ["I", "S", "L", "A", "N", "D"],
-      ["V", "", "C", "", "R"],
-      ["E", "", "E", "", "T"],
-      ["R", "", "A", "", "H"],
-      ["", "", "N", "", ""],
-    ],
-    clues: {
-      across: [
-        { number: 2, clue: 'Land surrounded by water', answer: 'ISLAND', row: 1, col: 1 },
-      ],
-      down: [
-        { number: 1, clue: 'A large natural stream of water', answer: 'RIVER', row: 0, col: 0 },
-        { number: 3, clue: 'A very large expanse of sea', answer: 'OCEAN', row: 0, col: 2 },
-        { number: 4, clue: 'The planet we live on', answer: 'EARTH', row: 0, col: 4 },
-      ],
-    },
-  },
-  {
-    id: 'bio-1',
-    title: 'Biology 101',
-    topic: 'Biology',
-    grid: [
-        ["", "C", "H", "L", "O", "R", "O", "P", "H", "Y", "L", "L"],
-        ["", "E", "", "", "A", "", "", "", "", "", "", ""],
-        ["P", "L", "A", "N", "T", "", "", "", "", "", "", ""],
-        ["", "L", "", "", "", "", "", "", "", "", "", ""],
-        ["", "", "", "D", "N", "A", "", "", "", "", "", ""],
-    ],
-    clues: {
-      across: [
-        { number: 1, clue: 'Green pigment in plants', answer: 'CHLOROPHYLL', row: 0, col: 1 },
-        { number: 3, clue: 'A living organism that makes its own food', answer: 'PLANT', row: 2, col: 0 },
-        { number: 4, clue: 'Genetic material', answer: 'DNA', row: 4, col: 3 },
-      ],
-      down: [
-        { number: 2, clue: 'The basic unit of life', answer: 'CELL', row: 0, col: 1 },
-      ],
-    },
-  },
-  {
-    id: 'tech-1',
-    title: 'Computer Basics',
-    topic: 'Technology',
-    grid: [
-      ["", "M", "O", "N", "I", "T", "O", "R"],
-      ["", "O", "", "", "", "", "", ""],
-      ["K", "E", "Y", "B", "O", "A", "R", "D"],
-      ["", "S", "", "", "", "", "", ""],
-      ["", "E", "", "", "", "", "", ""],
-    ],
-    clues: {
-      across: [
-        { number: 2, clue: 'A panel of keys for input', answer: 'KEYBOARD', row: 2, col: 0 }
-      ],
-      down: [
-        { number: 1, clue: 'A pointing device for computers', answer: 'MOUSE', row: 0, col: 1 }
-      ]
-    }
-  }
-];
-
-
-
 export const sampleAnnouncements = [
   {
     id: 1,
@@ -695,4 +603,85 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
 
+export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
+  {
+    id: "science-1",
+    title: "Basic Science",
+    topic: "Science",
+    grid: [
+      ["",  "A", "",  "",  "",  "",  "",  ""],
+      ["",  "T", "",  "",  "",  "",  "",  ""],
+      ["C", "O", "M", "P", "O", "U", "N", "D"],
+      ["",  "M", "",  "",  "",  "",  "",  ""],
+    ],
+    clues: {
+      across: [
+        { number: 1, clue: "Two or more elements chemically bonded", answer: "COMPOUND", row: 2, col: 0 },
+      ],
+      down: [
+        { number: 2, clue: "The smallest unit of an element", answer: "ATOM", row: 0, col: 1 },
+      ]
+    }
+  },
+  {
+    id: 'geo-1',
+    title: 'Geography Basics',
+    topic: 'Geography',
+    grid: [
+      ["R", "I", "V", "E", "R"],
+      ["", "", "", "", ""],
+      ["O", "C", "E", "A", "N"],
+      ["", "", "", "", ""],
+      ["E", "A", "R", "T", "H"],
+    ],
+    clues: {
+      across: [
+        { number: 1, clue: 'A large natural stream of water', answer: 'RIVER', row: 0, col: 0 },
+        { number: 3, clue: 'A large body of salt water', answer: 'OCEAN', row: 2, col: 0 },
+        { number: 5, clue: 'The planet we live on', answer: 'EARTH', row: 4, col: 0 },
+      ],
+      down: [],
+    },
+  },
+  {
+    id: 'bio-1',
+    title: 'Biology 101',
+    topic: 'Biology',
+    grid: [
+      ["P", "L", "A", "N", "T"],
+      ["", "", "", "", ""],
+      ["C", "E", "L", "L", ""],
+      ["", "", "", "", ""],
+      ["L", "E", "A", "F", ""],
+    ],
+    clues: {
+      across: [
+        { number: 1, clue: 'A living organism that photosynthesizes', answer: 'PLANT', row: 0, col: 0 },
+        { number: 3, clue: 'The basic unit of life', answer: 'CELL', row: 2, col: 0 },
+        { number: 5, clue: 'Part of a plant that makes food', answer: 'LEAF', row: 4, col: 0 },
+      ],
+      down: [],
+    },
+  },
+  {
+    id: 'tech-1',
+    title: 'Computer Basics',
+    topic: 'Technology',
+    grid: [
+      ["M", "O", "U", "S", "E"],
+      ["", "", "", "", ""],
+      ["C", "O", "D", "E", ""],
+      ["", "", "", "", ""],
+      ["D", "A", "T", "A", ""],
+    ],
+    clues: {
+      across: [
+        { number: 1, clue: 'You click with this device', answer: 'MOUSE', row: 0, col: 0 },
+        { number: 3, clue: 'The instructions for a computer', answer: 'CODE', row: 2, col: 0 },
+        { number: 5, clue: 'Information stored in a computer', answer: 'DATA', row: 4, col: 0 },
+      ],
+      down: [],
+    },
+  },
+];
     
