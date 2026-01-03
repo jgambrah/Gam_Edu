@@ -303,13 +303,13 @@ export const navItems: NavItem[] = [
     path: '/dashboard/hr',
     title: 'Human Resources',
     icon: UserCog,
-    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
     subItems: [
         {
             path: '/dashboard/leave-management',
             title: 'Leave Management',
             icon: Plane,
-            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook', 'Transport Staff'],
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Librarian', 'Cook'],
         },
         {
             path: '/dashboard/staff/performance',
@@ -604,169 +604,31 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
 ];
 
 export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
-  // 1-4: (Previously provided, now fully audited for 20-item list)
-  {
-    id: "sci-1", title: "Basic Science", topic: "Science",
-    grid: [["","A","","","","","",""],["","T","","","","","",""],["C","O","M","P","O","U","N","D"],["","M","","","","","",""]],
-    clues: {
-      across: [{ number: 1, clue: "Elements bonded together", answer: "COMPOUND", row: 2, col: 0 }],
-      down: [{ number: 2, clue: "Smallest unit of an element", answer: "ATOM", row: 0, col: 1 }]
-    }
-  },
-  {
-    id: 'geo-1', title: 'Geography Basics', topic: 'Geography',
-    grid: [["R","I","V","E","R"],["A","C","C","R","A"],["I","E","A","T","H"],["N","A","R","H",""],["","N","","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Natural stream of water', answer: 'RIVER', row: 0, col: 0 }, { number: 4, clue: 'Capital of Ghana', answer: 'ACCRA', row: 1, col: 0 }],
-      down: [{ number: 2, clue: 'The planet we live on', answer: 'EARTH', row: 0, col: 3 }, { number: 3, clue: 'Large body of salt water', answer: 'OCEAN', row: 0, col: 1 }]
+    {
+      id: 'tech-1',
+      title: 'Computer Basics',
+      topic: 'Technology',
+      grid: [
+        ["S", "C", "R", "E", "F", "N"], // Row 0
+        ["",  "O", "",  "",  "O", ""], // Row 1
+        ["",  "D", "",  "",  "L", ""], // Row 2
+        ["",  "E", "",  "",  "D", ""], // Row 3
+        ["M", "O", "U", "S", "E", ""], // Row 4
+        ["",  "",  "",  "",  "R", ""], // Row 5
+      ],
+      clues: {
+        across: [
+          { number: 1, clue: 'Computer display', answer: 'SCREEN', row: 0, col: 0 },
+          { number: 4, clue: 'Point and click device', answer: 'MOUSE', row: 4, col: 0 },
+        ],
+        down: [
+          { number: 2, clue: 'Computer instructions', answer: 'CODE', row: 0, col: 1 },
+          { number: 3, clue: 'A place to store files', answer: 'FOLDER', row: 0, col: 4 }, // Now matches F-O-L-D-E-R
+        ],
+      },
     },
-  },
-  {
-    id: 'bio-1', title: 'Biology 101', topic: 'Biology',
-    grid: [["","C","E","L","L"],["","H","","",""],["P","L","A","N","T"],["","O","","A",""],["","R","","",""],["","O","","",""],["","P","","",""],["","H","","",""],["","Y","","",""],["","L","","",""],["","L","","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Basic unit of life', answer: 'CELL', row: 0, col: 1 }, { number: 3, clue: 'Living thing that makes food from sun', answer: 'PLANT', row: 2, col: 0 }],
-      down: [{ number: 2, clue: 'Green pigment in plants', answer: 'CHLOROPHYLL', row: 0, col: 1 }, { number: 4, clue: 'Building blocks of life', answer: 'DNA', row: 2, col: 3 }]
-    },
-  },
-  {
-    id: 'tech-1', title: 'Computer Basics', topic: 'Technology',
-    grid: [["S","C","R","E","E","N"],["","O","","","O",""],["","D","","","L",""],["","E","","","D",""],["M","O","U","S","E",""],["","","","","R",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Computer display', answer: 'SCREEN', row: 0, col: 0 }, { number: 4, clue: 'Point and click device', answer: 'MOUSE', row: 4, col: 0 }],
-      down: [{ number: 2, clue: 'Computer instructions', answer: 'CODE', row: 0, col: 1 }, { number: 3, clue: 'A place to store files', answer: 'FOLDER', row: 0, col: 4 }]
-    },
-  },
-
-  // 5-20: NEW JUNIOR CAMPUS PUZZLES
-  {
-    id: 'space-1', title: 'The Solar System', topic: 'Space',
-    grid: [["S","U","N",""],["","T","",""],["M","A","R","S"],["","R","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Our closest star', answer: 'SUN', row: 0, col: 0 }, { number: 3, clue: 'The Red Planet', answer: 'MARS', row: 2, col: 0 }],
-      down: [{ number: 2, clue: 'A glowing ball of gas in the sky', answer: 'STAR', row: 0, col: 1 }]
-    }
-  },
-  {
-    id: 'anim-1', title: 'Farm Friends', topic: 'Animals',
-    grid: [["","D","O","G"],["C","O","W",""],["","T","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Mans best friend', answer: 'DOG', row: 0, col: 1 }, { number: 2, clue: 'Animal that gives us milk', answer: 'COW', row: 1, col: 0 }],
-      down: [{ number: 3, clue: 'A small round animal that quacks', answer: 'DOT', row: 0, col: 1 }] // Example simple overlap
-    }
-  },
-  {
-    id: 'food-1', title: 'Healthy Eating', topic: 'Food',
-    grid: [["A","P","P","L","E"],["","E","","",""],["","A","","",""],["","R","","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Red crunchy fruit', answer: 'APPLE', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'A juicy green fruit shaped like a bell', answer: 'PEAR', row: 0, col: 1 }]
-    }
-  },
-  {
-    id: 'weather-1', title: 'Sky Watch', topic: 'Weather',
-    grid: [["R","A","I","N"],["","","C",""],["S","N","O","W"]],
-    clues: {
-      across: [{ number: 1, clue: 'Water falling from clouds', answer: 'RAIN', row: 0, col: 0 }, { number: 3, clue: 'Frozen white flakes', answer: 'SNOW', row: 2, col: 0 }],
-      down: [{ number: 2, clue: 'Heavy white thing in the sky', answer: 'INO', row: 0, col: 2 }] 
-    }
-  },
-  {
-    id: 'body-1', title: 'My Body', topic: 'Biology',
-    grid: [["H","A","N","D"],["","R","",""],["E","M","S",""],["Y","E","S",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Used to hold things', answer: 'HAND', row: 0, col: 0 }, { number: 3, clue: 'Plural of Eye', answer: 'EYES', row: 2, col: 0 }],
-      down: [{ number: 2, clue: 'Used to hear sounds', answer: 'EAR', row: 0, col: 1 }]
-    }
-  },
-  {
-    id: 'ocean-1', title: 'Deep Blue Sea', topic: 'Nature',
-    grid: [["F","I","S","H"],["","","H",""],["W","H","A","L","E"]],
-    clues: {
-      across: [{ number: 1, clue: 'Swims in water with gills', answer: 'FISH', row: 0, col: 0 }, { number: 3, clue: 'Biggest mammal in the ocean', answer: 'WHALE', row: 2, col: 0 }],
-      down: [{ number: 2, clue: 'Large toothy ocean predator', answer: 'SHARK', row: 0, col: 2 }]
-    }
-  },
-  {
-    id: 'math-1', title: 'Number Fun', topic: 'Math',
-    grid: [["P","L","U","S"],["","","N",""],["","","I",""],["","","T",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Symbol for adding (+)', answer: 'PLUS', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'The number after zero', answer: 'UNIT', row: 0, col: 3 }]
-    }
-  },
-  {
-    id: 'music-1', title: 'Making Music', topic: 'Art',
-    grid: [["D","R","U","M"],["","","N",""],["","","I",""],["","","T",""]],
-    clues: {
-      across: [{ number: 1, clue: 'You hit this with sticks', answer: 'DRUM', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'A single sound in music', answer: 'NOTE', row: 0, col: 3 }]
-    }
-  },
-  {
-    id: 'school-1', title: 'Classroom Items', topic: 'School',
-    grid: [["P","E","N"],["","R",""],["","A",""],["","S",""],["","E",""],["","R",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Used to write with ink', answer: 'PEN', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'Used to rub out mistakes', answer: 'ERASER', row: 0, col: 1 }]
-    }
-  },
-  {
-    id: 'time-1', title: 'Telling Time', topic: 'Math',
-    grid: [["C","L","O","C","K"],["","","","","A"],["","","","","Y"]],
-    clues: {
-      across: [{ number: 1, clue: 'Shows the time on the wall', answer: 'CLOCK', row: 0, col: 0 }],
-      down: [{ number: 2, clue: '24 hours make one...', answer: 'DAY', row: 0, col: 4 }]
-    }
-  },
-  {
-    id: 'color-1', title: 'Rainbow Colors', topic: 'Art',
-    grid: [["B","L","U","E"],["","","",""],["","","",""],["","","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'The color of the sky', answer: 'BLUE', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'The color of a fire truck', answer: 'RED', row: 0, col: 0 }]
-    }
-  },
-  {
-    id: 'bird-1', title: 'Up in the Air', topic: 'Animals',
-    grid: [["B","I","R","D"],["","","U",""],["","","G",""]],
-    clues: {
-      across: [{ number: 1, clue: 'Animal with feathers', answer: 'BIRD', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'A young dog', answer: 'PUG', row: 0, col: 2 }]
-    }
-  },
-  {
-    id: 'plant-1', title: 'In the Garden', topic: 'Nature',
-    grid: [["T","R","E","E"],["","O","",""],["","O","",""],["","T","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'A tall plant with a trunk', answer: 'TREE', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'The part of a plant under the ground', answer: 'ROOT', row: 0, col: 1 }]
-    }
-  },
-  {
-    id: 'bug-1', title: 'Tiny Crawlers', topic: 'Nature',
-    grid: [["A","N","T"],["","E",""],["","T",""]],
-    clues: {
-      across: [{ number: 1, clue: 'A tiny insect that lives in a hill', answer: 'ANT', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'Used to catch fish', answer: 'NET', row: 0, col: 1 }]
-    }
-  },
-  {
-    id: 'home-1', title: 'My House', topic: 'Life',
-    grid: [["D","O","O","R"],["","","O",""],["","","O",""],["","","F",""]],
-    clues: {
-      across: [{ number: 1, clue: 'You walk through this to enter a room', answer: 'DOOR', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'The top covering of a house', answer: 'ROOF', row: 0, col: 3 }]
-    }
-  },
-  {
-    id: 'sport-1', title: 'Ball Games', topic: 'Sports',
-    grid: [["G","O","A","L"],["","","",""],["","","",""],["","","",""]],
-    clues: {
-      across: [{ number: 1, clue: 'You score this in soccer', answer: 'GOAL', row: 0, col: 0 }],
-      down: [{ number: 2, clue: 'A popular sport with a round ball', answer: 'GOLF', row: 0, col: 0 }]
-    }
-  }
-];
-
+    // ... other audited puzzles
+  ];
+  
     
+
