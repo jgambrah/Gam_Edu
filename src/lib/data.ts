@@ -473,10 +473,10 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Basic Science",
     topic: "Science",
     grid: [
-      ["", "A", "", ""],
-      ["", "T", "", ""],
+      ["", "A", "", "", "", "", ""],
+      ["", "T", "", "", "", "", ""],
       ["C", "O", "M", "P", "O", "U", "N", "D"],
-      ["", "M", "", ""],
+      ["", "M", "", "", "", "", ""],
     ],
     clues: {
       across: [
@@ -494,9 +494,9 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     grid: [
       ["R", "I", "V", "E", "R"],
       ["A", "C", "C", "R", "A"],
-      ["", "C", "", "T", ""],
-      ["", "E", "", "H", ""],
-      ["", "A", "", "", ""],
+      ["I", "E", "A", "T", "H"],
+      ["N", "A", "R", "H", ""],
+      ["", "N", "", "", ""],
     ],
     clues: {
       across: [
@@ -515,7 +515,7 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     topic: 'Biology',
     grid: [
       ["", "C", "E", "L", "L"],
-      ["", "H", "", "", "L"],
+      ["", "H", "", "", ""],
       ["P", "L", "A", "N", "T"],
       ["", "O", "", "A", ""],
       ["", "R", "", "", ""],
@@ -698,7 +698,3 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
-
-    
-
-    
