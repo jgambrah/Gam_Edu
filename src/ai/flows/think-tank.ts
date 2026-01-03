@@ -207,9 +207,9 @@ const CrosswordPuzzleSchema = z.object({
 export async function generateCrosswordAction(topic: string) {
   try {
     const prompt = `
-    Create a crossword puzzle about "${topic}" for educational purposes.
+    You are an expert puzzle creator. Create a complete, valid, and playable crossword puzzle about "${topic}" for educational purposes.
 
-    Your response MUST be a valid JSON object. Do NOT wrap it in markdown backticks or any other text.
+    Your response MUST be a valid JSON object. Do NOT wrap it in markdown backticks, preambles, or any other text.
     The JSON structure is extremely strict. It must be EXACTLY as follows:
 
     {
@@ -232,10 +232,10 @@ export async function generateCrosswordAction(topic: string) {
     }
 
     PUZZLE REQUIREMENTS:
-    1.  Words must be related to the topic: "${topic}".
+    1.  Words MUST be related to the topic: "${topic}".
     2.  Generate 4 to 6 words total.
     3.  Each word must be 4 to 8 letters long.
-    4.  Grid size must be between 5x5 and 10x10.
+    4.  The grid size must be between 5x5 and 10x10.
     5.  Use empty strings "" for black/empty squares.
     6.  All clues must be educational and age-appropriate.
     7.  The grid MUST correctly represent the intersection of all words.
@@ -244,7 +244,7 @@ export async function generateCrosswordAction(topic: string) {
     `;
 
     const { text } = await ai.generate({
-        model: 'googleai/gemini-1.5-flash',
+        model: 'googleai/gemini-1.5-flash-latest',
         prompt,
         config: { temperature: 0.8, maxOutputTokens: 2048 },
     });
