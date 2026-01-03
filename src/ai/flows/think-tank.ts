@@ -206,42 +206,45 @@ const CrosswordPuzzleSchema = z.object({
 
 export async function generateCrosswordAction(topic: string) {
   try {
-    const prompt = `Create a crossword puzzle about "${topic}" for educational purposes. 
-                
-    IMPORTANT: Return ONLY valid JSON, no other text or markdown. The response must be parseable JSON.
-    
-    The JSON must have this exact structure:
+    const prompt = `
+    Create a crossword puzzle about "${topic}" for educational purposes.
+
+    Your response MUST be a valid JSON object. Do NOT wrap it in markdown backticks or any other text.
+    The JSON structure is extremely strict. It must be EXACTLY as follows:
+
     {
-      "title": "Puzzle title",
+      "title": "Puzzle Title Here",
       "grid": [
         ["L", "E", "A", "R", "N", ""],
-        ["", "", "", "", "", "C"],
-        ["", "C", "O", "D", "E", "O"],
-        ["", "", "", "", "", "D"],
-        ["", "", "", "", "", "E"]
+        ["", "O", "", "", "", ""],
+        ["", "G", "", "", "", ""],
+        ["", "I", "", "", "", ""],
+        ["", "C", "", "", "", ""]
       ],
       "clues": {
         "across": [
-          { "number": 1, "clue": "Acquire knowledge", "answer": "LEARN", "row": 0, "col": 0 },
-          { "number": 2, "clue": "Programming instructions", "answer": "CODE", "row": 2, "col": 1 }
+          { "number": 1, "clue": "To gain knowledge", "answer": "LEARN", "row": 0, "col": 0 }
         ],
         "down": [
-          { "number": 3, "clue": "A sequence of instructions", "answer": "CODE", "row": 1, "col": 5 }
+          { "number": 2, "clue": "The science of reasoning", "answer": "LOGIC", "row": 0, "col": 1 }
         ]
       }
     }
-    
-    Requirements:
-    - Create 4-6 words total.
-    - Each word should be 4-8 letters long.
-    - Grid should be rectangular (5-10 rows, 5-10 columns).
-    - Use empty strings "" for black squares.
-    - Make clues educational and age-appropriate.
-    - Ensure all words intersect properly.
-    - Number clues sequentially starting from 1.
-    - Return ONLY the JSON object, nothing else.`;
+
+    PUZZLE REQUIREMENTS:
+    1.  Words must be related to the topic: "${topic}".
+    2.  Generate 4 to 6 words total.
+    3.  Each word must be 4 to 8 letters long.
+    4.  Grid size must be between 5x5 and 10x10.
+    5.  Use empty strings "" for black/empty squares.
+    6.  All clues must be educational and age-appropriate.
+    7.  The grid MUST correctly represent the intersection of all words.
+    8.  All clues in 'across' and 'down' must have a corresponding answer in the grid.
+    9.  The response must be ONLY the JSON object and nothing else.
+    `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',
       prompt,
       output: { schema: CrosswordPuzzleSchema },
       config: { temperature: 0.9, maxOutputTokens: 2048 },
