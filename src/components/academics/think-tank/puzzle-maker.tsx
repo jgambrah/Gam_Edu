@@ -9,10 +9,9 @@ import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // --- SERVER ACTION ---
-async function saveNewPuzzle(puzzleData: any) {
+async function saveNewPuzzle(puzzleData: any, toast: (options: any) => void) {
   // In a real app, this would be a server action.
   // For now, we keep it here to avoid build issues.
-  const { toast } = useToast();
   try {
     const { getFirestore } = await import('@/firebase');
     const firestore = getFirestore();
@@ -25,6 +24,11 @@ async function saveNewPuzzle(puzzleData: any) {
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error("Error adding puzzle: ", error);
+    toast({
+        variant: 'destructive',
+        title: 'Save Failed',
+        description: (error as Error).message
+    });
     return { success: false, error: (error as Error).message };
   }
 }
@@ -34,6 +38,7 @@ export function AddPuzzleForm() {
   const [title, setTitle] = useState('');
   const [topic, setTopic] = useState('');
   const [clueText, setClueText] = useState(''); // Format: 1, Across, Clue, Answer, Row, Col
+  const { toast } = useToast(); // Correctly call the hook inside the component
 
   const handleAdd = async () => {
     // Basic parser for demonstration
@@ -45,8 +50,10 @@ export function AddPuzzleForm() {
       grid: [[]] // You can use an AI flow to generate the grid from answers!
     };
 
-    const res = await saveNewPuzzle(puzzle);
-    if(res.success) alert("Puzzle Added!");
+    const res = await saveNewPuzzle(puzzle, toast);
+    if(res.success) {
+      toast({ title: "Puzzle Added!" });
+    }
   };
 
   return (
