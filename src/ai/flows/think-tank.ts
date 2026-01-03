@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -356,24 +357,7 @@ export async function generateCrosswordAction(topic: string) {
       
       } catch (error: any) {
         console.error('Puzzle generation failed:', error);
-        
-        // Return a working fallback puzzle instead of failing
-        console.log('Returning fallback puzzle');
-        return {
-          title: `${topic} Puzzle`,
-          grid: [
-            ["L", "E", "A", "R", "N"],
-            ["", "", "", "", ""],
-            ["I", "D", "E", "A", ""],
-          ],
-          clues: {
-            across: [
-              { number: 1, clue: "To gain knowledge", answer: "LEARN", row: 0, col: 0 },
-              { number: 3, clue: "A thought or concept", answer: "IDEA", row: 2, col: 0 }
-            ],
-            down: []
-          }
-        };
+        throw new Error(`Could not generate puzzle: ${error.message}. Please try a different topic.`);
       }
 }
     
@@ -381,3 +365,4 @@ export async function generateCrosswordAction(topic: string) {
     
 
     
+
