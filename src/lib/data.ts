@@ -488,57 +488,15 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     }
   },
   {
-    id: "animals-1",
-    title: "Animal Kingdom",
-    topic: "Animals",
-    grid: [
-      ["", "C", "A", "T", ""],
-      ["", "O", "", "", ""],
-      ["L", "I", "O", "N", ""],
-      ["", "D", "", "", ""],
-    ],
-    clues: {
-      across: [
-        { number: 1, clue: "A feline pet", answer: "CAT", row: 0, col: 1 },
-        { number: 3, clue: "King of the jungle", answer: "LION", row: 2, col: 0 }
-      ],
-      down: [
-        { number: 2, clue: "A farm animal that says 'moo'", answer: "COW", row: 0, col: 1 },
-        { number: 4, clue: "A big-eared animal that says 'hee-haw'", answer: "DONKEY", row: 2, col: 0 }
-      ]
-    }
-  },
-  {
-    id: "school-1",
-    title: "School Subjects",
-    topic: "School",
-    grid: [
-      ["M", "A", "T", "H"],
-      ["U", "", "R", ""],
-      ["S", "", "T", ""],
-      ["I", "", "", ""],
-      ["C", "", "", ""],
-    ],
-    clues: {
-      across: [
-        { number: 1, clue: "Subject with numbers", answer: "MATH", row: 0, col: 0 },
-      ],
-      down: [
-        { number: 2, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 0 },
-        { number: 3, clue: "Subject with painting", answer: "ART", row: 0, col: 2 },
-      ]
-    }
-  },
-  {
     id: 'geo-1',
     title: 'Geography Basics',
     topic: 'Geography',
     grid: [
-      ['R', 'I', 'V', 'E', 'R'],
-      ['', 'C', '', '', ''],
-      ['', 'C', '', '', ''],
-      ['', 'R', 'A', 'S', ''],
-      ['', 'A', '', '', ''],
+      ["R", "I", "V", "E", "R"],
+      ["A", "C", "C", "R", "A"],
+      ["", "C", "", "T", ""],
+      ["", "E", "", "H", ""],
+      ["", "A", "", "", ""],
     ],
     clues: {
       across: [
@@ -556,11 +514,17 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: 'Biology 101',
     topic: 'Biology',
     grid: [
-      ['', 'C', 'E', 'L', 'L'],
-      ['', 'L', '', '', 'E'],
-      ['P', 'L', 'A', 'N', 'T'],
-      ['', 'O', '', '', ''],
-      ['', 'R', '', '', ''],
+      ["", "C", "E", "L", "L"],
+      ["", "H", "", "", "L"],
+      ["P", "L", "A", "N", "T"],
+      ["", "O", "", "A", ""],
+      ["", "R", "", "", ""],
+      ["", "O", "", "", ""],
+      ["", "P", "", "", ""],
+      ["", "H", "", "", ""],
+      ["", "Y", "", "", ""],
+      ["", "L", "", "", ""],
+      ["", "L", "", "", ""],
     ],
     clues: {
       across: [
@@ -578,11 +542,12 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: 'Computer Basics',
     topic: 'Technology',
     grid: [
-      ['S', 'C', 'R', 'E', 'E', 'N'],
-      ['', 'O', '', '', '', ''],
-      ['', 'D', '', '', '', ''],
-      ['', 'E', '', '', '', ''],
-      ['M', 'O', 'U', 'S', 'E', ''],
+      ["S", "C", "R", "E", "E", "N"],
+      ["", "O", "", "", "O", ""],
+      ["", "D", "", "", "L", ""],
+      ["", "E", "", "", "D", ""],
+      ["M", "O", "U", "S", "E", ""],
+      ["", "", "", "", "R", ""],
     ],
     clues: {
       across: [
@@ -596,6 +561,7 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     },
   },
 ];
+
 
 export const sampleAnnouncements = [
   {
