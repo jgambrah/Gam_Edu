@@ -473,18 +473,19 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Basic Science",
     topic: "Science",
     grid: [
-      ["", "A", "", "", "", "", ""],
-      ["", "T", "", "", "", "", ""],
-      ["C", "O", "M", "P", "O", "U", "N", "D"],
-      ["", "M", "", "", "", "", ""],
+      ["A", "T", "O", "M"],
+      ["", "", "", ""],
+      ["C", "E", "L", "L"],
+      ["", "", "", ""],
+      ["D", "N", "A", ""],
     ],
     clues: {
       across: [
-        { number: 1, clue: "Two or more elements chemically bonded", answer: "COMPOUND", row: 2, col: 0 },
+        { number: 1, clue: "The smallest unit of an element", answer: "ATOM", row: 0, col: 0 },
+        { number: 3, clue: "The basic unit of life", answer: "CELL", row: 2, col: 0 },
+        { number: 5, clue: "Genetic material (abbr.)", answer: "DNA", row: 4, col: 0 },
       ],
-      down: [
-        { number: 2, clue: "The smallest unit of an element", answer: "ATOM", row: 0, col: 1 },
-      ]
+      down: []
     }
   },
   {
@@ -493,20 +494,18 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     topic: 'Geography',
     grid: [
       ["R", "I", "V", "E", "R"],
-      ["A", "C", "C", "R", "A"],
-      ["I", "E", "A", "T", "H"],
-      ["N", "A", "R", "H", ""],
-      ["", "N", "", "", ""],
+      ["", "", "", "", ""],
+      ["O", "C", "E", "A", "N"],
+      ["", "", "", "", ""],
+      ["E", "A", "R", "T", "H"],
     ],
     clues: {
       across: [
         { number: 1, clue: 'A large natural stream of water', answer: 'RIVER', row: 0, col: 0 },
-        { number: 4, clue: 'Capital of Ghana', answer: 'ACCRA', row: 1, col: 1 },
+        { number: 3, clue: 'A large body of salt water', answer: 'OCEAN', row: 2, col: 0 },
+        { number: 5, clue: 'The planet we live on', answer: 'EARTH', row: 4, col: 0 },
       ],
-      down: [
-        { number: 2, clue: 'The planet we live on', answer: 'EARTH', row: 0, col: 3 },
-        { number: 3, clue: 'A large body of salt water', answer: 'OCEAN', row: 0, col: 1 },
-      ],
+      down: [],
     },
   },
   {
@@ -514,27 +513,19 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: 'Biology 101',
     topic: 'Biology',
     grid: [
-      ["", "C", "E", "L", "L"],
-      ["", "H", "", "", ""],
       ["P", "L", "A", "N", "T"],
-      ["", "O", "", "A", ""],
-      ["", "R", "", "", ""],
-      ["", "O", "", "", ""],
-      ["", "P", "", "", ""],
-      ["", "H", "", "", ""],
-      ["", "Y", "", "", ""],
-      ["", "L", "", "", ""],
-      ["", "L", "", "", ""],
+      ["", "", "", "", ""],
+      ["C", "E", "L", "L", ""],
+      ["", "", "", "", ""],
+      ["L", "E", "A", "F", ""],
     ],
     clues: {
       across: [
-        { number: 1, clue: 'The basic unit of life', answer: 'CELL', row: 0, col: 1 },
-        { number: 3, clue: 'A living organism that photosynthesizes', answer: 'PLANT', row: 2, col: 0 },
+        { number: 1, clue: 'A living organism that photosynthesizes', answer: 'PLANT', row: 0, col: 0 },
+        { number: 3, clue: 'The basic unit of life', answer: 'CELL', row: 2, col: 0 },
+        { number: 5, clue: 'Part of a plant that makes food', answer: 'LEAF', row: 4, col: 0 },
       ],
-      down: [
-        { number: 2, clue: 'Green pigment in plants', answer: 'CHLOROPHYLL', row: 0, col: 1 },
-        { number: 4, clue: 'Genetic material', answer: 'DNA', row: 2, col: 3 },
-      ],
+      down: [],
     },
   },
   {
@@ -542,25 +533,23 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: 'Computer Basics',
     topic: 'Technology',
     grid: [
-      ["S", "C", "R", "E", "E", "N"],
-      ["", "O", "", "", "O", ""],
-      ["", "D", "", "", "L", ""],
-      ["", "E", "", "", "D", ""],
-      ["M", "O", "U", "S", "E", ""],
-      ["", "", "", "", "R", ""],
+      ["M", "O", "U", "S", "E"],
+      ["", "", "", "", ""],
+      ["C", "O", "D", "E", ""],
+      ["", "", "", "", ""],
+      ["D", "A", "T", "A", ""],
     ],
     clues: {
       across: [
-        { number: 1, clue: 'You look at this to see the computer display', answer: 'SCREEN', row: 0, col: 0 },
-        { number: 4, clue: 'You click with this device', answer: 'MOUSE', row: 4, col: 0 },
+        { number: 1, clue: 'You click with this device', answer: 'MOUSE', row: 0, col: 0 },
+        { number: 3, clue: 'The instructions for a computer', answer: 'CODE', row: 2, col: 0 },
+        { number: 5, clue: 'Information stored in a computer', answer: 'DATA', row: 4, col: 0 },
       ],
-      down: [
-        { number: 2, clue: 'The instructions for a computer', answer: 'CODE', row: 0, col: 1 },
-        { number: 3, clue: 'A place to store files', answer: 'FOLDER', row: 0, col: 4 },
-      ],
+      down: [],
     },
   },
 ];
+
 
 
 export const sampleAnnouncements = [
