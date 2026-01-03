@@ -473,17 +473,20 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Basic Science",
     topic: "Science",
     grid: [
-      ["A", "T", "O", "M"],
-      ["C", "", "", ""],
-      ["I", "", "", ""],
-      ["D", "", "", ""],
+      ["C", "O", "M", "P", "O", "U", "N", "D"],
+      ["", "L", "", "", "", "", "", ""],
+      ["", "E", "", "", "", "", "", ""],
+      ["", "M", "", "", "", "", "", ""],
+      ["A", "T", "O", "M", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
     ],
     clues: {
       across: [
-        { number: 1, clue: "The smallest unit of an element", answer: "ATOM", row: 0, col: 0 }
+        { number: 1, clue: "Two or more elements chemically bonded", answer: "COMPOUND", row: 0, col: 0 },
+        { number: 5, clue: "The smallest unit of an element", answer: "ATOM", row: 4, col: 0 }
       ],
       down: [
-        { number: 2, clue: "A substance with a pH less than 7", answer: "ACID", row: 0, col: 0 }
+        { number: 2, clue: "A fundamental substance", answer: "ELEMENT", row: 0, col: 1 }
       ]
     }
   },
@@ -492,19 +495,21 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: 'Geography Basics',
     topic: 'Geography',
     grid: [
-      ["", "L", "A", "N", "D"],
-      ["", "A", "", "", ""],
-      ["O", "C", "E", "A", "N"],
-      ["", "E", "", "", ""],
+      ["R", "", "O", "", "E"],
+      ["I", "S", "L", "A", "N", "D"],
+      ["V", "", "C", "", "R"],
+      ["E", "", "E", "", "T"],
+      ["R", "", "A", "", "H"],
+      ["", "", "N", "", ""],
     ],
     clues: {
       across: [
-        { number: 2, clue: "The solid part of the Earth's surface", answer: 'LAND', row: 0, col: 1 },
-        { number: 4, clue: 'A very large expanse of sea', answer: 'OCEAN', row: 2, col: 0 },
+        { number: 2, clue: 'Land surrounded by water', answer: 'ISLAND', row: 1, col: 1 },
       ],
       down: [
-        { number: 1, clue: 'A large area of water surrounded by land', answer: 'LAKE', row: 0, col: 1 },
-        { number: 3, clue: 'A large body of water conventionally regarded as a major part of the Ocean', answer: 'SEA', row: 2, col: 4 },
+        { number: 1, clue: 'A large natural stream of water', answer: 'RIVER', row: 0, col: 0 },
+        { number: 3, clue: 'A very large expanse of sea', answer: 'OCEAN', row: 0, col: 2 },
+        { number: 4, clue: 'The planet we live on', answer: 'EARTH', row: 0, col: 4 },
       ],
     },
   },
@@ -513,17 +518,17 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: 'Biology 101',
     topic: 'Biology',
     grid: [
-        ['', 'C', 'H', 'L', 'O', 'R', 'O', 'P', 'H', 'Y', 'L', 'L'],
-        ['', 'E', '', '', '', '', '', '', '', '', '', ''],
-        ['P', 'L', 'A', 'N', 'T', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', '', '', '', '', ''],
-        ['', 'D', 'N', 'A', '', '', '', '', '', '', '', ''],
+        ["", "C", "H", "L", "O", "R", "O", "P", "H", "Y", "L", "L"],
+        ["", "E", "", "", "A", "", "", "", "", "", "", ""],
+        ["P", "L", "A", "N", "T", "", "", "", "", "", "", ""],
+        ["", "L", "", "", "", "", "", "", "", "", "", ""],
+        ["", "", "", "D", "N", "A", "", "", "", "", "", ""],
     ],
     clues: {
       across: [
         { number: 1, clue: 'Green pigment in plants', answer: 'CHLOROPHYLL', row: 0, col: 1 },
         { number: 3, clue: 'A living organism that makes its own food', answer: 'PLANT', row: 2, col: 0 },
-        { number: 4, clue: 'Genetic material', answer: 'DNA', row: 4, col: 1 },
+        { number: 4, clue: 'Genetic material', answer: 'DNA', row: 4, col: 3 },
       ],
       down: [
         { number: 2, clue: 'The basic unit of life', answer: 'CELL', row: 0, col: 1 },
@@ -535,18 +540,18 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: 'Computer Basics',
     topic: 'Technology',
     grid: [
-      ["", "M", "O", "U", "S", "E"],
-      ["", "O", "", "", "", ""],
+      ["", "M", "O", "N", "I", "T", "O", "R"],
+      ["", "O", "", "", "", "", "", ""],
       ["K", "E", "Y", "B", "O", "A", "R", "D"],
-      ["", "Y", "", "", "", ""],
+      ["", "S", "", "", "", "", "", ""],
+      ["", "E", "", "", "", "", "", ""],
     ],
     clues: {
       across: [
-        { number: 1, clue: 'A pointing device for computers', answer: 'MOUSE', row: 0, col: 1 },
-        { number: 3, clue: 'A panel of keys for input', answer: 'KEYBOARD', row: 2, col: 0 },
+        { number: 2, clue: 'A panel of keys for input', answer: 'KEYBOARD', row: 2, col: 0 }
       ],
       down: [
-        { number: 2, clue: 'A screen that displays information', answer: 'MONITOR', row: 0, col: 1 },
+        { number: 1, clue: 'A pointing device for computers', answer: 'MOUSE', row: 0, col: 1 }
       ]
     }
   }
@@ -689,3 +694,5 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
+
+    
