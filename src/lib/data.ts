@@ -473,10 +473,10 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Basic Science",
     topic: "Science",
     grid: [
-      ["", "A", "", "", "", ""],
-      ["", "T", "", "", "", ""],
-      ["C", "O", "M", "P", "O", "UND"],
-      ["", "M", "", "", "", ""],
+      ["", "A", "", "", "", "", "", ""],
+      ["", "T", "", "", "", "", "", ""],
+      ["C", "O", "M", "P", "O", "U", "N", "D"],
+      ["", "M", "", "", "", "", "", ""],
     ],
     clues: {
       across: [
@@ -503,7 +503,7 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
       ],
       down: [
         { number: 1, clue: "A feline pet", answer: "CAT", row: 0, col: 3 },
-        { number: 2, clue: "King of the jungle", answer: "LION", row: 0, col: 1 }
+        { number: 3, clue: "King of the jungle", answer: "LION", row: 0, col: 1 }
       ]
     }
   },
@@ -512,24 +512,23 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "School Subjects",
     topic: "School",
     grid: [
-      ["M", "A", "T", "H", ""],
-      ["U", "", "", "", ""],
-      ["S", "", "R", "", ""],
-      ["I", "", "T", "", ""],
-      ["C", "", "", "", ""],
+      ["M", "A", "T", "H"],
+      ["U", "", "R", ""],
+      ["S", "", "T", ""],
+      ["I", "", "", ""],
+      ["C", "", "", ""],
     ],
     clues: {
       across: [
         { number: 1, clue: "Subject with numbers", answer: "MATH", row: 0, col: 0 },
       ],
       down: [
-        { number: 1, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 0 },
-        { number: 2, clue: "Subject with painting", answer: "ART", row: 0, col: 2 },
+        { number: 2, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 0 },
+        { number: 3, clue: "Subject with painting", answer: "ART", row: 0, col: 2 },
       ]
     }
   },
 ];
-
 
 export const sampleAnnouncements = [
   {
