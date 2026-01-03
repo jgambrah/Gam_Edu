@@ -84,12 +84,12 @@ const CrosswordPuzzle = () => {
   }, [toast, loadPuzzle, puzzles]);
   
   useEffect(() => {
-    // Load first puzzle from library, or generate if library is empty
+    // FIX: Add a guard to ensure puzzles is not undefined before trying to access it.
     if (!isLoadingPuzzles) {
       if (puzzles && puzzles.length > 0) {
         loadPuzzle(puzzles[0]);
         setIsGenerating(false);
-      } else {
+      } else if (puzzles) { // Puzzles is loaded but empty
         generatePuzzleWithAI('Science');
       }
     }
