@@ -218,6 +218,7 @@ export async function generateCrosswordAction(topic: string) {
     6.  All clues must be educational and age-appropriate.
     7.  The grid MUST correctly represent the intersection of all words.
     8.  All clues in 'across' and 'down' must have a corresponding answer in the grid.
+    9.  IMPORTANT: Both the 'across' and 'down' arrays must be present in the 'clues' object, even if one of them is an empty array [].
     `;
 
     const { output } = await ai.generate({
@@ -239,8 +240,4 @@ export async function generateCrosswordAction(topic: string) {
     throw error;
   }
 }
-
-    
-
-
 
