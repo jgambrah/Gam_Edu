@@ -186,7 +186,7 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
   }
 }
 
-// --- NEW: CROSSWORD PUZZLE GENERATION ACTION ---
+// --- NEW: CROSSWORD PUZZLE GENERATION ACTION (ROBUST VERSION) ---
 const CrosswordClueSchema = z.object({
   number: z.number(),
   clue: z.string(),
@@ -243,21 +243,44 @@ export async function generateCrosswordAction(topic: string) {
     9.  The response must be ONLY the JSON object and nothing else.
     `;
 
-    const { output } = await ai.generate({
-      model: 'googleai/gemini-2.5-flash',
-      prompt,
-      output: { schema: CrosswordPuzzleSchema },
-      config: { temperature: 0.9, maxOutputTokens: 2048 },
+    const { text } = await ai.generate({
+        model: 'googleai/gemini-1.5-flash',
+        prompt,
+        config: { temperature: 0.8, maxOutputTokens: 2048 },
     });
     
-    if (!output) {
-      throw new Error('AI did not return a valid puzzle structure.');
+    // 1. Robustly extract JSON from the raw text response
+    let jsonString = text;
+    const jsonStartIndex = jsonString.indexOf('{');
+    const jsonEndIndex = jsonString.lastIndexOf('}');
+
+    if (jsonStartIndex === -1 || jsonEndIndex === -1 || jsonEndIndex < jsonStartIndex) {
+        throw new Error('AI response did not contain a valid JSON object.');
     }
-    
-    return output;
+    jsonString = jsonString.substring(jsonStartIndex, jsonEndIndex + 1);
+
+    // 2. Safely parse the extracted JSON
+    let puzzleData;
+    try {
+        puzzleData = JSON.parse(jsonString);
+    } catch (parseError: any) {
+        console.error("JSON parsing error:", parseError);
+        throw new Error(`AI returned malformed JSON: ${parseError.message}`);
+    }
+
+    // 3. Validate the structure of the parsed data
+    const validationResult = CrosswordPuzzleSchema.safeParse(puzzleData);
+    if (!validationResult.success) {
+        console.error("AI Response Validation Failed:", validationResult.error);
+        throw new Error(`AI response did not match the required schema: ${validationResult.error.errors.map(e => e.path.join('.') + ' ' + e.message).join(', ')}`);
+    }
+
+    // If all checks pass, return the validated data
+    return validationResult.data;
+
   } catch (error) {
     console.error("Error in generateCrosswordAction:", error);
-    // Return null or re-throw to be handled by the client
-    return null;
+    // Re-throw the error so the client-side can handle it
+    throw error;
   }
 }
