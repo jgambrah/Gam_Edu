@@ -21,7 +21,7 @@ const CrosswordPuzzle = () => {
   const [direction, setDirection] = useState<'across' | 'down'>('across');
   const [showHints, setShowHints] = useState<Record<number, boolean>>({});
   const [completed, setCompleted] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [isMakerOpen, setIsMakerOpen] = useState(false);
   
   const { role } = useRole();
@@ -34,10 +34,10 @@ const CrosswordPuzzle = () => {
     () => firestore ? query(collection(firestore, 'junior_puzzles'), orderBy('createdAt', 'desc')) : null,
     [firestore]
   );
-  const { data: puzzles, isLoading: isLoadingPuzzles } = useCollection(puzzlesQuery);
+  const { data: puzzles, isLoading: isLoadingPuzzles, forceRefetch } = useCollection(puzzlesQuery);
 
   const loadPuzzle = useCallback((puzzleData: any) => {
-    if (!puzzleData || !puzzleData.grid || !Array.isArray(puzzleData.grid) || puzzleData.grid.length === 0) {
+    if (!puzzleData || !puzzleData.grid || !Array.isArray(puzzleData.grid)) {
         console.error("Invalid puzzle data provided to loadPuzzle", puzzleData);
         toast({
           variant: 'destructive',
@@ -45,6 +45,10 @@ const CrosswordPuzzle = () => {
           description: 'Could not load the crossword puzzle. Please try another one.',
         });
         return;
+    }
+    // Added a check for empty grid
+    if (puzzleData.grid.length === 0) {
+        puzzleData.grid = [[]]; // Ensure grid is at least an empty 2D array
     }
     setCurrentPuzzle(puzzleData);
     const rows = puzzleData.grid.length;
@@ -83,17 +87,24 @@ const CrosswordPuzzle = () => {
     }
   }, [toast, loadPuzzle, puzzles]);
   
-  useEffect(() => {
-    // FIX: Add a guard to ensure puzzles is not undefined before trying to access it.
+   // --- STABLE LOADING LOGIC ---
+   useEffect(() => {
+    // If a puzzle is already loaded, do nothing.
+    if (currentPuzzle) return;
+
+    // If puzzles are done loading from Firestore...
     if (!isLoadingPuzzles) {
-      if (puzzles && puzzles.length > 0) {
-        loadPuzzle(puzzles[0]);
-        setIsGenerating(false);
-      } else if (puzzles) { // Puzzles is loaded but empty
-        generatePuzzleWithAI('Science');
-      }
+        // ...and we have puzzles, load the first one.
+        if (puzzles && puzzles.length > 0) {
+            loadPuzzle(puzzles[0]);
+        } 
+        // ...and the collection is empty, generate a new one via AI.
+        else if (puzzles) { 
+            generatePuzzleWithAI('Science');
+        }
     }
-  }, [puzzles, isLoadingPuzzles, loadPuzzle, generatePuzzleWithAI]);
+    // This effect runs when isLoadingPuzzles changes, or when puzzles data arrives.
+  }, [isLoadingPuzzles, puzzles, loadPuzzle, generatePuzzleWithAI, currentPuzzle]);
 
 
   // Check if puzzle is complete
@@ -214,7 +225,7 @@ const CrosswordPuzzle = () => {
     return null;
   };
   
-  if (isGenerating || isLoadingPuzzles || !currentPuzzle) {
+  if (isLoadingPuzzles || !currentPuzzle) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] bg-slate-50 rounded-lg">
           <Loader2 size={48} className="animate-spin text-indigo-500 mb-4" />
