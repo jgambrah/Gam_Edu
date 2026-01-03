@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -10,8 +9,9 @@ import { Button } from '@/components/ui/button';
 const CrosswordPuzzle = () => {
   const [currentPuzzle, setCurrentPuzzle] = useState<any>(null);
   const [userGrid, setUserGrid] = useState<string[][]>([]);
+  const [cellStatus, setCellStatus] = useState<string[][]>([]);
   const [selectedCell, setSelectedCell] = useState<{row: number, col: number} | null>(null);
-  const [direction, setDirection] = useState('across');
+  const [direction, setDirection] = useState<'across' | 'down'>('across');
   const [showHints, setShowHints] = useState<Record<number, boolean>>({});
   const [completed, setCompleted] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -50,6 +50,7 @@ const CrosswordPuzzle = () => {
     const rows = puzzleData.grid.length;
     const cols = puzzleData.grid[0].length;
     setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
     setShowHints({});
     setCompleted(false);
     setSelectedCell(null);
@@ -107,74 +108,66 @@ const CrosswordPuzzle = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, row: number, col: number) => {
+    e.preventDefault();
     if (currentPuzzle.grid[row][col] === '') return;
 
+    const newGrid = userGrid.map(r => [...r]);
+    const newStatusGrid = cellStatus.map(r => [...r]);
+
     if (e.key === 'Backspace') {
-      const newGrid = userGrid.map(r => [...r]);
       newGrid[row][col] = '';
+      newStatusGrid[row][col] = '';
       setUserGrid(newGrid);
+      setCellStatus(newStatusGrid);
+
+      // Move to previous cell
+      if (direction === 'across' && col > 0) {
+        let prevCol = col - 1;
+        while (prevCol >= 0 && currentPuzzle.grid[row][prevCol] === '') prevCol--;
+        if (prevCol >= 0) setSelectedCell({ row, col: prevCol });
+      } else if (direction === 'down' && row > 0) {
+        let prevRow = row - 1;
+        while (prevRow >= 0 && currentPuzzle.grid[prevRow][col] === '') prevRow--;
+        if (prevRow >= 0) setSelectedCell({ row: prevRow, col });
+      }
       return;
     }
 
     if (/^[a-zA-Z]$/.test(e.key)) {
-      const newGrid = userGrid.map(r => [...r]);
       newGrid[row][col] = e.key.toUpperCase();
+      newStatusGrid[row][col] = ''; // Reset status on new input
       setUserGrid(newGrid);
+      setCellStatus(newStatusGrid);
 
       // Move to next cell
       if (direction === 'across' && col < cols - 1) {
         let nextCol = col + 1;
-        while (nextCol < cols && currentPuzzle.grid[row][nextCol] === '') {
-          nextCol++;
-        }
+        while (nextCol < cols && currentPuzzle.grid[row][nextCol] === '') nextCol++;
         if (nextCol < cols) setSelectedCell({ row, col: nextCol });
       } else if (direction === 'down' && row < rows - 1) {
         let nextRow = row + 1;
-        while (nextRow < rows && currentPuzzle.grid[nextRow][col] === '') {
-          nextRow++;
-        }
+        while (nextRow < rows && currentPuzzle.grid[nextRow][col] === '') nextRow++;
         if (nextRow < rows) setSelectedCell({ row: nextRow, col });
       }
-    }
-
-    if (e.key === 'ArrowRight' && col < cols - 1) {
-      let nextCol = col + 1;
-      while (nextCol < cols && currentPuzzle.grid[row][nextCol] === '') nextCol++;
-      if (nextCol < cols) setSelectedCell({ row, col: nextCol });
-    }
-    if (e.key === 'ArrowLeft' && col > 0) {
-      let nextCol = col - 1;
-      while (nextCol >= 0 && currentPuzzle.grid[row][nextCol] === '') nextCol--;
-      if (nextCol >= 0) setSelectedCell({ row, col: nextCol });
-    }
-    if (e.key === 'ArrowDown' && row < rows - 1) {
-      let nextRow = row + 1;
-      while (nextRow < rows && currentPuzzle.grid[nextRow][col] === '') nextRow++;
-      if (nextRow < rows) setSelectedCell({ row: nextRow, col });
-    }
-    if (e.key === 'ArrowUp' && row > 0) {
-      let nextRow = row - 1;
-      while (nextRow >= 0 && currentPuzzle.grid[nextRow][col] === '') nextRow--;
-      if (nextRow >= 0) setSelectedCell({ row: nextRow, col });
     }
   };
 
   const handleReset = () => {
     setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
     setShowHints({});
     setCompleted(false);
   };
 
   const handleCheckAnswers = () => {
-    const newGrid = userGrid.map((row, i) =>
+    const newStatusGrid = userGrid.map((row, i) =>
       row.map((cell, j) => {
-        if (currentPuzzle.grid[i][j] !== '' && cell && cell.toUpperCase() === currentPuzzle.grid[i][j]) {
-          return cell;
-        }
-        return '';
+        if (currentPuzzle.grid[i][j] === '') return '';
+        if (!cell) return ''; // Unanswered
+        return cell.toUpperCase() === currentPuzzle.grid[i][j] ? 'correct' : 'incorrect';
       })
     );
-    setUserGrid(newGrid);
+    setCellStatus(newStatusGrid);
   };
 
   const toggleHint = (clueNumber: number) => {
@@ -182,12 +175,12 @@ const CrosswordPuzzle = () => {
   };
 
   const getClueNumber = (row: number, col: number) => {
-    for (const clue of currentPuzzle.clues.across) {
-      if (clue.row === row && clue.col === col) return clue.number;
-    }
-    for (const clue of currentPuzzle.clues.down) {
-      if (clue.row === row && clue.col === col) return clue.number;
-    }
+    const acrossClue = currentPuzzle.clues.across.find((clue: any) => clue.row === row && clue.col === col);
+    if (acrossClue) return acrossClue.number;
+
+    const downClue = currentPuzzle.clues.down.find((clue: any) => clue.row === row && clue.col === col);
+    if (downClue) return downClue.number;
+    
     return null;
   };
 
@@ -239,46 +232,39 @@ const CrosswordPuzzle = () => {
           </p>
 
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Crossword Grid */}
             <div className="flex flex-col items-center">
               <div className="inline-block bg-gray-100 p-2 sm:p-4 rounded-lg shadow-inner overflow-x-auto">
-                {currentPuzzle.grid.map((row: string[], i: number) => (
+                {userGrid.map((row: string[], i: number) => (
                   <div key={i} className="flex">
-                    {row.map((cell: string, j: number) => {
+                    {currentPuzzle.grid[i].map((cell: string, j: number) => {
                       const clueNum = getClueNumber(i, j);
                       const isSelected = selectedCell?.row === i && selectedCell?.col === j;
-                      const isCorrect = cell !== '' && userGrid[i] && userGrid[i][j] && userGrid[i][j].toUpperCase() === cell;
-                      
+                      const status = cellStatus[i]?.[j];
+
+                      let cellClass = 'bg-white border-gray-300 cursor-pointer hover:bg-blue-50';
+                      if (cell === '') cellClass = 'bg-gray-800 border-gray-900';
+                      else if (isSelected) cellClass = 'bg-yellow-200 border-yellow-400 border-2';
+                      else if (status === 'correct') cellClass = 'bg-green-100 border-green-300';
+                      else if (status === 'incorrect') cellClass = 'bg-red-100 border-red-300';
+
                       return (
                         <div
                           key={j}
-                          className={`w-8 h-8 sm:w-10 sm:h-10 border relative ${
-                            cell === '' 
-                              ? 'bg-gray-800 border-gray-900' 
-                              : isSelected
-                              ? 'bg-yellow-200 border-yellow-400 border-2'
-                              : isCorrect
-                              ? 'bg-green-50 border-gray-300'
-                              : 'bg-white border-gray-300 cursor-pointer hover:bg-blue-50'
-                          }`}
+                          className={`w-8 h-8 sm:w-10 sm:h-10 border relative ${cellClass}`}
                           onClick={() => handleCellClick(i, j)}
                         >
                           {clueNum && (
-                            <span className="absolute top-0 left-0.5 text-xs font-bold text-indigo-600">
+                            <span className="absolute top-0 left-0.5 text-xs font-bold text-indigo-600 select-none">
                               {clueNum}
                             </span>
                           )}
-                          {cell !== '' && (
-                            <input
-                              type="text"
-                              maxLength={1}
-                              value={(userGrid[i] && userGrid[i][j]) || ''}
-                              onKeyDown={(e) => handleKeyDown(e, i, j)}
-                              onFocus={() => setSelectedCell({ row: i, col: j })}
-                              className="w-full h-full text-center text-base sm:text-lg font-semibold uppercase bg-transparent outline-none"
-                              readOnly
-                            />
-                          )}
+                          <div
+                            onKeyDown={(e) => handleKeyDown(e, i, j)}
+                            tabIndex={0}
+                            className="w-full h-full flex items-center justify-center text-base sm:text-lg font-semibold uppercase outline-none"
+                          >
+                           {userGrid[i]?.[j]}
+                          </div>
                         </div>
                       );
                     })}
@@ -286,7 +272,6 @@ const CrosswordPuzzle = () => {
                 ))}
               </div>
 
-              {/* Controls */}
               <div className="flex flex-wrap gap-2 sm:gap-3 mt-6 justify-center">
                 <button
                   onClick={handleCheckAnswers}
@@ -309,7 +294,7 @@ const CrosswordPuzzle = () => {
                   <p className="text-green-800 font-bold text-center text-sm sm:text-base">
                     🎉 Congratulations! You've completed the puzzle!
                   </p>
-                  <button
+                   <button
                     onClick={generatePuzzleWithAI}
                     className="mt-3 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                   >
@@ -319,7 +304,6 @@ const CrosswordPuzzle = () => {
               )}
             </div>
 
-            {/* Clues */}
             <div className="space-y-6">
               {currentPuzzle.clues.across.length > 0 && (
                 <div>
