@@ -16,21 +16,11 @@ const CrosswordPuzzle = () => {
   const [showHints, setShowHints] = useState<Record<number, boolean>>({});
   const [completed, setCompleted] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [studentInterest, setStudentInterest] = useState('');
+  const [topicInput, setTopicInput] = useState('');
+  const [studentInterest, setStudentInterest] = useState('Science');
 
-  const loadPuzzle = (puzzleData: any) => {
-    setCurrentPuzzle(puzzleData);
-    const rows = puzzleData.grid.length;
-    const cols = puzzleData.grid[0].length;
-    setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
-    setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
-    setShowHints({});
-    setCompleted(false);
-    setSelectedCell(null);
-  };
-
-  const generatePuzzleWithAI = useCallback(async (topic?: string) => {
-    const interest = topic || studentInterest || "General Knowledge";
+  const generatePuzzleWithAI = useCallback(async () => {
+    const interest = topicInput || studentInterest || "General Knowledge";
     setIsGenerating(true);
     try {
       const puzzleData = await generateCrosswordAction(interest);
@@ -45,12 +35,24 @@ const CrosswordPuzzle = () => {
     } finally {
       setIsGenerating(false);
     }
-  }, [studentInterest]);
+  }, [topicInput, studentInterest]);
 
+  const loadPuzzle = (puzzleData: any) => {
+    setCurrentPuzzle(puzzleData);
+    if (!puzzleData || !puzzleData.grid) return;
+    const rows = puzzleData.grid.length;
+    const cols = puzzleData.grid[0]?.length || 0;
+    setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    setShowHints({});
+    setCompleted(false);
+    setSelectedCell(null);
+  };
+  
   // Generate a default puzzle on initial load
   useEffect(() => {
-    generatePuzzleWithAI("Science");
-  }, [generatePuzzleWithAI]);
+    generatePuzzleWithAI();
+  }, []);
 
 
   // Check if puzzle is complete
@@ -64,7 +66,9 @@ const CrosswordPuzzle = () => {
   }, [userGrid, currentPuzzle]);
 
   const isPlayableCell = (row: number, col: number) => {
-    if (!currentPuzzle || !currentPuzzle.clues) return false;
+    if (!currentPuzzle || !currentPuzzle.grid || !currentPuzzle.grid[row] || currentPuzzle.grid[row][col] === '') {
+        return false;
+    }
     const isAcross = currentPuzzle.clues.across.some((clue: any) => 
         row === clue.row && col >= clue.col && col < clue.col + clue.answer.length
     );
@@ -86,10 +90,12 @@ const CrosswordPuzzle = () => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, row: number, col: number) => {
     e.preventDefault();
-    if (!isPlayableCell(row, col)) return;
+    if (!currentPuzzle || !isPlayableCell(row, col)) return;
 
     const newGrid = userGrid.map(r => [...r]);
     const newStatusGrid = cellStatus.map(r => [...r]);
+    const rows = currentPuzzle.grid.length;
+    const cols = currentPuzzle.grid[0].length;
 
     if (e.key === 'Backspace') {
       newGrid[row][col] = '';
@@ -155,6 +161,7 @@ const CrosswordPuzzle = () => {
   };
 
   const getClueNumber = (row: number, col: number) => {
+    if(!currentPuzzle?.clues) return null;
     const acrossClue = currentPuzzle.clues.across.find((clue: any) => clue.row === row && clue.col === col);
     if (acrossClue) return acrossClue.number;
 
@@ -190,14 +197,14 @@ const CrosswordPuzzle = () => {
             <div className="flex gap-2">
               <input
                 type="text"
-                value={studentInterest}
-                onChange={(e) => setStudentInterest(e.target.value)}
+                value={topicInput}
+                onChange={(e) => setTopicInput(e.target.value)}
                 placeholder="e.g., Space, Animals, Sports, History..."
                 className="flex-1 p-2 border-2 border-indigo-300 rounded"
                 onKeyPress={(e) => e.key === 'Enter' && generatePuzzleWithAI()}
               />
               <button
-                onClick={() => generatePuzzleWithAI()}
+                onClick={() => { setStudentInterest(topicInput); generatePuzzleWithAI(); }}
                 disabled={isGenerating}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
