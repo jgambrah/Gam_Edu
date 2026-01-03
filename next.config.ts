@@ -19,7 +19,8 @@ const nextConfig: NextConfig = {
                 tls: false, 
                 net: false,
                 child_process: false,
-                http2: false, // Add this line to fix the build error
+                http2: false,
+                dns: false,
             };
         }
         return config;
