@@ -1,9 +1,11 @@
 
-'use server';
+'use client';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '@/firebase'; // Use the shared firestore instance
 
 // --- Text-to-Speech Action ---
 const TTSInputSchema = z.object({
@@ -159,6 +161,24 @@ export const generateLessonImageAction = async (prompt: string): Promise<{ succe
     }
 };
 
+// --- NEW PUZZLE ACTION ---
+export async function saveNewPuzzle(puzzleData: any) {
+  if (!firestore) {
+    return { success: false, error: "Firestore is not initialized." };
+  }
+  try {
+    const docRef = await addDoc(collection(firestore, 'junior_puzzles'), {
+      ...puzzleData,
+      createdAt: serverTimestamp(),
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error("Error adding puzzle: ", error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+
 // DUMMY/PLACEHOLDER ACTIONS
 export async function generateArtDetailsAction(input: { item: string, type: 'shapes' | 'textures' }): Promise<any> { return { success: true, data: { description: 'Generated description', parts: ['Circle'], prompt: 'Generated prompt' } }; }
 export async function generateNumeracyTask(input: { task: string, topic: string }): Promise<any> { return { success: true, data: { question: `What is 1+1?`, answer: 2, options: [1,2,3] } }; }
@@ -179,4 +199,3 @@ export async function generateDietExample(topic: string): Promise<any> { return 
 export async function generateDentistExample(topic: string): Promise<any> { return { success: true, data: { task: 'Flossing', instruction: 'Floss between your teeth' } }; }
 export async function generateHealthScenario(topic: string): Promise<any> { return { success: true, data: { state: 'Energized', feeling: 'I want to run!', care: 'Play outside!' } }; }
 export async function generateConceptDetails(name: string, type: 'colors' | 'shapes' | 'feelings' | 'sizes'): Promise<any> { return { success: true, data: { prompt: `A prompt for ${name}`, explanation: 'An explanation', meta: '#FF0000' } }; }
-

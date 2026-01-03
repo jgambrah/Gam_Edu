@@ -2,11 +2,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Check, RotateCcw, Lightbulb, Sparkles, RefreshCw } from 'lucide-react';
+import { Check, RotateCcw, Lightbulb, Sparkles, RefreshCw, PlusCircle } from 'lucide-react';
 import { generateCrosswordAction } from '@/ai/flows/think-tank';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useRole } from '@/context/role-context';
+import { PuzzleMaker } from './puzzle-maker';
 
 const CrosswordPuzzle = () => {
   const [currentPuzzle, setCurrentPuzzle] = useState<any>(null);
@@ -16,17 +19,20 @@ const CrosswordPuzzle = () => {
   const [direction, setDirection] = useState<'across' | 'down'>('across');
   const [showHints, setShowHints] = useState<Record<number, boolean>>({});
   const [completed, setCompleted] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(true); // Start true for initial load
-  const [topicInput, setTopicInput] = useState('');
+  const [isGenerating, setIsGenerating] = useState(true);
+  const [isMakerOpen, setIsMakerOpen] = useState(false);
+  
+  const { role } = useRole();
   const { toast } = useToast();
+  
+  const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
   const generatePuzzleWithAI = useCallback(async (topic?: string) => {
     const interest = topic || "General Knowledge";
     setIsGenerating(true);
     setCompleted(false);
-    setCurrentPuzzle(null); // Clear old puzzle while generating
+    setCurrentPuzzle(null); 
     try {
-      // The action now just returns a random puzzle, the topic is for show
       const puzzleData = await generateCrosswordAction(interest);
       if (puzzleData && puzzleData.grid && puzzleData.clues) {
         loadPuzzle({ id: Date.now(), ...puzzleData });
@@ -34,7 +40,6 @@ const CrosswordPuzzle = () => {
         throw new Error('Failed to load a valid puzzle from the library.');
       }
     } catch (error: any) {
-      console.error('Error generating puzzle:', error);
       toast({
         variant: 'destructive',
         title: 'Puzzle Generation Failed',
@@ -61,7 +66,7 @@ const CrosswordPuzzle = () => {
   };
   
   useEffect(() => {
-    generatePuzzleWithAI('Science'); // Generate a default puzzle on initial load
+    generatePuzzleWithAI('Science');
   }, []);
 
 
@@ -94,7 +99,6 @@ const CrosswordPuzzle = () => {
             setDirection(direction === 'across' ? 'down' : 'across');
         } else {
             setSelectedCell({ row, col });
-            // Smart direction switching
             const isAcross = currentPuzzle.clues.across.some((c:any) => c.row === row && col >= c.col && col < c.col + c.answer.length);
             const isDown = currentPuzzle.clues.down.some((c:any) => c.col === col && row >= c.row && row < c.row + c.answer.length);
             if(isAcross && !isDown) setDirection('across');
@@ -118,7 +122,6 @@ const CrosswordPuzzle = () => {
       setUserGrid(newGrid);
       setCellStatus(newStatusGrid);
 
-      // Move to previous cell
       if (direction === 'across' && col > 0) {
         let prevCol = col - 1;
         while (prevCol >= 0 && !isPlayableCell(row, prevCol)) prevCol--;
@@ -133,11 +136,10 @@ const CrosswordPuzzle = () => {
 
     if (/^[a-zA-Z]$/.test(e.key)) {
       newGrid[row][col] = e.key.toUpperCase();
-      newStatusGrid[row][col] = ''; // Reset status on new input
+      newStatusGrid[row][col] = ''; 
       setUserGrid(newGrid);
       setCellStatus(newStatusGrid);
 
-      // Move to next cell
       if (direction === 'across' && col < cols - 1) {
         let nextCol = col + 1;
         while (nextCol < cols && !isPlayableCell(row, nextCol)) nextCol++;
@@ -164,7 +166,7 @@ const CrosswordPuzzle = () => {
     const newStatusGrid = userGrid.map((row, i) =>
       row.map((cell, j) => {
         if (!isPlayableCell(i, j)) return '';
-        if (!cell) return ''; // Unanswered
+        if (!cell) return '';
         return cell.toUpperCase() === currentPuzzle.grid[i][j] ? 'correct' : 'incorrect';
       })
     );
@@ -191,7 +193,7 @@ const CrosswordPuzzle = () => {
       <div className="flex flex-col items-center justify-center min-h-[500px] bg-slate-50 rounded-lg">
           <Loader2 size={48} className="animate-spin text-indigo-500 mb-4" />
           <p className="text-indigo-700 font-semibold">
-            {isGenerating ? 'Generating your puzzle...' : 'Loading...'}
+            Generating your puzzle...
           </p>
       </div>
     );
@@ -209,24 +211,35 @@ const CrosswordPuzzle = () => {
           </h1>
           <p className="text-center text-gray-600 mb-6">Test your knowledge with these fun puzzles!</p>
 
-          <div className="mb-6 p-4 bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-lg flex justify-center">
+          <div className="mb-6 p-4 bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-lg flex justify-center gap-4">
              <Button
                 onClick={() => generatePuzzleWithAI()}
                 disabled={isGenerating}
                 className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-base font-bold"
               >
-                {isGenerating ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw size={18} />
-                    Get New Puzzle
-                  </>
-                )}
+                {isGenerating ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
+                Get New Puzzle
               </Button>
+              {isTeacher && (
+                 <Dialog open={isMakerOpen} onOpenChange={setIsMakerOpen}>
+                    <DialogTrigger asChild>
+                         <Button
+                            variant="outline"
+                            className="flex items-center gap-2 px-6 py-3 bg-white border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 text-base font-bold"
+                          >
+                           <PlusCircle size={18} />
+                           Create Puzzle
+                          </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl">
+                        <DialogHeader>
+                            <DialogTitle>Puzzle Maker</DialogTitle>
+                            <DialogDescription>Create your own custom crossword puzzle for students.</DialogDescription>
+                        </DialogHeader>
+                        <PuzzleMaker onPuzzleCreated={() => { setIsMakerOpen(false); generatePuzzleWithAI(); }} />
+                    </DialogContent>
+                 </Dialog>
+              )}
           </div>
 
           <p className="text-center text-sm text-indigo-600 mb-4 font-bold">
@@ -266,7 +279,7 @@ const CrosswordPuzzle = () => {
                             maxLength={1}
                             onKeyDown={(e) => handleKeyDown(e, i, j)}
                             value={userGrid[i]?.[j] || ''}
-                            onChange={() => {}} // Controlled by onKeyDown
+                            onChange={() => {}}
                             className="w-full h-full text-center text-xl sm:text-2xl font-semibold uppercase bg-transparent outline-none"
                             ref={(input) => isSelected && input?.focus()}
                           />
@@ -376,5 +389,3 @@ const CrosswordPuzzle = () => {
 };
 
 export default CrosswordPuzzle;
-
-    
