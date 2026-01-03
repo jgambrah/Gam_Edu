@@ -26,18 +26,19 @@ const CrosswordPuzzle = () => {
     setCompleted(false);
     setCurrentPuzzle(null); // Clear old puzzle while generating
     try {
+      // The action now just returns a random puzzle, the topic is for show
       const puzzleData = await generateCrosswordAction(interest);
       if (puzzleData && puzzleData.grid && puzzleData.clues) {
         loadPuzzle({ id: Date.now(), ...puzzleData });
       } else {
-        throw new Error('AI did not return a valid puzzle structure.');
+        throw new Error('Failed to load a valid puzzle from the library.');
       }
     } catch (error: any) {
       console.error('Error generating puzzle:', error);
       toast({
         variant: 'destructive',
         title: 'Puzzle Generation Failed',
-        description: error.message || 'Please try a different topic or try again later.',
+        description: error.message || 'Please try again later.',
       });
     } finally {
       setIsGenerating(false);
@@ -204,45 +205,31 @@ const CrosswordPuzzle = () => {
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-center mb-2 text-indigo-900">
-            AI-Powered Think Tank
+            Crossword Challenge
           </h1>
-          <p className="text-center text-gray-600 mb-6">Generate custom puzzles based on your interests!</p>
+          <p className="text-center text-gray-600 mb-6">Test your knowledge with these fun puzzles!</p>
 
-          <div className="mb-6 p-4 bg-indigo-50 border-2 border-indigo-300 rounded-lg">
-            <h3 className="font-bold text-indigo-900 mb-2">What would you like to learn about?</h3>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={topicInput}
-                onChange={(e) => setTopicInput(e.target.value)}
-                placeholder="e.g., Space, Animals, Sports, History..."
-                className="flex-1 p-2 border-2 border-indigo-300 rounded"
-                onKeyPress={(e) => e.key === 'Enter' && generatePuzzleWithAI(topicInput)}
-              />
-              <button
-                onClick={() => generatePuzzleWithAI(topicInput)}
+          <div className="mb-6 p-4 bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-lg flex justify-center">
+             <Button
+                onClick={() => generatePuzzleWithAI()}
                 disabled={isGenerating}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-base font-bold"
               >
                 {isGenerating ? (
                   <>
-                    <RefreshCw size={18} className="animate-spin" />
+                    <Loader2 size={18} className="animate-spin" />
                     Generating...
                   </>
                 ) : (
                   <>
-                    <Sparkles size={18} />
-                    Generate
+                    <RefreshCw size={18} />
+                    Get New Puzzle
                   </>
                 )}
-              </button>
-            </div>
-            <p className="text-xs text-indigo-600 mt-2">
-              💡 Try: "Ancient Egypt", "Soccer", "Dinosaurs", "Planets", "Coding"
-            </p>
+              </Button>
           </div>
 
-          <p className="text-center text-sm text-indigo-600 mb-4">
+          <p className="text-center text-sm text-indigo-600 mb-4 font-bold">
             Current Puzzle: {currentPuzzle.title}
           </p>
 
@@ -313,10 +300,10 @@ const CrosswordPuzzle = () => {
                     🎉 Congratulations! You've completed the puzzle!
                   </p>
                    <button
-                    onClick={() => generatePuzzleWithAI(topicInput)}
+                    onClick={() => generatePuzzleWithAI()}
                     className="mt-3 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                   >
-                    Generate Another Puzzle
+                    Play Another Puzzle
                   </button>
                 </div>
               )}

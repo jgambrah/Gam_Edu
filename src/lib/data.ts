@@ -473,19 +473,19 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Basic Science",
     topic: "Science",
     grid: [
-      ["", "H", "", ""],
       ["A", "T", "O", "M"],
-      ["", "D", "", ""],
-      ["C", "E", "L", "L"]
+      ["I", "", "", ""],
+      ["R", "", "", ""],
+      ["", "C", "E", "L", "L"]
     ],
     clues: {
       across: [
-        { number: 2, clue: "Smallest unit of matter", answer: "ATOM", row: 1, col: 0 },
-        { number: 4, clue: "Basic unit of life", answer: "CELL", row: 3, col: 0 }
+        { number: 1, clue: "Smallest unit of matter", answer: "ATOM", row: 0, col: 0 },
+        { number: 3, clue: "Basic unit of life", answer: "CELL", row: 3, col: 1 }
       ],
       down: [
         { number: 1, clue: "Gas we breathe in", answer: "AIR", row: 0, col: 0 },
-        { number: 3, clue: "Famous scientist, Albert ___", answer: "EINSTEIN", row: 0, col: 2 } // This is intentionally broken to test layout
+        { number: 2, clue: "Short for temperature", answer: "TEMP", row: 0, col: 1 }
       ]
     }
   },
@@ -494,19 +494,19 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Animal Kingdom",
     topic: "Animals",
     grid: [
-      ["", "L", "I", "O", "N"],
-      ["D", "O", "G", "", ""],
-      ["", "G", "", "", ""],
-      ["", "E", "", "", ""],
-      ["", "R", "", "", ""]
+      ["", "D", "O", "G", ""],
+      ["", "I", "", "", ""],
+      ["L", "I", "O", "N", ""],
+      ["", "", "", "", ""],
     ],
     clues: {
       across: [
-        { number: 1, clue: "King of the jungle", answer: "LION", row: 0, col: 1 },
-        { number: 2, clue: "Man's best friend", answer: "DOG", row: 1, col: 0 }
+        { number: 2, clue: "Man's best friend", answer: "DOG", row: 0, col: 1 },
+        { number: 3, clue: "King of the jungle", answer: "LION", row: 2, col: 0 }
       ],
       down: [
-        { number: 3, clue: "A tall animal with a long neck", answer: "GIRAFFE", row: 1, col: 2 }
+        { number: 1, clue: "A farm animal that says oink", answer: "PIG", row: 0, col: 3 },
+        { number: 2, clue: "A big cat with stripes", answer: "TIGER", row: 0, col: 1}
       ]
     }
   },
@@ -515,18 +515,17 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "School Subjects",
     topic: "School",
     grid: [
-      ["M", "A", "T", "H"],
-      ["U", "", "", ""],
-      ["S", "", "", ""],
-      ["I", "", "", ""],
-      ["C", "", "", ""]
+      ["", "M", "U", "S", "I", "C"],
+      ["A", "", "", "", "", ""],
+      ["T", "", "", "", "", ""],
+      ["H", "", "", "", "", ""]
     ],
     clues: {
       across: [
-        { number: 1, clue: "Subject with numbers", answer: "MATH", row: 0, col: 0 }
+        { number: 1, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 1 }
       ],
       down: [
-        { number: 2, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 0 }
+        { number: 2, clue: "Subject with numbers", answer: "MATH", row: 0, col: 0 }
       ]
     }
   }
