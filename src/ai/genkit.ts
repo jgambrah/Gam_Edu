@@ -9,5 +9,5 @@ export const ai = genkit({
     }),
   ],
   // Use the model recommended for speed and quality
-  model: 'googleai/gemini-1.5-flash-latest', 
+  model: 'googleai/gemini-1.5-flash', 
 });

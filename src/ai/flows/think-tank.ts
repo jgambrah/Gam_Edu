@@ -241,7 +241,7 @@ export async function generateCrosswordAction(topic: string) {
     
       try {
         const { text } = await ai.generate({
-          model: 'googleai/gemini-1.5-flash-latest',
+          model: 'googleai/gemini-1.5-flash',
           prompt,
           config: { temperature: 0.7, maxOutputTokens: 4096 },
         });
@@ -366,6 +366,7 @@ export async function generateCrosswordAction(topic: string) {
     
 
     
+
 
 
 
