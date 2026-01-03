@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Trash2, Plus } from 'lucide-react';
-import { saveNewPuzzle } from '@/app/dashboard/early-years/actions';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface Clue {
   number: number;
@@ -17,6 +18,32 @@ interface Clue {
   row: number;
   col: number;
 }
+
+// --- SERVER ACTION MOVED HERE ---
+async function saveNewPuzzle(puzzleData: any) {
+  // This function is now self-contained within the component that uses it.
+  // We'll need to get the firestore instance inside.
+  // Note: In a real app, you might pass firestore instance as an arg
+  // but for this structure, we will re-initialize it if needed,
+  // though the hook `useFirestore` should provide it.
+  // This is a simplified approach to fix the build error.
+  const { toast } = useToast();
+  try {
+    const { getFirestore } = await import('@/firebase');
+    const firestore = getFirestore();
+    if (!firestore) throw new Error("Firestore not available");
+
+    const docRef = await addDoc(collection(firestore, 'junior_puzzles'), {
+      ...puzzleData,
+      createdAt: serverTimestamp(),
+    });
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error("Error adding puzzle: ", error);
+    return { success: false, error: (error as Error).message };
+  }
+}
+
 
 export function PuzzleMaker({ onPuzzleCreated }: { onPuzzleCreated: () => void }) {
   const { toast } = useToast();
