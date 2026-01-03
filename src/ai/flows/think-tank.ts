@@ -209,28 +209,6 @@ export async function generateCrosswordAction(topic: string) {
     const prompt = `
     You are an expert puzzle creator. Create a complete, valid, and playable crossword puzzle about "${topic}" for educational purposes.
 
-    Your response MUST be a valid JSON object. Do NOT wrap it in markdown backticks, preambles, or any other text.
-    The JSON structure is extremely strict. It must be EXACTLY as follows:
-
-    {
-      "title": "Puzzle Title Here",
-      "grid": [
-        ["L", "E", "A", "R", "N", ""],
-        ["", "O", "", "", "", ""],
-        ["", "G", "", "", "", ""],
-        ["", "I", "", "", "", ""],
-        ["", "C", "", "", "", ""]
-      ],
-      "clues": {
-        "across": [
-          { "number": 1, "clue": "To gain knowledge", "answer": "LEARN", "row": 0, "col": 0 }
-        ],
-        "down": [
-          { "number": 2, "clue": "The science of reasoning", "answer": "LOGIC", "row": 0, "col": 1 }
-        ]
-      }
-    }
-
     PUZZLE REQUIREMENTS:
     1.  Words MUST be related to the topic: "${topic}".
     2.  Generate 4 to 6 words total.
@@ -240,42 +218,20 @@ export async function generateCrosswordAction(topic: string) {
     6.  All clues must be educational and age-appropriate.
     7.  The grid MUST correctly represent the intersection of all words.
     8.  All clues in 'across' and 'down' must have a corresponding answer in the grid.
-    9.  The response must be ONLY the JSON object and nothing else.
     `;
 
-    const { text } = await ai.generate({
+    const { output } = await ai.generate({
         prompt,
-        config: { temperature: 0.8, maxOutputTokens: 2048 },
+        output: { schema: CrosswordPuzzleSchema },
+        config: { temperature: 0.8, maxOutputTokens: 4096 },
     });
     
-    // 1. Robustly extract JSON from the raw text response
-    let jsonString = text;
-    const jsonStartIndex = jsonString.indexOf('{');
-    const jsonEndIndex = jsonString.lastIndexOf('}');
-
-    if (jsonStartIndex === -1 || jsonEndIndex === -1 || jsonEndIndex < jsonStartIndex) {
-        throw new Error('AI response did not contain a valid JSON object.');
-    }
-    jsonString = jsonString.substring(jsonStartIndex, jsonEndIndex + 1);
-
-    // 2. Safely parse the extracted JSON
-    let puzzleData;
-    try {
-        puzzleData = JSON.parse(jsonString);
-    } catch (parseError: any) {
-        console.error("JSON parsing error:", parseError);
-        throw new Error(`AI returned malformed JSON: ${parseError.message}`);
+    if (!output) {
+      throw new Error('AI response did not return any parsable output.');
     }
 
-    // 3. Validate the structure of the parsed data
-    const validationResult = CrosswordPuzzleSchema.safeParse(puzzleData);
-    if (!validationResult.success) {
-        console.error("AI Response Validation Failed:", validationResult.error);
-        throw new Error(`AI response did not match the required schema: ${validationResult.error.errors.map(e => e.path.join('.') + ' ' + e.message).join(', ')}`);
-    }
-
-    // If all checks pass, return the validated data
-    return validationResult.data;
+    // The output is now guaranteed by Genkit to match the schema.
+    return output;
 
   } catch (error) {
     console.error("Error in generateCrosswordAction:", error);
@@ -285,5 +241,6 @@ export async function generateCrosswordAction(topic: string) {
 }
 
     
+
 
 
