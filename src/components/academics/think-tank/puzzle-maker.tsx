@@ -6,15 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getDocs, Firestore } from 'firebase/firestore';
+import { PuzzleMaker } from './puzzle-creator';
 
-// --- SERVER ACTION ---
-async function saveNewPuzzle(puzzleData: any, toast: (options: any) => void) {
-  // In a real app, this would be a server action.
-  // For now, we keep it here to avoid build issues.
+// --- SERVER ACTION (modified to accept firestore instance) ---
+async function saveNewPuzzle(firestore: Firestore, puzzleData: any, toast: (options: any) => void) {
   try {
-    const { getFirestore } = await import('@/firebase');
-    const firestore = getFirestore();
     if (!firestore) throw new Error("Firestore not available");
 
     const docRef = await addDoc(collection(firestore, 'junior_puzzles'), {
@@ -38,9 +35,14 @@ export function AddPuzzleForm() {
   const [title, setTitle] = useState('');
   const [topic, setTopic] = useState('');
   const [clueText, setClueText] = useState(''); // Format: 1, Across, Clue, Answer, Row, Col
-  const { toast } = useToast(); // Correctly call the hook inside the component
+  const { toast } = useToast();
+  const firestore = useFirestore(); // Get firestore instance from hook
 
   const handleAdd = async () => {
+    if (!firestore) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Database not ready.'});
+        return;
+    }
     // Basic parser for demonstration
     // In a real app, use a more structured dynamic form
     const puzzle = {
@@ -50,7 +52,7 @@ export function AddPuzzleForm() {
       grid: [[]] // You can use an AI flow to generate the grid from answers!
     };
 
-    const res = await saveNewPuzzle(puzzle, toast);
+    const res = await saveNewPuzzle(firestore, puzzle, toast);
     if(res.success) {
       toast({ title: "Puzzle Added!" });
     }
