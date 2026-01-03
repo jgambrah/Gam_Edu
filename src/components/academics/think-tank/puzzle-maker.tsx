@@ -36,7 +36,7 @@ export function AddPuzzleForm() {
   const [topic, setTopic] = useState('');
   const [clueText, setClueText] = useState(''); // Format: 1, Across, Clue, Answer, Row, Col
   const { toast } = useToast();
-  const firestore = useFirestore(); // Get firestore instance from hook
+  const firestore = useFirestore(); // Get firestore instance from component
 
   const handleAdd = async () => {
     if (!firestore) {
@@ -49,7 +49,7 @@ export function AddPuzzleForm() {
       title,
       topic,
       clues: { across: [], down: [] },
-      grid: [[]] // You can use an AI flow to generate the grid from answers!
+      grid: [] // FIX: Changed from [[]] to [] to prevent nested array error
     };
 
     const res = await saveNewPuzzle(firestore, puzzle, toast);
