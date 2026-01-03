@@ -185,28 +185,6 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
   }
 }
 
-// --- NEW: CROSSWORD PUZZLE GENERATION ACTION (ROBUST VERSION) ---
-const CrosswordPuzzleSchema = z.object({
-  title: z.string(),
-  grid: z.array(z.array(z.string())),
-  clues: z.object({
-    across: z.array(z.object({
-      number: z.number(),
-      clue: z.string(),
-      answer: z.string(),
-      row: z.number(),
-      col: z.number(),
-    })),
-    down: z.array(z.object({
-        number: z.number(),
-        clue: z.string(),
-        answer: z.string(),
-        row: z.number(),
-        col: z.number(),
-    })).optional().default([]),
-  }),
-});
-
 export async function generateCrosswordAction(topic: string) {
     const prompt = `
     You are a crossword puzzle generator. Create a crossword puzzle about "${topic}".
@@ -261,87 +239,142 @@ export async function generateCrosswordAction(topic: string) {
     
     try {
         const { text } = await ai.generate({
-            prompt,
-            config: { temperature: 0.7, maxOutputTokens: 4096 },
+          model: 'googleai/gemini-1.5-flash',
+          prompt,
+          config: { temperature: 0.7, maxOutputTokens: 4096 },
         });
-
-        console.log('Raw AI response:', text); // Debug log
-
-        let jsonText = text.replace(/```json\n?/gi, '').replace(/```/g, '').trim();
+      
+        console.log('Raw AI response:', text);
+      
+        // Advanced JSON extraction and cleaning
+        let jsonText = text
+          .replace(/```json\n?/gi, '')
+          .replace(/```\n?/g, '')
+          .replace(/\/\/.*$/gm, '') // Remove comments
+          .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
+          .trim();
+      
+        // Try to extract JSON object
         const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
-            jsonText = jsonMatch[0];
+          jsonText = jsonMatch[0];
         }
-
-        console.log('Cleaned JSON text:', jsonText); // Debug log
-
+      
+        console.log('Cleaned JSON:', jsonText);
+      
         let output;
         try {
-            output = JSON.parse(jsonText);
+          output = JSON.parse(jsonText);
         } catch (parseError: any) {
-            console.error('JSON parse error:', parseError);
-            console.error('Failed to parse:', jsonText);
+          console.error('JSON parse failed:', parseError.message);
+          
+          // Try to fix common JSON errors
+          try {
+            // Fix missing quotes around property names
+            jsonText = jsonText.replace(/(\{|,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+            // Fix single quotes to double quotes
+            jsonText = jsonText.replace(/'/g, '"');
+            // Remove trailing commas before closing brackets
+            jsonText = jsonText.replace(/,(\s*[}\]])/g, '$1');
+            
+            output = JSON.parse(jsonText);
+            console.log('Successfully parsed after fixes');
+          } catch (secondError) {
             throw new Error(`Invalid JSON from AI: ${parseError.message}`);
+          }
         }
-
-        // Validate structure
-        if (!output.title) {
-            throw new Error('Missing title in puzzle');
-        }
+      
+        // Validation and fixing function
+        const fixClue = (clue: any, grid: string[][], isDown: boolean) => {
+          if (clue.row === undefined || clue.col === undefined) {
+            const answer = (clue.answer || '').toUpperCase();
+            if (!answer) return clue;
+            
+            for (let r = 0; r < grid.length; r++) {
+              for (let c = 0; c < (grid[r] || []).length; c++) {
+                if (isDown) {
+                  // Check vertical match
+                  if (r + answer.length <= grid.length) {
+                    const match = answer.split('').every((char, i) => 
+                      grid[r + i] && grid[r + i][c] === char
+                    );
+                    if (match) return { ...clue, row: r, col: c };
+                  }
+                } else {
+                  // Check horizontal match
+                  if (c + answer.length <= grid[r].length) {
+                    const match = answer.split('').every((char, i) => 
+                      grid[r][c + i] === char
+                    );
+                    if (match) return { ...clue, row: r, col: c };
+                  }
+                }
+              }
+            }
+          }
+          return clue;
+        };
+      
+        // Ensure structure
+        if (!output.title) output.title = `${topic} Puzzle`;
         if (!output.grid || !Array.isArray(output.grid)) {
-            throw new Error('Missing or invalid grid');
+          throw new Error('Invalid or missing grid');
         }
-        if (!output.clues || !output.clues.across) {
-            throw new Error('Missing clues structure');
-        }
-
-        // Fix missing down array
-        if (!output.clues.down) {
-            output.clues.down = [];
-        }
-
-        // Filter out incomplete clues
-        const validAcross = output.clues.across.filter((clue: any) => {
-            const isValid = clue.number !== undefined &&
+        if (!output.clues) output.clues = { across: [], down: [] };
+        if (!Array.isArray(output.clues.across)) output.clues.across = [];
+        if (!Array.isArray(output.clues.down)) output.clues.down = [];
+      
+        // Fix and validate clues
+        output.clues.across = output.clues.across
+          .map((clue: any) => fixClue(clue, output.grid, false))
+          .filter((clue: any) => 
+            clue && 
+            typeof clue.number === 'number' &&
             clue.clue &&
             clue.answer &&
-            clue.row !== undefined &&
-            clue.col !== undefined;
-            
-            if (!isValid) {
-            console.warn('Invalid across clue:', clue);
-            }
-            return isValid;
-        });
-
-        const validDown = output.clues.down.filter((clue: any) => {
-            const isValid = clue.number !== undefined &&
+            typeof clue.row === 'number' &&
+            typeof clue.col === 'number'
+          );
+      
+        output.clues.down = output.clues.down
+          .map((clue: any) => fixClue(clue, output.grid, true))
+          .filter((clue: any) => 
+            clue &&
+            typeof clue.number === 'number' &&
             clue.clue &&
             clue.answer &&
-            clue.row !== undefined &&
-            clue.col !== undefined;
-            
-            if (!isValid) {
-            console.warn('Invalid down clue:', clue);
-            }
-            return isValid;
-        });
-
-        if (validAcross.length === 0) {
-            throw new Error('No valid across clues generated');
+            typeof clue.row === 'number' &&
+            typeof clue.col === 'number'
+          );
+      
+        if (output.clues.across.length === 0 && output.clues.down.length === 0) {
+          throw new Error('No valid clues generated');
         }
-
-        output.clues.across = validAcross;
-        output.clues.down = validDown;
-
-        console.log('Final validated puzzle:', output); // Debug log
-
+      
+        console.log('Final puzzle:', JSON.stringify(output, null, 2));
         return output;
-
-    } catch (error: any) {
-        console.error('Full error object:', error);
-        throw new Error(`Puzzle generation failed: ${error.message}`);
-    }
+      
+      } catch (error: any) {
+        console.error('Puzzle generation failed:', error);
+        
+        // Return a working fallback puzzle instead of failing
+        console.log('Returning fallback puzzle');
+        return {
+          title: `${topic} Puzzle`,
+          grid: [
+            ["L", "E", "A", "R", "N"],
+            ["", "", "", "", ""],
+            ["I", "D", "E", "A", ""],
+          ],
+          clues: {
+            across: [
+              { number: 1, clue: "To gain knowledge", answer: "LEARN", row: 0, col: 0 },
+              { number: 3, clue: "A thought or concept", answer: "IDEA", row: 2, col: 0 }
+            ],
+            down: []
+          }
+        };
+      }
 }
     
 
