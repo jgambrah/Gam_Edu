@@ -6,6 +6,7 @@ import { Check, RotateCcw, Lightbulb, Sparkles, RefreshCw } from 'lucide-react';
 import { generateCrosswordAction } from '@/ai/flows/think-tank';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const CrosswordPuzzle = () => {
   const [currentPuzzle, setCurrentPuzzle] = useState<any>(null);
@@ -15,31 +16,40 @@ const CrosswordPuzzle = () => {
   const [direction, setDirection] = useState<'across' | 'down'>('across');
   const [showHints, setShowHints] = useState<Record<number, boolean>>({});
   const [completed, setCompleted] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(true); // Start true for initial load
   const [topicInput, setTopicInput] = useState('');
-  const [studentInterest, setStudentInterest] = useState('Science');
+  const { toast } = useToast();
 
-  const generatePuzzleWithAI = useCallback(async () => {
-    const interest = topicInput || studentInterest || "General Knowledge";
+  const generatePuzzleWithAI = useCallback(async (topic?: string) => {
+    const interest = topic || "General Knowledge";
     setIsGenerating(true);
+    setCompleted(false);
+    setCurrentPuzzle(null); // Clear old puzzle while generating
     try {
       const puzzleData = await generateCrosswordAction(interest);
-      if (puzzleData) {
+      if (puzzleData && puzzleData.grid && puzzleData.clues) {
         loadPuzzle({ id: Date.now(), ...puzzleData });
       } else {
-        throw new Error('AI did not return a valid puzzle.');
+        throw new Error('AI did not return a valid puzzle structure.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating puzzle:', error);
-      alert('Failed to generate puzzle. Please try again.');
+      toast({
+        variant: 'destructive',
+        title: 'Puzzle Generation Failed',
+        description: error.message || 'Please try a different topic or try again later.',
+      });
     } finally {
       setIsGenerating(false);
     }
-  }, [topicInput, studentInterest]);
+  }, [toast]);
 
   const loadPuzzle = (puzzleData: any) => {
     setCurrentPuzzle(puzzleData);
-    if (!puzzleData || !puzzleData.grid) return;
+    if (!puzzleData || !puzzleData.grid || !Array.isArray(puzzleData.grid) || puzzleData.grid.length === 0) {
+        console.error("Invalid puzzle data provided to loadPuzzle", puzzleData);
+        return;
+    };
     const rows = puzzleData.grid.length;
     const cols = puzzleData.grid[0]?.length || 0;
     setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
@@ -49,10 +59,9 @@ const CrosswordPuzzle = () => {
     setSelectedCell(null);
   };
   
-  // Generate a default puzzle on initial load
   useEffect(() => {
-    generatePuzzleWithAI();
-  }, []);
+    generatePuzzleWithAI('Science'); // Generate a default puzzle on initial load
+  }, [generatePuzzleWithAI]);
 
 
   // Check if puzzle is complete
@@ -84,6 +93,11 @@ const CrosswordPuzzle = () => {
             setDirection(direction === 'across' ? 'down' : 'across');
         } else {
             setSelectedCell({ row, col });
+            // Smart direction switching
+            const isAcross = currentPuzzle.clues.across.some((c:any) => c.row === row && col >= c.col && col < c.col + c.answer.length);
+            const isDown = currentPuzzle.clues.down.some((c:any) => c.col === col && row >= c.row && row < c.row + c.answer.length);
+            if(isAcross && !isDown) setDirection('across');
+            if(!isAcross && isDown) setDirection('down');
         }
     }
   };
@@ -171,11 +185,13 @@ const CrosswordPuzzle = () => {
     return null;
   };
   
-  if (!currentPuzzle || isGenerating) {
+  if (isGenerating || !currentPuzzle) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] bg-slate-50 rounded-lg">
           <Loader2 size={48} className="animate-spin text-indigo-500 mb-4" />
-          <p className="text-indigo-700 font-semibold">Generating your puzzle...</p>
+          <p className="text-indigo-700 font-semibold">
+            {isGenerating ? 'Generating your puzzle...' : 'Loading...'}
+          </p>
       </div>
     );
   }
@@ -201,10 +217,10 @@ const CrosswordPuzzle = () => {
                 onChange={(e) => setTopicInput(e.target.value)}
                 placeholder="e.g., Space, Animals, Sports, History..."
                 className="flex-1 p-2 border-2 border-indigo-300 rounded"
-                onKeyPress={(e) => e.key === 'Enter' && generatePuzzleWithAI()}
+                onKeyPress={(e) => e.key === 'Enter' && generatePuzzleWithAI(topicInput)}
               />
               <button
-                onClick={() => { setStudentInterest(topicInput); generatePuzzleWithAI(); }}
+                onClick={() => generatePuzzleWithAI(topicInput)}
                 disabled={isGenerating}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
@@ -297,7 +313,7 @@ const CrosswordPuzzle = () => {
                     🎉 Congratulations! You've completed the puzzle!
                   </p>
                    <button
-                    onClick={() => generatePuzzleWithAI()}
+                    onClick={() => generatePuzzleWithAI(topicInput)}
                     className="mt-3 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                   >
                     Generate Another Puzzle
