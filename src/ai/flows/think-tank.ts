@@ -1,5 +1,6 @@
 
 
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -241,7 +242,7 @@ export async function generateCrosswordAction(topic: string) {
     
       try {
         const { text } = await ai.generate({
-          model: 'googleai/gemini-1.5-flash-001',
+          model: 'googleai/gemini-pro',
           prompt,
           config: { temperature: 0.7, maxOutputTokens: 4096 },
         });
@@ -365,7 +366,6 @@ export async function generateCrosswordAction(topic: string) {
 
     
 
-    
 
 
 
