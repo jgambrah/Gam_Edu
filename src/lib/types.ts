@@ -34,6 +34,17 @@ export type NavItem = {
   subItems?: NavItem[];
 };
 
+export interface CrosswordPuzzle {
+  id: string;
+  title: string;
+  topic: string;
+  grid: string[][];
+  clues: {
+    across: { number: number; clue: string; answer: string; row: number; col: number; }[];
+    down: { number: number; clue: string; answer: string; row: number; col: number; }[];
+  };
+}
+
 export const assignmentSchema = z.object({
     classId: z.string().min(1, 'Class is required.'),
     title: z.string().min(1, 'Title is required.'),
@@ -359,6 +370,7 @@ export type AlumniDetails = z.infer<typeof editAlumniSchema>;
 export type Student = {
     id: string;
     uid: string;
+    studentId?: string; // The official SS-YYYY-XXXX ID
     firstName: string;
     lastName: string;
     email: string;

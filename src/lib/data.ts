@@ -1,5 +1,5 @@
 
-import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill } from '@/lib/types';
+import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route, MathProblem, GlobalLeaderboardEntry, ElaGrammarDrill, CrosswordPuzzle } from '@/lib/types';
 import {
   LayoutDashboard,
   Users,
@@ -171,7 +171,7 @@ export const navItems: NavItem[] = [
             path: '/dashboard/academics/gradebook',
             title: 'Gradebook',
             icon: TrendingUp,
-            roles: ['Teacher', 'Administrator', 'Director'],
+            roles: ['Teacher', 'Administrator', 'Director', 'Student', 'Parent'],
         },
         {
             path: '/dashboard/academics/analytics',
@@ -465,6 +465,71 @@ export const navItems: NavItem[] = [
         },
     ]
   },
+];
+
+export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
+  {
+    id: "science-1",
+    title: "Basic Science",
+    topic: "Science",
+    grid: [
+      ["", "H", "", ""],
+      ["A", "T", "O", "M"],
+      ["", "D", "", ""],
+      ["C", "E", "L", "L"]
+    ],
+    clues: {
+      across: [
+        { number: 2, clue: "Smallest unit of matter", answer: "ATOM", row: 1, col: 0 },
+        { number: 4, clue: "Basic unit of life", answer: "CELL", row: 3, col: 0 }
+      ],
+      down: [
+        { number: 1, clue: "Gas we breathe in", answer: "AIR", row: 0, col: 0 },
+        { number: 3, clue: "Famous scientist, Albert ___", answer: "EINSTEIN", row: 0, col: 2 } // This is intentionally broken to test layout
+      ]
+    }
+  },
+  {
+    id: "animals-1",
+    title: "Animal Kingdom",
+    topic: "Animals",
+    grid: [
+      ["", "L", "I", "O", "N"],
+      ["D", "O", "G", "", ""],
+      ["", "G", "", "", ""],
+      ["", "E", "", "", ""],
+      ["", "R", "", "", ""]
+    ],
+    clues: {
+      across: [
+        { number: 1, clue: "King of the jungle", answer: "LION", row: 0, col: 1 },
+        { number: 2, clue: "Man's best friend", answer: "DOG", row: 1, col: 0 }
+      ],
+      down: [
+        { number: 3, clue: "A tall animal with a long neck", answer: "GIRAFFE", row: 1, col: 2 }
+      ]
+    }
+  },
+  {
+    id: "school-1",
+    title: "School Subjects",
+    topic: "School",
+    grid: [
+      ["M", "A", "T", "H"],
+      ["U", "", "", ""],
+      ["S", "", "", ""],
+      ["I", "", "", ""],
+      ["C", "", "", ""]
+    ],
+    clues: {
+      across: [
+        { number: 1, clue: "Subject with numbers", answer: "MATH", row: 0, col: 0 }
+      ],
+      down: [
+        { number: 2, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 0 }
+      ]
+    }
+  }
 ];
 
 export const sampleAnnouncements = [

@@ -4,6 +4,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { MOCK_CROSSWORD_PUZZLES } from '@/lib/data';
 
 // --- EXISTING PARADOX CODE (Keep this) ---
 const ParadoxSchema = z.object({
@@ -188,182 +189,33 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
 }
 
 export async function generateCrosswordAction(topic: string) {
-    const prompt = `
-    You are a crossword puzzle generator. Create a crossword puzzle about "${topic}".
+    try {
+        // Return a random puzzle from the mock data
+        const randomIndex = Math.floor(Math.random() * MOCK_CROSSWORD_PUZZLES.length);
+        const puzzle = MOCK_CROSSWORD_PUZZLES[randomIndex];
+        
+        // Simulate a slight delay to feel like generation
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-    STRICT REQUIREMENTS - YOU MUST FOLLOW EXACTLY:
+        // If a topic was provided, customize the title slightly
+        if (topic && puzzle.topic.toLowerCase() !== 'general') {
+            return {
+                ...puzzle,
+                title: `${topic} & ${puzzle.title}`
+            };
+        }
+        
+        return puzzle;
 
-    1. Return ONLY a JSON object, no other text
-    2. EVERY clue must have ALL 5 properties: number, clue, answer, row, col
-    3. Example of ONE COMPLETE clue:
-    {
-      "number": 1,
-      "clue": "Basic unit of life",
-      "answer": "CELL",
-      "row": 0,
-      "col": 0
+    } catch (error: any) {
+        console.error('Puzzle selection failed:', error);
+        throw new Error(`Could not load puzzle: ${error.message}.`);
     }
-
-    4. Complete example response:
-    {
-      "title": "Science Puzzle",
-      "grid": [
-        ["C", "E", "L", "L"],
-        ["", "A", "", ""],
-        ["", "T", "", ""],
-        ["", "O", "", ""],
-        ["", "M", "", ""]
-      ],
-      "clues": {
-        "across": [
-          {
-            "number": 1,
-            "clue": "Basic unit of life",
-            "answer": "CELL",
-            "row": 0,
-            "col": 0
-          }
-        ],
-        "down": [
-          {
-            "number": 2,
-            "clue": "Smallest unit of matter",
-            "answer": "ATOM",
-            "row": 1,
-            "col": 1
-          }
-        ]
-      }
-    }
-
-    CREATE THE PUZZLE NOW with 4-6 words. Each clue MUST have: number, clue, answer, row, col.
-    `;
-    
-      try {
-        const { text } = await ai.generate({
-          model: 'googleai/gemini-pro',
-          prompt,
-          config: { temperature: 0.7, maxOutputTokens: 4096 },
-        });
-      
-        console.log('Raw AI response:', text);
-      
-        // Advanced JSON extraction and cleaning
-        let jsonText = text
-          .replace(/```json\n?/gi, '')
-          .replace(/```\n?/g, '')
-          .replace(/\/\/.*$/gm, '') // Remove comments
-          .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
-          .trim();
-      
-        // Try to extract JSON object
-        const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          jsonText = jsonMatch[0];
-        }
-      
-        console.log('Cleaned JSON:', jsonText);
-      
-        let output;
-        try {
-          output = JSON.parse(jsonText);
-        } catch (parseError: any) {
-          console.error('JSON parse failed:', parseError.message);
-          
-          // Try to fix common JSON errors
-          try {
-            // Fix missing quotes around property names
-            jsonText = jsonText.replace(/(\{|,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
-            // Fix single quotes to double quotes
-            jsonText = jsonText.replace(/'/g, '"');
-            // Remove trailing commas before closing brackets
-            jsonText = jsonText.replace(/,(\s*[}\]])/g, '$1');
-            
-            output = JSON.parse(jsonText);
-            console.log('Successfully parsed after fixes');
-          } catch (secondError) {
-            throw new Error(`Invalid JSON from AI: ${parseError.message}`);
-          }
-        }
-      
-        // Validation and fixing function
-        const fixClue = (clue: any, grid: string[][], isDown: boolean) => {
-          if (clue.row === undefined || clue.col === undefined) {
-            const answer = (clue.answer || '').toUpperCase();
-            if (!answer) return clue;
-            
-            for (let r = 0; r < grid.length; r++) {
-              for (let c = 0; c < (grid[r] || []).length; c++) {
-                if (isDown) {
-                  // Check vertical match
-                  if (r + answer.length <= grid.length) {
-                    const match = answer.split('').every((char, i) => 
-                      grid[r + i] && grid[r + i][c] === char
-                    );
-                    if (match) return { ...clue, row: r, col: c };
-                  }
-                } else {
-                  // Check horizontal match
-                  if (c + answer.length <= grid[r].length) {
-                    const match = answer.split('').every((char, i) => 
-                      grid[r][c + i] === char
-                    );
-                    if (match) return { ...clue, row: r, col: c };
-                  }
-                }
-              }
-            }
-          }
-          return clue;
-        };
-      
-        // Ensure structure
-        if (!output.title) output.title = `${topic} Puzzle`;
-        if (!output.grid || !Array.isArray(output.grid)) {
-          throw new Error('Invalid or missing grid');
-        }
-        if (!output.clues) output.clues = { across: [], down: [] };
-        if (!Array.isArray(output.clues.across)) output.clues.across = [];
-        if (!Array.isArray(output.clues.down)) output.clues.down = [];
-      
-        // Fix and validate clues
-        output.clues.across = output.clues.across
-          .map((clue: any) => fixClue(clue, output.grid, false))
-          .filter((clue: any) => 
-            clue && 
-            typeof clue.number === 'number' &&
-            clue.clue &&
-            clue.answer &&
-            typeof clue.row === 'number' &&
-            typeof clue.col === 'number'
-          );
-      
-        output.clues.down = output.clues.down
-          .map((clue: any) => fixClue(clue, output.grid, true))
-          .filter((clue: any) => 
-            clue &&
-            typeof clue.number === 'number' &&
-            clue.clue &&
-            clue.answer &&
-            typeof clue.row === 'number' &&
-            typeof clue.col === 'number'
-          );
-      
-        if (output.clues.across.length === 0 && output.clues.down.length === 0) {
-          throw new Error('No valid clues generated');
-        }
-      
-        console.log('Final puzzle:', JSON.stringify(output, null, 2));
-        return output;
-      
-      } catch (error: any) {
-        console.error('Puzzle generation failed:', error);
-        throw new Error(`Could not generate puzzle: ${error.message}. Please try a different topic.`);
-      }
 }
     
 
     
+
 
 
 
