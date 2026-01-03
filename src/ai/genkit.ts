@@ -8,6 +8,6 @@ export const ai = genkit({
       apiVersion: 'v1', // Force the stable v1 API
     }),
   ],
-  // Use the model recommended for speed and quality
-  model: 'googleai/gemini-1.5-flash', 
+  // Use a stable and supported model
+  model: 'googleai/gemini-pro', 
 });
