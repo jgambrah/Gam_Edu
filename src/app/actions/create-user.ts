@@ -69,58 +69,37 @@ export async function createNewUser(
     // At this point, userRecord is guaranteed to be a valid Auth user record, either existing or newly created.
     const selectedRole = role || 'Parent';
 
-    if (selectedRole === 'Parent') {
-        const docRef = firestore.collection('parents').doc(userRecord.uid);
-        await docRef.set({
-            uid: userRecord.uid,
-            email: email,
-            firstName: details?.firstName,
-            lastName: details?.lastName,
-        }, { merge: true });
-        
-    } else if (selectedRole === 'Student') {
-        const docRef = firestore.collection('students').doc(userRecord.uid);
-        await docRef.set({
-            uid: userRecord.uid,
-            email: email,
-            firstName: details?.firstName,
-            lastName: details?.lastName,
-             // Add any other student-specific fields here from the form if needed
-        }, { merge: true });
-        
-    } else { // All other roles are considered 'staff'
-        const docRef = firestore.collection('staff').doc(userRecord.uid);
-        await docRef.set({
-            uid: userRecord.uid,
-            email: email,
-            role: selectedRole,
-            firstName: details?.firstName,
-            lastName: details?.lastName,
-        }, { merge: true });
+    // Create a document in the collection that corresponds to the user's role.
+    const collectionName = selectedRole === 'Parent' ? 'parents' : selectedRole === 'Student' ? 'students' : 'staff';
+    const profileDocRef = firestore.collection(collectionName).doc(userRecord.uid);
+    
+    const profileData: any = {
+        uid: userRecord.uid,
+        email: email,
+        firstName: details?.firstName,
+        lastName: details?.lastName,
+    };
+    if(collectionName === 'staff') {
+        profileData.role = selectedRole;
     }
+    await profileDocRef.set(profileData, { merge: true });
 
-    // Special handling for the specific director user to ensure profile exists
+    // FIX: Also create a document in the 'users' collection for the security rule check.
+    const userRoleRef = firestore.collection('users').doc(userRecord.uid);
+    await userRoleRef.set({ role: selectedRole }, { merge: true });
+
+
+    // Special handling for demo users to ensure profiles exist
     if (email === 'director@sunnyside.com') {
         const directorDocRef = firestore.collection('staff').doc(userRecord.uid);
-        await directorDocRef.set({
-            uid: userRecord.uid,
-            email: email,
-            role: 'Director',
-            firstName: details?.firstName || 'Director',
-            lastName: details?.lastName || 'User',
-        }, { merge: true });
+        await directorDocRef.set({ uid: userRecord.uid, email: email, role: 'Director', firstName: 'Director', lastName: 'User' }, { merge: true });
+        await firestore.collection('users').doc(userRecord.uid).set({ role: 'Director' }, { merge: true });
     }
 
-    // Special handling for the teacher user to ensure profile exists
     if (email === 'teacher@sunnyside.com') {
         const teacherDocRef = firestore.collection('staff').doc(userRecord.uid);
-        await teacherDocRef.set({
-            uid: userRecord.uid,
-            email: email,
-            role: 'Teacher',
-            firstName: details?.firstName || 'Teacher',
-            lastName: details?.lastName || 'User',
-        }, { merge: true });
+        await teacherDocRef.set({ uid: userRecord.uid, email: email, role: 'Teacher', firstName: 'Teacher', lastName: 'User' }, { merge: true });
+        await firestore.collection('users').doc(userRecord.uid).set({ role: 'Teacher' }, { merge: true });
     }
 
     return { uid: userRecord.uid };

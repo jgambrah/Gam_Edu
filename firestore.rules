@@ -9,35 +9,17 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Failsafe for specific Admin UID
     function isSuperAdmin() {
       return request.auth.uid == 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2';
     }
 
-    function getUserData(userId) {
-      return get(/databases/$(database)/documents/staff/$(userId)).data;
-    }
-    
     function getUserRole(userId) {
-      // Check staff collection first
-      let staffRole = get(/databases/$(database)/documents/staff/$(userId)).data.role;
-      if (staffRole != null) {
-        return staffRole;
-      }
-      // Check if user is in students collection
-      if (exists(/databases/$(database)/documents/students/$(userId))) {
-        return 'Student';
-      }
-      // Check if user is in parents collection
-      if (exists(/databases/$(database)/documents/parents/$(userId))) {
-        return 'Parent';
-      }
-      return ''; // Default to no role
+      return get(/databases/$(database)/documents/users/$(userId)).data.role;
     }
 
     function isOneOfRoles(userId, roles) {
       let userRole = getUserRole(userId);
-      return isSignedIn() && (userRole in roles || isSuperAdmin()); // <-- FAILSAFE ADDED
+      return isSignedIn() && (userRole in roles || isSuperAdmin());
     }
 
     function isAdmin() {
@@ -58,6 +40,13 @@ service cloud.firestore {
     
     function isParent() {
        return isOneOfRoles(request.auth.uid, ['Parent']);
+    }
+    
+    // Allow anyone to create their own user role doc on signup
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if request.auth.uid == userId;
+      allow write: if isAdmin();
     }
     
     // --- Collection Rules ---
