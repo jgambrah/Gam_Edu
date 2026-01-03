@@ -266,7 +266,7 @@ const CrosswordPuzzle = () => {
                       return (
                         <div
                           key={j}
-                          className={`w-8 h-8 sm:w-10 sm:h-10 border relative ${cellClass}`}
+                          className={`w-10 h-10 sm:w-12 sm:h-12 border relative ${cellClass}`}
                           onClick={() => handleCellClick(i, j)}
                         >
                           {clueNum && (
@@ -280,7 +280,7 @@ const CrosswordPuzzle = () => {
                             onKeyDown={(e) => handleKeyDown(e, i, j)}
                             value={userGrid[i]?.[j] || ''}
                             onChange={() => {}} // Controlled by onKeyDown
-                            className="w-full h-full text-center text-base sm:text-lg font-semibold uppercase bg-transparent outline-none"
+                            className="w-full h-full text-center text-xl sm:text-2xl font-semibold uppercase bg-transparent outline-none"
                             ref={(input) => isSelected && input?.focus()}
                           />
                         </div>
