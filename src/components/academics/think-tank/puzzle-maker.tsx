@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Trash2, Plus } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Clue {
   number: number;
@@ -113,59 +114,61 @@ export function PuzzleMaker({ onPuzzleCreated }: { onPuzzleCreated: () => void }
   };
 
   return (
-    <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1"><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-            <div className="space-y-1"><Label>Topic</Label><Input value={topic} onChange={(e) => setTopic(e.target.value)} /></div>
-        </div>
+    <ScrollArea className="h-[70vh] pr-6">
+        <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1"><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+                <div className="space-y-1"><Label>Topic</Label><Input value={topic} onChange={(e) => setTopic(e.target.value)} /></div>
+            </div>
 
-        <div>
-            <Label>Grid Editor</Label>
-            <div className="p-2 border rounded-md bg-slate-50 overflow-auto">
-                {grid.map((row, r) => (
-                    <div key={r} className="flex">
-                        {row.map((cell, c) => (
-                            <Input
-                                key={c}
-                                value={cell}
-                                onChange={e => handleGridInputChange(r, c, e.target.value)}
-                                className="w-10 h-10 text-center p-0 rounded-none border-gray-300"
-                                maxLength={1}
-                            />
-                        ))}
-                    </div>
-                ))}
+            <div>
+                <Label>Grid Editor</Label>
+                <div className="p-2 border rounded-md bg-slate-50 overflow-auto">
+                    {grid.map((row, r) => (
+                        <div key={r} className="flex">
+                            {row.map((cell, c) => (
+                                <Input
+                                    key={c}
+                                    value={cell}
+                                    onChange={e => handleGridInputChange(r, c, e.target.value)}
+                                    className="w-10 h-10 text-center p-0 rounded-none border-gray-300"
+                                    maxLength={1}
+                                />
+                            ))}
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-                <h4 className="font-semibold">Across Clues</h4>
-                {acrossClues.map((clue, index) => (
-                    <div key={index} className="flex items-end gap-1 p-2 border rounded">
-                       <Input placeholder="Clue" value={clue.clue || ''} onChange={e => handleClueChange('across', index, 'clue', e.target.value)} />
-                       <Input placeholder="Answer" value={clue.answer || ''} onChange={e => handleClueChange('across', index, 'answer', e.target.value)} />
-                       <Button size="icon" variant="ghost" onClick={() => removeClue('across', index)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
-                    </div>
-                ))}
-                <Button variant="outline" size="sm" onClick={() => addClue('across')}><Plus className="h-4 w-4 mr-2"/>Add</Button>
+            <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <h4 className="font-semibold">Across Clues</h4>
+                    {acrossClues.map((clue, index) => (
+                        <div key={index} className="flex items-end gap-1 p-2 border rounded">
+                        <Input placeholder="Clue" value={clue.clue || ''} onChange={e => handleClueChange('across', index, 'clue', e.target.value)} />
+                        <Input placeholder="Answer" value={clue.answer || ''} onChange={e => handleClueChange('across', index, 'answer', e.target.value)} />
+                        <Button size="icon" variant="ghost" onClick={() => removeClue('across', index)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                        </div>
+                    ))}
+                    <Button variant="outline" size="sm" onClick={() => addClue('across')}><Plus className="h-4 w-4 mr-2"/>Add</Button>
+                </div>
+                <div className="space-y-2">
+                    <h4 className="font-semibold">Down Clues</h4>
+                    {downClues.map((clue, index) => (
+                        <div key={index} className="flex items-end gap-1 p-2 border rounded">
+                        <Input placeholder="Clue" value={clue.clue || ''} onChange={e => handleClueChange('down', index, 'clue', e.target.value)} />
+                        <Input placeholder="Answer" value={clue.answer || ''} onChange={e => handleClueChange('down', index, 'answer', e.target.value)} />
+                        <Button size="icon" variant="ghost" onClick={() => removeClue('down', index)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                        </div>
+                    ))}
+                    <Button variant="outline" size="sm" onClick={() => addClue('down')}><Plus className="h-4 w-4 mr-2"/>Add</Button>
+                </div>
             </div>
-             <div className="space-y-2">
-                <h4 className="font-semibold">Down Clues</h4>
-                {downClues.map((clue, index) => (
-                    <div key={index} className="flex items-end gap-1 p-2 border rounded">
-                       <Input placeholder="Clue" value={clue.clue || ''} onChange={e => handleClueChange('down', index, 'clue', e.target.value)} />
-                       <Input placeholder="Answer" value={clue.answer || ''} onChange={e => handleClueChange('down', index, 'answer', e.target.value)} />
-                       <Button size="icon" variant="ghost" onClick={() => removeClue('down', index)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
-                    </div>
-                ))}
-                <Button variant="outline" size="sm" onClick={() => addClue('down')}><Plus className="h-4 w-4 mr-2"/>Add</Button>
-            </div>
+            
+            <Button onClick={handleSave} disabled={isSaving} className="w-full">
+                {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="h-4 w-4 mr-2"/>} Save Puzzle
+            </Button>
         </div>
-        
-        <Button onClick={handleSave} disabled={isSaving} className="w-full">
-            {isSaving ? <Loader2 className="animate-spin mr-2"/> : <Save className="h-4 w-4 mr-2"/>} Save Puzzle
-        </Button>
-    </div>
+    </ScrollArea>
   );
 }
