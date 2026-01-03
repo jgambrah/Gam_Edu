@@ -18,34 +18,6 @@ const CrosswordPuzzle = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [studentInterest, setStudentInterest] = useState('');
 
-  // Sample puzzle for initial display
-  const samplePuzzle = {
-    id: 'sample',
-    title: "Sample Puzzle - Science",
-    grid: [
-      ['E', 'N', 'E', 'R', 'G', 'Y', '', '', '', ''],
-      ['', '', 'V', '', '', '', '', '', '', ''],
-      ['', '', 'O', '', '', 'A', 'T', 'O', 'M', ''],
-      ['', '', 'L', '', '', '', '', '', '', ''],
-      ['C', 'E', 'L', 'L', '', '', '', '', '', ''],
-      ['', '', 'U', '', '', '', '', '', '', ''],
-      ['', '', 'T', '', '', '', '', '', '', ''],
-      ['', '', 'I', '', '', '', '', '', '', ''],
-      ['', '', 'O', '', '', '', '', '', '', ''],
-      ['', '', 'N', '', '', '', '', '', '', ''],
-    ],
-    clues: {
-      across: [
-        { number: 1, clue: "The capacity to do work", answer: "ENERGY", row: 0, col: 0 },
-        { number: 3, clue: "Smallest unit of matter", answer: "ATOM", row: 2, col: 5 },
-        { number: 5, clue: "Basic unit of life", answer: "CELL", row: 4, col: 0 },
-      ],
-      down: [
-        { number: 2, clue: "Change in species over time", answer: "EVOLUTION", row: 0, col: 2 },
-      ]
-    }
-  };
-  
   const loadPuzzle = (puzzleData: any) => {
     setCurrentPuzzle(puzzleData);
     const rows = puzzleData.grid.length;
@@ -57,18 +29,11 @@ const CrosswordPuzzle = () => {
     setSelectedCell(null);
   };
 
-  useEffect(() => {
-    loadPuzzle(samplePuzzle);
-  }, []);
-
-  const generatePuzzleWithAI = async () => {
-    if (!studentInterest.trim()) {
-      alert('Please enter your interest or topic!');
-      return;
-    }
+  const generatePuzzleWithAI = useCallback(async (topic?: string) => {
+    const interest = topic || studentInterest || "General Knowledge";
     setIsGenerating(true);
     try {
-      const puzzleData = await generateCrosswordAction(studentInterest);
+      const puzzleData = await generateCrosswordAction(interest);
       if (puzzleData) {
         loadPuzzle({ id: Date.now(), ...puzzleData });
       } else {
@@ -80,8 +45,15 @@ const CrosswordPuzzle = () => {
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [studentInterest]);
 
+  // Generate a default puzzle on initial load
+  useEffect(() => {
+    generatePuzzleWithAI("Science");
+  }, [generatePuzzleWithAI]);
+
+
+  // Check if puzzle is complete
   useEffect(() => {
     if (!currentPuzzle || !userGrid.length) return;
     
@@ -91,16 +63,15 @@ const CrosswordPuzzle = () => {
     setCompleted(isComplete);
   }, [userGrid, currentPuzzle]);
 
-  if (!currentPuzzle) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  }
-
-  const rows = currentPuzzle.grid.length;
-  const cols = currentPuzzle.grid[0].length;
-
   const isPlayableCell = (row: number, col: number) => {
-    return currentPuzzle.clues.across.some((clue: any) => row === clue.row && col >= clue.col && col < clue.col + clue.answer.length) ||
-           currentPuzzle.clues.down.some((clue: any) => col === clue.col && row >= clue.row && row < clue.row + clue.answer.length);
+    if (!currentPuzzle || !currentPuzzle.clues) return false;
+    const isAcross = currentPuzzle.clues.across.some((clue: any) => 
+        row === clue.row && col >= clue.col && col < clue.col + clue.answer.length
+    );
+    const isDown = currentPuzzle.clues.down.some((clue: any) => 
+        col === clue.col && row >= clue.row && row < clue.row + clue.answer.length
+    );
+    return isAcross || isDown;
   };
 
   const handleCellClick = (row: number, col: number) => {
@@ -157,14 +128,17 @@ const CrosswordPuzzle = () => {
       }
     }
   };
-
+  
   const handleReset = () => {
+    if (!currentPuzzle) return;
+    const rows = currentPuzzle.grid.length;
+    const cols = currentPuzzle.grid[0].length;
     setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
     setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
     setShowHints({});
     setCompleted(false);
   };
-
+  
   const handleCheckAnswers = () => {
     const newStatusGrid = userGrid.map((row, i) =>
       row.map((cell, j) => {
@@ -189,6 +163,18 @@ const CrosswordPuzzle = () => {
     
     return null;
   };
+  
+  if (!currentPuzzle || isGenerating) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[500px] bg-slate-50 rounded-lg">
+          <Loader2 size={48} className="animate-spin text-indigo-500 mb-4" />
+          <p className="text-indigo-700 font-semibold">Generating your puzzle...</p>
+      </div>
+    );
+  }
+
+  const rows = currentPuzzle.grid.length;
+  const cols = currentPuzzle.grid[0].length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-8">
@@ -211,7 +197,7 @@ const CrosswordPuzzle = () => {
                 onKeyPress={(e) => e.key === 'Enter' && generatePuzzleWithAI()}
               />
               <button
-                onClick={generatePuzzleWithAI}
+                onClick={() => generatePuzzleWithAI()}
                 disabled={isGenerating}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
@@ -242,7 +228,7 @@ const CrosswordPuzzle = () => {
               <div className="inline-block bg-gray-100 p-2 sm:p-4 rounded-lg shadow-inner overflow-x-auto">
                 {currentPuzzle.grid.map((row: string[], i: number) => (
                   <div key={i} className="flex">
-                    {row.map((cell: string, j: number) => {
+                    {row.map((_, j: number) => {
                       const clueNum = getClueNumber(i, j);
                       const isSelected = selectedCell?.row === i && selectedCell?.col === j;
                       const status = cellStatus[i]?.[j];
@@ -265,13 +251,15 @@ const CrosswordPuzzle = () => {
                               {clueNum}
                             </span>
                           )}
-                          <div
+                          <input
+                            type="text"
+                            maxLength={1}
                             onKeyDown={(e) => handleKeyDown(e, i, j)}
-                            tabIndex={isPlayable ? 0 : -1}
-                            className="w-full h-full flex items-center justify-center text-base sm:text-lg font-semibold uppercase outline-none"
-                          >
-                           {userGrid[i]?.[j]}
-                          </div>
+                            value={userGrid[i]?.[j] || ''}
+                            onChange={() => {}} // Controlled by onKeyDown
+                            className="w-full h-full text-center text-base sm:text-lg font-semibold uppercase bg-transparent outline-none"
+                            ref={(input) => isSelected && input?.focus()}
+                          />
                         </div>
                       );
                     })}
@@ -302,7 +290,7 @@ const CrosswordPuzzle = () => {
                     🎉 Congratulations! You've completed the puzzle!
                   </p>
                    <button
-                    onClick={generatePuzzleWithAI}
+                    onClick={() => generatePuzzleWithAI()}
                     className="mt-3 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                   >
                     Generate Another Puzzle
