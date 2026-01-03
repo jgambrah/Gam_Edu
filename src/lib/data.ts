@@ -473,23 +473,17 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Basic Science",
     topic: "Science",
     grid: [
+      ["", "A", "", "", "", ""],
       ["", "T", "", "", "", ""],
-      ["A", "E", "M", "P", "", ""],
-      ["I", "", "", "", "", ""],
-      ["R", "", "C", "E", "L", "L"],
-      ["", "", "A", "", "", ""],
-      ["", "", "T", "", "", ""],
-      ["", "", "O", "", "", ""],
-      ["", "", "M", "", "", ""],
+      ["C", "O", "M", "P", "O", "UND"],
+      ["", "M", "", "", "", ""],
     ],
     clues: {
       across: [
-        { number: 2, clue: "Basic unit of life", answer: "CELL", row: 3, col: 2 },
-        { number: 3, clue: "Smallest unit of matter", answer: "ATOM", row: 7, col: 2 },
+        { number: 1, clue: "Two or more elements chemically bonded", answer: "COMPOUND", row: 2, col: 0 },
       ],
       down: [
-        { number: 1, clue: "Short for temperature", answer: "TEMP", row: 0, col: 1 },
-        { number: 2, clue: "Gas we breathe in", answer: "AIR", row: 1, col: 0 },
+        { number: 2, clue: "The smallest unit of an element", answer: "ATOM", row: 0, col: 1 },
       ]
     }
   },
@@ -518,24 +512,22 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "School Subjects",
     topic: "School",
     grid: [
-      ["", "M", "A", "T", "H"],
-      ["", "U", "", "", ""],
-      ["A", "S", "I", "C", ""],
-      ["R", "I", "", "", ""],
-      ["T", "C", "", "", ""]
+      ["M", "A", "T", "H", ""],
+      ["U", "", "", "", ""],
+      ["S", "", "R", "", ""],
+      ["I", "", "T", "", ""],
+      ["C", "", "", "", ""],
     ],
     clues: {
       across: [
-        { number: 1, clue: "Subject with numbers", answer: "MATH", row: 0, col: 1 },
-        { number: 2, clue: "Subject with songs", answer: "MUSIC", row: 2, col: 1 },
-        { number: 4, clue: "Subject with painting", answer: "ART", row: 2, col: 0 }
+        { number: 1, clue: "Subject with numbers", answer: "MATH", row: 0, col: 0 },
       ],
       down: [
-        { number: 1, clue: "Stands for 'Mathematics'", answer: "MATH", row: 0, col: 1 },
-        { number: 3, clue: "Subject with experiments", answer: "SCIENCE", row: 2, col: 2 }
+        { number: 1, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 0 },
+        { number: 2, clue: "Subject with painting", answer: "ART", row: 0, col: 2 },
       ]
     }
-  }
+  },
 ];
 
 
@@ -674,5 +666,7 @@ export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
     { id: 'ela-g-02', topic: 'Verbs', type: 'MCQ', question_prompt: "The children ______ playing in the park.", correct_answer: "are", options: ["is", "are", "am", "be"], classId: 'class-1' },
 ];
+
+    
 
     
