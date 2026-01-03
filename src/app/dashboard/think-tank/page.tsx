@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -25,6 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
 import CrosswordPuzzle from '@/components/academics/think-tank/crossword';
+import { AddPuzzleForm } from '@/components/academics/think-tank/puzzle-maker';
 
 // Types and AI Functions
 import type { Paradox, DebateTopic, Student } from '@/lib/types';
@@ -32,6 +34,7 @@ import { generateDailyParadox, generateDebateTopic, generateDetectiveCase } from
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { formatDate } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
 

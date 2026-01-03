@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useRole } from '@/context/role-context';
 import { AddPuzzleForm } from './puzzle-maker';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
 
 const CrosswordPuzzle = () => {
   const [currentPuzzle, setCurrentPuzzle] = useState<any>(null);
@@ -24,8 +26,35 @@ const CrosswordPuzzle = () => {
   
   const { role } = useRole();
   const { toast } = useToast();
+  const firestore = useFirestore();
   
   const isTeacher = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+
+  const puzzlesQuery = useMemoFirebase(
+    () => firestore ? query(collection(firestore, 'junior_puzzles'), orderBy('createdAt', 'desc')) : null,
+    [firestore]
+  );
+  const { data: puzzles, isLoading: isLoadingPuzzles } = useCollection(puzzlesQuery);
+
+  const loadPuzzle = useCallback((puzzleData: any) => {
+    if (!puzzleData || !puzzleData.grid || !Array.isArray(puzzleData.grid) || puzzleData.grid.length === 0) {
+        console.error("Invalid puzzle data provided to loadPuzzle", puzzleData);
+        toast({
+          variant: 'destructive',
+          title: 'Invalid Puzzle Data',
+          description: 'Could not load the crossword puzzle. Please try another one.',
+        });
+        return;
+    }
+    setCurrentPuzzle(puzzleData);
+    const rows = puzzleData.grid.length;
+    const cols = puzzleData.grid[0]?.length || 0;
+    setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
+    setShowHints({});
+    setCompleted(false);
+    setSelectedCell(null);
+  }, [toast]);
 
   const generatePuzzleWithAI = useCallback(async (topic?: string) => {
     const interest = topic || "General Knowledge";
@@ -37,7 +66,7 @@ const CrosswordPuzzle = () => {
       if (puzzleData && puzzleData.grid && puzzleData.clues) {
         loadPuzzle({ id: Date.now(), ...puzzleData });
       } else {
-        throw new Error('Failed to load a valid puzzle from the library.');
+        throw new Error('Failed to generate a valid puzzle.');
       }
     } catch (error: any) {
       toast({
@@ -45,34 +74,31 @@ const CrosswordPuzzle = () => {
         title: 'Puzzle Generation Failed',
         description: error.message || 'Please try again later.',
       });
+      // Fallback to library if AI fails
+      if(puzzles && puzzles.length > 0) {
+        loadPuzzle(puzzles[0]);
+      }
     } finally {
       setIsGenerating(false);
     }
-  }, [toast]);
-
-  const loadPuzzle = (puzzleData: any) => {
-    setCurrentPuzzle(puzzleData);
-    if (!puzzleData || !puzzleData.grid || !Array.isArray(puzzleData.grid) || puzzleData.grid.length === 0) {
-        console.error("Invalid puzzle data provided to loadPuzzle", puzzleData);
-        return;
-    };
-    const rows = puzzleData.grid.length;
-    const cols = puzzleData.grid[0]?.length || 0;
-    setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
-    setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
-    setShowHints({});
-    setCompleted(false);
-    setSelectedCell(null);
-  };
+  }, [toast, loadPuzzle, puzzles]);
   
   useEffect(() => {
-    generatePuzzleWithAI('Science');
-  }, [generatePuzzleWithAI]);
+    // Load first puzzle from library, or generate if library is empty
+    if (!isLoadingPuzzles) {
+      if (puzzles && puzzles.length > 0) {
+        loadPuzzle(puzzles[0]);
+        setIsGenerating(false);
+      } else {
+        generatePuzzleWithAI('Science');
+      }
+    }
+  }, [puzzles, isLoadingPuzzles, loadPuzzle, generatePuzzleWithAI]);
 
 
   // Check if puzzle is complete
   useEffect(() => {
-    if (!currentPuzzle || !userGrid.length) return;
+    if (!currentPuzzle || !userGrid.length || currentPuzzle.grid.length === 0) return;
     
     const isComplete = currentPuzzle.grid.every((row: string[], i: number) =>
       row.every((cell, j) => cell === '' || (userGrid[i]?.[j]?.toUpperCase() === cell))
@@ -188,12 +214,12 @@ const CrosswordPuzzle = () => {
     return null;
   };
   
-  if (isGenerating || !currentPuzzle) {
+  if (isGenerating || isLoadingPuzzles || !currentPuzzle) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] bg-slate-50 rounded-lg">
           <Loader2 size={48} className="animate-spin text-indigo-500 mb-4" />
           <p className="text-indigo-700 font-semibold">
-            Generating your puzzle...
+            Loading Puzzle Library...
           </p>
       </div>
     );
