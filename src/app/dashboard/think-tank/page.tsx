@@ -1,10 +1,11 @@
 
+
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useRole } from '@/context/role-context';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
-import { collection, query, orderBy, limit, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { useRole } from '@/context/role-context';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, setDoc, increment, getDocs, onSnapshot } from 'firebase/firestore';
 import { isSameDay } from 'date-fns';
 import { BrainCircuit, Loader2, PlusCircle, Lightbulb, Clock, CheckCircle2, ChevronRight, MessageSquare, Search, AlertTriangle, ShieldCheck, Wand2, Trash2, Activity, Users } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
@@ -25,8 +26,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
-import CrosswordPuzzle from '@/components/academics/think-tank/crossword';
-import { AddPuzzleForm } from '@/components/academics/think-tank/puzzle-maker';
 
 // Types and AI Functions
 import type { Paradox, DebateTopic, Student } from '@/lib/types';
@@ -539,17 +538,15 @@ export default function ThinkTankPage() {
       </Card>
 
       <Tabs defaultValue="paradox" className="w-full">
-        <TabsList className={cn("grid w-full", canManage ? "grid-cols-5" : "grid-cols-4")}>
+        <TabsList className={cn("grid w-full", canManage ? "grid-cols-4" : "grid-cols-3")}>
             <TabsTrigger value="paradox">Daily Paradox</TabsTrigger>
             <TabsTrigger value="detective">Detective Desk</TabsTrigger>
             <TabsTrigger value="debate">Debate Arena</TabsTrigger>
-            <TabsTrigger value="crossword">Crossword</TabsTrigger>
             {canManage && <TabsTrigger value="monitor"><Activity className="mr-2 h-4 w-4"/> Activity Log</TabsTrigger>}
         </TabsList>
         <TabsContent value="paradox" className="mt-6"><DailyParadoxTab /></TabsContent>
         <TabsContent value="detective" className="mt-6"><DetectiveDeskTab /></TabsContent>
         <TabsContent value="debate" className="mt-6"><DebateArenaTab /></TabsContent>
-        <TabsContent value="crossword" className="mt-6"><CrosswordPuzzle /></TabsContent>
         {canManage && (
             <TabsContent value="monitor" className="mt-6">
                 <TeacherMonitorTab />
