@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -214,19 +215,18 @@ export async function generateCrosswordAction(topic: string) {
   2.  Generate 4 to 6 words total.
   3.  Each word must be 4 to 8 letters long.
   4.  The grid size must be between 5x5 and 10x10.
-  5.  Use empty strings "" for black/empty squares.
-  6.  All clues must be educational and age-appropriate.
-  7.  The grid MUST correctly represent the intersection of all words.
-  8.  All clues in 'across' and 'down' must have a corresponding answer in the grid.
-  9.  IMPORTANT: You MUST include BOTH "across" AND "down" clues, even if down is an empty array [].
+  5.  All clues MUST be educational and age-appropriate.
+  6.  The grid MUST correctly represent the intersection of all words. Use empty strings "" for black/empty squares.
+  7.  You MUST include BOTH "across" AND "down" clues, even if one is an empty array [].
+  8.  Each clue object in both "across" and "down" arrays MUST contain all of these properties: "number", "clue", "answer", "row", and "col".
 
   Return ONLY valid JSON with this exact structure:
   {
     "title": "Puzzle title",
     "grid": [["L","E","A","R","N"],["","","","",""]],
     "clues": {
-      "across": [{...}],
-      "down": [{...}]
+      "across": [{"number": 1, "clue": "To gain knowledge", "answer": "LEARN", "row": 0, "col": 0}],
+      "down": []
     }
   }
   `;
@@ -242,6 +242,11 @@ export async function generateCrosswordAction(topic: string) {
       throw new Error('AI response did not return any parsable output.');
     }
     
+    // Fallback in case AI still forgets the down property.
+    if (!output.clues.down) {
+        output.clues.down = [];
+    }
+
     return output;
 
   } catch (error) {
@@ -250,3 +255,4 @@ export async function generateCrosswordAction(topic: string) {
     throw error;
   }
 }
+
