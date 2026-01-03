@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -97,8 +98,13 @@ const CrosswordPuzzle = () => {
   const rows = currentPuzzle.grid.length;
   const cols = currentPuzzle.grid[0].length;
 
+  const isPlayableCell = (row: number, col: number) => {
+    return currentPuzzle.clues.across.some((clue: any) => row === clue.row && col >= clue.col && col < clue.col + clue.answer.length) ||
+           currentPuzzle.clues.down.some((clue: any) => col === clue.col && row >= clue.row && row < clue.row + clue.answer.length);
+  };
+
   const handleCellClick = (row: number, col: number) => {
-    if (currentPuzzle.grid[row][col] !== '') {
+    if (isPlayableCell(row, col)) {
         if (selectedCell?.row === row && selectedCell?.col === col) {
             setDirection(direction === 'across' ? 'down' : 'across');
         } else {
@@ -109,7 +115,7 @@ const CrosswordPuzzle = () => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, row: number, col: number) => {
     e.preventDefault();
-    if (currentPuzzle.grid[row][col] === '') return;
+    if (!isPlayableCell(row, col)) return;
 
     const newGrid = userGrid.map(r => [...r]);
     const newStatusGrid = cellStatus.map(r => [...r]);
@@ -123,11 +129,11 @@ const CrosswordPuzzle = () => {
       // Move to previous cell
       if (direction === 'across' && col > 0) {
         let prevCol = col - 1;
-        while (prevCol >= 0 && currentPuzzle.grid[row][prevCol] === '') prevCol--;
+        while (prevCol >= 0 && !isPlayableCell(row, prevCol)) prevCol--;
         if (prevCol >= 0) setSelectedCell({ row, col: prevCol });
       } else if (direction === 'down' && row > 0) {
         let prevRow = row - 1;
-        while (prevRow >= 0 && currentPuzzle.grid[prevRow][col] === '') prevRow--;
+        while (prevRow >= 0 && !isPlayableCell(prevRow, col)) prevRow--;
         if (prevRow >= 0) setSelectedCell({ row: prevRow, col });
       }
       return;
@@ -142,11 +148,11 @@ const CrosswordPuzzle = () => {
       // Move to next cell
       if (direction === 'across' && col < cols - 1) {
         let nextCol = col + 1;
-        while (nextCol < cols && currentPuzzle.grid[row][nextCol] === '') nextCol++;
+        while (nextCol < cols && !isPlayableCell(row, nextCol)) nextCol++;
         if (nextCol < cols) setSelectedCell({ row, col: nextCol });
       } else if (direction === 'down' && row < rows - 1) {
         let nextRow = row + 1;
-        while (nextRow < rows && currentPuzzle.grid[nextRow][col] === '') nextRow++;
+        while (nextRow < rows && !isPlayableCell(nextRow, col)) nextRow++;
         if (nextRow < rows) setSelectedCell({ row: nextRow, col });
       }
     }
@@ -162,7 +168,7 @@ const CrosswordPuzzle = () => {
   const handleCheckAnswers = () => {
     const newStatusGrid = userGrid.map((row, i) =>
       row.map((cell, j) => {
-        if (currentPuzzle.grid[i][j] === '') return '';
+        if (!isPlayableCell(i, j)) return '';
         if (!cell) return ''; // Unanswered
         return cell.toUpperCase() === currentPuzzle.grid[i][j] ? 'correct' : 'incorrect';
       })
@@ -234,15 +240,16 @@ const CrosswordPuzzle = () => {
           <div className="grid lg:grid-cols-2 gap-8">
             <div className="flex flex-col items-center">
               <div className="inline-block bg-gray-100 p-2 sm:p-4 rounded-lg shadow-inner overflow-x-auto">
-                {userGrid.map((row: string[], i: number) => (
+                {currentPuzzle.grid.map((row: string[], i: number) => (
                   <div key={i} className="flex">
-                    {currentPuzzle.grid[i].map((cell: string, j: number) => {
+                    {row.map((cell: string, j: number) => {
                       const clueNum = getClueNumber(i, j);
                       const isSelected = selectedCell?.row === i && selectedCell?.col === j;
                       const status = cellStatus[i]?.[j];
+                      const isPlayable = isPlayableCell(i, j);
 
                       let cellClass = 'bg-white border-gray-300 cursor-pointer hover:bg-blue-50';
-                      if (cell === '') cellClass = 'bg-gray-800 border-gray-900';
+                      if (!isPlayable) cellClass = 'bg-gray-800 border-gray-900';
                       else if (isSelected) cellClass = 'bg-yellow-200 border-yellow-400 border-2';
                       else if (status === 'correct') cellClass = 'bg-green-100 border-green-300';
                       else if (status === 'incorrect') cellClass = 'bg-red-100 border-red-300';
@@ -260,7 +267,7 @@ const CrosswordPuzzle = () => {
                           )}
                           <div
                             onKeyDown={(e) => handleKeyDown(e, i, j)}
-                            tabIndex={0}
+                            tabIndex={isPlayable ? 0 : -1}
                             className="w-full h-full flex items-center justify-center text-base sm:text-lg font-semibold uppercase outline-none"
                           >
                            {userGrid[i]?.[j]}
