@@ -201,18 +201,9 @@ const CrosswordPuzzleSchema = z.object({
   grid: z.array(z.array(z.string())),
   clues: z.object({
     across: z.array(CrosswordClueSchema),
-    down: z.array(CrosswordClueSchema), // Now required.
+    down: z.array(CrosswordClueSchema).optional().default([]), // Make down optional with empty array default
   }),
 });
-
-// A more lenient schema for the AI to handle cases where it omits an empty 'down' array.
-const LeniantCrosswordSchema = CrosswordPuzzleSchema.extend({
-  clues: z.object({
-    across: z.array(CrosswordClueSchema),
-    down: z.array(CrosswordClueSchema).optional(), // 'down' is optional here.
-  }),
-});
-
 
 export async function generateCrosswordAction(topic: string) {
   const prompt = `
@@ -227,14 +218,23 @@ export async function generateCrosswordAction(topic: string) {
   6.  All clues must be educational and age-appropriate.
   7.  The grid MUST correctly represent the intersection of all words.
   8.  All clues in 'across' and 'down' must have a corresponding answer in the grid.
-  9.  IMPORTANT: Both the 'across' and 'down' arrays must be present in the 'clues' object, even if one of them is an empty array [].
+  9.  IMPORTANT: You MUST include BOTH "across" AND "down" clues, even if down is an empty array [].
+
+  Return ONLY valid JSON with this exact structure:
+  {
+    "title": "Puzzle title",
+    "grid": [["L","E","A","R","N"],["","","","",""]],
+    "clues": {
+      "across": [{...}],
+      "down": [{...}]
+    }
+  }
   `;
 
   try {
-    // 1. Generate with the lenient schema first.
     const { output } = await ai.generate({
         prompt,
-        output: { schema: LeniantCrosswordSchema },
+        output: { schema: CrosswordPuzzleSchema },
         config: { temperature: 0.8, maxOutputTokens: 4096 },
     });
     
@@ -242,15 +242,7 @@ export async function generateCrosswordAction(topic: string) {
       throw new Error('AI response did not return any parsable output.');
     }
     
-    // 2. Manually ensure the 'down' property exists before final validation.
-    if (!output.clues.down) {
-      output.clues.down = [];
-    }
-    
-    // 3. Validate against the strict schema before returning. This is a final safety check.
-    const finalData = CrosswordPuzzleSchema.parse(output);
-
-    return finalData;
+    return output;
 
   } catch (error) {
     console.error("Error in generateCrosswordAction:", error);
@@ -258,4 +250,3 @@ export async function generateCrosswordAction(topic: string) {
     throw error;
   }
 }
-
