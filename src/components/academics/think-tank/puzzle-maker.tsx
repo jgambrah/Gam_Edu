@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, Firestore } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, type Firestore } from 'firebase/firestore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // --- SERVER ACTION (modified to accept firestore instance) ---
@@ -49,7 +49,7 @@ export function AddPuzzleForm({ onPuzzleCreated }: { onPuzzleCreated: (newPuzzle
       title,
       topic,
       clues: { across: [], down: [] },
-      grid: []
+      grid: [] // Use an empty non-nested array
     };
 
     const res = await saveNewPuzzle(firestore, puzzle, toast);
@@ -71,5 +71,3 @@ export function AddPuzzleForm({ onPuzzleCreated }: { onPuzzleCreated: (newPuzzle
     </ScrollArea>
   );
 }
-
-```
