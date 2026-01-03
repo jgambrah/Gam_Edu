@@ -473,18 +473,19 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Basic Science",
     topic: "Science",
     grid: [
+      ["", "T", "", ""],
       ["A", "T", "O", "M"],
-      ["I", "", "", ""],
-      ["R", "", "", ""],
-      ["", "C", "E", "L", "L"]
+      ["I", "E", "", ""],
+      ["R", "M", "", ""],
+      ["", "P", "C", "E", "L", "L"],
     ],
     clues: {
       across: [
-        { number: 1, clue: "Smallest unit of matter", answer: "ATOM", row: 0, col: 0 },
-        { number: 3, clue: "Basic unit of life", answer: "CELL", row: 3, col: 1 }
+        { number: 1, clue: "Smallest unit of matter", answer: "ATOM", row: 1, col: 0 },
+        { number: 3, clue: "Basic unit of life", answer: "CELL", row: 4, col: 2 }
       ],
       down: [
-        { number: 1, clue: "Gas we breathe in", answer: "AIR", row: 0, col: 0 },
+        { number: 1, clue: "Gas we breathe in", answer: "AIR", row: 1, col: 0 },
         { number: 2, clue: "Short for temperature", answer: "TEMP", row: 0, col: 1 }
       ]
     }
@@ -494,19 +495,20 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "Animal Kingdom",
     topic: "Animals",
     grid: [
-      ["", "D", "O", "G", ""],
-      ["", "I", "", "", ""],
-      ["L", "I", "O", "N", ""],
-      ["", "", "", "", ""],
+      ["T", "D", "O", "G"],
+      ["I", "I", "", ""],
+      ["G", "N", "O", "N"],
+      ["E", "", "", ""],
+      ["R", "L", "I", "O", "N"],
     ],
     clues: {
       across: [
         { number: 2, clue: "Man's best friend", answer: "DOG", row: 0, col: 1 },
-        { number: 3, clue: "King of the jungle", answer: "LION", row: 2, col: 0 }
+        { number: 4, clue: "King of the jungle", answer: "LION", row: 4, col: 1 }
       ],
       down: [
-        { number: 1, clue: "A farm animal that says oink", answer: "PIG", row: 0, col: 3 },
-        { number: 2, clue: "A big cat with stripes", answer: "TIGER", row: 0, col: 1}
+        { number: 1, clue: "A big cat with stripes", answer: "TIGER", row: 0, col: 0 },
+        { number: 3, clue: "A farm animal that says oink", answer: "PIG", row: 0, col: 3 }
       ]
     }
   },
@@ -515,21 +517,24 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
     title: "School Subjects",
     topic: "School",
     grid: [
-      ["", "M", "U", "S", "I", "C"],
-      ["A", "", "", "", "", ""],
-      ["T", "", "", "", "", ""],
-      ["H", "", "", "", "", ""]
+      ["", "M", "A", "T", "H"],
+      ["", "U", "", "", ""],
+      ["", "S", "", "", ""],
+      ["A", "R", "T", "", ""],
+      ["C", "", "", "", ""]
     ],
     clues: {
       across: [
-        { number: 1, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 1 }
+        { number: 1, clue: "Subject with numbers", answer: "MATH", row: 0, col: 1 },
+        { number: 3, clue: "Subject with painting", answer: "ART", row: 3, col: 0 }
       ],
       down: [
-        { number: 2, clue: "Subject with numbers", answer: "MATH", row: 0, col: 0 }
+        { number: 2, clue: "Subject with songs", answer: "MUSIC", row: 0, col: 1 }
       ]
     }
   }
 ];
+
 
 export const sampleAnnouncements = [
   {
