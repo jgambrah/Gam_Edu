@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -19,6 +20,8 @@ const CrosswordPuzzle = () => {
         ['', '', 'I', '', '', '', 'E', 'N', 'E', 'R', 'G', 'Y', '', ''],
         ['', '', 'O', '', '', '', '', '', '', '', '', '', '', ''],
         ['', '', 'N', '', 'A', 'T', 'O', 'M', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', 'E', 'C', 'O', 'S', 'Y', 'S', 'T', 'E', 'M'],
       ],
       clues: {
         across: [
@@ -26,9 +29,10 @@ const CrosswordPuzzle = () => {
           { number: 4, clue: "Force that pulls objects toward Earth's center", answer: "GRAVITY", row: 4, col: 0 },
           { number: 6, clue: "The capacity to do work or produce heat", answer: "ENERGY", row: 6, col: 6 },
           { number: 8, clue: "Smallest unit of matter that retains properties of an element", answer: "ATOM", row: 8, col: 4 },
+          { number: 10, clue: "Community of living organisms interacting with their environment", answer: "ECOSYSTEM", row: 10, col: 8 },
         ],
         down: [
-          { number: 2, clue: "Charles Darwin's theory of natural selection", answer: "EVOLUTION", row: 0, col: 2 },
+          { number: 2, clue: "Charles Darwin's theory of natural selection", answer: "EVOLUTION", row: 2, col: 2 },
         ]
       }
     },
@@ -37,27 +41,80 @@ const CrosswordPuzzle = () => {
       title: "Mathematics Challenge",
       grid: [
         ['F', 'R', 'A', 'C', 'T', 'I', 'O', 'N'],
-        ['', '', '', 'I', '', '', '', ''],
-        ['', '', '', 'R', 'A', 'D', 'I', 'U', 'S'],
-        ['', '', '', 'C', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', 'C', 'I', 'R', 'C', 'L', 'E'],
+        ['', '', '', '', '', '', '', ''],
         ['A', 'N', 'G', 'L', 'E', '', '', ''],
-        ['', '', '', 'E', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', 'R', 'A', 'D', 'I', 'U', 'S'],
+        ['', '', '', '', '', '', '', ''],
+        ['D', 'I', 'A', 'M', 'E', 'T', 'E', 'R'],
       ],
       clues: {
         across: [
           { number: 1, clue: "A number representing part of a whole", answer: "FRACTION", row: 0, col: 0 },
-          { number: 3, clue: "Distance from center to edge of a circle", answer: "RADIUS", row: 2, col: 3 },
-          { number: 5, clue: "Space between two intersecting lines", answer: "ANGLE", row: 4, col: 0 },
+          { number: 3, clue: "A round shape with all points equidistant from center", answer: "CIRCLE", row: 2, col: 3 },
+          { number: 5, clue: "Space between two intersecting lines measured in degrees", answer: "ANGLE", row: 4, col: 0 },
+          { number: 7, clue: "Distance from center to edge of a circle", answer: "RADIUS", row: 6, col: 5 },
+          { number: 9, clue: "Distance across a circle through its center", answer: "DIAMETER", row: 8, col: 0 },
         ],
-        down: [
-            { number: 2, clue: "A round shape", answer: "CIRCLE", row: 0, col: 3 },
-        ]
+        down: []
       }
     },
+    {
+      id: 3,
+      title: "History & Geography",
+      grid: [
+        ['C', 'O', 'N', 'T', 'I', 'N', 'E', 'N', 'T'],
+        ['', '', '', '', '', '', '', '', ''],
+        ['', '', 'N', 'A', 'T', 'I', 'O', 'N', ''],
+        ['', '', '', '', '', '', '', '', ''],
+        ['O', 'C', 'E', 'A', 'N', '', '', '', ''],
+        ['', '', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', 'E', 'M', 'P', 'I', 'R', 'E'],
+        ['', '', '', '', '', '', '', '', ''],
+        ['', 'C', 'U', 'L', 'T', 'U', 'R', 'E', ''],
+      ],
+      clues: {
+        across: [
+          { number: 1, clue: "Large continuous mass of land", answer: "CONTINENT", row: 0, col: 0 },
+          { number: 3, clue: "A country or sovereign state", answer: "NATION", row: 2, col: 2 },
+          { number: 5, clue: "Large body of salt water", answer: "OCEAN", row: 4, col: 0 },
+          { number: 7, clue: "Group of territories under single rule", answer: "EMPIRE", row: 6, col: 5 },
+          { number: 9, clue: "The beliefs and customs of a group of people", answer: "CULTURE", row: 8, col: 1 },
+        ],
+        down: []
+      }
+    },
+    {
+      id: 4,
+      title: "Computer Science",
+      grid: [
+        ['A', 'L', 'G', 'O', 'R', 'I', 'T', 'H', 'M'],
+        ['', '', '', '', '', '', '', '', ''],
+        ['', '', 'D', 'A', 'T', 'A', 'B', 'A', 'S', 'E'],
+        ['', '', '', '', '', '', '', '', ''],
+        ['C', 'O', 'D', 'I', 'N', 'G', '', '', ''],
+        ['', '', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', 'S', 'O', 'F', 'T', 'W', 'A', 'R', 'E'],
+        ['', '', '', '', '', '', '', '', ''],
+        ['', '', '', 'L', 'O', 'G', 'I', 'C', ''],
+      ],
+      clues: {
+        across: [
+          { number: 1, clue: "Step-by-step procedure for solving a problem", answer: "ALGORITHM", row: 0, col: 0 },
+          { number: 3, clue: "Organized collection of structured information", answer: "DATABASE", row: 2, col: 2 },
+          { number: 5, clue: "Writing instructions for computers to follow", answer: "CODING", row: 4, col: 0 },
+          { number: 7, clue: "Programs and applications run by computers", answer: "SOFTWARE", row: 6, col: 6 },
+          { number: 9, clue: "Reasoning conducted according to strict principles", answer: "LOGIC", row: 8, col: 3 },
+        ],
+        down: []
+      }
+    }
   ];
 
   const [currentPuzzle, setCurrentPuzzle] = useState<any>(null);
-  const [userGrid, setUserGrid] = useState<string[][]>([]);
+  const [userGrid, setUserGrid] = useState<any[][]>([]);
   const [selectedCell, setSelectedCell] = useState<{row: number, col: number} | null>(null);
   const [direction, setDirection] = useState('across');
   const [showHints, setShowHints] = useState<Record<number, boolean>>({});
@@ -83,7 +140,7 @@ const CrosswordPuzzle = () => {
 
   // Check if puzzle is complete
   useEffect(() => {
-    if (!currentPuzzle || !userGrid.length) return;
+    if (!currentPuzzle || userGrid.length === 0) return;
     
     const isComplete = currentPuzzle.grid.every((row: string[], i: number) =>
       row.every((cell, j) => cell === '' || (userGrid[i] && userGrid[i][j] && userGrid[i][j].toUpperCase() === cell))
@@ -356,3 +413,8 @@ const CrosswordPuzzle = () => {
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+export default CrosswordPuzzle;
