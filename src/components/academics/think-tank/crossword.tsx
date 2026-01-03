@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useRole } from '@/context/role-context';
-import { PuzzleMaker } from './puzzle-maker';
+import { AddPuzzleForm } from './puzzle-maker';
 
 const CrosswordPuzzle = () => {
   const [currentPuzzle, setCurrentPuzzle] = useState<any>(null);
@@ -67,7 +67,7 @@ const CrosswordPuzzle = () => {
   
   useEffect(() => {
     generatePuzzleWithAI('Science');
-  }, []);
+  }, [generatePuzzleWithAI]);
 
 
   // Check if puzzle is complete
@@ -236,7 +236,7 @@ const CrosswordPuzzle = () => {
                             <DialogTitle>Puzzle Maker</DialogTitle>
                             <DialogDescription>Create your own custom crossword puzzle for students.</DialogDescription>
                         </DialogHeader>
-                        <PuzzleMaker onPuzzleCreated={() => { setIsMakerOpen(false); generatePuzzleWithAI(); }} />
+                        <AddPuzzleForm />
                     </DialogContent>
                  </Dialog>
               )}
