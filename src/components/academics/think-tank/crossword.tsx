@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -46,19 +45,26 @@ const CrosswordPuzzle = () => {
         });
         return;
     }
-    // Added a check for empty grid
-    if (puzzleData.grid.length === 0) {
-        puzzleData.grid = [[]]; // Ensure grid is at least an empty 2D array
-    }
     setCurrentPuzzle(puzzleData);
-    const rows = puzzleData.grid.length;
-    const cols = puzzleData.grid[0]?.length || 0;
+    const rows = puzzleData.grid.length > 0 ? puzzleData.grid.length : 10;
+    const cols = puzzleData.grid[0]?.length > 0 ? puzzleData.grid[0].length : 10;
     setUserGrid(Array(rows).fill(null).map(() => Array(cols).fill('')));
     setCellStatus(Array(rows).fill(null).map(() => Array(cols).fill('')));
     setShowHints({});
     setCompleted(false);
     setSelectedCell(null);
   }, [toast]);
+  
+  const handlePuzzleCreated = useCallback((newPuzzleId: string) => {
+    forceRefetch(); // Tell useCollection to get the latest data
+    
+    // Find the new puzzle in the (soon to be updated) list
+    const newPuzzle = puzzles?.find(p => p.id === newPuzzleId);
+    if (newPuzzle) {
+        loadPuzzle(newPuzzle);
+    }
+    setIsMakerOpen(false);
+  }, [puzzles, forceRefetch, loadPuzzle]);
 
   const generatePuzzleWithAI = useCallback(async (topic?: string) => {
     const interest = topic || "General Knowledge";
@@ -78,7 +84,6 @@ const CrosswordPuzzle = () => {
         title: 'Puzzle Generation Failed',
         description: error.message || 'Please try again later.',
       });
-      // Fallback to library if AI fails
       if(puzzles && puzzles.length > 0) {
         loadPuzzle(puzzles[0]);
       }
@@ -87,23 +92,14 @@ const CrosswordPuzzle = () => {
     }
   }, [toast, loadPuzzle, puzzles]);
   
-   // --- STABLE LOADING LOGIC ---
    useEffect(() => {
-    // If a puzzle is already loaded, do nothing.
-    if (currentPuzzle) return;
+    if (currentPuzzle || isLoadingPuzzles) return;
 
-    // If puzzles are done loading from Firestore...
-    if (!isLoadingPuzzles) {
-        // ...and we have puzzles, load the first one.
-        if (puzzles && puzzles.length > 0) {
-            loadPuzzle(puzzles[0]);
-        } 
-        // ...and the collection is empty, generate a new one via AI.
-        else if (puzzles) { 
-            generatePuzzleWithAI('Science');
-        }
+    if (puzzles && puzzles.length > 0) {
+        loadPuzzle(puzzles[0]);
+    } else if (puzzles) { 
+        generatePuzzleWithAI('Science');
     }
-    // This effect runs when isLoadingPuzzles changes, or when puzzles data arrives.
   }, [isLoadingPuzzles, puzzles, loadPuzzle, generatePuzzleWithAI, currentPuzzle]);
 
 
@@ -273,7 +269,7 @@ const CrosswordPuzzle = () => {
                             <DialogTitle>Puzzle Maker</DialogTitle>
                             <DialogDescription>Create your own custom crossword puzzle for students.</DialogDescription>
                         </DialogHeader>
-                        <AddPuzzleForm />
+                        <AddPuzzleForm onPuzzleCreated={handlePuzzleCreated}/>
                     </DialogContent>
                  </Dialog>
               )}
