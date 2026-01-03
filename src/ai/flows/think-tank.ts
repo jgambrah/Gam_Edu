@@ -188,47 +188,79 @@ export async function generateDetectiveCase(input: { targetGroup: string }) {
 }
 
 // --- NEW: CROSSWORD PUZZLE GENERATION ACTION (ROBUST VERSION) ---
-const CrosswordClueSchema = z.object({
-  number: z.number(),
-  clue: z.string(),
-  answer: z.string(),
-  row: z.number(),
-  col: z.number(),
-});
-
-// Final, strict schema that the application expects.
 const CrosswordPuzzleSchema = z.object({
   title: z.string(),
   grid: z.array(z.array(z.string())),
   clues: z.object({
-    across: z.array(CrosswordClueSchema),
-    down: z.array(CrosswordClueSchema).optional().default([]), // Make down optional with empty array default
+    across: z.array(z.object({
+      number: z.number(),
+      clue: z.string(),
+      answer: z.string(),
+      row: z.number(),
+      col: z.number(),
+    })),
+    down: z.array(z.object({
+      number: z.number(),
+      clue: z.string(),
+      answer: z.string(),
+      row: z.number(),
+      col: z.number(),
+    })).optional().default([]), // Make down optional with empty array default
   }),
 });
 
 export async function generateCrosswordAction(topic: string) {
   const prompt = `
-  You are an expert puzzle creator. Create a complete, valid, and playable crossword puzzle about "${topic}" for educational purposes.
+  Create a crossword puzzle about "${topic}" for educational purposes.
 
-  PUZZLE REQUIREMENTS:
-  1.  Words MUST be related to the topic: "${topic}".
-  2.  Generate 4 to 6 words total.
-  3.  Each word must be 4 to 8 letters long.
-  4.  The grid size must be between 5x5 and 10x10.
-  5.  All clues MUST be educational and age-appropriate.
-  6.  The grid MUST correctly represent the intersection of all words. Use empty strings "" for black/empty squares.
-  7.  You MUST include BOTH "across" AND "down" clues, even if one is an empty array [].
-  8.  Each clue object in both "across" and "down" arrays MUST contain all of these properties: "number", "clue", "answer", "row", and "col".
-
-  Return ONLY valid JSON with this exact structure:
+  CRITICAL REQUIREMENTS:
+  1. Every clue MUST include: number, clue, answer, row, col
+  2. "row" and "col" indicate where the word STARTS in the grid (0-indexed)
+  3. Include both "across" and "down" arrays (use empty [] if no down clues)
+  
+  Example of CORRECT format:
   {
-    "title": "Puzzle title",
-    "grid": [["L","E","A","R","N"],["","","","",""]],
+    "title": "Science Puzzle",
+    "grid": [
+      ["C", "E", "L", "L"],
+      ["", "", "", ""],
+      ["A", "T", "O", "M"]
+    ],
     "clues": {
-      "across": [{"number": 1, "clue": "To gain knowledge", "answer": "LEARN", "row": 0, "col": 0}],
-      "down": []
+      "across": [
+        {
+          "number": 1,
+          "clue": "Basic unit of life",
+          "answer": "CELL",
+          "row": 0,
+          "col": 0
+        },
+        {
+          "number": 3,
+          "clue": "Smallest unit of matter",
+          "answer": "ATOM",
+          "row": 2,
+          "col": 0
+        }
+      ],
+      "down": [
+        {
+          "number": 1,
+          "clue": "Element symbol Ca",
+          "answer": "CA",
+          "row": 0,
+          "col": 0
+        }
+      ]
     }
   }
+
+  Rules:
+  - Grid uses uppercase letters and empty strings "" for black squares.
+  - Create 4-6 words (4-8 letters each).
+  - All clues must be educational.
+  - MUST include row and col for EVERY clue.
+  - Return ONLY valid JSON, no markdown.
   `;
 
   try {
