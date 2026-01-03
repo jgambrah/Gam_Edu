@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -92,20 +93,19 @@ const CrosswordPuzzle = () => {
     }
   }, [toast, loadPuzzle, puzzles]);
   
-   useEffect(() => {
-    if (currentPuzzle || isLoadingPuzzles) return;
-
-    if (puzzles && puzzles.length > 0) {
-        loadPuzzle(puzzles[0]);
-    } else if (puzzles) { 
-        generatePuzzleWithAI('Science');
+  useEffect(() => {
+    if (isLoadingPuzzles || !puzzles) return;
+    if (!currentPuzzle && puzzles.length > 0) {
+      loadPuzzle(puzzles[0]);
+    } else if (!currentPuzzle && puzzles.length === 0) {
+      generatePuzzleWithAI('Science');
     }
-  }, [isLoadingPuzzles, puzzles, loadPuzzle, generatePuzzleWithAI, currentPuzzle]);
+  }, [isLoadingPuzzles, puzzles, currentPuzzle, loadPuzzle, generatePuzzleWithAI]);
 
 
   // Check if puzzle is complete
   useEffect(() => {
-    if (!currentPuzzle || !userGrid.length || currentPuzzle.grid.length === 0) return;
+    if (!currentPuzzle || !userGrid.length || !currentPuzzle.grid || currentPuzzle.grid.length === 0) return;
     
     const isComplete = currentPuzzle.grid.every((row: string[], i: number) =>
       row.every((cell, j) => cell === '' || (userGrid[i]?.[j]?.toUpperCase() === cell))
@@ -221,7 +221,7 @@ const CrosswordPuzzle = () => {
     return null;
   };
   
-  if (isLoadingPuzzles || !currentPuzzle) {
+  if (isLoadingPuzzles || !currentPuzzle || !currentPuzzle.grid || currentPuzzle.grid.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] bg-slate-50 rounded-lg">
           <Loader2 size={48} className="animate-spin text-indigo-500 mb-4" />
