@@ -10,5 +10,5 @@ export const ai = genkit({
     }),
   ],
   // Use a stable and supported model
-  model: 'googleai/gemini-1.0-pro', 
+  model: 'googleai/gemini-pro', 
 });
