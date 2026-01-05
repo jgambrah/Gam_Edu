@@ -1,3 +1,4 @@
+
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
@@ -9,5 +10,5 @@ export const ai = genkit({
     }),
   ],
   // Use a stable and supported model
-  model: 'googleai/gemini-pro', 
+  model: 'googleai/gemini-1.0-pro', 
 });
