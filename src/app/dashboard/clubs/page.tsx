@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +9,7 @@ import Link from 'next/link';
 
 const clubModules = [
   {
-    path: '/dashboard/early-years',
+    path: 'https://nursery-bloom-825774943692.us-west1.run.app',
     title: 'Early Years',
     icon: Rabbit,
     description: 'Explore foundational literacy and numeracy in a fun, interactive environment.',

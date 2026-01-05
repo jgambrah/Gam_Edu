@@ -54,7 +54,8 @@ import {
   ListOrdered,
   RefreshCcw,
   Rabbit,
-  Rocket
+  Rocket,
+  ExternalLink,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -213,9 +214,9 @@ export const navItems: NavItem[] = [
     roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
     subItems: [
         {
-            path: '/dashboard/early-years',
+            path: 'https://nursery-bloom-825774943692.us-west1.run.app',
             title: 'Early Years',
-            icon: Rabbit,
+            icon: ExternalLink,
             roles: ['Student', 'Parent', 'Teacher', 'Administrator', 'Director'],
         },
         {
