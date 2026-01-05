@@ -7,8 +7,10 @@ const nextConfig: NextConfig = {
     serverExternalPackages: [
         "genkit", 
         "@genkit-ai", 
+        "next/dist/compiled/@opentelemetry/api",
         "@opentelemetry/sdk-node",
         "@opentelemetry/context-async-hooks",
+        "@opentelemetry/sdk-trace-node",
         "@grpc/grpc-js",
         "jsonwebtoken"
     ],
