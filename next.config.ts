@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
         "genkit", 
         "@genkit-ai", 
         "@opentelemetry/sdk-node",
+        "@opentelemetry/context-async-hooks",
         "@grpc/grpc-js",
         "jsonwebtoken"
     ],
