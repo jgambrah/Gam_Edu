@@ -1,13 +1,14 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { NUMERACY_DATA, ADDITION_DATA, SUBTRACTION_DATA, NUMBER_WORDS_DATA, TIME_DATA, MEASUREMENT_DATA, TENS_UNITS_DATA, GROUPING_DATA, SEQUENCE_DATA, NUM_COMPARISON_DATA, COUNTING_TASK_DATA, NUMBER_BONDS_DATA, SPATIAL_DATA, MONEY_DATA } from '../constants';
-import { generateLessonImage } from '../services/gemini';
 import { playRawPcm } from '../services/audio';
 import { z } from 'zod';
 import { 
   generateTTSAction,
   generateNumeracyTask,
+  generateLessonImageAction as generateLessonImage,
 } from '@/ai/flows/junior-actions';
 
 type MathTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one' | 'tracing';
@@ -135,8 +136,8 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) 
 
   return (
     <div className="relative">
-      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-600 px-4 py-2 rounded-full font-black text-[10px] uppercase shadow-sm z-10"><i className="fas fa-magic"></i> AI Spatial Assistant</button>
-      <div className="w-full bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 flex flex-col items-center min-h-[550px] animate-in zoom-in duration-500">
+      <button onClick={() => setIsDrawerOpen(true)} className="absolute -top-12 right-0 bg-white border-2 border-blue-200 text-blue-600 px-4 py-2 rounded-full font-bold shadow-sm uppercase tracking-widest z-10"><i className="fas fa-magic"></i> AI Spatial Assistant</button>
+      <div className="w-full flex flex-col items-center bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-blue-100 min-h-[550px] animate-in zoom-in duration-500">
         <h3 className="text-4xl font-black text-blue-600 mb-8 uppercase tracking-tighter text-center">Where is it? 🕵️‍♀️</h3>
         <p className="text-2xl font-bold text-gray-400 mb-10 italic">Where is the <span className="text-blue-500">{current.target}</span>?</p>
         <div className="w-full max-w-2xl aspect-video bg-blue-50 rounded-[3rem] border-8 border-white shadow-inner flex items-center justify-center mb-10 overflow-hidden group">

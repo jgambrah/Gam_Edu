@@ -6,10 +6,10 @@ import { ARTS_DATA } from '../constants';
 import { playRawPcm } from '../services/audio';
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { generateLessonImage } from '../services/gemini';
 import { 
     generateTTSAction, 
-    generateArtDetailsAction 
+    generateArtDetailsAction,
+    generateLessonImageAction
 } from '@/ai/flows/junior-actions';
 
 
@@ -117,7 +117,7 @@ const CreativeStudio: React.FC<{ onSound: (t: string) => void }> = ({ onSound })
 
   const fetchInspiration = async () => {
     setLoading(true);
-    const url = await generateLessonImage(prompts[promptIndex].prompt);
+    const url = await generateLessonImageAction(prompts[promptIndex].prompt);
     setInspirationUrl(url);
     setLoading(false);
   };
@@ -269,7 +269,7 @@ const ColorGarden: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =>
 
   const fetchVisual = async () => {
     setLoading(true);
-    const url = await generateLessonImage(items[index].prompt);
+    const url = await generateLessonImageAction(items[index].prompt);
     setImageUrl(url);
     setLoading(false);
   };
@@ -413,7 +413,7 @@ const TextureBin: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
 
   const fetchTexture = async () => {
     setLoading(true);
-    const url = await generateLessonImage(textures[index].prompt);
+    const url = await generateLessonImageAction(textures[index].prompt);
     setImageUrl(url);
     setLoading(false);
   };
