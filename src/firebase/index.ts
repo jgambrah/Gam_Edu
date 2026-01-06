@@ -25,26 +25,17 @@ export function initializeFirebase() {
         storageBucket: "studio-525105839-159e4.firebasestorage.app",
     });
 
-    // 2. CRITICAL FIX: Force Long Polling & enable persistent cache
-    // This fixes "Internal Assertion Failed" and random disconnects
+    // FIX: Removed experimentalForceLongPolling to prevent offline errors.
+    // The SDK will now manage the connection automatically.
     try {
       firestore = initializeFirestore(firebaseApp, {
-        experimentalForceLongPolling: true,
         localCache: persistentLocalCache({}),
       });
-      console.log("🔥 Firestore initialized with Long Polling (Stable Mode)");
+      console.log("🔥 Firestore initialized with Multi-Tab Persistence.");
     } catch (e) {
-      console.warn("Firestore initialization with persistence failed, falling back:", e);
-      try {
-        // Fallback without persistence if the first attempt fails
-        firestore = initializeFirestore(firebaseApp, {
-          experimentalForceLongPolling: true,
-        });
-      } catch (fallbackError) {
-          console.error("Critical Firestore initialization failed:", fallbackError);
-          // If even the basic init fails, get the standard instance
-          firestore = getFirestore(firebaseApp);
-      }
+      console.warn("Firestore persistence failed, falling back to in-memory:", e);
+      // If persistence fails (e.g., in some private browsing modes), initialize without it.
+      firestore = getFirestore(firebaseApp);
     }
 
   } else {
