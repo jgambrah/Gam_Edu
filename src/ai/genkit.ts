@@ -8,5 +8,6 @@ export const ai = genkit({
       apiKey: process.env.GEMINI_API_KEY,
     }),
   ],
-  model: 'googleai/gemini-1.5-flash-latest', 
+  // ✅ CORRECT: Use Gemini 3 Flash for core logic, text generation, and practice problems
+  model: 'googleai/gemini-3-flash-preview',
 });
