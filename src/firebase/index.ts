@@ -4,7 +4,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore'; 
+import { initializeFirestore, getFirestore, Firestore, persistentLocalCache } from 'firebase/firestore'; 
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Global variables to hold instances (Prevents re-initialization crashes in Next.js)
@@ -24,14 +24,24 @@ export function initializeFirebase() {
         // Ensure this matches the bucket we fixed CORS for
         storageBucket: "studio-525105839-159e4.firebasestorage.app",
     });
+    // This is the critical fix: force a stable connection method.
+    try {
+      firestore = initializeFirestore(firebaseApp, {
+        experimentalForceLongPolling: true,
+        localCache: persistentLocalCache({}),
+      });
+    } catch (e) {
+        console.warn("Firestore persistence failed, falling back:", e);
+        firestore = getFirestore(firebaseApp);
+    }
   } else {
     // --- ALREADY INITIALIZED (Hot Reload) ---
     firebaseApp = getApp();
+    firestore = getFirestore(firebaseApp);
   }
 
   // Always get the latest instances
   auth = getAuth(firebaseApp);
-  firestore = getFirestore(firebaseApp);
   storage = getStorage(firebaseApp, "gs://studio-525105839-159e4.firebasestorage.app");
 
   return { firebaseApp, auth, firestore, storage };

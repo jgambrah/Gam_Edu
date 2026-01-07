@@ -13,25 +13,17 @@ let firebaseApp: FirebaseApp;
 let auth: Auth;
 let firestore: Firestore;
 
-export function initializeFirebase() {
+// This function will be simplified as the main logic moves to index.ts
+export function initializeFirebaseOnClient() {
   if (typeof window === 'undefined') return null;
 
   if (!getApps().length) {
     firebaseApp = initializeApp(firebaseConfig);
-    try {
-      firestore = initializeFirestore(firebaseApp, {
-        experimentalForceLongPolling: true,
-        localCache: persistentLocalCache({}),
-      });
-    } catch (e) {
-      console.warn("Firestore persistence failed, falling back:", e);
-      firestore = getFirestore(firebaseApp);
-    }
   } else {
     firebaseApp = getApp();
-    firestore = getFirestore(firebaseApp);
   }
   auth = getAuth(firebaseApp);
+  firestore = getFirestore(firebaseApp);
 
   return { firebaseApp, auth, firestore };
 }
@@ -43,7 +35,8 @@ interface FirebaseClientProviderProps {
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const firebaseServices = useMemo(() => {
-    return initializeFirebase();
+    // We call the simplified client initializer here.
+    return initializeFirebaseOnClient();
   }, []);
 
   return (
