@@ -11,7 +11,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
       html: `
         <h1>Welcome, ${name}!</h1>
         <p>Thank you for joining GAM Edu. We are excited to help you learn.</p>
-        <p>Click here to start: <a href="https://gam-edu.vercel.app">Go to Dashboard</a></p>
+        <p>Click here to start: <a href="https://gam-it-service.app/dashboard">Go to Dashboard</a></p>
       `
     });
     console.log('Email sent to:', email);
