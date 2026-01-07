@@ -8,8 +8,8 @@ import { z } from 'zod';
 import { 
   generateTTSAction,
   generateNumeracyTask,
-  generateLessonImageAction as generateLessonImage,
-} from '@/ai/flows/junior-actions';
+  generateLessonImageAction
+} from '../actions';
 
 type MathTab = 'numbers' | 'counting' | 'sequence' | 'comparing' | 'number-words' | 'bonds' | 'addition' | 'subtraction' | 'tens-units' | 'grouping' | 'time' | 'money' | 'measurement' | 'shapes' | 'spatial' | 'comparison' | 'patterns' | 'one-to-one' | 'tracing';
 
@@ -112,7 +112,7 @@ const SpatialModule: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) 
   const current = data[index];
 
   useEffect(() => { fetchVisual(); setAnswered(false); }, [index, data]);
-  const fetchVisual = async () => { setLoading(true); const url = await generateLessonImage(current.prompt); setImageUrl(url); setLoading(false); };
+  const fetchVisual = async () => { setLoading(true); const url = await generateLessonImageAction(current.prompt); setImageUrl(url); setLoading(false); };
 
   const handleChoice = (pos: string) => {
     if (pos === current.position) {

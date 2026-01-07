@@ -10,7 +10,7 @@ import {
     generateTTSAction, 
     generateArtDetailsAction,
     generateLessonImageAction
-} from '@/ai/flows/junior-actions';
+} from '../actions';
 
 
 type ArtsTab = 'studio' | 'colors' | 'shapes' | 'texture';
@@ -302,7 +302,7 @@ const ColorGarden: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) =>
            <p className="text-gray-400 font-bold mt-4 italic">"{items[index].name} is {items[index].color.toLowerCase()}!"</p>
         </div>
         <div onClick={() => onSound(`Look at the ${items[index].name}! It is so ${items[index].color.toLowerCase()}!`)} className="relative w-80 h-80 md:w-96 md:h-96 bg-green-50 rounded-[3.5rem] border-8 border-white shadow-2xl overflow-hidden cursor-pointer group">
-          {loading ? <div className="absolute inset-0 flex items-center justify-center"><div className="w-16 h-16 border-8 border-green-400 border-t-transparent rounded-full animate-spin"></div></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110" />}
+          {loading ? <div className="w-16 h-16 border-8 border-green-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110" />}
           <div className="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/5 transition-colors flex items-center justify-center"><i className="fas fa-volume-high text-white text-5xl opacity-0 group-hover:opacity-100 drop-shadow-lg"></i></div>
         </div>
         <div className="flex gap-6 mt-12">
@@ -445,7 +445,7 @@ const TextureBin: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
         <h3 className="text-3xl font-black text-blue-500 mb-8 uppercase tracking-tight">Texture Bin</h3>
         <p className="text-gray-400 font-bold mb-10">Look closely! How does this feel?</p>
         <div onClick={() => onSound(textures[index].description)} className="relative w-72 h-72 md:w-96 md:h-96 bg-blue-50 rounded-[4rem] border-8 border-white shadow-inner flex items-center justify-center cursor-pointer group overflow-hidden mb-10">
-          {loading ? <div className="w-16 h-16 border-8 border-blue-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-125 duration-[2000ms]" />}
+          {loading ? <div className="w-16 h-16 border-8 border-blue-400 border-t-transparent rounded-full animate-spin"></div> : imageUrl && <img src={imageUrl} alt={textures[index].name} className="w-full h-full object-cover transition-transform group-hover:scale-125" />}
           <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/10 transition-colors flex items-center justify-center">
              <i className="fas fa-magnifying-glass text-white text-5xl opacity-0 group-hover:opacity-100 drop-shadow-lg"></i>
           </div>

@@ -16,7 +16,7 @@ import {
   // generateDietExample, 
   // generateDentistExample, 
   // generateHealthScenario 
-} from '@/ai/flows/junior-actions';
+} from '../actions';
 
 type ScienceTab = 'body' | 'organs' | 'growth' | 'senses' | 'diet' | 'dentist' | 'health' | 'water' | 'float-sink' | 'needs' | 'living' | 'weather' | 'animals' | 'transport' | 'concepts' | 'skills';
 
@@ -177,5 +177,3 @@ const ConceptsZone: React.FC<{ onSound: (t: string) => void; isGlobalPlaying: bo
 const SkillsLab: React.FC<{ onSound: (t: string) => void; isGlobalPlaying: boolean }> = () => <div>Skills Lab Module</div>;
 
 export default ScienceExploration;
-
-    
