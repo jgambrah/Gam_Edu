@@ -66,6 +66,12 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
+    path: '/dashboard/subscription',
+    title: 'Upgrade Plan',
+    icon: Star,
+    roles: 'all',
+  },
+  {
     path: '/dashboard/announcements',
     title: 'Announcements',
     icon: Megaphone,
@@ -419,7 +425,7 @@ export const navItems: NavItem[] = [
     path: '/dashboard/reports',
     title: 'Reporting & Analytics',
     icon: BarChart,
-    roles: ['Director', 'Administrator', 'Teacher'],
+    roles: ['Director', 'Administrator', 'Teacher', 'Accountant'],
      subItems: [
       {
         path: '/dashboard/reports/academics',
@@ -772,3 +778,6 @@ export const MOCK_CROSSWORD_PUZZLES: CrosswordPuzzle[] = [
 ];
   
     
+
+
+  
