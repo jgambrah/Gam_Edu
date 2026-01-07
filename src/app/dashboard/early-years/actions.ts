@@ -1,10 +1,13 @@
+'use server';
 
-'use client';
+// REMOVED: import { generateContent } from '@/ai/genkit'; 
+// We will import it dynamically inside the functions below.
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import wav from 'wav';
 import { generateLessonImageAction as generateLessonImage, generateArtDetailsAction, generateNumeracyTask, generateDictionDetails, generateStorytellingScene, generateThemedVocab, generateMissingLetterChallenge, generateSentence, generateRhymingWords, generateBlendsExample } from '@/ai/flows/junior-actions';
+
 
 // --- STORY GENERATOR ---
 const StorySchema = z.object({
@@ -135,6 +138,9 @@ const WordDetailsSchema = z.object({
 
 export async function generateWordDetails(word: string) {
   try {
+    // DYNAMIC IMPORT: This prevents the build error
+    const { ai } = await import('@/ai/genkit');
+    
     const prompt = `
       I need phonics data for the word: "${word}".
       Target audience: 5-year-old child.
