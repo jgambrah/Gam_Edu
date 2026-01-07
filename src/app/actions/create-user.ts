@@ -5,6 +5,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 import type { UserRole } from '@/lib/types';
+import { sendWelcomeEmail } from '@/lib/email'; // Import the email function
 
 // This function initializes the Firebase Admin SDK.
 function getAdminApp(): App {
@@ -48,6 +49,7 @@ export async function createNewUser(
 
   try {
     let userRecord;
+    let isNewUser = false; // Flag to check if we should send an email
 
     // Check if a user with this email already exists in Firebase Auth.
     try {
@@ -60,6 +62,7 @@ export async function createNewUser(
                 password: password,
                 displayName: `${details?.firstName} ${details?.lastName}`.trim(),
             });
+            isNewUser = true; // Mark as a new user
         } else {
             // A different error occurred (e.g., network issue).
             throw error;
@@ -100,6 +103,12 @@ export async function createNewUser(
         const teacherDocRef = firestore.collection('staff').doc(userRecord.uid);
         await teacherDocRef.set({ uid: userRecord.uid, email: email, role: 'Teacher', firstName: 'Teacher', lastName: 'User' }, { merge: true });
         await firestore.collection('users').doc(userRecord.uid).set({ role: 'Teacher' }, { merge: true });
+    }
+    
+    // Send welcome email ONLY if it's a new user creation
+    if (isNewUser) {
+        const fullName = `${details?.firstName} ${details?.lastName}`.trim();
+        await sendWelcomeEmail(email, fullName || 'New User');
     }
 
     return { uid: userRecord.uid };
