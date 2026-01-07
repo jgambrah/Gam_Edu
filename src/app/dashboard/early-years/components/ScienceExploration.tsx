@@ -177,3 +177,5 @@ const ConceptsZone: React.FC<{ onSound: (t: string) => void; isGlobalPlaying: bo
 const SkillsLab: React.FC<{ onSound: (t: string) => void; isGlobalPlaying: boolean }> = () => <div>Skills Lab Module</div>;
 
 export default ScienceExploration;
+
+    
