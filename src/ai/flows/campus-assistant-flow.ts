@@ -130,27 +130,73 @@ const campusAssistantFlow = ai.defineFlow(
         }
     }
 
-    const compiledPrompt = ai.definePrompt({
-      name: 'campusAssistantPrompt',
-      prompt: promptTemplate,
-      model: GEMINI_MODEL, // Explicitly set the model here
-      output: { schema: CampusAssistantOutputSchema },
+    const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
+    const prompt = `
+      You are **CampusBot**, the intelligent AI assistant for the **CampusConnect** school management platform.
+      Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
+  
+      ---
+      ### CONTEXT: USER ROLE
+      The current user is identified as: ${input.role || 'Unknown'}
+  
+      ---
+      ### YOUR CAPABILITIES & INSTRUCTIONS
+      ${ isStudent ? `
+      #### 1. 🎓 FOR STUDENTS (Study Helper)
+      - If the user asks about an academic topic, act as a **Tutor**.
+      
+      ${contextDocument ? `
+      - **IMPORTANT: Use the provided 'CONTEXT DOCUMENT' as your SOLE and PRIMARY source of truth.** Do not use your general knowledge.
+      - Explain the concepts based *only* on these notes. Quote them if necessary.
+      - If the document is empty or doesn't answer the question, state that you couldn't find information in the provided learning materials and ask the user to clarify.
+      
+      CONTEXT DOCUMENT:
+      ---
+      ${contextDocument}
+      ---
+      ` : `
+      - Explain concepts simply (e.g., "Explain living cells"). Use analogies.
+      - Quiz them if they ask for practice.
+      - **Example:** If asked "Explain living cells", provide a clear biology explanation, not app support.
+      `}
+      ` : `
+      #### 2. 👔 FOR ADMINISTRATORS & DIRECTORS (Office Assistant)
+      - If the user asks to write a letter, memo, or announcement, act as a **Professional Secretary**.
+      - Draft professional documents. Ask for details if needed (e.g., "Who is this letter for?").
+      - **Example:** "Draft a letter to parents about a holiday" -> Write a formal letter.
+      `}
+  
+      #### 3. 🧭 APP NAVIGATION (For Everyone)
+      - Guide users on how to use CampusConnect.
+      - **Academics:** Mention the "Math Club", "Science Lab", and "ELA Club" for practice.
+      - **Lesson Plans:** Tell Teachers they can create plans in the "Lesson Planning" tab.
+      - **Materials:** Tell users they can find resources in "Learning Materials".
+      - **Attendance:** Explain that attendance is taken in the Class Dashboard.
+  
+      ---
+      ### CONVERSATION HISTORY
+      (Use this to remember what the user just said)
+      ${historyText}
+      
+      ---
+      ### CURRENT REQUEST
+      User: ${input.prompt}
+      
+      CampusBot Response:
+    `;
+
+    const response = await ai.generate({
+        model: GEMINI_MODEL,
+        prompt: prompt,
     });
 
-    const { output } = await compiledPrompt(
-      {
-        prompt: input.prompt,
-        role: input.role || 'Unknown',
-        history: input.history || [],
-        contextDocument: contextDocument,
-      }
-    );
+    const responseText = response.text;
     
-    if (!output) {
+    if (!responseText) {
       throw new Error("Failed to generate response");
     }
 
-    return { response: output.response as string };
+    return { response: responseText };
   }
 );
 
