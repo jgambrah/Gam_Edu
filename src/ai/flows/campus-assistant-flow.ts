@@ -8,6 +8,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
+import { gemini15Flash } from '@genkit-ai/google-genai'; // Import the model reference
 
 // Define History Schema
 const HistoryMessageSchema = z.object({
@@ -133,15 +134,16 @@ const campusAssistantFlow = ai.defineFlow(
     const compiledPrompt = ai.definePrompt({
       name: 'campusAssistantPrompt',
       prompt: promptTemplate,
-      input: { schema: CampusAssistantInputSchema },
-      output: { schema: CampusAssistantOutputSchema },
     });
 
     const { output } = await compiledPrompt({
-      ...input,
+      prompt: input.prompt,
       role: input.role || 'Unknown',
       history: input.history || [],
       contextDocument: contextDocument,
+    }, {
+      model: gemini15Flash, // Explicitly set the model
+      output: { schema: CampusAssistantOutputSchema },
     });
     
     if (!output) {
