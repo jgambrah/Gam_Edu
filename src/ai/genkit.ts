@@ -11,6 +11,4 @@ export const ai = genkit({
       apiKey: process.env.GEMINI_API_KEY,
     }),
   ],
-  // ✅ SAFEST OPTION: Gemini 1.5 Flash (Super cheap & fast)
-  model: GEMINI_MODEL, 
 });
