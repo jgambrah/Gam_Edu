@@ -133,6 +133,7 @@ const campusAssistantFlow = ai.defineFlow(
     const compiledPrompt = ai.definePrompt({
       name: 'campusAssistantPrompt',
       prompt: promptTemplate,
+      output: { schema: CampusAssistantOutputSchema },
     });
 
     const { output } = await compiledPrompt(
@@ -144,7 +145,6 @@ const campusAssistantFlow = ai.defineFlow(
       },
       {
         model: GEMINI_MODEL, // Explicitly set the model
-        output: { schema: CampusAssistantOutputSchema },
       }
     );
     
