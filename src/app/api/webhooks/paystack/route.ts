@@ -1,6 +1,7 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { db } from '@/firebase/config'; // <--- UPDATED THIS LINE
+import { db } from '@/firebase/config';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 export async function POST(req: NextRequest) {
@@ -30,23 +31,26 @@ export async function POST(req: NextRequest) {
     const data = body.data;
 
     if (event === 'charge.success') {
-      console.log('Payment successful for:', data.customer.email);
+      const metadata = data.metadata;
 
-      // EXTRACT USER ID from metadata
-      const userId = data.metadata?.userId;
-
-      if (userId) {
-        // 3. Update Firestore to give the user access
-        const userRef = doc(db, 'users', userId);
-        await updateDoc(userRef, {
-          isPremium: true,
-          subscriptionStatus: 'active',
+      // SCENARIO 1: SCHOOL UPGRADE
+      if (metadata?.type === 'school_upgrade' && metadata?.schoolId) {
+        console.log(`🏫 Upgrading School: ${metadata.schoolId}`);
+        const schoolRef = doc(db, 'schools', metadata.schoolId);
+        
+        await updateDoc(schoolRef, {
+          plan: 'Premium',
+          status: 'active',
+          trialEndsAt: null, // Remove trial limit
           lastPaymentDate: serverTimestamp(),
           paymentReference: data.reference
         });
-        console.log(`User ${userId} upgraded to Premium.`);
-      } else {
-        console.warn('No userId found in payment metadata');
+      } 
+      
+      // SCENARIO 2: INDIVIDUAL USER UPGRADE (Legacy/Fallback)
+      else if (metadata?.userId) {
+         const userRef = doc(db, 'users', metadata.userId);
+         await updateDoc(userRef, { isPremium: true });
       }
     }
 
