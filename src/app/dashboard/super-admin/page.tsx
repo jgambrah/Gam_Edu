@@ -71,7 +71,7 @@ export default function SuperAdminPage() {
 
       const newSchoolId = schoolRef.id;
 
-      // Step B: Create the School Director
+      // Step B: Create the School Director (Admin) User
       const password = "schoolAdmin123"; // Default password
       
       const result = await createNewUser(
