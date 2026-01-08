@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -26,6 +25,12 @@ export default function SystemRepair({ onRepair }: { onRepair: () => void }) {
         lastName: 'User',
         uid: user.uid,
       }, { merge: true });
+
+      // Also ensure the 'users' collection is correct
+      await setDoc(doc(firestore, 'users', user.uid), {
+        role: 'Director',
+      }, { merge: true });
+
 
       toast({
         title: "System Repaired!",
