@@ -149,12 +149,6 @@ export default function LoginPage() {
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Sign In
                     </Button>
-                    <div className="mt-4 text-center text-sm">
-                    Don't have an account?{' '}
-                    <Link href="/signup" className="underline font-semibold text-indigo-600">
-                        Sign Up
-                    </Link>
-                    </div>
                     <div className="mt-6 text-center text-sm">
                       <p className="text-slate-600">
                         Is your school not registered yet?{' '}
