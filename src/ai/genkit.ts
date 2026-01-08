@@ -1,6 +1,6 @@
 
 import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/google-genai';
+import {googleAI, gemini15Flash} from '@genkit-ai/google-genai'; // Import the model reference
 
 export const ai = genkit({
   plugins: [
@@ -8,6 +8,6 @@ export const ai = genkit({
       apiKey: process.env.GEMINI_API_KEY,
     }),
   ],
-  // ✅ CORRECT: Use Gemini 3 Flash for core logic, text generation, and practice problems
-  model: 'googleai/gemini-3-flash-preview',
+  // ✅ SAFEST OPTION: Gemini 1.5 Flash (Super cheap & fast)
+  model: gemini15Flash, 
 });
