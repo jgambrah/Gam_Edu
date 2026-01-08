@@ -53,7 +53,7 @@ export default function StaffManagementPage() {
 
   // Reset loading state
   useEffect(() => {
-    if (isAddOpen || editingStaff) setIsSubmitting(false);
+    if (isAddOpen || editingStaff) setIsLoading(false);
   }, [isAddOpen, editingStaff]);
 
   // --- 0. INITIALIZATION: GET ADMIN'S SCHOOL ID ---
@@ -173,7 +173,7 @@ export default function StaffManagementPage() {
   // --- 3. UPDATE STAFF LOGIC ---
   const handleUpdateStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (!editingStaff || isSubmitting || !firestore) return;
+      if (!editingStaff || isSubmitting) return;
       setIsSubmitting(true);
 
       const formData = new FormData(e.currentTarget);
@@ -418,3 +418,5 @@ export default function StaffManagementPage() {
     </div>
   );
 }
+
+    
