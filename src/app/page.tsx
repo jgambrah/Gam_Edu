@@ -155,6 +155,14 @@ export default function LoginPage() {
                         Sign Up
                     </Link>
                     </div>
+                    <div className="mt-6 text-center text-sm">
+                      <p className="text-slate-600">
+                        Is your school not registered yet?{' '}
+                        <Link href="/register-school" className="text-blue-600 font-bold hover:underline">
+                          Register your School
+                        </Link>
+                      </p>
+                    </div>
                 </form>
                 </CardContent>
             </Card>
