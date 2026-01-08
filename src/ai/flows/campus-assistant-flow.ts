@@ -135,15 +135,18 @@ const campusAssistantFlow = ai.defineFlow(
       prompt: promptTemplate,
     });
 
-    const { output } = await compiledPrompt({
-      prompt: input.prompt,
-      role: input.role || 'Unknown',
-      history: input.history || [],
-      contextDocument: contextDocument,
-    }, {
-      model: GEMINI_MODEL, // Explicitly set the model
-      output: { schema: CampusAssistantOutputSchema },
-    });
+    const { output } = await compiledPrompt(
+      {
+        prompt: input.prompt,
+        role: input.role || 'Unknown',
+        history: input.history || [],
+        contextDocument: contextDocument,
+      },
+      {
+        model: GEMINI_MODEL, // Explicitly set the model
+        output: { schema: CampusAssistantOutputSchema },
+      }
+    );
     
     if (!output) {
       throw new Error("Failed to generate response");
