@@ -2,6 +2,9 @@
 import {genkit} from 'genkit';
 import {googleAI, gemini15Flash} from '@genkit-ai/google-genai'; // Import the model reference
 
+// 1. Export the Model explicitly so other files use the exact same one
+export const GEMINI_MODEL = gemini15Flash;
+
 export const ai = genkit({
   plugins: [
     googleAI({
@@ -9,5 +12,5 @@ export const ai = genkit({
     }),
   ],
   // ✅ SAFEST OPTION: Gemini 1.5 Flash (Super cheap & fast)
-  model: gemini15Flash, 
+  model: GEMINI_MODEL, 
 });

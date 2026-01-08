@@ -4,11 +4,10 @@
  * @fileOverview An AI assistant for the CampusConnect platform.
  */
 
-import { ai } from '@/ai/genkit';
+import { ai, GEMINI_MODEL } from '@/ai/genkit';
 import { z } from 'zod';
 import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
-import { gemini15Flash } from '@genkit-ai/google-genai'; // Import the model reference
 
 // Define History Schema
 const HistoryMessageSchema = z.object({
@@ -142,7 +141,7 @@ const campusAssistantFlow = ai.defineFlow(
       history: input.history || [],
       contextDocument: contextDocument,
     }, {
-      model: gemini15Flash, // Explicitly set the model
+      model: GEMINI_MODEL, // Explicitly set the model
       output: { schema: CampusAssistantOutputSchema },
     });
     
