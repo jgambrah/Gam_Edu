@@ -1,9 +1,10 @@
+
 'use server';
 /**
  * @fileOverview An AI assistant for the CampusConnect platform.
  */
 
-import { ai } from '@/ai/genkit';
+import { ai, GEMINI_MODEL } from '@/ai/genkit';
 import { gemini15Flash } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
@@ -187,10 +188,10 @@ const campusAssistantFlow = ai.defineFlow(
     `;
 
     const response = await ai.generate({
-        model: gemini15Flash,
+        model: 'googleai/gemini-1.5-flash', // <--- Use the direct string
         prompt: prompt,
         config: {
-            temperature: 0.7
+            temperature: 0.7 // Optional but good for chat
         }
     });
 
