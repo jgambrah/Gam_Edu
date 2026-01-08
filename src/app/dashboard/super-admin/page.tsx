@@ -4,19 +4,22 @@
 import { useState, useEffect } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc } from 'firebase/firestore';
-import { createNewUser } from '@/app/actions/create-user'; // We reuse your action!
+import { createNewUser } from '@/app/actions/create-user';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus, Building2 } from 'lucide-react';
+import { sendCredentialsAction } from '@/app/actions/send-credentials';
 
 type School = {
   id: string;
   name: string;
   plan: string;
   createdAt: any;
+  isActive: boolean;
+  trialEndsAt?: any;
 };
 
 export default function SuperAdminPage() {
@@ -56,44 +59,47 @@ export default function SuperAdminPage() {
     setCreating(true);
 
     try {
-      // Step A: Create the School Document FIRST
+      // Step A: Create the School Document
       const schoolRef = await addDoc(collection(firestore, 'schools'), {
         name: schoolName,
-        plan: 'Standard', // Default plan
+        plan: 'Trial',
+        status: 'active',
         createdAt: serverTimestamp(),
+        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 Day Trial
         isActive: true
       });
 
       const newSchoolId = schoolRef.id;
 
-      // Step B: Create the School Director (Admin) User
-      // We pass the newSchoolId to link them!
+      // Step B: Create the School Director
       const password = "schoolAdmin123"; // Default password
       
       const result = await createNewUser(
         adminEmail,
         password,
-        'Director', // Top role for the school
+        'Director', 
         { firstName: adminName, lastName: 'Admin' },
-        newSchoolId // <--- PASSING THE SCHOOL ID HERE
+        newSchoolId
       );
 
       if ('error' in result) throw new Error(result.error);
 
-      // Step C: Ensure the Director is in the 'staff' collection of that school
+      // Step C: Ensure Director profile exists
       await setDoc(doc(firestore, 'staff', result.uid), {
         uid: result.uid,
         email: adminEmail,
         role: 'Director',
         firstName: adminName,
         lastName: 'Admin',
-        schoolId: newSchoolId, // LINKED!
+        schoolId: newSchoolId,
         createdAt: serverTimestamp()
       });
 
-      toast({ title: "Success!", description: `Created ${schoolName} with Admin: ${adminEmail}` });
+      // --- NEW: SEND CREDENTIALS EMAIL ---
+      await sendCredentialsAction(adminEmail, adminName, schoolName, password);
+
+      toast({ title: "Success!", description: `School created and credentials sent to ${adminEmail}` });
       
-      // Reset Form
       setSchoolName('');
       setAdminEmail('');
       setAdminName('');
