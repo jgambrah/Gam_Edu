@@ -20,6 +20,7 @@ const CampusAssistantInputSchema = z.object({
   prompt: z.string().describe("The user's current question or message."),
   role: z.string().optional().describe('The role of the user (Student, Teacher, Administrator).'),
   history: z.array(HistoryMessageSchema).optional().describe('The previous conversation history.'),
+  contextDocument: z.string().optional(),
 });
 
 export type CampusAssistantInput = z.infer<typeof CampusAssistantInputSchema>;
@@ -133,6 +134,7 @@ const campusAssistantFlow = ai.defineFlow(
     const compiledPrompt = ai.definePrompt({
       name: 'campusAssistantPrompt',
       prompt: promptTemplate,
+      model: GEMINI_MODEL, // Explicitly set the model here
       output: { schema: CampusAssistantOutputSchema },
     });
 
@@ -142,9 +144,6 @@ const campusAssistantFlow = ai.defineFlow(
         role: input.role || 'Unknown',
         history: input.history || [],
         contextDocument: contextDocument,
-      },
-      {
-        model: GEMINI_MODEL, // Explicitly set the model
       }
     );
     
