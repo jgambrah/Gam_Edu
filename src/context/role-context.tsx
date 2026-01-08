@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
@@ -33,7 +34,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
       setLoading(true);
       try {
-        // Priority 1: STAFF
+        // Priority 1: STAFF (Director, Admin, Teacher, etc.)
         const staffRef = doc(firestore, 'staff', currentUser.uid);
         const staffSnap = await getDoc(staffRef);
         if (staffSnap.exists()) {
@@ -60,8 +61,22 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           setProfile(parentSnap.data());
           return;
         }
+        
+        // Fallback: Check the generic 'users' collection for a role, if one exists
+        // This is a safety net for your manual change.
+        const userRef = doc(firestore, 'users', currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+             const data = userSnap.data();
+             if(data.role) {
+                setRole(data.role as Role);
+                setProfile(data); // Set profile with whatever data is here
+                return;
+             }
+        }
 
-        // Fallback if no profile found
+
+        // Fallback if no profile found anywhere
         setRole(null);
         setProfile(null);
 
