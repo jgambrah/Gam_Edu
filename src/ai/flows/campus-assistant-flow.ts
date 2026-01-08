@@ -4,6 +4,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { gemini15Flash } from '@genkit-ai/google-genai';
 import { z } from 'zod';
 import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
@@ -186,7 +187,7 @@ const campusAssistantFlow = ai.defineFlow(
     `;
 
     const response = await ai.generate({
-        model: 'googleai/gemini-1.5-flash',
+        model: gemini15Flash,
         prompt: prompt,
         config: {
             temperature: 0.7
