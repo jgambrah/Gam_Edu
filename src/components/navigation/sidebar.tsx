@@ -4,11 +4,12 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { GraduationCap, LogOut } from 'lucide-react';
+import { Building2, GraduationCap, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context'; 
 import { signOut } from 'firebase/auth';
+import { auth } from '@/firebase/client-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
@@ -123,6 +124,14 @@ export default function AppSidebar() {
               </SidebarMenuItem>
             ) : null
           )}
+          {/* ONLY SHOW FOR THE CEO */}
+          {user?.email === 'jamesgambrah@gmail.com' && (
+            <SidebarMenuItem>
+                 <Link href="/dashboard/super-admin" className="text-purple-600 font-bold flex items-center gap-2 p-2 bg-purple-50 rounded mt-4">
+                    <Building2 className="h-5 w-5"/> CEO Portal
+                </Link>
+            </SidebarMenuItem>
+            )}
         </SidebarMenu>
       </SidebarContent>
       
