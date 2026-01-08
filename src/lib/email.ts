@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const apiKey = process.env.RESEND_API_KEY;
+
+if (!apiKey) {
+  // This check provides a clearer error if the environment variable is not set.
+  throw new Error("RESEND_API_KEY is missing in environment variables.");
+}
+
+const resend = new Resend(apiKey);
 
 export async function sendWelcomeEmail(email: string, name: string) {
   try {
