@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'; // Added Dialog components
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2 } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, AlertTriangle } from 'lucide-react'; 
 
 type School = {
   id: string;
@@ -19,7 +20,6 @@ type School = {
   plan: string;
   createdAt: any;
   isActive: boolean;
-  trialEndsAt?: any;
 };
 
 export default function SuperAdminPage() {
@@ -29,7 +29,10 @@ export default function SuperAdminPage() {
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  
+  // Delete State
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [schoolToDelete, setSchoolToDelete] = useState<School | null>(null);
 
   // Form State
   const [schoolName, setSchoolName] = useState('');
@@ -43,7 +46,6 @@ export default function SuperAdminPage() {
     try {
       const snap = await getDocs(collection(firestore, 'schools'));
       const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as School[];
-      // Sort by newest first (optional but helpful)
       setSchools(data);
     } catch (error) {
       console.error(error);
@@ -100,7 +102,7 @@ export default function SuperAdminPage() {
       // Step D: Send Email
       await sendCredentialsAction(adminEmail, adminName, schoolName, password);
 
-      toast({ title: "Success!", description: `Created ${schoolName} and sent credentials.` });
+      toast({ title: "Success!", description: `Created ${schoolName}` });
       
       setSchoolName('');
       setAdminEmail('');
@@ -114,21 +116,25 @@ export default function SuperAdminPage() {
     }
   };
 
-  // 3. DELETE SCHOOL LOGIC
-  const handleDeleteSchool = async (schoolId: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"?\nThis cannot be undone.`)) return;
-    if (!firestore) return;
-
-    setDeletingId(schoolId);
+  // 3. CONFIRM DELETE LOGIC
+  const confirmDelete = async () => {
+    if (!schoolToDelete || !firestore) return;
+    
+    setIsDeleting(true);
     try {
-        await deleteDoc(doc(firestore, 'schools', schoolId));
-        toast({ title: "Deleted", description: `${name} has been removed.` });
-        fetchSchools(); // Refresh list
+        await deleteDoc(doc(firestore, 'schools', schoolToDelete.id));
+        
+        toast({ title: "Deleted", description: `${schoolToDelete.name} has been removed.` });
+        
+        // Remove from list immediately
+        setSchools(prev => prev.filter(s => s.id !== schoolToDelete.id));
+        setSchoolToDelete(null); // Close modal
+
     } catch (error: any) {
         console.error(error);
-        toast({ variant: 'destructive', title: "Delete Failed", description: "Could not delete school." });
+        toast({ variant: 'destructive', title: "Delete Failed", description: error.message });
     } finally {
-        setDeletingId(null);
+        setIsDeleting(false);
     }
   };
 
@@ -193,10 +199,9 @@ export default function SuperAdminPage() {
                                     variant="ghost" 
                                     size="sm" 
                                     className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                    onClick={() => handleDeleteSchool(s.id, s.name)}
-                                    disabled={deletingId === s.id}
+                                    onClick={() => setSchoolToDelete(s)}
                                 >
-                                    {deletingId === s.id ? <Loader2 className="h-4 w-4 animate-spin"/> : <Trash2 className="h-4 w-4"/>}
+                                    <Trash2 className="h-4 w-4"/>
                                 </Button>
                             </TableCell>
                         </TableRow>
@@ -206,6 +211,32 @@ export default function SuperAdminPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* DELETE CONFIRMATION DIALOG */}
+      <Dialog open={!!schoolToDelete} onOpenChange={(open) => !open && setSchoolToDelete(null)}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-red-600">
+                    <AlertTriangle className="h-5 w-5"/> Delete School?
+                </DialogTitle>
+                <DialogDescription>
+                    Are you sure you want to delete <strong>{schoolToDelete?.name}</strong>?
+                    <br/><br/>
+                    This action cannot be undone. It will remove the school record. 
+                    (Note: You may need to manually remove users if this is a live school).
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="mt-4">
+                <Button variant="outline" onClick={() => setSchoolToDelete(null)} disabled={isDeleting}>
+                    Cancel
+                </Button>
+                <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2"/> : <Trash2 className="h-4 w-4 mr-2"/>}
+                    Delete Permanently
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
