@@ -3,8 +3,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-// FIX: Using getDocs instead of useCollection hooks
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from 'firebase/firestore';
+// UPDATED IMPORTS: Added 'query', 'where', 'getDoc'
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from 'firebase/firestore';
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -20,7 +20,6 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
 
-// --- TYPE DEFINITIONS ---
 type StaffMember = {
   id: string;
   uid: string;
@@ -31,14 +30,17 @@ type StaffMember = {
   phone?: string;
   gender?: string;
   address?: string;
+  schoolId?: string; // New Field
 };
 
 export default function StaffManagementPage() {
+  const { user } = useAuth(); // Get currently logged in Admin
   const firestore = useFirestore();
   const { toast } = useToast();
 
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null); // State for the School ID
   
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -49,33 +51,52 @@ export default function StaffManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
 
-  // Reset loading state when modals open/close
+  // Reset loading state
   useEffect(() => {
-    if (isAddOpen || editingStaff) {
-        setIsSubmitting(false);
-    }
+    if (isAddOpen || editingStaff) setIsSubmitting(false);
   }, [isAddOpen, editingStaff]);
 
-  // --- 1. FETCH LOGIC (Simplified & Stabilized) ---
+  // --- 0. INITIALIZATION: GET ADMIN'S SCHOOL ID ---
+  useEffect(() => {
+    const fetchAdminProfile = async () => {
+        if (!user || !firestore) return;
+        try {
+            // Check 'users' collection to get the Admin's schoolId
+            const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                if (data.schoolId) {
+                    console.log("🏫 Managing School ID:", data.schoolId);
+                    setAdminSchoolId(data.schoolId);
+                } else {
+                    console.warn("⚠️ You are not linked to any school.");
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching admin profile:", error);
+        }
+    };
+    fetchAdminProfile();
+  }, [user, firestore]);
+
+  // --- 1. FETCH LOGIC (Filtered by School) ---
   const fetchStaff = useCallback(async () => {
-    if (!firestore) {
-        console.log("Firestore not ready, skipping fetch.");
-        return;
-    }
+    if (!firestore || !adminSchoolId) return; // Don't fetch if we don't know the school yet
     
     setIsLoading(true);
-    console.log("🔄 Fetching Staff List...");
+    console.log("🔄 Fetching Staff for School:", adminSchoolId);
 
     try {
         const staffCollection = collection(firestore, 'staff');
-        const snapshot = await getDocs(staffCollection);
+        // FILTER: Only show staff belonging to this school
+        const q = query(staffCollection, where('schoolId', '==', adminSchoolId));
+        const snapshot = await getDocs(q);
         
         const data = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         })) as StaffMember[];
 
-        console.log(`✅ Found ${data.length} staff members.`);
         setStaff(data);
     } catch (err: any) {
         console.error("Fetch Error:", err);
@@ -83,17 +104,23 @@ export default function StaffManagementPage() {
     } finally {
         setIsLoading(false);
     }
-  }, [firestore, toast]);
+  }, [firestore, adminSchoolId, toast]);
 
-  // Run fetch on mount
+  // Load when school ID is ready
   useEffect(() => {
-      fetchStaff();
-  }, [fetchStaff]);
+      if(adminSchoolId) fetchStaff();
+  }, [fetchStaff, adminSchoolId]);
 
   // --- 2. ADD STAFF LOGIC ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting) return; 
+      
+      if (!adminSchoolId) {
+          toast({ variant: 'destructive', title: "Error", description: "You must be linked to a school to add staff." });
+          return;
+      }
+
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
@@ -107,11 +134,18 @@ export default function StaffManagementPage() {
       const password = "password123"; 
 
       try {
-          // A. Create Auth User 
-          const result = await createNewUser(email, password, role, { firstName, lastName });
+          // A. Create Auth User (PASSING SCHOOL ID NOW)
+          const result = await createNewUser(
+              email, 
+              password, 
+              role, 
+              { firstName, lastName },
+              adminSchoolId // <--- NEW: Link user to school in Auth
+            );
+            
           if ('error' in result) throw new Error(result.error);
 
-          // B. Create Firestore Doc
+          // B. Create Firestore Doc (INCLUDING SCHOOL ID)
           await setDoc(doc(firestore, 'staff', result.uid), {
               uid: result.uid,
               firstName,
@@ -121,12 +155,13 @@ export default function StaffManagementPage() {
               phone,
               gender,
               address,
+              schoolId: adminSchoolId, // <--- NEW: Link document to school
               createdAt: serverTimestamp()
           });
 
-          toast({ title: "Success", description: `${firstName} added.` });
+          toast({ title: "Success", description: `${firstName} added to school.` });
           setIsAddOpen(false);
-          fetchStaff(); // Manually refetch data
+          fetchStaff(); 
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -138,7 +173,7 @@ export default function StaffManagementPage() {
   // --- 3. UPDATE STAFF LOGIC ---
   const handleUpdateStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (!editingStaff || isSubmitting) return;
+      if (!editingStaff || isSubmitting || !firestore) return;
       setIsSubmitting(true);
 
       const formData = new FormData(e.currentTarget);
@@ -161,7 +196,7 @@ export default function StaffManagementPage() {
               address
           });
 
-          toast({ title: "Updated", description: "Staff details saved successfully." });
+          toast({ title: "Updated", description: "Staff details saved." });
           setEditingStaff(null); 
           fetchStaff();
 
@@ -180,8 +215,8 @@ export default function StaffManagementPage() {
           await deleteDoc(doc(firestore, 'staff', id));
           toast({ title: "Deleted" });
           fetchStaff(); 
-      } catch (e) {
-          toast({ variant: 'destructive', title: "Error", description: "Delete failed" });
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
       }
   };
 
@@ -191,7 +226,7 @@ export default function StaffManagementPage() {
     (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) &&
     (roleFilter === 'all' || s.role === roleFilter)
   );
-
+  
   return (
     <div className="space-y-6 p-6">
       <Card className="border-t-4 border-t-blue-600 shadow-sm">
@@ -201,14 +236,18 @@ export default function StaffManagementPage() {
                     <Users className="h-6 w-6 text-blue-600"/> Staff Management
                 </CardTitle>
                 <CardDescription>
-                    Found: {staff.length} | Showing: {filteredStaff.length}
+                    {adminSchoolId ? "Managing Staff for your School" : "Loading School Data..."}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={fetchStaff} disabled={isLoading}>
+                <Button variant="outline" onClick={fetchStaff} disabled={isLoading || !adminSchoolId}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
-                <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                <Button 
+                    onClick={() => setIsAddOpen(true)} 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={!adminSchoolId}
+                >
                     <UserPlus className="h-4 w-4 mr-2"/> Add Staff
                 </Button>
             </div>
@@ -237,7 +276,7 @@ export default function StaffManagementPage() {
             {isLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-blue-500"/></div>
             ) : filteredStaff.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No staff found matching your criteria.</div>
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No staff found for this school.</div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
@@ -376,7 +415,6 @@ export default function StaffManagementPage() {
             )}
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }
