@@ -9,21 +9,44 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Failsafe for specific Admin UID
     function isSuperAdmin() {
       return request.auth.uid == 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2';
     }
 
+    function getUserData(userId) {
+      return get(/databases/$(database)/documents/staff/$(userId)).data;
+    }
+    
     function getUserRole(userId) {
-      return get(/databases/$(database)/documents/users/$(userId)).data.role;
+      // Check staff collection first
+      let staffRole = get(/databases/$(database)/documents/staff/$(userId)).data.role;
+      if (staffRole != null) {
+        return staffRole;
+      }
+      // Check the generic users collection
+      let userRole = get(/databases/$(database)/documents/users/$(userId)).data.role;
+      if (userRole != null) {
+        return userRole;
+      }
+      // Check if user is in students collection
+      if (exists(/databases/$(database)/documents/students/$(userId))) {
+        return 'Student';
+      }
+      // Check if user is in parents collection
+      if (exists(/databases/$(database)/documents/parents/$(userId))) {
+        return 'Parent';
+      }
+      return ''; // Default to no role
     }
 
     function isOneOfRoles(userId, roles) {
       let userRole = getUserRole(userId);
-      return isSignedIn() && (userRole in roles || isSuperAdmin());
+      return isSignedIn() && (userRole in roles || isSuperAdmin()); // <-- FAILSAFE ADDED
     }
 
     function isAdmin() {
-      return isOneOfRoles(request.auth.uid, ['Administrator', 'Director']);
+      return isOneOfRoles(request.auth.uid, ['Administrator', 'Director', 'Admin']);
     }
 
     function isAccountant() {
@@ -40,13 +63,6 @@ service cloud.firestore {
     
     function isParent() {
        return isOneOfRoles(request.auth.uid, ['Parent']);
-    }
-    
-    // Allow anyone to create their own user role doc on signup
-    match /users/{userId} {
-      allow read: if isSignedIn();
-      allow create: if request.auth.uid == userId;
-      allow write: if isAdmin();
     }
     
     // --- Collection Rules ---
@@ -75,11 +91,6 @@ service cloud.firestore {
     match /timetables/{entry} {
         allow read: if isSignedIn();
         allow write: if isAdmin();
-    }
-    
-    // Rule for the student ID counter
-    match /counters/{counterId} {
-        allow read, write: if isAdmin();
     }
 
     // Students and Parents can be managed by admins, but can read their own profiles
@@ -335,9 +346,16 @@ service cloud.firestore {
       }
     }
 
+    // This must come before the final catch-all
+    match /users/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
     // Catch-all for remaining collections (adjust as needed)
     match /{document=**} {
       allow read, write: if isAdmin();
     }
   }
 }
+
+    
