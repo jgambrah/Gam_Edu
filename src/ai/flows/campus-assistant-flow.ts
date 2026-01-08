@@ -3,7 +3,7 @@
  * @fileOverview An AI assistant for the CampusConnect platform.
  */
 
-import { ai, GEMINI_MODEL } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
@@ -186,8 +186,11 @@ const campusAssistantFlow = ai.defineFlow(
     `;
 
     const response = await ai.generate({
-        model: GEMINI_MODEL,
+        model: 'googleai/gemini-1.5-flash',
         prompt: prompt,
+        config: {
+            temperature: 0.7
+        }
     });
 
     const responseText = response.text;
