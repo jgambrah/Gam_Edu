@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useFirestore } from '@/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc } from 'firebase/firestore'; // Added deleteDoc
+import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user'; 
 import { sendCredentialsAction } from '@/app/actions/send-credentials'; 
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, Mail } from 'lucide-react'; // Added Trash2
+import { Loader2, Plus, Building2, Trash2 } from 'lucide-react'; 
 
 type School = {
   id: string;
@@ -100,7 +100,7 @@ export default function SuperAdminPage() {
       // Step D: Send Email
       await sendCredentialsAction(adminEmail, adminName, schoolName, password);
 
-      toast({ title: "Success!", description: `Created ${schoolName}` });
+      toast({ title: "Success!", description: `Created ${schoolName} and sent credentials.` });
       
       setSchoolName('');
       setAdminEmail('');
