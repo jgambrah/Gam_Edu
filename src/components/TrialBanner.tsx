@@ -49,7 +49,7 @@ export default function TrialBanner() {
   if (!isTrial || daysLeft === null) return null;
 
   return (
-    <div className={`p-3 text-center text-sm font-medium flex justify-center items-center gap-2 ${daysLeft === 0 ? 'bg-red-600 text-white' : 'bg-orange-100 text-orange-800'}`}>
+    <div className={`p-3 text-center text-sm font-medium flex justify-center items-center gap-2 ${daysLeft <= 0 ? 'bg-red-600 text-white' : 'bg-orange-100 text-orange-800'}`}>
       <AlertTriangle className="h-4 w-4" />
       {daysLeft <= 0 ? (
         <span>Your Free Trial has expired! Access will be restricted.</span>

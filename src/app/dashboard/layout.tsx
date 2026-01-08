@@ -9,6 +9,7 @@ import Header from '@/components/navigation/header';
 import { AiChat } from '@/components/ai-chat';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
+import TrialBanner from '@/components/TrialBanner'; // Import the new banner
 
 // Dynamically import the sidebar
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
@@ -50,6 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* The main content area that will fill the remaining space */}
       <SidebarInset>
         <div className="flex h-screen flex-col overflow-hidden">
+          <TrialBanner /> {/* Add the banner here */}
           <Header />
           <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
             {children}
