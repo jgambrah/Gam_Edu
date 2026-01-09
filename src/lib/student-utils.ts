@@ -1,5 +1,8 @@
 
+
 import type { Student } from '@/lib/types';
+import { doc, collection, runTransaction, serverTimestamp } from 'firebase/firestore';
+import type { Firestore } from 'firebase/firestore';
 
 /**
  * Formats student name with ID for display
@@ -48,3 +51,35 @@ export function searchStudent(student: Student, searchTerm: string): boolean {
 export function formatStudentBadge(student: Student): string {
   return `${student.firstName} ${student.lastName.charAt(0)}. - ${formatStudentId(student)}`;
 }
+
+
+/**
+ * Atomically increments and returns the next student ID.
+ * @param firestore - The Firestore instance.
+ * @returns A formatted student ID string (e.g., "SS-2024-0001").
+ */
+export async function generateNextStudentId(firestore: Firestore): Promise<string> {
+  const counterRef = doc(firestore, 'counters', 'students');
+  
+  const newIdNumber = await runTransaction(firestore, async (transaction) => {
+    const counterDoc = await transaction.get(counterRef);
+    if (!counterDoc.exists()) {
+      // Initialize counter if it doesn't exist
+      transaction.set(counterRef, { 
+        currentId: 1,
+        lastUpdated: serverTimestamp()
+      });
+      return 1;
+    }
+    
+    const newId = (counterDoc.data().currentId || 0) + 1;
+    transaction.update(counterRef, { 
+      currentId: newId,
+      lastUpdated: serverTimestamp()
+    });
+    
+    return newId;
+  });
+  
+  const year = new Date().getFullYear();
+  const paddedNumber = String(newIdNumber

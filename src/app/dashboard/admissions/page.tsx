@@ -581,5 +581,3 @@ export default function AdmissionsPage() {
                 <CardDescription>You do not have permission to view this page.</CardDescription>
             </CardHeader>
         </Card>
-    );
-}

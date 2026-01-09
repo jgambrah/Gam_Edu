@@ -33,28 +33,8 @@ import type { Student, Class } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
 import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
-import { searchStudent, formatStudentId } from '@/lib/student-utils';
+import { searchStudent, formatStudentId, generateNextStudentId } from '@/lib/student-utils';
 
-// --- ROBUST ID GENERATION ---
-async function generateNextStudentId(firestore: any): Promise<string> {
-  const counterRef = doc(firestore, 'counters', 'students');
-  
-  const newIdNumber = await runTransaction(firestore, async (transaction) => {
-    const counterDoc = await transaction.get(counterRef);
-    if (!counterDoc.exists()) {
-      transaction.set(counterRef, { currentId: 1 });
-      return 1;
-    }
-    const newId = (counterDoc.data().currentId || 0) + 1;
-    transaction.update(counterRef, { currentId: newId });
-    return newId;
-  });
-  
-  const year = new Date().getFullYear();
-  const paddedNumber = String(newIdNumber).padStart(4, '0');
-  
-  return `SS-${year}-${paddedNumber}`;
-}
 
 export default function StudentsV3Page() {
   const firestore = useFirestore();
@@ -65,6 +45,8 @@ export default function StudentsV3Page() {
   const [classes, setClasses] = useState<Class[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
+  const [statusMsg, setStatusMsg] = useState("Initializing...");
+  const [isInitializing, setIsInitializing] = useState(false);
   
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
@@ -84,9 +66,11 @@ export default function StudentsV3Page() {
     }
   }, [isAddOpen, editingStudent]);
 
+
   const loadData = useCallback(async () => {
     if (isUserLoading || !firestore) return;
     setIsLoading(true);
+    setStatusMsg("Fetching Data...");
 
     try {
         const [classSnap, studentSnap] = await Promise.all([
@@ -94,17 +78,81 @@ export default function StudentsV3Page() {
             getDocs(collection(firestore, 'students'))
         ]);
         const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
-        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+        const studentList = studentSnap.docs.map(d => ({ 
+            id: d.id, 
+            ...d.data() 
+        })) as Student[];
         setClasses(classList);
         setStudents(studentList);
+        
+        setStatusMsg("Ready");
     } catch (err: any) {
-        toast({ variant: 'destructive', title: "Error", description: "Could not load data." });
+        console.error("Load Error:", err);
+        setStatusMsg("Error loading data");
+        toast({ variant: 'destructive', title: "Error", description: err.message });
     } finally {
         setIsLoading(false);
     }
   }, [user, isUserLoading, firestore, toast]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const debugDatabase = async () => {
+      console.log("--- STARTING DEBUG ---");
+      if (!firestore) {
+          alert("Firestore not initialized.");
+          return;
+      }
+      try {
+          const colRef = collection(firestore, 'students'); 
+          console.log("Looking in collection: 'students'");
+          
+          const snapshot = await getDocs(colRef);
+          console.log(`Raw Snapshot Size: ${snapshot.size}`);
+          
+          if (snapshot.empty) {
+              alert("The app connected, but the 'students' collection is empty.");
+          } else {
+              const rawData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+              console.log("Raw Data from DB:", rawData);
+          }
+      } catch (e: any) {
+          console.error("Debug Error:", e);
+          alert(`Read Failed: ${e.message}`);
+      }
+  };
+
+
+  const handleForceInitialize = async () => {
+      if (!firestore) return;
+      setIsInitializing(true);
+      try {
+          // 1. Create Test Class
+          const classRef = await addDoc(collection(firestore, 'classes'), {
+              name: "JHS 1 (Test)",
+              createdAt: serverTimestamp()
+          });
+          
+          // 2. Create Test Student
+          await addDoc(collection(firestore, 'students'), {
+              firstName: "Test",
+              lastName: "Student",
+              email: `test${Date.now()}@school.com`,
+              classId: classRef.id,
+              enrollmentStatus: 'Active',
+              createdAt: serverTimestamp(),
+              uid: "test-uid-" + Date.now()
+          });
+
+          toast({ title: "Success", description: "Dummy data created. Refreshing list..." });
+          
+          await loadData();
+      } catch (e: any) {
+          toast({ variant: 'destructive', title: "Error", description: e.message });
+      } finally {
+          setIsInitializing(false);
+      }
+  };
 
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -170,7 +218,7 @@ export default function StudentsV3Page() {
             usesCanteen: values.usesCanteen === 'on', // Added canteen flag
         });
 
-        toast({ title: "Updated", description: "Student details saved." });
+        toast({ title: "Updated", description: "Student saved." });
         setEditingStudent(null);
         loadData();
     } catch (error: any) {
@@ -218,6 +266,16 @@ export default function StudentsV3Page() {
                 <Button variant="outline" onClick={loadData} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
+                
+                <Button variant="secondary" onClick={debugDatabase} className="bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200">
+                    <Bug className="h-4 w-4 mr-2"/> Check Data
+                </Button>
+
+                <Button variant="destructive" onClick={handleForceInitialize} disabled={isInitializing}>
+                    {isInitializing ? <Loader2 className="h-4 w-4 animate-spin"/> : <Database className="h-4 w-4 mr-2"/>}
+                    Force Initialize DB
+                </Button>
+                
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
@@ -251,6 +309,14 @@ export default function StudentsV3Page() {
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
                     <WifiOff className="h-10 w-10 text-slate-300" />
                     <p className="font-medium">No students visible.</p>
+                    
+                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-xs text-left text-yellow-800 w-full max-w-xs">
+                        <p><strong>Debug Stats:</strong></p>
+                        <p>Total Fetched: {students.length}</p>
+                        <p>Search Term: "{searchTerm}"</p>
+                        <p>Class Filter: "{classFilter}"</p>
+                        {students.length > 0 && <p className="mt-2">Data exists but filters are hiding it.</p>}
+                    </div>
                 </div>
             ) : (
                 <div className="rounded-md border">
@@ -320,6 +386,7 @@ export default function StudentsV3Page() {
                             )}
                         </SelectContent>
                     </Select>
+                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please use a Debug/Initialize button if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -403,3 +470,4 @@ export default function StudentsV3Page() {
   );
 }
 
+```
