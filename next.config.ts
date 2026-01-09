@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
     typescript: { ignoreBuildErrors: true },
     eslint: { ignoreDuringBuilds: true },
     images: { remotePatterns: [{ protocol: 'https', hostname: '**' }] },
+    devIndicators: {
+        allowedDevOrigins: [
+            "https://*.cloudworkstations.dev",
+        ],
+    },
     // 1. Tell Next.js to run these packages on the server only (External)
     serverExternalPackages: [
         "genkit", 
