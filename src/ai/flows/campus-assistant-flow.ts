@@ -4,10 +4,11 @@
  * @fileOverview An AI assistant for the CampusConnect platform.
  */
 
-import { ai, GEMINI_MODEL } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
-import { initializeFirebase } from '@/firebase';
+// REMOVED: Firebase client-side imports that were causing the error.
+// import { getFirestore, collection, query, where, getDocs, limit } from 'firebase/firestore';
+// import { initializeFirebase } from '@/firebase';
 
 // Define History Schema
 const HistoryMessageSchema = z.object({
@@ -32,7 +33,7 @@ const CampusAssistantOutputSchema = z.object({
 
 export type CampusAssistantOutput = z.infer<typeof CampusAssistantOutputSchema>;
 
-// --- 2. DEFINE THE FLOW (UPGRADED SEARCH LOGIC) ---
+// --- 2. DEFINE THE FLOW (REMOVED FIRESTORE LOGIC) ---
 const campusAssistantFlow = ai.defineFlow(
   {
     name: 'campusAssistantFlow',
@@ -40,41 +41,11 @@ const campusAssistantFlow = ai.defineFlow(
     outputSchema: CampusAssistantOutputSchema,
   },
   async (input) => {
-    let contextDocument = '';
+    // The Firestore logic to fetch a context document has been removed 
+    // to fix the server/client boundary error.
+    const contextDocument = '';
     const isStudent = input.role === 'Student';
-    const isAcademicQuery = ['explain', 'what is', 'tell me about', 'who is', 'define'].some(keyword => input.prompt.toLowerCase().includes(keyword));
-
-    if (isStudent && isAcademicQuery) {
-        try {
-            const { firestore } = initializeFirebase()!;
-            if (firestore) {
-                const materialsRef = collection(firestore, 'learning_materials');
-                const promptText = input.prompt.toLowerCase().replace(/what|is|a|an|the|of|explain|about/g, '').trim();
-
-                // 1. Try to find an exact match for the topic title first
-                let q = query(materialsRef, where('topicTitle', '==', promptText), limit(1));
-                let querySnapshot = await getDocs(q);
-
-                // 2. If no exact match, search by keywords
-                if (querySnapshot.empty) {
-                    const keywords = promptText.split(' ');
-                    q = query(materialsRef, where('topicTitle', 'array-contains-any', keywords), limit(1));
-                    querySnapshot = await getDocs(q);
-                }
-                
-                if (!querySnapshot.empty) {
-                    const docData = querySnapshot.docs[0].data();
-                    contextDocument = docData.content || ''; // Pass the full, detailed content
-                    console.log(`[CampusBot] Found context document for topic: ${docData.topicTitle}`);
-                } else {
-                    console.log(`[CampusBot] No specific document found for query: "${promptText}"`);
-                }
-            }
-        } catch (error) {
-            console.error("[CampusBot] Error fetching context document:", error);
-        }
-    }
-
+    
     const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
     const prompt = `
       You are **CampusBot**, the intelligent AI assistant for the **CampusConnect** school management platform.
@@ -89,21 +60,9 @@ const campusAssistantFlow = ai.defineFlow(
       ${ isStudent ? `
       #### 1. 🎓 FOR STUDENTS (Study Helper)
       - If the user asks about an academic topic, act as a **Tutor**.
-      
-      ${contextDocument ? `
-      - **IMPORTANT: Use the provided 'CONTEXT DOCUMENT' as your SOLE and PRIMARY source of truth.** Do not use your general knowledge.
-      - Explain the concepts based *only* on these notes. Quote them if necessary.
-      - If the document is empty or doesn't answer the question, state that you couldn't find information in the provided learning materials and ask the user to clarify.
-      
-      CONTEXT DOCUMENT:
-      ---
-      ${contextDocument}
-      ---
-      ` : `
       - Explain concepts simply (e.g., "Explain living cells"). Use analogies.
       - Quiz them if they ask for practice.
       - **Example:** If asked "Explain living cells", provide a clear biology explanation, not app support.
-      `}
       ` : `
       #### 2. 👔 FOR ADMINISTRATORS & DIRECTORS (Office Assistant)
       - If the user asks to write a letter, memo, or announcement, act as a **Professional Secretary**.
