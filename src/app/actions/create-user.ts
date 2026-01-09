@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
@@ -11,23 +12,22 @@ function getAdminApp(): App {
   const existingApp = getApps().find(app => app.name === 'admin');
   if (existingApp) return existingApp;
 
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
-
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new Error("Missing Firebase Admin credentials in .env file.");
+  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (!serviceAccountString) {
+    throw new Error("The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.");
   }
+  
+  try {
+    const serviceAccount: ServiceAccount = JSON.parse(serviceAccountString);
 
-  const serviceAccount: ServiceAccount = {
-    projectId,
-    clientEmail,
-    privateKey: privateKey.replace(/\\n/g, '\n'),
-  };
+    return initializeApp({
+      credential: cert(serviceAccount),
+    }, 'admin');
 
-  return initializeApp({
-    credential: cert(serviceAccount),
-  }, 'admin');
+  } catch (error: any) {
+    console.error("Failed to parse Firebase service account key:", error.message);
+    throw new Error("Firebase service account key is not a valid JSON object.");
+  }
 }
 
 export async function createNewUser(
