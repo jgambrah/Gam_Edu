@@ -58,10 +58,12 @@ export default function ParentsPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [studentSearch, setStudentSearch] = useState('');
 
   useEffect(() => {
     if (isAddOpen || editingParent) {
         setIsSubmitting(false);
+        setStudentSearch(''); // Reset search on modal open
     }
   }, [isAddOpen, editingParent]);
   
@@ -141,6 +143,8 @@ export default function ParentsPage() {
     p.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+  const filteredStudentsForModal = (students || []).filter(s => searchStudent(s, studentSearch));
+
   const isLoading = isLoadingParents || isLoadingStudents;
 
   return (
@@ -218,13 +222,15 @@ export default function ParentsPage() {
                 
                 <div className="space-y-2 pt-2">
                     <Label>Link Students</Label>
-                    <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4">
-                        {(students || []).map(s => (
+                    <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
+                    <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
+                        {filteredStudentsForModal.map(s => (
                             <div key={s.id} className="flex items-center space-x-2">
                                 <Checkbox id={`add-${s.id}`} name="studentIds" value={s.id} />
                                 <Label htmlFor={`add-${s.id}`}>{s.firstName} {s.lastName}</Label>
                             </div>
                         ))}
+                         {filteredStudentsForModal.length === 0 && <p className="text-sm text-center text-muted-foreground">No students match your search.</p>}
                     </div>
                 </div>
 
@@ -250,13 +256,15 @@ export default function ParentsPage() {
 
                      <div className="space-y-2 pt-2">
                         <Label>Link Students</Label>
-                        <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4">
-                            {(students || []).map(s => (
+                        <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
+                        <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
+                            {filteredStudentsForModal.map(s => (
                                 <div key={s.id} className="flex items-center space-x-2">
                                     <Checkbox id={`edit-${s.id}`} name="studentIds" value={s.id} defaultChecked={editingParent.studentIds?.includes(s.id)} />
                                     <Label htmlFor={`edit-${s.id}`}>{s.firstName} {s.lastName}</Label>
                                 </div>
                             ))}
+                             {filteredStudentsForModal.length === 0 && <p className="text-sm text-center text-muted-foreground">No students match your search.</p>}
                         </div>
                     </div>
                     <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Update Parent Details"}</Button></DialogFooter>
