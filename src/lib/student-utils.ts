@@ -1,5 +1,4 @@
 
-
 import type { Student } from '@/lib/types';
 import { doc, collection, runTransaction, serverTimestamp } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
@@ -82,4 +81,7 @@ export async function generateNextStudentId(firestore: Firestore): Promise<strin
   });
   
   const year = new Date().getFullYear();
-  const paddedNumber = String(newIdNumber
+  const paddedNumber = String(newIdNumber).padStart(4, '0');
+  
+  return `SS-${year}-${paddedNumber}`;
+}
