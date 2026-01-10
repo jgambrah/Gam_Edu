@@ -36,13 +36,13 @@ export function SidebarProvider({
   const [open, setOpen] = React.useState(true)
   const [openMobile, setOpenMobile] = React.useState(false)
 
-  const toggleSidebar = () => {
+  const toggleSidebar = React.useCallback(() => {
     if (isMobile) {
       setOpenMobile(!openMobile)
     } else {
       setOpen(!open)
     }
-  }
+  }, [isMobile, openMobile, open]);
 
   // Set sidebar state from cookie.
   React.useEffect(() => {
@@ -108,3 +108,21 @@ export function useSidebar() {
   }
   return context;
 }
+
+export const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(({ className, ...props }, ref) => {
+  const { open, isMobile } = useSidebar();
+  
+  if (isMobile) {
+    return <div ref={ref} className={className} {...props} />;
+  }
+
+  return (
+    <div
+      ref={ref}
+      data-sidebar-inset
+      className={cn("transition-[margin-left] duration-300 ease-in-out", open ? "ml-64" : "ml-16", className)}
+      {...props}
+    />
+  );
+});
+SidebarInset.displayName = "SidebarInset";

@@ -2,13 +2,14 @@
 'use client';
 
 import React from 'react';
-import dynamic from 'next/dynamic';
+import dynamic from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/navigation/header';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import TrialBanner from '@/components/TrialBanner';
-import { SidebarProvider, Sidebar, SidebarInset } from '@/context/sidebar-context';
+import { SidebarProvider } from '@/context/sidebar-context'; // Correct import
+import { SidebarInset } from '@/context/sidebar-context'; // Correct import
 
 // Dynamically import the sidebar for performance
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
@@ -36,16 +37,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   
   return (
     <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-            <div className="flex h-screen flex-col overflow-hidden">
-                <TrialBanner />
-                <Header />
-                <main className="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-6 lg:p-8">
-                    {children}
-                </main>
-            </div>
-        </SidebarInset>
+      <AppSidebar />
+      <SidebarInset>
+        <div className="flex h-screen flex-col overflow-hidden">
+          <TrialBanner />
+          <Header />
+          <main className="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-6 lg:p-8">
+            {children}
+          </main>
+        </div>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
