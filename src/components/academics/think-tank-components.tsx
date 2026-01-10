@@ -142,7 +142,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
     };
 
     const handleConclude = async () => {
-        // Validation: Ensure there is actually a debate to judge
         if (messages.length < 3) {
             alert("Please exchange at least a few arguments before judging.");
             return;
@@ -150,13 +149,11 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
 
         setIsJudging(true);
         try {
-            // Map the current state messages to the simple format the server expects
             const historyForAi = messages.map(m => ({ 
                 role: m.role, 
                 text: m.text 
             }));
             
-            // Call the fixed server action
             const result = await evaluateDebateAction(historyForAi);
             
             if (result.success && result.data) {
@@ -190,7 +187,6 @@ export function DebateArena({ topic }: { topic: DebateTopic }) {
                         </CardDescription>
                     </div>
                     <div className="flex gap-1">
-                        {/* JUDGE BUTTON */}
                         <Button 
                             variant="outline" 
                             size="sm" 
