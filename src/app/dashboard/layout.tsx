@@ -2,14 +2,14 @@
 'use client';
 
 import React from 'react';
-import dynamic from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/navigation/header';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import TrialBanner from '@/components/TrialBanner';
-import { SidebarProvider } from '@/context/sidebar-context'; // Correct import
-import { SidebarInset } from '@/context/sidebar-context'; // Correct import
+import { SidebarProvider } from '@/context/sidebar-context';
+import { SidebarInset } from '@/context/sidebar-context';
 
 // Dynamically import the sidebar for performance
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
