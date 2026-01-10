@@ -268,3 +268,5 @@ function StudentParentReportCardView({ studentId }: { studentId: string }) {
         </div>
     )
 }
+
+    
