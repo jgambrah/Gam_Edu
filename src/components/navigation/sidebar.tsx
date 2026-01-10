@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Building2, GraduationCap, LogOut } from 'lucide-react';
+import { GraduationCap, LogOut, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context'; 
@@ -13,9 +13,16 @@ import { auth } from '@/firebase/client-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { navItems } from '@/lib/data';
 import type { NavItem, UserRole } from '@/lib/types';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarFooter } from '@/components/ui/sidebar';
+import { 
+  Sidebar, 
+  SidebarContent, 
+  SidebarHeader, 
+  SidebarMenu, 
+  SidebarMenuItem, 
+  SidebarFooter 
+} from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronRight } from 'lucide-react';
+import RoleSwitcher from './role-switcher';
 
 function isNavItemVisible(item: NavItem, role: UserRole | null) {
   if (item.roles === 'all') return true;
@@ -32,6 +39,8 @@ function NavLink({ item, isSubItem = false }: { item: NavItem, isSubItem?: boole
   return (
     <Link
       href={item.path}
+      target={item.path.startsWith('http') ? '_blank' : undefined}
+      rel={item.path.startsWith('http') ? 'noopener noreferrer' : undefined}
       className={cn(
         'flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none transition-colors',
         'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
@@ -56,7 +65,6 @@ export default function AppSidebar() {
   const handleSignOut = async () => {
     if (auth) {
       await signOut(auth);
-       // Add a small delay to ensure state clears, then redirect
       setTimeout(() => {
         router.push('/');
       }, 100);
@@ -87,7 +95,7 @@ export default function AppSidebar() {
         <SidebarMenu>
           {loading ? (
             <div className="space-y-2 px-2">
-             {[...Array(5)].map((_, i) => <div key={i} className="h-10 bg-slate-100 rounded animate-pulse"/>)}
+             {[...Array(8)].map((_, i) => <div key={i} className="h-8 bg-slate-100 rounded animate-pulse"/>)}
            </div>
           ) : filteredNav.map((item) =>
             isNavItemVisible(item, role) ? (
@@ -124,18 +132,11 @@ export default function AppSidebar() {
               </SidebarMenuItem>
             ) : null
           )}
-          {/* ONLY SHOW FOR THE CEO */}
-          {user?.email === 'jamesgambrah@gmail.com' && (
-            <SidebarMenuItem>
-                 <Link href="/dashboard/super-admin" className="text-purple-600 font-bold flex items-center gap-2 p-2 bg-purple-50 rounded mt-4">
-                    <Building2 className="h-5 w-5"/> CEO Portal
-                </Link>
-            </SidebarMenuItem>
-            )}
         </SidebarMenu>
       </SidebarContent>
       
       <SidebarFooter>
+        {process.env.NODE_ENV === 'development' && <RoleSwitcher />}
         <div className="flex items-center gap-3 p-2">
           <Avatar className="h-10 w-10">
             <AvatarImage

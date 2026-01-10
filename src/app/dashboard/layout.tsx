@@ -8,8 +8,8 @@ import Header from '@/components/navigation/header';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import TrialBanner from '@/components/TrialBanner';
-import { SidebarProvider } from '@/context/sidebar-context';
-import { SidebarInset } from '@/context/sidebar-context';
+// CORRECTED: Import provider and components from the single source of truth
+import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
 
 // Dynamically import the sidebar for performance
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
@@ -17,7 +17,11 @@ const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
   ssr: false,
 });
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
 
@@ -34,7 +38,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
     );
   }
-  
+
+  // The entire layout is now wrapped in the single SidebarProvider
   return (
     <SidebarProvider>
       <AppSidebar />
