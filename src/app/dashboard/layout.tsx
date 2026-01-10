@@ -21,23 +21,30 @@ export default function DashboardLayout({
 }) {
     return (
         <SidebarProvider>
-            {/* ✅ Root container: Fixed height, no overflow */}
-            <div className="flex h-screen w-full overflow-hidden">
+            {/* ✅ Root: Fixed height, fixed width, no overflow */}
+            <div className="flex h-screen w-screen overflow-hidden">
+                {/* ✅ Sidebar: Fixed width */}
                 <AppSidebar />
                 
-                {/* ✅ Content column: Fixed height, no overflow */}
-                <div className="flex flex-col h-screen flex-1 min-w-0">
-                    {/* ✅ Fixed elements at top - auto height */}
-                    <TrialBanner />
-                    <Header />
+                {/* ✅ Content wrapper: Takes remaining width */}
+                <div className="flex flex-col flex-1 h-screen min-w-0 overflow-hidden">
+                    {/* ✅ Fixed header elements */}
+                    <div className="flex-shrink-0">
+                        <TrialBanner />
+                        <Header />
+                    </div>
                     
-                    {/* ✅ CRITICAL: Main area takes remaining height and scrolls */}
-                    <main className="flex-1 min-h-0 overflow-x-auto overflow-y-auto bg-slate-50/50 p-4 md:p-6 lg:p-8">
-                        {children}
+                    {/* ✅ SCROLLABLE MAIN AREA */}
+                    <main className="flex-1 min-h-0 w-full overflow-auto bg-slate-50/50">
+                        <div className="p-4 md:p-6 lg:p-8">
+                            {children}
+                        </div>
                     </main>
                     
-                    {/* ✅ Fixed element at bottom - auto height */}
-                    <AiChat />
+                    {/* ✅ Fixed footer element */}
+                    <div className="flex-shrink-0">
+                        <AiChat />
+                    </div>
                 </div>
             </div>
         </SidebarProvider>
