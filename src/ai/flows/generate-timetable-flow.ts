@@ -50,7 +50,7 @@ export async function generateTimetable(input: any) {
 
     // 2. Call AI with Timeout Config
     const response = await generate({
-      model: 'googleai/gemini-3-flash-preview',
+      model: 'googleai/gemini-2.5-flash',
       prompt: prompt,
       output: {
         schema: TimetableSchema,
