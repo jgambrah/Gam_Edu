@@ -4,7 +4,7 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { SidebarInset, SidebarContext } from '@/components/ui/sidebar'; // Import the context
+import { SidebarInset } from '@/components/ui/sidebar';
 import Header from '@/components/navigation/header';
 import { AiChat } from '@/components/ai-chat';
 import { useUser } from '@/firebase';
@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import TrialBanner from '@/components/TrialBanner';
 
 // This is the new, correct provider for the sidebar state
-import { SidebarProvider } from '@/components/ui/sidebar'; 
+import { SidebarProvider } from '@/context/sidebar-context'; 
 
 // Dynamically import the sidebar for performance
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
