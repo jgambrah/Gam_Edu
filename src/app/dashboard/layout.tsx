@@ -3,13 +3,16 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { usePathname, useRouter } from 'next/navigation';
-import { SidebarInset } from '@/components/ui/sidebar';
+import { useRouter } from 'next/navigation';
+import { SidebarInset, SidebarContext } from '@/components/ui/sidebar'; // Import the context
 import Header from '@/components/navigation/header';
 import { AiChat } from '@/components/ai-chat';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import TrialBanner from '@/components/TrialBanner';
+
+// This is the new, correct provider for the sidebar state
+import { SidebarProvider } from '@/components/ui/sidebar'; 
 
 // Dynamically import the sidebar for performance
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
@@ -21,14 +24,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, isUserLoading } = useUser();
   const router = useRouter();
 
-  // Redirect to login if not authenticated
   React.useEffect(() => {
     if (!isUserLoading && !user) {
       router.replace('/');
     }
   }, [isUserLoading, user, router]);
 
-  // Show a loading screen while user state is being determined
   if (isUserLoading || !user) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -37,9 +38,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  // Render the main dashboard layout for authenticated users
+  // Wrap the entire layout in the single SidebarProvider
   return (
-    <>
+    <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <div className="flex h-screen flex-col overflow-hidden">
@@ -51,6 +52,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
         <AiChat />
       </SidebarInset>
-    </>
+    </SidebarProvider>
   );
 }

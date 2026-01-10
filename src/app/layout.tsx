@@ -1,6 +1,6 @@
 
 import { RoleProvider } from '@/context/role-context';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/context/sidebar-context'; // Corrected import path
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import ClientBoundary from './dashboard/client-boundary';
