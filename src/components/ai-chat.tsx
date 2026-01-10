@@ -64,10 +64,10 @@ export function AiChat() {
   return (
     <>
       <Button
-        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg bg-purple-600 hover:bg-purple-700"
         onClick={() => setIsOpen(true)}
       >
-        <GraduationCap className="h-8 w-8" />
+        <Bot className="h-8 w-8" />
         <span className="sr-only">Open AI Assistant</span>
       </Button>
 
