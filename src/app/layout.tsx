@@ -17,10 +17,6 @@ export default function RootLayout({
       <head>
       </head>
       <body className="antialiased">
-        <Script 
-          src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js" 
-          strategy="beforeInteractive"
-        />
         <FirebaseClientProvider>
           <RoleProvider>
             <SidebarProvider>

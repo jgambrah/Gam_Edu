@@ -30,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
+import Script from 'next/script';
 
 const Editor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
@@ -514,6 +515,11 @@ function PythonAcademy() {
   
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
+      <Script 
+          src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js" 
+          strategy="beforeInteractive"
+          onLoad={() => console.log('Pyodide script loaded.')}
+        />
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <aside className="lg:col-span-3 space-y-6">
@@ -618,7 +624,7 @@ function PythonAcademy() {
                                 </Button>
 
                                 <Button 
-                                    variant="ghost"
+                                    variant="ghost" 
                                     onClick={() => {
                                         setIsPassed(false);
                                         toast({ description: "Free practice mode active. Keep experimenting!" });
