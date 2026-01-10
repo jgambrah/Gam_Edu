@@ -337,7 +337,7 @@ export default function ForumPage() {
             </Dialog>
         </CardHeader>
         <CardContent>
-            <div className="border rounded-md">
+            <div className="w-full border rounded-md">
                 <Table>
                     <TableHeader><TableRow><TableHead>Topic</TableHead><TableHead>Author</TableHead><TableHead>Replies</TableHead><TableHead>Last Activity</TableHead></TableRow></TableHeader>
                     <TableBody>
