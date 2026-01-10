@@ -4,14 +4,13 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Sidebar, SidebarInset } from '@/components/ui/sidebar';
 import Header from '@/components/navigation/header';
-import { AiChat } from '@/components/ai-chat';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import TrialBanner from '@/components/TrialBanner';
-import { SidebarProvider } from '@/context/sidebar-context'; 
+import { SidebarProvider, Sidebar, SidebarInset } from '@/context/sidebar-context';
 
+// Dynamically import the sidebar for performance
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
   loading: () => <div className="hidden w-64 h-full bg-slate-100 animate-pulse md:block" />,
   ssr: false,
@@ -46,7 +45,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {children}
                 </main>
             </div>
-            <AiChat />
         </SidebarInset>
     </SidebarProvider>
   );
