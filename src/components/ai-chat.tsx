@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { campusAssistant } from '@/ai/flows/campus-assistant-flow';
 import { useRole } from '@/context/role-context';
-import { Bot, Loader2, Send } from 'lucide-react';
+import { GraduationCap, Bot, Loader2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -64,10 +64,10 @@ export function AiChat() {
   return (
     <>
       <Button
-        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg"
+        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg bg-primary hover:bg-primary/90"
         onClick={() => setIsOpen(true)}
       >
-        <Bot className="h-8 w-8" />
+        <GraduationCap className="h-8 w-8" />
         <span className="sr-only">Open AI Assistant</span>
       </Button>
 

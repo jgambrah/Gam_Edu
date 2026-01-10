@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -8,6 +9,7 @@ import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import TrialBanner from '@/components/TrialBanner';
+import { AiChat } from '@/components/ai-chat'; // Import the AiChat component
 
 // Dynamically import the sidebar
 const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
@@ -37,22 +39,18 @@ export default function DashboardLayout({
         );
     }
   return (
-    // ✅ CRITICAL: Wrap everything with SidebarProvider
     <SidebarProvider>
       <div className="flex h-screen w-full">
-        {/* Sidebar */}
         <AppSidebar />
         
-        {/* Main content area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <TrialBanner />
-          {/* Header with SidebarTrigger */}
           <Header />
           
-          {/* Page content */}
           <main className="flex-1 overflow-auto bg-slate-50/50 p-4 md:p-6 lg:p-8">
             {children}
           </main>
+          <AiChat />
         </div>
       </div>
     </SidebarProvider>
