@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -41,6 +40,7 @@ export default function StudentsV3Page() {
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
+  // Data State
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   
@@ -48,41 +48,61 @@ export default function StudentsV3Page() {
   const [statusMsg, setStatusMsg] = useState("Initializing...");
   const [isInitializing, setIsInitializing] = useState(false);
   
+  // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState('all');
 
+  // Form State
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
 
+  // Reset form state when opening modals
   useEffect(() => {
-    if (isAddOpen || editingStudent) {
-        setIsSubmitting(false);
-        setSelectedClassId(editingStudent?.classId || ''); 
-        setSelectedGender(editingStudent?.gender || ''); 
+    if (isAddOpen) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(''); 
+        setSelectedGender(''); 
+    }
+    if (editingStudent) { 
+        setIsSubmitting(false); 
+        setSelectedClassId(editingStudent.classId || ''); 
+        setSelectedGender(editingStudent.gender || ''); 
     }
   }, [isAddOpen, editingStudent]);
 
 
+  // --- 1. DIRECT DATA FETCH (The Stable Fix) ---
   const loadData = useCallback(async () => {
     if (isUserLoading || !firestore) return;
+    
+    if (!user) {
+        setIsLoading(false);
+        setStatusMsg("Not Connected");
+        return;
+    }
+
     setIsLoading(true);
     setStatusMsg("Fetching Data...");
 
     try {
-        const [classSnap, studentSnap] = await Promise.all([
-            getDocs(collection(firestore, 'classes')),
-            getDocs(collection(firestore, 'students'))
-        ]);
+        // A. Fetch Classes
+        const classSnap = await getDocs(collection(firestore, 'classes'));
         const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
+        setClasses(classList);
+
+        // B. Fetch Students
+        const studentSnap = await getDocs(collection(firestore, 'students'));
+        console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
+        
         const studentList = studentSnap.docs.map(d => ({ 
             id: d.id, 
             ...d.data() 
         })) as Student[];
-        setClasses(classList);
         setStudents(studentList);
         
         setStatusMsg("Ready");
@@ -95,8 +115,12 @@ export default function StudentsV3Page() {
     }
   }, [user, isUserLoading, firestore, toast]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  // Load on mount
+  useEffect(() => {
+      loadData();
+  }, [loadData]);
 
+  // --- 2. DEBUGGING TOOL (CONSOLE ONLY) ---
   const debugDatabase = async () => {
       console.log("--- STARTING DEBUG ---");
       if (!firestore) {
@@ -123,6 +147,7 @@ export default function StudentsV3Page() {
   };
 
 
+  // --- 3. FORCE INITIALIZE (ALWAYS VISIBLE) ---
   const handleForceInitialize = async () => {
       if (!firestore) return;
       setIsInitializing(true);
@@ -154,6 +179,7 @@ export default function StudentsV3Page() {
       }
   };
 
+  // --- 4. ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (isSubmitting || !firestore) return;
@@ -198,6 +224,7 @@ export default function StudentsV3Page() {
       }
   };
 
+  // --- 5. UPDATE STUDENT ---
   const handleUpdateStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingStudent || isSubmitting || !firestore) return;
@@ -228,6 +255,7 @@ export default function StudentsV3Page() {
     }
   };
 
+  // --- 6. DELETE STUDENT ---
   const handleDelete = async (id: string) => {
     if (!firestore || !confirm("Delete this student profile?")) return;
     try {
@@ -363,6 +391,7 @@ export default function StudentsV3Page() {
         </CardContent>
       </Card>
 
+      {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
@@ -418,6 +447,7 @@ export default function StudentsV3Page() {
         </DialogContent>
       </Dialog>
 
+      {/* EDIT MODAL */}
       <Dialog open={!!editingStudent} onOpenChange={(open) => !open && setEditingStudent(null)}>
         <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Edit Student Details</DialogTitle><DialogDescription>Modify the student's profile.</DialogDescription></DialogHeader>
             {editingStudent && (
@@ -470,4 +500,4 @@ export default function StudentsV3Page() {
   );
 }
 
-```
+    
