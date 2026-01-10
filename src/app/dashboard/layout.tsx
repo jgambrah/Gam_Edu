@@ -17,24 +17,6 @@ const AppSidebar = dynamic(() => import('@/components/navigation/sidebar'), {
   ssr: false,
 });
 
-function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
-    return (
-        <>
-            <AppSidebar />
-            <SidebarInset>
-                <div className="flex h-screen flex-col overflow-hidden">
-                    <TrialBanner />
-                    <Header />
-                    <main className="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-6 lg:p-8">
-                        {children}
-                    </main>
-                </div>
-                <AiChat />
-            </SidebarInset>
-        </>
-    );
-}
-
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
@@ -55,7 +37,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   
   return (
     <SidebarProvider>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+        <AppSidebar />
+        <SidebarInset>
+            <div className="flex h-screen flex-col overflow-hidden">
+                <TrialBanner />
+                <Header />
+                <main className="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-6 lg:p-8">
+                    {children}
+                </main>
+            </div>
+            <AiChat />
+        </SidebarInset>
     </SidebarProvider>
   );
 }
