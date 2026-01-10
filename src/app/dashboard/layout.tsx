@@ -23,7 +23,6 @@ export default function DashboardLayout({
         <SidebarProvider>
             <div className="flex h-screen w-full">
                 <AppSidebar />
-                {/* FIX: Removed 'overflow-hidden' to allow content to scroll horizontally if needed */}
                 <div className="flex-1 flex flex-col">
                     <TrialBanner />
                     <Header />
