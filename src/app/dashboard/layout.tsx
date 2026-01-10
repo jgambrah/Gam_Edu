@@ -21,24 +21,29 @@ export default function DashboardLayout({
 }) {
     return (
         <SidebarProvider>
-            {/* ✅ Root container: Fixed height, no overflow */}
-            <div className="flex h-screen w-full overflow-hidden">
-                <AppSidebar />
+            {/* ✅ Root: Fixed to viewport, no overflow */}
+            <div className="fixed inset-0 flex overflow-hidden">
+                {/* ✅ Sidebar: Scrollable if needed */}
+                <div className="flex-shrink-0">
+                    <AppSidebar />
+                </div>
                 
-                {/* ✅ Content column: Takes remaining space and handles internal scrolling */}
-                <div className="flex flex-1 flex-col overflow-hidden">
-                    {/* ✅ Header section remains fixed */}
+                {/* ✅ Content area: Takes remaining space */}
+                <div className="flex flex-col flex-1 min-w-0 h-full">
+                    {/* ✅ Fixed header elements - no scroll */}
                     <div className="flex-shrink-0">
                         <TrialBanner />
                         <Header />
                     </div>
                     
-                    {/* ✅ SCROLLABLE MAIN AREA */}
-                    <main className="flex-1 overflow-auto bg-slate-50/50 p-4 md:p-6 lg:p-8">
-                        {children}
+                    {/* ✅ SCROLLABLE MAIN: Vertical only, fits width */}
+                    <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50/50">
+                        <div className="w-full max-w-full p-4 md:p-6 lg:p-8">
+                            {children}
+                        </div>
                     </main>
                     
-                    {/* ✅ Footer/Chat section remains fixed */}
+                    {/* ✅ Fixed footer element - no scroll */}
                     <div className="flex-shrink-0">
                         <AiChat />
                     </div>
