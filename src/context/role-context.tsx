@@ -10,12 +10,13 @@ type Role = 'Director' | 'Administrator' | 'Teacher' | 'Accountant' | 'Student' 
 
 interface RoleContextType {
   role: Role;
+  setRole: React.Dispatch<React.SetStateAction<Role>>;
   loading: boolean;
   profile: any;
   refreshRole: () => void;
 }
 
-const RoleContext = createContext<RoleContextType>({ role: null, loading: true, profile: null, refreshRole: () => {} });
+const RoleContext = createContext<RoleContextType>({ role: null, setRole: () => {}, loading: true, profile: null, refreshRole: () => {} });
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -102,7 +103,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   }, [user, isUserLoading, firestore, refreshTrigger]);
 
   return (
-    <RoleContext.Provider value={{ role, loading, profile, refreshRole }}>
+    <RoleContext.Provider value={{ role, setRole, loading, profile, refreshRole }}>
       {children}
     </RoleContext.Provider>
   );
