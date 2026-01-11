@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { GraduationCap, LogOut, ChevronRight } from 'lucide-react';
+import { GraduationCap, LogOut, ChevronRight, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context'; 
@@ -133,6 +133,22 @@ export default function AppSidebar() {
             ) : null
           )}
         </SidebarMenu>
+        {/* --- CEO PORTAL LINK --- */}
+        {/* Check both Email AND UID to be 100% sure */}
+        {user && (
+          (user.email?.toLowerCase() === 'jamesgambrah@gmail.com') || 
+          (user.uid === 'L4oE5XWweKRYrhtIXn6hB8IDHBC2')
+        ) && (
+          <div className="p-2">
+            <Link 
+              href="/dashboard/super-admin" 
+              className="mt-6 mb-2 flex items-center gap-3 rounded-lg bg-purple-100 px-3 py-2 text-purple-700 font-bold transition-all hover:bg-purple-200 border border-purple-300"
+            >
+              <Building2 className="h-5 w-5" />
+              <span>CEO Portal</span>
+            </Link>
+          </div>
+        )}
       </SidebarContent>
       
       <SidebarFooter>
