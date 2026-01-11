@@ -2,8 +2,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, getDocs } from 'firebase/firestore';
+import { useAuth, useFirestore } from '@/firebase';
+// UPDATED IMPORTS: Added 'query', 'where', 'getDoc'
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from 'firebase/firestore';
+import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 
 // UI Components
@@ -18,7 +20,6 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { UserRole } from '@/lib/types';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
 
@@ -78,6 +79,18 @@ export default function ParentsPage() {
       const password = "password123";
 
       try {
+          // --- CONFLICT CHECK ---
+          if (studentIds.length > 0) {
+            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds));
+            const conflictSnap = await getDocs(conflictQuery);
+            if (!conflictSnap.empty) {
+                const conflictingParent = conflictSnap.docs[0].data();
+                const conflictingStudentId = studentIds.find(id => conflictingParent.studentIds.includes(id));
+                const studentName = students?.find(s => s.id === conflictingStudentId)?.firstName || 'A student';
+                throw new Error(`${studentName} is already linked to another parent (${conflictingParent.firstName}).`);
+            }
+          }
+
           const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName });
           if ('error' in result) throw new Error(result.error);
 
@@ -113,12 +126,28 @@ export default function ParentsPage() {
     const studentIds = formData.getAll('studentIds') as string[];
 
     try {
+        // --- CONFLICT CHECK ---
+        if (studentIds.length > 0) {
+            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds));
+            const conflictSnap = await getDocs(conflictQuery);
+            // Ensure the conflict is not with the current parent being edited
+            const actualConflicts = conflictSnap.docs.filter(doc => doc.id !== editingParent.id);
+            if (actualConflicts.length > 0) {
+                 const conflictingParent = actualConflicts[0].data();
+                 const conflictingStudentId = studentIds.find(id => conflictingParent.studentIds.includes(id));
+                 const studentName = students?.find(s => s.id === conflictingStudentId)?.firstName || 'A student';
+                 throw new Error(`${studentName} is already linked to another parent (${conflictingParent.firstName}).`);
+            }
+        }
+
         const parentRef = doc(firestore, 'parents', editingParent.id);
+        
         await updateDoc(parentRef, { ...values, studentIds });
 
         toast({ title: "Updated", description: "Parent details saved." });
         setEditingParent(null);
         forceRefetchParents();
+
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
@@ -248,6 +277,7 @@ export default function ParentsPage() {
                         <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingParent.firstName} required /></div>
                         <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingParent.lastName} required /></div>
                     </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2"><Label>Email</Label><Input value={editingParent.email} disabled className="bg-slate-100" /></div>
                         <div className="space-y-2"><Label>Phone</Label><Input name="phone" defaultValue={editingParent.phone} /></div>
