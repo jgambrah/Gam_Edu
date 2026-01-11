@@ -11,7 +11,7 @@ import {
   ClipboardCheck, TrendingUp, Bell, FileText, Bus,
   CreditCard, DollarSign, Receipt, Package, Award,
   MessageSquare, Clock, AlertCircle, CheckCircle2,
-  UserCheck, BookMarked, Briefcase, BarChart3, Activity, Landmark
+  UserCheck, BookMarked, Briefcase, BarChart3, Activity, Landmark, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import { FinancialRecord, AccountsPayableRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { StudentDisplay } from '@/components/student-display';
 
 
 // Simple Stat Card Component
@@ -665,7 +666,6 @@ export default function DashboardClient() {
     // PARENT DASHBOARD
     if (isParent) {
       const myStudents = students?.filter(s => profile?.studentIds?.includes(s.uid)) || [];
-      const myAssignments = assignments?.filter(a => myStudents.some(s => s.classId === a.classId)) || [];
       
       return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -678,49 +678,48 @@ export default function DashboardClient() {
                   {myStudents.map(student => (
                     <Link href="/dashboard/my-children" key={student.uid}>
                       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
-                        <p className="font-semibold">{student.firstName} {student.lastName}</p>
-                        <Badge variant="secondary">{classes?.find(c => c.id === student.classId)?.name || 'N/A'}</Badge>
+                        <StudentDisplay student={student} variant="list" />
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       </div>
                     </Link>
                   ))}
+                  {myStudents.length === 0 && <p className="text-muted-foreground">No children linked to this account.</p>}
                 </CardContent>
             </Card>
-             <Card>
-              <CardHeader><CardTitle>Upcoming Deadlines</CardTitle></CardHeader>
-              <CardContent>
-                {myAssignments.slice(0, 3).map(a => (
-                   <ActivityItem 
-                    key={a.id}
-                    title={a.title}
-                    description={`For ${classes?.find(c => c.id === a.classId)?.name}`}
-                    time={`Due: ${a.dueDate.toDate().toLocaleDateString()}`}
-                    icon={FileText}
-                  />
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-           <div className="space-y-6">
-              <QuickActionCard 
-                title="My Bills" 
-                description="View and pay school fees"
-                icon={Banknote} 
-                link="/dashboard/my-bills"
-              />
-              <Card>
+            
+            <Card>
                 <CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader>
                 <CardContent>
-                  {announcements?.slice(0, 2).map(a => (
+                  {announcements?.slice(0, 3).map(a => (
                      <ActivityItem 
                       key={a.id}
                       title={a.title}
-                      description={a.content.substring(0, 50) + '...'}
+                      description={a.content.substring(0, 100) + '...'}
                       time={a.publishedAt?.toDate().toLocaleDateString()}
                       icon={Bell}
                       iconColor='text-purple-600'
                     />
                   ))}
                 </CardContent>
+            </Card>
+          </div>
+           <div className="space-y-6">
+              <Card>
+                  <CardHeader>
+                      <CardTitle>Student Bills</CardTitle>
+                      <CardDescription>View financial records for your children.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                      {myStudents.map(student => (
+                          <Link href="/dashboard/my-bills" key={student.uid}>
+                              <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50">
+                                  <span className="font-medium text-sm">{student.firstName} {student.lastName}'s Bills</span>
+                                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                          </Link>
+                      ))}
+                      {myStudents.length === 0 && <p className="text-muted-foreground text-sm">No children linked.</p>}
+                  </CardContent>
               </Card>
            </div>
         </div>
