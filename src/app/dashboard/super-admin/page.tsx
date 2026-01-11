@@ -3,23 +3,25 @@
 
 import { useState, useEffect } from 'react';
 import { useFirestore } from '@/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc } from 'firebase/firestore'; 
+import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user'; 
-import { sendCredentialsAction } from '@/app/actions/send-credentials'; 
+import { sendSchoolCredentialsEmail } from '@/lib/email'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, AlertTriangle } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, Edit, Crown, Clock } from 'lucide-react'; 
 
 type School = {
   id: string;
   name: string;
   plan: string;
   createdAt: any;
-  isActive: boolean;
+  trialEndsAt?: any;
 };
 
 export default function SuperAdminPage() {
@@ -34,6 +36,11 @@ export default function SuperAdminPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [schoolToDelete, setSchoolToDelete] = useState<School | null>(null);
 
+  // Edit State (NEW)
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [schoolToEdit, setSchoolToEdit] = useState<School | null>(null);
+  const [newPlan, setNewPlan] = useState<string>('Trial');
+
   // Form State
   const [schoolName, setSchoolName] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
@@ -46,6 +53,8 @@ export default function SuperAdminPage() {
     try {
       const snap = await getDocs(collection(firestore, 'schools'));
       const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as School[];
+      // Sort: Newest first
+      data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
       setSchools(data);
     } catch (error) {
       console.error(error);
@@ -99,8 +108,7 @@ export default function SuperAdminPage() {
         createdAt: serverTimestamp()
       });
 
-      // Step D: Send Email
-      await sendCredentialsAction(adminEmail, adminName, schoolName, password);
+      await sendSchoolCredentialsEmail(adminEmail, adminName, schoolName, password);
 
       toast({ title: "Success!", description: `Created ${schoolName}` });
       
@@ -116,20 +124,46 @@ export default function SuperAdminPage() {
     }
   };
 
-  // 3. CONFIRM DELETE LOGIC
+  // 3. UPDATE PLAN LOGIC (NEW)
+  const handleUpdatePlan = async () => {
+    if (!schoolToEdit || !firestore) return;
+    setIsUpdating(true);
+
+    try {
+        const updates: any = { plan: newPlan };
+
+        // Logic: If switching to Premium, remove trial expiry.
+        // If switching to Trial, reset expiry to 14 days from now.
+        if (newPlan === 'Premium') {
+            updates.trialEndsAt = null; 
+            updates.subscriptionStatus = 'active';
+        } else if (newPlan === 'Trial') {
+            updates.trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+        }
+
+        await updateDoc(doc(firestore, 'schools', schoolToEdit.id), updates);
+
+        toast({ title: "Updated", description: `Plan changed to ${newPlan}` });
+        setSchoolToEdit(null);
+        fetchSchools();
+
+    } catch (error: any) {
+        toast({ variant: 'destructive', title: "Update Failed", description: error.message });
+    } finally {
+        setIsUpdating(false);
+    }
+  };
+
+  // 4. CONFIRM DELETE LOGIC
   const confirmDelete = async () => {
     if (!schoolToDelete || !firestore) return;
     
     setIsDeleting(true);
     try {
         await deleteDoc(doc(firestore, 'schools', schoolToDelete.id));
-        
         toast({ title: "Deleted", description: `${schoolToDelete.name} has been removed.` });
-        
-        // Remove from list immediately
         setSchools(prev => prev.filter(s => s.id !== schoolToDelete.id));
-        setSchoolToDelete(null); // Close modal
-
+        setSchoolToDelete(null); 
     } catch (error: any) {
         console.error(error);
         toast({ variant: 'destructive', title: "Delete Failed", description: error.message });
@@ -181,7 +215,6 @@ export default function SuperAdminPage() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>School Name</TableHead>
-                        <TableHead>ID</TableHead>
                         <TableHead>Plan</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
@@ -190,19 +223,43 @@ export default function SuperAdminPage() {
                 <TableBody>
                     {schools.map(s => (
                         <TableRow key={s.id}>
-                            <TableCell className="font-bold">{s.name}</TableCell>
-                            <TableCell className="font-mono text-xs text-slate-500">{s.id}</TableCell>
-                            <TableCell><span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{s.plan}</span></TableCell>
+                            <TableCell className="font-bold">
+                                {s.name}
+                                <div className="text-xs text-muted-foreground font-mono">{s.id}</div>
+                            </TableCell>
+                            <TableCell>
+                                {s.plan === 'Premium' ? (
+                                    <span className="flex items-center gap-1 text-green-700 font-bold bg-green-100 px-2 py-1 rounded w-fit text-xs">
+                                        <Crown className="h-3 w-3"/> Premium
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-1 text-orange-700 font-bold bg-orange-100 px-2 py-1 rounded w-fit text-xs">
+                                        <Clock className="h-3 w-3"/> Trial
+                                    </span>
+                                )}
+                            </TableCell>
                             <TableCell><span className="text-green-600 font-bold text-sm">Active</span></TableCell>
                             <TableCell className="text-right">
-                                <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                    onClick={() => setSchoolToDelete(s)}
-                                >
-                                    <Trash2 className="h-4 w-4"/>
-                                </Button>
+                                <div className="flex justify-end gap-2">
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => {
+                                            setSchoolToEdit(s);
+                                            setNewPlan(s.plan);
+                                        }}
+                                    >
+                                        <Edit className="h-4 w-4 text-blue-600"/>
+                                    </Button>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="text-red-500 hover:bg-red-50"
+                                        onClick={() => setSchoolToDelete(s)}
+                                    >
+                                        <Trash2 className="h-4 w-4"/>
+                                    </Button>
+                                </div>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -212,27 +269,50 @@ export default function SuperAdminPage() {
         </CardContent>
       </Card>
 
+      {/* EDIT PLAN DIALOG (NEW) */}
+      <Dialog open={!!schoolToEdit} onOpenChange={(open) => !open && setSchoolToEdit(null)}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Update Plan for {schoolToEdit?.name}</DialogTitle>
+                <DialogDescription>Manually change the subscription plan.</DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+                <Label>Subscription Plan</Label>
+                <Select value={newPlan} onValueChange={setNewPlan}>
+                    <SelectTrigger className="mt-2">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Trial">Trial (14 Days)</SelectItem>
+                        <SelectItem value="Premium">Premium (Unlimited)</SelectItem>
+                        <SelectItem value="Enterprise">Enterprise</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setSchoolToEdit(null)}>Cancel</Button>
+                <Button onClick={handleUpdatePlan} disabled={isUpdating} className="bg-blue-600 hover:bg-blue-700">
+                    {isUpdating ? <Loader2 className="animate-spin mr-2"/> : null}
+                    Save Changes
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* DELETE CONFIRMATION DIALOG */}
       <Dialog open={!!schoolToDelete} onOpenChange={(open) => !open && setSchoolToDelete(null)}>
         <DialogContent>
             <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-red-600">
-                    <AlertTriangle className="h-5 w-5"/> Delete School?
-                </DialogTitle>
+                <DialogTitle className="text-red-600">Delete School?</DialogTitle>
                 <DialogDescription>
                     Are you sure you want to delete <strong>{schoolToDelete?.name}</strong>?
-                    <br/><br/>
-                    This action cannot be undone. It will remove the school record. 
-                    (Note: You may need to manually remove users if this is a live school).
+                    <br/>This action cannot be undone.
                 </DialogDescription>
             </DialogHeader>
-            <DialogFooter className="mt-4">
-                <Button variant="outline" onClick={() => setSchoolToDelete(null)} disabled={isDeleting}>
-                    Cancel
-                </Button>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setSchoolToDelete(null)}>Cancel</Button>
                 <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2"/> : <Trash2 className="h-4 w-4 mr-2"/>}
-                    Delete Permanently
+                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Delete Permanently"}
                 </Button>
             </DialogFooter>
         </DialogContent>
