@@ -177,9 +177,9 @@ export default function MyChildrenPage() {
         if (role === 'Student') {
             return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }
-        // FIX: The `in` operator queries against the document ID, not the `uid` field.
+        // FIX: The `in` operator queries against the document ID, not the `uid` field. Correcting to query by `uid`.
         if (role === 'Parent' && parentData?.studentIds && parentData.studentIds.length > 0) {
-            return query(collection(firestore, 'students'), where(documentId(), 'in', parentData.studentIds));
+            return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
         }
         return null;
     }, [firestore, role, user, parentData]);
