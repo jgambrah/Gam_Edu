@@ -1,15 +1,13 @@
 import { Resend } from 'resend';
 
-const apiKey = process.env.RESEND_API_KEY;
-
-if (!apiKey) {
-  // This check provides a clearer error if the environment variable is not set.
-  throw new Error("RESEND_API_KEY is missing in environment variables.");
-}
-
-const resend = new Resend(apiKey);
-
 export async function sendWelcomeEmail(email: string, name: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error("Email failed: RESEND_API_KEY is missing in environment variables.");
+    return; // Don't throw, just log the error on the server
+  }
+  const resend = new Resend(apiKey);
+
   try {
     await resend.emails.send({
       from: 'GAM Edu <info@gam-it-service.app>', // Changed this to your domain later (e.g. hello@gam-edu.com)
@@ -29,6 +27,13 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
 
 export async function sendSchoolCredentialsEmail(email: string, name: string, schoolName: string, password: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error("Email failed: RESEND_API_KEY is missing in environment variables.");
+    return; // Don't throw, just log the error on the server
+  }
+  const resend = new Resend(apiKey);
+  
   try {
     await resend.emails.send({
       from: 'GAM Edu <info@gam-it-service.app>',
