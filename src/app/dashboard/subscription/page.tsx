@@ -48,7 +48,7 @@ export default function SubscriptionPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="h-10 w-10 animate-spin" />
       </div>
     );
@@ -86,18 +86,19 @@ export default function SubscriptionPage() {
                             <li className="flex items-center gap-2">✅ Priority Support</li>
                         </ul>
                     </div>
-                    <div className="bg-indigo-50 p-8 rounded-lg text-center">
-                        <p className="text-indigo-600 font-bold">ANNUAL PLAN</p>
-                        <div className="my-4">
-                            <span className="text-5xl font-bold text-gray-900">GHS 500</span>
-                            <span className="text-gray-500">/year</span>
+                    <div className="bg-indigo-50 p-8 rounded-lg">
+                        <div className="text-center">
+                            <p className="text-indigo-600 font-bold">ANNUAL PLAN</p>
+                            <div className="my-2">
+                                <span className="text-5xl font-bold text-gray-900">GHS 500</span>
+                                <span className="text-gray-500">/year</span>
+                            </div>
                         </div>
 
                         <PayButton 
                           amount={500} 
                           email={user.email || ''} 
                           userId={user.uid}
-                          // Pass school-specific metadata
                           metadata={{
                               type: 'school_upgrade',
                               schoolId: schoolId,
