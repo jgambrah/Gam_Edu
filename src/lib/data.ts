@@ -1,4 +1,3 @@
-
 import type { NavItem, UserRole, ChartOfAccount, GeneralLedgerTransaction, Bus, Route } from '@/lib/types';
 import {
   LayoutDashboard,
@@ -49,6 +48,7 @@ import {
   Wrench,
   Truck,
   Calculator,
+  Building2,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -422,6 +422,12 @@ export const navItems: NavItem[] = [
             icon: FileText,
             roles: ['Director', 'Administrator'],
         },
+        {
+            path: '/dashboard/super-admin',
+            title: 'CEO Portal',
+            icon: Building2,
+            roles: ['Director'],
+        },
     ]
   },
 ];
@@ -586,3 +592,5 @@ export const MOCK_CROSSWORD_PUZZLES = [
     },
   },
 ];
+
+    
