@@ -33,6 +33,12 @@ export async function POST(req: NextRequest) {
     if (event === 'charge.success') {
       const metadata = data.metadata;
 
+      // PROTECT THE CEO ACCOUNT
+      if (metadata?.userId === 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2') {
+        console.log("CEO account action detected. No changes will be made.");
+        return NextResponse.json({ status: 'success', message: 'CEO account cannot be modified by webhook.' }, { status: 200 });
+      }
+      
       // SCENARIO 1: SCHOOL UPGRADE
       if (metadata?.type === 'school_upgrade' && metadata?.schoolId) {
         console.log(`🏫 Upgrading School: ${metadata.schoolId}`);
