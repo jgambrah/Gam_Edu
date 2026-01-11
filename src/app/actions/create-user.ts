@@ -1,31 +1,38 @@
+
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
-import { sendSchoolCredentialsEmail } from '@/lib/email'; // Ensure this path is correct
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
 
-// Initialize Admin SDK Safely
-function getAdminApp(): App {
+// --- HELPER: Fixes Vercel Key Formatting Issues ---
+const formatPrivateKey = (key: string) => {
+  return key.replace(/\\n/g, '\n').replace(/"/g, ''); 
+};
+
+function getAdminApp() {
   const existingApp = getApps().find(app => app.name === 'admin');
   if (existingApp) return existingApp;
 
-  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (!serviceAccountString) {
-    throw new Error("The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.");
-  }
-  
-  try {
-    const serviceAccount: ServiceAccount = JSON.parse(serviceAccountString);
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
 
-    return initializeApp({
-      credential: cert(serviceAccount),
-    }, 'admin');
-
-  } catch (error: any) {
-    console.error("Failed to parse Firebase service account key:", error.message);
-    throw new Error("Firebase service account key is not a valid JSON object.");
+  if (!projectId || !clientEmail || !privateKeyRaw) {
+    // Log exactly which one is missing so we stop guessing
+    console.error("❌ FIREBASE CREDENTIALS MISSING:", {
+      projectId: !!projectId,
+      clientEmail: !!clientEmail,
+      privateKey: !!privateKeyRaw
+    });
+    throw new Error("Missing Firebase Admin credentials.");
   }
+
+  const privateKey = formatPrivateKey(privateKeyRaw);
+
+  return initializeApp({
+    credential: cert({ projectId, clientEmail, privateKey }),
+  }, 'admin');
 }
 
 export async function createNewUser(
@@ -35,59 +42,61 @@ export async function createNewUser(
   details?: { firstName: string, lastName: string },
   schoolId?: string 
 ) {
-  
-  // 1. Initialize Admin App
-  const adminApp = getAdminApp();
-  const auth = getAuth(adminApp);
-  const firestore = getFirestore(adminApp);
+  console.log("🚀 Starting User Creation for:", email);
 
   try {
+    const adminApp = getAdminApp();
+    const auth = getAuth(adminApp);
+    const firestore = getFirestore(adminApp);
+
     let userRecord;
     
-    // 2. Check if user exists
+    // 1. Auth Creation
     try {
         userRecord = await auth.getUserByEmail(email);
+        console.log("User already exists, linking to new school...");
     } catch (error: any) {
         if (error.code === 'auth/user-not-found') {
-            // Create new user
+            console.log("Creating new Auth User...");
             userRecord = await auth.createUser({
-                email: email,
-                password: password,
-                displayName: `${details?.firstName} ${details?.lastName}`.trim(),
+                email,
+                password,
+                displayName: `${details?.firstName} ${details?.lastName}`,
             });
         } else {
-            throw error;
+            throw error; // Throw actual error if it's not "not found"
         }
     }
     
-    const selectedRole = role || 'Parent';
-    const collectionName = selectedRole === 'Parent' ? 'parents' : selectedRole === 'Student' ? 'students' : 'staff';
-    
-    // 3. Create Profile Document
+    // 2. Firestore Profile Creation
+    const collectionName = role === 'Student' ? 'students' : 'staff';
     const profileData: any = {
         uid: userRecord.uid,
-        email: email,
+        email,
         firstName: details?.firstName,
         lastName: details?.lastName,
-        createdAt: new Date(), // Admin SDK uses native Date, not serverTimestamp()
+        role: role || 'Parent',
+        createdAt: new Date(),
         isActive: true
     };
 
     if (schoolId) profileData.schoolId = schoolId;
-    if (collectionName === 'staff') profileData.role = selectedRole;
-    
+
     await firestore.collection(collectionName).doc(userRecord.uid).set(profileData, { merge: true });
-
-    // 4. Update 'users' mapping collection
-    const userRoleData: any = { role: selectedRole, email };
-    if (schoolId) userRoleData.schoolId = schoolId;
     
-    await firestore.collection('users').doc(userRecord.uid).set(userRoleData, { merge: true });
+    // 3. User Mapping
+    await firestore.collection('users').doc(userRecord.uid).set({
+        role: role || 'Parent',
+        schoolId: schoolId,
+        email
+    }, { merge: true });
 
+    console.log("✅ User Created Successfully");
     return { uid: userRecord.uid, success: true };
 
   } catch (error: any) {
-    console.error('Create User Error:', error);
-    return { error: error.message || 'Failed to create user' };
+    // Log the REAL error to Vercel logs
+    console.error("❌ FATAL SERVER ERROR:", error);
+    return { error: error.message || 'Internal Server Error' };
   }
 }
