@@ -278,8 +278,6 @@ export default function StudentsV3Page() {
   return (
     <div className="space-y-6 p-6">
       
-      <MigrateStudentIds />
-
       <Card className="border-t-4 border-t-green-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -499,5 +497,3 @@ export default function StudentsV3Page() {
     </div>
   );
 }
-
-    
