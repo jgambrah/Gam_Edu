@@ -6,7 +6,8 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import PayButton from '@/components/subscription/PayButton';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Crown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export default function SubscriptionPage() {
   const { user, isUserLoading } = useUser();
@@ -64,52 +65,86 @@ export default function SubscriptionPage() {
         </Card>
     );
   }
+  
+  const commonMetadata = {
+    type: 'school_upgrade',
+    schoolId: schoolId,
+    schoolName: schoolName,
+    userId: user.uid
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <Card className="shadow-lg border-t-4 border-t-indigo-600">
-            <CardHeader>
-                <CardTitle className="text-2xl">Upgrade Your Plan</CardTitle>
-                <CardDescription>
-                    Your trial has ended. Upgrade <strong className="text-indigo-600">{schoolName || 'your school'}</strong> to unlock all features.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <h3 className="text-xl font-bold text-slate-800">Premium School Plan</h3>
-                         <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                            <li className="flex items-center gap-2">✅ Unlimited Staff & Students</li>
-                            <li className="flex items-center gap-2">✅ Full Access to All Modules</li>
-                            <li className="flex items-center gap-2">✅ AI-Powered Features</li>
-                            <li className="flex items-center gap-2">✅ Priority Support</li>
-                        </ul>
-                    </div>
-                    <div className="bg-indigo-50 p-8 rounded-lg">
-                        <div className="text-center">
-                            <p className="text-indigo-600 font-bold">ANNUAL PLAN</p>
-                            <div className="my-2">
-                                <span className="text-5xl font-bold text-gray-900">GHS 500</span>
-                                <span className="text-gray-500">/year</span>
-                            </div>
-                        </div>
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+            <h1 className="text-3xl font-bold tracking-tight">Choose Your Plan</h1>
+            <p className="text-muted-foreground mt-2">
+                Your trial has ended. Upgrade <strong className="text-indigo-600">{schoolName || 'your school'}</strong> to unlock all features.
+            </p>
+        </div>
 
-                        <PayButton 
-                          amount={500} 
-                          email={user.email || ''} 
-                          userId={user.uid}
-                          metadata={{
-                              type: 'school_upgrade',
-                              schoolId: schoolId,
-                              schoolName: schoolName,
-                              userId: user.uid
-                          }}
-                        />
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+            
+            {/* Monthly Plan */}
+            <Card className="shadow-lg border">
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-xl">Monthly Plan</CardTitle>
+                    <div className="my-4">
+                        <span className="text-4xl font-bold text-gray-900">GHS 300</span>
+                        <span className="text-gray-500">/month</span>
                     </div>
-                </div>
-            </CardContent>
-        </Card>
+                    <CardDescription>
+                        Flexible monthly payments for full access.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <ul className="space-y-2 text-sm text-slate-600">
+                        <li className="flex items-center gap-2">✅ Unlimited Staff & Students</li>
+                        <li className="flex items-center gap-2">✅ Full Access to All Modules</li>
+                        <li className="flex items-center gap-2">✅ AI-Powered Features</li>
+                        <li className="flex items-center gap-2">✅ Priority Support</li>
+                    </ul>
+                     <PayButton 
+                        amount={300} 
+                        email={user.email || ''} 
+                        userId={user.uid}
+                        metadata={{...commonMetadata, planType: 'monthly'}}
+                    />
+                </CardContent>
+            </Card>
+
+            {/* Annual Plan */}
+             <Card className="shadow-2xl border-2 border-indigo-600 relative">
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white">
+                    <Crown className="mr-2 h-4 w-4"/> Best Value
+                </Badge>
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-xl">Annual Plan</CardTitle>
+                     <div className="my-4">
+                        <span className="text-4xl font-bold text-gray-900">GHS 3000</span>
+                        <span className="text-gray-500">/year</span>
+                    </div>
+                    <CardDescription>
+                        Save GHS 600 with our annual subscription.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <ul className="space-y-2 text-sm text-slate-600">
+                        <li className="flex items-center gap-2">✅ Unlimited Staff & Students</li>
+                        <li className="flex items-center gap-2">✅ Full Access to All Modules</li>
+                        <li className="flex items-center gap-2">✅ AI-Powered Features</li>
+                        <li className="flex items-center gap-2">✅ Priority Support</li>
+                    </ul>
+                    <PayButton 
+                        amount={3000} 
+                        email={user.email || ''} 
+                        userId={user.uid}
+                        metadata={{...commonMetadata, planType: 'annual'}}
+                    />
+                </CardContent>
+            </Card>
+
+        </div>
       </div>
     </div>
   );
