@@ -65,19 +65,21 @@ function StudentBillView({ studentId }: { studentId: string }) {
                     <CardContent><p className="text-2xl font-bold">GH₵{summary.balance.toFixed(2)}</p></CardContent>
                 </Card>
             </div>
-            <Table>
-                <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Due Date</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
-                <TableBody>
-                    {records.map(rec => (
-                        <TableRow key={rec.id}>
-                            <TableCell>{rec.description}</TableCell>
-                            <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
-                            <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
-                            <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+            <div className="overflow-x-auto w-full">
+                <Table>
+                    <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Due Date</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                        {records.map(rec => (
+                            <TableRow key={rec.id}>
+                                <TableCell>{rec.description}</TableCell>
+                                <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
+                                <TableCell>{rec.dueDate?.toDate ? format(rec.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                <TableCell><Badge variant={getStatusVariant(rec.status)}>{rec.status}</Badge></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
         </div>
     );
 }
@@ -90,21 +92,39 @@ export default function MyBillsPage() {
     const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, role]);
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
 
+    // ✅ FIXED: Query students by UID field instead of document ID
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !user) return null;
+        
         if (role === 'Student') {
+            // For students, query by their own UID
             return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }
+        
         if (role === 'Parent' && parentData?.studentIds && parentData.studentIds.length > 0) {
-            // FIX: Use documentId() to query by the document's ID, which matches what's in studentIds
-            return query(collection(firestore, 'students'), where(documentId(), 'in', parentData.studentIds));
+            // ✅ CRITICAL FIX: Query by 'uid' field, not document ID
+            // This assumes studentIds array contains the student UIDs
+            return query(
+                collection(firestore, 'students'), 
+                where('uid', 'in', parentData.studentIds)
+            );
         }
+        
         return null;
     }, [firestore, role, user, parentData]);
 
     const { data: students, isLoading: areStudentsLoading } = useCollection<Student>(studentsQuery);
     
     const isLoading = isUserLoading || isParentLoading || areStudentsLoading;
+
+    // ✅ DEBUG: Log to console to help troubleshoot
+    console.log('MyBills Debug:', {
+        role,
+        userId: user?.uid,
+        parentStudentIds: parentData?.studentIds,
+        foundStudents: students?.length,
+        studentDetails: students?.map(s => ({ id: s.id, uid: s.uid, name: `${s.firstName} ${s.lastName}` }))
+    });
 
     return (
         <Card>
@@ -122,7 +142,11 @@ export default function MyBillsPage() {
                         {students.map(student => (
                             <AccordionItem value={student.uid} key={student.uid}>
                                 <AccordionTrigger>
-                                    <h3 className="text-lg font-semibold flex items-center gap-2"><User /> {student.firstName} {student.lastName}</h3>
+                                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                                        <User className="h-5 w-5" /> 
+                                        {student.firstName} {student.lastName}
+                                        <Badge variant="outline" className="ml-2">{student.studentId || student.uid}</Badge>
+                                    </h3>
                                 </AccordionTrigger>
                                 <AccordionContent className="p-1">
                                     <StudentBillView studentId={student.uid} />
@@ -132,7 +156,15 @@ export default function MyBillsPage() {
                     </Accordion>
                 ) : (
                     <div className="text-center p-8 text-muted-foreground">
-                        No student information found for your account.
+                        {role === 'Parent' && parentData?.studentIds && parentData.studentIds.length > 0 ? (
+                            <>
+                                <p className="mb-2">No student records found.</p>
+                                <p className="text-sm">Expected {parentData.studentIds.length} student(s), but found 0.</p>
+                                <p className="text-xs mt-2 text-gray-400">Student IDs: {parentData.studentIds.join(', ')}</p>
+                            </>
+                        ) : (
+                            'No student information found for your account.'
+                        )}
                     </div>
                 )}
             </CardContent>
