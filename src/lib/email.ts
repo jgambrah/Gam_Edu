@@ -1,16 +1,25 @@
+
 import { Resend } from 'resend';
 
-export async function sendWelcomeEmail(email: string, name: string) {
+// Helper function to initialize Resend only when needed (Lazy Loading)
+// This prevents the "Missing API Key" error in the browser
+const getResendClient = () => {
   const apiKey = process.env.RESEND_API_KEY;
+  
   if (!apiKey) {
-    console.error("Email failed: RESEND_API_KEY is missing in environment variables.");
-    return; // Don't throw, just log the error on the server
+    // Only throw this error if we are actually trying to send an email on the server
+    throw new Error("RESEND_API_KEY is missing in environment variables.");
   }
-  const resend = new Resend(apiKey);
+  
+  return new Resend(apiKey);
+};
 
+export async function sendWelcomeEmail(email: string, name: string) {
   try {
+    const resend = getResendClient(); // <--- Initialize here
+
     await resend.emails.send({
-      from: 'GAM Edu <info@gam-it-service.app>', // Changed this to your domain later (e.g. hello@gam-edu.com)
+      from: 'GAM Edu <info@gam-it-service.app>',
       to: email,
       subject: 'Welcome to GAM Edu!',
       html: `
@@ -25,16 +34,10 @@ export async function sendWelcomeEmail(email: string, name: string) {
   }
 }
 
-
 export async function sendSchoolCredentialsEmail(email: string, name: string, schoolName: string, password: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.error("Email failed: RESEND_API_KEY is missing in environment variables.");
-    return; // Don't throw, just log the error on the server
-  }
-  const resend = new Resend(apiKey);
-  
   try {
+    const resend = getResend_client(); // <--- Initialize here
+
     await resend.emails.send({
       from: 'GAM Edu <info@gam-it-service.app>',
       to: email,
