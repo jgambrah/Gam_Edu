@@ -1,50 +1,58 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, doc, query, where } from 'firebase/firestore';
+import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, query, where, documentId } from 'firebase/firestore';
 import { ReportCard, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, FileText } from 'lucide-react';
+import { Loader2, FileText, AlertTriangle } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { StudentReportCard } from './student-report-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Suspense } from 'react';
 import { useRole } from '@/context/role-context';
+import { StudentDisplay } from '@/components/student-display';
 
 function ReportListForStudent({ student }: { student: Student }) {
     const firestore = useFirestore();
-    const [selectedReport, setSelectedReport] = useState<ReportCard | null>(null);
+    
+    // ✅ FIX: Use student.id (Document ID) to ensure we find reports even if 'uid' field is missing
+    const studentIdentifier = student.id || student.uid;
 
     const reportsQuery = useMemoFirebase(
-      () => query(collection(firestore, 'report-cards'), where('studentId', '==', student.uid), where('status', '==', 'Published')),
-      [firestore, student.uid]
+      () => studentIdentifier ? query(
+          collection(firestore, 'report-cards'), 
+          where('studentId', '==', studentIdentifier), 
+          where('status', '==', 'Published')
+      ) : null,
+      [firestore, studentIdentifier]
     );
     const { data: reports, isLoading } = useCollection<ReportCard>(reportsQuery);
 
     if (isLoading) {
-        return <Loader2 className="h-5 w-5 animate-spin" />;
+        return <div className="p-4 flex justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>;
     }
 
     if (!reports || reports.length === 0) {
-        return <p className="text-sm text-muted-foreground">No published report cards available.</p>;
+        return <p className="text-sm text-muted-foreground p-6 text-center italic">No published report cards available for this child.</p>;
     }
     
     return (
-        <div className="space-y-2">
+        <div className="space-y-2 p-3">
             {reports.map(report => (
-                <div key={report.id} className="flex justify-between items-center p-2 border rounded-md">
+                <div key={report.id} className="flex justify-between items-center p-3 border rounded-md bg-white shadow-sm">
                     <div>
-                        <p className="font-medium">{report.academicYear} - {report.term}</p>
+                        <p className="font-medium text-slate-900">{report.academicYear} - {report.term}</p>
                     </div>
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button variant="outline" size="sm">View Report</Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-4xl">
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader><DialogTitle>Student Report Card</DialogTitle></DialogHeader>
-                            <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+                            <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
                                 <StudentReportCard student={student} term={report.term} year={report.academicYear} />
                             </Suspense>
                         </DialogContent>
@@ -60,52 +68,113 @@ export default function StudentParentReportCardView() {
     const { user, isUserLoading } = useUser();
     const { role } = useRole();
 
-    // Fetch parent data to find their children
-    const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user) ? doc(firestore, 'parents', user.uid) : null, [firestore, user, role]);
+    // 1. Fetch parent data to get the list of child IDs
+    const parentDocRef = useMemoFirebase(
+        () => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null,
+        [firestore, user?.uid, role]
+    );
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
 
-    // Fetch student data for the children
+    const studentIds = useMemo(() => parentData?.studentIds || [], [parentData?.studentIds?.join(',')]);
+
+    // 2. Fetch student profiles for all children in the list
     const studentsQuery = useMemoFirebase(() => {
-        if (role === 'Parent' && parentData && parentData.studentIds.length > 0) {
-            return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
+        if (!firestore) return null;
+        if (role === 'Parent' && studentIds.length > 0) {
+            // ✅ FIX: Use documentId() to match the IDs in the parent's list
+            return query(collection(firestore, 'students'), where(documentId(), 'in', studentIds));
         }
         if (role === 'Student' && user) {
-            return query(collection(firestore, 'students'), where('uid', '==', user.uid));
+            // ✅ FIX: Use documentId() for the student's own profile too
+            return query(collection(firestore, 'students'), where(documentId(), '==', user.uid));
         }
         return null;
-    }, [firestore, role, user, parentData]);
+    }, [firestore, role, user?.uid, studentIds.join(',')]);
+
     const { data: students, isLoading: areStudentsLoading } = useCollection<Student>(studentsQuery);
     
     const isLoading = isUserLoading || isParentLoading || areStudentsLoading;
 
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><FileText /> My Report Cards</CardTitle>
-                <CardDescription>View published academic report cards for each term.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? (
-                    <div className="flex justify-center items-center h-40">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                    </div>
-                ) : students && students.length > 0 ? (
-                    <Accordion type="single" collapsible defaultValue={students[0].id}>
+    if (isLoading) {
+        return (
+            <Card>
+                <CardContent className="flex justify-center p-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </CardContent>
+            </Card>
+        );
+    }
+    
+    // --- View for Students ---
+    if (role === 'Student') {
+        const student = students?.[0];
+        if (!student) return <div className="p-8 text-center text-muted-foreground">Your student profile could not be found.</div>;
+        
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><FileText className="text-primary" /> My Report Cards</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ReportListForStudent student={student} />
+                </CardContent>
+            </Card>
+        );
+    }
+
+    // --- View for Parents ---
+    if (role === 'Parent') {
+        if (!students || students.length === 0) {
+            return (
+                <Card>
+                    <CardContent className="p-12 text-center text-muted-foreground">
+                        <p>No children linked to your account.</p>
+                        <p className="text-xs mt-2 text-slate-400">If you believe this is an error, please contact the administrator.</p>
+                    </CardContent>
+                </Card>
+            );
+        }
+        
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+                        <FileText className="text-primary" /> My Children's Reports
+                    </CardTitle>
+                    <CardDescription>Select a child to view their published academic results.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {/* If some IDs didn't resolve to students, show a subtle warning */}
+                    {studentIds.length > students.length && (
+                        <div className="mb-4 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700 flex items-center gap-2">
+                            <AlertTriangle className="h-3 w-3" />
+                            Some linked student records could not be found.
+                        </div>
+                    )}
+
+                    <Accordion type="single" collapsible defaultValue={students[0].id || students[0].uid}>
                         {students.map(student => (
-                            <AccordionItem value={student.id} key={student.id}>
-                                <AccordionTrigger>
-                                    <h3 className="text-lg font-semibold">{student.firstName} {student.lastName}</h3>
+                            <AccordionItem value={student.id || student.uid} key={student.id || student.uid} className="border rounded-lg mb-2 overflow-hidden px-2">
+                                <AccordionTrigger className="hover:no-underline py-4 px-2">
+                                    <StudentDisplay student={student} variant="list" showAvatar/>
                                 </AccordionTrigger>
-                                <AccordionContent>
+                                <AccordionContent className="p-0 bg-slate-50 border-t">
                                     <ReportListForStudent student={student} />
                                 </AccordionContent>
                             </AccordionItem>
                         ))}
                     </Accordion>
-                ) : (
-                    <p className="text-center text-muted-foreground py-8">No student information found.</p>
-                )}
-            </CardContent>
+                </CardContent>
+            </Card>
+        );
+    }
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Access Denied</CardTitle>
+                <CardDescription>This page is only accessible to Parents and Students.</CardDescription>
+            </CardHeader>
         </Card>
-    )
+    );
 }
