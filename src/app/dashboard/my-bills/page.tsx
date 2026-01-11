@@ -4,8 +4,8 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { collection, doc, query, where, documentId } from 'firebase/firestore';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, User } from 'lucide-react';
@@ -95,8 +95,9 @@ export default function MyBillsPage() {
         if (role === 'Student') {
             return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }
-        if (role === 'Parent' && parentData?.studentIds?.length) {
-            return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
+        if (role === 'Parent' && parentData?.studentIds && parentData.studentIds.length > 0) {
+            // FIX: Use documentId() to query by the document's ID, which matches what's in studentIds
+            return query(collection(firestore, 'students'), where(documentId(), 'in', parentData.studentIds));
         }
         return null;
     }, [firestore, role, user, parentData]);
