@@ -1,13 +1,11 @@
-
 'use server';
 
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
-import type { UserRole } from '@/lib/types';
-import { sendWelcomeEmail } from '@/lib/email'; 
+import { sendSchoolCredentialsEmail } from '@/lib/email'; // Ensure this path is correct
 
-// Initialize Admin SDK
+// Initialize Admin SDK Safely
 function getAdminApp(): App {
   const existingApp = getApps().find(app => app.name === 'admin');
   if (existingApp) return existingApp;
@@ -33,95 +31,63 @@ function getAdminApp(): App {
 export async function createNewUser(
   email: string,
   password: string,
-  role?: UserRole,
+  role?: string,
   details?: { firstName: string, lastName: string },
-  schoolId?: string // <--- NEW PARAMETER
-): Promise<{ uid: string } | { error: string }> {
+  schoolId?: string 
+) {
   
+  // 1. Initialize Admin App
   const adminApp = getAdminApp();
   const auth = getAuth(adminApp);
   const firestore = getFirestore(adminApp);
 
   try {
     let userRecord;
-    let isNewUser = false; 
-
-    // 1. Create or Fetch Auth User
+    
+    // 2. Check if user exists
     try {
         userRecord = await auth.getUserByEmail(email);
     } catch (error: any) {
         if (error.code === 'auth/user-not-found') {
+            // Create new user
             userRecord = await auth.createUser({
                 email: email,
                 password: password,
                 displayName: `${details?.firstName} ${details?.lastName}`.trim(),
             });
-            isNewUser = true; 
         } else {
             throw error;
         }
     }
     
     const selectedRole = role || 'Parent';
-
-    // 2. Determine Collection based on Role
-    // Note: Staff/Teachers go to 'staff', Students to 'students', Parents to 'parents'
     const collectionName = selectedRole === 'Parent' ? 'parents' : selectedRole === 'Student' ? 'students' : 'staff';
-    const profileDocRef = firestore.collection(collectionName).doc(userRecord.uid);
     
-    // 3. Prepare Profile Data (Now including schoolId)
+    // 3. Create Profile Document
     const profileData: any = {
         uid: userRecord.uid,
         email: email,
         firstName: details?.firstName,
         lastName: details?.lastName,
-        createdAt: new Date(),
+        createdAt: new Date(), // Admin SDK uses native Date, not serverTimestamp()
+        isActive: true
     };
 
-    if (schoolId) {
-        profileData.schoolId = schoolId; // <--- LINK TO SCHOOL
-    }
-
-    if(collectionName === 'staff') {
-        profileData.role = selectedRole;
-    }
+    if (schoolId) profileData.schoolId = schoolId;
+    if (collectionName === 'staff') profileData.role = selectedRole;
     
-    await profileDocRef.set(profileData, { merge: true });
+    await firestore.collection(collectionName).doc(userRecord.uid).set(profileData, { merge: true });
 
-    // 4. Update the core 'users' collection (Critical for Auth/Rules)
-    const userRoleRef = firestore.collection('users').doc(userRecord.uid);
-    const userRoleData: any = { role: selectedRole };
+    // 4. Update 'users' mapping collection
+    const userRoleData: any = { role: selectedRole, email };
+    if (schoolId) userRoleData.schoolId = schoolId;
     
-    if (schoolId) {
-        userRoleData.schoolId = schoolId; // <--- LINK TO SCHOOL
-    }
-    
-    // Add display name if available
-    if (details?.firstName) {
-        userRoleData.firstName = details.firstName;
-        userRoleData.lastName = details.lastName;
-        userRoleData.email = email;
-    }
+    await firestore.collection('users').doc(userRecord.uid).set(userRoleData, { merge: true });
 
-    await userRoleRef.set(userRoleData, { merge: true });
-
-    // 5. Send Welcome Email (Only for new users)
-    if (isNewUser) {
-        const fullName = `${details?.firstName} ${details?.lastName}`.trim();
-        // You can customize the email here to mention the school if schoolId is present
-        await sendWelcomeEmail(email, fullName || 'User');
-    }
-
-    return { uid: userRecord.uid };
+    return { uid: userRecord.uid, success: true };
 
   } catch (error: any) {
-    console.error('Error creating/updating user:', error);
-    
-    let errorMessage = 'An unknown error occurred.';
-    if (error.code === 'auth/email-already-exists') {
-        errorMessage = 'This email is already registered.';
-    }
-    
-    return { error: errorMessage };
+    console.error('Create User Error:', error);
+    return { error: error.message || 'Failed to create user' };
   }
 }
