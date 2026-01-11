@@ -3,7 +3,7 @@
 
 import { useState, useMemo, Suspense } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, doc, query, where, Timestamp, orderBy } from 'firebase/firestore';
+import { collection, doc, query, where, Timestamp, orderBy, documentId } from 'firebase/firestore';
 import { ReportCard, Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, User, FileText, CalendarCheck, ShieldAlert, BadgeInfo } from 'lucide-react';
@@ -177,8 +177,9 @@ export default function MyChildrenPage() {
         if (role === 'Student') {
             return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }
-        if (role === 'Parent' && parentData?.studentIds?.length) {
-            return query(collection(firestore, 'students'), where('uid', 'in', parentData.studentIds));
+        // FIX: The `in` operator queries against the document ID, not the `uid` field.
+        if (role === 'Parent' && parentData?.studentIds && parentData.studentIds.length > 0) {
+            return query(collection(firestore, 'students'), where(documentId(), 'in', parentData.studentIds));
         }
         return null;
     }, [firestore, role, user, parentData]);
@@ -268,5 +269,3 @@ function StudentParentReportCardView({ studentId }: { studentId: string }) {
         </div>
     )
 }
-
-    
