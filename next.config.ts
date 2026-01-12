@@ -24,22 +24,31 @@ const nextConfig: NextConfig = {
         "@grpc/grpc-js",
         "jsonwebtoken"
     ],
-    // 2. Ignore Node.js specific modules for Browser builds
-    webpack: (config, { isServer }) => {
-        if (!isServer) {
-            config.resolve.fallback = {
-                ...config.resolve.fallback,
-                fs: false, 
-                tls: false, 
-                net: false,
-                child_process: false,
-                http2: false,
-                dns: false,
-                "node:async_hooks": false, // <--- Fixes your specific error
-                async_hooks: false,
-            };
-        }
-        return config;
-    },
+    // 2. Ignore Node.js specific modules for Browser builds (Turbopack configuration)
+    experimental: {
+      turbo: {
+        rules: {
+          '*.node': {
+            loaders: ['node-loader'],
+            as: '*.node',
+          },
+          // This is the equivalent of the webpack fallback configuration
+          'node-loader': {
+             resolve: {
+                fallback: {
+                    fs: false,
+                    tls: false,
+                    net: false,
+                    child_process: false,
+                    http2: false,
+                    dns: false,
+                    "node:async_hooks": false,
+                    async_hooks: false,
+                }
+             }
+          }
+        },
+      },
+    }
 };
 export default nextConfig;
