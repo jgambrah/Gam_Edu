@@ -8,6 +8,7 @@ import { useRole } from '@/context/role-context';
 import SystemRepair from '@/components/SystemRepair'; // Import the repair tool
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+
 function DashboardPageContent() {
   const { role, loading, refreshRole } = useRole();
 
