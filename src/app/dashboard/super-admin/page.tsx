@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user'; 
-import { sendSchoolCredentialsEmail } from '@/lib/email'; 
+// REMOVED: import { sendSchoolCredentialsEmail } from '@/lib/email'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -108,9 +108,9 @@ export default function SuperAdminPage() {
         createdAt: serverTimestamp()
       });
 
-      await sendSchoolCredentialsEmail(adminEmail, adminName, schoolName, password);
+      // Email sending is now handled inside createNewUser action
 
-      toast({ title: "Success!", description: `Created ${schoolName}` });
+      toast({ title: "Success!", description: `Created ${schoolName} and sent credentials.` });
       
       setSchoolName('');
       setAdminEmail('');

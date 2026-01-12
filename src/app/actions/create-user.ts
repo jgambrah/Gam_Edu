@@ -3,14 +3,15 @@
 
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
+import { sendSchoolCredentialsEmail } from '@/lib/email';
 
 // --- HELPER: Fixes Vercel Key Formatting Issues ---
 const formatPrivateKey = (key: string) => {
   return key.replace(/\\n/g, '\n').replace(/"/g, ''); 
 };
 
-function getAdminApp() {
+function getAdminApp(): App {
   const existingApp = getApps().find(app => app.name === 'admin');
   if (existingApp) return existingApp;
 
@@ -19,7 +20,6 @@ function getAdminApp() {
   const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
 
   if (!projectId || !clientEmail || !privateKeyRaw) {
-    // Log exactly which one is missing so we stop guessing
     console.error("❌ FIREBASE CREDENTIALS MISSING:", {
       projectId: !!projectId,
       clientEmail: !!clientEmail,
@@ -27,11 +27,13 @@ function getAdminApp() {
     });
     throw new Error("Missing Firebase Admin credentials.");
   }
-
+  
   const privateKey = formatPrivateKey(privateKeyRaw);
+  
+  const serviceAccount = { projectId, clientEmail, privateKey };
 
   return initializeApp({
-    credential: cert({ projectId, clientEmail, privateKey }),
+    credential: cert(serviceAccount),
   }, 'admin');
 }
 
@@ -64,7 +66,7 @@ export async function createNewUser(
                 displayName: `${details?.firstName} ${details?.lastName}`,
             });
         } else {
-            throw error; // Throw actual error if it's not "not found"
+            throw error; 
         }
     }
     
@@ -90,12 +92,18 @@ export async function createNewUser(
         schoolId: schoolId,
         email
     }, { merge: true });
+    
+    // 4. Send Credentials Email (Integrated Step)
+    if (details?.firstName && schoolId) {
+        const schoolDoc = await firestore.collection('schools').doc(schoolId).get();
+        const schoolName = schoolDoc.data()?.name || 'Your School';
+        await sendSchoolCredentialsEmail(email, details.firstName, schoolName, password);
+    }
 
     console.log("✅ User Created Successfully");
     return { uid: userRecord.uid, success: true };
 
   } catch (error: any) {
-    // Log the REAL error to Vercel logs
     console.error("❌ FATAL SERVER ERROR:", error);
     return { error: error.message || 'Internal Server Error' };
   }
