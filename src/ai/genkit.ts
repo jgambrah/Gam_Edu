@@ -1,14 +1,12 @@
 
-import {genkit} from 'genkit';
-import {googleAI, gemini15Flash} from '@genkit-ai/google-genai'; // Import the model reference
-import { firebase } from '@genkit-ai/firebase';
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 
-// 1. Export the Model explicitly so other files use the exact same one
-export const GEMINI_MODEL = gemini15Flash;
+// We removed the 'firebase' plugin to stop the crash.
+// You only need googleAI for the text generation features.
 
 export const ai = genkit({
   plugins: [
-    firebase(),
     googleAI({
       apiKey: process.env.GEMINI_API_KEY,
     }),
