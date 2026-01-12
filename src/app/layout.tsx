@@ -2,7 +2,6 @@
 import { RoleProvider } from '@/context/role-context';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import ClientBoundary from './dashboard/client-boundary';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export default function RootLayout({
@@ -17,9 +16,7 @@ export default function RootLayout({
       <body className="antialiased">
         <FirebaseClientProvider>
           <RoleProvider>
-              <ClientBoundary>
-                {children}
-              </ClientBoundary>
+              {children}
               <Toaster />
           </RoleProvider>
         </FirebaseClientProvider>
