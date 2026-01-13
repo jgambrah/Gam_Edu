@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,22 +22,22 @@ import { quizSchema } from '@/lib/types';
 import { Loader2, Wand2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateQuiz } from '@/ai/flows/generate-quiz-flow';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import type { Class } from '@/lib/types';
+import { errorEmitter, FirestorePermissionError } from '@/firebase';
 
-type QuizCreationFormProps = {
-  setOpen: (open: boolean) => void;
-};
-
-export function QuizCreationForm({ setOpen }: QuizCreationFormProps) {
+export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const classesQuery = useMemoFirebase(
-    () => user && query(collection(firestore, 'classes'), where('teacherId', '==', user.uid)),
-    [firestore, user]
+    () => (user && schoolId) ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    [firestore, user, schoolId]
   );
-  const { data: classes } = useCollection(classesQuery);
+  const { data: classes } = useCollection<Class>(classesQuery);
 
   const form = useForm<z.infer<typeof quizSchema>>({
     resolver: zodResolver(quizSchema),
@@ -47,19 +48,23 @@ export function QuizCreationForm({ setOpen }: QuizCreationFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof quizSchema>) {
-    if (!user) return;
+    if (!user || !schoolId) return;
     setIsSubmitting(true);
     try {
       toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
       const quizData = await generateQuiz({ topic: values.topic, numQuestions: values.numQuestions, forGradeLevel: 'Grade 9' });
-
-      await addDoc(collection(firestore, 'quizzes'), {
+      
+      const quizzesCollection = collection(firestore, 'quizzes');
+      const dataToSave = {
         ...quizData,
         classId: values.classId,
         teacherId: user.uid,
+        schoolId: schoolId,
         topic: values.topic,
         createdAt: serverTimestamp(),
-      });
+      };
+
+      await addDoc(quizzesCollection, dataToSave);
 
       toast({
         title: 'Quiz Created!',
@@ -67,13 +72,21 @@ export function QuizCreationForm({ setOpen }: QuizCreationFormProps) {
       });
       form.reset();
       setOpen(false);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'FirebaseError' && error.code === 'permission-denied') {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: 'quizzes',
+          operation: 'create',
+          requestResourceData: form.getValues(),
+        }));
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'An AI or network error occurred while creating the quiz.',
+        });
+      }
       console.error('Error creating quiz:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'An AI error occurred while creating the quiz.',
-      });
     } finally {
       setIsSubmitting(false);
     }

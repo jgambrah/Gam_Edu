@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +32,7 @@ import { collection, query, serverTimestamp, where, addDoc } from 'firebase/fire
 import { assignmentSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type AssignmentCreationFormProps = {
   setOpen: (open: boolean) => void;
@@ -41,10 +43,11 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { schoolId } = useCurrentSchool();
 
   const classesQuery = useMemoFirebase(
-    () => user && query(collection(firestore, 'classes'), where('teacherId', '==', user.uid)),
-    [firestore, user]
+    () => (user && schoolId) ? query(collection(firestore, 'classes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    [firestore, user, schoolId]
   );
   const { data: classes } = useCollection(classesQuery);
 
@@ -58,12 +61,13 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
   });
 
   async function onSubmit(values: z.infer<typeof assignmentSchema>) {
-    if (!user) return;
+    if (!user || !schoolId) return;
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'assignments'), {
         ...values,
         teacherId: user.uid,
+        schoolId: schoolId, // SAAS: Stamp with schoolId
         createdAt: serverTimestamp(),
       });
 

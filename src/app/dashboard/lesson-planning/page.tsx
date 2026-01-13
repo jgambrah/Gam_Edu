@@ -14,6 +14,7 @@ import { ClipboardList, Loader2, PlusCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { LessonPlanForm } from './lesson-plan-form';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type ClassData = { id: string, name: string };
 type StaffData = { uid: string, firstName: string, lastName: string };
@@ -42,36 +43,35 @@ export default function LessonPlanningPage() {
   const { role } = useRole();
   const { user } = useUser();
   const firestore = useFirestore();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const [isFormOpen, setFormOpen] = useState(false);
 
+  const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
+
   const plansQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
+    if (!user || !firestore || !schoolId) return null;
+    let q = query(collection(firestore, 'lesson-plans'), where('schoolId', '==', schoolId), orderBy('date', 'desc'));
     if (role === 'Teacher') {
-      return query(collection(firestore, 'lesson-plans'), where('teacherId', '==', user.uid), orderBy('date', 'desc'));
-    } else if (role === 'Administrator' || role === 'Director') {
-      return query(collection(firestore, 'lesson-plans'), orderBy('date', 'desc'));
+      q = query(q, where('teacherId', '==', user.uid));
     }
-    return null;
-  }, [firestore, user, role]);
+    return q;
+  }, [firestore, user, role, schoolId]);
   const { data: lessonPlans, isLoading: isLoadingPlans } = useCollection<LessonPlan>(plansQuery);
 
   const classesQuery = useMemoFirebase(() => {
-    if (!user || !firestore) return null;
-    if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore, 'classes');
-    } else if (role === 'Teacher') {
-      return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+    if (!user || !firestore || !schoolId) return null;
+    let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+    if (role === 'Teacher') {
+      q = query(q, where('teacherId', '==', user.uid));
     }
-    return null;
-  }, [firestore, user, role]);
+    return q;
+  }, [firestore, user, role, schoolId]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
 
-  const staffQuery = useMemoFirebase(() => (firestore && user) ? collection(firestore, 'staff') : null, [firestore, user]);
+  const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: staff, isLoading: isLoadingStaff } = useCollection<StaffData>(staffQuery);
-
-  const canAccess = role === 'Teacher' || role === 'Administrator' || role === 'Director';
   
-  const isLoading = isLoadingPlans || isLoadingClasses || isLoadingStaff;
+  const isLoading = isLoadingPlans || isLoadingClasses || isLoadingStaff || isLoadingSchool;
 
   const enrichedLessonPlans = useMemo(() => {
     if (!lessonPlans || !classes || !staff) return [];
@@ -107,8 +107,8 @@ export default function LessonPlanningPage() {
           </div>
           <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild>
-              <Button>
-                {isLoadingClasses ? (
+              <Button disabled={isLoading || !schoolId}>
+                {(isLoading) ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <PlusCircle className="mr-2 h-4 w-4" />

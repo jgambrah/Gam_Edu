@@ -13,6 +13,7 @@ import {
   Users, BookOpen, CheckCircle 
 } from 'lucide-react';
 import { generateLearningInsights } from '@/ai/flows/learning-analytics';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,30 +26,33 @@ import { Class, Student, Assessment, AttendanceRecord } from '@/lib/types';
 export default function LearningAnalyticsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId, loading: schoolLoading } = useCurrentSchool();
   
   const [selectedClassId, setSelectedClassId] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiReport, setAiReport] = useState<any>(null);
 
-  // 1. Fetch Classes
-  const classesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore]);
-  const { data: classes } = useCollection<Class>(classesQuery);
+  // 1. Fetch Classes for the current school
+  const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: classes, isLoading: classesLoading } = useCollection<Class>(classesQuery);
 
   // 2. Fetch Data (Dependent on selected Class)
   const studentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null, 
-  [firestore, selectedClassId]);
-  const { data: students } = useCollection<Student>(studentsQuery);
+    (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, 
+  [firestore, selectedClassId, schoolId]);
+  const { data: students, isLoading: studentsLoading } = useCollection<Student>(studentsQuery);
 
   const assessmentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId)) : null, 
-  [firestore, selectedClassId]);
-  const { data: assessments } = useCollection<Assessment>(assessmentsQuery);
+    (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, 
+  [firestore, selectedClassId, schoolId]);
+  const { data: assessments, isLoading: assessmentsLoading } = useCollection<Assessment>(assessmentsQuery);
 
   const attendanceQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore, 'attendance'), where('classId', '==', selectedClassId)) : null, 
-  [firestore, selectedClassId]);
-  const { data: attendance } = useCollection<AttendanceRecord>(attendanceQuery);
+    (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'attendance'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, 
+  [firestore, selectedClassId, schoolId]);
+  const { data: attendance, isLoading: attendanceLoading } = useCollection<AttendanceRecord>(attendanceQuery);
+
+  const isLoading = schoolLoading || classesLoading || (selectedClassId && (studentsLoading || assessmentsLoading || attendanceLoading));
 
   // --- DATA AGGREGATION ENGINE ---
   const { studentStats, classAverages, scatterData } = useMemo(() => {
@@ -128,7 +132,14 @@ export default function LearningAnalyticsPage() {
             </div>
         </div>
 
-        {selectedClassId && students && (
+        {selectedClassId && isLoading && (
+             <div className="flex flex-col items-center justify-center h-[50vh] text-slate-400">
+                <Loader2 className="h-12 w-12 animate-spin mb-4 opacity-50"/>
+                <p>Loading analytics data...</p>
+            </div>
+        )}
+
+        {selectedClassId && !isLoading && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4">
                 
                 {/* 1. SCATTER PLOT: ATTENDANCE VS GRADES */}
@@ -247,7 +258,7 @@ export default function LearningAnalyticsPage() {
             </div>
         )}
 
-        {!selectedClassId && (
+        {!selectedClassId && !isLoading && (
             <div className="flex flex-col items-center justify-center h-[50vh] text-slate-400">
                 <Users className="h-16 w-16 mb-4 opacity-50"/>
                 <p>Select a class above to begin analysis.</p>
@@ -256,5 +267,3 @@ export default function LearningAnalyticsPage() {
     </div>
   );
 }
-
-    

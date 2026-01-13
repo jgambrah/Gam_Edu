@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,19 +14,21 @@ import { AssignmentSubmissionsList } from './assignment-submissions-list';
 import { QuizCreationForm } from './quiz-creation-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function QuizList() {
   const firestore = useFirestore();
   const { user } = useAuth();
+  const { schoolId } = useCurrentSchool();
 
   const quizzesQuery = useMemoFirebase(
-    () => user ? query(collection(firestore, 'quizzes'), where('teacherId', '==', user.uid)) : null,
-    [firestore, user]
+    () => (user && schoolId) ? query(collection(firestore, 'quizzes'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    [firestore, user, schoolId]
   );
   const { data: quizzes, isLoading } = useCollection<Quiz>(quizzesQuery);
   const sortedQuizzes = quizzes?.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
 
-  const { data: classes } = useCollection<{id: string, name: string}>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+  const { data: classes } = useCollection<{id: string, name: string}>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
   const getClassName = (classId: string) => {
     return classes?.find(c => c.id === classId)?.name || classId;
@@ -69,12 +72,13 @@ function QuizList() {
 export default function TeacherAssignmentsView() {
   const firestore = useFirestore();
   const { user } = useAuth();
+  const { schoolId } = useCurrentSchool();
   const [isAssignmentFormOpen, setAssignmentFormOpen] = useState(false);
   const [isQuizFormOpen, setQuizFormOpen] = useState(false);
 
   const assignmentsQuery = useMemoFirebase(
-    () => user && firestore ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid)) : null,
-    [user, firestore]
+    () => (user && schoolId) ? query(collection(firestore, 'assignments'), where('teacherId', '==', user.uid), where('schoolId', '==', schoolId)) : null,
+    [user, firestore, schoolId]
   );
   const { data: assignments, isLoading } = useCollection<Assignment>(assignmentsQuery);
 

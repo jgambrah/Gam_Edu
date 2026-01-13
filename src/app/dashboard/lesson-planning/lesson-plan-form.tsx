@@ -34,6 +34,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { generateLessonIdeas } from '@/ai/flows/generate-lesson-ideas-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type ClassData = { id: string; name: string };
 
@@ -46,6 +47,7 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   const firestore = useFirestore();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -84,12 +86,13 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
   };
 
   async function onSubmit(values: z.infer<typeof lessonPlanSchema>) {
-    if (!user) return;
+    if (!user || !schoolId) return;
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'lesson-plans'), {
         ...values,
         teacherId: user.uid,
+        schoolId: schoolId,
         createdAt: serverTimestamp(),
       });
 

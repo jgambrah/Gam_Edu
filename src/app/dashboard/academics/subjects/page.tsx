@@ -16,11 +16,12 @@ import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- TYPES ---
 type Staff = {
     uid: string;
-    id: string; // Add id to the type, as it's provided by useCollection
+    id: string; 
     firstName: string;
     lastName: string;
 };
@@ -29,6 +30,7 @@ type Subject = {
     id: string;
     name: string;
     teacherIds: string[];
+    schoolId?: string;
 };
 
 const subjectSchema = z.object({
@@ -41,12 +43,14 @@ function SubjectForm({
   setOpen,
   allTeachers,
   initialData,
-  onSuccess
+  onSuccess,
+  schoolId
 }: {
   setOpen: (open: boolean) => void;
   allTeachers: Staff[];
   initialData?: Subject;
   onSuccess: () => void;
+  schoolId: string;
 }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -68,6 +72,7 @@ function SubjectForm({
       } else {
         await addDoc(collection(firestore, 'subjects'), {
             ...values,
+            schoolId: schoolId, // SAAS: Stamp with schoolId
             createdAt: serverTimestamp()
         });
         toast({ title: 'Success', description: 'New subject has been created.' });
@@ -106,7 +111,7 @@ function SubjectForm({
                 <FormDescription>Select all teachers qualified to teach this subject.</FormDescription>
               </div>
               <div className="space-y-2 max-h-64 overflow-y-auto border p-2 rounded-md">
-                {allTeachers.length === 0 && <p className="text-sm text-muted-foreground text-center">No teachers found.</p>}
+                {allTeachers.length === 0 && <p className="text-sm text-muted-foreground text-center">No teachers found for this school.</p>}
                 {allTeachers.map((teacher) => (
                   <FormField
                     key={teacher.id || teacher.uid}
@@ -155,47 +160,29 @@ export default function SubjectsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const [refetchKey, setRefetchKey] = useState(0);
 
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
-  const [isInitializing, setIsInitializing] = useState(false);
   
   const canManage = role === 'Director' || role === 'Administrator';
 
   const forceRefetch = useCallback(() => setRefetchKey(prev => prev + 1), []);
 
   const subjectsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'subjects');
-  }, [firestore, refetchKey]);
+    if (!firestore || !schoolId) return null;
+    return query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId));
+  }, [firestore, refetchKey, schoolId]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
   const teachersQuery = useMemoFirebase(() => {
-    if (!firestore || !canManage) return null;
-    return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'));
-  }, [firestore, canManage, refetchKey]);
+    if (!firestore || !canManage || !schoolId) return null;
+    return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId));
+  }, [firestore, canManage, refetchKey, schoolId]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
-  const isLoading = isLoadingSubjects || (canManage && isLoadingTeachers);
-
-  const handleForceInitialize = async () => {
-      if (!firestore) return;
-      setIsInitializing(true);
-      try {
-          await addDoc(collection(firestore, 'subjects'), {
-              name: "General Science (Test)",
-              teacherIds: [],
-              createdAt: serverTimestamp()
-          });
-          toast({ title: "Success", description: "Test subject created." });
-          forceRefetch();
-      } catch (e: any) {
-          toast({ variant: 'destructive', title: "Error", description: e.message });
-      } finally {
-          setIsInitializing(false);
-      }
-  };
+  const isLoading = isLoadingSchool || isLoadingSubjects || (canManage && isLoadingTeachers);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this subject? This action cannot be undone.")) {
@@ -244,10 +231,10 @@ export default function SubjectsPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2"><BookCopy /> Subject Management</CardTitle>
-            <CardDescription>Create academic subjects and assign qualified teachers.</CardDescription>
+            <CardDescription>Create academic subjects and assign qualified teachers for your school.</CardDescription>
           </div>
           <div className="flex gap-2">
-             <Button onClick={() => handleOpenDialog()} disabled={isLoading}>
+             <Button onClick={() => handleOpenDialog()} disabled={isLoading || !schoolId}>
                 <PlusCircle className="mr-2 h-4 w-4" /> New Subject
              </Button>
           </div>
@@ -257,15 +244,7 @@ export default function SubjectsPage() {
             <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
           ) : sortedSubjects.length === 0 ? (
              <div className="text-center text-muted-foreground p-10 border-2 border-dashed rounded-lg bg-slate-50">
-                 <p className="mb-4">No subjects created yet.</p>
-                 <Button 
-                    variant="destructive" 
-                    onClick={handleForceInitialize} 
-                    disabled={isInitializing}
-                 >
-                    {isInitializing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Database className="mr-2 h-4 w-4"/>}
-                    Force Initialize Database
-                 </Button>
+                 <p className="mb-4">No subjects found for this school.</p>
              </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -297,16 +276,17 @@ export default function SubjectsPage() {
           <DialogHeader>
             <DialogTitle>{editingSubject ? 'Edit Subject' : 'Create New Subject'}</DialogTitle>
           </DialogHeader>
-          <SubjectForm
-            setOpen={handleCloseDialog}
-            allTeachers={teachers || []}
-            initialData={editingSubject}
-            onSuccess={forceRefetch}
-          />
+          {schoolId && (
+            <SubjectForm
+                setOpen={handleCloseDialog}
+                allTeachers={teachers || []}
+                initialData={editingSubject}
+                onSuccess={forceRefetch}
+                schoolId={schoolId}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
   );
 }
-
-    
