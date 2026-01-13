@@ -15,11 +15,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { StudentSearchInput } from '@/components/student-search';
+import { searchStudent } from '@/lib/student-utils';
 
+
+// --- TYPE DEFINITIONS ---
 type StaffMember = {
   id: string;
   uid: string;
@@ -33,14 +38,22 @@ type StaffMember = {
   schoolId?: string; // New Field
 };
 
+type Student = {
+    id: string;
+    uid: string;
+    firstName: string;
+    lastName: string;
+};
+
+// --- MAIN PAGE COMPONENT ---
 export default function StaffManagementPage() {
-  const { user } = useAuth(); // Get currently logged in Admin
+  const { user } = useAuth(); // Logged in Director/Admin
   const firestore = useFirestore();
   const { toast } = useToast();
 
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null); // State for the School ID
+  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null); // CRITICAL: Your School Key
   
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -51,25 +64,29 @@ export default function StaffManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
 
-  // Reset loading state
-  useEffect(() => {
-    if (isAddOpen || editingStaff) setIsLoading(false);
-  }, [isAddOpen, editingStaff]);
-
-  // --- 0. INITIALIZATION: GET ADMIN'S SCHOOL ID ---
+  // --- 1. INITIALIZATION: FIND YOUR SCHOOL ---
   useEffect(() => {
     const fetchAdminProfile = async () => {
         if (!user || !firestore) return;
         try {
-            // Check 'users' collection to get the Admin's schoolId
-            const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-            if (userDoc.exists()) {
-                const data = userDoc.data();
+            // We look at YOUR staff profile to see which school you belong to
+            const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
+            
+            if (staffDoc.exists()) {
+                const data = staffDoc.data();
                 if (data.schoolId) {
-                    console.log("🏫 Managing School ID:", data.schoolId);
+                    console.log("🏫 School Found:", data.schoolId);
                     setAdminSchoolId(data.schoolId);
                 } else {
-                    console.warn("⚠️ You are not linked to any school.");
+                    console.warn("⚠️ You are not linked to any school. Contact the CEO.");
+                }
+            } else {
+                 // Fallback for CEO or super-admin who might not be in the 'staff' collection
+                const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+                if (userDoc.exists() && userDoc.data().schoolId) {
+                    setAdminSchoolId(userDoc.data().schoolId);
+                } else {
+                    console.warn("Could not determine school from staff or user profile.");
                 }
             }
         } catch (error) {
@@ -79,19 +96,18 @@ export default function StaffManagementPage() {
     fetchAdminProfile();
   }, [user, firestore]);
 
-  // --- 1. FETCH LOGIC (Filtered by School) ---
+  // --- 2. FETCH STAFF (FILTERED BY SCHOOL) ---
   const fetchStaff = useCallback(async () => {
-    if (!firestore || !adminSchoolId) return; // Don't fetch if we don't know the school yet
+    if (!firestore || !adminSchoolId) return; // Wait until we know the school
     
     setIsLoading(true);
-    console.log("🔄 Fetching Staff for School:", adminSchoolId);
-
     try {
         const staffCollection = collection(firestore, 'staff');
-        // FILTER: Only show staff belonging to this school
-        const q = query(staffCollection, where('schoolId', '==', adminSchoolId));
-        const snapshot = await getDocs(q);
         
+        // 🔥 THE MAGIC FILTER: Only get staff belonging to THIS school
+        const q = query(staffCollection, where('schoolId', '==', adminSchoolId));
+        
+        const snapshot = await getDocs(q);
         const data = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
@@ -99,28 +115,22 @@ export default function StaffManagementPage() {
 
         setStaff(data);
     } catch (err: any) {
-        console.error("Fetch Error:", err);
+        console.error(err);
         toast({ variant: 'destructive', title: "Error", description: "Failed to load staff list." });
     } finally {
         setIsLoading(false);
     }
   }, [firestore, adminSchoolId, toast]);
 
-  // Load when school ID is ready
+  // Trigger fetch when schoolId is found
   useEffect(() => {
       if(adminSchoolId) fetchStaff();
   }, [fetchStaff, adminSchoolId]);
 
-  // --- 2. ADD STAFF LOGIC ---
+  // --- 3. CREATE NEW STAFF LOGIC ---
   const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isSubmitting) return; 
-      
-      if (!adminSchoolId) {
-          toast({ variant: 'destructive', title: "Error", description: "You must be linked to a school to add staff." });
-          return;
-      }
-
+      if (isSubmitting || !adminSchoolId) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
@@ -134,18 +144,18 @@ export default function StaffManagementPage() {
       const password = "password123"; 
 
       try {
-          // A. Create Auth User (PASSING SCHOOL ID NOW)
+          // A. Create Auth User
           const result = await createNewUser(
               email, 
               password, 
               role, 
               { firstName, lastName },
-              adminSchoolId // <--- NEW: Link user to school in Auth
+              adminSchoolId
             );
             
           if ('error' in result) throw new Error(result.error);
 
-          // B. Create Firestore Doc (INCLUDING SCHOOL ID)
+          // B. Create Firestore Doc in 'staff' collection
           await setDoc(doc(firestore, 'staff', result.uid), {
               uid: result.uid,
               firstName,
@@ -155,11 +165,11 @@ export default function StaffManagementPage() {
               phone,
               gender,
               address,
-              schoolId: adminSchoolId, // <--- NEW: Link document to school
+              schoolId: adminSchoolId,
               createdAt: serverTimestamp()
           });
 
-          toast({ title: "Success", description: `${firstName} added to school.` });
+          toast({ title: "Success", description: `${firstName} added to your school.` });
           setIsAddOpen(false);
           fetchStaff(); 
 
@@ -170,10 +180,10 @@ export default function StaffManagementPage() {
       }
   };
 
-  // --- 3. UPDATE STAFF LOGIC ---
+  // --- 4. UPDATE STAFF LOGIC ---
   const handleUpdateStaff = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (!editingStaff || isSubmitting) return;
+      if (!editingStaff || isSubmitting || !firestore) return;
       setIsSubmitting(true);
 
       const formData = new FormData(e.currentTarget);
@@ -187,14 +197,11 @@ export default function StaffManagementPage() {
       try {
           const staffRef = doc(firestore, 'staff', editingStaff.id);
           
-          await updateDoc(staffRef, {
-              firstName,
-              lastName,
-              phone,
-              role,
-              gender,
-              address
-          });
+          await updateDoc(staffRef, { firstName, lastName, phone, role, gender, address });
+
+          // Also update the generic 'users' collection if the role changed
+          const userRef = doc(firestore, 'users', editingStaff.id);
+          await updateDoc(userRef, { role });
 
           toast({ title: "Updated", description: "Staff details saved." });
           setEditingStaff(null); 
@@ -208,12 +215,14 @@ export default function StaffManagementPage() {
       }
   };
 
-  // --- 4. DELETE LOGIC ---
+  // --- 5. DELETE LOGIC ---
   const handleDelete = async (id: string) => {
-      if(!confirm("Delete this staff profile?")) return;
+      if(!confirm("Delete this staff profile? This cannot be undone.")) return;
       try {
+          // This will need an Admin SDK function to delete the Auth user eventually
           await deleteDoc(doc(firestore, 'staff', id));
-          toast({ title: "Deleted" });
+          await deleteDoc(doc(firestore, 'users', id));
+          toast({ title: "Deleted", description: "Staff profile removed." });
           fetchStaff(); 
       } catch (e: any) {
           toast({ variant: 'destructive', title: "Error", description: e.message });
@@ -229,14 +238,14 @@ export default function StaffManagementPage() {
   
   return (
     <div className="space-y-6 p-6">
-      <Card className="border-t-4 border-t-blue-600 shadow-sm">
+      <Card className="border-t-4 border-t-purple-600 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <Users className="h-6 w-6 text-blue-600"/> Staff Management
+                    <Users className="h-6 w-6 text-purple-600"/> Staff Management
                 </CardTitle>
                 <CardDescription>
-                    {adminSchoolId ? "Managing Staff for your School" : "Loading School Data..."}
+                    {adminSchoolId ? `Total Staff: ${staff.length}` : "Loading School Data..."}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
@@ -245,7 +254,7 @@ export default function StaffManagementPage() {
                 </Button>
                 <Button 
                     onClick={() => setIsAddOpen(true)} 
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-purple-600 hover:bg-purple-700"
                     disabled={!adminSchoolId}
                 >
                     <UserPlus className="h-4 w-4 mr-2"/> Add Staff
@@ -258,7 +267,7 @@ export default function StaffManagementPage() {
                 <div className="relative flex-grow">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input 
-                        placeholder="Search staff..." 
+                        placeholder="Search by name or email..." 
                         className="pl-8 max-w-sm" 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
@@ -274,7 +283,7 @@ export default function StaffManagementPage() {
             </div>
 
             {isLoading ? (
-                <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-blue-500"/></div>
+                <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
             ) : filteredStaff.length === 0 ? (
                 <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No staff found for this school.</div>
             ) : (
