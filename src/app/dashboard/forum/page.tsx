@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, doc, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import { ForumThread, ForumReply } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,9 +20,10 @@ import { validateContentSafety, generateAIModeratorComment } from '@/ai/flows/fo
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { getAuth } from 'firebase/auth';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- Create Thread Form ---
-function CreateThreadForm({ setOpen, forceRefetch }: { setOpen: (open: boolean) => void; forceRefetch: () => void; }) {
+function CreateThreadForm({ setOpen, forceRefetch, schoolId }: { setOpen: (open: boolean) => void; forceRefetch: () => void; schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,6 +75,7 @@ function CreateThreadForm({ setOpen, forceRefetch }: { setOpen: (open: boolean) 
                 aiModeratorEnabled: aiModerator,
                 replyCount: 0,
                 lastReplyAt: serverTimestamp(),
+                schoolId: schoolId, // SAAS STAMP
             });
             
             toast({ title: 'Success', description: 'Thread posted successfully.' });
@@ -241,7 +243,7 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
                 {isLoading ? <Loader2 className="mx-auto my-8 h-8 w-8 animate-spin text-primary" /> : replies?.map(r => (
                     <div key={r.id} className={`flex gap-3 ${r.author.uid === hookUser?.uid ? 'justify-end' : ''}`}>
                          {r.isAIMessage && <Bot className="h-8 w-8 text-blue-500 flex-shrink-0 mt-1"/>}
-                        <div className={`max-w-[80%] p-3 rounded-xl text-sm shadow-sm ${
+                        <div className={`max-w-[85%] p-3 rounded-xl text-sm shadow-sm ${
                             r.isAIMessage ? 'bg-blue-50 border border-blue-100 text-slate-800' : 
                             r.author.uid === hookUser?.uid ? 'bg-indigo-600 text-white rounded-br-none' : 
                             'bg-white border text-slate-700 rounded-bl-none'
@@ -275,13 +277,14 @@ function ThreadView({ thread, onBack }: { thread: ForumThread, onBack: () => voi
 export default function ForumPage() {
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser(); 
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null);
     const [isCreateOpen, setCreateOpen] = useState(false);
   
     const threadsQuery = useMemoFirebase(() => {
-        if (!firestore) return null;
-        return query(collection(firestore, 'forumThreads'));
-    }, [firestore]);
+        if (!firestore || !schoolId) return null;
+        return query(collection(firestore, 'forumThreads'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
 
     const { data: rawThreads, isLoading: isDataLoading, forceRefetch } = useCollection<ForumThread>(threadsQuery);
 
@@ -309,7 +312,7 @@ export default function ForumPage() {
         }
     };
 
-    const isLoading = isUserLoading || isDataLoading;
+    const isLoading = isUserLoading || isDataLoading || isLoadingSchool;
 
     if (selectedThread) {
         return <ThreadView thread={selectedThread} onBack={() => setSelectedThread(null)} />;
@@ -325,14 +328,14 @@ export default function ForumPage() {
             </div>
             <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
                 <DialogTrigger asChild>
-                    <Button><Plus className="mr-2 h-4 w-4"/> Create Thread</Button>
+                    <Button disabled={!schoolId}><Plus className="mr-2 h-4 w-4"/> Create Thread</Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Start a New Discussion</DialogTitle>
                         <DialogDescription>What's on your mind?</DialogDescription>
                     </DialogHeader>
-                    <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} />
+                    {schoolId && <CreateThreadForm setOpen={setCreateOpen} forceRefetch={forceRefetch} schoolId={schoolId} />}
                 </DialogContent>
             </Dialog>
         </CardHeader>

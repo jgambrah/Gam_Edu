@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -7,7 +8,6 @@ import { collection, query, orderBy, addDoc, serverTimestamp, where, doc, update
 import { 
   MessageCircle, Search, Send, Plus, User, MoreVertical, Phone, Video, Loader2 
 } from 'lucide-react';
-import { format } from 'date-fns';
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- TYPES ---
 interface ChatMetadata {
@@ -28,6 +29,7 @@ interface ChatMetadata {
     lastMessage: string;
     lastMessageTime: any;
     unreadCount: Record<string, number>;
+    schoolId: string;
 }
 
 interface Message {
@@ -46,7 +48,7 @@ interface SearchUser {
 }
 
 // --- SUB-COMPONENT: New Chat Dialog ---
-function NewChatDialog({ open, setOpen, onStartChat }: { open: boolean, setOpen: (o: boolean) => void, onStartChat: (uid: string, user: SearchUser) => void }) {
+function NewChatDialog({ open, setOpen, onStartChat, schoolId }: { open: boolean, setOpen: (o: boolean) => void, onStartChat: (uid: string, user: SearchUser) => void, schoolId: string }) {
     const firestore = useFirestore();
     const { role } = useRole();
     const [searchTerm, setSearchTerm] = useState('');
@@ -54,21 +56,17 @@ function NewChatDialog({ open, setOpen, onStartChat }: { open: boolean, setOpen:
     const [results, setResults] = useState<SearchUser[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
-    // Only Admin/Staff can search Students freely. Students usually contact Teachers.
     const allowedRoles = role === 'Student' ? ['staff'] : ['students', 'staff'];
 
     const handleSearch = async () => {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsSearching(true);
         try {
-            // NOTE: Full text search is hard in Firestore. We fetch a limited list.
-            // In a real app with thousands of users, use Algolia/Typesense.
             const collectionName = searchRole === 'staff' ? 'staff' : 'students';
-            const q = query(collection(firestore, collectionName), limit(20)); // Just fetch first 20 for MVP
+            const q = query(collection(firestore, collectionName), where('schoolId', '==', schoolId), limit(20));
             const snap = await getDocs(q);
             const users = snap.docs.map(d => ({ ...d.data(), uid: d.id })) as SearchUser[];
             
-            // Simple Client-side filtering
             const filtered = users.filter(u => 
                 (u.firstName + ' ' + u.lastName).toLowerCase().includes(searchTerm.toLowerCase())
             );
@@ -135,18 +133,20 @@ function NewChatDialog({ open, setOpen, onStartChat }: { open: boolean, setOpen:
 export default function MessagesPage() {
     const { user } = useUser();
     const firestore = useFirestore();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
     const [isNewChatOpen, setIsNewChatOpen] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     
     // 1. Fetch Conversations
     const chatsQuery = useMemoFirebase(() => 
-        (firestore && user) ? query(
+        (firestore && user && schoolId) ? query(
             collection(firestore, 'direct_messages'), 
+            where('schoolId', '==', schoolId),
             where('participants', 'array-contains', user.uid),
             orderBy('lastMessageTime', 'desc')
         ) : null, 
-    [firestore, user]);
+    [firestore, user, schoolId]);
 
     const { data: chats, isLoading: chatsLoading } = useCollection<ChatMetadata>(chatsQuery);
 
@@ -194,9 +194,8 @@ export default function MessagesPage() {
     };
 
     const startNewChat = async (targetUid: string, targetUser: SearchUser) => {
-        if (!user || !firestore) return;
+        if (!user || !firestore || !schoolId) return;
         
-        // Check if chat exists (in local list)
         const existing = chats?.find(c => c.participants.includes(targetUid));
         if (existing) {
             setSelectedChatId(existing.id);
@@ -204,18 +203,18 @@ export default function MessagesPage() {
             return;
         }
 
-        // Create new chat
         try {
             const myName = user.displayName || user.email?.split('@')[0] || 'Me';
             const docRef = await addDoc(collection(firestore, 'direct_messages'), {
                 participants: [user.uid, targetUid],
                 participantDetails: {
-                    [user.uid]: { name: myName, role: 'User' }, // Ideally fetch real role
+                    [user.uid]: { name: myName, role: 'User' },
                     [targetUid]: { name: `${targetUser.firstName} ${targetUser.lastName}`, role: targetUser.role }
                 },
                 lastMessage: 'Chat started',
                 lastMessageTime: serverTimestamp(),
-                unreadCount: { [targetUid]: 1 }
+                unreadCount: { [targetUid]: 1 },
+                schoolId: schoolId,
             });
             setSelectedChatId(docRef.id);
             setIsNewChatOpen(false);
@@ -224,22 +223,22 @@ export default function MessagesPage() {
         }
     };
 
-    // Helper to get "The Other Person" details
     const getOtherParticipant = (chat: ChatMetadata) => {
         if (!user) return { name: 'Unknown', role: '' };
         const otherId = chat.participants.find(id => id !== user.uid);
         if (!otherId || !chat.participantDetails) return { name: 'Unknown', role: '' };
         return chat.participantDetails[otherId] || { name: 'Unknown', role: '' };
     };
+    
+    const isLoading = chatsLoading || isLoadingSchool;
 
     return (
         <div className="h-[calc(100vh-100px)] grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 md:p-6 bg-slate-50/50">
             
-            {/* LEFT SIDEBAR: CHAT LIST */}
             <Card className="md:col-span-1 flex flex-col h-full overflow-hidden border-0 shadow-md">
                 <div className="p-4 border-b flex justify-between items-center bg-white">
                     <h2 className="font-bold text-lg flex items-center gap-2"><MessageCircle className="h-5 w-5 text-indigo-600"/> Messages</h2>
-                    <Button size="icon" variant="ghost" onClick={() => setIsNewChatOpen(true)}><Plus className="h-5 w-5"/></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setIsNewChatOpen(true)} disabled={!schoolId}><Plus className="h-5 w-5"/></Button>
                 </div>
                 <div className="p-2 border-b bg-white">
                     <div className="relative">
@@ -249,11 +248,11 @@ export default function MessagesPage() {
                 </div>
                 <ScrollArea className="flex-1 bg-white">
                     <div className="flex flex-col">
-                        {chatsLoading && <div className="p-4 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto text-slate-400"/></div>}
-                        {!chatsLoading && chats?.length === 0 && (
+                        {isLoading && <div className="p-4 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto text-slate-400"/></div>}
+                        {!isLoading && chats?.length === 0 && (
                             <div className="p-8 text-center text-muted-foreground">
                                 <p className="text-sm">No messages yet.</p>
-                                <Button variant="link" onClick={() => setIsNewChatOpen(true)}>Start a chat</Button>
+                                <Button variant="link" onClick={() => setIsNewChatOpen(true)} disabled={!schoolId}>Start a chat</Button>
                             </div>
                         )}
                         {chats?.map(chat => {
@@ -281,11 +280,9 @@ export default function MessagesPage() {
                 </ScrollArea>
             </Card>
 
-            {/* RIGHT SIDE: CHAT WINDOW */}
             <Card className="md:col-span-2 lg:col-span-3 flex flex-col h-full border-0 shadow-md overflow-hidden">
                 {selectedChatId && chats ? (
                     <>
-                        {/* Chat Header */}
                         <div className="p-4 border-b bg-white flex justify-between items-center shadow-sm z-10">
                             <div className="flex items-center gap-3">
                                 <Avatar className="h-10 w-10">
@@ -305,7 +302,6 @@ export default function MessagesPage() {
                             </div>
                         </div>
 
-                        {/* Messages Area */}
                         <div className="flex-1 bg-slate-50/50 p-4 overflow-hidden relative">
                             <div className="absolute inset-0 overflow-y-auto p-4 space-y-4" ref={scrollRef}>
                                 {msgsLoading && <Loader2 className="h-8 w-8 animate-spin mx-auto mt-10 text-indigo-300"/>}
@@ -329,7 +325,6 @@ export default function MessagesPage() {
                             </div>
                         </div>
 
-                        {/* Input Area */}
                         <div className="p-4 bg-white border-t">
                             <form 
                                 onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
@@ -348,7 +343,6 @@ export default function MessagesPage() {
                         </div>
                     </>
                 ) : (
-                    // Empty State
                     <div className="flex-1 flex flex-col items-center justify-center text-slate-300 bg-slate-50/30">
                         <MessageCircle className="h-24 w-24 mb-4 opacity-20"/>
                         <p className="text-lg font-medium text-slate-400">Select a conversation to start chatting</p>
@@ -356,7 +350,7 @@ export default function MessagesPage() {
                 )}
             </Card>
 
-            <NewChatDialog open={isNewChatOpen} setOpen={setIsNewChatOpen} onStartChat={startNewChat} />
+            {schoolId && <NewChatDialog open={isNewChatOpen} setOpen={setIsNewChatOpen} onStartChat={startNewChat} schoolId={schoolId}/>}
         </div>
     );
 }
