@@ -1,5 +1,7 @@
 
 'use client';
+
+import { useMemo } from 'react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useDoc, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -9,17 +11,27 @@ export default function CreditBalance() {
   const { schoolId } = useCurrentSchool();
   const firestore = useFirestore();
   
-  // Real-time listener
-  const { data: school } = useDoc(
-    firestore && schoolId ? doc(firestore, 'schools', schoolId) : null
-  );
+  // 🔥 FIX: Memoize the reference so it doesn't change on every render
+  const schoolRef = useMemo(() => {
+    if (!firestore || !schoolId) return null;
+    return doc(firestore, 'schools', schoolId);
+  }, [firestore, schoolId]); // Only recreate if ID changes
+
+  // Pass the stable reference to useDoc
+  const { data: school } = useDoc(schoolRef);
 
   if (!school) return null;
 
+  // Visual color logic based on credits
+  const credits = school.aiCredits || 0;
+  let colorClass = "bg-purple-100 text-purple-800";
+  if (credits < 50) colorClass = "bg-orange-100 text-orange-800";
+  if (credits < 10) colorClass = "bg-red-100 text-red-800 animate-pulse";
+
   return (
-    <div className="flex items-center gap-1 text-sm font-medium bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
+    <div className={`flex items-center gap-1 text-sm font-medium px-3 py-1 rounded-full transition-colors ${colorClass}`}>
       <Zap className="h-3 w-3 fill-current" />
-      <span>{school.aiCredits || 0} Credits</span>
+      <span>{credits} AI Credits</span>
     </div>
   );
 }
