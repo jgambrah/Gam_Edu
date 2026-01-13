@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -113,23 +114,56 @@ export default function SchoolSetupWizard() {
           </div>
         )}
 
-        {/* STEP 2: SUCCESS */}
+        {/* STEP 2: SUCCESS & AI INTRO */}
         {step === 2 && (
-          <div className="space-y-4 py-4 text-center">
+          <div className="space-y-6 py-4 text-center">
+            
+            {/* Success Icon */}
             <div className="flex justify-center">
-                <div className="bg-green-100 p-4 rounded-full">
+                <div className="bg-green-100 p-4 rounded-full animate-bounce">
                     <CheckCircle2 className="h-12 w-12 text-green-600" />
                 </div>
             </div>
-            <h3 className="text-lg font-bold">Great Job!</h3>
-            <p className="text-slate-600">
-                You have created your first class: <strong>{className}</strong>.
-                <br/>
-                Now you are ready to add students and staff.
-            </p>
+
+            <div className="space-y-2">
+                <h3 className="text-xl font-bold text-slate-800">You are ready to go!</h3>
+                <p className="text-slate-600">
+                    You have successfully created your first class: <span className="font-bold text-blue-600">{className}</span>.
+                </p>
+            </div>
+
+            {/* AI Assistant Tip */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-left flex gap-3">
+                <div className="bg-purple-100 p-2 rounded-full h-fit">
+                    {/* Robot Icon matching your chat bot */}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-6 w-6 text-purple-600"
+                    >
+                        <rect width="18" height="18" x="3" y="3" rx="2" />
+                        <path d="M9 3v18" />
+                        <path d="m14 9 3 3-3 3" />
+                        <path d="M9 12h5" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 className="font-bold text-purple-900 text-sm">Need Help? Ask our AI!</h4>
+                    <p className="text-xs text-purple-700 mt-1">
+                        Look for the <strong>Purple Robot Icon</strong> in the bottom-right corner. 
+                        It can guide you through the app, answer questions, or help you generate content.
+                    </p>
+                </div>
+            </div>
+
             <DialogFooter>
-              <Button onClick={handleFinish} className="w-full bg-green-600 hover:bg-green-700">
-                Go to Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+              <Button onClick={handleFinish} className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6">
+                Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </DialogFooter>
           </div>
