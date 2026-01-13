@@ -20,6 +20,7 @@ import { Loader2, Send, CheckCircle, ShieldCheck, Printer } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { StudentReportCard } from './student-report-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useCurrentSchool } from '@/hooks/use-current-school'; // SAAS IMPORT
 
 type Student = { uid: string; firstName: string; lastName: string; classId: string; id: string; };
 
@@ -99,6 +100,7 @@ export default function ReportCardManager() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const [selectedClassId, setSelectedClassId] = useState('');
   const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0]);
@@ -106,30 +108,32 @@ export default function ReportCardManager() {
   const [processingStudentId, setProcessingStudentId] = useState<string | null>(null);
   
   const classesQuery = useMemoFirebase(() => {
-      if(!firestore || !user) return null;
+      if(!firestore || !user || !schoolId) return null;
+      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
       if (role === 'Teacher') {
-        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        q = query(q, where('teacherId', '==', user.uid));
       }
-      return collection(firestore, 'classes');
-  }, [firestore, user, role]);
+      return q;
+  }, [firestore, user, role, schoolId]);
   
   const { data: teacherClasses } = useCollection<Class>(classesQuery);
 
   const studentsQuery = useMemoFirebase(
-    () => selectedClassId ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
-    [firestore, selectedClassId]
+    () => (selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null,
+    [firestore, selectedClassId, schoolId]
   );
   const { data: students } = useCollection<Student>(studentsQuery);
   
   const reportCardsQuery = useMemoFirebase(() => {
-    if (!selectedClassId || !selectedYear || !selectedTerm) return null;
+    if (!selectedClassId || !selectedYear || !selectedTerm || !schoolId) return null;
     return query(
         collection(firestore, 'report-cards'),
+        where('schoolId', '==', schoolId),
         where('classId', '==', selectedClassId),
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
     );
-  }, [firestore, selectedClassId, selectedYear, selectedTerm]);
+  }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
   const { data: reportCards } = useCollection<ReportCard>(reportCardsQuery);
 
   const getStudentReportCard = (studentId: string) => reportCards?.find(rc => rc.studentId === studentId);
@@ -147,17 +151,17 @@ export default function ReportCardManager() {
             toast({ title: 'Parent Notified', description: 'An in-app and email notification has been sent.' });
         }
         
-        await setDoc(reportCardRef, dataToSet, { merge: true });
-
-        const reportCardData: ReportCard = getStudentReportCard(student.uid) || {
+        const reportCardData: Partial<ReportCard> = {
             id: reportCardId,
             studentId: student.uid,
             classId: selectedClassId,
             academicYear: selectedYear,
             term: selectedTerm,
-            status: newStatus
+            schoolId: schoolId,
+            status: newStatus,
+            ...dataToSet
         };
-        await setDoc(reportCardRef, { ...reportCardData, status: newStatus}, { merge: true });
+        await setDoc(reportCardRef, reportCardData, { merge: true });
 
         toast({ title: 'Success', description: `Report card for ${student.firstName} is now ${newStatus}.` });
     } catch(error) {

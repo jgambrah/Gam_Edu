@@ -28,6 +28,7 @@ import { GenerateReportCard } from './report-card-pdf';
 import { Assessment, FinancialRecord, Class, Student, Subject } from '@/lib/types';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent } from '@/lib/student-utils';
+import { useCurrentSchool } from '@/hooks/use-current-school'; // SAAS IMPORT
 
 // --- HELPER: Grading Logic ---
 function getGrade(percentage: number) {
@@ -291,6 +292,7 @@ export default function GradebookManager() {
   const { user, isUserLoading } = useUser();
   const { role, isRoleLoading } = useRole();
   const firestore = useFirestore();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   // State
   const [activeForm, setActiveForm] = useState<string | null>(null);
@@ -300,42 +302,45 @@ export default function GradebookManager() {
 
   const isStaff = ['Teacher', 'Administrator', 'Director'].includes(role || '');
 
-  // 1. Fetch Classes
+  // 1. Fetch Classes (SAAS Aware)
   const classesQuery = useMemoFirebase(() => {
-      if (!firestore || !user || !isStaff) return null;
-      if (role === 'Administrator' || role === 'Director') return query(collection(firestore, 'classes'));
-      if (role === 'Teacher') return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
-      return null;
-  }, [firestore, user, role, isStaff]);
+      if (!firestore || !user || !isStaff || !schoolId) return null;
+      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+      if (role === 'Teacher') {
+          q = query(q, where('teacherId', '==', user.uid));
+      }
+      return q;
+  }, [firestore, user, role, isStaff, schoolId]);
   
   const { data: teacherClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-  // 2. Fetch Students for the selected class
+  // 2. Fetch Students for the selected class (SAAS Aware)
   const studentsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null,
-  [firestore, selectedClassId]);
+    (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null,
+  [firestore, selectedClassId, schoolId]);
   const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
-  // 3. Fetch Assessments for the selected class, term, and year
+  // 3. Fetch Assessments for the selected class, term, and year (SAAS Aware)
   const assessmentsQuery = useMemoFirebase(() => {
-    if (!selectedClassId || !firestore) return null;
+    if (!selectedClassId || !firestore || !schoolId) return null;
     return query(
         collection(firestore, 'assessments'),
+        where('schoolId', '==', schoolId),
         where('classId', '==', selectedClassId),
         where('academicYear', '==', selectedYear),
         where('term', '==', selectedTerm)
     );
-  }, [firestore, selectedClassId, selectedYear, selectedTerm]);
+  }, [firestore, selectedClassId, selectedYear, selectedTerm, schoolId]);
   const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
-  // 4. Fetch ALL Subjects (for name mapping)
-  const subjectsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'subjects')) : null, [firestore]);
+  // 4. Fetch ALL Subjects for the school (for name mapping)
+  const subjectsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: allSubjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-  // 5. Fetch Financials
+  // 5. Fetch Financials (SAAS Aware)
   const financialRecordsQuery = useMemoFirebase(() => 
-    (firestore && selectedClassId) ? query(collection(firestore, 'financialRecords'), where('classId', '==', selectedClassId)) : null,
-  [firestore, selectedClassId]);
+    (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId)) : null,
+  [firestore, selectedClassId, schoolId]);
   const { data: financialRecords, isLoading: isLoadingFinancial } = useCollection<FinancialRecord>(financialRecordsQuery);
 
   // --- DERIVED DATA ---
@@ -367,7 +372,7 @@ export default function GradebookManager() {
     return financials;
   }, [students, financialRecords]);
 
-  const isLoading = isUserLoading || isRoleLoading || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial || isLoadingSubjects));
+  const isLoading = isUserLoading || isRoleLoading || isLoadingSchool || isLoadingClasses || (selectedClassId && (isLoadingStudents || isLoadingAssessments || isLoadingFinancial || isLoadingSubjects));
 
   if (!isStaff && !isLoading) {
       return <div className="p-8 text-center text-red-500">Access Denied. Staff only.</div>;

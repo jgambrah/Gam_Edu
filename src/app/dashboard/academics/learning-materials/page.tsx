@@ -26,6 +26,7 @@ import { getAuth } from 'firebase/auth';
 import { Badge } from '@/components/ui/badge';
 import { LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
 import { updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // --- DATA TYPES ---
@@ -58,7 +59,8 @@ function MaterialForm({
   classes,
   subjectsList, // <--- PASSED FROM PARENT
   preSelectedSubject,
-  preSelectedClassId
+  preSelectedClassId,
+  schoolId, // SAAS
 }: { 
   open: boolean; 
   setOpen: (o: boolean) => void; 
@@ -67,6 +69,7 @@ function MaterialForm({
   subjectsList: string[]; // <--- NEW PROP
   preSelectedSubject?: string;
   preSelectedClassId?: string;
+  schoolId: string;
 }) {
   const firestore = useFirestore();
   const { user: hookUser } = useAuth();
@@ -156,7 +159,7 @@ function MaterialForm({
     setIsSubmitting(true);
 
     try {
-      const dataToSave = {
+      const dataToSave: any = {
         strand,
         subStrand,
         topicTitle,
@@ -168,17 +171,16 @@ function MaterialForm({
         practiceQuestions: questions,
         uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
+        schoolId: schoolId, // SAAS
       };
 
       if (materialToEdit) {
         await updateDocumentNonBlocking(doc(firestore, 'learning_materials', materialToEdit.id), dataToSave);
         toast({ title: 'Success', description: 'Topic updated successfully.' });
       } else {
-        await addDocumentNonBlocking(collection(firestore, 'learning_materials'), {
-          ...dataToSave,
-          courseId: 'bs7-integrated-science',
-          createdAt: serverTimestamp(),
-        });
+        dataToSave.createdAt = serverTimestamp();
+        dataToSave.courseId = 'bs7-integrated-science';
+        await addDocumentNonBlocking(collection(firestore, 'learning_materials'), dataToSave);
         toast({ title: 'Success', description: 'Topic created successfully.' });
       }
       setOpen(false);
@@ -341,6 +343,7 @@ export default function LearningMaterialsPage() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<LearningMaterial | null>(null);
@@ -353,7 +356,7 @@ export default function LearningMaterialsPage() {
   
   // 1. Student Profile & Class ID
   const { data: studentData, isLoading: isStudentLoading } = useCollection<Student>(
-    useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [role, user, firestore])
+    useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId)) : null, [role, user, firestore, schoolId])
   );
   const studentClassId = useMemo(() => studentData?.[0]?.classId, [studentData]);
 
@@ -362,11 +365,11 @@ export default function LearningMaterialsPage() {
 
   // 2. Classes (for managers)
   const { data: classes } = useCollection<Class>(
-    useMemoFirebase(() => (canManage && firestore) ? query(collection(firestore, 'classes')) : null, [canManage, firestore])
+    useMemoFirebase(() => (canManage && firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [canManage, firestore, schoolId])
   );
 
   // 3. Subjects
-  const subjectsQuery = useMemoFirebase(() => firestore && user ? collection(firestore, 'subjects') : null, [firestore, user]);
+  const subjectsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: subjectsData, isLoading: isLoadingSubjects } = useCollection<{id:string, name:string}>(subjectsQuery);
   
   const subjectsList = useMemo(() => {
@@ -375,15 +378,15 @@ export default function LearningMaterialsPage() {
     return Array.from(new Set([...fallbackSubjects, ...dbSubjects])).sort();
   }, [subjectsData]);
 
-  // 4. Materials Query (now depends on activeClassId)
+  // 4. Materials Query (now depends on activeClassId and schoolId)
   const materialsQuery = useMemoFirebase(() => {
-    if (!firestore || !activeClassId) return null;
-    let q = query(collection(firestore, 'learning_materials'), where('classId', '==', activeClassId));
+    if (!firestore || !activeClassId || !schoolId) return null;
+    let q = query(collection(firestore, 'learning_materials'), where('schoolId', '==', schoolId), where('classId', '==', activeClassId));
     if (currentSubject) {
         q = query(q, where('subject', '==', currentSubject));
     }
     return q;
-  }, [firestore, activeClassId, currentSubject]);
+  }, [firestore, activeClassId, currentSubject, schoolId]);
 
   const { data: materials, isLoading: isLoadingMaterials } = useCollection<LearningMaterial>(materialsQuery);
 
@@ -401,18 +404,18 @@ export default function LearningMaterialsPage() {
   };
 
   const handleEdit = (mat: LearningMaterial) => {
-      setEditingMaterial(mat);
+      setSelectedMaterial(mat);
       setEditorMode('edit');
       setIsFormOpen(true);
   };
 
   const handleCreate = () => {
-      setEditingMaterial(null);
+      setSelectedMaterial(null);
       setEditorMode('create');
       setIsFormOpen(true);
   };
   
-  const pageLoading = isUserLoading || (role === 'Student' && isStudentLoading) || isLoadingSubjects || (!!activeClassId && isLoadingMaterials);
+  const pageLoading = isUserLoading || isLoadingSchool || (role === 'Student' && isStudentLoading) || isLoadingSubjects || (!!activeClassId && isLoadingMaterials);
   const [editorMode, setEditorMode] = useState<'create' | 'edit'>('create');
 
   if (canManage && !activeClassId) {
@@ -473,7 +476,7 @@ export default function LearningMaterialsPage() {
                 </CardContent>
             </Card>
 
-            {isFormOpen && (
+            {isFormOpen && schoolId && (
                 <MaterialForm 
                     open={isFormOpen} 
                     setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
@@ -481,6 +484,7 @@ export default function LearningMaterialsPage() {
                     materialToEdit={editingMaterial}
                     subjectsList={subjectsList}
                     preSelectedClassId={activeClassId || ''}
+                    schoolId={schoolId}
                 />
             )}
         </div>
@@ -561,7 +565,7 @@ export default function LearningMaterialsPage() {
         </div>
       )}
 
-      {isFormOpen && (
+      {isFormOpen && schoolId && (
         <MaterialForm 
             open={isFormOpen} 
             setOpen={(val) => { setIsFormOpen(val); if(!val) setEditingMaterial(null); }} 
@@ -570,12 +574,9 @@ export default function LearningMaterialsPage() {
             subjectsList={subjectsList}
             preSelectedSubject={currentSubject || undefined}
             preSelectedClassId={activeClassId || ''}
+            schoolId={schoolId}
         />
       )}
     </div>
   );
 }
-
-    
-
-    

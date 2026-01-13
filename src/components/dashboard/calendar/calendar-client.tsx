@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, deleteDoc, doc, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, deleteDoc, doc, Timestamp, serverTimestamp, where } from 'firebase/firestore';
 import { 
   Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, 
   MapPin, Clock, Trash2, Loader2, Info, Wand2 
@@ -26,6 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { generateEvent } from '@/ai/flows/generate-event-flow';
+import { useCurrentSchool } from '@/hooks/use-current-school'; // SAAS IMPORT
 
 // --- TYPES ---
 type EventType = 'Academic' | 'Holiday' | 'Sports' | 'Meeting' | 'Event';
@@ -34,10 +35,11 @@ interface SchoolEvent {
   id: string;
   title: string;
   description?: string;
-  date: Timestamp; // Stored as Firestore Timestamp
+  date: Timestamp;
   type: EventType;
   location?: string;
   time?: string;
+  schoolId?: string; // SAAS
 }
 
 // --- HELPERS ---
@@ -50,7 +52,7 @@ const EVENT_COLORS: Record<EventType, string> = {
 };
 
 // --- COMPONENT: Add Event Form ---
-function AddEventForm({ open, setOpen, selectedDate }: { open: boolean, setOpen: (o: boolean) => void, selectedDate: Date }) {
+function AddEventForm({ open, setOpen, selectedDate, schoolId }: { open: boolean, setOpen: (o: boolean) => void, selectedDate: Date, schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,7 +101,8 @@ function AddEventForm({ open, setOpen, selectedDate }: { open: boolean, setOpen:
                 location,
                 time,
                 date: Timestamp.fromDate(eventDate),
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                schoolId: schoolId // SAAS
             });
 
             toast({ title: 'Success', description: 'Event added to calendar.' });
@@ -175,6 +178,7 @@ export default function SchoolCalendarPageContent() {
   const firestore = useFirestore();
   const { role } = useRole();
   const { toast } = useToast();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const canManage = ['Administrator', 'Director'].includes(role);
 
@@ -183,12 +187,14 @@ export default function SchoolCalendarPageContent() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  // Fetch Events
+  // Fetch Events (SAAS Aware)
   const eventsQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'school_calendar'), orderBy('date', 'asc')) : null,
-    [firestore]
+    () => (firestore && schoolId) ? query(collection(firestore, 'school_calendar'), where('schoolId', '==', schoolId), orderBy('date', 'asc')) : null,
+    [firestore, schoolId]
   );
-  const { data: events, isLoading } = useCollection<SchoolEvent>(eventsQuery);
+  const { data: events, isLoading: isLoadingEvents } = useCollection<SchoolEvent>(eventsQuery);
+
+  const isLoading = isLoadingEvents || isLoadingSchool;
 
   // Generate Calendar Grid
   const daysInGrid = useMemo(() => {
@@ -235,7 +241,7 @@ export default function SchoolCalendarPageContent() {
             </h1>
             <p className="text-slate-500">Upcoming events, holidays, and academic schedules.</p>
         </div>
-        {canManage && (
+        {canManage && schoolId && (
             <Button onClick={() => setIsAddOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm">
                 <Plus className="mr-2 h-4 w-4"/> Add Event
             </Button>
@@ -387,7 +393,7 @@ export default function SchoolCalendarPageContent() {
       </div>
 
       {/* MODAL */}
-      <AddEventForm open={isAddOpen} setOpen={setIsAddOpen} selectedDate={selectedDate} />
+      {schoolId && <AddEventForm open={isAddOpen} setOpen={setIsAddOpen} selectedDate={selectedDate} schoolId={schoolId}/>}
     </div>
   );
 }

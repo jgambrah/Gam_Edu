@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Wand2 } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import TimetableSeeder from '@/components/TimetableSeeder';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 
@@ -23,94 +24,60 @@ export default function TimetablePage() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const [selectedClassId, setSelectedClassId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [customConstraint, setCustomConstraint] = useState('');
 
-  // 1. Classes Query
-  const { data: classes } = useCollection<Class>(
-    useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'classes')) : null, 
-        [firestore]
-    )
-  );
+  // SAAS-AWARE QUERIES
+  const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-  // 2. Teachers Query
-  const { data: allTeachers } = useCollection<Teacher>(
-    useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, 
-        [firestore]
-    )
-  );
+  const allTeachersQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Teacher')) : null, [firestore, schoolId]);
+  const { data: allTeachers } = useCollection<Teacher>(allTeachersQuery);
 
-  // 3. Subjects Query
-  const { data: subjects } = useCollection<Subject>(
-    useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'subjects')) : null, 
-        [firestore]
-    )
-  );
+  const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: subjects } = useCollection<Subject>(subjectsQuery);
 
-  // 4. Rooms Query
-  const { data: rooms } = useCollection<Room>(
-    useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'rooms')) : null, 
-        [firestore]
-    )
-  );
+  const roomsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: rooms } = useCollection<Room>(roomsQuery);
 
-  // 5. TimeSlots Query (Ordered)
-  const { data: timeSlots } = useCollection<TimeSlot>(
-    useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'timeSlots'), orderBy('startTime')) : null, 
-        [firestore]
-    )
-  );
+  const timeSlotsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'timeSlots'), where('schoolId', '==', schoolId), orderBy('startTime')) : null, [firestore, schoolId]);
+  const { data: timeSlots } = useCollection<TimeSlot>(timeSlotsQuery);
 
-  // 6. Timetable Query
-  const { data: timetable, isLoading: isTimetableLoading, forceRefetch } = useCollection<TimetableEntry>(
-    useMemoFirebase(
-        () => firestore ? query(collection(firestore, 'timetables')) : null, 
-        [firestore]
-    )
-  );
+  const timetableQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: timetable, isLoading: isTimetableLoading, forceRefetch } = useCollection<TimetableEntry>(timetableQuery);
+  
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: students } = useCollection<Student>(studentsQuery);
 
-  // 7. Student Data (Only if role is Student)
-  const { data: studentData } = useCollection<Student>(
-    useMemoFirebase(
-        () => (user && role === 'Student') ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null,
-        [firestore, user, role]
-    )
-  );
 
   // Auto-select class for Students
   useEffect(() => {
-    if (role === 'Student' && studentData && studentData.length > 0) {
-      const currentStudent = studentData[0];
+    if (role === 'Student' && user && students && students.length > 0) {
+      const currentStudent = students.find(s => s.uid === user.uid);
       if (currentStudent) {
         setSelectedClassId(currentStudent.classId);
       }
     }
-  }, [role, studentData]);
+  }, [role, user, students]);
 
   const canAccess = ['Student', 'Teacher', 'Admin', 'Administrator', 'Director'].includes(role || '');
   const canGenerate = ['Admin', 'Administrator', 'Director'].includes(role || '');
 
   const handleGenerateTimetable = async () => {
-    if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore) return;
+    if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore || !schoolId) return;
     setIsGenerating(true);
     toast({ title: "AI is on the job!", description: "Generating a new timetable. This may take a moment." });
 
     try {
-      // FIX: Filter out invalid teachers (missing UIDs) to satisfy AI Schema
       const validTeachers = allTeachers.filter(t => t.uid && t.firstName && t.lastName);
 
       const simplifiedTeachers = validTeachers.map(t => ({
         uid: t.uid,
         firstName: t.firstName,
         lastName: t.lastName,
-        // Ensure subjects logic is safe
         subjects: subjects.filter(s => s.teacherIds?.includes(t.uid)).map(s => s.id)
       }));
 
@@ -140,7 +107,8 @@ export default function TimetablePage() {
       if (result && result.timetable) {
           result.timetable.forEach((entry: any) => {
             const newDocRef = doc(collection(firestore, 'timetables'));
-            batch.set(newDocRef, entry);
+            // Stamp with schoolId
+            batch.set(newDocRef, { ...entry, schoolId });
           });
       }
       
