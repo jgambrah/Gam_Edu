@@ -40,7 +40,6 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -61,6 +60,7 @@ import { DailyAttendanceSheet } from '../attendance/daily-attendance-sheet';
 import { Subject, TimetableEntry } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const classFormSchema = z.object({
   name: z.string().min(1, { message: 'Class name is required.' }),
@@ -76,6 +76,7 @@ type ClassData = {
   teacherId?: string;
   studentIds?: string[];
   capacity?: number;
+  schoolId?: string;
 };
 
 type Teacher = {
@@ -94,7 +95,7 @@ type Student = {
     lastName: string;
 }
 
-function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => void; teachers: Teacher[] }) {
+function CreateClassForm({ schoolId, setOpen, teachers }: { schoolId: string, setOpen: (open: boolean) => void; teachers: Teacher[] }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -120,6 +121,7 @@ function CreateClassForm({ setOpen, teachers }: { setOpen: (open: boolean) => vo
         teacherId: values.teacherId || '',
         studentIds: [],
         capacity: values.capacity,
+        schoolId: schoolId, // Stamp with school ID
       };
       setDocumentNonBlocking(doc(firestore, 'classes', classId), classData, { merge: true });
 
@@ -444,25 +446,37 @@ function ClassDetailsDialog({ classData, teachers, students, timetable, subjects
 export default function AcademicsPageContent() {
   const { role } = useRole();
   const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
+  const { user } = useUser();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
 
+  // Use the new hook to get schoolId
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+
   const classesQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
+    if (!firestore || !user || !schoolId) return null;
+    let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
     if (role === 'Teacher') {
-        return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+        q = query(q, where('teacherId', '==', user.uid));
     }
-    return collection(firestore, 'classes');
-  }, [firestore, user, role]);
+    return q;
+  }, [firestore, user, role, schoolId]);
 
   const { data: classes, isLoading: isLoadingClasses } = useCollection<ClassData>(classesQuery);
-  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(useMemoFirebase(() => firestore && user ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher')) : null, [firestore, user]));
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore && user ? collection(firestore, 'students') : null, [firestore, user]));
-  const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(useMemoFirebase(() => firestore && user ? collection(firestore, 'timetables') : null, [firestore, user]));
-  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(useMemoFirebase(() => firestore && user ? collection(firestore, 'subjects') : null, [firestore, user]));
-
-  const isLoading = isUserLoading || isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
+  
+  const teachersQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Teacher>(teachersQuery);
+  
+  const studentsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+  
+  const timetableQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
+  
+  const subjectsQuery = useMemoFirebase(() => firestore && schoolId ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
+  
+  const isLoading = isLoadingSchool || isLoadingClasses || isLoadingTeachers || isLoadingStudents || isLoadingTimetable || isLoadingSubjects;
 
   const canManageClasses = role === 'Director' || role === 'Administrator';
   
@@ -491,10 +505,10 @@ export default function AcademicsPageContent() {
           <div>
             <CardTitle>Class Management</CardTitle>
             <CardDescription>
-              {role === 'Teacher' ? 'Showing classes assigned to you.' : 'View, create, and manage academic classes.'}
+              {role === 'Teacher' ? 'Showing classes assigned to you.' : 'View, create, and manage academic classes for your school.'}
             </CardDescription>
           </div>
-          {canManageClasses && (
+          {canManageClasses && schoolId && (
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -509,7 +523,7 @@ export default function AcademicsPageContent() {
                     Fill out the form below to add a new class to the system.
                   </DialogDescription>
                 </DialogHeader>
-                <CreateClassForm setOpen={setCreateDialogOpen} teachers={teachers || []} />
+                <CreateClassForm schoolId={schoolId} setOpen={setCreateDialogOpen} teachers={teachers || []} />
               </DialogContent>
             </Dialog>
           )}
@@ -552,7 +566,7 @@ export default function AcademicsPageContent() {
             </div>
           ) : (
             <div className="text-center py-10">
-              <p className="text-muted-foreground">{role === 'Teacher' ? 'You are not assigned to any classes.' : 'No classes found.'}</p>
+              <p className="text-muted-foreground">{!schoolId ? "Loading school data..." : (role === 'Teacher' ? 'You are not assigned to any classes.' : 'No classes found.')}</p>
               {canManageClasses && <p className='text-sm text-muted-foreground'>Click "Create Class" to get started.</p>}
             </div>
           )}
@@ -562,4 +576,3 @@ export default function AcademicsPageContent() {
   );
 }
 
-    
