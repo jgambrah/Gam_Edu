@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
@@ -68,13 +68,19 @@ export default function ParentsPage() {
     const fetchAdminProfile = async () => {
         if (!user || !firestore) return;
         try {
+            // Check 'staff' collection first (Standard SaaS Admin)
             const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
+            
             if (staffDoc.exists() && staffDoc.data().schoolId) {
+                console.log("🏫 School Found:", staffDoc.data().schoolId);
                 setAdminSchoolId(staffDoc.data().schoolId);
             } else {
+                 // Fallback for CEO/SuperAdmin in 'users' collection
                 const userDoc = await getDoc(doc(firestore, 'users', user.uid));
                 if (userDoc.exists() && userDoc.data().schoolId) {
                     setAdminSchoolId(userDoc.data().schoolId);
+                } else {
+                    console.warn("Could not determine school. Please contact support.");
                 }
             }
         } catch (error) { console.error("Error fetching admin profile:", error); }
@@ -341,3 +347,5 @@ export default function ParentsPage() {
     </div>
   );
 }
+
+    
