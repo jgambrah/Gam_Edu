@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
@@ -141,6 +141,18 @@ export default function DashboardClient() {
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
+  // ✅ ADD THIS DEBUG CODE:
+  useEffect(() => {
+    console.log('🔍 Dashboard Debug:', {
+      isLoadingSchool,
+      schoolId,
+      isUserLoading,
+      isRoleLoading,
+      role,
+      userId: user?.uid
+    });
+  }, [isLoadingSchool, schoolId, isUserLoading, isRoleLoading, role, user]);
+
   // Role checks
   const isAdminOrDirector = role === 'Administrator' || role === 'Director';
   const isTeacher = role === 'Teacher';
@@ -187,25 +199,35 @@ export default function DashboardClient() {
   const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(accountsPayableQuery);
 
 
-  // LOGIC FIX: Only wait for the data relevant to the current user's role
+  // FIXED LOADING LOGIC
   const isGlobalLoading = isLoadingSchool || isUserLoading || isRoleLoading;
-  
+
+  // Start with global loading state
   let isLoading = isGlobalLoading;
 
-  if (!isGlobalLoading && schoolId) {
+  // ✅ FIX: Only check additional loading if we have a schoolId AND global loading is done
+  if (!isGlobalLoading) {
+    if (schoolId) {
+      // We have a school, check role-specific data loading
       if (isAdminOrDirector) {
-          isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
+        isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
       } else if (isTeacher) {
-          isLoading = classesLoading || assignmentsLoading;
+        isLoading = classesLoading || assignmentsLoading;
       } else if (isStudent) {
-          isLoading = classesLoading || assignmentsLoading || announcementsLoading;
+        isLoading = classesLoading || assignmentsLoading || announcementsLoading;
       } else if (isFinance) {
-          isLoading = paymentsLoading || payablesLoading;
+        isLoading = paymentsLoading || payablesLoading;
       } else if (isLibrarian) {
-          isLoading = libraryLoading;
+        isLoading = libraryLoading;
+      } else {
+        // Unknown role or no specific loading required
+        isLoading = false;
       }
+    } else {
+      // ✅ CRITICAL FIX: No schoolId found, stop loading
+      isLoading = false;
+    }
   }
-  
 
   // --- LIVE ACTIVITY FEED ---
   const recentActivity = useMemo(() => {
@@ -240,7 +262,6 @@ export default function DashboardClient() {
             iconColor: 'text-purple-600'
         })));
     }
-    // ✅ FIX: Added a check here
     if (financialRecords) {
         activities.push(...financialRecords.map(p => ({
             type: 'Payment',
