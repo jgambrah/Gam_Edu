@@ -959,6 +959,21 @@ export default function DashboardClient() {
         </Card>
     );
   };
+  
+  if (!isLoading && !schoolId) {
+    return (
+      <div className="p-8 flex flex-col items-center justify-center text-center space-y-4">
+        <div className="p-4 bg-orange-100 rounded-full text-orange-600">
+          <AlertCircle className="h-10 w-10" />
+        </div>
+        <h2 className="text-xl font-bold">No School Linked</h2>
+        <p className="text-muted-foreground max-w-md">
+          Your account is created, but it is not linked to any specific school data. 
+          Please contact your School Administrator or the Platform Support.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -971,4 +986,4 @@ export default function DashboardClient() {
   );
 }
 
-    
+  
