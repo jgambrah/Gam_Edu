@@ -12,19 +12,23 @@ import { Loader2, FileText } from 'lucide-react';
 import { AuditLog } from '@/lib/types';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export default function AuditLogPage() {
   const { role } = useRole();
   const firestore = useFirestore();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const [searchTerm, setSearchTerm] = useState('');
 
   const canAccess = role === 'Administrator' || role === 'Director';
 
   const auditLogQuery = useMemoFirebase(
-    () => (firestore ? query(collection(firestore, 'auditLogs'), orderBy('timestamp', 'desc')) : null),
-    [firestore]
+    () => (firestore && schoolId) ? query(collection(firestore, 'auditLogs'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc')) : null,
+    [firestore, schoolId]
   );
-  const { data: logs, isLoading } = useCollection<AuditLog>(auditLogQuery);
+  const { data: logs, isLoading: isLoadingLogs } = useCollection<AuditLog>(auditLogQuery);
+
+  const isLoading = isLoadingSchool || isLoadingLogs;
 
   const filteredLogs = useMemo(() => {
     if (!logs) return [];
@@ -95,7 +99,7 @@ export default function AuditLogPage() {
           )}
            {!isLoading && filteredLogs.length === 0 && (
             <div className="text-center py-10">
-                <p className="text-muted-foreground">No audit logs found matching your criteria.</p>
+                <p className="text-muted-foreground">No audit logs found for this school matching your criteria.</p>
             </div>
            )}
         </CardContent>
