@@ -3,7 +3,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-// UPDATED IMPORTS: Added 'query', 'where', 'getDoc'
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from 'firebase/firestore';
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
@@ -15,14 +14,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { StudentSearchInput } from '@/components/student-search';
-import { searchStudent } from '@/lib/student-utils';
-
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
 
 // --- TYPE DEFINITIONS ---
 type StaffMember = {
@@ -35,14 +30,7 @@ type StaffMember = {
   phone?: string;
   gender?: string;
   address?: string;
-  schoolId?: string; // New Field
-};
-
-type Student = {
-    id: string;
-    uid: string;
-    firstName: string;
-    lastName: string;
+  schoolId?: string;
 };
 
 // --- MAIN PAGE COMPONENT ---
@@ -53,7 +41,7 @@ export default function StaffManagementPage() {
 
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null); // CRITICAL: Your School Key
+  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null); 
   
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -69,24 +57,19 @@ export default function StaffManagementPage() {
     const fetchAdminProfile = async () => {
         if (!user || !firestore) return;
         try {
-            // We look at YOUR staff profile to see which school you belong to
+            // Check 'staff' collection first (Standard SaaS Admin)
             const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
             
-            if (staffDoc.exists()) {
-                const data = staffDoc.data();
-                if (data.schoolId) {
-                    console.log("🏫 School Found:", data.schoolId);
-                    setAdminSchoolId(data.schoolId);
-                } else {
-                    console.warn("⚠️ You are not linked to any school. Contact the CEO.");
-                }
+            if (staffDoc.exists() && staffDoc.data().schoolId) {
+                console.log("🏫 School Found:", staffDoc.data().schoolId);
+                setAdminSchoolId(staffDoc.data().schoolId);
             } else {
-                 // Fallback for CEO or super-admin who might not be in the 'staff' collection
+                 // Fallback for CEO/SuperAdmin in 'users' collection
                 const userDoc = await getDoc(doc(firestore, 'users', user.uid));
                 if (userDoc.exists() && userDoc.data().schoolId) {
                     setAdminSchoolId(userDoc.data().schoolId);
                 } else {
-                    console.warn("Could not determine school from staff or user profile.");
+                    console.warn("Could not determine school. Please contact support.");
                 }
             }
         } catch (error) {
@@ -98,13 +81,13 @@ export default function StaffManagementPage() {
 
   // --- 2. FETCH STAFF (FILTERED BY SCHOOL) ---
   const fetchStaff = useCallback(async () => {
-    if (!firestore || !adminSchoolId) return; // Wait until we know the school
+    if (!firestore || !adminSchoolId) return; 
     
     setIsLoading(true);
     try {
         const staffCollection = collection(firestore, 'staff');
         
-        // 🔥 THE MAGIC FILTER: Only get staff belonging to THIS school
+        // 🔥 SAAS FILTER: Only get staff for THIS school
         const q = query(staffCollection, where('schoolId', '==', adminSchoolId));
         
         const snapshot = await getDocs(q);
@@ -150,7 +133,7 @@ export default function StaffManagementPage() {
               password, 
               role, 
               { firstName, lastName },
-              adminSchoolId
+              adminSchoolId // <--- PASS THE SCHOOL ID
             );
             
           if ('error' in result) throw new Error(result.error);
@@ -165,7 +148,7 @@ export default function StaffManagementPage() {
               phone,
               gender,
               address,
-              schoolId: adminSchoolId,
+              schoolId: adminSchoolId, // <--- STAMP THE DOC
               createdAt: serverTimestamp()
           });
 
@@ -199,7 +182,7 @@ export default function StaffManagementPage() {
           
           await updateDoc(staffRef, { firstName, lastName, phone, role, gender, address });
 
-          // Also update the generic 'users' collection if the role changed
+          // Also update the generic 'users' collection for Auth consistency
           const userRef = doc(firestore, 'users', editingStaff.id);
           await updateDoc(userRef, { role });
 
@@ -219,7 +202,7 @@ export default function StaffManagementPage() {
   const handleDelete = async (id: string) => {
       if(!confirm("Delete this staff profile? This cannot be undone.")) return;
       try {
-          // This will need an Admin SDK function to delete the Auth user eventually
+          // Delete from both collections to keep DB clean
           await deleteDoc(doc(firestore, 'staff', id));
           await deleteDoc(doc(firestore, 'users', id));
           toast({ title: "Deleted", description: "Staff profile removed." });
@@ -285,7 +268,9 @@ export default function StaffManagementPage() {
             {isLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
             ) : filteredStaff.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No staff found for this school.</div>
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                    {adminSchoolId ? "No staff found. Add one to get started." : "Loading..."}
+                </div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
