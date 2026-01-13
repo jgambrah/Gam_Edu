@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "genkit:start": "genkit start -- tsx src/ai/dev.ts",
+    "genkit:start": "genkit start --tsx genkit.config.ts",
     "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
