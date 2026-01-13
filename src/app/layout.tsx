@@ -1,5 +1,3 @@
-
-import { RoleProvider } from '@/context/role-context';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
@@ -15,10 +13,8 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <FirebaseClientProvider>
-          <RoleProvider>
-              {children}
-              <Toaster />
-          </RoleProvider>
+            {children}
+            <Toaster />
         </FirebaseClientProvider>
       </body>
     </html>

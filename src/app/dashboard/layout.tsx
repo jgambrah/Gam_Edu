@@ -8,20 +8,19 @@ import Header from '@/components/navigation/header';
 import { AiChat } from '@/components/ai-chat';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
-import AppSidebar from '@/components/navigation/sidebar'; // Statically import the sidebar
+import AppSidebar from '@/components/navigation/sidebar';
+import { RoleProvider } from '@/context/role-context';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    // If the user data has loaded and there is no user, redirect to login.
     if (!isUserLoading && !user) {
       router.replace('/');
     }
   }, [user, isUserLoading, router]);
 
-  // While checking user auth, show a loading screen.
   if (isUserLoading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -30,7 +29,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  // If user is not logged in, render nothing to prevent flash of content before redirect
   if (!user) {
     return null;
   }
@@ -38,7 +36,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <SidebarProvider>
       <AppSidebar />
-      {/* The main content area that will fill the remaining space */}
       <SidebarInset>
         <div className="flex h-screen flex-col overflow-hidden">
           <Header />
@@ -49,5 +46,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <AiChat />
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <RoleProvider>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </RoleProvider>
   );
 }
