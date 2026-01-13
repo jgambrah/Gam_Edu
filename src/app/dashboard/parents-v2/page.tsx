@@ -3,7 +3,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-// UPDATED IMPORTS: Added 'query', 'where', 'getDoc'
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from 'firebase/firestore';
 import { UserRole, ALL_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
@@ -15,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
@@ -34,6 +33,7 @@ type ParentMember = {
   phone?: string;
   address?: string;
   studentIds?: string[];
+  schoolId?: string;
 };
 
 type Student = {
@@ -45,32 +45,86 @@ type Student = {
 
 // --- MAIN PAGE COMPONENT ---
 export default function ParentsPage() {
+  const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const parentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'parents') : null, [firestore]);
-  const {data: parents, isLoading: isLoadingParents, forceRefetch: forceRefetchParents } = useCollection<ParentMember>(parentsQuery);
+  const [parents, setParents] = useState<ParentMember[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null);
 
-  const studentsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
-  const {data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
-
+  // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Filters
+  const [searchTerm, setSearchTerm] = useState('');
   const [studentSearch, setStudentSearch] = useState('');
 
+  // --- 1. INITIALIZATION: FIND YOUR SCHOOL ---
+  useEffect(() => {
+    const fetchAdminProfile = async () => {
+        if (!user || !firestore) return;
+        try {
+            const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
+            if (staffDoc.exists() && staffDoc.data().schoolId) {
+                setAdminSchoolId(staffDoc.data().schoolId);
+            } else {
+                const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+                if (userDoc.exists() && userDoc.data().schoolId) {
+                    setAdminSchoolId(userDoc.data().schoolId);
+                }
+            }
+        } catch (error) { console.error("Error fetching admin profile:", error); }
+    };
+    fetchAdminProfile();
+  }, [user, firestore]);
+
+  // --- 2. FETCH DATA (PARENTS & STUDENTS) (FILTERED BY SCHOOL) ---
+  const loadData = useCallback(async () => {
+    if (!firestore || !adminSchoolId) return; 
+    
+    setIsLoading(true);
+    try {
+        const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
+        const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
+
+        const [parentSnap, studentSnap] = await Promise.all([
+            getDocs(parentQuery),
+            getDocs(studentQuery)
+        ]);
+
+        const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as ParentMember[];
+        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+
+        setParents(parentList);
+        setStudents(studentList);
+    } catch (err: any) {
+        toast({ variant: 'destructive', title: "Error", description: "Failed to load school data." });
+    } finally {
+        setIsLoading(false);
+    }
+  }, [firestore, adminSchoolId, toast]);
+
+  useEffect(() => {
+      if(adminSchoolId) loadData();
+  }, [loadData, adminSchoolId]);
+
+
+  // Reset form state when opening modals
   useEffect(() => {
     if (isAddOpen || editingParent) {
         setIsSubmitting(false);
-        setStudentSearch(''); // Reset search on modal open
+        setStudentSearch('');
     }
   }, [isAddOpen, editingParent]);
   
+  // --- 3. ADD PARENT ---
   const handleAddParent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isSubmitting || !firestore) return;
+      if (isSubmitting || !firestore || !adminSchoolId) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
@@ -79,19 +133,13 @@ export default function ParentsPage() {
       const password = "password123";
 
       try {
-          // --- CONFLICT CHECK ---
           if (studentIds.length > 0) {
-            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds));
+            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
             const conflictSnap = await getDocs(conflictQuery);
-            if (!conflictSnap.empty) {
-                const conflictingParent = conflictSnap.docs[0].data();
-                const conflictingStudentId = studentIds.find(id => conflictingParent.studentIds.includes(id));
-                const studentName = students?.find(s => s.id === conflictingStudentId)?.firstName || 'A student';
-                throw new Error(`${studentName} is already linked to another parent (${conflictingParent.firstName}).`);
-            }
+            if (!conflictSnap.empty) throw new Error("A selected student is already linked to another parent.");
           }
 
-          const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName });
+          const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName }, adminSchoolId);
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'parents', result.uid), {
@@ -102,12 +150,13 @@ export default function ParentsPage() {
               phone: values.phone,
               address: values.address,
               studentIds: studentIds,
+              schoolId: adminSchoolId,
               createdAt: serverTimestamp()
           });
 
           toast({ title: "Success", description: "Parent created successfully." });
           setIsAddOpen(false);
-          forceRefetchParents();
+          loadData();
 
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error creating parent", description: error.message });
@@ -116,9 +165,10 @@ export default function ParentsPage() {
       }
   };
 
+  // --- 4. UPDATE PARENT ---
   const handleUpdateParent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!editingParent || isSubmitting || !firestore) return;
+    if (!editingParent || isSubmitting || !firestore || !adminSchoolId) return;
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
@@ -126,27 +176,19 @@ export default function ParentsPage() {
     const studentIds = formData.getAll('studentIds') as string[];
 
     try {
-        // --- CONFLICT CHECK ---
         if (studentIds.length > 0) {
-            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds));
+            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
             const conflictSnap = await getDocs(conflictQuery);
-            // Ensure the conflict is not with the current parent being edited
             const actualConflicts = conflictSnap.docs.filter(doc => doc.id !== editingParent.id);
-            if (actualConflicts.length > 0) {
-                 const conflictingParent = actualConflicts[0].data();
-                 const conflictingStudentId = studentIds.find(id => conflictingParent.studentIds.includes(id));
-                 const studentName = students?.find(s => s.id === conflictingStudentId)?.firstName || 'A student';
-                 throw new Error(`${studentName} is already linked to another parent (${conflictingParent.firstName}).`);
-            }
+            if (actualConflicts.length > 0) throw new Error("A selected student is already linked to another parent.");
         }
 
         const parentRef = doc(firestore, 'parents', editingParent.id);
-        
         await updateDoc(parentRef, { ...values, studentIds });
 
         toast({ title: "Updated", description: "Parent details saved." });
         setEditingParent(null);
-        forceRefetchParents();
+        loadData();
 
     } catch (error: any) {
         toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -155,26 +197,20 @@ export default function ParentsPage() {
     }
   };
 
+  // --- 5. DELETE PARENT ---
   const handleDelete = async (id: string) => {
-    if (!firestore) return;
-    if (!confirm("Are you sure you want to delete this parent's profile?")) return;
+    if (!firestore || !confirm("Delete this parent's profile?")) return;
     try {
         await deleteDoc(doc(firestore, 'parents', id));
         toast({ title: "Deleted" });
-        forceRefetchParents();
+        loadData();
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  const filteredParents = (parents || []).filter(p => 
-    (p.firstName + ' ' + p.lastName).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  const filteredStudentsForModal = (students || []).filter(s => searchStudent(s, studentSearch));
-
-  const isLoading = isLoadingParents || isLoadingStudents;
+  const filteredParents = parents.filter(p => searchStudent(p, searchTerm));
+  const filteredStudentsForModal = students.filter(s => searchStudent(s, studentSearch));
 
   return (
     <div className="space-y-6 p-6">
@@ -185,14 +221,14 @@ export default function ParentsPage() {
                     <HeartHandshake className="h-6 w-6 text-pink-500"/> Parent Management
                 </CardTitle>
                 <CardDescription>
-                    Found: {parents?.length || 0} | Showing: {filteredParents.length}
+                    Found: {parents.length} | Showing: {filteredParents.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={forceRefetchParents} disabled={isLoading}>
+                <Button variant="outline" onClick={loadData} disabled={isLoading || !adminSchoolId}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
-                <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600">
+                <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600" disabled={!adminSchoolId}>
                     <UserPlus className="h-4 w-4 mr-2"/> Add Parent
                 </Button>
             </div>
@@ -203,13 +239,13 @@ export default function ParentsPage() {
               value={searchTerm}
               onChange={setSearchTerm}
               className="max-w-sm"
-              placeholder="Search parents..."
+              placeholder="Search parents by name..."
             />
 
             {isLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-pink-500"/></div>
             ) : filteredParents.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No parents found in the database.</div>
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No parents found.</div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
@@ -245,7 +281,7 @@ export default function ParentsPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="jane.doe@example.com"/></div>
-                     <div className="space-y-2"><Label>Phone</Label><Input name="phone" placeholder="123-456-7890"/></div>
+                     <div className="space-y-2"><Label>Phone</Label><Input name="phone" placeholder="024-xxx-xxxx"/></div>
                 </div>
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="Residential Address" /></div>
                 
