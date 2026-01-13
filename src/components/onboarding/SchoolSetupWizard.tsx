@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useAuth, useDoc, useMemoFirebase } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { useFirestore, useAuth } from '@/firebase';
+import { collection, query, where, addDoc, serverTimestamp, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -31,32 +31,28 @@ export default function SchoolSetupWizard() {
   const isDirector = role === 'Director' || role === 'Administrator';
 
   // 1. Check if Setup is Needed
-  const schoolDocRef = useMemoFirebase(() => schoolId ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
-  const { data: schoolData, isLoading: isLoadingSchool } = useDoc(schoolDocRef);
-
   useEffect(() => {
     async function checkStatus() {
-      // Don't run until all data is loaded and conditions are met
-      if (isLoadingSchool || isLoadingRole || !isDirector || !firestore || !schoolId) {
-        return;
-      }
+      if (!firestore || !schoolId || !isDirector || isLoadingRole) return;
       
-      // If setup is already marked as complete, never show the wizard again.
-      if (schoolData?.isSetupComplete) {
-        setIsOpen(false);
-        return;
-      }
+      // A. Check School Document first
+      const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
       
-      // Check if they have any classes yet
+      // If already marked complete, STOP.
+      if (schoolDoc.exists() && schoolDoc.data().isSetupComplete) {
+          return; 
+      }
+
+      // B. If not marked complete, check for classes (Legacy check)
       const q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
       const snap = await getDocs(q);
       
       if (snap.empty) {
-        setIsOpen(true); // Open Wizard if no classes found AND setup is not complete
+        setIsOpen(true);
       }
     }
     checkStatus();
-  }, [firestore, schoolId, isDirector, isLoadingSchool, isLoadingRole, schoolData]);
+  }, [firestore, schoolId, isDirector, isLoadingRole]);
 
   // 2. Handle Step 1: Create Class
   const handleCreateClass = async () => {
@@ -110,6 +106,7 @@ export default function SchoolSetupWizard() {
     }
   };
 
+
   if (!isOpen) return null;
 
   return (
@@ -138,7 +135,7 @@ export default function SchoolSetupWizard() {
                 value={className}
                 onChange={e => setClassName(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">You can add more later.</p>
+              <p className="text-xs text-muted-foreground">This helps you enroll students later.</p>
             </div>
             
             <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2">
