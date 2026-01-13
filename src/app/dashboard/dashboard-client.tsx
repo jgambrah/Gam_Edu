@@ -7,8 +7,8 @@ import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, 
-  PlusCircle, PenSquare, FilePen, BookOpen, Calendar,
-  ClipboardCheck, TrendingUp, Bell, FileText, Bus,
+  PlusCircle, PenSquare, FileText, BookOpen, Calendar,
+  ClipboardCheck, TrendingUp, Bell, Bus,
   CreditCard, DollarSign, Receipt, Package, Award,
   MessageSquare, Clock, AlertCircle, CheckCircle2,
   UserCheck, BookMarked, Briefcase, BarChart3, Activity, Landmark, ChevronRight
@@ -17,7 +17,6 @@ import Link from 'next/link';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import { FinancialRecord, AccountsPayableRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -178,7 +177,7 @@ export default function DashboardClient() {
   const leaveRequestsQuery = useMemoFirebase(() => (firestore && isStaffUser && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser, schoolId]);
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection(leaveRequestsQuery);
   
-  const libraryItemsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore]);
+  const libraryItemsQuery = useMemoFirebase(() => schoolId ? query(collection(firestore, 'library'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(libraryItemsQuery);
 
   const financialRecordsQuery = useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector) && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector, schoolId]);
@@ -241,7 +240,8 @@ export default function DashboardClient() {
             iconColor: 'text-purple-600'
         })));
     }
-    if (financialRecords) { // ✅ FIX: Added a check here
+    // ✅ FIX: Added a check here
+    if (financialRecords) {
         activities.push(...financialRecords.map(p => ({
             type: 'Payment',
             title: 'Payment Received',
@@ -986,4 +986,4 @@ export default function DashboardClient() {
   );
 }
 
-  
+    
