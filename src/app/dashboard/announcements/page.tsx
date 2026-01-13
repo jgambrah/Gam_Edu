@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { generateAnnouncement } from '@/ai/flows/generate-announcement-flow';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Class } from '@/lib/types';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // --- TYPE DEFINITION ---
@@ -40,18 +41,21 @@ type Announcement = {
   createdAt: any;
   audience: Audience[];
   classId?: string;
+  schoolId?: string; // SAAS
 };
 
 // --- COMPONENT: Post Announcement Form ---
 function PostAnnouncementForm({ 
     open, 
-    setOpen 
+    setOpen,
+    schoolId
 }: { 
     open: boolean, 
-    setOpen: (o: boolean) => void 
+    setOpen: (o: boolean) => void,
+    schoolId: string
 }) {
     const firestore = useFirestore();
-    const { user } = useUser(); // Get full user object for name/photo
+    const { user } = useUser();
     const { role } = useRole();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,7 +69,11 @@ function PostAnnouncementForm({
     const [selectedAudience, setSelectedAudience] = useState<Audience[]>(['Everybody']);
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+    // SAAS FIX: Only show classes for this school
+    const classesQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId]);
+    const { data: classes } = useCollection<Class>(classesQuery);
 
     const handleAudienceChange = (audience: Audience, checked: boolean | 'indeterminate') => {
         if (checked) {
@@ -74,7 +82,6 @@ function PostAnnouncementForm({
             setSelectedAudience(prev => prev.filter(a => a !== audience));
         }
     };
-
 
     const handleGenerateWithAI = async () => {
         if (!aiKeyPoints.trim()) {
@@ -114,7 +121,8 @@ function PostAnnouncementForm({
                 audience: selectedAudience,
                 classId: selectedClassId === 'all' ? null : selectedClassId,
                 publishedAt: serverTimestamp(),
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                schoolId: schoolId, // SAAS FIX: Stamp with schoolId
             });
 
             toast({ title: 'Success', description: 'Announcement posted.' });
@@ -243,17 +251,32 @@ export default function AnnouncementsPage() {
   const { role, isRoleLoading } = useRole();
   const { user } = useUser();
   const { toast } = useToast();
+  const { schoolId, loading: schoolLoading } = useCurrentSchool(); // SAAS FIX
 
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const canManage = ['Administrator', 'Director'].includes(role);
 
-  // 1. FETCH ANNOUNCEMENTS (Ordered by newest first)
-  const announcementsQuery = useMemoFirebase(
-    () => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc')) : null,
-    [firestore]
-  );
+  // 1. FETCH ANNOUNCEMENTS (SAAS FIX: Filtered by schoolId)
+  const announcementsQuery = useMemoFirebase(() => {
+      if (!firestore || !schoolId) return null; // Don't query without schoolId
+      
+      const q = query(
+          collection(firestore, 'announcements_v2'), 
+          where('schoolId', '==', schoolId), 
+          orderBy('publishedAt', 'desc')
+      );
+      
+      // Student/Parent/Teacher view (further filtering by audience)
+      if (!canManage && role) {
+          return query(q, where('audience', 'array-contains-any', ['Everybody', role]));
+      }
+      
+      return q;
+  }, [firestore, schoolId, role, canManage]);
+  
   const { data: announcements, isLoading } = useCollection<Announcement>(announcementsQuery);
+
 
   const handleDelete = async (id: string) => {
       if (!confirm("Delete this announcement?")) return;
@@ -273,6 +296,8 @@ export default function AnnouncementsPage() {
           default: return 'bg-blue-100 text-blue-800 border-blue-200';
       }
   };
+  
+  const pageLoading = isLoading || isRoleLoading || schoolLoading;
 
   return (
     <div className="space-y-6 p-6 max-w-5xl mx-auto">
@@ -285,8 +310,7 @@ export default function AnnouncementsPage() {
             <p className="text-slate-500">Latest news and updates from the administration.</p>
         </div>
         
-        {/* Only Admins/Directors see the Add Button */}
-        {canManage && (
+        {canManage && schoolId && (
             <Button onClick={() => setIsFormOpen(true)} className="bg-blue-600 hover:bg-blue-700 shadow-md">
                 <Plus className="mr-2 h-4 w-4"/> Post Announcement
             </Button>
@@ -294,7 +318,7 @@ export default function AnnouncementsPage() {
       </div>
 
       {/* CONTENT AREA */}
-      {isLoading || isRoleLoading ? (
+      {pageLoading ? (
           <div className="flex flex-col items-center py-20 text-muted-foreground gap-2">
               <Loader2 className="h-10 w-10 animate-spin text-blue-500"/>
               <p>Loading updates...</p>
@@ -331,7 +355,6 @@ export default function AnnouncementsPage() {
                                   <CardTitle className="text-xl text-slate-800">{post.title}</CardTitle>
                               </div>
                               
-                              {/* Delete Button (Only for Admins) */}
                               {canManage && (
                                   <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600 hover:bg-red-50" onClick={() => handleDelete(post.id)}>
                                       <Trash2 className="h-4 w-4"/>
@@ -360,8 +383,8 @@ export default function AnnouncementsPage() {
           </div>
       )}
 
-      {/* MODAL */}
-      <PostAnnouncementForm open={isFormOpen} setOpen={setIsFormOpen} />
+      {/* MODAL (Pass schoolId down) */}
+      {schoolId && <PostAnnouncementForm open={isFormOpen} setOpen={setIsFormOpen} schoolId={schoolId}/>}
 
     </div>
   );

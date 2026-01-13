@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +22,7 @@ import { Student, graduateStudentSchema, editAlumniSchema, AlumniDetails } from 
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
 import { z } from 'zod';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- Form for Graduating a student ---
 function GraduateStudentForm({ setOpen, students }: { setOpen: (open: boolean) => void, students: Student[] }) {
@@ -189,16 +190,19 @@ export default function AlumniPage() {
   const firestore = useFirestore();
   const [isGraduateFormOpen, setGraduateFormOpen] = useState(false);
   const [editingAlumnus, setEditingAlumnus] = useState<Student | null>(null);
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-  const studentsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'students');
-  }, [firestore]);
-  const { data: students, isLoading } = useCollection<Student>(studentsQuery);
+  const studentsQuery = useMemoFirebase(() => 
+    schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
+  [firestore, schoolId]);
+
+  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
   
   const activeStudents = useMemo(() => students?.filter(s => s.enrollmentStatus !== 'Graduated') || [], [students]);
   const alumni = useMemo(() => students?.filter(s => s.enrollmentStatus === 'Graduated') || [], [students]);
   
+  const isLoading = isLoadingSchool || isLoadingStudents;
+
   if (!['Administrator', 'Director'].includes(role)) {
     return (
       <Card>

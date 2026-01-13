@@ -22,6 +22,7 @@ import { format, formatDistanceToNow, isThisMonth } from 'date-fns';
 import { FinancialRecord, AccountsPayableRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { StudentDisplay } from '@/components/student-display';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // Simple Stat Card Component
@@ -139,6 +140,7 @@ export default function DashboardClient() {
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   // Role checks
   const isAdminOrDirector = role === 'Administrator' || role === 'Director';
@@ -149,40 +151,44 @@ export default function DashboardClient() {
   const isLibrarian = role === 'Librarian';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || ['Cook', 'Transport Staff'].includes(role || '');
 
-  // --- DATA FETCHING ---
-  const { data: students, isLoading: studentsLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'students')) : null, [firestore])
-  );
-  const { data: staff, isLoading: staffLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore])
-  );
-  const { data: classes, isLoading: classesLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'classes')) : null, [firestore])
-  );
-  const { data: assignments, isLoading: assignmentsLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'assignments')) : null, [firestore])
-  );
-  const { data: announcements, isLoading: announcementsLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'announcements_v2'), orderBy('publishedAt', 'desc'), limit(5)) : null, [firestore])
-  );
-  
-  const { data: leaveRequests, isLoading: leaveLoading } = useCollection(
-    useMemoFirebase(() => (firestore && isStaffUser) ? query(collection(firestore, 'leaveRequests'), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser])
-  );
-  
-  const { data: libraryItems, isLoading: libraryLoading } = useCollection(
-    useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore])
-  );
+  // --- DATA FETCHING (Now School-Aware) ---
+  const studentsQuery = useMemoFirebase(() => schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
 
-  // --- NEW: FINANCIAL DATA FETCHING ---
-  const { data: financialRecords, isLoading: paymentsLoading } = useCollection<FinancialRecord>(
-    useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector)) ? query(collection(firestore, 'financialRecords'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector])
-  );
-  const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(
-    useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector)) ? query(collection(firestore, 'accountsPayable'), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector])
-  );
+  const staffQuery = useMemoFirebase(() => schoolId ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: staff, isLoading: staffLoading } = useCollection(staffQuery);
 
-  const isLoading = isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading || payablesLoading;
+  const classesQuery = useMemoFirebase(() => schoolId ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: classes, isLoading: classesLoading } = useCollection(classesQuery);
+  
+  const assignmentsQuery = useMemoFirebase(() => {
+    if (!user || !firestore || !schoolId) return null;
+    let q = query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId));
+    if(isTeacher) q = query(q, where('teacherId', '==', user.uid));
+    return q;
+  }, [firestore, user, isTeacher, schoolId]);
+  const { data: assignments, isLoading: assignmentsLoading } = useCollection(assignmentsQuery);
+
+  const announcementsQuery = useMemoFirebase(() => {
+    if(!firestore || !schoolId) return null;
+    return query(collection(firestore, 'announcements_v2'), where('schoolId', '==', schoolId), orderBy('publishedAt', 'desc'), limit(5))
+  }, [firestore, schoolId]);
+  const { data: announcements, isLoading: announcementsLoading } = useCollection(announcementsQuery);
+  
+  const leaveRequestsQuery = useMemoFirebase(() => (firestore && isStaffUser && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, isStaffUser, schoolId]);
+  const { data: leaveRequests, isLoading: leaveLoading } = useCollection(leaveRequestsQuery);
+  
+  const libraryItemsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore]);
+  const { data: libraryItems, isLoading: libraryLoading } = useCollection(libraryItemsQuery);
+
+  const financialRecordsQuery = useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector) && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector, schoolId]);
+  const { data: financialRecords, isLoading: paymentsLoading } = useCollection<FinancialRecord>(financialRecordsQuery);
+  
+  const accountsPayableQuery = useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector) && schoolId) ? query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector, schoolId]);
+  const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(accountsPayableQuery);
+
+
+  const isLoading = isLoadingSchool || isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading || payablesLoading;
 
   // --- LIVE ACTIVITY FEED ---
   const recentActivity = useMemo(() => {
@@ -678,7 +684,7 @@ export default function DashboardClient() {
                   {myStudents.map(student => (
                     <Link href="/dashboard/my-children" key={student.uid}>
                       <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
-                        <StudentDisplay student={student} variant="list" />
+                        <StudentDisplay student={student} variant="list" showAvatar />
                         <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       </div>
                     </Link>
@@ -838,7 +844,7 @@ export default function DashboardClient() {
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard 
-              title="Total Books" 
+              title="Total Items" 
               value={stats.totalBooks} 
               icon={BookMarked} 
               link="/dashboard/library"
