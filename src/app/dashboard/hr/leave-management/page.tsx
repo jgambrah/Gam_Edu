@@ -26,10 +26,11 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { LeaveRequest, leaveApplicationSchema, managerApprovalSchema, managerRejectionSchema, PublicHoliday, LeaveStatus, Staff, LEAVE_TYPES } from '@/lib/types';
 import { MOCK_PUBLIC_HOLIDAYS } from '@/lib/data';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // --- Staff View: Form for applying for leave ---
-function LeaveApplicationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+function LeaveApplicationForm({ setOpen, schoolId }: { setOpen: (open: boolean) => void, schoolId: string }) {
   const firestore = useFirestore();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -41,7 +42,7 @@ function LeaveApplicationForm({ setOpen }: { setOpen: (open: boolean) => void })
   });
 
   async function onSubmit(values: z.infer<typeof leaveApplicationSchema>) {
-    if (!user || !staffName) return;
+    if (!user || !staffName || !schoolId) return;
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'leaveRequests'), {
@@ -50,6 +51,7 @@ function LeaveApplicationForm({ setOpen }: { setOpen: (open: boolean) => void })
         staffName: staffName,
         status: 'Pending',
         createdAt: serverTimestamp(),
+        schoolId: schoolId, // SAAS STAMP
       });
       toast({ title: 'Request Submitted', description: 'Your leave request has been submitted for approval.' });
       form.reset();
@@ -95,9 +97,12 @@ function LeaveApplicationForm({ setOpen }: { setOpen: (open: boolean) => void })
 function StaffLeaveView() {
     const { user } = useAuth();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     const [isFormOpen, setFormOpen] = useState(false);
 
-    const myRequestsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'leaveRequests'), where('staffId', '==', user.uid)) : null, [firestore, user]);
+    const myRequestsQuery = useMemoFirebase(() => 
+        (user && schoolId) ? query(collection(firestore, 'leaveRequests'), where('staffId', '==', user.uid), where('schoolId', '==', schoolId)) : null, 
+    [firestore, user, schoolId]);
     const { data: myRequests, isLoading } = useCollection<LeaveRequest>(myRequestsQuery);
 
     return (
@@ -106,8 +111,11 @@ function StaffLeaveView() {
                 <CardHeader className='flex flex-row justify-between items-center'>
                     <CardTitle>My Leave Requests</CardTitle>
                     <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Apply for Leave</Button></DialogTrigger>
-                        <DialogContent><DialogHeader><DialogTitle>New Leave Application</DialogTitle><DialogDescription>Fill out the form below to request time off.</DialogDescription></DialogHeader><LeaveApplicationForm setOpen={setFormOpen} /></DialogContent>
+                        <DialogTrigger asChild><Button disabled={!schoolId}><PlusCircle className="mr-2 h-4 w-4" /> Apply for Leave</Button></DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>New Leave Application</DialogTitle><DialogDescription>Fill out the form below to request time off.</DialogDescription></DialogHeader>
+                            {schoolId && <LeaveApplicationForm setOpen={setFormOpen} schoolId={schoolId} />}
+                        </DialogContent>
                     </Dialog>
                 </CardHeader>
                 <CardContent>
@@ -253,8 +261,11 @@ function ManagerApprovalDialog({ request, setOpen, action }: { request: LeaveReq
 
 function ManagerLeaveView() {
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
 
-  const { data: allRequests, isLoading } = useCollection<LeaveRequest>(useMemoFirebase(() => collection(firestore, 'leaveRequests'), [firestore]));
+  const { data: allRequests, isLoading } = useCollection<LeaveRequest>(
+    useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId])
+  );
 
   const pendingRequests = useMemo(() => allRequests?.filter(r => r.status === 'Pending') || [], [allRequests]);
   const approvedRequests = useMemo(() => allRequests?.filter(r => r.status === 'Approved') || [], [allRequests]);

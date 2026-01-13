@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, PlusCircle, Star, TrendingUp, Sparkles, Printer, User, Lock, CheckCircle2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -22,13 +21,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { PerformanceReview, performanceReviewSchema, Staff, UserRole } from '@/lib/types';
+import { PerformanceReview, performanceReviewSchema, Staff } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Slider } from "@/components/ui/slider";
-// AI import is optional, will remove if it causes issues.
-// import { generateReviewText } from '@/ai/flows/staff-review-flow'; 
 import PerformanceSetup from '@/components/PerformanceSetup';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- COMPONENTS ---
 
@@ -73,7 +71,7 @@ function MetricInput({ label, value, onChange }: { label: string, value: number,
     );
 }
 
-function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean) => void, staffList: Staff[] }) {
+function PerformanceReviewForm({ setOpen, staffList, schoolId }: { setOpen: (open: boolean) => void, staffList: Staff[], schoolId: string }) {
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
@@ -98,7 +96,6 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
 
   const handleAiGenerate = async () => {
       setAiLoading(true);
-      // Mocking AI response for now as the flow doesn't exist
       setTimeout(() => {
         form.setValue('strengths', 'Excellent classroom management and rapport with students.');
         form.setValue('improvementAreas', 'Could incorporate more technology into lessons.');
@@ -109,7 +106,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
   };
 
   async function onSubmit(values: any) {
-    if (!user) return;
+    if (!user || !schoolId) return;
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'performanceReviews'), {
@@ -118,6 +115,7 @@ function PerformanceReviewForm({ setOpen, staffList }: { setOpen: (open: boolean
         reviewerId: user.uid,
         reviewerName: user.displayName || user.email,
         createdAt: serverTimestamp(),
+        schoolId: schoolId, // SAAS STAMP
       });
       toast({ title: 'Success', description: 'Performance review has been logged.' });
       form.reset();
@@ -202,12 +200,13 @@ export default function PerformanceReviewsPage() {
   const { role } = useRole();
   const { user } = useUser();
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [isFormOpen, setFormOpen] = useState(false);
 
   // 1. DETERMINE PERMISSIONS
   const isAdmin = ['Admin', 'Administrator', 'Director'].includes(role || '');
-  const isStaff = ['Teacher', 'Staff', 'Accountant', 'Librarian'].includes(role || '');
+  const isStaff = ['Teacher', 'Staff', 'Accountant', 'Librarian'].includes(role || '') || isAdmin;
 
   // 2. AUTO-SELECT FOR STAFF
   useEffect(() => {
@@ -216,11 +215,11 @@ export default function PerformanceReviewsPage() {
       }
   }, [isAdmin, user]);
 
-  // 3. FETCH STAFF LIST (Admin Only)
+  // 3. FETCH STAFF LIST (Admin Only, Filtered by School)
   const staffQuery = useMemoFirebase(() => {
-      if (!isAdmin || !firestore) return null;
-      return query(collection(firestore, 'staff'));
-    }, [firestore, isAdmin]);
+      if (!isAdmin || !firestore || !schoolId) return null;
+      return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId));
+    }, [firestore, isAdmin, schoolId]);
   const { data: staffList } = useCollection<Staff>(staffQuery);
   
   const reviewableStaff = useMemo(() => {
@@ -232,15 +231,16 @@ export default function PerformanceReviewsPage() {
     );
   }, [staffList]);
 
-  // 4. FETCH REVIEWS
+  // 4. FETCH REVIEWS (Filtered by School & Staff)
   const reviewsQuery = useMemoFirebase(() => {
-    if (!firestore || !user || !selectedStaffId) return null;
+    if (!firestore || !user || !selectedStaffId || !schoolId) return null;
     return query(
         collection(firestore, 'performanceReviews'),
         where('staffId', '==', selectedStaffId),
+        where('schoolId', '==', schoolId), // SAAS Filter
         orderBy('reviewDate', 'asc')
     );
-  }, [firestore, user, selectedStaffId]);
+  }, [firestore, user, selectedStaffId, schoolId]);
   const { data: rawReviews, isLoading: isLoadingReviews } = useCollection<PerformanceReview>(reviewsQuery);
 
   const sortedReviews = useMemo(() => rawReviews ? [...rawReviews].reverse() : [], [rawReviews]);
@@ -255,7 +255,7 @@ export default function PerformanceReviewsPage() {
   }, [rawReviews]);
 
   // Block Access if neither Admin nor Staff
-  if (!isAdmin && !isStaff) {
+  if (!isStaff) {
     return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>Unauthorized.</CardDescription></CardHeader></Card>;
   }
 
@@ -276,7 +276,7 @@ export default function PerformanceReviewsPage() {
             <DialogTrigger asChild><Button className="bg-indigo-600 hover:bg-indigo-700"><PlusCircle className="mr-2 h-4 w-4" /> New Evaluation</Button></DialogTrigger>
             <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader><DialogTitle>Staff Evaluation Form</DialogTitle><DialogDescription>Rate performance across key metrics.</DialogDescription></DialogHeader>
-                <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff || []} />
+                {schoolId && <PerformanceReviewForm setOpen={setFormOpen} staffList={reviewableStaff || []} schoolId={schoolId} />}
             </DialogContent>
             </Dialog>
         )}
