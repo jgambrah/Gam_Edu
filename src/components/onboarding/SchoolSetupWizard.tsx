@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useAuth, useMemoFirebase } from '@/firebase';
-import { collection, query, where, addDoc, serverTimestamp, getDocs } from 'firebase/firestore';
+import { useFirestore, useAuth, useDoc, useMemoFirebase } from '@/firebase';
+import { collection, query, where, addDoc, serverTimestamp, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -16,10 +16,9 @@ import { useRole } from '@/context/role-context';
 export default function SchoolSetupWizard() {
   const { user } = useAuth();
   const firestore = useFirestore();
-  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+  const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
   const { role, loading: isLoadingRole } = useRole();
-
 
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
@@ -31,29 +30,33 @@ export default function SchoolSetupWizard() {
 
   const isDirector = role === 'Director' || role === 'Administrator';
 
-
   // 1. Check if Setup is Needed
-  const classesQuery = useMemoFirebase(
-    () => (firestore && schoolId ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null),
-    [firestore, schoolId]
-  );
+  const schoolDocRef = useMemoFirebase(() => schoolId ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+  const { data: schoolData, isLoading: isLoadingSchool } = useDoc(schoolDocRef);
 
   useEffect(() => {
     async function checkStatus() {
+      // Don't run until all data is loaded and conditions are met
       if (isLoadingSchool || isLoadingRole || !isDirector || !firestore || !schoolId) {
         return;
       }
       
+      // If setup is already marked as complete, never show the wizard again.
+      if (schoolData?.isSetupComplete) {
+        setIsOpen(false);
+        return;
+      }
+      
+      // Check if they have any classes yet
       const q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
       const snap = await getDocs(q);
       
       if (snap.empty) {
-        setIsOpen(true); // Open Wizard if no classes found
+        setIsOpen(true); // Open Wizard if no classes found AND setup is not complete
       }
     }
     checkStatus();
-  }, [firestore, schoolId, isDirector, isLoadingSchool, isLoadingRole]);
-
+  }, [firestore, schoolId, isDirector, isLoadingSchool, isLoadingRole, schoolData]);
 
   // 2. Handle Step 1: Create Class
   const handleCreateClass = async () => {
@@ -81,19 +84,33 @@ export default function SchoolSetupWizard() {
     setStep(2); // Jump to the AI/Success screen
   };
 
-  // 3. Handle Finish
-  const handleFinish = () => {
-    setIsOpen(false);
-    if (!skipped) {
-        toast({ title: "Setup Complete!", description: "You can now add more data from the dashboard." });
-        // Refresh to reload data and hide wizard
-        window.location.reload();
+  // 3. Handle Finish (Mark as complete permanently)
+  const handleFinish = async () => {
+    setLoading(true);
+    try {
+        // Mark the school as "Setup Complete" in database
+        if (schoolId && firestore) {
+            const schoolRef = doc(firestore, 'schools', schoolId);
+            await updateDoc(schoolRef, {
+                isSetupComplete: true 
+            });
+        }
+        
+        setIsOpen(false);
+        if (!skipped) {
+            toast({ title: "Setup Complete!", description: "You can now add more data from the dashboard." });
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error("Failed to save setup status", error);
+        // Close anyway so they aren't stuck
+        setIsOpen(false);
+    } finally {
+        setLoading(false);
     }
   };
 
-  // Only render for admins, and only if it's supposed to be open
-  if (!isDirector || !isOpen) return null;
-
+  if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
@@ -121,7 +138,7 @@ export default function SchoolSetupWizard() {
                 value={className}
                 onChange={e => setClassName(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">This helps you enroll students later.</p>
+              <p className="text-xs text-muted-foreground">You can add more later.</p>
             </div>
             
             <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2">
@@ -139,7 +156,6 @@ export default function SchoolSetupWizard() {
         {step === 2 && (
           <div className="space-y-6 py-4 text-center">
             
-            {/* Success Icon */}
             <div className="flex justify-center">
                 <div className="bg-green-100 p-4 rounded-full animate-bounce">
                     <CheckCircle2 className="h-12 w-12 text-green-600" />
@@ -147,7 +163,7 @@ export default function SchoolSetupWizard() {
             </div>
 
             <div className="space-y-2">
-                <h3 className="text-xl font-bold text-slate-800">You are ready to go!</h3>
+                <h3 className="text-xl font-bold text-slate-800">Welcome Aboard!</h3>
                 <p className="text-slate-600">
                     {skipped 
                         ? "You can set up your classes and students anytime from the dashboard." 
@@ -156,7 +172,7 @@ export default function SchoolSetupWizard() {
                 </p>
             </div>
 
-            {/* AI Assistant Tip - THIS IS THE IMPORTANT PART */}
+            {/* AI Assistant Tip */}
             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-left flex gap-3 shadow-sm">
                 <div className="bg-purple-100 p-2 rounded-full h-fit">
                     {/* Robot Icon */}
@@ -186,8 +202,9 @@ export default function SchoolSetupWizard() {
             </div>
 
             <DialogFooter>
-              <Button onClick={handleFinish} className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6">
-                Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+              <Button onClick={handleFinish} className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6" disabled={loading}>
+                {loading ? <Loader2 className="animate-spin mr-2"/> : <ArrowRight className="ml-2 h-5 w-5" />}
+                Go to Dashboard 
               </Button>
             </DialogFooter>
           </div>
