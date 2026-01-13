@@ -188,7 +188,29 @@ export default function DashboardClient() {
   const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(accountsPayableQuery);
 
 
-  const isLoading = isLoadingSchool || isUserLoading || isRoleLoading || studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || assignmentsLoading || paymentsLoading || payablesLoading;
+  // FIX: The isLoading logic now accounts for roles.
+  // It only waits for data that the current user is expected to see.
+  const isLoading = useMemo(() => {
+      const coreLoading = isLoadingSchool || isUserLoading || isRoleLoading;
+      if (coreLoading) return true;
+      
+      if (isAdminOrDirector) {
+          return studentsLoading || staffLoading || classesLoading || leaveLoading || libraryLoading || announcementsLoading || paymentsLoading || payablesLoading;
+      }
+      if (isTeacher) {
+          return studentsLoading || classesLoading || assignmentsLoading || announcementsLoading;
+      }
+      if (isStudent || isParent) {
+          return classesLoading || assignmentsLoading || announcementsLoading;
+      }
+      // Add other roles here if they have dashboard components
+      return false;
+  }, [
+      isLoadingSchool, isUserLoading, isRoleLoading, studentsLoading, staffLoading, classesLoading,
+      leaveLoading, libraryLoading, announcementsLoading, assignmentsLoading, paymentsLoading, payablesLoading,
+      role // Add role to dependency array
+  ]);
+  
 
   // --- LIVE ACTIVITY FEED ---
   const recentActivity = useMemo(() => {

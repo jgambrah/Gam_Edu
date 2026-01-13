@@ -14,8 +14,19 @@ export function useCurrentSchool() {
   useEffect(() => {
     async function fetchSchool() {
       if (!user || !firestore) return;
+      
+      setLoading(true);
       try {
-        // 1. Check Staff Collection (Most common)
+        // Strategy: Check collections in order of likelihood based on typical roles
+        // 1. Check 'users' (The centralized place - if you updated your create-user action)
+        const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+        if (userDoc.exists() && userDoc.data().schoolId) {
+            setSchoolId(userDoc.data().schoolId);
+            setLoading(false);
+            return;
+        }
+
+        // 2. Check 'staff'
         const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
         if (staffDoc.exists() && staffDoc.data().schoolId) {
             setSchoolId(staffDoc.data().schoolId);
@@ -23,13 +34,28 @@ export function useCurrentSchool() {
             return;
         }
 
-        // 2. Check Users Collection (Fallback for CEO/SuperAdmin)
-        const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-        if (userDoc.exists() && userDoc.data().schoolId) {
-            setSchoolId(userDoc.data().schoolId);
+        // 3. Check 'students'
+        const studentDoc = await getDoc(doc(firestore, 'students', user.uid));
+        if (studentDoc.exists() && studentDoc.data().schoolId) {
+            setSchoolId(studentDoc.data().schoolId);
+            setLoading(false);
+            return;
         }
+
+        // 4. Check 'parents'
+        const parentDoc = await getDoc(doc(firestore, 'parents', user.uid));
+        if (parentDoc.exists() && parentDoc.data().schoolId) {
+            setSchoolId(parentDoc.data().schoolId);
+            setLoading(false);
+            return;
+        }
+
+        console.warn("No School ID found for this user.");
+        setSchoolId(null);
+
       } catch (error) {
         console.error("Failed to fetch school ID", error);
+        setSchoolId(null);
       } finally {
         setLoading(false);
       }
