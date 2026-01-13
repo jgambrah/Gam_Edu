@@ -10,6 +10,7 @@ import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import AppSidebar from '@/components/navigation/sidebar';
 import { RoleProvider } from '@/context/role-context';
+import SchoolSetupWizard from '@/components/onboarding/SchoolSetupWizard'; // Import the wizard
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -44,6 +45,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </main>
         </div>
         <AiChat />
+        <SchoolSetupWizard /> {/* Add the wizard component here */}
       </SidebarInset>
     </SidebarProvider>
   );
