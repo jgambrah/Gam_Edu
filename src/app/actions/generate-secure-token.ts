@@ -5,26 +5,35 @@ import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 import jwt from 'jsonwebtoken';
 
+// --- HELPER: Fixes Vercel Key Formatting Issues ---
+const formatPrivateKey = (key: string) => {
+  return key.replace(/\\n/g, '\n').replace(/"/g, ''); 
+};
+
 function getAdminApp(): App {
   const existingApp = getApps().find(app => app.name === 'admin');
   if (existingApp) return existingApp;
 
-  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (!serviceAccountString) {
-    throw new Error("The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.");
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (!projectId || !clientEmail || !privateKeyRaw) {
+    console.error("❌ FIREBASE CREDENTIALS MISSING IN generate-secure-token:", {
+      projectId: !!projectId,
+      clientEmail: !!clientEmail,
+      privateKey: !!privateKeyRaw
+    });
+    throw new Error("Missing Firebase Admin credentials for token generation.");
   }
   
-  try {
-    const serviceAccount: ServiceAccount = JSON.parse(serviceAccountString);
+  const privateKey = formatPrivateKey(privateKeyRaw);
+  
+  const serviceAccount = { projectId, clientEmail, privateKey };
 
-    return initializeApp({
-      credential: cert(serviceAccount),
-    }, 'admin');
-
-  } catch (error: any) {
-    console.error("Failed to parse Firebase service account key:", error.message);
-    throw new Error("Firebase service account key is not a valid JSON object.");
-  }
+  return initializeApp({
+    credential: cert(serviceAccount),
+  }, 'admin');
 }
 
 export async function generateSecureToken(uid: string): Promise<string> {
