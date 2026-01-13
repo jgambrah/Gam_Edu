@@ -14,6 +14,7 @@ import { FileText, Printer, BarChart2, Users } from 'lucide-react';
 import { Class, Subject, Student, Assessment } from '@/lib/types';
 import Link from 'next/link';
 import { useUser } from '@/firebase/provider';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'F' | 'N/A' => {
     if (score >= 90) return 'A';
@@ -28,29 +29,32 @@ export default function AcademicReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
     const { user } = useUser();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+    
     const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
     const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
 
     const canAccess = ['Administrator', 'Director', 'Teacher'].includes(role);
 
-    // Data Fetching
+    // Data Fetching with schoolId
     const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
+        if (!user || !firestore || !schoolId) return null;
+        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
         if (role === 'Teacher') {
-            return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+            q = query(q, where('teacherId', '==', user.uid));
         }
-        return collection(firestore, 'classes');
-    }, [firestore, user, role]);
+        return q;
+    }, [firestore, user, role, schoolId]);
 
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-    const subjectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'subjects') : null, [firestore]);
+    const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
-    const studentsQuery = useMemoFirebase(() => (firestore && selectedClassId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId)) : null, [firestore, selectedClassId]);
+    const studentsQuery = useMemoFirebase(() => (firestore && selectedClassId && schoolId) ? query(collection(firestore, 'students'), where('classId', '==', selectedClassId), where('schoolId', '==', schoolId)) : null, [firestore, selectedClassId, schoolId]);
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
-    const assessmentsQuery = useMemoFirebase(() => (firestore && selectedClassId && selectedSubjectId) ? query(collection(firestore, 'assessments'), where('classId', '==', selectedClassId), where('subjectId', '==', selectedSubjectId)) : null, [firestore, selectedClassId, selectedSubjectId]);
+    const assessmentsQuery = useMemoFirebase(() => (firestore && selectedClassId && selectedSubjectId && schoolId) ? query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId), where('subjectId', '==', selectedSubjectId)) : null, [firestore, selectedClassId, selectedSubjectId, schoolId]);
     const { data: assessments, isLoading: isLoadingAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Report Data Calculation

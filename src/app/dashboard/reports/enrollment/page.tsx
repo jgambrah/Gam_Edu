@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,6 +13,7 @@ import { FileText, Printer, Users } from 'lucide-react';
 import { Class, Student } from '@/lib/types';
 import Link from 'next/link';
 import { formatStudentId } from '@/lib/student-utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const GENDER_COLORS = {
     Male: '#3b82f6', // blue-500
@@ -23,12 +24,13 @@ const GENDER_COLORS = {
 export default function EnrollmentReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const canAccess = ['Administrator', 'Director'].includes(role);
 
-    // Data Fetching
-    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+    // Data Fetching (School-Aware)
+    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     // Report Data Calculation
     const reportData = useMemo(() => {
@@ -74,7 +76,7 @@ export default function EnrollmentReportsPage() {
         );
     }
     
-    const isLoading = isLoadingStudents || isLoadingClasses;
+    const isLoading = isLoadingSchool || isLoadingStudents || isLoadingClasses;
 
     return (
         <div className="space-y-6" id="report-content">

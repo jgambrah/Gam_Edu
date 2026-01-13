@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
@@ -15,11 +15,13 @@ import { Loader2, FileText, Printer, Landmark } from 'lucide-react';
 import { PayrollRecord } from '@/lib/types';
 import Link from 'next/link';
 import { PayslipDialog } from '../../payroll/payslip-dialog';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export default function PayrollReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const today = new Date();
     const defaultPeriod = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
@@ -31,11 +33,15 @@ export default function PayrollReportsPage() {
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
 
     const handleFetchRecords = async () => {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsFetching(true);
         setFetchedRecords([]); // Clear previous results
         try {
-            const recordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', period));
+            const recordsQuery = query(
+                collection(firestore, 'payrollRecords'), 
+                where('schoolId', '==', schoolId),
+                where('period', '==', period)
+            );
             const querySnapshot = await getDocs(recordsQuery);
             const records = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as PayrollRecord[];
             setFetchedRecords(records);
@@ -98,8 +104,8 @@ export default function PayrollReportsPage() {
                 </CardHeader>
                 <CardContent className="flex gap-4">
                     <Input type="month" value={period} onChange={(e) => setPeriod(e.target.value)} className="w-fit" />
-                    <Button onClick={handleFetchRecords} disabled={isFetching}>
-                        {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null} Fetch Records
+                    <Button onClick={handleFetchRecords} disabled={isFetching || isLoadingSchool}>
+                        {(isFetching || isLoadingSchool) && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Fetch Records
                     </Button>
                 </CardContent>
             </Card>

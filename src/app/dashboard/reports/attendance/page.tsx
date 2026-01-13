@@ -21,6 +21,7 @@ import { format, startOfDay, endOfDay } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const COLORS = {
     Present: '#22c55e',
@@ -53,6 +54,8 @@ export default function AttendanceReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
     const { user } = useUser();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
         from: startOfDay(new Date(new Date().setDate(new Date().getDate() - 30))),
         to: endOfDay(new Date()),
@@ -62,64 +65,59 @@ export default function AttendanceReportsPage() {
 
     const canAccess = ['Administrator', 'Director', 'Teacher'].includes(role);
 
-    // 1. Fetch Classes
+    // 1. Fetch Classes (School-Aware)
     const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
-        if (role === 'Administrator' || role === 'Director') {
-            return collection(firestore, 'classes');
-        }
+        if (!user || !firestore || !schoolId) return null;
+        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
         if (role === 'Teacher') {
-            return query(collection(firestore, 'classes'), where('teacherId', '==', user.uid));
+            q = query(q, where('teacherId', '==', user.uid));
         }
-        return null;
-    }, [firestore, user, role]);
+        return q;
+    }, [firestore, user, role, schoolId]);
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
-    // 2. Fetch Attendance
+    // 2. Fetch Attendance (School-Aware)
     const attendanceQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !dateRange?.from) return null;
+        if (!user || !firestore || !dateRange?.from || !schoolId) return null;
         
         const start = startOfDay(dateRange.from);
         const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
         return query(
             collection(firestore, 'attendance'),
+            where('schoolId', '==', schoolId),
             where('date', '>=', Timestamp.fromDate(start)),
             where('date', '<=', Timestamp.fromDate(end))
         );
-    }, [firestore, user, dateRange]);
+    }, [firestore, user, dateRange, schoolId]);
     const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
     
-    // 3. Fetch Students
+    // 3. Fetch Students (School-Aware)
     const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !user) return null;
-        return collection(firestore, 'students');
-    }, [firestore, user]);
+        if (!firestore || !schoolId) return null;
+        return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
     
     const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
 
-    const isLoading = isLoadingClasses || isLoadingAttendance || isLoadingStudents;
+    const isLoading = isLoadingSchool || isLoadingClasses || isLoadingAttendance || isLoadingStudents;
 
     // --- DATA PROCESSING & FILTERING ---
     const filteredData = useMemo(() => {
         if (!attendanceRecords || !students || !classes) return [];
     
-        // Create MULTIPLE lookup maps to handle different ID formats
         const studentMapByUid = new Map(students.map(s => [s.uid, s]));
         const studentMapById = new Map(students.map(s => [s.id, s]));
         const classMap = new Map(classes.map(c => [c.id, c.name]));
     
         let data = attendanceRecords.map(record => {
-            // Try multiple lookup strategies
-            let student = studentMapByUid.get(record.studentId) || 
-                         studentMapById.get(record.studentId);
+            let student = studentMapByUid.get(record.studentId) || studentMapById.get(record.studentId);
             
-            // If still not found, try a fallback search
             if (!student) {
                 student = students.find(s => 
                     s.uid === record.studentId || 
                     s.id === record.studentId ||
-                    s.studentId === record.studentId // In case it's using the formatted ID
+                    s.studentId === record.studentId
                 );
             }
             
@@ -141,7 +139,6 @@ export default function AttendanceReportsPage() {
     
     }, [attendanceRecords, selectedClassId, selectedStatus, students, classes]);
 
-    // Count missing students for warning
     const missingStudentsCount = useMemo(() => {
         return filteredData.filter(record => !record.student).length;
     }, [filteredData]);
@@ -219,18 +216,7 @@ export default function AttendanceReportsPage() {
                             className={cn("w-[300px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
                         >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dateRange?.from ? (
-                            dateRange.to ? (
-                                <>
-                                {format(dateRange.from, "LLL dd, y")} -{" "}
-                                {format(dateRange.to, "LLL dd, y")}
-                                </>
-                            ) : (
-                                format(dateRange.from, "LLL dd, y")
-                            )
-                            ) : (
-                            <span>Pick a date</span>
-                            )}
+                            {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date</span>)}
                         </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -372,5 +358,3 @@ export default function AttendanceReportsPage() {
         </div>
     );
 }
-
-    

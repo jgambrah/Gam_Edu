@@ -4,7 +4,7 @@
 import { useMemo } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,6 +13,7 @@ import { FileText, Printer, Boxes } from 'lucide-react';
 import { InventoryItem } from '@/lib/types';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const CATEGORY_COLORS = {
     'IT Equipment': '#3b82f6', // blue-500
@@ -33,10 +34,11 @@ const STATUS_COLORS = {
 export default function InventoryReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const canAccess = ['Administrator', 'Director'].includes(role);
 
-    const { data: inventory, isLoading } = useCollection<InventoryItem>(useMemoFirebase(() => firestore ? collection(firestore, 'inventory') : null, [firestore]));
+    const { data: inventory, isLoading: isLoadingInventory } = useCollection<InventoryItem>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'inventory'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     const reportData = useMemo(() => {
         if (!inventory) {
@@ -79,6 +81,8 @@ export default function InventoryReportsPage() {
             default: return 'outline';
         }
     }
+    
+    const isLoading = isLoadingSchool || isLoadingInventory;
 
     if (!canAccess) {
         return (
