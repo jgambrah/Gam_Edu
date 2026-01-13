@@ -35,6 +35,7 @@ import { format } from 'date-fns';
 import { generateLessonIdeas } from '@/ai/flows/generate-lesson-ideas-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 type ClassData = { id: string; name: string };
 
@@ -69,6 +70,19 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
         toast({ variant: 'destructive', title: 'Topic Required', description: 'Please enter a topic before using the AI assistant.' });
         return;
     }
+     if (!schoolId) {
+      toast({ variant: 'destructive', title: 'Error', description: 'School ID not found.' });
+      return;
+    }
+
+    // --- CREDIT CHECK ---
+    const creditResult = await checkAndSpendCredits(schoolId, 3); // Cost: 3 credits
+    if (!creditResult.success) {
+      toast({ variant: 'destructive', title: 'Insufficient AI Credits', description: creditResult.error || 'Please upgrade your plan.' });
+      return;
+    }
+    // --- END CREDIT CHECK ---
+
     setIsGenerating(true);
     toast({ title: 'AI is thinking...', description: 'Generating lesson ideas for your topic.' });
     try {
@@ -183,7 +197,7 @@ export function LessonPlanForm({ setOpen, classes }: LessonPlanFormProps) {
                     <FormLabel>Lesson Topic</FormLabel>
                     <Button type="button" variant="outline" size="sm" onClick={handleAskAI} disabled={isGenerating || !topicValue}>
                         {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Ask AI
+                        Ask AI (-3 Credits)
                     </Button>
                   </div>
                   <FormControl>

@@ -35,6 +35,8 @@ import { useRole } from '@/context/role-context';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { Class } from '@/lib/types';
 import { errorEmitter, FirestorePermissionError } from '@/firebase';
+import { checkAndSpendCredits } from '@/app/actions/credits';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const generateQuizSchema = z.object({
   topic: z.string().min(3, "Topic must be at least 3 characters long."),
@@ -50,6 +52,7 @@ export function AiQuizGenerator() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
   const [generatedQuiz, setGeneratedQuiz] = useState<GenerateQuizOutput | null>(null);
@@ -84,6 +87,19 @@ export function AiQuizGenerator() {
   });
 
   async function onGenerate(values: GenerateQuizFormData) {
+    if (!schoolId) {
+      toast({ variant: 'destructive', title: 'Error', description: 'School ID not found.' });
+      return;
+    }
+
+    // --- CREDIT CHECK ---
+    const creditResult = await checkAndSpendCredits(schoolId, 10);
+    if (!creditResult.success) {
+      toast({ variant: 'destructive', title: 'Insufficient AI Credits', description: creditResult.error || 'Please upgrade your plan.' });
+      return;
+    }
+    // --- END CREDIT CHECK ---
+
     setIsGenerating(true);
     setGeneratedQuiz(null);
     toast({ title: 'Generating Quiz...', description: 'Please wait while the AI creates your quiz.' });
@@ -225,7 +241,7 @@ export function AiQuizGenerator() {
 
             <Button type="submit" disabled={isGenerating}>
               {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-              Generate Quiz
+              Generate Quiz (-10 Credits)
             </Button>
           </form>
         </Form>

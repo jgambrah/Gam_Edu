@@ -25,6 +25,8 @@ import type { Class } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { getAuth } from 'firebase/auth';
+import { checkAndSpendCredits } from '@/app/actions/credits';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 type Subject = 'Math' | 'Science' | 'ELA Grammar';
 
@@ -32,6 +34,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const { user: hookUser } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generatedProblems, setGeneratedProblems] = useState<GeneratePracticeProblemsOutput | null>(null);
@@ -41,13 +44,26 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
   const [numQuestions, setNumQuestions] = useState(5);
   const [classId, setClassId] = useState('');
 
-  const { data: classes } = useCollection<Class>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+  const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
 
   async function onGenerate() {
     if (!topic) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please enter a topic.' });
         return;
     }
+     if (!schoolId) {
+      toast({ variant: 'destructive', title: 'Error', description: 'School ID not found.' });
+      return;
+    }
+
+    // --- CREDIT CHECK ---
+    const creditResult = await checkAndSpendCredits(schoolId, 5); // Cost: 5 credits
+    if (!creditResult.success) {
+      toast({ variant: 'destructive', title: 'Insufficient AI Credits', description: creditResult.error || 'Please upgrade your plan.' });
+      return;
+    }
+    // --- END CREDIT CHECK ---
+
     setIsGenerating(true);
     setGeneratedProblems(null);
     toast({ title: 'Generating Problems...', description: 'Please wait while the AI creates questions.' });
@@ -163,7 +179,7 @@ export function AiProblemGenerator({ subject, setOpen }: { subject: Subject; set
           </div>
           <Button type="button" onClick={onGenerate} disabled={isGenerating}>
             {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-            Generate Problems
+            Generate Problems (-5 Credits)
           </Button>
       </div>
 
