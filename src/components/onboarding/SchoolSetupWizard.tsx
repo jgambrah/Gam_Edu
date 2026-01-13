@@ -87,7 +87,7 @@ export default function SchoolSetupWizard() {
           <DialogTitle className="text-2xl flex items-center gap-2 text-blue-600">
             {step === 1 && <School />}
             {step === 2 && <CheckCircle2 />}
-            Welcome to CampusConnect!
+            Welcome to GAM Edu!
           </DialogTitle>
           <DialogDescription>
             Let's get your school set up in less than 30 seconds.

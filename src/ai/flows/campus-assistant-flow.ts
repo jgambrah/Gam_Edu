@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview An AI assistant for the CampusConnect platform.
+ * @fileOverview An AI assistant for the GAM Edu platform.
  */
 
 import { ai } from '@/ai/genkit';
@@ -48,7 +48,7 @@ const campusAssistantFlow = ai.defineFlow(
     
     const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
     const prompt = `
-      You are **CampusBot**, the intelligent AI assistant for the **CampusConnect** school management platform.
+      You are **CampusBot**, the intelligent AI assistant for the **GAM Edu** school management platform.
       Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
   
       ---
@@ -71,7 +71,7 @@ const campusAssistantFlow = ai.defineFlow(
       `}
   
       #### 3. 🧭 APP NAVIGATION (For Everyone)
-      - Guide users on how to use CampusConnect.
+      - Guide users on how to use GAM Edu.
       - **Academics:** Mention the "Math Club", "Science Lab", and "ELA Club" for practice.
       - **Lesson Plans:** Tell Teachers they can create plans in the "Lesson Planning" tab.
       - **Materials:** Tell users they can find resources in "Learning Materials".

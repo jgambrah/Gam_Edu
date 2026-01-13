@@ -88,7 +88,7 @@ export default function LoginPage() {
             <div>
                 <div className="flex items-center gap-3 mb-6">
                     <GraduationCap className="h-10 w-10 text-indigo-300" />
-                    <h1 className="text-3xl font-bold">CampusConnect</h1>
+                    <h1 className="text-3xl font-bold">GAM Edu</h1>
                 </div>
                 <h2 className="text-2xl font-semibold leading-tight">Experience the next generation of AI-driven education management.</h2>
                 <p className="mt-2 text-indigo-200">Personalized learning, automated administration, and seamless communication in one platform.</p>
