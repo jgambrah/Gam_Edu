@@ -1,56 +1,43 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth, useFirestore } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase'; // Use useUser instead of useAuth
 import { doc, getDoc } from 'firebase/firestore';
 
 export function useCurrentSchool() {
-  const { user } = useAuth();
+  const { user, isUserLoading } = useUser(); // Get user and its loading state
   const firestore = useFirestore();
   const [schoolId, setSchoolId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchSchool() {
-      if (!user || !firestore) return;
+      // Don't proceed until we have a user and firestore instance
+      if (!user || !firestore) {
+        // If auth is done but there's no user, we can stop loading.
+        if (!isUserLoading) {
+            setLoading(false);
+            setSchoolId(null);
+        }
+        return;
+      }
       
       setLoading(true);
       try {
-        // Strategy: Check collections in order of likelihood based on typical roles
-        // 1. Check 'users' (The centralized place - if you updated your create-user action)
-        const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-        if (userDoc.exists() && userDoc.data().schoolId) {
-            setSchoolId(userDoc.data().schoolId);
-            setLoading(false);
-            return;
+        // Strategy: Check collections in order of likelihood
+        const collectionsToTry = ['staff', 'users', 'students', 'parents'];
+        for (const collectionName of collectionsToTry) {
+            const docRef = doc(firestore, collectionName, user.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().schoolId) {
+                setSchoolId(docSnap.data().schoolId);
+                setLoading(false);
+                return; // Found it, exit the loop and function
+            }
         }
 
-        // 2. Check 'staff'
-        const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
-        if (staffDoc.exists() && staffDoc.data().schoolId) {
-            setSchoolId(staffDoc.data().schoolId);
-            setLoading(false);
-            return;
-        }
-
-        // 3. Check 'students'
-        const studentDoc = await getDoc(doc(firestore, 'students', user.uid));
-        if (studentDoc.exists() && studentDoc.data().schoolId) {
-            setSchoolId(studentDoc.data().schoolId);
-            setLoading(false);
-            return;
-        }
-
-        // 4. Check 'parents'
-        const parentDoc = await getDoc(doc(firestore, 'parents', user.uid));
-        if (parentDoc.exists() && parentDoc.data().schoolId) {
-            setSchoolId(parentDoc.data().schoolId);
-            setLoading(false);
-            return;
-        }
-
-        console.warn("No School ID found for this user.");
+        // If loop finishes and nothing is found
+        console.warn("No School ID found for this user across all collections.");
         setSchoolId(null);
 
       } catch (error) {
@@ -60,9 +47,13 @@ export function useCurrentSchool() {
         setLoading(false);
       }
     }
+    
+    // Only run the fetch logic when Firebase auth is no longer loading.
+    if (!isUserLoading) {
+        fetchSchool();
+    }
 
-    fetchSchool();
-  }, [user, firestore]);
+  }, [user, isUserLoading, firestore]);
 
   return { schoolId, loading };
 }
