@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser, useFirestore } from '@/firebase'; // Use useUser instead of useAuth
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase'; // Use useUser instead of useAuth
 import { doc, getDoc } from 'firebase/firestore';
 
 export function useCurrentSchool() {
@@ -30,7 +31,10 @@ export function useCurrentSchool() {
             const docRef = doc(firestore, collectionName, user.uid);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists() && docSnap.data().schoolId) {
-                setSchoolId(docSnap.data().schoolId);
+                const fetchedId = docSnap.data().schoolId;
+                if (fetchedId !== schoolId) {
+                    setSchoolId(fetchedId);
+                }
                 setLoading(false);
                 return; // Found it, exit the loop and function
             }
@@ -38,7 +42,9 @@ export function useCurrentSchool() {
 
         // If loop finishes and nothing is found
         console.warn("No School ID found for this user across all collections.");
-        setSchoolId(null);
+        if (schoolId !== null) {
+            setSchoolId(null);
+        }
 
       } catch (error) {
         console.error("Failed to fetch school ID", error);
@@ -53,7 +59,7 @@ export function useCurrentSchool() {
         fetchSchool();
     }
 
-  }, [user, isUserLoading, firestore]);
+  }, [user, isUserLoading, firestore, schoolId]); // Added schoolId to dependency array
 
   return { schoolId, loading };
 }
