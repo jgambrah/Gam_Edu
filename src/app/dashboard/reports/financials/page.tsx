@@ -2,26 +2,35 @@
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, where } from 'firebase/firestore';
-import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, where, doc } from 'firebase/firestore';
 import { 
-  Printer, Filter, TrendingUp, TrendingDown, Scale, 
-  BookOpen, FileBarChart, DollarSign, CalendarIcon, Loader2, Landmark 
+  Book, Scale, CreditCard, FileText, Plus, Landmark, 
+  Save, Loader2, CornerDownRight, Trash2, Receipt
 } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { Account, JournalEntry, JournalLine } from '@/lib/types';
+import { CalendarIcon } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
 
 // --- HELPER: Report Logic ---
 type AccountBalance = {
@@ -358,29 +367,32 @@ function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: 
 export default function FinancialReportsPage() {
     const firestore = useFirestore();
     const { role } = useRole();
-    const { user } = useUser();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     
     // Date Filtering
-    const [fromDate, setFromDate] = useState<Date>(startOfMonth(new Date()));
-    const [toDate, setToDate] = useState<Date>(endOfMonth(new Date()));
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: startOfMonth(new Date()),
+        to: endOfMonth(new Date()),
+    });
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
 
-    // 1. Fetch ALL Accounts
-    const accountsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'accounts')) : null, [firestore]);
+    // Fetch school-specific data
+    const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accounts, isLoading: accLoading } = useCollection<Account>(accountsQuery);
 
-    // 2. Fetch ALL Journals
-    const journalsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'journal_entries'), orderBy('date', 'asc')) : null, [firestore]);
+    const journalsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId), orderBy('date', 'asc')) : null, [firestore, schoolId]);
     const { data: allJournals, isLoading: jLoading } = useCollection<JournalEntry>(journalsQuery);
 
-    // 3. Process Data
     const { calculatedBalances, netIncome } = useMemo(() => {
-        if (!accounts || !allJournals) return { calculatedBalances: [], netIncome: 0 };
+        if (!accounts || !allJournals || !dateRange?.from) return { calculatedBalances: [], netIncome: 0 };
+        
+        const start = startOfDay(dateRange.from);
+        const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
         const filteredJournals = allJournals.filter(j => {
             const d = j.date.toDate();
-            return d >= fromDate && d <= toDate;
+            return d >= start && d <= end;
         });
 
         const balances: AccountBalance[] = accounts.map(acc => {
@@ -410,11 +422,11 @@ export default function FinancialReportsPage() {
 
         return { calculatedBalances: balances, netIncome: revenue - expense };
 
-    }, [accounts, allJournals, fromDate, toDate]);
+    }, [accounts, allJournals, dateRange]);
 
     if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
 
-    const isLoading = accLoading || jLoading;
+    const isLoading = isLoadingSchool || accLoading || jLoading;
 
     return (
         <div className="space-y-6 p-6">
@@ -424,16 +436,10 @@ export default function FinancialReportsPage() {
                     <p className="text-muted-foreground">Generate standard accounting statements.</p>
                 </div>
                 
-                {/* Date Filter */}
                 <div className="flex items-center gap-2 bg-white p-2 rounded-md border shadow-sm">
                     <Popover>
-                        <PopoverTrigger asChild><Button variant="outline" className="w-[140px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{format(fromDate, "PP")}</Button></PopoverTrigger>
-                        <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={fromDate} onSelect={(d) => d && setFromDate(d)} initialFocus/></PopoverContent>
-                    </Popover>
-                    <span className="text-slate-400">to</span>
-                    <Popover>
-                        <PopoverTrigger asChild><Button variant="outline" className="w-[140px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{format(toDate, "PP")}</Button></PopoverTrigger>
-                        <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={toDate} onSelect={(d) => d && setToDate(d)} initialFocus/></PopoverContent>
+                        <PopoverTrigger asChild><Button variant="outline" className="w-[300px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick date range</span>)}</Button></PopoverTrigger>
+                        <PopoverContent className="w-auto p-0"><Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} /></PopoverContent>
                     </Popover>
                 </div>
             </div>
@@ -450,18 +456,9 @@ export default function FinancialReportsPage() {
                     <TabsContent value="ledger" className="mt-4">
                         <GeneralLedger accounts={accounts || []} journals={allJournals || []} />
                     </TabsContent>
-
-                    <TabsContent value="tb" className="mt-4">
-                        <TrialBalance data={calculatedBalances} />
-                    </TabsContent>
-
-                    <TabsContent value="pl" className="mt-4">
-                        <IncomeStatement data={calculatedBalances} />
-                    </TabsContent>
-
-                    <TabsContent value="bs" className="mt-4">
-                        <BalanceSheet data={calculatedBalances} netIncome={netIncome} />
-                    </TabsContent>
+                    <TabsContent value="tb" className="mt-4"><TrialBalance data={calculatedBalances} /></TabsContent>
+                    <TabsContent value="pl" className="mt-4"><IncomeStatement data={calculatedBalances} /></TabsContent>
+                    <TabsContent value="bs" className="mt-4"><BalanceSheet data={calculatedBalances} netIncome={netIncome} /></TabsContent>
                 </Tabs>
             )}
 
@@ -476,5 +473,3 @@ export default function FinancialReportsPage() {
         </div>
     );
 }
-
-    

@@ -2,30 +2,32 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment, runTransaction, where } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, updateDoc, writeBatch, query, where, addDoc } from 'firebase/firestore';
 import { 
   Truck, ShoppingCart, Package, Plus, FileCheck, AlertCircle, Calendar, ChevronRight, User, Phone, MapPin 
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { Supplier, PurchaseOrder, InventoryItem } from '@/lib/types';
 
+
 // --- COMPONENT: Supplier Manager ---
-function SupplierManager() {
+function SupplierManager({ onSupplierAdded, schoolId }: { onSupplierAdded: () => void, schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
@@ -37,14 +39,15 @@ function SupplierManager() {
     const [email, setEmail] = useState('');
 
     const handleSubmit = async () => {
-        if (!name) return;
+        if (!name || !schoolId) return;
         try {
             await addDoc(collection(firestore, 'suppliers'), {
                 name, contactPerson: contact, phone, email, 
-                balance: 0, createdAt: serverTimestamp()
+                balance: 0, createdAt: serverTimestamp(), schoolId: schoolId,
             });
             toast({ title: "Supplier Added" });
             setIsOpen(false); setName('');
+            onSupplierAdded();
         } catch (e) { toast({ variant: 'destructive', title: "Error" }); }
     };
 
@@ -68,7 +71,7 @@ function SupplierManager() {
 }
 
 // --- COMPONENT: Purchase Order Form ---
-function PurchaseOrderForm({ suppliers, items, onClose }: { suppliers: Supplier[], items: any[], onClose: () => void }) {
+function PurchaseOrderForm({ suppliers, items, onClose, schoolId }: { suppliers: Supplier[], items: any[], onClose: () => void, schoolId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -84,21 +87,18 @@ function PurchaseOrderForm({ suppliers, items, onClose }: { suppliers: Supplier[
     const updateLine = (index: number, field: string, value: any) => {
         const newLines = [...poLines];
         (newLines[index] as any)[field] = value;
-        // Auto-fill cost if item selected
         if (field === 'itemId') {
             const item = items.find(i => i.id === value);
-            if (item) newLines[index].cost = item.price || 0; // Default to selling price, user can edit
+            if (item) newLines[index].cost = item.price || 0;
         }
         setPoLines(newLines);
     };
 
     const handleSubmit = async () => {
-        if (!firestore || !user || !supplierId) return;
+        if (!firestore || !user || !supplierId || !schoolId) return;
         setIsSubmitting(true);
         try {
             const supplier = suppliers.find(s => s.id === supplierId);
-            
-            // Resolve Item Names
             const finalItems = poLines.map(line => ({
                 ...line,
                 name: items.find(i => i.id === line.itemId)?.name || 'Unknown Item'
@@ -109,9 +109,10 @@ function PurchaseOrderForm({ suppliers, items, onClose }: { suppliers: Supplier[
                 supplierName: supplier?.name,
                 items: finalItems,
                 totalAmount: total,
-                status: 'Sent', // PO Sent to vendor
+                status: 'Sent',
                 date: serverTimestamp(),
-                createdBy: user.uid
+                createdBy: user.uid,
+                schoolId: schoolId,
             });
             
             toast({ title: "PO Created", description: `Order for GH₵${total} sent.` });
@@ -162,40 +163,29 @@ export default function ProcurementPage() {
     const { user } = useUser();
     const { role } = useRole();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     const [isPoOpen, setIsPoOpen] = useState(false);
 
-    // Fetch Data
-    const suppliersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'suppliers')) : null, [firestore]);
-    const { data: suppliers } = useCollection<Supplier>(suppliersQuery);
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
 
-    const poQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'purchase_orders'), orderBy('date', 'desc')) : null, [firestore]);
+    const suppliersQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'suppliers'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: suppliers, forceRefetch: refetchSuppliers } = useCollection<Supplier>(suppliersQuery);
+
+    const poQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'purchase_orders'), where('schoolId', '==', schoolId), orderBy('date', 'desc')) : null, [firestore, schoolId]);
     const { data: pos } = useCollection<PurchaseOrder>(poQuery);
 
-    // Fetch Inventory Items for PO dropdown
-    const itemsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'school_shop_items')) : null, [firestore]);
+    const itemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: inventoryItems } = useCollection<InventoryItem>(itemsQuery);
 
-    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
-    if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
-
-    // --- GRN LOGIC (Receive Goods) ---
     const handleReceiveGoods = async (po: PurchaseOrder) => {
-        if (!confirm("Confirm receipt of goods? This will update inventory and create a Bill.")) return;
+        if (!confirm("Confirm receipt of goods? This will create a Bill.") || !firestore || !schoolId) return;
         
         try {
-            await runTransaction(firestore!, async (transaction) => {
-                // 1. Update PO Status
-                const poRef = doc(firestore!, 'purchase_orders', po.id);
+            await runTransaction(firestore, async (transaction) => {
+                const poRef = doc(firestore, 'purchase_orders', po.id);
                 transaction.update(poRef, { status: 'Received' });
 
-                // 2. Update Inventory Stock
-                po.items.forEach(item => {
-                    const itemRef = doc(firestore!, 'school_shop_items', item.itemId);
-                    transaction.update(itemRef, { stock: increment(item.quantity) });
-                });
-
-                // 3. Create Vendor Bill (Accounts Payable)
-                const billRef = doc(collection(firestore!, 'vendor_bills'));
+                const billRef = doc(collection(firestore, 'vendor_bills'));
                 transaction.set(billRef, {
                     supplierId: po.supplierId,
                     supplierName: po.supplierName,
@@ -205,23 +195,18 @@ export default function ProcurementPage() {
                     amountPaid: 0,
                     status: 'Unpaid',
                     date: serverTimestamp(),
-                    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Net 30 default
+                    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Net 30 default
+                    schoolId: schoolId,
                 });
-
-                // 4. Update Supplier Balance
-                const suppRef = doc(firestore!, 'suppliers', po.supplierId);
-                transaction.update(suppRef, { balance: increment(po.totalAmount) });
-                
-                // (Optional) Create Journal Entry: Dr Inventory / Cr Accounts Payable
-                // This would be added here if you want full double-entry automation
             });
-
-            toast({ title: "Goods Received", description: "Inventory updated and Bill created." });
+            toast({ title: "Goods Received", description: "Bill created in Accounts Payable." });
         } catch (e) {
             console.error(e);
             toast({ variant: 'destructive', title: "Error receiving goods." });
         }
     };
+
+    if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
 
     return (
         <div className="space-y-6 p-6">
@@ -231,12 +216,12 @@ export default function ProcurementPage() {
                     <p className="text-muted-foreground">Manage Suppliers, Orders, and Goods Receipt.</p>
                 </div>
                 <div className="flex gap-2">
-                    <SupplierManager />
+                    {schoolId && <SupplierManager onSupplierAdded={refetchSuppliers} schoolId={schoolId} />}
                     <Dialog open={isPoOpen} onOpenChange={setIsPoOpen}>
                         <DialogTrigger asChild><Button className="bg-blue-600"><ShoppingCart className="mr-2 h-4 w-4"/> Create PO</Button></DialogTrigger>
                         <DialogContent className="sm:max-w-[600px]">
                             <DialogHeader><DialogTitle>New Purchase Order</DialogTitle></DialogHeader>
-                            <PurchaseOrderForm suppliers={suppliers || []} items={inventoryItems || []} onClose={() => setIsPoOpen(false)} />
+                            {schoolId && <PurchaseOrderForm suppliers={suppliers || []} items={inventoryItems || []} onClose={() => setIsPoOpen(false)} schoolId={schoolId} />}
                         </DialogContent>
                     </Dialog>
                 </div>
@@ -244,7 +229,6 @@ export default function ProcurementPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                {/* SUPPLIER LIST */}
                 <Card className="lg:col-span-1">
                     <CardHeader><CardTitle>Suppliers</CardTitle></CardHeader>
                     <CardContent className="p-0">
@@ -265,7 +249,6 @@ export default function ProcurementPage() {
                     </CardContent>
                 </Card>
 
-                {/* PO LIST */}
                 <Card className="lg:col-span-2">
                     <CardHeader><CardTitle>Purchase Orders</CardTitle></CardHeader>
                     <CardContent>

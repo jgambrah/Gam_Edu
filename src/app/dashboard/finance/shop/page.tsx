@@ -9,6 +9,7 @@ import {
   ShoppingBag, Package, PlusCircle, ShoppingCart, 
   Search, TrendingUp, AlertTriangle, Shirt, Book, PenTool, Trash2, ArchiveRestore, Edit
 } from 'lucide-react';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,6 +38,7 @@ interface ShopItem {
     stock: number;
     minStock: number;
     description?: string;
+    schoolId?: string;
 }
 
 interface CartItem extends ShopItem {
@@ -117,7 +119,7 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
 }
 
 // --- COMPONENT: Add/Restock Shop Item ---
-function ShopManager() {
+function ShopManager({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -141,21 +143,12 @@ function ShopManager() {
                 stock: parseInt(stock),
                 minStock: 10, 
                 description: desc,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                schoolId: schoolId,
             });
             
-            // Log transaction
-            await addDoc(collection(firestore, 'school_shop_transactions'), {
-                type: 'RESTOCK',
-                itemName: name,
-                quantity: parseInt(stock),
-                date: serverTimestamp(),
-                notes: 'Initial Stock'
-            });
-
             toast({ title: "Product Added", description: `${name} is now available for sale.` });
             setIsFormOpen(false);
-            // Reset
             setName(''); setPrice(''); setStock(''); setDesc('');
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Failed to add item." });
@@ -203,7 +196,7 @@ function ShopManager() {
 }
 
 // --- COMPONENT: Point of Sale (POS) ---
-function PointOfSale({ items }: { items: ShopItem[] }) {
+function PointOfSale({ items, schoolId }: { items: ShopItem[], schoolId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -237,18 +230,18 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
     };
 
     const handleCheckout = async () => {
-        if (cart.length === 0 || !user) return;
+        if (cart.length === 0 || !user || !schoolId) return;
         setIsProcessing(true);
 
         try {
             const batch = writeBatch(firestore);
             
-            // 1. Handle Till (If Cash)
             if (paymentMethod === 'Cash') {
                 const tillQ = query(
                     collection(firestore, 'tills'), 
                     where('accountantId', '==', user.uid), 
-                    where('status', '==', 'Open')
+                    where('status', '==', 'Open'),
+                    where('schoolId', '==', schoolId)
                 );
                 const tillSnap = await getDocs(tillQ);
                 
@@ -264,7 +257,8 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
                     amount: totalAmount,
                     type: 'Inflow',
                     description: `Shop Sales: ${cart.length} items`,
-                    timestamp: serverTimestamp()
+                    timestamp: serverTimestamp(),
+                    schoolId: schoolId,
                 });
                 
                 batch.update(doc(firestore, 'tills', activeTill.id), {
@@ -272,7 +266,6 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
                 });
             }
 
-            // 2. Decrement Stock & Log
             cart.forEach(item => {
                 const itemRef = doc(firestore, 'school_shop_items', item.id);
                 batch.update(itemRef, { stock: increment(-item.quantity) });
@@ -286,7 +279,8 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
                     priceAtSale: item.price,
                     total: item.price * item.quantity,
                     soldBy: user.uid,
-                    date: serverTimestamp()
+                    date: serverTimestamp(),
+                    schoolId: schoolId,
                 });
             });
 
@@ -313,7 +307,6 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
             
-            {/* LEFT: Item Selector */}
             <Card className="lg:col-span-2 flex flex-col overflow-hidden border-emerald-100">
                 <CardHeader className="pb-3 bg-emerald-50/50">
                     <div className="relative">
@@ -350,7 +343,6 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
                 </ScrollArea>
             </Card>
 
-            {/* RIGHT: Cart & Checkout */}
             <Card className="flex flex-col h-full border-l-4 border-l-emerald-500 shadow-xl bg-white">
                 <CardHeader className="pb-4 bg-emerald-50 border-b border-emerald-100">
                     <CardTitle className="flex items-center gap-2 text-emerald-800"><ShoppingCart className="h-5 w-5"/> Sale Cart</CardTitle>
@@ -406,9 +398,10 @@ function PointOfSale({ items }: { items: ShopItem[] }) {
 export default function SchoolShopPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     const [restockItem, setRestockItem] = useState<ShopItem | null>(null);
 
-    const itemsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'school_shop_items'), orderBy('name')) : null, [firestore]);
+    const itemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId), orderBy('name')) : null, [firestore, schoolId]);
     const { data: items, isLoading, forceRefetch } = useCollection<ShopItem>(itemsQuery);
 
     const canManage = ['Administrator', 'Director', 'Accountant'].includes(role);
@@ -425,7 +418,7 @@ export default function SchoolShopPage() {
                         <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-800"><ShoppingBag className="text-emerald-600"/> School Shop</h1>
                         <p className="text-muted-foreground">Sell uniforms, books, and supplies.</p>
                     </div>
-                    <ShopManager />
+                    {schoolId && <ShopManager schoolId={schoolId} />}
                 </div>
 
                 {lowStockItems.length > 0 && (
@@ -443,7 +436,7 @@ export default function SchoolShopPage() {
                     </TabsList>
 
                     <TabsContent value="pos" className="flex-1 mt-4">
-                        {isLoading ? <Loader2 className="mx-auto mt-20 animate-spin text-emerald-600"/> : <PointOfSale items={items || []} />}
+                        {isLoading || !schoolId ? <Loader2 className="mx-auto mt-20 animate-spin text-emerald-600"/> : <PointOfSale items={items || []} schoolId={schoolId} />}
                     </TabsContent>
 
                     <TabsContent value="list">
@@ -467,7 +460,7 @@ export default function SchoolShopPage() {
                                                 <TableCell className="font-medium">{item.name}</TableCell>
                                                 <TableCell><Badge variant="outline">{item.category}</Badge></TableCell>
                                                 <TableCell className="text-xs text-muted-foreground">{item.description || '-'}</TableCell>
-                                                <TableCell className="text-right">GH₵{(item.unitPrice || 0).toFixed(2)}</TableCell>
+                                                <TableCell className="text-right">GH₵{item.price?.toFixed(2) || '0.00'}</TableCell>
                                                 <TableCell className="text-right">
                                                     <span className={`font-bold ${item.stock <= item.minStock ? "text-red-600" : "text-green-600"}`}>
                                                         {item.stock}

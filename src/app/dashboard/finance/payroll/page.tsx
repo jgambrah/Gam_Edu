@@ -2,14 +2,15 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase'; 
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, writeBatch, where, getDocs, runTransaction, increment } from 'firebase/firestore';
 import { 
   Banknote, Calculator, Settings, UserCog, CheckCircle2, 
-  FileText, Loader2, Save, Printer, DollarSign, Landmark, RefreshCw
+  FileText, Loader2, Save, Printer, DollarSign, Landmark 
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -20,12 +21,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Staff, StaffPayrollConfig, PayrollSettings, PayrollRecord } from '@/lib/types';
-import { PayslipDialog } from '../payroll/payslip-dialog';
+import { PayslipDialog } from '../../payroll/payslip-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 
@@ -49,7 +47,7 @@ function calculatePayslip(staff: any, config: any) {
     const grossSalary = basic + totalAllowances;
 
     // 2. SSNIT (Tier 1 & 2 Employee Share - 5.5%)
-    const ssnitEmployee = basic * ((config?.ssnitEmployeeContributionRate || 5.5) / 100);
+    const ssnitEmployee = basic * ((config?.ssnitEmployeeContributionRate || 0.055));
 
     // 3. Provident Fund (Tier 3 - Tax Deductible up to 16.5%)
     const tier3 = basic * ((staff.tier3Contribution || 0) / 100);
@@ -60,7 +58,7 @@ function calculatePayslip(staff: any, config: any) {
     // 5. PAYE Calculation (Progressive)
     let taxRemaining = taxableIncome * 12; // Annualize for calculation
     let payeTaxAnnual = 0;
-    const brackets = config?.taxBrackets || DEFAULT_TAX_BRACKETS;
+    const brackets = config?.payeeBrackets || DEFAULT_TAX_BRACKETS;
 
     for (const bracket of brackets) {
         if (taxRemaining <= 0) break;
@@ -78,7 +76,7 @@ function calculatePayslip(staff: any, config: any) {
     const netSalary = grossSalary - totalDeductions;
 
     // 7. Employer Costs
-    const employerSSNIT = basic * ((config?.ssnitEmployerRate || 13) / 100);
+    const employerSSNIT = basic * ((config?.ssnitEmployerContributionRate || 0.13));
 
     return {
         basicSalary: basic,
@@ -97,87 +95,21 @@ function calculatePayslip(staff: any, config: any) {
 }
 
 
-// --- COMPONENT: Payroll Settings ---
-function PayrollSettingsForm() {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [loading, setLoading] = useState(false);
-    
-    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
-    const { data: config } = useDoc(settingsRef);
-
-    const handleSaveDefault = async () => {
-        if (!firestore) return;
-        setLoading(true);
-        try {
-            await setDoc(doc(firestore, 'payrollSettings', 'global'), {
-                ssnitEmployeeContributionRate: 0.055,
-                ssnitEmployerContributionRate: 0.13,
-                payeeBrackets: DEFAULT_TAX_BRACKETS,
-                updatedAt: serverTimestamp()
-            }, { merge: true });
-            toast({ title: "Updated", description: "Tax tables updated to Ghana 2024 defaults." });
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error" });
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    const displayBrackets = config?.payeeBrackets || DEFAULT_TAX_BRACKETS;
-
-    return (
-        <Card>
-            <CardHeader><CardTitle>Tax & SSNIT Configuration</CardTitle><CardDescription>Current statutory rates for Ghana.</CardDescription></CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <Label>SSNIT Employee Rate</Label>
-                        <Input value={`${((config?.ssnitEmployeeContributionRate || 0.055) * 100).toFixed(1)}%`} disabled className="bg-slate-100" />
-                    </div>
-                    <div>
-                        <Label>SSNIT Employer Rate</Label>
-                        <Input value={`${((config?.ssnitEmployerContributionRate || 0.13) * 100).toFixed(1)}%`} disabled className="bg-slate-100" />
-                    </div>
-                </div>
-                
-                <div>
-                    <Label className="mb-2 block">PAYE Tax Brackets (Annual Chargeable Income)</Label>
-                    <div className="border rounded-md overflow-hidden">
-                        <Table>
-                            <TableHeader><TableRow><TableHead>Annual Income Range (GH₵)</TableHead><TableHead>Rate</TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {displayBrackets.map((b: any, i: number) => (
-                                    <TableRow key={i}>
-                                        <TableCell>{b.from.toLocaleString()} - {(b.to === Infinity || !b.to) ? 'Above' : b.to.toLocaleString()}</TableCell>
-                                        <TableCell>{b.rate * 100}%</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </div>
-                <Button onClick={handleSaveDefault} disabled={loading} variant="outline" className="w-full">
-                    {loading ? <Loader2 className="animate-spin"/> : <RefreshCw className="mr-2 h-4 w-4"/>} Reset to Ghana Defaults
-                </Button>
-            </CardContent>
-        </Card>
-    );
-}
-
 // --- COMPONENT: Run Payroll ---
 function RunPayroll({ staff, config }: { staff: any[], config: any }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
     const [isProcessing, setIsProcessing] = useState(false);
     const [month, setMonth] = useState(format(new Date(), 'yyyy-MM'));
     const [previewData, setPreviewData] = useState<any[]>([]);
 
     // Generate Preview
     const handlePreview = async () => {
+        if (!firestore || !schoolId) return;
         setIsProcessing(true);
-        const existingRecordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', month));
+        const existingRecordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', month), where('schoolId', '==', schoolId));
         const existingRecordsSnapshot = await getDocs(existingRecordsQuery);
         if (!existingRecordsSnapshot.empty) {
             toast({ variant: 'destructive', title: 'Payroll Already Run', description: `Payroll for ${month} has already been processed. View in "Reports".`});
@@ -203,7 +135,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
     };
 
     const handleCommit = async () => {
-        if (!firestore || !user || previewData.length === 0) return;
+        if (!firestore || !user || !schoolId || previewData.length === 0) return;
         setIsProcessing(true);
         const batch = writeBatch(firestore);
 
@@ -217,6 +149,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
                     ...payslipData,
                     createdAt: serverTimestamp(),
                     generatedBy: user.uid,
+                    schoolId: schoolId,
                 });
             });
 
@@ -285,14 +218,17 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
 export default function PayrollPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
 
-    const staffQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'staff')) : null, [firestore]);
-    const { data: staff, isLoading } = useCollection<any>(staffQuery);
+    const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: staff, isLoading: isLoadingStaff } = useCollection<any>(staffQuery);
 
     const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
-    const { data: config } = useDoc(settingsRef);
+    const { data: config, isLoading: isLoadingSettings } = useDoc(settingsRef);
 
     const canManage = ['Administrator', 'Director', 'Accountant'].includes(role);
+
+    const isLoading = isLoadingStaff || isLoadingSettings;
 
     if (!canManage) return <div className="p-8 text-center text-red-500">Access Denied</div>;
 
@@ -306,20 +242,9 @@ export default function PayrollPage() {
                 </div>
             </div>
 
-            <Tabs defaultValue="run">
-                <TabsList>
-                    <TabsTrigger value="run"><Calculator className="mr-2 h-4 w-4"/> Run Payroll</TabsTrigger>
-                    <TabsTrigger value="config"><Settings className="mr-2 h-4 w-4"/> Tax Config</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="run" className="mt-4">
-                    {isLoading ? <Loader2 className="mx-auto animate-spin"/> : <RunPayroll staff={staff || []} config={config} />}
-                </TabsContent>
-                
-                <TabsContent value="config" className="mt-4">
-                    <PayrollSettingsForm />
-                </TabsContent>
-            </Tabs>
+            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
+                <RunPayroll staff={staff || []} config={config} />
+            )}
         </div>
     );
 }

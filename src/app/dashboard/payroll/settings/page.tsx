@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -30,6 +29,7 @@ import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
 import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const canteenRateSchema = z.object({
     dailyRate: z.coerce.number().min(0, "Rate must be a positive number.")
@@ -41,12 +41,12 @@ const transportRateSchema = z.object({
 
 
 // --- Canteen Rate Settings Component ---
-function CanteenSettings() {
+function CanteenSettings({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
-    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolSettings', 'canteen') : null, [firestore]);
+    const settingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen') : null, [firestore, schoolId]);
     const { data: canteenSettings, isLoading } = useDoc(settingsRef);
 
     const form = useForm<z.infer<typeof canteenRateSchema>>({
@@ -61,7 +61,7 @@ function CanteenSettings() {
     }, [canteenSettings, form]);
 
     const handleSave = async (values: z.infer<typeof canteenRateSchema>) => {
-        if (!firestore) return;
+        if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
         try {
@@ -109,12 +109,12 @@ function CanteenSettings() {
 }
 
 // --- Transport Rate Settings Component ---
-function TransportSettings() {
+function TransportSettings({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
-    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolSettings', 'transport') : null, [firestore]);
+    const settingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport') : null, [firestore, schoolId]);
     const { data: transportSettings, isLoading } = useDoc(settingsRef);
 
     const form = useForm<z.infer<typeof transportRateSchema>>({
@@ -129,7 +129,7 @@ function TransportSettings() {
     }, [transportSettings, form]);
 
     const handleSave = async (values: z.infer<typeof transportRateSchema>) => {
-        if (!firestore) return;
+        if (!firestore || !settingsRef) return;
         
         setIsSaving(true);
         try {
@@ -177,7 +177,7 @@ function TransportSettings() {
 }
 
 // --- Retrospective Billing Component ---
-function RetrospectiveBilling() {
+function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState(false);
@@ -189,8 +189,8 @@ function RetrospectiveBilling() {
     const form = useForm();
 
     const handleReprocess = async () => {
-        if (!firestore || !dateRange?.from) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range.' });
+        if (!firestore || !dateRange?.from || !schoolId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Please select a valid date range and ensure school context is available.' });
             return;
         }
         setIsProcessing(true);
@@ -200,13 +200,14 @@ function RetrospectiveBilling() {
             const start = startOfDay(dateRange.from);
             const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
 
-            const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'canteen'));
-            const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', 'transport'));
+            const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
+            const transportSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'transport'));
             const canteenRate = canteenSettingsSnap.data()?.dailyRate || 0;
             const transportRate = transportSettingsSnap.data()?.dailyRate || 0;
             
             const attendanceQuery = query(
                 collection(firestore, 'attendance'),
+                where('schoolId', '==', schoolId),
                 where('date', '>=', Timestamp.fromDate(start)),
                 where('date', '<=', Timestamp.fromDate(end)),
                 where('status', 'in', ['Present', 'Late'])
@@ -234,7 +235,7 @@ function RetrospectiveBilling() {
                         billedAmount: canteenRate,
                         studentId: record.studentId, studentName: record.studentName, classId: record.classId,
                         type: 'Canteen Fee', description: `Canteen - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
-                        createdAt: serverTimestamp(), amountPaid: 0,
+                        createdAt: serverTimestamp(), amountPaid: 0, schoolId,
                     }, { merge: true });
                 }
 
@@ -245,7 +246,7 @@ function RetrospectiveBilling() {
                         billedAmount: transportRate,
                         studentId: record.studentId, studentName: record.studentName, classId: record.classId,
                         type: 'Transport Fee', description: `Transport - ${format(recordDate, 'PPP')}`, status: 'Unpaid', dueDate: new Date(),
-                        createdAt: serverTimestamp(), amountPaid: 0,
+                        createdAt: serverTimestamp(), amountPaid: 0, schoolId,
                     }, { merge: true });
                 }
             }
@@ -300,20 +301,29 @@ function RetrospectiveBilling() {
 
 export default function FinancialSettingsPage() {
   const { role } = useRole();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   
   if (!['Administrator', 'Director', 'Accountant'].includes(role)) {
     return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;
+  }
+
+  if (isLoadingSchool) {
+      return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
+
+  if (!schoolId) {
+       return <Card><CardHeader><CardTitle>School Not Found</CardTitle><CardDescription>Cannot load settings without a school context.</CardDescription></CardHeader></Card>;
   }
 
   return (
     <div className="space-y-6">
         <h1 className="text-2xl font-bold">Financial Settings</h1>
         <div className="grid lg:grid-cols-2 gap-6">
-            <CanteenSettings />
-            <TransportSettings />
+            <CanteenSettings schoolId={schoolId} />
+            <TransportSettings schoolId={schoolId} />
         </div>
-        <ManualBillingReconciliation />
-        <RetrospectiveBilling />
+        <ManualBillingReconciliation schoolId={schoolId} />
+        <RetrospectiveBilling schoolId={schoolId} />
     </div>
   );
 }

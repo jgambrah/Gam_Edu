@@ -23,8 +23,9 @@ import { Loader2, PlusCircle, Trash2, Users } from 'lucide-react';
 import { Staff, StaffPayrollConfig, staffPayrollConfigSchema } from '@/lib/types';
 import { useRole } from '@/context/role-context';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
-function StaffPayrollForm({ staff }: { staff: Staff }) {
+function StaffPayrollForm({ staff, schoolId }: { staff: Staff; schoolId: string; }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,14 +54,22 @@ function StaffPayrollForm({ staff }: { staff: Staff }) {
 
     useEffect(() => {
         async function fetchConfig() {
-            if (!staff) return;
+            if (!staff || !firestore) return;
             setIsLoadingConfig(true);
             const configQuery = query(collection(firestore, `staff/${staff.uid}/payroll`));
             const snapshot = await getDocs(configQuery);
             if (!snapshot.empty) {
                 form.reset(snapshot.docs[0].data() as StaffPayrollConfig);
             } else {
-                form.reset(); // Reset to default if no config found
+                form.reset({
+                     basicSalary: 0,
+                    allowances: [],
+                    deductions: [],
+                    ssnitNumber: '',
+                    tinNumber: '',
+                    bankName: '',
+                    accountNumber: '',
+                });
             }
             setIsLoadingConfig(false);
         }
@@ -68,10 +77,11 @@ function StaffPayrollForm({ staff }: { staff: Staff }) {
     }, [staff, firestore, form]);
 
     async function onSubmit(values: z.infer<typeof staffPayrollConfigSchema>) {
+        if(!firestore) return;
         setIsSubmitting(true);
         try {
             const configRef = doc(firestore, `staff/${staff.uid}/payroll`, 'main');
-            await setDoc(configRef, values);
+            await setDoc(configRef, { ...values, schoolId });
             toast({ title: 'Success', description: `Payroll settings for ${staff.firstName} updated.` });
         } catch(e) {
             console.error(e);
@@ -149,11 +159,11 @@ function StaffPayrollForm({ staff }: { staff: Staff }) {
 
 export default function StaffPayrollConfigPage() {
     const { role } = useRole();
-    const { user } = useUser();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
 
-    const staffListQuery = useMemoFirebase(() => (user && firestore) ? collection(firestore, 'staff') : null, [firestore, user]);
+    const staffListQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: staffList } = useCollection<Staff>(staffListQuery);
     
     if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
@@ -183,7 +193,7 @@ export default function StaffPayrollConfigPage() {
                 </CardContent>
             </Card>
 
-            {selectedStaff && <StaffPayrollForm staff={selectedStaff} />}
+            {selectedStaff && schoolId && <StaffPayrollForm staff={selectedStaff} schoolId={schoolId} />}
         </div>
     );
 }

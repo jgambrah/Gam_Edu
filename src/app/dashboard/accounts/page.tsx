@@ -130,11 +130,11 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
 
     // Fetch Rate when type changes
     useEffect(() => {
-        if(!firestore) return;
+        if(!firestore || !schoolId) return;
         const fetchRate = async () => {
-            // Note: In a multi-school app, this ID should include the schoolId
             const docId = chargeType === 'Canteen' ? 'canteen' : 'transport';
-            const snap = await getDoc(doc(firestore, `schools/${schoolId}/settings`, docId));
+            const settingsRef = doc(firestore, `schoolSettings/${schoolId}/rates`, docId);
+            const snap = await getDoc(settingsRef);
             if(snap.exists()) {
                 setRate(Number(snap.data().dailyRate) || 0);
             }
@@ -154,7 +154,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded 
     };
 
     const handleSubmit = async () => {
-        if(!firestore) return;
+        if(!firestore || !schoolId) return;
         if(selectedStudents.length === 0) {
             toast({ variant: 'destructive', title: 'Error', description: 'Select at least one student.' });
             return;
@@ -464,6 +464,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
     const { user } = useUser();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { schoolId } = useCurrentSchool();
     
     const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
@@ -473,7 +474,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
     });
 
     async function onSubmit(values: z.infer<typeof recordPaymentSchema>) {
-        if (!firestore || !user) return;
+        if (!firestore || !user || !schoolId) return;
         
         setIsSubmitting(true);
         try {
@@ -490,7 +491,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             });
 
             if (values.method === 'Cash') {
-                const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'));
+                const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'), where('schoolId', '==', schoolId));
                 const tillSnapshot = await getDocs(tillQuery);
                 if (tillSnapshot.empty) {
                     throw new Error("You do not have an open till. Please open a till before recording cash payments.");
@@ -504,7 +505,8 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                     studentName: record.studentName,
                     amount: values.amount,
                     timestamp: serverTimestamp(),
-                    description: `Payment for: ${record.description} (${record.type})`
+                    description: `Payment for: ${record.description} (${record.type})`,
+                    schoolId: schoolId,
                 });
                 
                 batch.update(doc(firestore, 'tills', activeTill.id), {
@@ -925,5 +927,3 @@ export default function AccountsPage() {
       </div>
     );
   }
-
-    
