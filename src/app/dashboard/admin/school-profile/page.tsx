@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
+import { useCurrentSchool } from '@/hooks/use-current-school'; // <--- NEW HOOK
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,20 +12,21 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Building2, Save, Loader2, Globe, Phone, Mail, MapPin } from 'lucide-react';
-import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
   const { role } = useRole();
+  const { schoolId, loading: isSchoolLoading } = useCurrentSchool(); // <--- GET ID
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-  const settingsRef = useMemoFirebase(
+  // 1. Fetch from the specific School Document
+  const schoolRef = useMemoFirebase(
     () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
     [firestore, schoolId]
   );
-  const { data: profile, isLoading: isLoadingProfile } = useDoc(settingsRef);
+  
+  const { data: profile, isLoading } = useDoc(schoolRef);
 
   // Form State
   const [name, setName] = useState('');
@@ -54,27 +56,30 @@ export default function SchoolProfilePage() {
 
     setIsSaving(true);
     try {
+        // 2. Save to specific School Document
         await setDoc(doc(firestore, 'schools', schoolId), {
             name, motto, address, phone, email, website, logoUrl,
             updatedAt: serverTimestamp()
-        }, { merge: true });
+        }, { merge: true }); // <--- MERGE IS CRITICAL (Keeps 'plan' & 'trialEndsAt' safe)
         
         toast({ title: "Settings Saved", description: "School profile updated successfully." });
     } catch (error: any) {
-        toast({ variant: 'destructive', title: "Error", description: error.message });
+        console.error(error);
+        toast({ variant: 'destructive', title: "Error", description: "Could not save profile." });
     } finally {
         setIsSaving(false);
     }
   };
 
   const canManage = ['Administrator', 'Director'].includes(role || '');
-  const isLoading = isLoadingSchool || isLoadingProfile;
 
   if (!canManage) {
-      return <div className="p-8 text-center text-red-500">Access Denied</div>;
+      return <div className="p-8 text-center text-red-500">Access Denied. Only Directors can manage school profile.</div>;
   }
 
-  if (isLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
+  if (isLoading || isSchoolLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600 h-8 w-8"/></div>;
+
+  if (!schoolId) return <div className="p-8 text-center text-orange-500">No School Linked to this account.</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -112,7 +117,7 @@ export default function SchoolProfilePage() {
                             <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+233..." />
                         </div>
                         <div className="space-y-2">
-                            <Label className="flex items-center gap-2"><Mail className="h-3 w-3"/> Email Address</Label>
+                            <Label className="flex items-center gap-2"><Mail className="h-3 w-3"/> Official Email</Label>
                             <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@school.com" />
                         </div>
                         <div className="space-y-2">
@@ -123,8 +128,10 @@ export default function SchoolProfilePage() {
 
                     <div className="space-y-2">
                         <Label>Logo URL</Label>
-                        <Input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://..." />
-                        <p className="text-xs text-muted-foreground">Paste a direct link to your school logo (PNG/JPG).</p>
+                        <div className="flex gap-2">
+                            <Input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://..." />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Paste a direct link to your logo (or use Settings > Uploads to host it).</p>
                     </div>
 
                     <div className="pt-4 border-t flex justify-end">
