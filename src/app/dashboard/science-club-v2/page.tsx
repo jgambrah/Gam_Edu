@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -11,7 +10,7 @@ import {
   Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { generateScienceLessonAction } from '@/ai/flows/generate-science-lesson';
+import { generateScienceLessonAction, GeneratedLesson } from '@/ai/flows/generate-science-lesson';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -26,7 +25,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry, ScienceLesson } from '@/lib/types';
+import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
@@ -35,7 +34,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
-
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const scienceProblemSchema = z.object({
     topic: z.string().min(1, "Topic is required."),
@@ -46,14 +45,8 @@ const scienceProblemSchema = z.object({
     classId: z.string().min(1, "Please select a class."),
 });
 
-interface LessonCard {
+interface LessonCard extends GeneratedLesson {
     id?: string;
-    title: string;
-    explanation: string;
-    analogy: string;
-    keyTerms: string[];
-    quizQuestion: string;
-    quizAnswer: string;
     timestamp?: any;
 }
 
@@ -64,14 +57,14 @@ function ScienceExplorerTab() {
     const { toast } = useToast();
     const [topic, setTopic] = useState('');
     const [isLearning, setIsLearning] = useState(false);
-    const [currentLesson, setCurrentLesson] = useState<ScienceLesson | null>(null);
+    const [currentLesson, setCurrentLesson] = useState<GeneratedLesson | null>(null);
     const [showAnswer, setShowAnswer] = useState(false);
 
     // Fetch History
     const historyQuery = useMemoFirebase(() => 
         (user && firestore) ? query(collection(firestore, 'science_learning_history'), where('userId', '==', user.uid), orderBy('timestamp', 'desc'), limit(10)) : null,
     [user, firestore]);
-    const { data: history, isLoading: historyLoading } = useCollection<ScienceLesson>(historyQuery);
+    const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
 
     const handleLearn = async () => {
         if (!topic.trim()) return;
@@ -240,8 +233,9 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { schoolId } = useCurrentSchool();
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes'): null, [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     const form = useForm<z.infer<typeof scienceProblemSchema>>({
         resolver: zodResolver(scienceProblemSchema),
@@ -254,9 +248,13 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     });
 
     async function onSubmit(values: z.infer<typeof scienceProblemSchema>) {
+        if (!schoolId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Cannot determine school ID.'});
+            return;
+        }
         setIsSubmitting(true);
         try {
-            await addDocumentNonBlocking(collection(firestore, 'science_problems'), values);
+            await addDocumentNonBlocking(collection(firestore, 'science_problems'), { ...values, schoolId });
             toast({ title: 'Success', description: 'New science problem has been added.' });
             form.reset();
             setOpen(false);
@@ -309,7 +307,8 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 // --- SUB-COMPONENT: Problem Management ---
 function ManageProblems() {
     const firestore = useFirestore();
-    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore]));
+    const { schoolId } = useCurrentSchool();
+    const { data: problems, isLoading } = useCollection<ScienceProblem>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'science_problems'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
@@ -450,15 +449,16 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
 function ScienceLabTab() {
     const firestore = useFirestore();
     const router = useRouter();
+    const { schoolId } = useCurrentSchool();
 
     const [selectedTopic, setSelectedTopic] = useState('');
     const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
     const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(
-        useMemoFirebase(() => firestore ? query(collection(firestore, 'science_problems')) : null, [firestore])
+        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'science_problems'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId])
     );
     const { data: facts, isLoading: isLoadingFacts } = useCollection<DailyFact>(
-        useMemoFirebase(() => firestore ? query(collection(firestore, 'daily_facts'), orderBy('createdAt', 'desc')) : null, [firestore])
+        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'daily_facts'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId])
     );
 
     const uniqueTopics = useMemo(() => {
@@ -549,6 +549,9 @@ export default function ScienceClubPage() {
             Welcome to the Science Club! Explore topics, practice problems, and climb the leaderboard.
           </CardDescription>
         </CardHeader>
+         <CardContent>
+            <FactOfTheDay isStaff={isTeacherOrAdmin} />
+        </CardContent>
       </Card>
       
       {isLoading ? <Loader2 className="mx-auto my-10 h-8 w-8 animate-spin"/> : (
@@ -588,4 +591,3 @@ export default function ScienceClubPage() {
     </div>
   );
 }
-

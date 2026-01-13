@@ -34,6 +34,7 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { formatDate } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const TARGET_GROUPS = ['Novice (Basic 1-3)', 'Apprentice (Basic 4-6)', 'Scholar (JHS)', 'Master (SHS)'];
 
@@ -50,10 +51,12 @@ const getStudentGroup = (className: string = '') => {
 // --- COMPONENT: Teacher Monitor ---
 function TeacherMonitorTab() {
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
+    
     // Query last 50 submissions
     const submissionsQuery = useMemoFirebase(() => 
-        firestore ? query(collection(firestore, 'think_tank_submissions'), orderBy('timestamp', 'desc'), limit(50)) : null,
-    [firestore]);
+        (firestore && schoolId) ? query(collection(firestore, 'think_tank_submissions'), where('schoolId', '==', schoolId), orderBy('timestamp', 'desc'), limit(50)) : null,
+    [firestore, schoolId]);
     
     const { data: submissions, isLoading } = useCollection<any>(submissionsQuery);
 
@@ -167,6 +170,7 @@ function DetectiveDeskTab() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); 
@@ -188,9 +192,9 @@ function DetectiveDeskTab() {
 
   // 3. Query Cases
   const casesQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'think_tank_detective_cases'), limit(50));
-  }, [firestore]);
+    if (!firestore || !schoolId) return null;
+    return query(collection(firestore, 'think_tank_detective_cases'), where('schoolId', '==', schoolId), limit(50));
+  }, [firestore, schoolId]);
 
   const { data: allCases, isLoading, forceRefetch } = useCollection<any>(casesQuery);
   
@@ -208,14 +212,14 @@ function DetectiveDeskTab() {
   const handleGenerateCase = async () => {
     const auth = getAuth();
     const currentUser = auth.currentUser || user;
-    if (!currentUser) return;
+    if (!currentUser || !schoolId) return;
     setIsGenerating(true);
     toast({ title: "Investigating...", description: "Gathering evidence for a new case." });
     
     try {
         const result = await generateDetectiveCase({ targetGroup: activeGroup });
         const docRef = await addDoc(collection(firestore!, 'think_tank_detective_cases'), {
-            ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid
+            ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid, schoolId: schoolId
         });
         toast({ title: "Case File Opened", description: "New investigation ready." });
         setSelectedCaseId(docRef.id);
@@ -314,6 +318,7 @@ function DailyParadoxTab() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]); 
@@ -332,9 +337,9 @@ function DailyParadoxTab() {
   }, [canManage, adminSelectedGroup, studentData]);
 
   const paradoxQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'think_tank_paradoxes'), limit(50));
-  }, [firestore]);
+    if (!firestore || !schoolId) return null;
+    return query(collection(firestore, 'think_tank_paradoxes'), where('schoolId', '==', schoolId), limit(50));
+  }, [firestore, schoolId]);
 
   const { data: allParadoxes, isLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
   
@@ -358,14 +363,15 @@ function DailyParadoxTab() {
   }, [groupParadoxes]);
   
     const handleAttempt = async (answer: string) => {
-      if (!user || canManage) return; 
+      if (!user || canManage || !schoolId) return; 
       await addDocumentNonBlocking(collection(firestore!, 'think_tank_submissions'), {
           studentId: user.uid,
           studentName: user.displayName || user.email,
           type: 'Paradox',
           activityId: activeParadox?.id,
           response: answer,
-          timestamp: serverTimestamp()
+          timestamp: serverTimestamp(),
+          schoolId: schoolId,
       });
   };
 
@@ -389,13 +395,13 @@ function DailyParadoxTab() {
   const handleGenerateParadox = async () => {
     const auth = getAuth();
     const currentUser = auth.currentUser || user;
-    if (!currentUser) return;
+    if (!currentUser || !schoolId) return;
     setIsGenerating(true);
     try {
         const result = await generateDailyParadox({ targetGroup: activeGroup });
         if (!result) throw new Error("AI returned no data");
         const docRef = await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
-            ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid
+            ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid, schoolId: schoolId
         });
         toast({ title: "Success!" });
         setSelectedParadoxId(docRef.id);
@@ -451,6 +457,7 @@ function DebateArenaTab() {
   const { role } = useRole();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [adminSelectedGroup, setAdminSelectedGroup] = useState(TARGET_GROUPS[2]);
@@ -467,7 +474,7 @@ function DebateArenaTab() {
       return 'Scholar (JHS)';
   }, [canManage, adminSelectedGroup, studentData]);
   
-  const topicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'think_tank_debates'), limit(50)) : null, [firestore]);
+  const topicsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'think_tank_debates'), where('schoolId', '==', schoolId), limit(50)) : null, [firestore, schoolId]);
   const { data: allTopics, isLoading, forceRefetch } = useCollection<DebateTopic>(topicsQuery);
   
   const latestTopic = useMemo(() => {
@@ -482,11 +489,11 @@ function DebateArenaTab() {
   const handleAiGenerate = async () => {
       const auth = getAuth();
       const currentUser = auth.currentUser || user;
-      if (!currentUser) return;
+      if (!currentUser || !schoolId) return;
       setIsGenerating(true);
       try {
           const result = await generateDebateTopic({ targetGroup: activeGroup });
-          await addDoc(collection(firestore!, 'think_tank_debates'), { ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid });
+          await addDoc(collection(firestore!, 'think_tank_debates'), { ...result, createdAt: serverTimestamp(), createdBy: currentUser.uid, schoolId: schoolId });
           toast({ title: "AI Generated Debate!" });
           forceRefetch();
       } catch(e: any) {

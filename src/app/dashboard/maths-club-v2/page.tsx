@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -38,6 +37,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription } from '@/components/ui/form';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const cleanLatex = (formula: string = "") => {
   if (!formula) return "";
@@ -293,8 +293,9 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { schoolId } = useCurrentSchool();
 
-    const { data: classes } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+    const { data: classes } = useCollection<Class>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     const form = useForm<z.infer<typeof mathProblemSchema>>({
         resolver: zodResolver(mathProblemSchema),
@@ -306,9 +307,13 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
     });
 
     async function onSubmit(values: z.infer<typeof mathProblemSchema>) {
+        if (!schoolId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not determine school ID.' });
+            return;
+        }
         setIsSubmitting(true);
         try {
-            await addDocumentNonBlocking(collection(firestore, 'math_problems'), values);
+            await addDocumentNonBlocking(collection(firestore, 'math_problems'), { ...values, schoolId });
             toast({ title: 'Success', description: 'New math problem has been added.' });
             form.reset();
             setOpen(false);
@@ -379,7 +384,8 @@ function ProblemCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) 
 // --- SUB-COMPONENT: Problem Management ---
 function ManageProblems() {
     const firestore = useFirestore();
-    const { data: problems, isLoading } = useCollection<MathProblem>(useMemoFirebase(() => firestore ? query(collection(firestore, 'math_problems')) : null, [firestore]));
+    const { schoolId } = useCurrentSchool();
+    const { data: problems, isLoading } = useCollection<MathProblem>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'math_problems'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isAiFormOpen, setIsAiFormOpen] = useState(false);
 
@@ -436,33 +442,32 @@ export default function MathsClubPage() {
   const { role, isRoleLoading } = useRole();
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
 
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
 
   const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
     useMemoFirebase(() => {
-      if (!user || !firestore) return null;
-      if (role !== 'Student') return null;
-      return query(collection(firestore, 'students'), where('uid', '==', user.uid));
-    }, [firestore, user, role])
+      if (!user || !firestore || role !== 'Student' || !schoolId) return null;
+      return query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId));
+    }, [firestore, user, role, schoolId])
   );
   
   const studentInfo = studentData?.[0]; 
   const studentClassId = studentInfo?.classId;
   
   const problemsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    if (isTeacherOrAdmin) {
-      return query(collection(firestore, 'math_problems'));
-    }
+    if (!firestore || !schoolId) return null;
+    let baseQuery = query(collection(firestore, 'math_problems'), where('schoolId', '==', schoolId));
+    
     if (role === 'Student') {
         if (studentClassId) {
-             return query(collection(firestore, 'math_problems'), where('classId', '==', studentClassId));
+             return query(baseQuery, where('classId', '==', studentClassId));
         }
         return null;
     }
-    return null;
-  }, [firestore, isTeacherOrAdmin, role, studentClassId]);
+    return baseQuery;
+  }, [firestore, isTeacherOrAdmin, role, studentClassId, schoolId]);
 
   const { data: problems, isLoading: isLoadingProblems } = useCollection<MathProblem>(problemsQuery);
   
@@ -572,7 +577,7 @@ export default function MathsClubPage() {
             overflow-y: hidden;
           }
           .katex-display {
-            margin: 0.5em 0 !important;
+            margin: 0 !important;
           }
         `}</style>
     </div>

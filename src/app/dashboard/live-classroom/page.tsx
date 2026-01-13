@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -18,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Class } from '@/lib/types';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 import LiveRoom from '@/components/dashboard/live-classroom/live-room';
 
@@ -109,13 +111,6 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
     const [time, setTime] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Debugging: Check if classes are actually arriving
-    useEffect(() => {
-        if (open) {
-            console.log("ScheduleDialog Open. Classes available:", classes);
-        }
-    }, [open, classes]);
-
     const handleSchedule = async () => {
         if (!selectedClassId || !topic || !date || !time) return;
         setLoading(true);
@@ -145,7 +140,6 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                     
-                    {/* FIX: Using Native HTML Select for reliability */}
                     <div className="space-y-2">
                         <Label>Select Class</Label>
                         <select 
@@ -196,9 +190,10 @@ function ScheduleDialog({ open, setOpen, classes }: { open: boolean, setOpen: (o
 
 // --- MAIN PAGE ---
 export default function LiveClassroomPage() {
-  const { user, isUserLoading } = useUser(); // FIX: Use useUser for better loading state
+  const { user, isUserLoading } = useUser();
   const { role } = useRole();
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
   
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [isLive, setIsLive] = useState(false);
@@ -208,10 +203,13 @@ export default function LiveClassroomPage() {
 
   // 1. Fetch User's Classes
   const classesQuery = useMemoFirebase(() => {
-      if (!firestore || !user) return null;
-      // In production, Teachers filter by teacherId, Students by enrollment
-      return query(collection(firestore, 'classes'));
-  }, [firestore, user]);
+      if (!firestore || !user || !schoolId) return null;
+      let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+      if (role === 'Teacher') {
+          q = query(q, where('teacherId', '==', user.uid));
+      }
+      return q;
+  }, [firestore, user, role, schoolId]);
 
   const { data: classes, isLoading: classesLoading } = useCollection<Class>(classesQuery);
 
@@ -233,7 +231,7 @@ export default function LiveClassroomPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] gap-4 p-4">
+    <div className="flex flex-col h-[calc(100vh-100px)] gap-4 p-4 md:p-6 bg-slate-50/50">
         
         {/* HEADER */}
         {!isLive && (
