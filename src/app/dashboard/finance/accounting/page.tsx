@@ -1,15 +1,16 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase'; 
+import { useState, useMemo, useRef } from 'react';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, serverTimestamp, doc, updateDoc, increment, getDocs, where, runTransaction } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
   Save, Loader2, CornerDownRight, Trash2, Receipt
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -24,45 +25,17 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType } from '@/lib/types';
 
-// --- TYPES ---
-export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Revenue' | 'Expense';
-
-export interface Account {
-  id: string;
-  code: string; 
-  name: string; 
-  type: AccountType;
-  description?: string;
-  balance: number;
-  parentId?: string | null;
-}
-
-export interface JournalLine {
-  accountId: string;
-  accountName: string;
-  debit: number;
-  credit: number;
-}
-
-export interface JournalEntry {
-  id: string;
-  date: any;
-  description: string;
-  lines: JournalLine[];
-  totalAmount: number;
-  createdBy: string;
-  createdAt: any;
-}
 
 // --- COMPONENT: Chart of Accounts Manager ---
-function ChartOfAccounts({ accounts }: { accounts: Account[] | undefined }) {
+function ChartOfAccounts({ accounts, schoolId }: { accounts: Account[] | undefined, schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Form
+    // Form State
     const [code, setCode] = useState('');
     const [name, setName] = useState('');
     const [type, setType] = useState<AccountType>('Expense');
@@ -77,13 +50,14 @@ function ChartOfAccounts({ accounts }: { accounts: Account[] | undefined }) {
     }, [parentId, isSubAccount, accounts]);
 
     const handleCreate = async () => {
-        if (!code || !name) return;
+        if (!code || !name || !schoolId) return;
         setIsSubmitting(true);
         try {
             await addDoc(collection(firestore, 'accounts'), {
                 code, name, type, balance: 0, 
                 parentId: isSubAccount ? parentId : null,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                schoolId: schoolId,
             });
             toast({ title: "Account Created" });
             setIsFormOpen(false);
@@ -166,12 +140,11 @@ function ChartOfAccounts({ accounts }: { accounts: Account[] | undefined }) {
 }
 
 // --- COMPONENT: Payment Voucher (With Bill Integration) ---
-function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
+function PaymentVoucherForm({ accounts, schoolId }: { accounts: Account[] | undefined, schoolId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     
-    // States
     const [payee, setPayee] = useState('');
     const [desc, setDesc] = useState('');
     const [grossAmount, setGrossAmount] = useState('');
@@ -183,19 +156,16 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
     const [whtRate, setWhtRate] = useState('0'); 
     const [vatScheme, setVatScheme] = useState('Exempt');
     
-    // --- NEW: Bill Selection ---
     const [selectedBillId, setSelectedBillId] = useState('');
-    // Fetch Unpaid Bills
-    const billsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'vendor_bills'), where('status', '==', 'Unpaid')) : null, [firestore]);
+    const billsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accountsPayable'), where('status', '==', 'Unpaid'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: bills } = useCollection<any>(billsQuery);
 
-    // Auto-fill when bill selected
     useEffect(() => {
         if(selectedBillId && bills) {
             const bill = bills.find(b => b.id === selectedBillId);
             if(bill) {
-                setPayee(bill.supplierName);
-                setGrossAmount(bill.totalAmount.toString());
+                setPayee(bill.vendorName);
+                setGrossAmount(bill.amount.toString());
                 setDesc(`Payment for Bill: ${bill.description}`);
             }
         }
@@ -203,7 +173,6 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
     
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // --- GHANA TAX CALCULATOR ---
     const { baseAmount, whtAmount, netPayable, vatAmount } = useMemo(() => {
         const gross = parseFloat(grossAmount) || 0;
         const whtPercent = parseFloat(whtRate) / 100;
@@ -235,26 +204,23 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
         };
     }, [grossAmount, whtRate, vatScheme]);
 
-    // Account filters
     const expenseAccounts = accounts?.filter(a => a.type === 'Expense' || a.type === 'Asset' || a.type === 'Liability').sort((a,b) => a.code.localeCompare(b.code));
     const paymentAccounts = accounts?.filter(a => a.type === 'Asset').sort((a,b) => a.code.localeCompare(b.code));
     const liabilityAccounts = accounts?.filter(a => a.type === 'Liability').sort((a,b) => a.code.localeCompare(b.code));
 
     const handleCreatePV = async () => {
-        if (!firestore || !user) return;
+        if (!firestore || !user || !schoolId) return;
         setIsSubmitting(true);
         try {
             await runTransaction(firestore, async (transaction) => {
-                // 1. Create PV Record
                 const pvRef = doc(collection(firestore, 'payment_vouchers'));
                 transaction.set(pvRef, {
                     payee, description: desc, grossAmount: parseFloat(grossAmount),
                     whtAmount, netAmount: netPayable, paymentMethod: method, referenceNumber: refNumber,
                     expenseAccountId: expenseAcc, paymentAccountId: paymentAcc, whtLiabilityAccountId: whtLiabilityAcc || null,
-                    status: 'Paid', date: serverTimestamp(), createdBy: user.uid, linkedBillId: selectedBillId || null
+                    status: 'Paid', date: serverTimestamp(), createdBy: user.uid, linkedBillId: selectedBillId || null, schoolId
                 });
                 
-                // 2. Journal Entry Logic
                 const journalRef = doc(collection(firestore, 'journal_entries'));
                 const expName = accounts?.find(a => a.id === expenseAcc)?.name || '';
                 const bankName = accounts?.find(a => a.id === paymentAcc)?.name || '';
@@ -273,27 +239,19 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                     totalAmount: parseFloat(grossAmount),
                     createdBy: user.uid,
                     createdAt: serverTimestamp(),
-                    lines: lines
+                    lines: lines,
+                    schoolId
                 });
 
-                // 3. Account Balance Update
                 transaction.update(doc(firestore, 'accounts', expenseAcc), { balance: increment(parseFloat(grossAmount)) });
                 transaction.update(doc(firestore, 'accounts', paymentAcc), { balance: increment(-netPayable) });
-                if (whtAmount > 0) {
+                if (whtAmount > 0 && whtLiabilityAcc) {
                     transaction.update(doc(firestore, 'accounts', whtLiabilityAcc), { balance: increment(whtAmount) });
                 }
 
-                // 4. Update Bill Status & Supplier Balance
                 if (selectedBillId) {
-                    const billRef = doc(firestore, 'vendor_bills', selectedBillId);
+                    const billRef = doc(firestore, 'accountsPayable', selectedBillId);
                     transaction.update(billRef, { status: 'Paid', amountPaid: parseFloat(grossAmount) });
-                    
-                    const billDoc = await transaction.get(billRef);
-                    if (billDoc.exists()) {
-                         const supplierId = billDoc.data().supplierId;
-                         const suppRef = doc(firestore, 'suppliers', supplierId);
-                         transaction.update(suppRef, { balance: increment(-parseFloat(grossAmount)) });
-                    }
                 }
             });
 
@@ -319,7 +277,7 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
                             <SelectItem value="none">-- None (Direct Expense) --</SelectItem>
                             {bills?.map((b: any) => (
                                 <SelectItem key={b.id} value={b.id}>
-                                    {b.supplierName} - GH₵{b.totalAmount} (Due: {b.dueDate?.toDate ? format(b.dueDate.toDate(), 'PP') : 'N/A'})
+                                    {b.vendorName} - GH₵{b.amount} (Due: {b.dueDate?.toDate ? format(b.dueDate.toDate(), 'PP') : 'N/A'})
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -445,14 +403,14 @@ function PaymentVoucherForm({ accounts }: { accounts: Account[] | undefined }) {
 }
 
 // --- JOURNAL ENTRY COMPONENT (Unchanged but included for completeness) ---
-function JournalEntryForm({ accounts }: { accounts: Account[] | undefined }) {
+function JournalEntryForm({ accounts, schoolId }: { accounts: Account[] | undefined, schoolId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
     
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [desc, setDesc] = useState('');
-    const [lines, setLines] = useState([{ accountId: '', debit: 0, credit: 0 }]);
+    const [lines, setLines] = useState([{ accountId: '', debit: 0, credit: 0 }, { accountId: '', debit: 0, credit: 0 }]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const totalDebit = lines.reduce((sum, line) => sum + (line.debit || 0), 0);
@@ -471,7 +429,7 @@ function JournalEntryForm({ accounts }: { accounts: Account[] | undefined }) {
     };
 
     const handlePost = async () => {
-        if (!firestore || !user) return;
+        if (!firestore || !user || !schoolId) return;
         if (!isBalanced) {
             toast({ variant: 'destructive', title: "Unbalanced", description: "Debits must equal Credits." });
             return;
@@ -486,7 +444,7 @@ function JournalEntryForm({ accounts }: { accounts: Account[] | undefined }) {
                 }));
                 transaction.set(journalRef, {
                     date: new Date(date), description: desc, lines: finalLines,
-                    totalAmount: totalDebit, createdBy: user.uid, createdAt: serverTimestamp()
+                    totalAmount: totalDebit, createdBy: user.uid, createdAt: serverTimestamp(), schoolId
                 });
                 for (const line of lines) {
                     const accRef = doc(firestore, 'accounts', line.accountId);
@@ -548,15 +506,18 @@ function JournalEntryForm({ accounts }: { accounts: Account[] | undefined }) {
 export default function AccountingPage() {
     const { role } = useRole();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
 
-    const accountsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'accounts')) : null, [firestore]);
-    const { data: accounts, isLoading } = useCollection<Account>(accountsQuery);
+    const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: accounts, isLoading: accLoading } = useCollection<Account>(accountsQuery);
 
-    const journalQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'journal_entries'), orderBy('createdAt', 'desc')) : null, [firestore]);
+    const journalQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'journal_entries'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
     const { data: journals } = useCollection<JournalEntry>(journalQuery);
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
     if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
+
+    const isLoading = accLoading || !schoolId;
 
     return (
         <div className="space-y-6 p-6">
@@ -565,10 +526,10 @@ export default function AccountingPage() {
                 <div><h1 className="text-2xl font-bold text-slate-800">Accounting & General Ledger</h1><p className="text-muted-foreground">Manage chart of accounts and expenditures.</p></div>
             </div>
             <Tabs defaultValue="overview">
-                <TabsList className="w-full justify-start"><TabsTrigger value="overview">Chart of Accounts</TabsTrigger><TabsTrigger value="journal">Journal Entry</TabsTrigger><TabsTrigger value="pv">Payment Voucher</TabsTrigger><TabsTrigger value="report">General Ledger</TabsTrigger></TabsList>
+                <TabsList className="w-full justify-start"><TabsTrigger value="overview">Chart of Accounts</TabsTrigger><TabsTrigger value="journal">Journal Entry</TabsTrigger><TabsTrigger value="pv">Payment Voucher</TabsTrigger></TabsList>
                 <TabsContent value="overview" className="mt-4">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-2">{isLoading ? <Loader2 className="mx-auto animate-spin"/> : <ChartOfAccounts accounts={accounts || []} />}</div>
+                        <div className="lg:col-span-2">{isLoading ? <Loader2 className="mx-auto animate-spin"/> : <ChartOfAccounts accounts={accounts || []} schoolId={schoolId!} />}</div>
                         <div className="space-y-4">
                             <Card className="bg-blue-50 border-blue-100"><CardHeader><CardTitle className="text-sm">Total Assets</CardTitle></CardHeader><CardContent className="text-2xl font-bold text-blue-700">GH₵{accounts?.filter(a => a.type === 'Asset').reduce((sum, a) => sum + a.balance, 0).toFixed(2)}</CardContent></Card>
                             <Card className="bg-green-50 border-green-100"><CardHeader><CardTitle className="text-sm">Total Revenue</CardTitle></CardHeader><CardContent className="text-2xl font-bold text-green-700">GH₵{accounts?.filter(a => a.type === 'Revenue').reduce((sum, a) => sum + a.balance, 0).toFixed(2)}</CardContent></Card>
@@ -576,21 +537,11 @@ export default function AccountingPage() {
                         </div>
                     </div>
                 </TabsContent>
-                <TabsContent value="journal" className="mt-4"><JournalEntryForm accounts={accounts || []} /></TabsContent>
-                <TabsContent value="pv" className="mt-4"><PaymentVoucherForm accounts={accounts || []} /></TabsContent>
-                <TabsContent value="report" className="mt-4">
-                    <Card><CardHeader><CardTitle>General Ledger Transactions</CardTitle></CardHeader><CardContent>
-                            <Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead>Details (Dr/Cr)</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>
-                                <TableBody>{journals?.map(j => (
-                                        <TableRow key={j.id}><TableCell className="text-xs">{j.date ? format(j.date.toDate(), 'PPP') : 'N/A'}</TableCell><TableCell className="font-medium">{j.description}</TableCell>
-                                            <TableCell><div className="text-xs space-y-1">{j.lines.map((line, i) => (<div key={i} className="flex justify-between w-[200px]"><span>{line.accountName}</span><span>{line.debit > 0 ? <span className="text-slate-600">Dr {line.debit}</span> : <span className="text-slate-400">Cr {line.credit}</span>}</span></div>))}</div></TableCell>
-                                            <TableCell className="text-right font-bold">GH₵{j.totalAmount.toFixed(2)}</TableCell></TableRow>
-                                    ))}</TableBody>
-                            </Table>
-                        </CardContent></Card>
-                </TabsContent>
+                <TabsContent value="journal" className="mt-4"><JournalEntryForm accounts={accounts || []} schoolId={schoolId!} /></TabsContent>
+                <TabsContent value="pv" className="mt-4"><PaymentVoucherForm accounts={accounts || []} schoolId={schoolId!} /></TabsContent>
             </Tabs>
         </div>
     );
 }
 
+    

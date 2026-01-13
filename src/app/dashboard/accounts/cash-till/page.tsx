@@ -16,6 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- Accountant's Till View ---
 function AccountantTillView() {
@@ -23,8 +24,9 @@ function AccountantTillView() {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { schoolId } = useCurrentSchool();
 
-    const tillQuery = useMemoFirebase(() => user ? query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open')) : null, [firestore, user]);
+    const tillQuery = useMemoFirebase(() => (user && schoolId) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('accountantId', '==', user.uid), where('status', '==', 'Open')) : null, [firestore, user, schoolId]);
     const { data: openTills, isLoading: isLoadingTills, forceRefetch } = useCollection<Till>(tillQuery);
     const activeTill = openTills?.[0];
 
@@ -32,19 +34,20 @@ function AccountantTillView() {
     const { data: transactions, isLoading: isLoadingTransactions } = useCollection<TillTransaction>(transactionsQuery);
 
     const handleOpenTill = async () => {
-        if (!user) return;
+        if (!user || !schoolId) return;
         setIsSubmitting(true);
         try {
             const newTillRef = doc(collection(firestore, 'tills'));
             await setDoc(newTillRef, {
                 accountantId: user.uid,
                 accountantName: user.displayName || user.email,
-                openingBalance: 0, // Assuming tills start empty
+                openingBalance: 0,
                 closingBalance: null,
                 dateOpened: serverTimestamp(),
                 dateClosed: null,
                 status: 'Open',
                 directorApproval: { directorId: null, directorName: null, approvedAt: null },
+                schoolId: schoolId,
             });
             toast({ title: 'Success', description: 'New till opened for the day.' });
             forceRefetch();
@@ -142,13 +145,12 @@ function DirectorTillView() {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
 
-    // Query for pending tills
-    const pendingTillsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'tills'), where('status', '==', 'PendingApproval')) : null, [firestore, user]);
+    const pendingTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'PendingApproval')) : null, [firestore, schoolId]);
     const { data: pendingTills, isLoading: isLoadingPending, forceRefetch: forceRefetchPending } = useCollection<Till>(pendingTillsQuery);
     
-    // Query for closed/approved tills
-    const closedTillsQuery = useMemoFirebase(() => user ? query(collection(firestore, 'tills'), where('status', '==', 'Closed'), orderBy('dateClosed', 'desc')) : null, [firestore, user]);
+    const closedTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'Closed'), orderBy('dateClosed', 'desc')) : null, [firestore, schoolId]);
     const { data: closedTills, isLoading: isLoadingClosed } = useCollection<Till>(closedTillsQuery);
 
     const [selectedTill, setSelectedTill] = useState<Till | null>(null);
@@ -177,7 +179,7 @@ function DirectorTillView() {
                 });
             } else { // Reject
                 await updateDoc(tillRef, {
-                    status: 'Open', // Re-open the till
+                    status: 'Open', 
                     'directorApproval.rejectionReason': rejectionReason,
                 });
             }
@@ -288,3 +290,5 @@ export default function CashTillPage() {
         </div>
     );
 }
+
+    

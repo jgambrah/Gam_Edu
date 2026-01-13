@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,7 +30,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, isPast } from 'date-fns';
-import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student, Till } from '@/lib/types';
+import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student, Till, Class } from '@/lib/types';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -41,6 +41,7 @@ import { StudentDisplay } from '@/components/student-display';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
 import { StudentSelect } from '@/components/StudentSelect';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- Types ---
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
@@ -112,7 +113,7 @@ function TransactionDetailModal({ record, open, setOpen }: { record: FinancialRe
 }
 
 // --- COMPONENT: Manual Daily Charge Form (NEW FEATURE) ---
-function DailyChargeForm({ setOpen, classes, students, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], onRecordsAdded: () => void }) {
+function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,14 +132,15 @@ function DailyChargeForm({ setOpen, classes, students, onRecordsAdded }: { setOp
     useEffect(() => {
         if(!firestore) return;
         const fetchRate = async () => {
+            // Note: In a multi-school app, this ID should include the schoolId
             const docId = chargeType === 'Canteen' ? 'canteen' : 'transport';
-            const snap = await getDoc(doc(firestore, 'schoolSettings', docId));
+            const snap = await getDoc(doc(firestore, `schools/${schoolId}/settings`, docId));
             if(snap.exists()) {
                 setRate(Number(snap.data().dailyRate) || 0);
             }
         };
         fetchRate();
-    }, [chargeType, firestore]);
+    }, [chargeType, firestore, schoolId]);
 
     // Toggle Selection
     const toggleStudent = (uid: string) => {
@@ -171,7 +173,6 @@ function DailyChargeForm({ setOpen, classes, students, onRecordsAdded }: { setOp
                 const student = classStudents.find(s => s.uid === uid);
                 if(!student) return;
 
-                // Create the standardized ID: type-studentId-date
                 const recordId = `${chargeType.toLowerCase()}-${uid}-${dateStr}`;
                 const recordRef = doc(firestore, 'financialRecords', recordId);
                 
@@ -185,8 +186,9 @@ function DailyChargeForm({ setOpen, classes, students, onRecordsAdded }: { setOp
                     amountPaid: 0,
                     status: 'Unpaid',
                     dueDate: date,
-                    createdAt: serverTimestamp()
-                }, { merge: true }); // Merge ensures we update existing if it exists, or create new
+                    createdAt: serverTimestamp(),
+                    schoolId: schoolId, // SAAS Stamp
+                }, { merge: true });
             });
 
             await batch.commit();
@@ -285,7 +287,7 @@ function DailyChargeForm({ setOpen, classes, students, onRecordsAdded }: { setOp
 }
 
 // --- FORM: Financial Record (Single) ---
-function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (open: boolean) => void; students: Student[], onRecordAdded: () => void }) {
+function FinancialRecordForm({ setOpen, students, schoolId, onRecordAdded }: { setOpen: (open: boolean) => void; students: Student[], schoolId: string, onRecordAdded: () => void }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -305,7 +307,7 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
   }, [isOpeningBalance, form]);
 
   async function onSubmit(values: z.infer<typeof extendedFinancialRecordSchema>) {
-    if (!firestore) return;
+    if (!firestore || !schoolId) return;
     setIsSubmitting(true);
     try {
         const student = students.find(s => s.uid === values.studentId);
@@ -318,7 +320,8 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
         amountPaid: 0,
         status: 'Unpaid',
         createdAt: serverTimestamp(),
-        dueDate: values.dueDate || new Date(), 
+        dueDate: values.dueDate || new Date(),
+        schoolId: schoolId,
       };
       
       await addDocumentNonBlocking(collection(firestore, 'financialRecords'), newRecord);
@@ -351,7 +354,7 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
         <FormField control={form.control} name="studentId" render={({ field }) => (
             <FormItem>
                 <FormLabel>Student</FormLabel>
-                <StudentSelect students={students} value={field.value} onValueChange={field.onChange} />
+                <StudentSelect students={students || []} value={field.value} onValueChange={field.onChange} />
                 <FormMessage />
             </FormItem>
         )}/>
@@ -381,7 +384,7 @@ function FinancialRecordForm({ setOpen, students, onRecordAdded }: { setOpen: (o
   )
 }
 
-function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], onRecordsAdded: () => void }) {
+function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded }: { setOpen: (open: boolean) => void; classes: any[], students: Student[], schoolId: string, onRecordsAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -392,7 +395,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
     });
   
     async function onSubmit(values: z.infer<typeof bulkBillingSchema>) {
-      if (!firestore) return;
+      if (!firestore || !schoolId) return;
       setIsSubmitting(true);
       const studentsInClass = students.filter(s => s.classId === values.classId);
       if(studentsInClass.length === 0) {
@@ -412,6 +415,7 @@ function BulkBillingForm({ setOpen, classes, students, onRecordsAdded }: { setOp
                 amountPaid: 0,
                 status: isPast(values.dueDate) ? 'Overdue' : 'Unpaid',
                 createdAt: serverTimestamp(),
+                schoolId: schoolId,
             });
         });
         await batch.commit();
@@ -461,7 +465,6 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    // Calculate current balance for display
     const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
 
     const form = useForm<z.infer<typeof recordPaymentSchema>>({
@@ -692,230 +695,235 @@ function EditRecordDialog({ record, open, setOpen, onUpdate }: { record: Financi
 
 // --- Main Page ---
 export default function AccountsPage() {
-  const { role } = useRole();
-  const firestore = useFirestore();
-  const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver', record: FinancialRecord | null }>({ type: 'payment', record: null });
-  const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
-  const [transactionDetail, setTransactionDetail] = useState<FinancialRecord | null>(null);
-
-  const finQuery = useMemoFirebase(() => firestore ? collection(firestore, 'financialRecords') : null, [firestore]);
-  const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
-  
-  const studentQuery = useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]);
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentQuery);
-
-  const { data: classes } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
-
-  const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
-  const isLoading = isLoadingRecords || isLoadingStudents;
-
-  const dashboardStats = useMemo(() => {
-    if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
-
-    let totalPaid = 0;
-    let totalBilled = 0;
-    let outstandingTuition = 0;
-    let outstandingCanteen = 0;
-    let outstandingTransport = 0;
-
-    for (const record of records) {
-        const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
-        totalBilled += record.billedAmount;
-        totalPaid += (record.amountPaid || 0) + (record.waiverAmount || 0);
-
-        if (balance > 0) {
-            if (record.type === 'Tuition Fee') outstandingTuition += balance;
-            else if (record.type === 'Canteen Fee') outstandingCanteen += balance;
-            else if (record.type === 'Transport Fee') outstandingTransport += balance;
-        }
-    }
+    const { role } = useRole();
+    const firestore = useFirestore();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     
-    return {
-        totalRevenue: totalPaid,
-        totalOutstanding: totalBilled - totalPaid,
-        outstandingTuition,
-        outstandingCanteen,
-        outstandingTransport
-    };
-  }, [records]);
-
-  const studentFinancials = useMemo(() => {
-    if (!records || !students) return [];
-
-    return students.map(student => {
-      const studentRecords = records.filter(r => r.studentId === student.uid);
-      const totalBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-      const totalPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
-      const totalWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
-      const balance = totalBilled - totalPaid - totalWaivers;
+    const [activeForm, setActiveForm] = useState<'single' | 'bulk' | 'daily' | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver', record: FinancialRecord | null }>({ type: 'payment', record: null });
+    const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
+    const [transactionDetail, setTransactionDetail] = useState<FinancialRecord | null>(null);
+  
+    const finQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
+    
+    const studentQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentQuery);
+  
+    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: classes } = useCollection<Class>(classesQuery);
+  
+    const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
+    const isLoading = isLoadingSchool || isLoadingRecords || isLoadingStudents;
+  
+    const dashboardStats = useMemo(() => {
+      if (!records) return { totalRevenue: 0, totalOutstanding: 0, outstandingTuition: 0, outstandingCanteen: 0, outstandingTransport: 0 };
+  
+      let totalPaid = 0;
+      let totalBilled = 0;
+      let outstandingTuition = 0;
+      let outstandingCanteen = 0;
+      let outstandingTransport = 0;
+  
+      for (const record of records) {
+          const balance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
+          totalBilled += record.billedAmount;
+          totalPaid += (record.amountPaid || 0) + (record.waiverAmount || 0);
+  
+          if (balance > 0) {
+              if (record.type === 'Tuition Fee') outstandingTuition += balance;
+              else if (record.type === 'Canteen Fee') outstandingCanteen += balance;
+              else if (record.type === 'Transport Fee') outstandingTransport += balance;
+          }
+      }
       
-      const sortedRecords = studentRecords.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-
-      let runningBalance = 0;
-      const ledger = sortedRecords.map(rec => {
-            const debit = rec.billedAmount;
-            const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
-            runningBalance += (debit - credit); 
-            return { ...rec, debit, credit, runningBalance };
-        });
-
       return {
-        student,
-        balance,
-        hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
-        ledger: ledger.reverse(),
+          totalRevenue: totalPaid,
+          totalOutstanding: totalBilled - totalPaid,
+          outstandingTuition,
+          outstandingCanteen,
+          outstandingTransport
       };
-    }).filter(sf => 
-        (sf.ledger.length > 0 || searchTerm) && 
-        searchStudent(sf.student, searchTerm)
-    );
-  }, [records, students, searchTerm]);
-
-
-  if (!canAccess) {
+    }, [records]);
+  
+    const studentFinancials = useMemo(() => {
+      if (!records || !students) return [];
+  
+      return students.map(student => {
+        const studentRecords = records.filter(r => r.studentId === student.uid);
+        const totalBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+        const totalPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
+        const totalWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
+        const balance = totalBilled - totalPaid - totalWaivers;
+        
+        const sortedRecords = studentRecords.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+  
+        let runningBalance = 0;
+        const ledger = sortedRecords.map(rec => {
+              const debit = rec.billedAmount;
+              const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
+              runningBalance += (debit - credit); 
+              return { ...rec, debit, credit, runningBalance };
+          });
+  
+        return {
+          student,
+          balance,
+          hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
+          ledger: ledger.reverse(),
+        };
+      }).filter(sf => 
+          (sf.ledger.length > 0 || searchTerm) && 
+          searchStudent(sf.student, searchTerm)
+      );
+    }, [records, students, searchTerm]);
+  
+  
+    if (!canAccess) {
+      return (
+        <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>
+      );
+    }
+  
+    const handleOpenDialog = (type: 'payment' | 'waiver', record: FinancialRecord) => setDialogState({ type, record });
+    const handleCloseDialog = () => setDialogState({ type: 'payment', record: null });
+    const handleOpenEditDialog = (record: FinancialRecord) => setEditingRecord(record);
+    const handleCloseEditDialog = () => setEditingRecord(null);
+  
     return (
-      <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>
+      <div className="space-y-6">
+          <Card>
+              <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                  <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle><DollarSign className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
+                  <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Revenue</CardTitle><HandCoins className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
+                  <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle><Receipt className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
+                  <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle><Utensils className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
+                  <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle><Bus className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
+              </CardContent>
+          </Card>
+  
+         <div className="grid lg:grid-cols-1 gap-6">
+          <Card>
+              <CardHeader>
+              <div className="flex justify-between items-center">
+                  <div><CardTitle>Student Billing</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
+                  <div className="flex gap-2">
+                      <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
+                          <DialogTrigger asChild>
+                              <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                                  <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
+                              </Button>
+                          </DialogTrigger>
+                          {schoolId && <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
+                      </Dialog>
+                      <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
+                          <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
+                      </Button>
+                      <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
+                          <FileCog className="mr-2 h-4 w-4" /> Bulk Bill
+                      </Button>
+                  </div>
+              </div>
+              </CardHeader>
+              <CardContent>
+                  {activeForm === 'single' && schoolId && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} schoolId={schoolId} onRecordAdded={forceRefetch} />}
+                  {activeForm === 'bulk' && schoolId && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} schoolId={schoolId} onRecordsAdded={forceRefetch} />}
+              </CardContent>
+          </Card>
+        </div>
+  
+        <Card>
+          <CardHeader>
+              <StudentSearchInput value={searchTerm} onChange={setSearchTerm}/>
+          </CardHeader>
+          <CardContent>
+              {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
+                  <div className="space-y-4">
+                      {studentFinancials.map(({ student, balance, hasOverdue, ledger }) => (
+                           <Collapsible key={student.uid} className="border rounded-lg">
+                              <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
+                                  <StudentDisplay student={student} variant="full" showAvatar />
+                                  <div className="flex items-center gap-4">
+                                      <div className="text-right">
+                                          <p className="text-sm text-muted-foreground">Balance</p>
+                                          <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
+                                      </div>
+                                      <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                                  </div>
+                              </CollapsibleTrigger>
+                               <CollapsibleContent className="p-4 bg-slate-50/50 border-t">
+                                  <div className="border rounded-md overflow-hidden bg-white">
+                                   <Table>
+                                      <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead><TableHead className="text-right">Run. Bal</TableHead><TableHead className="w-[120px] text-right">Actions</TableHead></TableRow></TableHeader>
+                                      <TableBody>
+                                          {ledger.map(rec => (
+                                              <TableRow key={rec.id}>
+                                                  <TableCell className="text-xs text-muted-foreground">{rec.createdAt ? format(rec.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}</TableCell>
+                                                  <TableCell className="font-medium max-w-[200px] truncate">{rec.description}</TableCell>
+                                                  <TableCell className="text-right font-mono text-red-600">{rec.debit > 0 ? `GH₵${rec.debit.toFixed(2)}` : '-'}</TableCell>
+                                                  <TableCell className="text-right font-mono text-green-600">{rec.credit > 0 ? `GH₵${rec.credit.toFixed(2)}` : '-'}</TableCell>
+                                                  <TableCell className="text-right font-bold text-slate-700">GH₵{rec.runningBalance.toFixed(2)}</TableCell>
+                                                  <TableCell>
+                                                      <div className="flex gap-1 justify-end">
+                                                          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" onClick={() => setTransactionDetail(rec)}><Eye className="h-4 w-4"/></Button>
+                                                          <DropdownMenu>
+                                                              <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400"><MoreVertical /></Button></DropdownMenuTrigger>
+                                                              <DropdownMenuContent>
+                                                                  <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
+                                                                  <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
+                                                                  <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver</DropdownMenuItem>
+                                                              </DropdownMenuContent>
+                                                          </DropdownMenu>
+                                                      </div>
+                                                  </TableCell>
+                                              </TableRow>
+                                          ))}
+                                      </TableBody>
+                                  </Table>
+                                  </div>
+                              </CollapsibleContent>
+                          </Collapsible>
+                      ))}
+                  </div>
+              )}
+          </CardContent>
+        </Card>
+        
+        {dialogState.record && dialogState.type === 'payment' && (
+          <RecordPaymentDialog 
+              record={dialogState.record} 
+              open={!!dialogState.record} 
+              setOpen={handleCloseDialog} 
+              onUpdate={forceRefetch} 
+          />
+        )}
+        {dialogState.record && dialogState.type === 'waiver' && (
+          <ApplyWaiverDialog 
+              record={dialogState.record} 
+              open={!!dialogState.record} 
+              setOpen={handleCloseDialog} 
+              onUpdate={forceRefetch} 
+          />
+        )}
+        {editingRecord && (
+          <EditRecordDialog 
+              record={editingRecord} 
+              open={!!editingRecord} 
+              setOpen={handleCloseEditDialog} 
+              onUpdate={forceRefetch} 
+          />
+        )}
+        {transactionDetail && (
+          <TransactionDetailModal 
+              record={transactionDetail} 
+              open={!!transactionDetail} 
+              setOpen={() => setTransactionDetail(null)}
+          />
+        )}
+      </div>
     );
   }
 
-  const handleOpenDialog = (type: 'payment' | 'waiver', record: FinancialRecord) => setDialogState({ type, record });
-  const handleCloseDialog = () => setDialogState({ type: 'payment', record: null });
-  const handleOpenEditDialog = (record: FinancialRecord) => setEditingRecord(record);
-  const handleCloseEditDialog = () => setEditingRecord(null);
-
-  return (
-    <div className="space-y-6">
-        <Card>
-            <CardHeader><CardTitle>Financial Overview</CardTitle></CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Outstanding</CardTitle><DollarSign className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalOutstanding.toFixed(2)}</div></CardContent></Card>
-                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Total Revenue</CardTitle><HandCoins className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.totalRevenue.toFixed(2)}</div></CardContent></Card>
-                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Tuition Debt</CardTitle><Receipt className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTuition.toFixed(2)}</div></CardContent></Card>
-                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Canteen Debt</CardTitle><Utensils className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingCanteen.toFixed(2)}</div></CardContent></Card>
-                <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium">Transport Debt</CardTitle><Bus className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">GH₵{dashboardStats.outstandingTransport.toFixed(2)}</div></CardContent></Card>
-            </CardContent>
-        </Card>
-
-       <div className="grid lg:grid-cols-1 gap-6">
-        <Card>
-            <CardHeader>
-            <div className="flex justify-between items-center">
-                <div><CardTitle>Student Billing</CardTitle><CardDescription>Create, manage, and track all student financial records.</CardDescription></div>
-                <div className="flex gap-2">
-                    <Dialog open={activeForm === 'daily'} onOpenChange={(open) => setActiveForm(open ? 'daily' : null)}>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
-                                <Coffee className="mr-2 h-4 w-4" /> Add Daily Charge
-                            </Button>
-                        </DialogTrigger>
-                        <DailyChargeForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />
-                    </Dialog>
-                    <Button variant={activeForm === 'single' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'single' ? null : 'single')}>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Single Bill
-                    </Button>
-                    <Button variant={activeForm === 'bulk' ? 'default' : 'outline'} onClick={() => setActiveForm(activeForm === 'bulk' ? null : 'bulk')}>
-                        <FileCog className="mr-2 h-4 w-4" /> Bulk Bill
-                    </Button>
-                </div>
-            </div>
-            </CardHeader>
-            <CardContent>
-                {activeForm === 'single' && <FinancialRecordForm setOpen={() => setActiveForm(null)} students={students || []} onRecordAdded={forceRefetch} />}
-                {activeForm === 'bulk' && <BulkBillingForm setOpen={() => setActiveForm(null)} classes={classes || []} students={students || []} onRecordsAdded={forceRefetch} />}
-            </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-            <StudentSearchInput value={searchTerm} onChange={setSearchTerm}/>
-        </CardHeader>
-        <CardContent>
-            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
-                <div className="space-y-4">
-                    {studentFinancials.map(({ student, balance, hasOverdue, ledger }) => (
-                         <Collapsible key={student.uid} className="border rounded-lg">
-                            <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
-                                <StudentDisplay student={student} variant="full" showAvatar />
-                                <div className="flex items-center gap-4">
-                                    <div className="text-right">
-                                        <p className="text-sm text-muted-foreground">Balance</p>
-                                        <p className={cn("font-bold text-lg", balance > 0 && "text-destructive", balance < 0 && "text-green-600")}>GH₵{balance.toFixed(2)}</p>
-                                    </div>
-                                    <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                                </div>
-                            </CollapsibleTrigger>
-                             <CollapsibleContent className="p-4 bg-slate-50/50 border-t">
-                                <div className="border rounded-md overflow-hidden bg-white">
-                                 <Table>
-                                    <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead><TableHead className="text-right">Run. Bal</TableHead><TableHead className="w-[120px] text-right">Actions</TableHead></TableRow></TableHeader>
-                                    <TableBody>
-                                        {ledger.map(rec => (
-                                            <TableRow key={rec.id}>
-                                                <TableCell className="text-xs text-muted-foreground">{rec.createdAt ? format(rec.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}</TableCell>
-                                                <TableCell className="font-medium max-w-[200px] truncate">{rec.description}</TableCell>
-                                                <TableCell className="text-right font-mono text-red-600">{rec.debit > 0 ? `GH₵${rec.debit.toFixed(2)}` : '-'}</TableCell>
-                                                <TableCell className="text-right font-mono text-green-600">{rec.credit > 0 ? `GH₵${rec.credit.toFixed(2)}` : '-'}</TableCell>
-                                                <TableCell className="text-right font-bold text-slate-700">GH₵{rec.runningBalance.toFixed(2)}</TableCell>
-                                                <TableCell>
-                                                    <div className="flex gap-1 justify-end">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" onClick={() => setTransactionDetail(rec)}><Eye className="h-4 w-4"/></Button>
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400"><MoreVertical /></Button></DropdownMenuTrigger>
-                                                            <DropdownMenuContent>
-                                                                <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
-                                                                <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
-                                                                <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver</DropdownMenuItem>
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                </div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    ))}
-                </div>
-            )}
-        </CardContent>
-      </Card>
-      
-      {dialogState.record && dialogState.type === 'payment' && (
-        <RecordPaymentDialog 
-            record={dialogState.record} 
-            open={!!dialogState.record} 
-            setOpen={handleCloseDialog} 
-            onUpdate={forceRefetch} 
-        />
-      )}
-      {dialogState.record && dialogState.type === 'waiver' && (
-        <ApplyWaiverDialog 
-            record={dialogState.record} 
-            open={!!dialogState.record} 
-            setOpen={handleCloseDialog} 
-            onUpdate={forceRefetch} 
-        />
-      )}
-      {editingRecord && (
-        <EditRecordDialog 
-            record={editingRecord} 
-            open={!!editingRecord} 
-            setOpen={handleCloseEditDialog} 
-            onUpdate={forceRefetch} 
-        />
-      )}
-      {transactionDetail && (
-        <TransactionDetailModal 
-            record={transactionDetail} 
-            open={!!transactionDetail} 
-            setOpen={() => setTransactionDetail(null)}
-        />
-      )}
-    </div>
-  );
-}
+    
