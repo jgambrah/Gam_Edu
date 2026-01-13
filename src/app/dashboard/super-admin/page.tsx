@@ -76,6 +76,7 @@ export default function SuperAdminPage() {
       const schoolRef = await addDoc(collection(firestore, 'schools'), {
         name: schoolName,
         plan: 'Trial', 
+        aiCredits: 100, // Start Trial with 100 credits
         status: 'active',
         createdAt: serverTimestamp(),
         trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), 
@@ -320,3 +321,5 @@ export default function SuperAdminPage() {
     </div>
   );
 }
+
+    
