@@ -16,6 +16,7 @@ import { Loader2, Wand2 } from 'lucide-react';
 import { generateTimetable } from '@/ai/flows/generate-timetable-flow';
 import TimetableSeeder from '@/components/TimetableSeeder';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
 
 type Teacher = { uid: string; firstName: string; lastName: string; subjects: string[] };
 
@@ -68,7 +69,17 @@ export default function TimetablePage() {
 
   const handleGenerateTimetable = async () => {
     if (!canGenerate || !allTeachers || !subjects || !classes || !rooms || !timeSlots || !firestore || !schoolId) return;
+    
     setIsGenerating(true);
+    
+    // ADD CREDIT CHECK
+    const creditResult = await checkAndSpendCredits(schoolId, 50); // High cost for timetable
+    if (!creditResult.success) {
+        toast({ variant: 'destructive', title: "Insufficient AI Credits", description: creditResult.error });
+        setIsGenerating(false);
+        return;
+    }
+    
     toast({ title: "AI is on the job!", description: "Generating a new timetable. This may take a moment." });
 
     try {
@@ -92,6 +103,7 @@ export default function TimetablePage() {
         rooms: rooms?.map(({ id, name }) => ({ id, name })) || [],
         timeSlots: timeSlots?.map(({ id, day, startTime, endTime }) => ({ id, day, startTime, endTime })) || [],
         customConstraint: customConstraint,
+        schoolId: schoolId, // Pass schoolId to AI flow
       };
 
       const result = await generateTimetable(input);
@@ -193,7 +205,7 @@ export default function TimetablePage() {
             />
             <Button onClick={handleGenerateTimetable} disabled={isGenerating} className="w-full">
               {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-              Generate New Timetable
+              Generate New Timetable (-50 Credits)
             </Button>
           </CardContent>
         </Card>

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { generateLearningInsights } from '@/ai/flows/learning-analytics';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
 
 // UI
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,6 +74,7 @@ export default function LearningAnalyticsPage() {
 
         return {
             name: `${student.firstName} ${student.lastName}`,
+            studentName: `${student.firstName} ${student.lastName}`,
             attendanceRate: Math.round(attendanceRate),
             averageGrade: Math.round(gradeAvg),
             missedAssessments: 0 // logic to calc missed
@@ -95,11 +97,19 @@ export default function LearningAnalyticsPage() {
 
   // --- AI HANDLER ---
   const handleRunAiAnalysis = async () => {
-      if (studentStats.length === 0) return;
+      if (studentStats.length === 0 || !schoolId) return;
       setIsAnalyzing(true);
+      
       try {
-          // Send simplified data to save tokens
-          const result = await generateLearningInsights({ classData: studentStats });
+          // ADD CREDIT CHECK
+          const creditResult = await checkAndSpendCredits(schoolId, 10);
+          if (!creditResult.success) {
+              toast({ variant: 'destructive', title: "Insufficient AI Credits", description: creditResult.error });
+              setIsAnalyzing(false);
+              return;
+          }
+
+          const result = await generateLearningInsights({ classData: studentStats, schoolId });
           if (result.success) {
               setAiReport(result.data);
               toast({ title: "Analysis Complete", description: "Insights generated successfully." });
@@ -198,7 +208,7 @@ export default function LearningAnalyticsPage() {
                             <CardDescription>Let AI analyze the data to find at-risk students and suggest strategies.</CardDescription>
                         </div>
                         <Button onClick={handleRunAiAnalysis} disabled={isAnalyzing || studentStats.length === 0} className="bg-indigo-600 hover:bg-indigo-700">
-                            {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Analyzing...</> : "Run Analysis"}
+                            {isAnalyzing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Analyzing...</> : "Run Analysis (-10 Credits)"}
                         </Button>
                     </CardHeader>
                     

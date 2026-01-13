@@ -1,10 +1,13 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // Input: Array of anonymous student stats
 const AnalysisInputSchema = z.object({
+  schoolId: z.string(),
   classData: z.array(z.object({
     studentName: z.string(), // We send names so the AI can identify them in the report
     attendanceRate: z.number(),
@@ -25,8 +28,15 @@ const AnalysisOutputSchema = z.object({
   teachingStrategy: z.string().describe("Specific advice for the teacher to improve results"),
 });
 
-export async function generateLearningInsights(input: { classData: any[] }) {
+export async function generateLearningInsights(input: { classData: any[], schoolId: string }) {
   try {
+    // Note: The credit check is now done on the client-side *before* calling this.
+    // However, keeping a server-side check is a good security practice.
+    const creditResult = await checkAndSpendCredits(input.schoolId, 10);
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error };
+    }
+
     const prompt = `
       Act as an Expert Educational Data Scientist.
       Analyze the following performance data for a class of students in Ghana.

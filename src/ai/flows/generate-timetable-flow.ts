@@ -3,6 +3,7 @@
 
 import { generate } from '@genkit-ai/ai';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits'; // Import the action
 
 // Define the Schema for the AI response
 const TimetableSchema = z.object({
@@ -22,9 +23,16 @@ export async function generateTimetable(input: any) {
   console.log("🚀 AI Timetable Generation Started...");
 
   try {
+    // The credit check is now done on the client-side *before* calling this.
+    // A server-side check is a good backup.
+    if (input.schoolId) {
+        const creditResult = await checkAndSpendCredits(input.schoolId, 50); // High cost
+        if (!creditResult.success) {
+            return { success: false, error: creditResult.error };
+        }
+    }
+
     // 1. Validate Input Size
-    // If we send too much data, the AI will choke or timeout.
-    // We strictly limit the context here.
     const prompt = `
       You are a School Timetable Scheduler.
       
@@ -67,17 +75,14 @@ export async function generateTimetable(input: any) {
     }
 
     // 3. Post-Process Data
-    // The AI might miss the 'timeSlotId'. We fix it by matching time/day.
     const rawData = response.output();
     const fixedTimetable = rawData?.timetable.map((entry: any) => {
-        // Find matching time slot ID from original input
         const matchSlot = input.timeSlots.find((ts: any) => 
             ts.day === entry.day && ts.startTime === entry.startTime
         );
         return {
             ...entry,
             timeSlotId: matchSlot ? matchSlot.id : `${entry.day}-${entry.startTime}`,
-            // Ensure IDs are strings
             teacherId: entry.teacherId || "TBA",
             roomId: entry.roomId || "TBA"
         };
@@ -89,8 +94,6 @@ export async function generateTimetable(input: any) {
   } catch (error: any) {
     console.error("❌ AI Generation Failed:", error);
     
-    // Return a clean error to the client instead of crashing
-    // This fixes the "Unexpected response" white screen
     return { 
         success: false, 
         error: error.message || "Server Timeout or Model Error" 

@@ -3,6 +3,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits'; // Import
 
 // Input Schemas from lib/types
 import type { FinancialRecord } from '@/lib/types';
@@ -20,11 +21,17 @@ const ReconciliationSchema = z.object({
   unmatchedBankIds: z.array(z.string())
 });
 
-export async function autoReconcileFlow(bankLines: BankTx[], ledgerLines: InternalTx[]) {
+export async function autoReconcileFlow(bankLines: BankTx[], ledgerLines: InternalTx[], schoolId: string) {
   try {
     // We strictly verify the inputs aren't empty
     if (bankLines.length === 0 || ledgerLines.length === 0) {
         return { success: false, error: "No data to compare." };
+    }
+
+    // ADD CREDIT CHECK
+    const creditResult = await checkAndSpendCredits(schoolId, 25); // High cost for reconciliation
+    if (!creditResult.success) {
+      return { success: false, error: creditResult.error };
     }
 
     const prompt = `

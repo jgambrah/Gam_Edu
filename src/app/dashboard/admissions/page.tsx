@@ -58,9 +58,10 @@ import { ApplicationTracker } from '@/components/dashboard/admissions/applicatio
 import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
 import { generateNextStudentId } from '@/lib/student-utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
-
-function ParentApplicationForm({ onSuccess }: { onSuccess: () => void }) {
+function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void, schoolId: string }) {
     const { user } = useAuth();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -88,6 +89,7 @@ function ParentApplicationForm({ onSuccess }: { onSuccess: () => void }) {
                 status: 'Pending Review',
                 submittedByParentId: user.uid,
                 submittedAt: serverTimestamp(),
+                schoolId: schoolId,
             };
     
             await addDocumentNonBlocking(collection(firestore, 'admissionApplications'), applicationData);
@@ -184,37 +186,41 @@ function AdminApplicationDashboard() {
     const firestore = useFirestore();
     const { user } = useAuth();
     const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
+
+    // Data State
     const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    
     const [availableClasses, setAvailableClasses] = useState<{id: string, name: string, capacity: number, currentStudents: number}[]>([]);
     
+    // Dialog State
     const [selectedApp, setSelectedApp] = useState<any>(null);
     const [decision, setDecision] = useState<'Approve' | 'Reject' | null>(null);
     const [assignedClass, setAssignedClass] = useState('');
     const [rejectionReason, setRejectionReason] = useState('');
     const [processing, setProcessing] = useState(false);
 
+    // AI State
     const [aiThinking, setAiThinking] = useState(false);
     const [aiReasoning, setAiReasoning] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!firestore) return;
-        const q = query(collection(firestore, 'admissionApplications'), where('status', '==', 'Pending Review'));
+        if (!firestore || !schoolId) return;
+        const q = query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), where('status', '==', 'Pending Review'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setApplications(apps);
             setLoading(false);
         });
         return () => unsubscribe();
-    }, [firestore]);
+    }, [firestore, schoolId]);
 
     useEffect(() => {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         const fetchClasses = async () => {
-            const querySnapshot = await getDocs(collection(firestore, 'classes'));
+            const querySnapshot = await getDocs(query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)));
             
-            const studentsQuery = await getDocs(collection(firestore, 'students'));
+            const studentsQuery = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
             const studentsData = studentsQuery.docs.map(doc => doc.data() as Student);
             
             const classesData = querySnapshot.docs.map(doc => {
@@ -229,12 +235,19 @@ function AdminApplicationDashboard() {
             setAvailableClasses(classesData as any);
         };
         fetchClasses();
-    }, [firestore]);
+    }, [firestore, schoolId]);
 
     const handleAskAI = async () => {
-        if (!selectedApp || availableClasses.length === 0) return;
+        if (!selectedApp || availableClasses.length === 0 || !schoolId) return;
         setAiThinking(true);
         setAiReasoning(null);
+
+        const creditResult = await checkAndSpendCredits(schoolId, 1);
+        if (!creditResult.success) {
+            toast({ variant: "destructive", title: "AI Credit Error", description: creditResult.error });
+            setAiThinking(false);
+            return;
+        }
 
         const dob = selectedApp.student.dateOfBirth?.toDate ? selectedApp.student.dateOfBirth.toDate() : new Date();
         const age = differenceInYears(new Date(), dob);
@@ -261,7 +274,7 @@ function AdminApplicationDashboard() {
     };
 
     const handleProcessApplication = async () => {
-        if (!selectedApp || !user) return;
+        if (!selectedApp || !user || !schoolId) return;
         setProcessing(true);
 
         try {
@@ -279,19 +292,19 @@ function AdminApplicationDashboard() {
                 const [firstName, ...lastName] = selectedApp.student.fullName.split(' ');
 
                 const studentData = {
-                    uid: selectedApp.submittedByParentId, // TEMPORARY - will be replaced by Auth UID
+                    uid: selectedApp.submittedByParentId,
                     studentId: newStudentId,
                     firstName: firstName,
                     lastName: lastName.join(' '),
-                    email: selectedApp.parent1.email, // Use parent email temporarily
+                    email: selectedApp.parent1.email,
                     classId: assignedClass,
                     gender: selectedApp.student.gender,
                     dateOfBirth: selectedApp.student.dateOfBirth,
                     address: selectedApp.student.address,
                     enrollmentStatus: 'Active',
+                    schoolId: schoolId,
                 };
                 
-                // For now, let's just add to students collection. Auth user creation would be next.
                 await addDoc(collection(firestore, 'students'), studentData);
 
                 await updateDoc(appRef, {
@@ -409,7 +422,7 @@ function AdminApplicationDashboard() {
                                     </span>
                                     {!aiReasoning && (
                                         <Button variant="ghost" size="sm" className="h-6 text-xs text-indigo-600" onClick={handleAskAI} disabled={aiThinking}>
-                                            {aiThinking ? <Loader2 className="animate-spin w-3 h-3" /> : 'Suggest Placement'}
+                                            {aiThinking ? <Loader2 className="animate-spin w-3 h-3" /> : 'Suggest Placement (-1 Credit)'}
                                         </Button>
                                     )}
                                 </div>
@@ -466,31 +479,31 @@ function AdminApplicationDashboard() {
     );
 }
 
-function ParentDashboard() {
+function ParentDashboard({ schoolId }: { schoolId: string }) {
      const { user } = useAuth();
     const firestore = useFirestore();
     const [myApps, setMyApps] = useState<any[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(true);
     
-    const { data: availableClasses } = useCollection<any>(useMemoFirebase(() => collection(firestore, 'classes'), [firestore]));
+    const { data: availableClasses } = useCollection<any>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
 
     useEffect(() => {
-        if (!user || !firestore) return;
-        const q = query(collection(firestore, 'admissionApplications'), where('submittedByParentId', '==', user.uid), orderBy('submittedAt', 'desc'));
+        if (!user || !firestore || !schoolId) return;
+        const q = query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), where('submittedByParentId', '==', user.uid), orderBy('submittedAt', 'desc'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             setMyApps(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             setLoading(false);
         });
         return () => unsubscribe();
-    }, [user, firestore]);
+    }, [user, firestore, schoolId]);
 
     if (showForm) {
         return (
             <div className="space-y-4">
                 <Button variant="ghost" onClick={() => setShowForm(false)}>← Back to Dashboard</Button>
-                <ParentApplicationForm onSuccess={() => setShowForm(false)} />
+                <ParentApplicationForm onSuccess={() => setShowForm(false)} schoolId={schoolId} />
             </div>
         )
     }
@@ -565,20 +578,21 @@ function ParentDashboard() {
 
 export default function AdmissionsPage() {
     const { role } = useRole();
+    const { schoolId } = useCurrentSchool();
 
     if (role === 'Administrator' || role === 'Director') {
         return <AdminApplicationDashboard />;
     }
 
-    if (role === 'Parent') {
-        return <ParentDashboard />;
+    if (role === 'Parent' && schoolId) {
+        return <ParentDashboard schoolId={schoolId} />;
     }
 
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Access Denied</CardTitle>
-                <CardDescription>You do not have permission to view this page.</CardDescription>
+                <CardDescription>You do not have permission to view this page or your school data is not available.</CardDescription>
             </CardHeader>
         </Card>
     );
