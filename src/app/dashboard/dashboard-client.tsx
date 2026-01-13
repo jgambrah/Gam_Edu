@@ -141,7 +141,6 @@ export default function DashboardClient() {
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
-  // ✅ ADD THIS DEBUG CODE:
   useEffect(() => {
     console.log('🔍 Dashboard Debug:', {
       isLoadingSchool,
@@ -161,6 +160,7 @@ export default function DashboardClient() {
   const isFinance = role === 'Accountant';
   const isLibrarian = role === 'Librarian';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || ['Cook', 'Transport Staff'].includes(role || '');
+  const isSuperAdmin = user?.uid === 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2';
 
   // --- DATA FETCHING (Now School-Aware) ---
   const studentsQuery = useMemoFirebase(() => schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -195,36 +195,44 @@ export default function DashboardClient() {
   const financialRecordsQuery = useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector) && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<FinancialRecord>(financialRecordsQuery);
   
-  const accountsPayableQuery = useMemoFirebase(() => (firestore && (isFinance || isAdminOrDirector) && schoolId) ? query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, isFinance, isAdminOrDirector, schoolId]);
+  const accountsPayableQuery = useMemoFirebase(() => {
+    if (!firestore || !(isFinance || isAdminOrDirector)) return null;
+
+    // Super Admin sees ALL records, unfiltered by school.
+    if (isSuperAdmin) {
+      return query(collection(firestore, 'accountsPayable'), orderBy('createdAt', 'desc'));
+    }
+
+    // Regular admins/finance users see only their school's records.
+    if (schoolId) {
+      return query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
+    }
+
+    return null;
+  }, [firestore, isFinance, isAdminOrDirector, schoolId, isSuperAdmin]);
   const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(accountsPayableQuery);
 
 
-  // FIXED LOADING LOGIC
   const isGlobalLoading = isLoadingSchool || isUserLoading || isRoleLoading;
-
-  // Start with global loading state
+  
   let isLoading = isGlobalLoading;
 
-  // ✅ FIX: Only check additional loading if we have a schoolId AND global loading is done
   if (!isGlobalLoading) {
     if (schoolId) {
-      // We have a school, check role-specific data loading
       if (isAdminOrDirector) {
-        isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
+          isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
       } else if (isTeacher) {
-        isLoading = classesLoading || assignmentsLoading;
+          isLoading = classesLoading || assignmentsLoading;
       } else if (isStudent) {
-        isLoading = classesLoading || assignmentsLoading || announcementsLoading;
+          isLoading = classesLoading || assignmentsLoading || announcementsLoading;
       } else if (isFinance) {
-        isLoading = paymentsLoading || payablesLoading;
+          isLoading = paymentsLoading || payablesLoading;
       } else if (isLibrarian) {
-        isLoading = libraryLoading;
+          isLoading = libraryLoading;
       } else {
-        // Unknown role or no specific loading required
         isLoading = false;
       }
     } else {
-      // ✅ CRITICAL FIX: No schoolId found, stop loading
       isLoading = false;
     }
   }
