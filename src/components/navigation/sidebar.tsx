@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -133,7 +134,6 @@ export default function AppSidebar() {
           )}
         </SidebarMenu>
         {/* --- CEO PORTAL LINK --- */}
-        {/* Check both Email AND UID to be 100% sure */}
         {user && (
           (user.email?.toLowerCase() === 'jamesgambrah@gmail.com') || 
           (user.uid === 'L4oE5XWweKRYrhtIXn6hB8IDHBC2')
@@ -148,7 +148,7 @@ export default function AppSidebar() {
             </Link>
           </div>
         )}
-      </SidebarFooter>
+      </SidebarContent>
       
       <SidebarFooter>
         {process.env.NODE_ENV === 'development' && <RoleSwitcher />}
