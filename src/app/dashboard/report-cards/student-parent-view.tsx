@@ -63,6 +63,48 @@ function ReportListForStudent({ student }: { student: Student }) {
     )
 }
 
+function StudentAccordionItem({ studentUid }: { studentUid: string }) {
+    const firestore = useFirestore();
+    
+    // ✅ FIX: Fetch directly by Document ID to be 100% accurate
+    const studentDocRef = useMemoFirebase(
+        () => firestore ? doc(firestore, 'students', studentUid) : null,
+        [firestore, studentUid]
+    );
+    
+    const { data: student, isLoading } = useDoc<Student>(studentDocRef);
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center p-4 border-b">
+                <Loader2 className="h-5 w-5 animate-spin"/>
+                <span className="ml-2 text-muted-foreground">Loading child...</span>
+            </div>
+        );
+    }
+    
+    if (!student) {
+        return (
+             <div className="p-4 border-b text-red-500 bg-red-50 rounded-md my-2">
+                <ShieldAlert className="h-4 w-4 inline mr-2" />
+                <span>Student record ({studentUid}) missing from database.</span>
+            </div>
+        );
+    }
+
+    return (
+        <AccordionItem value={studentUid} key={studentUid} className="border rounded-lg mb-2 overflow-hidden px-2">
+            <AccordionTrigger className="hover:no-underline py-4 px-2">
+                <StudentDisplay student={student} variant="list" showAvatar/>
+            </AccordionTrigger>
+            <AccordionContent className="p-0 bg-slate-50 border-t">
+                <ReportListForStudent student={student} />
+            </AccordionContent>
+        </AccordionItem>
+    );
+}
+
+
 export default function StudentParentReportCardView() {
     const firestore = useFirestore();
     const { user, isUserLoading } = useUser();
@@ -74,7 +116,12 @@ export default function StudentParentReportCardView() {
         [firestore, user?.uid, role]
     );
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
-
+    
+    // For students viewing their own profile
+    const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
+        useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
+    );
+    
     const studentIds = useMemo(() => parentData?.studentIds || [], [parentData?.studentIds?.join(',')]);
 
     // 2. Fetch student profiles for all children in the list
@@ -93,12 +140,12 @@ export default function StudentParentReportCardView() {
 
     const { data: students, isLoading: areStudentsLoading } = useCollection<Student>(studentsQuery);
     
-    const isLoading = isUserLoading || isParentLoading || areStudentsLoading;
+    const isLoading = isUserLoading || isParentLoading || isStudentLoading;
 
     if (isLoading) {
         return (
             <Card>
-                <CardContent className="flex justify-center p-12">
+                <CardContent className="flex justify-center p-8">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </CardContent>
             </Card>
@@ -127,9 +174,12 @@ export default function StudentParentReportCardView() {
         if (!students || students.length === 0) {
             return (
                 <Card>
-                    <CardContent className="p-12 text-center text-muted-foreground">
-                        <p>No children linked to your account.</p>
-                        <p className="text-xs mt-2 text-slate-400">If you believe this is an error, please contact the administrator.</p>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><FileText className="text-primary" /> My Bills</CardTitle>
+                        <CardDescription>A summary of your financial records with the school.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-8 text-center text-muted-foreground">
+                        No children linked to your account.
                     </CardContent>
                 </Card>
             );
@@ -152,16 +202,9 @@ export default function StudentParentReportCardView() {
                         </div>
                     )}
 
-                    <Accordion type="single" collapsible defaultValue={students[0].id || students[0].uid}>
-                        {students.map(student => (
-                            <AccordionItem value={student.id || student.uid} key={student.id || student.uid} className="border rounded-lg mb-2 overflow-hidden px-2">
-                                <AccordionTrigger className="hover:no-underline py-4 px-2">
-                                    <StudentDisplay student={student} variant="list" showAvatar/>
-                                </AccordionTrigger>
-                                <AccordionContent className="p-0 bg-slate-50 border-t">
-                                    <ReportListForStudent student={student} />
-                                </AccordionContent>
-                            </AccordionItem>
+                    <Accordion type="single" collapsible defaultValue={studentIds[0]}>
+                        {studentIds.map(uid => (
+                            <StudentAccordionItem key={uid} studentUid={uid} />
                         ))}
                     </Accordion>
                 </CardContent>
