@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, documentId } from 'firebase/firestore';
+import { collection, doc, query, where, Timestamp, documentId } from 'firebase/firestore';
 import { ReportCard, Student } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, FileText, AlertTriangle } from 'lucide-react';
@@ -18,7 +18,6 @@ import { StudentDisplay } from '@/components/student-display';
 function ReportListForStudent({ student }: { student: Student }) {
     const firestore = useFirestore();
     
-    // ✅ FIX: Use student.id (Document ID) to ensure we find reports even if 'uid' field is missing
     const studentIdentifier = student.id || student.uid;
 
     const reportsQuery = useMemoFirebase(
@@ -66,7 +65,6 @@ function ReportListForStudent({ student }: { student: Student }) {
 function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     const firestore = useFirestore();
     
-    // ✅ FIX: Fetch directly by Document ID to be 100% accurate
     const studentDocRef = useMemoFirebase(
         () => firestore ? doc(firestore, 'students', studentUid) : null,
         [firestore, studentUid]
@@ -110,37 +108,32 @@ export default function StudentParentReportCardView() {
     const { user, isUserLoading } = useUser();
     const { role } = useRole();
 
-    // 1. Fetch parent data to get the list of child IDs
     const parentDocRef = useMemoFirebase(
         () => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null,
         [firestore, user?.uid, role]
     );
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
     
-    // For students viewing their own profile
     const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
     
     const studentIds = useMemo(() => parentData?.studentIds || [], [parentData?.studentIds?.join(',')]);
 
-    // 2. Fetch student profiles for all children in the list
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore) return null;
         if (role === 'Parent' && studentIds.length > 0) {
-            // ✅ FIX: Use documentId() to match the IDs in the parent's list
             return query(collection(firestore, 'students'), where(documentId(), 'in', studentIds));
         }
         if (role === 'Student' && user) {
-            // ✅ FIX: Use documentId() for the student's own profile too
-            return query(collection(firestore, 'students'), where(documentId(), '==', user.uid));
+            return query(collection(firestore, 'students'), where('uid', '==', user.uid));
         }
         return null;
     }, [firestore, role, user?.uid, studentIds.join(',')]);
 
     const { data: students, isLoading: areStudentsLoading } = useCollection<Student>(studentsQuery);
     
-    const isLoading = isUserLoading || isParentLoading || isStudentLoading;
+    const isLoading = isUserLoading || isParentLoading || isStudentLoading || areStudentsLoading;
 
     if (isLoading) {
         return (
@@ -194,7 +187,6 @@ export default function StudentParentReportCardView() {
                     <CardDescription>Select a child to view their published academic results.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {/* If some IDs didn't resolve to students, show a subtle warning */}
                     {studentIds.length > students.length && (
                         <div className="mb-4 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700 flex items-center gap-2">
                             <AlertTriangle className="h-3 w-3" />
