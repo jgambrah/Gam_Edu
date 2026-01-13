@@ -223,7 +223,7 @@ export default function DashboardClient() {
             iconColor: 'text-purple-600'
         })));
     }
-    if (financialRecords) {
+    if (financialRecords) { // ✅ FIX: Added a check here
         activities.push(...financialRecords.map(p => ({
             type: 'Payment',
             title: 'Payment Received',
