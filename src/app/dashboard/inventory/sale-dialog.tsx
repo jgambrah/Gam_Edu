@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -13,6 +14,7 @@ import { doc, writeBatch, serverTimestamp, query, collection, where, getDocs } f
 import { Loader2 } from 'lucide-react';
 import { InventoryItem } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const saleSchema = z.object({
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
@@ -30,6 +32,7 @@ export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDia
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { schoolId } = useCurrentSchool();
 
   const form = useForm<z.infer<typeof saleSchema>>({
     resolver: zodResolver(saleSchema),
@@ -41,6 +44,10 @@ export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDia
         toast({ variant: "destructive", title: "Authentication Error" });
         return;
     }
+    if (!schoolId) {
+        toast({ variant: "destructive", title: "School context error" });
+        return;
+    }
     if (values.quantity > item.quantity) {
         form.setError("quantity", { message: "Cannot sell more than available quantity." });
         return;
@@ -48,18 +55,15 @@ export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDia
     setIsSubmitting(true);
 
     try {
-        // 1. Find the accountant's open till
-        const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'));
+        const tillQuery = query(collection(firestore, 'tills'), where('accountantId', '==', user.uid), where('status', '==', 'Open'), where('schoolId', '==', schoolId));
         const tillSnapshot = await getDocs(tillQuery);
         if (tillSnapshot.empty) {
             throw new Error("You do not have an open till. Please open one before making sales.");
         }
         const activeTill = tillSnapshot.docs[0];
 
-        // 2. Prepare batch write
         const batch = writeBatch(firestore);
 
-        // 3. Update inventory item quantity
         const itemRef = doc(firestore, 'inventory', item.id);
         const newQuantity = item.quantity - values.quantity;
         batch.update(itemRef, {
@@ -67,7 +71,6 @@ export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDia
             status: newQuantity > 0 ? 'Available' : 'Out of Stock'
         });
 
-        // 4. Log inventory transaction
         const invTransactionRef = doc(collection(firestore, `inventory/${item.id}/transactions`));
         batch.set(invTransactionRef, {
             itemId: item.id,
@@ -75,20 +78,20 @@ export function SaleDialog({ item, open, onOpenChange, onSaleComplete }: SaleDia
             quantityChange: -values.quantity,
             staffId: user.uid,
             timestamp: serverTimestamp(),
-            notes: `Sold ${values.quantity} unit(s).`
+            notes: `Sold ${values.quantity} unit(s).`,
+            schoolId,
         });
 
-        // 5. Log cash till transaction
         const tillTransactionRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
         batch.set(tillTransactionRef, {
             tillId: activeTill.id,
-            financialRecordId: item.id, // Use item ID for reference
+            financialRecordId: item.id,
             amount: (item.unitPrice || 0) * values.quantity,
             description: `Sale: ${values.quantity} x ${item.name}`,
             timestamp: serverTimestamp(),
+            schoolId,
         });
 
-        // 6. Commit batch
         await batch.commit();
 
         toast({ title: 'Sale Recorded', description: `${values.quantity} x ${item.name} sold. Till updated.` });

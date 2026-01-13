@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -9,9 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { useFirestore } from '@/firebase';
-import { doc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { doc, writeBatch, serverTimestamp, collection } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { InventoryItem, Staff, checkoutSchema } from '@/lib/types';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 interface CheckoutFormProps {
     item: InventoryItem;
@@ -24,12 +26,17 @@ export function CheckoutForm({ item, staffList, setOpen, onCheckedOut }: Checkou
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { schoolId } = useCurrentSchool();
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
   });
 
   async function onSubmit(values: z.infer<typeof checkoutSchema>) {
+    if (!schoolId) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Cannot determine school context.' });
+        return;
+    }
     setIsSubmitting(true);
     const selectedStaff = staffList.find(s => s.uid === values.staffId);
     if (!selectedStaff) {
@@ -55,7 +62,8 @@ export function CheckoutForm({ item, staffList, setOpen, onCheckedOut }: Checkou
             transactionType: 'Check-Out',
             timestamp: serverTimestamp(),
             staffId: selectedStaff.uid,
-            notes: `Checked out to ${selectedStaff.firstName} ${selectedStaff.lastName}`
+            notes: `Checked out to ${selectedStaff.firstName} ${selectedStaff.lastName}`,
+            schoolId: schoolId,
         });
 
         await batch.commit();

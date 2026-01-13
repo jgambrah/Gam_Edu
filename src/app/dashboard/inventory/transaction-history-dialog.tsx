@@ -1,12 +1,14 @@
+
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, where } from 'firebase/firestore';
 import { InventoryItem, InventoryTransaction } from '@/lib/types';
 import { format } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 interface TransactionHistoryDialogProps {
   item: InventoryItem;
@@ -16,9 +18,18 @@ interface TransactionHistoryDialogProps {
 
 export function TransactionHistoryDialog({ item, open, setOpen }: TransactionHistoryDialogProps) {
   const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
+
+  // SAAS-aware query for transactions of a specific item
   const transactionsQuery = useMemoFirebase(
-    () => query(collection(firestore, `inventory/${item.id}/transactions`), orderBy('timestamp', 'desc')),
-    [firestore, item.id]
+    () => (firestore && schoolId) 
+        ? query(
+            collection(firestore, 'inventory', item.id, 'transactions'),
+            where('schoolId', '==', schoolId), // Ensure transactions belong to the school
+            orderBy('timestamp', 'desc')
+          )
+        : null,
+    [firestore, item.id, schoolId]
   );
   const { data: transactions, isLoading } = useCollection<InventoryTransaction>(transactionsQuery);
 

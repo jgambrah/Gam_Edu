@@ -24,6 +24,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { where } from 'firebase/firestore';
 
 const restockSchema = z.object({
     quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
@@ -33,6 +35,7 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { schoolId } = useCurrentSchool();
 
     const form = useForm<z.infer<typeof restockSchema>>({
         resolver: zodResolver(restockSchema),
@@ -40,7 +43,7 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
     });
 
     async function onSubmit(values: z.infer<typeof restockSchema>) {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
             const batch = writeBatch(firestore);
@@ -54,7 +57,8 @@ function RestockDialog({ item, open, onOpenChange, onRestockComplete }: { item: 
                 transactionType: 'Restock',
                 quantityChange: values.quantity,
                 timestamp: serverTimestamp(),
-                notes: `Added ${values.quantity} unit(s).`
+                notes: `Added ${values.quantity} unit(s).`,
+                schoolId: schoolId,
             });
 
             await batch.commit();
@@ -101,6 +105,7 @@ export default function InventoryPage() {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const [refetchKey, setRefetchKey] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -111,14 +116,16 @@ export default function InventoryPage() {
 
     const forceRefetch = useCallback(() => setRefetchKey(prev => prev + 1), []);
 
-    const inventoryQuery = useMemoFirebase(() => user ? query(collection(firestore, 'inventory'), orderBy('name')) : null, [firestore, user, refetchKey]);
-    const { data: inventory, isLoading } = useCollection<InventoryItem>(inventoryQuery);
+    const inventoryQuery = useMemoFirebase(() => (user && schoolId) ? query(collection(firestore, 'inventory'), where('schoolId', '==', schoolId), orderBy('name')) : null, [firestore, user, refetchKey, schoolId]);
+    const { data: inventory, isLoading: isLoadingInventory } = useCollection<InventoryItem>(inventoryQuery);
 
-    const staffListQuery = useMemoFirebase(() => (user && firestore) ? collection(firestore, 'staff') : null, [firestore, user]);
+    const staffListQuery = useMemoFirebase(() => (user && firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, user, schoolId]);
     const { data: staffList } = useCollection<Staff>(staffListQuery);
 
     const canManage = role === 'Administrator' || role === 'Director';
     const canSell = role === 'Accountant';
+    
+    const isLoading = isLoadingInventory || isLoadingSchool;
 
     const handleOpenDialog = (dialog: 'addItem' | 'checkOut' | 'history' | 'sellItem' | 'restockItem', item?: InventoryItem) => {
         setSelectedItem(item || null);
@@ -187,7 +194,7 @@ export default function InventoryPage() {
                         </div>
                         {canManage && (
                         <div className="flex gap-2">
-                            <Button onClick={() => handleOpenDialog('addItem')}><PlusCircle className="mr-2"/> Add New Item</Button>
+                            <Button onClick={() => handleOpenDialog('addItem')} disabled={!schoolId}><PlusCircle className="mr-2"/> Add New Item</Button>
                         </div>
                         )}
                     </div>
@@ -239,10 +246,10 @@ export default function InventoryPage() {
             </Card>
 
             <Dialog open={activeDialog !== null} onOpenChange={(open) => !open && handleCloseDialog()}>
-                {activeDialog === 'addItem' && (
+                {activeDialog === 'addItem' && schoolId && (
                     <DialogContent className="sm:max-w-2xl">
                         <DialogHeader><DialogTitle>Add New Inventory Item</DialogTitle><DialogDescription>Enter the details for the new asset.</DialogDescription></DialogHeader>
-                        <InventoryItemForm setOpen={handleCloseDialog} onAdded={forceRefetch} />
+                        <InventoryItemForm setOpen={handleCloseDialog} onAdded={forceRefetch} schoolId={schoolId} />
                     </DialogContent>
                 )}
                 {activeDialog === 'checkOut' && selectedItem && (

@@ -22,10 +22,11 @@ import { Badge } from '@/components/ui/badge';
 import { format, addDays, isPast } from 'date-fns';
 import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 // --- Form for adding new library items ---
-function LibraryItemForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+function LibraryItemForm({ setOpen, schoolId }: { setOpen: (open: boolean) => void, schoolId: string }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,6 +51,7 @@ function LibraryItemForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         ...values,
         status: 'Available',
         createdAt: new Date(),
+        schoolId: schoolId, // SAAS STAMP
       };
       await setDocumentNonBlocking(newItemRef, dataToSave, {});
       toast({
@@ -125,12 +127,16 @@ export default function LibraryPage() {
   const [isFormOpen, setFormOpen] = useState(false);
   const [filter, setFilter] = useState('');
   const [activeTab, setActiveTab] = useState('catalog');
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+
 
   const canManage = ['Librarian', 'Administrator', 'Director'].includes(role || '');
   const canBorrow = ['Student', 'Teacher'].includes(role || '');
 
-  const libraryQuery = useMemoFirebase(() => firestore ? collection(firestore, 'library') : null, [firestore]);
-  const { data: libraryItems, isLoading } = useCollection<LibraryItem>(libraryQuery);
+  const libraryQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'library'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const { data: libraryItems, isLoading: isLoadingItems } = useCollection<LibraryItem>(libraryQuery);
+
+  const isLoading = isLoadingItems || isLoadingSchool;
 
   const libraryStats = useMemo(() => {
     if (!libraryItems) {
@@ -233,8 +239,8 @@ export default function LibraryPage() {
             {canManage && (
                 <div className='flex gap-2'>
                     <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-                        <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Add New Item</Button></DialogTrigger>
-                        <DialogContent><DialogHeader><DialogTitle>Add New Item to Catalog</DialogTitle><DialogDescription>Fill out the form to add a new item.</DialogDescription></DialogHeader><LibraryItemForm setOpen={setFormOpen} /></DialogContent>
+                        <DialogTrigger asChild><Button disabled={!schoolId}><PlusCircle className="mr-2 h-4 w-4" /> Add New Item</Button></DialogTrigger>
+                        <DialogContent><DialogHeader><DialogTitle>Add New Item to Catalog</DialogTitle><DialogDescription>Fill out the form to add a new item.</DialogDescription></DialogHeader>{schoolId && <LibraryItemForm setOpen={setFormOpen} schoolId={schoolId} />}</DialogContent>
                     </Dialog>
                 </div>
             )}

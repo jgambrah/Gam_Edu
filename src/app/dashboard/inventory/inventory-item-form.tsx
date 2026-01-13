@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -18,7 +19,7 @@ import { inventoryItemSchema } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
-export function InventoryItemForm({ setOpen, onAdded }: { setOpen: () => void; onAdded: () => void }) {
+export function InventoryItemForm({ setOpen, onAdded, schoolId }: { setOpen: () => void; onAdded: () => void; schoolId: string; }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,6 +42,7 @@ export function InventoryItemForm({ setOpen, onAdded }: { setOpen: () => void; o
       const dataToSave = {
         ...values,
         status: 'Available',
+        schoolId: schoolId, // SAAS STAMP
       };
       batch.set(newItemRef, dataToSave);
       
@@ -49,7 +51,8 @@ export function InventoryItemForm({ setOpen, onAdded }: { setOpen: () => void; o
         itemId: newItemRef.id,
         transactionType: 'Creation',
         timestamp: serverTimestamp(),
-        notes: `Item created with quantity ${values.quantity}.`
+        notes: `Item created with quantity ${values.quantity}.`,
+        schoolId: schoolId, // SAAS STAMP
       });
 
       await batch.commit();

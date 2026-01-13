@@ -20,6 +20,7 @@ import { addDoc, collection, doc, updateDoc, writeBatch, query, where } from 'fi
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StudentDisplay } from '@/components/student-display';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // --- Student Assignment Dialog ---
 
@@ -136,12 +137,12 @@ function StudentAssignmentDialog({ route, students, open, onOpenChange, onAssign
 }
 
 // --- Bus Management Dialog ---
-function BusManagementDialog({ open, onOpenChange, onBusChange }: { open: boolean; onOpenChange: (open: boolean) => void; onBusChange: () => void; }) {
+function BusManagementDialog({ open, onOpenChange, onBusChange, schoolId }: { open: boolean; onOpenChange: (open: boolean) => void; onBusChange: () => void; schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { data: buses, isLoading } = useCollection<Bus>(useMemoFirebase(() => firestore ? collection(firestore, 'buses') : null, [firestore]));
+    const { data: buses, isLoading } = useCollection<Bus>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     const form = useForm({
         defaultValues: { name: '', capacity: 30 }
@@ -150,7 +151,7 @@ function BusManagementDialog({ open, onOpenChange, onBusChange }: { open: boolea
     const onAddBus = async (values: { name: string; capacity: number }) => {
         setIsSubmitting(true);
         try {
-            await addDocumentNonBlocking(collection(firestore, 'buses'), values);
+            await addDocumentNonBlocking(collection(firestore, 'buses'), { ...values, schoolId });
             toast({ title: 'Bus Added' });
             onBusChange();
             form.reset();
@@ -212,13 +213,13 @@ const routeSchema = z.object({
   stops: z.array(stopSchema).min(1, 'At least one stop is required.'),
 });
 
-function RouteManagementDialog({ open, onOpenChange, onRouteChange }: { open: boolean; onOpenChange: (open: boolean) => void; onRouteChange: () => void; }) {
+function RouteManagementDialog({ open, onOpenChange, onRouteChange, schoolId }: { open: boolean; onOpenChange: (open: boolean) => void; onRouteChange: () => void; schoolId: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { data: buses } = useCollection<Bus>(useMemoFirebase(() => firestore ? collection(firestore, 'buses') : null, [firestore]));
-    const { data: drivers } = useCollection<Student>(useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')) : null, [firestore]));
+    const { data: buses } = useCollection<Bus>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+    const { data: drivers } = useCollection<Student>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Transport Staff')) : null, [firestore, schoolId]));
 
     const form = useForm<z.infer<typeof routeSchema>>({
         resolver: zodResolver(routeSchema),
@@ -239,7 +240,7 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange }: { open: bo
         setIsSubmitting(true);
         const stopsWithIds = values.stops.map(stop => ({...stop, id: doc(collection(firestore, 'temp')).id }));
         try {
-            await addDocumentNonBlocking(collection(firestore, 'routes'), {...values, stops: stopsWithIds});
+            await addDocumentNonBlocking(collection(firestore, 'routes'), {...values, stops: stopsWithIds, schoolId});
             toast({ title: 'Route Created' });
             onRouteChange();
             onOpenChange(false);
@@ -296,10 +297,10 @@ function RouteManagementDialog({ open, onOpenChange, onRouteChange }: { open: bo
 }
 
 // --- Main Page ---
-
 export default function TransportPage() {
   const { role } = useRole();
   const firestore = useFirestore();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   
   // Dialog states
@@ -311,14 +312,14 @@ export default function TransportPage() {
   const canManage = ['Administrator', 'Director'].includes(role);
 
   // Data fetching
-  const { data: routes, forceRefetch: refetchRoutes, isLoading: isLoadingRoutes } = useCollection<Route>(useMemoFirebase(() => firestore ? collection(firestore, 'routes') : null, [firestore]));
-  const { data: buses, forceRefetch: refetchBuses, isLoading: isLoadingBuses } = useCollection<Bus>(useMemoFirebase(() => firestore ? collection(firestore, 'buses') : null, [firestore]));
-  const { data: students, forceRefetch: refetchStudents, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => firestore ? collection(firestore, 'students') : null, [firestore]));
-  const { data: drivers } = useCollection<Student>(useMemoFirebase(() => firestore ? query(collection(firestore, 'staff'), where('role', '==', 'Transport Staff')) : null, [firestore]));
-  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => firestore ? collection(firestore, 'classes') : null, [firestore]));
+  const { data: routes, forceRefetch: refetchRoutes, isLoading: isLoadingRoutes } = useCollection<Route>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'routes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+  const { data: buses, forceRefetch: refetchBuses, isLoading: isLoadingBuses } = useCollection<Bus>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'buses'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+  const { data: students, forceRefetch: refetchStudents, isLoading: isLoadingStudents } = useCollection<Student>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+  const { data: drivers } = useCollection<Student>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Transport Staff')) : null, [firestore, schoolId]));
+  const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
 
-  const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents || isLoadingClasses;
+  const isLoading = isLoadingRoutes || isLoadingBuses || isLoadingStudents || isLoadingClasses || isLoadingSchool;
 
   const selectedRoute = useMemo(() => {
     return routes?.find(r => r.id === selectedRouteId);
@@ -455,17 +456,19 @@ export default function TransportPage() {
         />
       )}
 
-      {canManage && (
+      {canManage && schoolId && (
         <>
             <BusManagementDialog 
                 open={busManagementOpen}
                 onOpenChange={setBusManagementOpen}
                 onBusChange={refetchBuses}
+                schoolId={schoolId}
             />
             <RouteManagementDialog
                 open={routeManagementOpen}
                 onOpenChange={setRouteManagementOpen}
                 onRouteChange={refetchRoutes}
+                schoolId={schoolId}
             />
         </>
       )}
