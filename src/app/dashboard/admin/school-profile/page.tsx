@@ -132,7 +132,7 @@ export default function SchoolProfilePage() {
                         <div className="flex gap-2">
                             <Input value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://..." />
                         </div>
-                        <p className="text-xs text-muted-foreground">Paste a direct link to your logo (or use Settings > Uploads to host it).</p>
+                        <p className="text-xs text-muted-foreground">Paste a direct link to your logo (or use Settings &gt; Uploads to host it).</p>
                     </div>
 
                     <div className="pt-4 border-t flex justify-end">
