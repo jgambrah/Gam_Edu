@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,18 +11,20 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Building2, Save, Loader2, Globe, Phone, Mail, MapPin } from 'lucide-react';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export default function SchoolProfilePage() {
   const firestore = useFirestore();
   const { role } = useRole();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const settingsRef = useMemoFirebase(
-    () => (firestore ? doc(firestore, 'schoolSettings', 'profile') : null),
-    [firestore]
+    () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+    [firestore, schoolId]
   );
-  const { data: profile, isLoading } = useDoc(settingsRef);
+  const { data: profile, isLoading: isLoadingProfile } = useDoc(settingsRef);
 
   // Form State
   const [name, setName] = useState('');
@@ -49,11 +50,11 @@ export default function SchoolProfilePage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firestore) return;
+    if (!firestore || !schoolId) return;
 
     setIsSaving(true);
     try {
-        await setDoc(doc(firestore, 'schoolSettings', 'profile'), {
+        await setDoc(doc(firestore, 'schools', schoolId), {
             name, motto, address, phone, email, website, logoUrl,
             updatedAt: serverTimestamp()
         }, { merge: true });
@@ -67,6 +68,7 @@ export default function SchoolProfilePage() {
   };
 
   const canManage = ['Administrator', 'Director'].includes(role || '');
+  const isLoading = isLoadingSchool || isLoadingProfile;
 
   if (!canManage) {
       return <div className="p-8 text-center text-red-500">Access Denied</div>;
@@ -137,5 +139,3 @@ export default function SchoolProfilePage() {
     </div>
   );
 }
-
-    

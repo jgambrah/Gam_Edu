@@ -26,6 +26,7 @@ import {
   BookCopy,
   BarChart,
   CalendarCheck,
+  UserCog as StaffIcon, // Using UserCog for Staff
   Shield,
   Code,
   Sigma,
@@ -423,10 +424,10 @@ export const navItems: NavItem[] = [
             roles: ['Director', 'Administrator'],
         },
         {
-            path: '/dashboard/super-admin',
-            title: 'CEO Portal',
+            path: '/dashboard/admin/school-profile',
+            title: 'School Profile',
             icon: Building2,
-            roles: ['Director'],
+            roles: ['Director', 'Administrator'],
         },
     ]
   },
@@ -551,17 +552,45 @@ export const mockAttendanceRecords = [
   { id: '9', studentId: 'student-01', studentName: 'Alice Smith', classId: 'grade-10-a', date: new Date('2024-05-19'), status: 'Late', notes: 'Missed bus' },
 ];
 
+export type MathProblem = {
+    id: string;
+    topic: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
+    question_text: string;
+    correct_answer: number | string;
+    options: (number | string)[];
+    classId: string;
+};
+
 export const MOCK_MATH_PROBLEMS: MathProblem[] = [
     { id: 'alg-e-01', topic: 'Algebra', difficulty: 'Easy', question_text: 'If x + 5 = 12, what is x?', correct_answer: 7, options: [5, 6, 7, 8], classId: 'class-1' },
     { id: 'alg-e-02', topic: 'Algebra', difficulty: 'Easy', question_text: 'Solve for y: 3y = 21', correct_answer: 7, options: [3, 6, 7, 9], classId: 'class-1' },
     { id: 'geo-m-01', topic: 'Geometry', difficulty: 'Medium', question_text: 'What is the area of a circle with a radius of 5?', correct_answer: '78.54', options: ['31.42', '50.00', '78.54', '100.00'], classId: 'class-2' },
 ];
 
+export type GlobalLeaderboardEntry = {
+    userId: string;
+    userName: string;
+    profilePictureUrl?: string;
+    total_correct_answers: number;
+    total_quizzes_completed: number;
+};
+
 export const MOCK_LEADERBOARD: GlobalLeaderboardEntry[] = [
     { userId: 'student-01', userName: 'Alice', total_correct_answers: 150, total_quizzes_completed: 20, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-01' },
     { userId: 'student-02', userName: 'Bob', total_correct_answers: 135, total_quizzes_completed: 18, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-02' },
     { userId: 'student-03', userName: 'Charlie', total_correct_answers: 120, total_quizzes_completed: 22, profilePictureUrl: 'https://i.pravatar.cc/150?u=student-03' },
 ];
+
+export type ElaGrammarDrill = {
+    id: string;
+    topic: string;
+    type: 'MCQ' | 'Drag and Drop';
+    question_prompt: string;
+    options?: string[];
+    correct_answer: string | string[];
+    classId: string;
+};
 
 export const MOCK_ELA_DRILLS: ElaGrammarDrill[] = [
     { id: 'ela-g-01', topic: 'Punctuation', type: 'MCQ', question_prompt: 'Which sentence is correctly punctuated?', correct_answer: "The quick, brown fox jumps over the lazy dog.", options: ["The quick, brown fox jumps over the lazy dog.", "The quick brown fox, jumps over the lazy dog.", "The quick brown fox jumps over, the lazy dog."], classId: 'class-1' },
@@ -592,5 +621,3 @@ export const MOCK_CROSSWORD_PUZZLES = [
     },
   },
 ];
-
-    
