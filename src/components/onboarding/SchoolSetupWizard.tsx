@@ -2,14 +2,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useCollection, useAuth, useMemoFirebase } from '@/firebase';
+import { useFirestore, useAuth } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, getDocs } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, ArrowRight, School, UserPlus, CheckCircle2 } from 'lucide-react';
+import { Loader2, ArrowRight, School, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRole } from '@/context/role-context';
 
@@ -17,17 +17,20 @@ export default function SchoolSetupWizard() {
   const { user } = useAuth();
   const firestore = useFirestore();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
-  const { role, loading: isLoadingRole } = useRole();
   const { toast } = useToast();
+  const { role, loading: isLoadingRole } = useRole();
+
 
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [skipped, setSkipped] = useState(false); // Track if they skipped
 
   // Form State
   const [className, setClassName] = useState('');
-  
+
   const isDirector = role === 'Director' || role === 'Administrator';
+
 
   // 1. Check if Setup is Needed
   useEffect(() => {
@@ -48,6 +51,7 @@ export default function SchoolSetupWizard() {
     checkStatus();
   }, [firestore, schoolId, isDirector, isLoadingSchool, isLoadingRole]);
 
+
   // 2. Handle Step 1: Create Class
   const handleCreateClass = async () => {
     if (!className || !schoolId) return;
@@ -58,7 +62,8 @@ export default function SchoolSetupWizard() {
         schoolId: schoolId,
         createdAt: serverTimestamp()
       });
-      setStep(2); // Move to next step
+      setSkipped(false);
+      setStep(2);
     } catch (e) {
       console.error(e);
       toast({ variant: 'destructive', title: "Error", description: "Failed to create class." });
@@ -67,16 +72,25 @@ export default function SchoolSetupWizard() {
     }
   };
 
+  // 2b. Handle Skip
+  const handleSkip = () => {
+    setSkipped(true);
+    setStep(2); // Jump to the AI/Success screen
+  };
+
   // 3. Handle Finish
   const handleFinish = () => {
     setIsOpen(false);
-    toast({ title: "Setup Complete!", description: "You can now add more data from the dashboard." });
-    // Refresh to reload data and hide wizard
-    window.location.reload();
+    if (!skipped) {
+        toast({ title: "Setup Complete!", description: "You can now add more data from the dashboard." });
+        // Refresh to reload data and hide wizard
+        window.location.reload();
+    }
   };
 
   // Only render for admins, and only if it's supposed to be open
   if (!isDirector || !isOpen) return null;
+
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
@@ -90,7 +104,7 @@ export default function SchoolSetupWizard() {
             Welcome to GAM Edu!
           </DialogTitle>
           <DialogDescription>
-            Let's get your school set up in less than 30 seconds.
+            {step === 1 ? "Let's get your school set up quickly." : "You are all set to begin."}
           </DialogDescription>
         </DialogHeader>
 
@@ -104,10 +118,14 @@ export default function SchoolSetupWizard() {
                 value={className}
                 onChange={e => setClassName(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">You can add more later.</p>
+              <p className="text-xs text-muted-foreground">This helps you enroll students later.</p>
             </div>
-            <DialogFooter>
-              <Button onClick={handleCreateClass} disabled={loading || !className} className="w-full">
+            
+            <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-between gap-2">
+              <Button variant="ghost" onClick={handleSkip} className="text-slate-500">
+                Skip for now
+              </Button>
+              <Button onClick={handleCreateClass} disabled={loading || !className}>
                 {loading ? <Loader2 className="animate-spin mr-2" /> : "Create Class & Continue"}
               </Button>
             </DialogFooter>
@@ -118,7 +136,6 @@ export default function SchoolSetupWizard() {
         {step === 2 && (
           <div className="space-y-6 py-4 text-center">
             
-            {/* Success Icon */}
             <div className="flex justify-center">
                 <div className="bg-green-100 p-4 rounded-full animate-bounce">
                     <CheckCircle2 className="h-12 w-12 text-green-600" />
@@ -126,16 +143,19 @@ export default function SchoolSetupWizard() {
             </div>
 
             <div className="space-y-2">
-                <h3 className="text-xl font-bold text-slate-800">You are ready to go!</h3>
+                <h3 className="text-xl font-bold text-slate-800">Welcome Aboard!</h3>
                 <p className="text-slate-600">
-                    You have successfully created your first class: <span className="font-bold text-blue-600">{className}</span>.
+                    {skipped 
+                        ? "You can set up your classes and students anytime from the dashboard." 
+                        : <span>You have successfully created: <span className="font-bold text-blue-600">{className}</span>.</span>
+                    }
                 </p>
             </div>
 
-            {/* AI Assistant Tip */}
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-left flex gap-3">
+            {/* AI Assistant Tip - THIS IS THE IMPORTANT PART */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-left flex gap-3 shadow-sm">
                 <div className="bg-purple-100 p-2 rounded-full h-fit">
-                    {/* Robot Icon matching your chat bot */}
+                    {/* Robot Icon */}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
