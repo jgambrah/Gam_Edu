@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -87,7 +86,7 @@ export default function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
           <GraduationCap className="h-8 w-8 text-primary" />
-          <span className="text-lg font-semibold text-primary">CampusConnect</span>
+          <span className="text-lg font-semibold text-primary">GAM Edu</span>
         </div>
       </SidebarHeader>
       
@@ -149,7 +148,7 @@ export default function AppSidebar() {
             </Link>
           </div>
         )}
-      </SidebarContent>
+      </SidebarFooter>
       
       <SidebarFooter>
         {process.env.NODE_ENV === 'development' && <RoleSwitcher />}
