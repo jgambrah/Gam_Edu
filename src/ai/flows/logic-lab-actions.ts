@@ -2,10 +2,16 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // --- ACTION 1: INTERPRETER ---
-export async function interpretBlockCodeAction(blocks: string[]) {
+export async function interpretBlockCodeAction(blocks: string[], schoolId: string) {
   try {
+    const creditResult = await checkAndSpendCredits(schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, output: "AI Credit Check Failed: " + creditResult.error };
+    }
+
     // STEP 1: Turn blocks into a string
     let codeString = blocks.map(b => b === '[NEWLINE]' ? '\n' : b).join(' ');
 
@@ -55,9 +61,15 @@ export async function getCodeCoachResponseAction(input: {
     currentBlocks: string[],
     availableBlocks: string[],
     userQuestion?: string,
-    missionTitle: string
+    missionTitle: string,
+    schoolId: string
 }) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, text: "The Code Coach is out of AI credits. Please ask your teacher." };
+    }
+
     const prompt = `
       You are "Code Coach", a friendly programming tutor for kids (ages 10-14).
       
@@ -92,8 +104,13 @@ export async function getCodeCoachResponseAction(input: {
 }
 
 // --- ACTION 3: CONCEPT EXPLAINER ---
-export async function explainCodingConceptAction(concept: string) {
+export async function explainCodingConceptAction(concept: string, schoolId: string) {
   try {
+    const creditResult = await checkAndSpendCredits(schoolId, 1);
+    if (!creditResult.success) {
+      return { success: false, text: "The AI Explainer is out of credits." };
+    }
+
     const prompt = `
       Explain the coding concept: "${concept}".
       Target Audience: 10-year-old student.

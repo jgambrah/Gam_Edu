@@ -1,8 +1,8 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // Define the Input Structure
 interface Question {
@@ -14,6 +14,7 @@ interface EvaluationInput {
   passageText: string;
   questions: Question[];
   studentAnswers: Record<number, string>;
+  schoolId: string;
 }
 
 // Define the Output Structure (Strict JSON)
@@ -30,6 +31,11 @@ const FeedbackSchema = z.object({
 
 export async function evaluateReadingSubmissionAction(input: EvaluationInput) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 5);
+    if (!creditResult.success) {
+      return { success: false, error: "Not enough AI credits to grade submission." };
+    }
+
     // Format the data for the AI
     const qAndA = input.questions.map((q, idx) => {
       return `Q${idx + 1}: ${q.question}

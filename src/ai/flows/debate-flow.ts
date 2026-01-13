@@ -1,8 +1,8 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // --- SHARED TYPES ---
 const MessageSchema = z.object({
@@ -15,10 +15,16 @@ const DebateInputSchema = z.object({
   topic: z.string(),
   history: z.array(MessageSchema),
   lastMessage: z.string(),
+  schoolId: z.string(), // Added for credit check
 });
 
 export async function generateDebateResponse(input: z.infer<typeof DebateInputSchema>) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
+    if (!creditResult.success) {
+      return { success: false, text: "You are out of AI credits for this debate." };
+    }
+
     const historyText = input.history
       .map(m => `${m.role === 'user' ? 'Debater' : 'Opponent'}: ${m.text}`)
       .join('\n');
@@ -63,8 +69,13 @@ const EvaluationSchema = z.object({
   areaForImprovement: z.string().describe("One specific thing to improve"),
 });
 
-export async function evaluateDebateAction(history: z.infer<typeof MessageSchema>[]) {
+export async function evaluateDebateAction(history: z.infer<typeof MessageSchema>[], schoolId: string) {
   try {
+    const creditResult = await checkAndSpendCredits(schoolId, 2);
+    if (!creditResult.success) {
+      return { success: false, error: "Not enough AI credits to provide an evaluation." };
+    }
+
     console.log("👨‍⚖️ Judge is reviewing history length:", history.length);
 
     // 1. Better Transcript Formatting

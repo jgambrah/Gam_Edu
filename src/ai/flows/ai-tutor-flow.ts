@@ -1,8 +1,27 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
+
+// Helper to get schoolId from user
+const formatPrivateKey = (key: string) => key.replace(/\\n/g, '\n').replace(/"/g, '');
+
+function getAdminApp(): App {
+  const existingApp = getApps().find(app => app.name === 'admin');
+  if (existingApp) return existingApp;
+  // ... rest of init logic
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
+  if (!projectId || !clientEmail || !privateKeyRaw) throw new Error("Missing Admin credentials.");
+  const privateKey = formatPrivateKey(privateKeyRaw);
+  return initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) }, 'admin');
+}
+
 
 const ChatInputSchema = z.object({
   history: z.array(z.object({
@@ -10,10 +29,26 @@ const ChatInputSchema = z.object({
     content: z.string()
   })),
   message: z.string(),
+  userId: z.string(), // Added to find the user's school
 });
 
 export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
   try {
+    const adminApp = getAdminApp();
+    const userRecord = await getAuth(adminApp).getUser(input.userId);
+    const db = getFirestore(adminApp);
+    const userDoc = await db.collection('users').doc(input.userId).get();
+    const schoolId = userDoc.data()?.schoolId;
+
+    if (!schoolId) {
+      return { success: false, text: "Error: School ID not found for your account." };
+    }
+    
+    const creditResult = await checkAndSpendCredits(schoolId, 1); // Cost: 1 credit per message
+    if (!creditResult.success) {
+      return { success: false, text: "You are out of AI credits! Please contact your school administrator." };
+    }
+
     const historyText = input.history
       .map(m => `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.content}`)
       .join('\n');

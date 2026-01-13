@@ -2,12 +2,14 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // Define Input
 interface WritingInput {
   prompt: string;
   studentText: string;
   type: string; // e.g., 'Creative Writing', 'Essay'
+  schoolId: string;
 }
 
 // Define Output Schema (Structured Feedback)
@@ -21,6 +23,11 @@ const WritingFeedbackSchema = z.object({
 
 export async function evaluateWritingAction(input: WritingInput) {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 5);
+    if (!creditResult.success) {
+      return { success: false, error: "Not enough AI credits to grade submission." };
+    }
+
     const prompt = `
       You are an expert English Teacher. Evaluate the following student writing submission.
 

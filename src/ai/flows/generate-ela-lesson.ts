@@ -1,8 +1,8 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 const ElaLessonSchema = z.object({
   title: z.string().describe("A catchy title for the ELA lesson"),
@@ -15,8 +15,13 @@ const ElaLessonSchema = z.object({
 
 export type GeneratedElaLesson = z.infer<typeof ElaLessonSchema>;
 
-export async function generateElaLessonAction(input: { topic: string, grade: string }): Promise<{ success: boolean; data?: GeneratedElaLesson, error?: string }> {
+export async function generateElaLessonAction(input: { topic: string, grade: string, schoolId: string }): Promise<{ success: boolean; data?: GeneratedElaLesson, error?: string }> {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 3);
+    if (!creditResult.success) {
+      return { success: false, error: "Not enough AI credits to generate this lesson." };
+    }
+
     const prompt = `
       You are an expert English Language Arts (ELA) tutor. Create a micro-lesson for a student in ${input.grade}.
       Topic: "${input.topic}".

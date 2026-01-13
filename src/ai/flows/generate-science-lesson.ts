@@ -1,8 +1,8 @@
-
 'use server';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 const LessonSchema = z.object({
   title: z.string().describe("A catchy title for the lesson"),
@@ -15,8 +15,13 @@ const LessonSchema = z.object({
 
 export type GeneratedLesson = z.infer<typeof LessonSchema>;
 
-export async function generateScienceLessonAction(input: { topic: string, grade: string }): Promise<{ success: boolean; data?: GeneratedLesson, error?: string }> {
+export async function generateScienceLessonAction(input: { topic: string, grade: string, schoolId: string }): Promise<{ success: boolean; data?: GeneratedLesson, error?: string }> {
   try {
+    const creditResult = await checkAndSpendCredits(input.schoolId, 3);
+    if (!creditResult.success) {
+      return { success: false, error: "Not enough AI credits to generate this lesson." };
+    }
+
     const prompt = `
       You are an expert science tutor. Create a micro-lesson for a student in ${input.grade}.
       Topic: "${input.topic}".
