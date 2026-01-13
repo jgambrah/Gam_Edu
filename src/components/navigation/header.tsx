@@ -18,7 +18,8 @@ import { navItems } from '@/lib/data';
 import { useFirebase, useUser } from '@/firebase'; 
 import { signOut } from 'firebase/auth';
 import { useRole } from '@/context/role-context'; 
-import NotificationBell from './notifications'; // Import the new component
+import NotificationBell from './notifications';
+import CreditBalance from '@/components/CreditBalance'; // Import the new component
 
 export default function Header() {
   const pathname = usePathname();
@@ -50,8 +51,9 @@ export default function Header() {
         <h1 className="text-lg font-semibold md:text-xl">{pageTitle}</h1>
       </div>
 
-      <div className="flex items-center gap-2">
-        <NotificationBell /> {/* Add the bell here */}
+      <div className="flex items-center gap-4">
+        <CreditBalance /> {/* Add the balance component */}
+        <NotificationBell />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
