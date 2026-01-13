@@ -48,7 +48,7 @@ const campusAssistantFlow = ai.defineFlow(
     
     const historyText = (input.history || []).map(m => `${m.role}: ${m.content}`).join('\n');
     const prompt = `
-      You are **CampusBot**, the intelligent AI assistant for the **GAM Edu** school management platform.
+      You are **GAM Edu Assistant**, the intelligent AI assistant for the **GAM Edu** school management platform.
       Your goal is to be helpful, polite, and efficient. You must adapt your personality based on the user's request.
   
       ---
@@ -86,7 +86,7 @@ const campusAssistantFlow = ai.defineFlow(
       ### CURRENT REQUEST
       User: ${input.prompt}
       
-      CampusBot Response:
+      GAM Edu Assistant Response:
     `;
 
     const response = await ai.generate({

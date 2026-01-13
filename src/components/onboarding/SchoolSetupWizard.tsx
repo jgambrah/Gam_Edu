@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirestore, useAuth } from '@/firebase';
+import { useFirestore, useAuth, useMemoFirebase } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, getDocs } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -33,14 +33,17 @@ export default function SchoolSetupWizard() {
 
 
   // 1. Check if Setup is Needed
+  const classesQuery = useMemoFirebase(
+    () => (firestore && schoolId ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null),
+    [firestore, schoolId]
+  );
+
   useEffect(() => {
-    // Don't run check until we know the user's role and school
-    if (isLoadingSchool || isLoadingRole || !isDirector || !firestore || !schoolId) {
-      return;
-    }
-    
     async function checkStatus() {
-      // Check if they have any classes yet
+      if (isLoadingSchool || isLoadingRole || !isDirector || !firestore || !schoolId) {
+        return;
+      }
+      
       const q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
       const snap = await getDocs(q);
       
@@ -136,6 +139,7 @@ export default function SchoolSetupWizard() {
         {step === 2 && (
           <div className="space-y-6 py-4 text-center">
             
+            {/* Success Icon */}
             <div className="flex justify-center">
                 <div className="bg-green-100 p-4 rounded-full animate-bounce">
                     <CheckCircle2 className="h-12 w-12 text-green-600" />
@@ -143,7 +147,7 @@ export default function SchoolSetupWizard() {
             </div>
 
             <div className="space-y-2">
-                <h3 className="text-xl font-bold text-slate-800">Welcome Aboard!</h3>
+                <h3 className="text-xl font-bold text-slate-800">You are ready to go!</h3>
                 <p className="text-slate-600">
                     {skipped 
                         ? "You can set up your classes and students anytime from the dashboard." 

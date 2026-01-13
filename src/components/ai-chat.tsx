@@ -74,9 +74,9 @@ export function AiChat() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[425px] md:max-w-lg lg:max-w-2xl grid-rows-[auto_1fr_auto] h-full max-h-[80vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>CampusBot Assistant</DialogTitle>
+            <DialogTitle>GAM Edu Assistant</DialogTitle>
             <DialogDescription>
-              Your AI-powered helper for all things CampusConnect.
+              Your AI-powered helper for all things GAM Edu.
             </DialogDescription>
           </DialogHeader>
           
