@@ -3,12 +3,12 @@
 
 import { useState } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { useAuth } from '@/firebase'; // Adjust import based on your setup
+import { useAuth } from '@/firebase'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Mail, ArrowLeft, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, ArrowLeft, Loader2, CheckCircle2, AlertCircle, School } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PasswordResetPage() {
@@ -38,7 +38,6 @@ export default function PasswordResetPage() {
     } catch (error: any) {
       setStatus('error');
       
-      // Handle specific Firebase error codes
       switch (error.code) {
         case 'auth/user-not-found':
           setErrorMessage('No account found with this email address');
@@ -60,7 +59,6 @@ export default function PasswordResetPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
       <div className="w-full max-w-md">
-        {/* Back to Login Link */}
         <Link 
           href="/" 
           className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors"
@@ -76,22 +74,20 @@ export default function PasswordResetPage() {
             </div>
             <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
             <CardDescription className="text-gray-600">
-              Enter your email address and we'll send you a link to reset your password
+              Enter your email and we'll send a link to reset your password
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {/* Success Alert */}
             {status === 'success' && (
               <Alert className="bg-green-50 border-green-200">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
-                  Password reset email sent! Check your inbox and follow the instructions.
+                  Email sent! Check your inbox and follow the instructions.
                 </AlertDescription>
               </Alert>
             )}
 
-            {/* Error Alert */}
             {status === 'error' && (
               <Alert className="bg-red-50 border-red-200">
                 <AlertCircle className="h-4 w-4 text-red-600" />
@@ -129,33 +125,15 @@ export default function PasswordResetPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Sending Email...
+                    Sending Link...
                   </>
                 ) : (
                   'Send Reset Link'
                 )}
               </Button>
             </form>
-
-            {/* Additional Info */}
-            <div className="pt-4 border-t text-center">
-              <p className="text-sm text-gray-600">
-                Remember your password?{' '}
-                <Link 
-                  href="/" 
-                  className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                >
-                  Sign in
-                </Link>
-              </p>
-            </div>
           </CardContent>
         </Card>
-
-        {/* Footer Text */}
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Didn't receive the email? Check your spam folder or try again
-        </p>
       </div>
     </div>
   );

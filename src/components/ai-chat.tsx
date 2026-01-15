@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { campusAssistant } from '@/ai/flows/campus-assistant-flow';
 import { useRole } from '@/context/role-context';
-import { GraduationCap, Bot, Loader2, Send } from 'lucide-react';
+import { Bot, Loader2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';

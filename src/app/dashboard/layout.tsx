@@ -10,7 +10,8 @@ import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import AppSidebar from '@/components/navigation/sidebar';
 import { RoleProvider } from '@/context/role-context';
-import SchoolSetupWizard from '@/components/onboarding/SchoolSetupWizard'; // Import the wizard
+import SchoolSetupWizard from '@/components/onboarding/SchoolSetupWizard'; 
+import TrialBanner from '@/components/TrialBanner';
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
@@ -39,13 +40,14 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <SidebarInset>
         <div className="flex h-screen flex-col overflow-hidden">
+          <TrialBanner />
           <Header />
           <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
             {children}
           </main>
         </div>
         <AiChat />
-        <SchoolSetupWizard /> {/* Add the wizard component here */}
+        <SchoolSetupWizard />
       </SidebarInset>
     </SidebarProvider>
   );

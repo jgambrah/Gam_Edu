@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, Home, ArrowLeft, SearchX } from 'lucide-react';
+import { School, Home, ArrowLeft, SearchX } from 'lucide-react';
 
 export default function NotFound() {
   return (
@@ -11,7 +11,7 @@ export default function NotFound() {
       {/* Visual Icon */}
       <div className="bg-white p-6 rounded-full shadow-xl mb-6 animate-in zoom-in duration-500">
         <div className="relative">
-          <GraduationCap className="h-24 w-24 text-indigo-200" />
+          <School className="h-24 w-24 text-indigo-200" />
           <SearchX className="h-12 w-12 text-indigo-600 absolute -bottom-2 -right-2 bg-white rounded-full border-4 border-white" />
         </div>
       </div>
