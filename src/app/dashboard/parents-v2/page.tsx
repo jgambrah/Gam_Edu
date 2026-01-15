@@ -3,9 +3,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useFirestore } from '@/firebase';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from 'firebase/firestore';
-import { UserRole, ALL_ROLES } from '@/lib/types';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc, deleteField } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
+import { useCurrentSchool } from '@/hooks/use-current-school'; 
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -22,7 +22,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
 
-
 // --- TYPE DEFINITIONS ---
 type ParentMember = {
   id: string;
@@ -33,7 +32,7 @@ type ParentMember = {
   phone?: string;
   address?: string;
   studentIds?: string[];
-  schoolId?: string;
+  schoolId?: string; // New Field
 };
 
 type Student = {
@@ -41,6 +40,7 @@ type Student = {
     uid: string;
     firstName: string;
     lastName: string;
+    schoolId?: string; // Also expect schoolId here
 };
 
 // --- MAIN PAGE COMPONENT ---
@@ -48,11 +48,11 @@ export default function ParentsPage() {
   const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool(); 
 
   const [parents, setParents] = useState<ParentMember[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null);
+  const [isLoadingData, setIsLoadingData] = useState(true); 
 
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -63,36 +63,14 @@ export default function ParentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [studentSearch, setStudentSearch] = useState('');
 
-  // --- 1. INITIALIZATION: FIND YOUR SCHOOL ---
-  useEffect(() => {
-    const fetchAdminProfile = async () => {
-        if (!user || !firestore) return;
-        try {
-            // Check 'staff' collection first (Standard SaaS Admin)
-            const staffDoc = await getDoc(doc(firestore, 'staff', user.uid));
-            
-            if (staffDoc.exists() && staffDoc.data().schoolId) {
-                console.log("🏫 School Found:", staffDoc.data().schoolId);
-                setAdminSchoolId(staffDoc.data().schoolId);
-            } else {
-                 // Fallback for CEO/SuperAdmin in 'users' collection
-                const userDoc = await getDoc(doc(firestore, 'users', user.uid));
-                if (userDoc.exists() && userDoc.data().schoolId) {
-                    setAdminSchoolId(userDoc.data().schoolId);
-                } else {
-                    console.warn("Could not determine school. Please contact support.");
-                }
-            }
-        } catch (error) { console.error("Error fetching admin profile:", error); }
-    };
-    fetchAdminProfile();
-  }, [user, firestore]);
-
-  // --- 2. FETCH DATA (PARENTS & STUDENTS) (FILTERED BY SCHOOL) ---
+  // --- 1. FETCH DATA (PARENTS & STUDENTS) (FILTERED BY SCHOOL) ---
   const loadData = useCallback(async () => {
-    if (!firestore || !adminSchoolId) return; 
+    if (!firestore || !adminSchoolId) {
+        return; 
+    }
     
-    setIsLoading(true);
+    setIsLoadingData(true);
+
     try {
         const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
         const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
@@ -108,12 +86,14 @@ export default function ParentsPage() {
         setParents(parentList);
         setStudents(studentList);
     } catch (err: any) {
+        console.error("Load Data Error:", err);
         toast({ variant: 'destructive', title: "Error", description: "Failed to load school data." });
     } finally {
-        setIsLoading(false);
+        setIsLoadingData(false);
     }
   }, [firestore, adminSchoolId, toast]);
 
+  // Trigger data load when school ID becomes available
   useEffect(() => {
       if(adminSchoolId) loadData();
   }, [loadData, adminSchoolId]);
@@ -127,10 +107,10 @@ export default function ParentsPage() {
     }
   }, [isAddOpen, editingParent]);
   
-  // --- 3. ADD PARENT ---
+  // --- 2. ADD PARENT ---
   const handleAddParent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isSubmitting || !firestore || !adminSchoolId) return;
+      if (isSubmitting || !firestore || !adminSchoolId) return; 
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
@@ -142,7 +122,7 @@ export default function ParentsPage() {
           if (studentIds.length > 0) {
             const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
             const conflictSnap = await getDocs(conflictQuery);
-            if (!conflictSnap.empty) throw new Error("A selected student is already linked to another parent.");
+            if (!conflictSnap.empty) throw new Error("One or more selected students are already linked to another parent.");
           }
 
           const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName }, adminSchoolId);
@@ -156,22 +136,28 @@ export default function ParentsPage() {
               phone: values.phone,
               address: values.address,
               studentIds: studentIds,
-              schoolId: adminSchoolId,
+              schoolId: adminSchoolId, 
               createdAt: serverTimestamp()
           });
 
-          toast({ title: "Success", description: "Parent created successfully." });
+          for (const studentId of studentIds) {
+            const studentRef = doc(firestore, 'students', studentId);
+            await updateDoc(studentRef, { parentId: result.uid });
+          }
+
+          toast({ title: "Success", description: "Parent created and linked successfully." });
           setIsAddOpen(false);
           loadData();
 
       } catch (error: any) {
+          console.error("Error adding parent:", error);
           toast({ variant: 'destructive', title: "Error creating parent", description: error.message });
       } finally {
           setIsSubmitting(false);
       }
   };
 
-  // --- 4. UPDATE PARENT ---
+  // --- 3. UPDATE PARENT ---
   const handleUpdateParent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingParent || isSubmitting || !firestore || !adminSchoolId) return;
@@ -186,35 +172,54 @@ export default function ParentsPage() {
             const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
             const conflictSnap = await getDocs(conflictQuery);
             const actualConflicts = conflictSnap.docs.filter(doc => doc.id !== editingParent.id);
-            if (actualConflicts.length > 0) throw new Error("A selected student is already linked to another parent.");
+            if (actualConflicts.length > 0) throw new Error("One or more selected students are already linked to another parent.");
         }
 
         const parentRef = doc(firestore, 'parents', editingParent.id);
-        await updateDoc(parentRef, { ...values, studentIds });
+        await updateDoc(parentRef, { ...values, studentIds, updatedAt: serverTimestamp() });
+
+        const oldStudentIds = editingParent.studentIds || [];
+        const studentsToUnlink = oldStudentIds.filter(id => !studentIds.includes(id));
+        const studentsToLink = studentIds.filter(id => !oldStudentIds.includes(id));
+
+        for (const studentId of studentsToUnlink) {
+            const studentRef = doc(firestore, 'students', studentId);
+            await updateDoc(studentRef, { parentId: deleteField() }); 
+        }
+        for (const studentId of studentsToLink) {
+            const studentRef = doc(firestore, 'students', studentId);
+            await updateDoc(studentRef, { parentId: editingParent.uid });
+        }
+
 
         toast({ title: "Updated", description: "Parent details saved." });
         setEditingParent(null);
         loadData();
 
     } catch (error: any) {
+        console.error("Error updating parent:", error);
         toast({ variant: 'destructive', title: "Error", description: error.message });
     } finally {
         setIsSubmitting(false);
     }
   };
 
-  // --- 5. DELETE PARENT ---
+  // --- 4. DELETE PARENT ---
   const handleDelete = async (id: string) => {
-    if (!firestore || !confirm("Delete this parent's profile?")) return;
+    if (!firestore || !confirm("Delete this parent's profile? This cannot be undone.")) return;
     try {
         await deleteDoc(doc(firestore, 'parents', id));
-        toast({ title: "Deleted" });
+        toast({ title: "Deleted", description: "Parent profile removed." });
         loadData();
     } catch (e: any) {
+        console.error("Error deleting parent:", e);
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
+  const overallLoading = isLoadingSchoolId || isLoadingData;
+
+  // Client-side filtering for display
   const filteredParents = parents.filter(p => searchStudent(p, searchTerm));
   const filteredStudentsForModal = students.filter(s => searchStudent(s, studentSearch));
 
@@ -227,12 +232,12 @@ export default function ParentsPage() {
                     <HeartHandshake className="h-6 w-6 text-pink-500"/> Parent Management
                 </CardTitle>
                 <CardDescription>
-                    Found: {parents.length} | Showing: {filteredParents.length}
+                    {adminSchoolId ? `Total Parents: ${parents.length}` : "Loading School Data..."}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={loadData} disabled={isLoading || !adminSchoolId}>
-                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
+                <Button variant="outline" onClick={loadData} disabled={overallLoading || !adminSchoolId}>
+                    <RefreshCw className={`h-4 w-4 mr-2 ${overallLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
                 <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600" disabled={!adminSchoolId}>
                     <UserPlus className="h-4 w-4 mr-2"/> Add Parent
@@ -245,13 +250,15 @@ export default function ParentsPage() {
               value={searchTerm}
               onChange={setSearchTerm}
               className="max-w-sm"
-              placeholder="Search parents by name..."
+              placeholder="Search parents by name or email..."
             />
 
-            {isLoading ? (
+            {overallLoading ? (
                 <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-pink-500"/></div>
             ) : filteredParents.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No parents found.</div>
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                    {adminSchoolId ? "No parents found for this school." : "Loading..."}
+                </div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
@@ -292,16 +299,19 @@ export default function ParentsPage() {
                 <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="Residential Address" /></div>
                 
                 <div className="space-y-2 pt-2">
-                    <Label>Link Students</Label>
+                    <Label>Link Students (Optional)</Label>
                     <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
                     <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
-                        {filteredStudentsForModal.map(s => (
-                            <div key={s.id} className="flex items-center space-x-2">
-                                <Checkbox id={`add-${s.id}`} name="studentIds" value={s.id} />
-                                <Label htmlFor={`add-${s.id}`}>{s.firstName} {s.lastName}</Label>
-                            </div>
-                        ))}
-                         {filteredStudentsForModal.length === 0 && <p className="text-sm text-center text-muted-foreground">No students match your search.</p>}
+                        {filteredStudentsForModal.length > 0 ? (
+                            filteredStudentsForModal.map(s => (
+                                <div key={s.id} className="flex items-center space-x-2">
+                                    <Checkbox id={`add-${s.id}`} name="studentIds" value={s.uid} />
+                                    <Label htmlFor={`add-${s.id}`}>{s.firstName} {s.lastName}</Label>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-sm text-center text-muted-foreground">No students match your search or no students have been added yet.</p>
+                        )}
                     </div>
                 </div>
 
@@ -330,13 +340,21 @@ export default function ParentsPage() {
                         <Label>Link Students</Label>
                         <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
                         <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
-                            {filteredStudentsForModal.map(s => (
-                                <div key={s.id} className="flex items-center space-x-2">
-                                    <Checkbox id={`edit-${s.id}`} name="studentIds" value={s.id} defaultChecked={editingParent.studentIds?.includes(s.id)} />
-                                    <Label htmlFor={`edit-${s.id}`}>{s.firstName} {s.lastName}</Label>
-                                </div>
-                            ))}
-                             {filteredStudentsForModal.length === 0 && <p className="text-sm text-center text-muted-foreground">No students match your search.</p>}
+                            {filteredStudentsForModal.length > 0 ? (
+                                filteredStudentsForModal.map(s => (
+                                    <div key={s.id} className="flex items-center space-x-2">
+                                        <Checkbox 
+                                            id={`edit-${s.id}`} 
+                                            name="studentIds" 
+                                            value={s.uid} 
+                                            defaultChecked={editingParent.studentIds?.includes(s.uid)} 
+                                        />
+                                        <Label htmlFor={`edit-${s.id}`}>{s.firstName} {s.lastName}</Label>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-sm text-center text-muted-foreground">No students match your search or no students have been added yet.</p>
+                            )}
                         </div>
                     </div>
                     <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Update Parent Details"}</Button></DialogFooter>
@@ -348,4 +366,4 @@ export default function ParentsPage() {
   );
 }
 
-    
+```
