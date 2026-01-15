@@ -14,7 +14,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, School, CheckCircle2, Globe, Brain, Shield, Users, BookOpen } from 'lucide-react';
 
 // --- DATA: TESTIMONIALS ---
-// You can add more here later!
 const TESTIMONIALS = [
   {
     name: "James Smith",
@@ -40,13 +39,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [testimonialIndex, setTestimonialIndex] = useState(0); // State for rotation
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
   const router = useRouter();
   const { toast } = useToast();
   const auth = useAuth();
 
 
-  // Auto-rotate testimonials every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setTestimonialIndex((prev) => (prev + 1) % TESTIMONIALS.length);
@@ -89,41 +87,46 @@ export default function LoginPage() {
     <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
       
       {/* LEFT SIDE: MARKETING */}
-      <div className="hidden lg:flex flex-col bg-blue-950 text-white p-12 relative overflow-hidden">
+      {/* FIX: Added h-screen and overflow-y-auto to allow scrolling on small screens */}
+      {/* FIX: Removed justify-between, used flex-col with gap to control flow */}
+      <div className="hidden lg:flex flex-col bg-blue-950 text-white p-8 lg:p-12 relative h-screen overflow-y-auto no-scrollbar">
         
         {/* Background Decor */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col h-full">
-          <div>
-            <div className="flex items-center gap-2 text-2xl font-bold mb-8">
-              <School className="h-8 w-8 text-blue-400" />
+          
+          {/* Top Section */}
+          <div className="flex-shrink-0">
+            <div className="flex items-center gap-2 text-xl font-bold mb-6">
+              <School className="h-6 w-6 text-blue-400" />
               GAM Edu
             </div>
             
-            <h1 className="text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-3xl lg:text-4xl font-extrabold leading-tight mb-3">
               The Intelligent Future of <span className="text-blue-400">School Management</span>.
             </h1>
-            <p className="text-blue-200 text-lg mb-8 max-w-lg">
+            <p className="text-blue-200 text-base mb-6 max-w-lg">
               Empower your institution with AI-driven insights, automated finance, and personalized learning clubs.
             </p>
-
-            <div className="space-y-5">
-              <FeatureRow icon={Brain} title="Intelligent AI Core" desc="Auto-generate quizzes, lesson plans & personalized tutors." />
-              <FeatureRow icon={School} title="Complete Management Suite" desc="Staff, Students, Payroll & Finance in one secure cloud." />
-              <FeatureRow icon={Shield} title="Role-Based Security" desc="Dedicated portals for Directors, Teachers & Parents." />
-              <FeatureRow icon={Users} title="Engaging STEM Clubs" desc="Math, Science & Coding clubs with leaderboards." />
-              <FeatureRow icon={BookOpen} title="Smart Financials" desc="Auto-reconciliation for fees & expenses." />
-            </div>
           </div>
 
-          {/* DYNAMIC TESTIMONIAL CARD */}
-          <div className="relative z-10 mt-auto pt-12">
-              <div className="bg-white/10 p-6 rounded-xl border border-white/10 backdrop-blur-md transition-all duration-500 ease-in-out">
-              <p className="font-medium italic text-lg leading-relaxed">"{currentTestimonial.text}"</p>
+          {/* Features Section - Compact Spacing */}
+          <div className="space-y-3 flex-grow">
+            <FeatureRow icon={Brain} title="Intelligent AI Core" desc="Auto-generate quizzes, lesson plans & personalized tutors." />
+            <FeatureRow icon={School} title="Complete Management Suite" desc="Staff, Students, Payroll & Finance in one secure cloud." />
+            <FeatureRow icon={Shield} title="Role-Based Security" desc="Dedicated portals for Directors, Teachers & Parents." />
+            <FeatureRow icon={Users} title="Engaging STEM Clubs" desc="Math, Science & Coding clubs with leaderboards." />
+            <FeatureRow icon={BookOpen} title="Smart Financials" desc="Auto-reconciliation for fees & expenses." />
+          </div>
+
+          {/* DYNAMIC TESTIMONIAL CARD - Pushed to bottom safely */}
+          <div className="relative z-10 mt-8 flex-shrink-0">
+              <div className="bg-white/10 p-5 rounded-xl border border-white/10 backdrop-blur-md transition-all duration-500 ease-in-out">
+              <p className="font-medium italic text-base leading-relaxed">"{currentTestimonial.text}"</p>
               <div className="mt-4 flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white shadow-lg">
+                  <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white shadow-lg text-xs">
                       {currentTestimonial.initials}
                   </div>
                   <div>
@@ -146,7 +149,7 @@ export default function LoginPage() {
       </div>
 
       {/* RIGHT SIDE: LOGIN */}
-      <div className="flex items-center justify-center p-8 bg-slate-50">
+      <div className="flex items-center justify-center p-8 bg-slate-50 h-screen overflow-y-auto">
         <Card className="w-full max-w-md shadow-2xl border-t-4 border-t-blue-600">
           <CardHeader className="space-y-1 pb-2">
             <div className="lg:hidden flex justify-center mb-4">
@@ -210,9 +213,9 @@ export default function LoginPage() {
 
 function FeatureRow({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) {
   return (
-    <div className="flex items-start gap-4 p-2 hover:bg-white/5 rounded-lg transition-colors">
-      <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
-        <Icon className="h-5 w-5 text-blue-300" />
+    <div className="flex items-start gap-3 p-2 hover:bg-white/5 rounded-lg transition-colors">
+      <div className="h-8 w-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+        <Icon className="h-4 w-4 text-blue-300" />
       </div>
       <div>
         <h3 className="font-bold text-white text-sm">{title}</h3>
