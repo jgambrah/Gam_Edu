@@ -4,10 +4,10 @@
 import { useState, useMemo, useRef } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, where, doc } from 'firebase/firestore';
+import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
-  Save, Loader2, CornerDownRight, Trash2, Receipt
+  Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -432,7 +432,7 @@ export default function FinancialReportsPage() {
         <div className="space-y-6 p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><FileBarChart className="text-indigo-600"/> Financial Reports</h1>
+                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><BarChart className="text-indigo-600"/> Financial Reports</h1>
                     <p className="text-muted-foreground">Generate standard accounting statements.</p>
                 </div>
                 

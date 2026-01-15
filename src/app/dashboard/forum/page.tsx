@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, orderBy, addDoc, doc, serverTimestamp, updateDoc, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, doc, serverTimestamp, updateDoc, where, limit, getDocs } from 'firebase/firestore';
 import { ForumThread, ForumReply } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
