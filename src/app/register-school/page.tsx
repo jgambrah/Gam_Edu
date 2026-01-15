@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Loader2, CheckCircle2, School } from 'lucide-react';
+import { Loader2, CheckCircle2, School, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RegisterSchoolPage() {
@@ -55,7 +55,7 @@ export default function RegisterSchoolPage() {
       
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-blue-900 flex items-center justify-center gap-3">
-            <School className="h-10 w-10" /> GAM Edu
+            <GraduationCap className="h-10 w-10" /> GAM Edu
         </h1>
         <p className="text-slate-600 mt-2">The complete management solution for modern schools.</p>
       </div>

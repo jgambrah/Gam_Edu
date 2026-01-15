@@ -46,7 +46,7 @@ export default function NotFound() {
 
       {/* Footer decoration */}
       <div className="absolute bottom-8 text-xs text-slate-400">
-        Sunnyside Academy &copy; 2025
+        GAM Edu &copy; 2025
       </div>
     </div>
   );
