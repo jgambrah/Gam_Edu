@@ -59,7 +59,7 @@ export function useCurrentSchool() {
         fetchSchool();
     }
 
-  }, [user, isUserLoading, firestore, schoolId]); // Added schoolId to dependency array
+  }, [user, isUserLoading, firestore]); // ✅ FIX: Removed schoolId from the dependency array
 
   return { schoolId, loading };
 }
