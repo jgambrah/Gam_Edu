@@ -18,6 +18,8 @@ import { useRole } from '@/context/role-context';
 import { GraduationCap, Bot, Loader2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 type Message = {
   role: 'user' | 'model';
@@ -31,14 +33,28 @@ export function AiChat() {
   const [isLoading, setIsLoading] = useState(false);
   const { role } = useRole();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
+    setIsLoading(true);
     const userMessage: Message = { role: 'user', content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
-    setIsLoading(true);
+    
+    if (schoolId) {
+        const result = await checkAndSpendCredits(schoolId, 1);
+        if (!result.success) {
+            setMessages(prev => [...prev, { 
+                role: 'model', 
+                content: "🚫 You are out of AI Credits. Please ask your administrator to upgrade the school's plan." 
+            }]);
+            setIsLoading(false);
+            return;
+        }
+    }
+
 
     try {
       const response = await campusAssistant({
