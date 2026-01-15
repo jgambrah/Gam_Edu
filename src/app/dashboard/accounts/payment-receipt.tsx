@@ -1,0 +1,118 @@
+'use client';
+
+import { AppLogo } from '@/components/icons/app-logo';
+import { format } from 'date-fns';
+import { FinancialRecord, Student } from '@/lib/types';
+import { formatStudentId } from '@/lib/student-utils';
+
+interface PaymentReceiptProps {
+  transaction: FinancialRecord;
+  student: Student;
+  schoolProfile: any; // Using 'any' for flexibility with school profile structure
+}
+
+export function PaymentReceipt({ transaction, student, schoolProfile }: PaymentReceiptProps) {
+  const amountPaid = transaction.amountPaid || 0;
+  const paymentDate = transaction.createdAt?.toDate ? format(transaction.createdAt.toDate(), 'PPP') : 'N/A';
+
+  return (
+    <div 
+        id={`receipt-${transaction.id}`} 
+        className="bg-white text-black font-sans p-8 mx-auto"
+        style={{ width: '210mm', minHeight: '297mm', position: 'relative' }}
+    >
+      {/* Header */}
+      <header className="flex items-center justify-between pb-4 border-b-2 border-black">
+        <div className="flex items-center gap-4">
+          {schoolProfile?.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img 
+              src={schoolProfile.logoUrl} 
+              alt="School Logo" 
+              className="w-20 h-20 object-contain"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <AppLogo className="h-16 w-16 text-slate-800" />
+          )}
+          <div>
+            <h1 className="text-2xl font-bold uppercase tracking-wide">{schoolProfile?.name || 'School Name'}</h1>
+            <p className="text-xs text-gray-500">{schoolProfile?.address || 'School Address'}</p>
+            <p className="text-xs text-gray-500">{schoolProfile?.phone || ''} | {schoolProfile?.email || ''}</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <h2 className="text-3xl font-bold uppercase text-gray-400 tracking-wider">Receipt</h2>
+          <p className="text-xs font-mono text-gray-500 mt-1">
+            #{transaction.id.slice(0, 8).toUpperCase()}
+          </p>
+        </div>
+      </header>
+      
+      {/* Billed To & Details */}
+      <section className="grid grid-cols-2 gap-8 my-8 text-sm">
+        <div>
+          <h3 className="text-xs uppercase font-bold text-gray-500 mb-2">Billed To</h3>
+          <p className="font-bold text-base">{student?.firstName} {student?.lastName}</p>
+          <p className="text-gray-600 font-mono">{formatStudentId(student)}</p>
+        </div>
+        <div className="text-right">
+          <h3 className="text-xs uppercase font-bold text-gray-500 mb-2">Payment Details</h3>
+          <p><span className="font-semibold">Payment Date:</span> {paymentDate}</p>
+          <p><span className="font-semibold">Payment Method:</span> {(transaction as any).paymentMethod || 'Card'}</p>
+        </div>
+      </section>
+
+      {/* Line Items Table */}
+      <section>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50">
+            <tr className="border-b border-t border-gray-200">
+              <th className="text-left p-3 font-bold uppercase text-gray-600">Description</th>
+              <th className="text-right p-3 font-bold uppercase text-gray-600">Amount Paid</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-gray-200">
+              <td className="p-3">
+                <p className="font-medium">{transaction.description}</p>
+                <p className="text-xs text-gray-500">Payment towards fee: {transaction.type}</p>
+              </td>
+              <td className="text-right p-3 font-mono">GH₵ {amountPaid.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      
+      {/* Totals */}
+      <section className="flex justify-end mt-8">
+        <div className="w-1/2">
+          <div className="flex justify-between py-3 border-b">
+            <span className="font-medium">Subtotal</span>
+            <span className="font-mono">GH₵ {amountPaid.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between py-4 bg-gray-100 px-4 rounded-b-lg text-lg">
+            <span className="font-bold">Total Paid</span>
+            <span className="font-bold">GH₵ {amountPaid.toFixed(2)}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="absolute bottom-8 left-8 right-8 text-sm">
+        <div className="flex justify-between items-end pt-12">
+            <div className="text-center w-1/3">
+                <div className="border-b-2 border-dashed border-gray-300 mb-2 w-4/5 mx-auto"></div>
+                <p className="text-xs font-bold uppercase">Bursar's Signature</p>
+            </div>
+            <div className="text-center">
+                <h3 className="text-lg font-bold text-gray-700">Thank You!</h3>
+            </div>
+             <div className="w-1/3 text-right">
+                <p className="text-xs text-gray-400">Generated by GAM Edu</p>
+             </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

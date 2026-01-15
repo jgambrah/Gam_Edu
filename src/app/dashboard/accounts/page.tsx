@@ -42,6 +42,7 @@ import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
 import { StudentSelect } from '@/components/StudentSelect';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { GenerateReceipt } from './generate-receipt'; // IMPORT THE NEW COMPONENT
 
 // --- Types ---
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
@@ -869,10 +870,11 @@ export default function AccountsPage() {
                                                   <TableCell className="text-right font-bold text-slate-700">GH₵{rec.runningBalance.toFixed(2)}</TableCell>
                                                   <TableCell>
                                                       <div className="flex gap-1 justify-end">
-                                                          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400" onClick={() => setTransactionDetail(rec)}><Eye className="h-4 w-4"/></Button>
+                                                          {(rec.amountPaid || 0) > 0 && <GenerateReceipt transaction={rec} />}
                                                           <DropdownMenu>
                                                               <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400"><MoreVertical /></Button></DropdownMenuTrigger>
                                                               <DropdownMenuContent>
+                                                                  <DropdownMenuItem onClick={() => setTransactionDetail(rec)}><Eye className="mr-2 h-4 w-4"/> View Details</DropdownMenuItem>
                                                                   <DropdownMenuItem onClick={() => handleOpenEditDialog(rec)}><Edit className="mr-2 h-4 w-4" /> Edit Bill</DropdownMenuItem>
                                                                   <DropdownMenuItem onClick={() => handleOpenDialog('payment', rec)}>Record Payment</DropdownMenuItem>
                                                                   <DropdownMenuItem onClick={() => handleOpenDialog('waiver', rec)}>Apply Waiver</DropdownMenuItem>
@@ -927,3 +929,4 @@ export default function AccountsPage() {
       </div>
     );
   }
+
