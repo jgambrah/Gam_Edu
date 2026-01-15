@@ -33,12 +33,15 @@ import { MigrateStudentIds } from './migrate-student-ids';
 import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, formatStudentId, generateNextStudentId } from '@/lib/student-utils';
+import { query, where } from 'firebase/firestore';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 export default function StudentsV3Page() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
+  const { schoolId: adminSchoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   // Data State
   const [students, setStudents] = useState<Student[]>([]);
@@ -76,9 +79,9 @@ export default function StudentsV3Page() {
   }, [isAddOpen, editingStudent]);
 
 
-  // --- 1. DIRECT DATA FETCH (The Stable Fix) ---
+  // --- 1. DIRECT DATA FETCH ---
   const loadData = useCallback(async () => {
-    if (isUserLoading || !firestore) return;
+    if (isUserLoading || !firestore || !adminSchoolId) return;
     
     if (!user) {
         setIsLoading(false);
@@ -90,13 +93,13 @@ export default function StudentsV3Page() {
     setStatusMsg("Fetching Data...");
 
     try {
-        // A. Fetch Classes
-        const classSnap = await getDocs(collection(firestore, 'classes'));
+        const classQuery = query(collection(firestore, 'classes'), where('schoolId', '==', adminSchoolId));
+        const classSnap = await getDocs(classQuery);
         const classList = classSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Class[];
         setClasses(classList);
 
-        // B. Fetch Students
-        const studentSnap = await getDocs(collection(firestore, 'students'));
+        const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
+        const studentSnap = await getDocs(studentQuery);
         console.log(`Loaded ${studentSnap.size} students via Direct Fetch.`);
         
         const studentList = studentSnap.docs.map(d => ({ 
@@ -113,9 +116,8 @@ export default function StudentsV3Page() {
     } finally {
         setIsLoading(false);
     }
-  }, [user, isUserLoading, firestore, toast]);
+  }, [user, isUserLoading, firestore, toast, adminSchoolId]);
 
-  // Load on mount
   useEffect(() => {
       loadData();
   }, [loadData]);
@@ -123,7 +125,18 @@ export default function StudentsV3Page() {
   // --- ADD STUDENT ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isSubmitting || !firestore) return;
+      
+      // SAFETY CHECK: Prevent submission if school ID is missing
+      if (!adminSchoolId) {
+          toast({ 
+              variant: 'destructive', 
+              title: "System Error", 
+              description: "School ID not found. Please refresh the page and try again." 
+          });
+          return;
+      }
+
+      if (isSubmitting) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
@@ -135,7 +148,7 @@ export default function StudentsV3Page() {
           const result = await createNewUser(values.email as string, "password123", 'Student', { 
               firstName: values.firstName as string, 
               lastName: values.lastName as string 
-          });
+          }, adminSchoolId);
           if ('error' in result) throw new Error(result.error);
 
           await setDoc(doc(firestore, 'students', result.uid), {
@@ -149,9 +162,10 @@ export default function StudentsV3Page() {
               dateOfBirth: values.dateOfBirth,
               address: values.address,
               usesBusService: values.usesBusService === 'on',
-              usesCanteen: values.usesCanteen === 'on', // Added canteen flag
+              usesCanteen: values.usesCanteen === 'on',
               enrollmentStatus: 'Active',
-              createdAt: serverTimestamp()
+              createdAt: serverTimestamp(),
+              schoolId: adminSchoolId
           });
 
           toast({ title: "Success", description: `Student added with ID: ${newStudentId}.` });
@@ -183,7 +197,7 @@ export default function StudentsV3Page() {
             dateOfBirth: values.dateOfBirth,
             address: values.address,
             usesBusService: values.usesBusService === 'on',
-            usesCanteen: values.usesCanteen === 'on', // Added canteen flag
+            usesCanteen: values.usesCanteen === 'on',
         });
 
         toast({ title: "Updated", description: "Student saved." });
@@ -226,14 +240,14 @@ export default function StudentsV3Page() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    Found: {students.length} | Showing: {filteredStudents.length}
+                    {adminSchoolId ? `Found: ${students.length} | Showing: ${filteredStudents.length}` : 'Loading School Data...'}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
                 <Button variant="outline" onClick={loadData} disabled={isLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
-                <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700">
+                <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700" disabled={!adminSchoolId}>
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
             </div>
@@ -260,7 +274,7 @@ export default function StudentsV3Page() {
             {isLoading ? (
                 <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
                     <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
-                    <p>Loading data...</p>
+                    <p>{statusMsg}</p>
                 </div>
             ) : filteredStudents.length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50 flex flex-col items-center gap-2">
@@ -312,6 +326,8 @@ export default function StudentsV3Page() {
         </CardContent>
       </Card>
 
+      <MigrateStudentIds />
+
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
         <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
@@ -352,7 +368,7 @@ export default function StudentsV3Page() {
                 <div className="flex items-center gap-6">
                     <div className="flex items-center space-x-2">
                         <Checkbox id="usesBusService" name="usesBusService" />
-                        <Label htmlFor="usesBusService">Subscribed to Bus Service</Label>
+                        <Label htmlFor="usesBusService">This student uses the bus service</Label>
                     </div>
                      <div className="flex items-center space-x-2">
                         <Checkbox id="usesCanteen" name="usesCanteen" defaultChecked={true} />
@@ -420,3 +436,5 @@ export default function StudentsV3Page() {
     </div>
   );
 }
+
+    
