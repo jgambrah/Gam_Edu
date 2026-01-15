@@ -331,21 +331,19 @@ function PythonAcademy() {
     window.speechSynthesis.speak(u);
   };
 
-  // --- PYODIDE INITIALIZATION ---
-  useEffect(() => {
-    async function initPyodide() {
-      if (!pyodide.current) {
-        // @ts-ignore
-        pyodide.current = await window.loadPyodide();
-        
-        // PRE-LOAD PROFESSIONAL PACKAGES
-        await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
-        
-        setIsLoadingPy(false);
-      }
+  const handleScriptLoad = async () => {
+    if (pyodide.current) return;
+    try {
+      // @ts-ignore - loadPyodide is available on window after script loads
+      pyodide.current = await window.loadPyodide();
+      await pyodide.current.loadPackage(['numpy', 'matplotlib', 'pandas']);
+      setIsLoadingPy(false);
+      console.log('Pyodide loaded successfully.');
+    } catch (error) {
+      console.error('Failed to load Pyodide:', error);
+      setIsLoadingPy(false);
     }
-    initPyodide();
-  }, []);
+  };
 
   // --- LOAD & FLATTEN MISSIONS ---
   useEffect(() => {
@@ -517,8 +515,8 @@ function PythonAcademy() {
     <div className="min-h-screen bg-[#020617] text-slate-300 p-4 md:p-8 font-sans">
       <Script 
           src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js" 
-          strategy="beforeInteractive"
-          onLoad={() => console.log('Pyodide script loaded.')}
+          strategy="lazyOnload"
+          onLoad={handleScriptLoad}
         />
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
