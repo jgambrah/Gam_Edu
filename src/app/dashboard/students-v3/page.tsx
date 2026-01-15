@@ -12,7 +12,7 @@ import {
   deleteDoc, 
   serverTimestamp, 
   addDoc,
-  runTransaction
+  runTransaction // <-- ADDED IMPORT
 } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
 
@@ -122,38 +122,45 @@ export default function StudentsV3Page() {
       loadData();
   }, [loadData]);
   
-  // --- ADD STUDENT ---
+  // --- 3. ADD STUDENT LOGIC (With ID Generation) ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       
-      // SAFETY CHECK: Prevent submission if school ID is missing
+      // Safety Check
       if (!adminSchoolId) {
-          toast({ 
-              variant: 'destructive', 
-              title: "System Error", 
-              description: "School ID not found. Please refresh the page and try again." 
-          });
+          toast({ variant: 'destructive', title: "System Error", description: "School ID not found. Please refresh the page and try again." });
           return;
       }
-
+      
       if (isSubmitting) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries());
+      const firstName = values.firstName as string;
+      const lastName = values.lastName as string;
+      const email = values.email as string;
+      const password = "password123"; 
 
       try {
-          const newStudentId = await generateNextStudentId(firestore);
-
-          const result = await createNewUser(values.email as string, "password123", 'Student', { 
-              firstName: values.firstName as string, 
-              lastName: values.lastName as string 
-          }, adminSchoolId);
+          // A. Create Auth User
+          const result = await createNewUser(
+              email, 
+              password, 
+              'Student', 
+              { firstName, lastName },
+              adminSchoolId 
+            );
+            
           if ('error' in result) throw new Error(result.error);
 
+          // B. Generate Sequential Student ID (Transaction)
+          const newStudentId = await generateNextStudentId(firestore);
+          
+          // C. Save student document with the new ID
           await setDoc(doc(firestore, 'students', result.uid), {
               uid: result.uid,
-              studentId: newStudentId,
+              studentId: newStudentId, // <--- SAVING THE REAL ID
               firstName: values.firstName,
               lastName: values.lastName,
               email: values.email,
@@ -168,11 +175,12 @@ export default function StudentsV3Page() {
               schoolId: adminSchoolId
           });
 
-          toast({ title: "Success", description: `Student added with ID: ${newStudentId}.` });
+          toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}.` });
           setIsAddOpen(false);
-          loadData();
+          loadData(); 
 
       } catch (error: any) {
+          console.error(error);
           toast({ variant: 'destructive', title: "Error", description: error.message });
       } finally {
           setIsSubmitting(false);
@@ -438,3 +446,5 @@ export default function StudentsV3Page() {
     </div>
   );
 }
+
+    
