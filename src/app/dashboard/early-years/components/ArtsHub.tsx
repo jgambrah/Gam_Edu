@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -487,6 +488,3 @@ const TextureBin: React.FC<{ onSound: (t: string) => void }> = ({ onSound }) => 
     </div>
   );
 };
-
-
-export default ArtsHub;
