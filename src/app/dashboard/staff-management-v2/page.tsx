@@ -14,43 +14,54 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit } from 'lucide-react';
+import { Users, UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, HeartHandshake } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { StudentSearchInput } from '@/components/student-search';
+import { searchStudent } from '@/lib/student-utils';
+
 
 // --- TYPE DEFINITIONS ---
-type StaffMember = {
+type ParentMember = {
   id: string;
   uid: string;
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
   phone?: string;
-  gender?: string;
   address?: string;
+  studentIds?: string[];
   schoolId?: string;
 };
 
+type Student = {
+    id: string;
+    uid: string;
+    firstName: string;
+    lastName: string;
+};
+
 // --- MAIN PAGE COMPONENT ---
-export default function StaffManagementPage() {
-  const { user } = useAuth(); // Logged in Director/Admin
+export default function ParentsPage() {
+  const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [parents, setParents] = useState<ParentMember[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null); 
-  
+  const [adminSchoolId, setAdminSchoolId] = useState<string | null>(null);
+
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
+  const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [studentSearch, setStudentSearch] = useState('');
 
   // --- 1. INITIALIZATION: FIND YOUR SCHOOL ---
   useEffect(() => {
@@ -72,228 +83,189 @@ export default function StaffManagementPage() {
                     console.warn("Could not determine school. Please contact support.");
                 }
             }
-        } catch (error) {
-            console.error("Error fetching admin profile:", error);
-        }
+        } catch (error) { console.error("Error fetching admin profile:", error); }
     };
     fetchAdminProfile();
   }, [user, firestore]);
 
-  // --- 2. FETCH STAFF (FILTERED BY SCHOOL) ---
-  const fetchStaff = useCallback(async () => {
+  // --- 2. FETCH DATA (PARENTS & STUDENTS) (FILTERED BY SCHOOL) ---
+  const loadData = useCallback(async () => {
     if (!firestore || !adminSchoolId) return; 
     
     setIsLoading(true);
     try {
-        const staffCollection = collection(firestore, 'staff');
-        
-        // 🔥 SAAS FILTER: Only get staff for THIS school
-        const q = query(staffCollection, where('schoolId', '==', adminSchoolId));
-        
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        })) as StaffMember[];
+        const parentQuery = query(collection(firestore, 'parents'), where('schoolId', '==', adminSchoolId));
+        const studentQuery = query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId));
 
-        setStaff(data);
+        const [parentSnap, studentSnap] = await Promise.all([
+            getDocs(parentQuery),
+            getDocs(studentQuery)
+        ]);
+
+        const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as ParentMember[];
+        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+
+        setParents(parentList);
+        setStudents(studentList);
     } catch (err: any) {
-        console.error(err);
-        toast({ variant: 'destructive', title: "Error", description: "Failed to load staff list." });
+        toast({ variant: 'destructive', title: "Error", description: "Failed to load school data." });
     } finally {
         setIsLoading(false);
     }
   }, [firestore, adminSchoolId, toast]);
 
-  // Trigger fetch when schoolId is found
   useEffect(() => {
-      if(adminSchoolId) fetchStaff();
-  }, [fetchStaff, adminSchoolId]);
+      if(adminSchoolId) loadData();
+  }, [loadData, adminSchoolId]);
 
-  // --- 3. CREATE NEW STAFF LOGIC ---
-  const handleAddStaff = async (e: React.FormEvent<HTMLFormElement>) => {
+
+  // Reset form state when opening modals
+  useEffect(() => {
+    if (isAddOpen || editingParent) {
+        setIsSubmitting(false);
+        setStudentSearch('');
+    }
+  }, [isAddOpen, editingParent]);
+  
+  // --- 3. ADD PARENT ---
+  const handleAddParent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (isSubmitting || !adminSchoolId) return;
+      if (isSubmitting || !firestore || !adminSchoolId) return;
       setIsSubmitting(true);
       
       const formData = new FormData(e.currentTarget);
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const role = formData.get('role') as UserRole;
-      const email = formData.get('email') as string;
-      const phone = formData.get('phone') as string;
-      const gender = formData.get('gender') as string;
-      const address = formData.get('address') as string;
-      const password = "password123"; 
+      const values = Object.fromEntries(formData.entries()) as any;
+      const studentIds = formData.getAll('studentIds') as string[];
+      const password = "password123";
 
       try {
-          // A. Create Auth User
-          const result = await createNewUser(
-              email, 
-              password, 
-              role, 
-              { firstName, lastName },
-              adminSchoolId // <--- PASS THE SCHOOL ID
-            );
-            
+          if (studentIds.length > 0) {
+            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
+            const conflictSnap = await getDocs(conflictQuery);
+            if (!conflictSnap.empty) throw new Error("A selected student is already linked to another parent.");
+          }
+
+          const result = await createNewUser(values.email, password, 'Parent', { firstName: values.firstName, lastName: values.lastName }, adminSchoolId);
           if ('error' in result) throw new Error(result.error);
 
-          // B. Create Firestore Doc in 'staff' collection
-          await setDoc(doc(firestore, 'staff', result.uid), {
+          await setDoc(doc(firestore, 'parents', result.uid), {
               uid: result.uid,
-              firstName,
-              lastName,
-              email,
-              role,
-              phone,
-              gender,
-              address,
-              schoolId: adminSchoolId, // <--- STAMP THE DOC
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
+              phone: values.phone,
+              address: values.address,
+              studentIds: studentIds,
+              schoolId: adminSchoolId,
               createdAt: serverTimestamp()
           });
 
-          toast({ title: "Success", description: `${firstName} added to your school.` });
+          toast({ title: "Success", description: "Parent created successfully." });
           setIsAddOpen(false);
-          fetchStaff(); 
+          loadData();
 
       } catch (error: any) {
-          toast({ variant: 'destructive', title: "Error", description: error.message });
+          toast({ variant: 'destructive', title: "Error creating parent", description: error.message });
       } finally {
           setIsSubmitting(false);
       }
   };
 
-  // --- 4. UPDATE STAFF LOGIC ---
-  const handleUpdateStaff = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!editingStaff || isSubmitting || !firestore) return;
-      setIsSubmitting(true);
+  // --- 4. UPDATE PARENT ---
+  const handleUpdateParent = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingParent || isSubmitting || !firestore || !adminSchoolId) return;
+    setIsSubmitting(true);
 
-      const formData = new FormData(e.currentTarget);
-      const firstName = formData.get('firstName') as string;
-      const lastName = formData.get('lastName') as string;
-      const phone = formData.get('phone') as string;
-      const role = formData.get('role') as string;
-      const gender = formData.get('gender') as string;
-      const address = formData.get('address') as string;
+    const formData = new FormData(e.currentTarget);
+    const values = Object.fromEntries(formData.entries()) as any;
+    const studentIds = formData.getAll('studentIds') as string[];
 
-      try {
-          const staffRef = doc(firestore, 'staff', editingStaff.id);
-          
-          await updateDoc(staffRef, { firstName, lastName, phone, role, gender, address });
+    try {
+        if (studentIds.length > 0) {
+            const conflictQuery = query(collection(firestore, 'parents'), where('studentIds', 'array-contains-any', studentIds), where('schoolId', '==', adminSchoolId));
+            const conflictSnap = await getDocs(conflictQuery);
+            const actualConflicts = conflictSnap.docs.filter(doc => doc.id !== editingParent.id);
+            if (actualConflicts.length > 0) throw new Error("A selected student is already linked to another parent.");
+        }
 
-          // Also update the generic 'users' collection for Auth consistency
-          const userRef = doc(firestore, 'users', editingStaff.id);
-          await updateDoc(userRef, { role });
+        const parentRef = doc(firestore, 'parents', editingParent.id);
+        await updateDoc(parentRef, { ...values, studentIds });
 
-          toast({ title: "Updated", description: "Staff details saved." });
-          setEditingStaff(null); 
-          fetchStaff();
+        toast({ title: "Updated", description: "Parent details saved." });
+        setEditingParent(null);
+        loadData();
 
-      } catch (error: any) {
-          console.error("Update Error:", error);
-          toast({ variant: 'destructive', title: "Error", description: "Failed to update staff." });
-      } finally {
-          setIsSubmitting(false);
-      }
+    } catch (error: any) {
+        toast({ variant: 'destructive', title: "Error", description: error.message });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
-  // --- 5. DELETE LOGIC ---
+  // --- 5. DELETE PARENT ---
   const handleDelete = async (id: string) => {
-      if(!confirm("Delete this staff profile? This cannot be undone.")) return;
-      try {
-          // Delete from both collections to keep DB clean
-          await deleteDoc(doc(firestore, 'staff', id));
-          await deleteDoc(doc(firestore, 'users', id));
-          toast({ title: "Deleted", description: "Staff profile removed." });
-          fetchStaff(); 
-      } catch (e: any) {
-          toast({ variant: 'destructive', title: "Error", description: e.message });
-      }
+    if (!firestore || !confirm("Delete this parent's profile?")) return;
+    try {
+        await deleteDoc(doc(firestore, 'parents', id));
+        toast({ title: "Deleted" });
+        loadData();
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Error", description: e.message });
+    }
   };
 
-  // Client-side filtering
-  const filteredStaff = staff.filter(s => 
-    ((s.firstName || '') + ' ' + (s.lastName || '')).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (s.email || '').toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (roleFilter === 'all' || s.role === roleFilter)
-  );
-  
+  const filteredParents = parents.filter(p => searchStudent(p, searchTerm));
+  const filteredStudentsForModal = students.filter(s => searchStudent(s, studentSearch));
+
   return (
     <div className="space-y-6 p-6">
-      <Card className="border-t-4 border-t-purple-600 shadow-sm">
+      <Card className="border-t-4 border-t-pink-500 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                    <Users className="h-6 w-6 text-purple-600"/> Staff Management
+                    <HeartHandshake className="h-6 w-6 text-pink-500"/> Parent Management
                 </CardTitle>
                 <CardDescription>
-                    {adminSchoolId ? `Total Staff: ${staff.length}` : "Loading School Data..."}
+                    Found: {parents.length} | Showing: {filteredParents.length}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={fetchStaff} disabled={isLoading || !adminSchoolId}>
+                <Button variant="outline" onClick={loadData} disabled={isLoading || !adminSchoolId}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
-                <Button 
-                    onClick={() => setIsAddOpen(true)} 
-                    className="bg-purple-600 hover:bg-purple-700"
-                    disabled={!adminSchoolId}
-                >
-                    <UserPlus className="h-4 w-4 mr-2"/> Add Staff
+                <Button onClick={() => setIsAddOpen(true)} className="bg-pink-500 hover:bg-pink-600" disabled={!adminSchoolId}>
+                    <UserPlus className="h-4 w-4 mr-2"/> Add Parent
                 </Button>
             </div>
         </CardHeader>
         
         <CardContent className="space-y-4">
-            <div className="flex gap-4">
-                <div className="relative flex-grow">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                        placeholder="Search by name or email..." 
-                        className="pl-8 max-w-sm" 
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
-                    <SelectTrigger className="w-[180px]"><SelectValue placeholder="Filter by Role" /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Roles</SelectItem>
-                        {ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                    </SelectContent>
-                </Select>
-            </div>
+            <StudentSearchInput 
+              value={searchTerm}
+              onChange={setSearchTerm}
+              className="max-w-sm"
+              placeholder="Search parents by name..."
+            />
 
             {isLoading ? (
-                <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-purple-500"/></div>
-            ) : filteredStaff.length === 0 ? (
-                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-                    {adminSchoolId ? "No staff found. Add one to get started." : "Loading..."}
-                </div>
+                <div className="py-10 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-pink-500"/></div>
+            ) : filteredParents.length === 0 ? (
+                <div className="py-10 text-center text-muted-foreground border-2 border-dashed rounded-lg">No parents found.</div>
             ) : (
                 <div className="rounded-md border">
                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Phone</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead className="text-right">Action</TableHead>
-                            </TableRow>
-                        </TableHeader>
+                        <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Linked Students</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                         <TableBody>
-                            {filteredStaff.map((s) => (
-                                <TableRow key={s.id}>
-                                    <TableCell className="font-medium">{s.firstName} {s.lastName}</TableCell>
-                                    <TableCell>{s.email}</TableCell>
-                                    <TableCell>{s.phone || '-'}</TableCell>
-                                    <TableCell><Badge variant="outline">{s.role}</Badge></TableCell>
+                            {filteredParents.map((p) => (
+                                <TableRow key={p.id}>
+                                    <TableCell className="font-medium">{p.firstName} {p.lastName}</TableCell>
+                                    <TableCell>{p.email}</TableCell>
+                                    <TableCell>{p.studentIds?.length || 0}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingStaff(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -307,104 +279,67 @@ export default function StaffManagementPage() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Add New Staff</DialogTitle></DialogHeader>
-            <form onSubmit={handleAddStaff} className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
+        <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Add New Parent</DialogTitle></DialogHeader>
+            <form onSubmit={handleAddParent} className="space-y-4 mt-4">
+                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="Jane"/></div>
                     <div className="space-y-2"><Label>Last Name *</Label><Input name="lastName" required placeholder="Doe"/></div>
                 </div>
-                
                 <div className="grid grid-cols-2 gap-4">
-                     <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="jane@school.com"/></div>
+                     <div className="space-y-2"><Label>Email *</Label><Input name="email" type="email" required placeholder="jane.doe@example.com"/></div>
                      <div className="space-y-2"><Label>Phone</Label><Input name="phone" placeholder="024-xxx-xxxx"/></div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                     <div className="space-y-2">
-                        <Label>Gender</Label>
-                        <Select name="gender">
-                            <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Male">Male</SelectItem>
-                                <SelectItem value="Female">Female</SelectItem>
-                            </SelectContent>
-                        </Select>
-                     </div>
-                     <div className="space-y-2">
-                        <Label>Role</Label>
-                        <Select name="role" defaultValue="Teacher">
-                            <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                {ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                <div className="space-y-2"><Label>Address</Label><Input name="address" placeholder="Residential Address" /></div>
+                
+                <div className="space-y-2 pt-2">
+                    <Label>Link Students</Label>
+                    <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
+                    <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
+                        {filteredStudentsForModal.map(s => (
+                            <div key={s.id} className="flex items-center space-x-2">
+                                <Checkbox id={`add-${s.id}`} name="studentIds" value={s.id} />
+                                <Label htmlFor={`add-${s.id}`}>{s.firstName} {s.lastName}</Label>
+                            </div>
+                        ))}
+                         {filteredStudentsForModal.length === 0 && <p className="text-sm text-center text-muted-foreground">No students match your search.</p>}
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <Label>Address</Label>
-                    <Input name="address" placeholder="Residential Address" />
-                </div>
-
-                <div className="pt-2">
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Staff Account"}
-                    </Button>
-                    <p className="text-xs text-center text-muted-foreground mt-2">Default password: password123</p>
-                </div>
+                <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Create Parent Account"}</Button></DialogFooter>
             </form>
         </DialogContent>
       </Dialog>
 
       {/* EDIT MODAL */}
-      <Dialog open={!!editingStaff} onOpenChange={(open) => !open && setEditingStaff(null)}>
-        <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader><DialogTitle>Edit Staff Member</DialogTitle></DialogHeader>
-            {editingStaff && (
-                <form onSubmit={handleUpdateStaff} className="space-y-4 mt-4">
+      <Dialog open={!!editingParent} onOpenChange={(open) => !open && setEditingParent(null)}>
+        <DialogContent className="sm:max-w-2xl"><DialogHeader><DialogTitle>Edit Parent Details</DialogTitle></DialogHeader>
+            {editingParent && (
+                <form onSubmit={handleUpdateParent} className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingStaff.firstName} required /></div>
-                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingStaff.lastName} required /></div>
+                        <div className="space-y-2"><Label>First Name</Label><Input name="firstName" defaultValue={editingParent.firstName} required /></div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input name="lastName" defaultValue={editingParent.lastName} required /></div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><Label>Email</Label><Input value={editingStaff.email} disabled className="bg-slate-100" /></div>
-                        <div className="space-y-2"><Label>Phone</Label><Input name="phone" defaultValue={editingStaff.phone} /></div>
+                        <div className="space-y-2"><Label>Email</Label><Input value={editingParent.email} disabled className="bg-slate-100" /></div>
+                        <div className="space-y-2"><Label>Phone</Label><Input name="phone" defaultValue={editingParent.phone} /></div>
                     </div>
+                    <div className="space-y-2"><Label>Address</Label><Input name="address" defaultValue={editingParent.address} /></div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Gender</Label>
-                            <Select name="gender" defaultValue={editingStaff.gender}>
-                                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Male">Male</SelectItem>
-                                    <SelectItem value="Female">Female</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Role</Label>
-                            <Select name="role" defaultValue={editingStaff.role}>
-                                <SelectTrigger><SelectValue/></SelectTrigger>
-                                <SelectContent>
-                                    {ALL_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
+                     <div className="space-y-2 pt-2">
+                        <Label>Link Students</Label>
+                        <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
+                        <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
+                            {filteredStudentsForModal.map(s => (
+                                <div key={s.id} className="flex items-center space-x-2">
+                                    <Checkbox id={`edit-${s.id}`} name="studentIds" value={s.id} defaultChecked={editingParent.studentIds?.includes(s.id)} />
+                                    <Label htmlFor={`edit-${s.id}`}>{s.firstName} {s.lastName}</Label>
+                                </div>
+                            ))}
+                             {filteredStudentsForModal.length === 0 && <p className="text-sm text-center text-muted-foreground">No students match your search.</p>}
                         </div>
                     </div>
-
-                    <div className="space-y-2">
-                        <Label>Address</Label>
-                        <Input name="address" defaultValue={editingStaff.address} />
-                    </div>
-
-                    <div className="pt-2">
-                        <Button type="submit" className="w-full" disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Update Staff Details"}
-                        </Button>
-                    </div>
+                    <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Update Parent Details"}</Button></DialogFooter>
                 </form>
             )}
         </DialogContent>
@@ -412,5 +347,3 @@ export default function StaffManagementPage() {
     </div>
   );
 }
-
-    
