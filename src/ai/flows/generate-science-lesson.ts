@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -35,6 +36,7 @@ export async function generateScienceLessonAction(input: { topic: string, grade:
     `;
 
     const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: prompt,
       output: { schema: LessonSchema },
     });

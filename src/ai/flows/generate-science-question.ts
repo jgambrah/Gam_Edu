@@ -1,7 +1,7 @@
 
 'use server';
 
-import { generate } from '@genkit-ai/ai';
+import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 // 1. Define Schema for ONE question
@@ -34,12 +34,13 @@ export async function generateScienceQuestionAction(input: {
       Output strictly JSON.
     `;
 
-    const response = await generate({
+    const { output } = await ai.generate({
+      model: 'googleai/gemini-1.5-flash-latest',
       prompt: prompt,
       output: { schema: OutputSchema },
     });
 
-    const data = response.output();
+    const data = output;
     
     if (!data || !data.questions) {
         throw new Error("AI returned invalid data structure");
