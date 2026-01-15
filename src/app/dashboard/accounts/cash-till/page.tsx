@@ -147,7 +147,7 @@ function DirectorTillView() {
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
 
-    const pendingTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'PendingApproval')) : null, [firestore, schoolId]);
+    const pendingTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'PendingApproval'), orderBy('dateOpened', 'desc')) : null, [firestore, schoolId]);
     const { data: pendingTills, isLoading: isLoadingPending, forceRefetch: forceRefetchPending } = useCollection<Till>(pendingTillsQuery);
     
     const closedTillsQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'tills'), where('schoolId', '==', schoolId), where('status', '==', 'Closed'), orderBy('dateClosed', 'desc')) : null, [firestore, schoolId]);
