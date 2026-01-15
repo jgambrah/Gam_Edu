@@ -12,9 +12,12 @@ import {
   deleteDoc, 
   serverTimestamp, 
   addDoc,
-  runTransaction // <-- ADDED IMPORT
+  runTransaction,
+  query, 
+  where
 } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
+import { useCurrentSchool } from '@/hooks/use-current-school'; 
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -28,13 +31,11 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { Student, Class } from '@/lib/types';
+import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
 import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, formatStudentId, generateNextStudentId } from '@/lib/student-utils';
-import { query, where } from 'firebase/firestore';
-import { useCurrentSchool } from '@/hooks/use-current-school';
 
 
 export default function StudentsV3Page() {
@@ -126,9 +127,13 @@ export default function StudentsV3Page() {
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       
-      // Safety Check
+      // SAFETY CHECK: Prevent submission if school ID is missing
       if (!adminSchoolId) {
-          toast({ variant: 'destructive', title: "System Error", description: "School ID not found. Please refresh the page and try again." });
+          toast({ 
+              variant: 'destructive', 
+              title: "System Error", 
+              description: "School ID not found. Please refresh the page and try again." 
+          });
           return;
       }
       
@@ -308,25 +313,18 @@ export default function StudentsV3Page() {
                         <TableBody>
                             {filteredStudents.map((s) => (
                                 <TableRow key={s.id}>
-                                    <TableCell><StudentDisplay student={s} variant="list" /></TableCell>
-                                    <TableCell className="font-mono text-xs">{formatStudentId(s)}</TableCell>
-                                    <TableCell>{s.email}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline">
-                                            {classes.find(c => c.id === s.classId)?.name || 'Unassigned'}
-                                        </Badge>
+                                    <TableCell className="font-medium">
+                                        <div>{s.firstName} {s.lastName}</div>
                                     </TableCell>
-                                     <TableCell>
-                                        <div className="flex items-center gap-2">
-                                          {s.usesBusService && <Bus className="h-4 w-4 text-muted-foreground" title="Uses Bus Service" />}
-                                          {s.usesCanteen !== false && <Utensils className="h-4 w-4 text-muted-foreground" title="Uses Canteen" />}
-                                        </div>
-                                     </TableCell>
+                                    <TableCell className="font-mono text-xs">
+                                        {/* @ts-ignore */}
+                                        {s.studentId || <span className="text-orange-500 italic">ID Pending</span>}
+                                    </TableCell>
+                                    <TableCell>{s.email}</TableCell>
+                                    <TableCell><Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge></TableCell>
+                                    <TableCell>{s.gender || '-'}</TableCell>
                                     <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
-                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
-                                        </div>
+                                        <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -363,6 +361,7 @@ export default function StudentsV3Page() {
                             )}
                         </SelectContent>
                     </Select>
+                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please use a Debug/Initialize button if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
