@@ -301,16 +301,16 @@ export default function ParentsPage() {
                 <div className="space-y-2 pt-2">
                     <Label>Link Students (Optional)</Label>
                     <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
-                    <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
+                    <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2 bg-slate-50">
                         {filteredStudentsForModal.length > 0 ? (
                             filteredStudentsForModal.map(s => (
-                                <div key={s.id} className="flex items-center space-x-2">
+                                <div key={s.id} className="flex items-center space-x-2 p-2 hover:bg-white rounded">
                                     <Checkbox id={`add-${s.id}`} name="studentIds" value={s.uid} />
-                                    <Label htmlFor={`add-${s.id}`}>{s.firstName} {s.lastName}</Label>
+                                    <Label htmlFor={`add-${s.id}`} className="cursor-pointer font-normal">{s.firstName} {s.lastName}</Label>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-center text-muted-foreground">No students match your search or no students have been added yet.</p>
+                            <p className="text-sm text-center text-muted-foreground p-2">No students match your search or no students have been added yet.</p>
                         )}
                     </div>
                 </div>
@@ -339,21 +339,21 @@ export default function ParentsPage() {
                      <div className="space-y-2 pt-2">
                         <Label>Link Students</Label>
                         <StudentSearchInput value={studentSearch} onChange={setStudentSearch} />
-                        <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2">
+                        <div className="max-h-48 overflow-y-auto space-y-2 rounded-md border p-4 mt-2 bg-slate-50">
                             {filteredStudentsForModal.length > 0 ? (
                                 filteredStudentsForModal.map(s => (
-                                    <div key={s.id} className="flex items-center space-x-2">
+                                    <div key={s.id} className="flex items-center space-x-2 p-2 hover:bg-white rounded">
                                         <Checkbox 
                                             id={`edit-${s.id}`} 
                                             name="studentIds" 
                                             value={s.uid} 
                                             defaultChecked={editingParent.studentIds?.includes(s.uid)} 
                                         />
-                                        <Label htmlFor={`edit-${s.id}`}>{s.firstName} {s.lastName}</Label>
+                                        <Label htmlFor={`edit-${s.id}`} className="cursor-pointer font-normal">{s.firstName} {s.lastName}</Label>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-sm text-center text-muted-foreground">No students match your search or no students have been added yet.</p>
+                                <p className="text-sm text-center text-muted-foreground p-2">No students match search.</p>
                             )}
                         </div>
                     </div>
@@ -366,3 +366,4 @@ export default function ParentsPage() {
   );
 }
 
+    
