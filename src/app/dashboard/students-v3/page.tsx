@@ -230,6 +230,8 @@ export default function StudentsV3Page() {
     return searchStudent(s, term);
   });
 
+  const overallLoading = isLoadingSchool || isLoading;
+
   return (
     <div className="space-y-6 p-6">
       
@@ -240,13 +242,14 @@ export default function StudentsV3Page() {
                     <GraduationCap className="h-6 w-6 text-green-600"/> Students
                 </CardTitle>
                 <CardDescription>
-                    {adminSchoolId ? `Found: ${students.length} | Showing: ${filteredStudents.length}` : 'Loading School Data...'}
+                    {adminSchoolId ? `Found: ${students.length} | Showing: ${filteredStudents.length}` : "Loading School Data..."}
                 </CardDescription>
             </div>
             <div className="flex gap-2">
-                <Button variant="outline" onClick={loadData} disabled={isLoading}>
+                <Button variant="outline" onClick={loadData} disabled={overallLoading}>
                     <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}/> Refresh
                 </Button>
+                
                 <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700" disabled={!adminSchoolId}>
                     <UserPlus className="h-4 w-4 mr-2"/> Add Student
                 </Button>
@@ -271,7 +274,7 @@ export default function StudentsV3Page() {
                 </Select>
             </div>
 
-            {isLoading ? (
+            {overallLoading ? (
                 <div className="py-12 flex flex-col items-center gap-3 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
                     <Loader2 className="h-8 w-8 animate-spin text-green-500"/>
                     <p>{statusMsg}</p>
@@ -308,7 +311,7 @@ export default function StudentsV3Page() {
                                      <TableCell>
                                         <div className="flex items-center gap-2">
                                           {s.usesBusService && <Bus className="h-4 w-4 text-muted-foreground" title="Uses Bus Service" />}
-                                          {s.usesCanteen && <Utensils className="h-4 w-4 text-muted-foreground" title="Uses Canteen" />}
+                                          {s.usesCanteen !== false && <Utensils className="h-4 w-4 text-muted-foreground" title="Uses Canteen" />}
                                         </div>
                                      </TableCell>
                                     <TableCell className="text-right">
@@ -352,7 +355,6 @@ export default function StudentsV3Page() {
                             )}
                         </SelectContent>
                     </Select>
-                    {classes.length === 0 && <p className="text-xs text-red-400">No classes found in DB. Please use a Debug/Initialize button if needed.</p>}
                 </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>Date of Birth</Label><Input name="dateOfBirth" type="date" /></div>
@@ -368,7 +370,7 @@ export default function StudentsV3Page() {
                 <div className="flex items-center gap-6">
                     <div className="flex items-center space-x-2">
                         <Checkbox id="usesBusService" name="usesBusService" />
-                        <Label htmlFor="usesBusService">This student uses the bus service</Label>
+                        <Label htmlFor="usesBusService">Uses Bus Service</Label>
                     </div>
                      <div className="flex items-center space-x-2">
                         <Checkbox id="usesCanteen" name="usesCanteen" defaultChecked={true} />
@@ -436,5 +438,3 @@ export default function StudentsV3Page() {
     </div>
   );
 }
-
-    
