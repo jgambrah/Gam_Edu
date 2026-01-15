@@ -48,11 +48,11 @@ export default function ParentsPage() {
   const { user } = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool(); 
+  const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
 
   const [parents, setParents] = useState<ParentMember[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true); 
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -366,4 +366,3 @@ export default function ParentsPage() {
   );
 }
 
-```
