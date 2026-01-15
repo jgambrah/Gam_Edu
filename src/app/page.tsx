@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -88,57 +89,59 @@ export default function LoginPage() {
     <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
       
       {/* LEFT SIDE: MARKETING */}
-      <div className="hidden lg:flex flex-col justify-between bg-blue-950 text-white p-12 relative overflow-hidden">
+      <div className="hidden lg:flex flex-col bg-blue-950 text-white p-12 relative overflow-hidden">
         
         {/* Background Decor */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 text-2xl font-bold mb-8">
-            <School className="h-8 w-8 text-blue-400" />
-            GAM Edu
-          </div>
-          
-          <h1 className="text-4xl font-extrabold leading-tight mb-4">
-            The Intelligent Future of <span className="text-blue-400">School Management</span>.
-          </h1>
-          <p className="text-blue-200 text-lg mb-8 max-w-lg">
-            Empower your institution with AI-driven insights, automated finance, and personalized learning clubs.
-          </p>
+        <div className="relative z-10 flex flex-col h-full">
+          <div>
+            <div className="flex items-center gap-2 text-2xl font-bold mb-8">
+              <School className="h-8 w-8 text-blue-400" />
+              GAM Edu
+            </div>
+            
+            <h1 className="text-4xl font-extrabold leading-tight mb-4">
+              The Intelligent Future of <span className="text-blue-400">School Management</span>.
+            </h1>
+            <p className="text-blue-200 text-lg mb-8 max-w-lg">
+              Empower your institution with AI-driven insights, automated finance, and personalized learning clubs.
+            </p>
 
-          <div className="space-y-5">
-            <FeatureRow icon={Brain} title="Intelligent AI Core" desc="Auto-generate quizzes, lesson plans & personalized tutors." />
-            <FeatureRow icon={School} title="Complete Management Suite" desc="Staff, Students, Payroll & Finance in one secure cloud." />
-            <FeatureRow icon={Shield} title="Role-Based Security" desc="Dedicated portals for Directors, Teachers & Parents." />
-            <FeatureRow icon={Users} title="Engaging STEM Clubs" desc="Math, Science & Coding clubs with leaderboards." />
-            <FeatureRow icon={BookOpen} title="Smart Financials" desc="Auto-reconciliation for fees & expenses." />
+            <div className="space-y-5">
+              <FeatureRow icon={Brain} title="Intelligent AI Core" desc="Auto-generate quizzes, lesson plans & personalized tutors." />
+              <FeatureRow icon={School} title="Complete Management Suite" desc="Staff, Students, Payroll & Finance in one secure cloud." />
+              <FeatureRow icon={Shield} title="Role-Based Security" desc="Dedicated portals for Directors, Teachers & Parents." />
+              <FeatureRow icon={Users} title="Engaging STEM Clubs" desc="Math, Science & Coding clubs with leaderboards." />
+              <FeatureRow icon={BookOpen} title="Smart Financials" desc="Auto-reconciliation for fees & expenses." />
+            </div>
           </div>
-        </div>
 
-        {/* DYNAMIC TESTIMONIAL CARD */}
-        <div className="relative z-10 mt-12">
-            <div className="bg-white/10 p-6 rounded-xl border border-white/10 backdrop-blur-md transition-all duration-500 ease-in-out">
-            <p className="font-medium italic text-lg leading-relaxed">"{currentTestimonial.text}"</p>
-            <div className="mt-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white shadow-lg">
-                    {currentTestimonial.initials}
-                </div>
-                <div>
-                <p className="text-sm font-bold text-white">{currentTestimonial.name}</p>
-                <p className="text-xs text-blue-200">{currentTestimonial.role}</p>
-                </div>
-            </div>
-            </div>
-            {/* Dots Indicator */}
-            <div className="flex gap-2 mt-4 justify-center lg:justify-start">
-                {TESTIMONIALS.map((_, idx) => (
-                    <div 
-                        key={idx} 
-                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === testimonialIndex ? 'w-6 bg-blue-400' : 'w-1.5 bg-white/30'}`}
-                    />
-                ))}
-            </div>
+          {/* DYNAMIC TESTIMONIAL CARD */}
+          <div className="relative z-10 mt-auto pt-12">
+              <div className="bg-white/10 p-6 rounded-xl border border-white/10 backdrop-blur-md transition-all duration-500 ease-in-out">
+              <p className="font-medium italic text-lg leading-relaxed">"{currentTestimonial.text}"</p>
+              <div className="mt-4 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white shadow-lg">
+                      {currentTestimonial.initials}
+                  </div>
+                  <div>
+                  <p className="text-sm font-bold text-white">{currentTestimonial.name}</p>
+                  <p className="text-xs text-blue-200">{currentTestimonial.role}</p>
+                  </div>
+              </div>
+              </div>
+              {/* Dots Indicator */}
+              <div className="flex gap-2 mt-4 justify-center lg:justify-start">
+                  {TESTIMONIALS.map((_, idx) => (
+                      <div 
+                          key={idx} 
+                          className={`h-1.5 rounded-full transition-all duration-300 ${idx === testimonialIndex ? 'w-6 bg-blue-400' : 'w-1.5 bg-white/30'}`}
+                      />
+                  ))}
+              </div>
+          </div>
         </div>
       </div>
 
