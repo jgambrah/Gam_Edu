@@ -1,51 +1,15 @@
 
 'use client';
 
+import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
+import { Auth, getAuth } from 'firebase/auth';
+import { Firestore, getFirestore, initializeFirestore, persistentLocalCache } from 'firebase/firestore'; 
+import { FirebaseStorage, getStorage } from 'firebase/storage';
 import { firebaseConfig } from '@/firebase/config';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { initializeFirestore, getFirestore, Firestore, persistentLocalCache } from 'firebase/firestore'; 
-import { getStorage, FirebaseStorage } from 'firebase/storage';
 
-// Global variables to hold instances (Prevents re-initialization crashes in Next.js)
-let firebaseApp: FirebaseApp;
-let auth: Auth;
-let firestore: Firestore;
-let storage: FirebaseStorage;
-
-export function initializeFirebase() {
-  // Don't run on server side
-  if (typeof window === 'undefined') return null; 
-
-  if (!getApps().length) {
-    // --- INITIALIZATION FOR THE FIRST TIME ---
-    firebaseApp = initializeApp({
-        ...firebaseConfig,
-        // Ensure this matches the bucket we fixed CORS for
-        storageBucket: "studio-525105839-159e4.firebasestorage.app",
-    });
-    // This is the critical fix: force a stable connection method.
-    try {
-      firestore = initializeFirestore(firebaseApp, {
-        experimentalForceLongPolling: true,
-        localCache: persistentLocalCache({}),
-      });
-    } catch (e) {
-        console.warn("Firestore persistence failed, falling back:", e);
-        firestore = getFirestore(firebaseApp);
-    }
-  } else {
-    // --- ALREADY INITIALIZED (Hot Reload) ---
-    firebaseApp = getApp();
-    firestore = getFirestore(firebaseApp);
-  }
-
-  // Always get the latest instances
-  auth = getAuth(firebaseApp);
-  storage = getStorage(firebaseApp, "gs://studio-525105839-159e4.firebasestorage.app");
-
-  return { firebaseApp, auth, firestore, storage };
-}
+// Removed the redundant initializeFirebase function from this file.
+// The primary initializer now lives in client-provider.tsx to ensure
+// it's always used on the client with the correct settings.
 
 export function getSdks(app: FirebaseApp) {
     return {
