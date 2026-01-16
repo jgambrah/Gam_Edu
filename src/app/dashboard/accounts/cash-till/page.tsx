@@ -159,6 +159,16 @@ function DirectorTillView() {
 
     const isLoading = isLoadingPending || isLoadingClosed;
 
+    const sortedPending = useMemo(() => {
+        if (!pendingTills) return [];
+        return [...pendingTills].sort((a,b) => (b.dateOpened?.seconds || 0) - (a.dateOpened?.seconds || 0));
+    }, [pendingTills]);
+
+    const sortedClosed = useMemo(() => {
+        if (!closedTills) return [];
+        return [...closedTills].sort((a,b) => (b.dateClosed?.seconds || 0) - (a.dateClosed?.seconds || 0));
+    }, [closedTills]);
+
     const handleDecision = async (till: Till, action: 'Approve' | 'Reject') => {
         if (action === 'Reject' && !rejectionReason) {
             toast({ variant: 'destructive', title: 'Reason required', description: 'Please provide a reason for rejection.' });
@@ -212,7 +222,7 @@ function DirectorTillView() {
                             <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Closing Balance</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                             <TableBody>
                                 {isLoadingPending ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
-                                : pendingTills?.map(till => (
+                                : sortedPending?.map(till => (
                                     <TableRow key={till.id}>
                                         <TableCell>{till.accountantName}</TableCell>
                                         <TableCell>{till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}</TableCell>
@@ -239,14 +249,14 @@ function DirectorTillView() {
                                 ))}
                             </TableBody>
                         </Table>
-                         {!isLoadingPending && pendingTills?.length === 0 && <p className="text-center text-muted-foreground p-8">No tills are currently pending approval.</p>}
+                         {!isLoadingPending && sortedPending?.length === 0 && <p className="text-center text-muted-foreground p-8">No tills are currently pending approval.</p>}
                     </TabsContent>
                     <TabsContent value="history" className="mt-4">
                          <Table>
                             <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date Closed</TableHead><TableHead>Balance</TableHead><TableHead>Approved By</TableHead></TableRow></TableHeader>
                             <TableBody>
                                 {isLoadingClosed ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
-                                : closedTills?.map(till => (
+                                : sortedClosed?.map(till => (
                                     <TableRow key={till.id}>
                                         <TableCell>{till.accountantName}</TableCell>
                                         <TableCell>{till.dateClosed ? format(till.dateClosed.toDate(), 'PPP p') : 'N/A'}</TableCell>
@@ -256,7 +266,7 @@ function DirectorTillView() {
                                 ))}
                             </TableBody>
                         </Table>
-                         {!isLoadingClosed && closedTills?.length === 0 && <p className="text-center text-muted-foreground p-8">No approved tills in history.</p>}
+                         {!isLoadingClosed && sortedClosed?.length === 0 && <p className="text-center text-muted-foreground p-8">No approved tills in history.</p>}
                     </TabsContent>
                 </Tabs>
             </CardContent>
