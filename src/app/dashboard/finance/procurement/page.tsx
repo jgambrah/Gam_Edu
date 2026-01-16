@@ -2,280 +2,229 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, serverTimestamp, updateDoc, writeBatch, query, where, addDoc } from 'firebase/firestore';
-import { 
-  Truck, ShoppingCart, Package, Plus, FileCheck, AlertCircle, Calendar, ChevronRight, User, Phone, MapPin 
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { useCurrentSchool } from '@/hooks/use-current-school';
-
-// UI
+import { collection, doc, serverTimestamp, updateDoc, writeBatch, query, where, addDoc, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, PlusCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { Vendor, AccountsPayableRecord, payableSchema } from '@/lib/types';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
-import { Supplier, PurchaseOrder, InventoryItem } from '@/lib/types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
-// --- COMPONENT: Supplier Manager ---
-function SupplierManager({ onSupplierAdded, schoolId }: { onSupplierAdded: () => void, schoolId: string }) {
+function PayableForm({ setOpen, onBillAdded }: { setOpen: (open: boolean) => void; onBillAdded: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
-    const [isOpen, setIsOpen] = useState(false);
-    
-    // Form
-    const [name, setName] = useState('');
-    const [contact, setContact] = useState('');
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
-
-    const handleSubmit = async () => {
-        if (!name || !schoolId) return;
-        try {
-            await addDoc(collection(firestore, 'suppliers'), {
-                name, contactPerson: contact, phone, email, 
-                balance: 0, createdAt: serverTimestamp(), schoolId: schoolId,
-            });
-            toast({ title: "Supplier Added" });
-            setIsOpen(false); setName('');
-            onSupplierAdded();
-        } catch (e) { toast({ variant: 'destructive', title: "Error" }); }
-    };
-
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4"/> Add Supplier</Button></DialogTrigger>
-            <DialogContent>
-                <DialogHeader><DialogTitle>New Supplier</DialogTitle></DialogHeader>
-                <div className="space-y-4 py-4">
-                    <div><Label>Company Name</Label><Input value={name} onChange={e => setName(e.target.value)} /></div>
-                    <div><Label>Contact Person</Label><Input value={contact} onChange={e => setContact(e.target.value)} /></div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div><Label>Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} /></div>
-                        <div><Label>Email</Label><Input value={email} onChange={e => setEmail(e.target.value)} /></div>
-                    </div>
-                    <Button onClick={handleSubmit} className="w-full">Save Supplier</Button>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-// --- COMPONENT: Purchase Order Form ---
-function PurchaseOrderForm({ suppliers, items, onClose, schoolId }: { suppliers: Supplier[], items: any[], onClose: () => void, schoolId: string }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    
-    const [supplierId, setSupplierId] = useState('');
-    const [poLines, setPoLines] = useState([{ itemId: '', qty: 1, cost: 0 }]);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const total = poLines.reduce((sum, line) => sum + (line.qty * line.cost), 0);
-
-    const handleAddLine = () => setPoLines([...poLines, { itemId: '', qty: 1, cost: 0 }]);
     
-    const updateLine = (index: number, field: string, value: any) => {
-        const newLines = [...poLines];
-        (newLines[index] as any)[field] = value;
-        if (field === 'itemId') {
-            const item = items.find(i => i.id === value);
-            if (item) newLines[index].cost = item.price || 0;
-        }
-        setPoLines(newLines);
-    };
+    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => firestore ? collection(firestore, 'vendors') : null, [firestore]));
 
-    const handleSubmit = async () => {
-        if (!firestore || !user || !supplierId || !schoolId) return;
+    const form = useForm<z.infer<typeof payableSchema>>({
+        resolver: zodResolver(payableSchema),
+    });
+
+    async function onSubmit(values: z.infer<typeof payableSchema>) {
+        if (!firestore) return;
         setIsSubmitting(true);
         try {
-            const supplier = suppliers.find(s => s.id === supplierId);
-            const finalItems = poLines.map(line => ({
-                ...line,
-                name: items.find(i => i.id === line.itemId)?.name || 'Unknown Item'
-            }));
-
-            await addDoc(collection(firestore, 'purchase_orders'), {
-                supplierId,
-                supplierName: supplier?.name,
-                items: finalItems,
-                totalAmount: total,
-                status: 'Sent',
-                date: serverTimestamp(),
-                createdBy: user.uid,
-                schoolId: schoolId,
+            await addDocumentNonBlocking(collection(firestore, 'accountsPayable'), {
+                ...values,
+                status: 'Unpaid',
+                createdAt: serverTimestamp(),
             });
-            
-            toast({ title: "PO Created", description: `Order for GH₵${total} sent.` });
-            onClose();
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error" });
-        } finally { setIsSubmitting(false); }
-    };
+            // TODO: addJournalEntry
+            toast({ title: 'Success', description: 'Bill has been recorded.' });
+            onBillAdded();
+            form.reset();
+            setOpen(false);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to record bill.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
     return (
-        <div className="space-y-4">
-            <div className="space-y-2">
-                <Label>Select Supplier</Label>
-                <Select value={supplierId} onValueChange={setSupplierId}>
-                    <SelectTrigger><SelectValue placeholder="Choose Vendor"/></SelectTrigger>
-                    <SelectContent>{suppliers.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
-                </Select>
-            </div>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField control={form.control} name="vendorId" render={({ field }) => (
+                    <FormItem><FormLabel>Vendor</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a vendor" /></SelectTrigger></FormControl><SelectContent>{vendors?.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="description" render={({ field }) => (
+                    <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="e.g., Janitorial services for March" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField control={form.control} name="amount" render={({ field }) => (
+                        <FormItem><FormLabel>Amount</FormLabel><FormControl><Input type="number" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="dueDate" render={({ field }) => (
+                        <FormItem className="flex flex-col"><FormLabel>Due Date</FormLabel><Popover><PopoverTrigger asChild><FormControl>
+                        <Button variant={'outline'} className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>{field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button>
+                        </FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>
+                    )} />
+                </div>
+                 <FormField control={form.control} name="invoiceNumber" render={({ field }) => (
+                    <FormItem><FormLabel>Invoice # (Optional)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="expenseAccountId" render={({ field }) => (
+                    <FormItem><FormLabel>Expense Account</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select an expense account" /></SelectTrigger></FormControl><SelectContent>{/* TODO: Fetch expense accounts */}</SelectContent></Select><FormMessage /></FormItem>
+                )} />
 
-            <div className="border rounded-md p-2 bg-slate-50 space-y-2 max-h-[300px] overflow-y-auto">
-                {poLines.map((line, idx) => (
-                    <div key={idx} className="flex gap-2 items-end">
-                        <div className="flex-1 space-y-1">
-                            <Label className="text-xs">Item</Label>
-                            <Select value={line.itemId} onValueChange={v => updateLine(idx, 'itemId', v)}>
-                                <SelectTrigger><SelectValue/></SelectTrigger>
-                                <SelectContent>{items.map(i => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)}</SelectContent>
-                            </Select>
-                        </div>
-                        <div className="w-20 space-y-1"><Label className="text-xs">Qty</Label><Input type="number" value={line.qty} onChange={e => updateLine(idx, 'qty', parseInt(e.target.value))}/></div>
-                        <div className="w-24 space-y-1"><Label className="text-xs">Cost</Label><Input type="number" value={line.cost} onChange={e => updateLine(idx, 'cost', parseFloat(e.target.value))}/></div>
-                    </div>
-                ))}
-                <Button variant="ghost" size="sm" onClick={handleAddLine}><Plus className="h-4 w-4 mr-2"/> Add Item</Button>
-            </div>
-
-            <div className="flex justify-between items-center pt-2 border-t">
-                <span className="font-bold text-lg">Total: GH₵{total.toFixed(2)}</span>
-                <Button onClick={handleSubmit} disabled={isSubmitting || total === 0}>{isSubmitting ? <Loader2 className="animate-spin"/> : "Create PO"}</Button>
-            </div>
-        </div>
+                <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Record Bill</Button>
+            </form>
+        </Form>
     );
 }
 
-// --- MAIN PAGE ---
-export default function ProcurementPage() {
+function PayBillDialog({ bill, setOpen, onBillPaid }: { bill: AccountsPayableRecord; setOpen: (open: boolean) => void; onBillPaid: () => void }) {
     const firestore = useFirestore();
-    const { user } = useUser();
-    const { role } = useRole();
     const { toast } = useToast();
-    const { schoolId } = useCurrentSchool();
-    const [isPoOpen, setIsPoOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [paymentAccountId, setPaymentAccountId] = useState('');
+
+    async function handlePayment() {
+        if (!firestore || !paymentAccountId) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Please select a payment account.' });
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            await updateDoc(doc(firestore, 'accountsPayable', bill.id), {
+                status: 'Paid',
+                paidAt: serverTimestamp(),
+                paymentAccountId,
+            });
+            // TODO: addJournalEntry
+            toast({ title: 'Success', description: 'Bill has been marked as paid.' });
+            onBillPaid();
+            setOpen(false);
+        } catch(error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to process payment.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+    
+    return (
+        <DialogContent>
+            <DialogHeader><DialogTitle>Confirm Bill Payment</DialogTitle><DialogDescription>You are about to pay a bill for GH₵{bill.amount.toFixed(2)} to a vendor.</DialogDescription></DialogHeader>
+            <div className="space-y-4 py-4">
+                <Select onValueChange={setPaymentAccountId}><SelectTrigger><SelectValue placeholder="Select payment account (e.g., bank)"/></SelectTrigger><SelectContent>{/* TODO: Fetch asset accounts */}</SelectContent></Select>
+            </div>
+             <Button onClick={handlePayment} disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Confirm Payment</Button>
+        </DialogContent>
+    );
+}
+
+
+export default function AccountsPayablePage() {
+    const { role } = useRole();
+    const firestore = useFirestore();
+    const [isFormOpen, setFormOpen] = useState(false);
+    const [payingBill, setPayingBill] = useState<AccountsPayableRecord | null>(null);
 
     const canAccess = ['Administrator', 'Director', 'Accountant'].includes(role);
 
-    const suppliersQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'suppliers'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: suppliers, forceRefetch: refetchSuppliers } = useCollection<Supplier>(suppliersQuery);
+    const payablesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accountsPayable') : null, [firestore]);
+    const { data: payables, isLoading, forceRefetch } = useCollection<AccountsPayableRecord>(payablesQuery);
+    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => firestore ? collection(firestore, 'vendors') : null, [firestore]));
+    
+    const unpaidBills = useMemo(() => payables?.filter(p => p.status === 'Unpaid'), [payables]);
+    const paidBills = useMemo(() => payables?.filter(p => p.status === 'Paid'), [payables]);
 
-    const poQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'purchase_orders'), where('schoolId', '==', schoolId), orderBy('date', 'desc')) : null, [firestore, schoolId]);
-    const { data: pos } = useCollection<PurchaseOrder>(poQuery);
+    const getVendorName = (vendorId: string) => vendors?.find(v => v.id === vendorId)?.name || 'Unknown Vendor';
 
-    const itemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'school_shop_items'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: inventoryItems } = useCollection<InventoryItem>(itemsQuery);
-
-    const handleReceiveGoods = async (po: PurchaseOrder) => {
-        if (!confirm("Confirm receipt of goods? This will create a Bill.") || !firestore || !schoolId) return;
-        
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const poRef = doc(firestore, 'purchase_orders', po.id);
-                transaction.update(poRef, { status: 'Received' });
-
-                const billRef = doc(collection(firestore, 'vendor_bills'));
-                transaction.set(billRef, {
-                    supplierId: po.supplierId,
-                    supplierName: po.supplierName,
-                    poId: po.id,
-                    description: `Bill for PO #${po.id.slice(0,6)}`,
-                    totalAmount: po.totalAmount,
-                    amountPaid: 0,
-                    status: 'Unpaid',
-                    date: serverTimestamp(),
-                    dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Net 30 default
-                    schoolId: schoolId,
-                });
-            });
-            toast({ title: "Goods Received", description: "Bill created in Accounts Payable." });
-        } catch (e) {
-            console.error(e);
-            toast({ variant: 'destructive', title: "Error receiving goods." });
-        }
-    };
-
-    if (!canAccess) return <div className="p-8 text-center text-red-500">Access Denied</div>;
-
+    if (!canAccess) {
+        return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted to financial staff.</CardDescription></CardHeader></Card>;
+    }
+    
     return (
-        <div className="space-y-6 p-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2"><Truck className="text-blue-600"/> Procurement</h1>
-                    <p className="text-muted-foreground">Manage Suppliers, Orders, and Goods Receipt.</p>
-                </div>
-                <div className="flex gap-2">
-                    {schoolId && <SupplierManager onSupplierAdded={refetchSuppliers} schoolId={schoolId} />}
-                    <Dialog open={isPoOpen} onOpenChange={setIsPoOpen}>
-                        <DialogTrigger asChild><Button className="bg-blue-600"><ShoppingCart className="mr-2 h-4 w-4"/> Create PO</Button></DialogTrigger>
-                        <DialogContent className="sm:max-w-[600px]">
-                            <DialogHeader><DialogTitle>New Purchase Order</DialogTitle></DialogHeader>
-                            {schoolId && <PurchaseOrderForm suppliers={suppliers || []} items={inventoryItems || []} onClose={() => setIsPoOpen(false)} schoolId={schoolId} />}
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </div>
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                     <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle>Accounts Payable</CardTitle>
+                            <CardDescription>Track and manage bills from vendors.</CardDescription>
+                        </div>
+                        <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+                            <DialogTrigger asChild><Button><PlusCircle className="mr-2 h-4 w-4" /> Record New Bill</Button></DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader><DialogTitle>Record a New Bill</DialogTitle><DialogDescription>Enter the details from the vendor's invoice.</DialogDescription></DialogHeader>
+                                <PayableForm setOpen={setFormOpen} onBillAdded={forceRefetch} />
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <Tabs defaultValue="unpaid">
+                        <TabsList>
+                            <TabsTrigger value="unpaid">Unpaid</TabsTrigger>
+                            <TabsTrigger value="paid">Paid</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="unpaid">
+                            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
+                                <Table>
+                                    <TableHeader><TableRow><TableHead>Vendor</TableHead><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Due Date</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {unpaidBills?.map(bill => (
+                                            <TableRow key={bill.id}>
+                                                <TableCell>{getVendorName(bill.vendorId)}</TableCell>
+                                                <TableCell>{bill.description}</TableCell>
+                                                <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
+                                                <TableCell>{bill.dueDate.toDate ? format(bill.dueDate.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                <TableCell><Button size="sm" onClick={() => setPayingBill(bill)}>Pay Bill</Button></TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
+                        </TabsContent>
+                         <TabsContent value="paid">
+                            {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
+                                <Table>
+                                    <TableHeader><TableRow><TableHead>Vendor</TableHead><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Paid At</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {paidBills?.map(bill => (
+                                            <TableRow key={bill.id}>
+                                                <TableCell>{getVendorName(bill.vendorId)}</TableCell>
+                                                <TableCell>{bill.description}</TableCell>
+                                                <TableCell>GH₵{bill.amount.toFixed(2)}</TableCell>
+                                                <TableCell>{bill.paidAt?.toDate ? format(bill.paidAt.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            )}
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <Card className="lg:col-span-1">
-                    <CardHeader><CardTitle>Suppliers</CardTitle></CardHeader>
-                    <CardContent className="p-0">
-                        <Table>
-                            <TableHeader><TableRow><TableHead>Name</TableHead><TableHead className="text-right">Balance</TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {suppliers?.map(s => (
-                                    <TableRow key={s.id}>
-                                        <TableCell>
-                                            <div className="font-medium">{s.name}</div>
-                                            <div className="text-xs text-muted-foreground">{s.phone}</div>
-                                        </TableCell>
-                                        <TableCell className="text-right font-bold text-red-600">GH₵{s.balance.toFixed(2)}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-
-                <Card className="lg:col-span-2">
-                    <CardHeader><CardTitle>Purchase Orders</CardTitle></CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Supplier</TableHead><TableHead>Items</TableHead><TableHead>Total</TableHead><TableHead>Status</TableHead><TableHead></TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {pos?.map(po => (
-                                    <TableRow key={po.id}>
-                                        <TableCell className="text-xs">{po.date ? format(po.date.toDate(), 'PP') : '-'}</TableCell>
-                                        <TableCell>{po.supplierName}</TableCell>
-                                        <TableCell className="text-xs">{po.items.length} items</TableCell>
-                                        <TableCell>GH₵{po.totalAmount.toFixed(2)}</TableCell>
-                                        <TableCell><Badge variant={po.status === 'Received' ? 'default' : 'secondary'}>{po.status}</Badge></TableCell>
-                                        <TableCell>
-                                            {po.status === 'Sent' && (
-                                                <Button size="sm" variant="outline" onClick={() => handleReceiveGoods(po)}>
-                                                    <FileCheck className="mr-2 h-3 w-3"/> Receive
-                                                </Button>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </div>
+            <Dialog open={!!payingBill} onOpenChange={(open) => !open && setPayingBill(null)}>
+                {payingBill && <PayBillDialog bill={payingBill} setOpen={() => setPayingBill(null)} onBillPaid={forceRefetch} />}
+            </Dialog>
         </div>
     );
 }
+
+    

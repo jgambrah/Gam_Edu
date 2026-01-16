@@ -432,7 +432,7 @@ export default function FinancialReportsPage() {
         <div className="space-y-6 p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><BarChart className="text-indigo-600"/> Financial Reports</h1>
+                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><FileText className="text-indigo-600"/> Financial Reports</h1>
                     <p className="text-muted-foreground">Generate standard accounting statements.</p>
                 </div>
                 
@@ -473,3 +473,5 @@ export default function FinancialReportsPage() {
         </div>
     );
 }
+
+    
