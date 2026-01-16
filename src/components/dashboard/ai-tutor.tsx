@@ -50,6 +50,11 @@ export const AITutor: React.FC = () => {
     e.preventDefault();
     if (!inputText.trim() || isLoading) return;
 
+    if (!user?.uid) {
+        toast({ title: "Error", description: "You must be logged in to use the tutor.", variant: 'destructive' });
+        return;
+    }
+
     const userText = inputText;
     setInputText('');
     setIsLoading(true);
@@ -64,8 +69,6 @@ export const AITutor: React.FC = () => {
     setMessages(currentHistory);
 
     try {
-      // FIX: Increased from -10 to -50 so it remembers the start of the lesson
-      // for summaries and quizzes at the end.
       const historyForApi = currentHistory.slice(-50).map(m => ({ 
           role: m.role, 
           content: m.content
@@ -75,11 +78,12 @@ export const AITutor: React.FC = () => {
       
       const response = await chatWithAiTutor({
         history: historyForApi,
-        message: lastMessage?.content || userText
+        message: lastMessage?.content || userText,
+        userId: user.uid,
       });
 
       if (!response.success) {
-        throw new Error(response.error);
+        throw new Error(response.text || "AI tutor failed to respond.");
       }
 
       const aiMsg: ChatMessage = {
@@ -95,7 +99,7 @@ export const AITutor: React.FC = () => {
         toast({
             variant: "destructive",
             title: "AI Error",
-            description: "Could not get a response. Check your internet or API key."
+            description: error.message || "Could not get a response. Check your internet or API key."
         });
     } finally {
       setIsLoading(false);
