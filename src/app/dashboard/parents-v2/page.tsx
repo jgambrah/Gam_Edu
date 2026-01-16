@@ -357,7 +357,7 @@ export default function ParentsPage() {
                             )}
                         </div>
                     </div>
-                    <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Update Parent Details"}</Button></DialogFooter>
+                    <DialogFooter><Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Save Changes"}</Button></DialogFooter>
                 </form>
             )}
         </DialogContent>
@@ -365,5 +365,3 @@ export default function ParentsPage() {
     </div>
   );
 }
-
-    
