@@ -51,6 +51,7 @@ import {
   Truck,
   Calculator,
   Building2,
+  Rabbit,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -202,6 +203,18 @@ export const navItems: NavItem[] = [
     icon: Activity,
     roles: ['Student', 'Teacher', 'Administrator', 'Director'],
     subItems: [
+        {
+            path: 'https://nursery-bloom-825774943692.us-west1.run.app',
+            title: 'Early Years',
+            icon: Rabbit,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/junior-academy',
+            title: 'Junior Campus',
+            icon: GraduationCap,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
         {
             path: '/dashboard/study-club',
             title: 'Study Club (AI Tutor)',
