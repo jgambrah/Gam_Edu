@@ -1,7 +1,6 @@
-
 'use server';
 
-import { ai } from '@/ai/genkit'; // Import your configured instance
+import { ai } from '@/ai/genkit'; 
 
 export async function generateScienceFactAction(topic?: string) {
   try {
@@ -9,7 +8,7 @@ export async function generateScienceFactAction(topic?: string) {
       ? `Tell me a fascinating scientific fact about ${topic} for a curious student. Keep it under 50 words.`
       : `Tell me a random fascinating scientific fact for a curious student. Keep it under 50 words.`;
 
-    // Direct generation call - No flows, no schemas, just text in, text out.
+    // 🔥 FIX: Explicitly adding the model here stops the error
     const response = await ai.generate({
       model: 'googleai/gemini-1.5-flash-latest', 
       prompt: promptText,
