@@ -145,20 +145,33 @@ export default function DashboardClient() {
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
-  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
+  const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
 
-  useEffect(() => {
-    console.log('🔍 Dashboard Debug:', {
-      isLoadingSchool,
-      schoolId,
-      isUserLoading,
-      isRoleLoading,
-      role,
-      userId: user?.uid
-    });
-  }, [isLoadingSchool, schoolId, isUserLoading, isRoleLoading, role, user]);
+  // --- 1. GLOBAL LOADING GATE ---
+  // Do not run ANY queries until we know who the user is and what school they belong to.
+  if (isUserLoading || isRoleLoading || isSchoolLoading) {
+      return (
+        <div className="flex h-[50vh] w-full items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+            <span className="ml-3 text-muted-foreground">Loading your workspace...</span>
+        </div>
+      );
+  }
 
-  // Role checks
+  // --- 2. MISSING DATA GATE ---
+  if (!schoolId) {
+      return (
+        <div className="p-8 text-center border-2 border-dashed border-red-200 bg-red-50 rounded-lg">
+            <h2 className="text-xl font-bold text-red-700">Account Setup Incomplete</h2>
+            <p className="text-red-600 mt-2">
+                We could not link your account to a school. Please contact support or your administrator.
+            </p>
+            <p className="text-xs text-muted-foreground mt-4">Debug: UID: {user?.uid}</p>
+        </div>
+      );
+  }
+
+  // --- 3. SAFE QUERIES (Only run now that schoolId is guaranteed) ---
   const isAdminOrDirector = role === 'Administrator' || role === 'Director';
   const isTeacher = role === 'Teacher';
   const isStudent = role === 'Student';
@@ -167,8 +180,8 @@ export default function DashboardClient() {
   const isLibrarian = role === 'Librarian';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || ['Cook', 'Transport Staff'].includes(role || '');
   const isSuperAdmin = user?.uid === 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2';
-
-  // --- DATA FETCHING (Now School-Aware & Safe) ---
+  
+  // --- SAFE DATA FETCHING ---
   const studentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
@@ -236,34 +249,22 @@ export default function DashboardClient() {
 
 
   // FIXED LOADING LOGIC
-  const isGlobalLoading = isLoadingSchool || isUserLoading || isRoleLoading;
-
-  // Start with global loading state
   let isLoading = isGlobalLoading;
 
-  // ✅ FIX: Only check additional loading if we have a schoolId AND global loading is done
-  if (!isGlobalLoading) {
-    if (schoolId) {
-      // We have a school, check role-specific data loading
-      if (isAdminOrDirector) {
-        isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
-      } else if (isTeacher) {
-        isLoading = classesLoading || assignmentsLoading;
-      } else if (isStudent) {
-        isLoading = classesLoading || assignmentsLoading || announcementsLoading;
-      } else if (isFinance) {
-        isLoading = paymentsLoading || payablesLoading;
-      } else if (isLibrarian) {
-        isLoading = libraryLoading;
-      } else {
-        // Unknown role or no specific loading required
-        isLoading = false;
-      }
-    } else {
-      // ✅ CRITICAL FIX: No schoolId found, stop loading
-      isLoading = false;
+  if (!isGlobalLoading && schoolId) {
+    if (isAdminOrDirector) {
+      isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
+    } else if (isTeacher) {
+      isLoading = classesLoading || assignmentsLoading;
+    } else if (isStudent) {
+      isLoading = classesLoading || assignmentsLoading || announcementsLoading;
+    } else if (isFinance) {
+      isLoading = paymentsLoading || payablesLoading;
+    } else if (isLibrarian) {
+      isLoading = libraryLoading;
     }
   }
+
 
   // --- STATS CALCULATIONS ---
   const stats = useMemo(() => {
@@ -1076,8 +1077,9 @@ export default function DashboardClient() {
         <h1 className="text-3xl font-bold">Welcome, {profile?.firstName || user?.displayName || 'User'}!</h1>
         <p className="text-muted-foreground">Here's a quick overview of your school.</p>
       </div>
-      {isLoading ? <Loader2 className="h-10 w-10 animate-spin" /> : renderDashboardByRole()}
+      {renderDashboardByRole()}
     </div>
   );
 }
 
+    
