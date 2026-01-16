@@ -3,67 +3,50 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useFirestore } from '@/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, updateDoc, query, where, orderBy } from 'firebase/firestore'; 
+import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, query, where, orderBy, updateDoc } from 'firebase/firestore'; 
 import { createNewUser } from '@/app/actions/create-user'; 
+import { sendSchoolCredentialsEmail } from '@/lib/email';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, Edit, Crown, Clock } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Check } from 'lucide-react'; 
 
-type School = {
-  id: string;
-  name: string;
-  plan: string;
-  createdAt: any;
-  trialEndsAt?: any;
-};
-
-type Lead = {
-    id: string;
-    schoolName: string;
-    contactName: string;
-    email: string;
-};
+type School = { id: string; name: string; plan: string; createdAt: any; };
+type Lead = { id: string; schoolName: string; contactName: string; email: string; phone: string; status: string; };
 
 export default function SuperAdminPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   
   const [schools, setSchools] = useState<School[]>([]);
-  const [leads, setLeads] = useState<Lead[]>([]); // <-- New state for leads
+  const [leads, setLeads] = useState<Lead[]>([]); // New State
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   
   const [isDeleting, setIsDeleting] = useState(false);
   const [schoolToDelete, setSchoolToDelete] = useState<School | null>(null);
 
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [schoolToEdit, setSchoolToEdit] = useState<School | null>(null);
-  const [newPlan, setNewPlan] = useState<string>('Trial');
-
   // Form State
   const [schoolName, setSchoolName] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminName, setAdminName] = useState('');
-  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null); // <-- Track selected lead
+  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null); // Track if a lead was selected
 
-  // 1. Fetch All Data (Schools & Leads)
-  const fetchData = useCallback(async () => {
+  const loadData = useCallback(async () => {
     if (!firestore) return;
     setLoading(true);
     try {
-      const schoolsSnap = await getDocs(query(collection(firestore, 'schools'), orderBy('createdAt', 'desc')));
-      const schoolsData = schoolsSnap.docs.map(d => ({ id: d.id, ...d.data() })) as School[];
-      setSchools(schoolsData);
+      // 1. Fetch Schools
+      const schoolSnap = await getDocs(collection(firestore, 'schools'));
+      setSchools(schoolSnap.docs.map(d => ({ id: d.id, ...d.data() })) as School[]);
 
-      const leadsSnap = await getDocs(query(collection(firestore, 'leads'), where('status', '==', 'pending'), orderBy('createdAt', 'desc')));
-      const leadsData = leadsSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Lead[];
-      setLeads(leadsData);
+      // 2. Fetch Pending Leads
+      const leadsQ = query(collection(firestore, 'leads'), where('status', '==', 'pending'));
+      const leadSnap = await getDocs(leadsQ);
+      setLeads(leadSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Lead[]);
 
     } catch (error) {
       console.error(error);
@@ -72,70 +55,64 @@ export default function SuperAdminPage() {
     }
   }, [firestore]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { loadData(); }, [loadData]);
 
-  // 2. Select a lead to pre-fill the form
-  const handleSelectLead = (lead: Lead) => {
-    setSchoolName(lead.schoolName);
-    setAdminEmail(lead.email);
-    setAdminName(lead.contactName);
-    setSelectedLeadId(lead.id);
-    toast({ title: "Lead Loaded", description: `${lead.schoolName} details are ready for creation.` });
+  // --- POPULATE FUNCTION ---
+  const populateFromLead = (lead: Lead) => {
+      setSchoolName(lead.schoolName);
+      setAdminName(lead.contactName);
+      setAdminEmail(lead.email);
+      setSelectedLeadId(lead.id); // Mark this lead as being processed
+      toast({ title: "Form Filled", description: `Data populated from ${lead.schoolName}` });
   };
 
-  // 3. Create New School Logic (Now updates lead status)
   const handleCreateSchool = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firestore) return;
     setCreating(true);
 
     try {
+      // A. Create School
       const schoolRef = await addDoc(collection(firestore, 'schools'), {
         name: schoolName,
         plan: 'Trial', 
-        aiCredits: 100,
         status: 'active',
         createdAt: serverTimestamp(),
         trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), 
-        isActive: true
+        isActive: true,
+        aiCredits: 1000,
       });
 
       const newSchoolId = schoolRef.id;
-      const password = "schoolAdmin123"; 
-      
+
+      // B. Create User
+      const password = "password123"; 
       const result = await createNewUser(
-        adminEmail,
-        password,
-        'Director', 
-        { firstName: adminName, lastName: 'Admin' },
-        newSchoolId 
+        adminEmail, password, 'Director', 
+        { firstName: adminName, lastName: 'Admin' }, newSchoolId 
       );
 
       if ('error' in result) throw new Error(result.error);
 
+      // C. Update Profile
       await setDoc(doc(firestore, 'staff', result.uid), {
-        uid: result.uid,
-        email: adminEmail,
-        role: 'Director',
-        firstName: adminName,
-        lastName: 'Admin',
-        schoolId: newSchoolId, 
-        createdAt: serverTimestamp()
+        uid: result.uid, email: adminEmail, role: 'Director', firstName: adminName, lastName: 'Admin',
+        schoolId: newSchoolId, createdAt: serverTimestamp()
       });
 
-      // --- NEW: Update Lead Status ---
+      // D. Send Email
+      await sendSchoolCredentialsEmail(adminEmail, adminName, schoolName, password);
+
+      // E. CLOSE THE LEAD (If we used one)
       if (selectedLeadId) {
-        await updateDoc(doc(firestore, 'leads', selectedLeadId), { status: 'approved' });
+          await updateDoc(doc(firestore, 'leads', selectedLeadId), { status: 'approved' });
       }
 
-      toast({ title: "Success!", description: `Created ${schoolName} and sent credentials.` });
+      toast({ title: "Success!", description: `Created ${schoolName}` });
       
-      // Reset form
-      setSchoolName('');
-      setAdminEmail('');
-      setAdminName('');
-      setSelectedLeadId(null);
-      fetchData(); // Refresh both schools and leads lists
+      // Reset
+      setSchoolName(''); setAdminEmail(''); setAdminName(''); setSelectedLeadId(null);
+      loadData();
 
     } catch (error: any) {
       toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -144,85 +121,99 @@ export default function SuperAdminPage() {
     }
   };
 
-  // Other handlers (update, delete) remain the same...
-  const handleUpdatePlan = async () => { /* ... existing code ... */ };
-  const confirmDelete = async () => { /* ... existing code ... */ };
+  const confirmDelete = async () => {
+    if (!schoolToDelete || !firestore) return;
+    setIsDeleting(true);
+    try {
+        await deleteDoc(doc(firestore, 'schools', schoolToDelete.id));
+        toast({ title: "Deleted", description: "School removed." });
+        setSchoolToDelete(null);
+        loadData();
+    } catch (error: any) {
+        toast({ variant: 'destructive', title: "Delete Failed", description: error.message });
+    } finally {
+        setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="p-8 space-y-8">
-      <h1 className="text-3xl font-bold flex items-center gap-2">
-        <Building2 className="h-8 w-8 text-purple-600"/> Super Admin Portal (CEO)
+      <h1 className="text-3xl font-bold flex items-center gap-2 text-slate-800">
+        <Building2 className="h-8 w-8 text-blue-600"/> CEO Command Center
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        {/* PENDING LEADS CARD */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Pending Leads ({leads.length})</CardTitle>
-            <CardDescription>New schools waiting for approval.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? <Loader2 className="animate-spin"/> : (
-              <Table>
-                <TableHeader><TableRow><TableHead>School Name</TableHead><TableHead>Contact</TableHead><TableHead></TableHead></TableRow></TableHeader>
-                <TableBody>
-                  {leads.map(lead => (
-                    <TableRow key={lead.id}>
-                      <TableCell className="font-medium">{lead.schoolName}</TableCell>
-                      <TableCell>{lead.contactName}</TableCell>
-                      <TableCell className="text-right">
-                        <Button size="sm" variant="outline" onClick={() => handleSelectLead(lead)}>
-                          Use Lead
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                   {leads.length === 0 && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No pending leads.</TableCell></TableRow>}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-        
-        {/* CREATE SCHOOL FORM */}
-        <Card className="max-w-xl">
-          <CardHeader><CardTitle>Onboard New School</CardTitle></CardHeader>
-          <CardContent>
-            <form onSubmit={handleCreateSchool} className="space-y-4">
-              <div>
-                  <label className="text-sm font-medium">School Name</label>
-                  <Input required value={schoolName} onChange={e => setSchoolName(e.target.value)} placeholder="e.g. Galaxy Int. School" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                  <div>
-                      <label className="text-sm font-medium">Director Name</label>
-                      <Input required value={adminName} onChange={e => setAdminName(e.target.value)} placeholder="John" />
-                  </div>
-                  <div>
-                      <label className="text-sm font-medium">Director Email</label>
-                      <Input required type="email" value={adminEmail} onChange={e => setAdminEmail(e.target.value)} placeholder="admin@galaxy.com" />
-                  </div>
-              </div>
-              <Button disabled={creating} className="w-full bg-purple-600 hover:bg-purple-700">
-                  {creating ? <Loader2 className="animate-spin mr-2"/> : <Plus className="mr-2 h-4 w-4"/>}
-                  Create School & Admin
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">Default Password: schoolAdmin123</p>
-            </form>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          
+          {/* LEFT: CREATE FORM */}
+          <Card className="border-t-4 border-t-blue-600 shadow-md h-fit">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Plus className="h-5 w-5"/> Create New School</CardTitle>
+                <CardDescription>Manually enter details or select a lead from the list.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleCreateSchool} className="space-y-4">
+                <div>
+                    <label className="text-sm font-medium">School Name</label>
+                    <Input required value={schoolName} onChange={e => setSchoolName(e.target.value)} placeholder="e.g. Galaxy Int. School" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="text-sm font-medium">Director Name</label>
+                        <Input required value={adminName} onChange={e => setAdminName(e.target.value)} placeholder="John" />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium">Director Email</label>
+                        <Input required type="email" value={adminEmail} onChange={e => setAdminEmail(e.target.value)} placeholder="admin@galaxy.com" />
+                    </div>
+                </div>
+                <Button disabled={creating} className="w-full bg-blue-600 hover:bg-blue-700">
+                    {creating ? <Loader2 className="animate-spin mr-2"/> : "Generate School Portal"}
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">Credentials will be emailed automatically.</p>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* RIGHT: PENDING LEADS */}
+          <Card className="border-t-4 border-t-orange-500 shadow-md h-fit">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><UserPlus className="h-5 w-5"/> Incoming Requests</CardTitle>
+                <CardDescription>Leads from your public website form.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {leads.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground bg-slate-50 rounded-lg border border-dashed">
+                        No pending leads found.
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        {leads.map(lead => (
+                            <div key={lead.id} className="flex items-center justify-between p-3 bg-white border rounded-lg hover:shadow-sm transition-all">
+                                <div>
+                                    <p className="font-bold text-sm">{lead.schoolName}</p>
+                                    <p className="text-xs text-muted-foreground">{lead.contactName} • {lead.email}</p>
+                                </div>
+                                <Button size="sm" variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => populateFromLead(lead)}>
+                                    Use This <ArrowRight className="ml-1 h-3 w-3"/>
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </CardContent>
+          </Card>
       </div>
 
-      {/* SCHOOL LIST (Existing Component) */}
+      {/* SCHOOL LIST */}
       <Card>
-        <CardHeader><CardTitle>Registered Schools ({schools.length})</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Active Schools ({schools.length})</CardTitle></CardHeader>
         <CardContent>
           {loading ? <Loader2 className="animate-spin"/> : (
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>School Name</TableHead>
+                        <TableHead>ID</TableHead>
                         <TableHead>Plan</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
@@ -231,43 +222,19 @@ export default function SuperAdminPage() {
                 <TableBody>
                     {schools.map(s => (
                         <TableRow key={s.id}>
-                            <TableCell className="font-bold">
-                                {s.name}
-                                <div className="text-xs text-muted-foreground font-mono">{s.id}</div>
-                            </TableCell>
-                            <TableCell>
-                                {s.plan === 'Premium' ? (
-                                    <span className="flex items-center gap-1 text-green-700 font-bold bg-green-100 px-2 py-1 rounded w-fit text-xs">
-                                        <Crown className="h-3 w-3"/> Premium
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center gap-1 text-orange-700 font-bold bg-orange-100 px-2 py-1 rounded w-fit text-xs">
-                                        <Clock className="h-3 w-3"/> Trial
-                                    </span>
-                                )}
-                            </TableCell>
+                            <TableCell className="font-bold">{s.name}</TableCell>
+                            <TableCell className="font-mono text-xs text-slate-500">{s.id}</TableCell>
+                            <TableCell><span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{s.plan}</span></TableCell>
                             <TableCell><span className="text-green-600 font-bold text-sm">Active</span></TableCell>
                             <TableCell className="text-right">
-                                <div className="flex justify-end gap-2">
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
-                                        onClick={() => {
-                                            setSchoolToEdit(s);
-                                            setNewPlan(s.plan);
-                                        }}
-                                    >
-                                        <Edit className="h-4 w-4 text-blue-600"/>
-                                    </Button>
-                                    <Button 
-                                        variant="ghost" 
-                                        size="sm" 
-                                        className="text-red-500 hover:bg-red-50"
-                                        onClick={() => setSchoolToDelete(s)}
-                                    >
-                                        <Trash2 className="h-4 w-4"/>
-                                    </Button>
-                                </div>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-red-500 hover:text-red-700"
+                                    onClick={() => setSchoolToDelete(s)}
+                                >
+                                    <Trash2 className="h-4 w-4"/>
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -277,12 +244,22 @@ export default function SuperAdminPage() {
         </CardContent>
       </Card>
 
-      {/* DIALOGS (Existing components for edit/delete) */}
-      <Dialog open={!!schoolToEdit} onOpenChange={(open) => !open && setSchoolToEdit(null)}>
-        {/* ... Edit Dialog Content ... */}
-      </Dialog>
+      {/* DELETE DIALOG */}
       <Dialog open={!!schoolToDelete} onOpenChange={(open) => !open && setSchoolToDelete(null)}>
-        {/* ... Delete Dialog Content ... */}
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle className="text-red-600">Delete School?</DialogTitle>
+                <DialogDescription>
+                    This will remove <strong>{schoolToDelete?.name}</strong> from the system.
+                </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setSchoolToDelete(null)}>Cancel</Button>
+                <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+                    {isDeleting ? <Loader2 className="h-4 w-4 animate-spin"/> : "Delete"}
+                </Button>
+            </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   );
