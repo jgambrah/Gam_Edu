@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -9,7 +10,7 @@ import {
   FlaskConical, Trophy, PencilRuler, Plus, Loader2, 
   Trash2, Lightbulb, CheckCircle2, Wand2, XCircle, FolderOpen, Play, BookOpen, Microscope, Sparkles, Atom, Database, PlusCircle
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { generateScienceLessonAction, GeneratedLesson } from '@/ai/flows/generate-science-lesson';
 
 // UI Components
@@ -25,10 +26,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry } from '@/lib/types';
+import { Class, Student, ScienceProblem, DailyFact, ScienceLeaderboardEntry, ScienceLesson } from '@/lib/types';
 import { AiProblemGenerator } from '../ai-problem-generator';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { generateDailyFact } from '@/ai/flows/generate-daily-fact-flow';
+import { generateScienceFactAction } from '@/app/actions/science-ai';
 import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,6 +60,7 @@ function ScienceExplorerTab() {
     const [isLearning, setIsLearning] = useState(false);
     const [currentLesson, setCurrentLesson] = useState<GeneratedLesson | null>(null);
     const [showAnswer, setShowAnswer] = useState(false);
+    const { schoolId } = useCurrentSchool();
 
     // Fetch History
     const historyQuery = useMemoFirebase(() => 
@@ -67,13 +69,13 @@ function ScienceExplorerTab() {
     const { data: history, isLoading: historyLoading } = useCollection<LessonCard>(historyQuery);
 
     const handleLearn = async () => {
-        if (!topic.trim()) return;
+        if (!topic.trim() || !schoolId) return;
         setIsLearning(true);
         setShowAnswer(false);
         setCurrentLesson(null);
 
         try {
-            const result = await generateScienceLessonAction({ topic, grade: 'JHS 1' });
+            const result = await generateScienceLessonAction({ topic, grade: 'JHS 1', schoolId });
             
             if (result.success && result.data) {
                 setCurrentLesson(result.data);
@@ -85,10 +87,10 @@ function ScienceExplorerTab() {
                     });
                 }
             } else {
-                toast({ variant: 'destructive', title: "AI Error", description: "Could not generate lesson." });
+                toast({ variant: 'destructive', title: "AI Error", description: result.error || "Could not generate lesson." });
             }
-        } catch (e) {
-             toast({ variant: 'destructive', title: "Error", description: "Something went wrong." });
+        } catch (e: any) {
+             toast({ variant: 'destructive', title: "Error", description: e.message || "Something went wrong." });
         } finally {
             setIsLearning(false);
         }
@@ -212,10 +214,6 @@ function Leaderboard() {
                         <TableCell className="font-bold">{index + 1}</TableCell>
                         <TableCell>
                             <div className="flex items-center gap-3">
-                                {/* <Avatar>
-                                    <AvatarImage src={entry.profilePictureUrl} />
-                                    <AvatarFallback>{entry.userName.charAt(0)}</AvatarFallback>
-                                </Avatar> */}
                                 <span>{entry.userName}</span>
                             </div>
                         </TableCell>
@@ -380,20 +378,24 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
           if (isStale) {
               console.log("Fact is stale or missing. Generating a new one...");
               try {
-                  const result = await generateDailyFact();
-                  await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
-                      factText: result.fact,
-                      createdAt: serverTimestamp(),
-                      postedBy: user?.uid,
-                  });
-                  toast({ title: "New Fact of the Day Generated!" });
-              } catch (error) {
+                  const result = await generateScienceFactAction();
+                  if (result.success) {
+                    await addDocumentNonBlocking(collection(firestore, 'daily_facts'), {
+                        factText: result.fact,
+                        createdAt: serverTimestamp(),
+                        postedBy: user?.uid,
+                    });
+                    toast({ title: "New Fact of the Day Generated!" });
+                  } else {
+                    throw new Error(result.error);
+                  }
+              } catch (error: any) {
                   console.error("Failed to generate new fact:", error);
+                  toast({ variant: 'destructive', title: 'AI Error', description: error.message || 'Could not generate a new fact.' });
               }
           }
         };
         
-        // Trigger the check only when the data has loaded
         if (!isLoading) {
             generateNewFactIfNeeded();
         }
@@ -445,97 +447,57 @@ function FactOfTheDay({ isStaff }: { isStaff: boolean }) {
     );
 }
 
-// --- The New Science Lab Tab ---
-function ScienceLabTab() {
-    const firestore = useFirestore();
-    const router = useRouter();
-    const { schoolId } = useCurrentSchool();
-
-    const [selectedTopic, setSelectedTopic] = useState('');
-    const [selectedDifficulty, setSelectedDifficulty] = useState('');
-
-    const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(
-        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'science_problems'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId])
-    );
-    const { data: facts, isLoading: isLoadingFacts } = useCollection<DailyFact>(
-        useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'daily_facts'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId])
-    );
-
-    const uniqueTopics = useMemo(() => {
-        if (!problems) return [];
-        return Array.from(new Set(problems.map(p => p.topic)));
-    }, [problems]);
-
-    const handleStartPractice = () => {
-        if (selectedTopic && selectedDifficulty) {
-            router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
-        }
-    };
-
-    return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><PencilRuler/> Practice Hub</CardTitle>
-                        <CardDescription>Select a topic and difficulty to begin a practice quiz.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {(isLoadingProblems) ? (
-                            <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
-                        ) : (
-                            <>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Select onValueChange={setSelectedTopic} value={selectedTopic}>
-                                        <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
-                                        <SelectContent>
-                                            {uniqueTopics.map(topic => (
-                                                <SelectItem key={topic} value={topic}>{topic}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <Select onValueChange={setSelectedDifficulty} value={selectedDifficulty}>
-                                        <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Easy">Easy</SelectItem>
-                                            <SelectItem value="Medium">Medium</SelectItem>
-                                            <SelectItem value="Hard">Hard</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
-                                    Start Practice
-                                </Button>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="lg:col-span-1 space-y-6">
-                 <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="text-md flex items-center gap-2"><Lightbulb/> Recent Facts</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {isLoadingFacts ? <Skeleton className="h-20" /> : (
-                            <ul className="space-y-3">
-                                {facts?.slice(0, 5).map(fact => (
-                                    <li key={fact.id} className="text-sm border-l-2 pl-3 italic text-muted-foreground">{fact.factText}</li>
-                                ))}
-                            </ul>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    );
-}
 
 // --- MAIN PAGE ---
 export default function ScienceClubPage() {
+  const router = useRouter();
+  const firestore = useFirestore();
   const { role, isRoleLoading } = useRole();
+  const { user, isUserLoading } = useUser();
+  const { schoolId } = useCurrentSchool();
+
+  const [selectedTopic, setSelectedTopic] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
+
   const isTeacherOrAdmin = role === 'Teacher' || role === 'Administrator' || role === 'Director';
-  const isLoading = isRoleLoading;
+  
+  const { data: studentData, isLoading: isLoadingStudent } = useCollection<Student>(
+    useMemoFirebase(() => {
+        if (!user || !firestore || role !== 'Student' || !schoolId) return null;
+        return query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId));
+    }, [firestore, user, role, schoolId])
+  );
+  
+  const studentClassId = studentData?.[0]?.classId;
+  
+  const problemsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    let baseQuery = query(collection(firestore, 'science_problems'), where('schoolId', '==', schoolId));
+    
+    if (role === 'Student') {
+        if (studentClassId) {
+             return query(baseQuery, where('classId', '==', studentClassId));
+        }
+        return null;
+    }
+    return baseQuery;
+  }, [firestore, isTeacherOrAdmin, role, studentClassId, schoolId]);
+
+  const { data: problems, isLoading: isLoadingProblems } = useCollection<ScienceProblem>(problemsQuery);
+
+  const uniqueTopics = useMemo(() => {
+    if (!problems) return [];
+    const topics = new Set(problems.map(p => p.topic));
+    return Array.from(topics);
+  }, [problems]);
+
+  const handleStartPractice = () => {
+    if (selectedTopic && selectedDifficulty) {
+      router.push(`/dashboard/science-club/practice?topic=${selectedTopic}&difficulty=${selectedDifficulty}`);
+    }
+  };
+
+  const isLoading = isUserLoading || isRoleLoading || isLoadingProblems || (role === 'Student' && isLoadingStudent);
 
   return (
     <div className="space-y-6">
@@ -555,22 +517,63 @@ export default function ScienceClubPage() {
       </Card>
       
       {isLoading ? <Loader2 className="mx-auto my-10 h-8 w-8 animate-spin"/> : (
-        <Tabs defaultValue="lab" className="w-full">
+        <Tabs defaultValue="practice" className="w-full">
             <TabsList className={cn("grid w-full", isTeacherOrAdmin ? "grid-cols-4" : "grid-cols-3")}>
-            <TabsTrigger value="lab"><Atom className="mr-2 h-4 w-4"/> The Science Lab</TabsTrigger>
-            <TabsTrigger value="learn"><Microscope className="mr-2 h-4 w-4"/> Science Explorer</TabsTrigger>
+            <TabsTrigger value="practice"><PencilRuler className="mr-2 h-4 w-4"/>Practice Hub</TabsTrigger>
+            <TabsTrigger value="learn">Science Explorer</TabsTrigger>
             <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Leaderboard</TabsTrigger>
-            {isTeacherOrAdmin && <TabsTrigger value="manage"><Database className="mr-2 h-4 w-4"/>Manage Content</TabsTrigger>}
+            {isTeacherOrAdmin && <TabsTrigger value="manage">Manage Content</TabsTrigger>}
             </TabsList>
             
-            <TabsContent value="lab" className="mt-6">
-                <ScienceLabTab />
+            <TabsContent value="practice">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Start a New Practice Session</CardTitle>
+                    <CardDescription>Select a topic and difficulty to begin.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {(isLoading) ? (
+                        <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div> 
+                    ) : 
+                    (role === 'Student' && !studentClassId) ? (
+                        <div className="text-center space-y-2">
+                            <p className="text-muted-foreground">We could not find your class assignment.</p>
+                            <p className="text-xs text-red-500">Debug: User ID {user?.uid}</p>
+                        </div>
+                    ) : 
+                    (
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Select onValueChange={setSelectedTopic} value={selectedTopic}>
+                                    <SelectTrigger><SelectValue placeholder="Select a Topic" /></SelectTrigger>
+                                    <SelectContent>
+                                        {uniqueTopics.map(topic => (
+                                            <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Select onValueChange={setSelectedDifficulty} value={selectedDifficulty}>
+                                    <SelectTrigger><SelectValue placeholder="Select Difficulty" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Easy">Easy</SelectItem>
+                                        <SelectItem value="Medium">Medium</SelectItem>
+                                        <SelectItem value="Hard">Hard</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <Button onClick={handleStartPractice} disabled={!selectedTopic || !selectedDifficulty} className="w-full">
+                                Start Practice
+                            </Button>
+                        </>
+                    )}
+                </CardContent>
+            </Card>
             </TabsContent>
-            
+
             <TabsContent value="learn" className="mt-6">
                 <ScienceExplorerTab />
             </TabsContent>
-
+            
             <TabsContent value="leaderboard">
                 <Card>
                     <CardHeader>
