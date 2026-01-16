@@ -4,22 +4,17 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet, CheckSquare, Coffee } from 'lucide-react';
+import { Loader2, PlusCircle, MoreVertical, FileCog, Edit, Utensils, Bus, User, ChevronDown, DollarSign, HandCoins, Receipt, AlertCircle, Eye, Wallet, CheckSquare, Coffee, Printer } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,7 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, isPast } from 'date-fns';
+import { format, isPast, startOfDay, endOfDay } from 'date-fns';
 import { FinancialRecord, financialRecordSchema, bulkBillingSchema, recordPaymentSchema, applyWaiverSchema, Student, Till, Class } from '@/lib/types';
 import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Textarea } from '@/components/ui/textarea';
@@ -42,7 +37,11 @@ import { StudentSearchInput } from '@/components/student-search';
 import { searchStudent } from '@/lib/student-utils';
 import { StudentSelect } from '@/components/StudentSelect';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { GenerateReceipt } from './generate-receipt'; // IMPORT THE NEW COMPONENT
+import { GenerateReceipt } from './generate-receipt';
+import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
+import { DateRange } from 'react-day-picker';
+import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
+
 
 // --- Types ---
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
@@ -707,7 +706,8 @@ export default function AccountsPage() {
     const [dialogState, setDialogState] = useState<{ type: 'payment' | 'waiver', record: FinancialRecord | null }>({ type: 'payment', record: null });
     const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
     const [transactionDetail, setTransactionDetail] = useState<FinancialRecord | null>(null);
-  
+    const [studentDateRange, setStudentDateRange] = useState<Record<string, DateRange | undefined>>({});
+
     const finQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: records, isLoading: isLoadingRecords, forceRefetch } = useCollection<FinancialRecord>(finQuery);
     
@@ -755,12 +755,22 @@ export default function AccountsPage() {
   
       return students.map(student => {
         const studentRecords = records.filter(r => r.studentId === student.uid);
-        const totalBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const totalPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
-        const totalWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
+
+        const dateRange = studentDateRange[student.uid];
+        const filteredRecords = dateRange?.from ? studentRecords.filter(rec => {
+            const recDate = rec.createdAt.toDate();
+            const from = startOfDay(dateRange.from!);
+            const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from!);
+            return recDate >= from && recDate <= to;
+        }) : studentRecords;
+
+
+        const totalBilled = filteredRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+        const totalPaid = filteredRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
+        const totalWaivers = filteredRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
         const balance = totalBilled - totalPaid - totalWaivers;
         
-        const sortedRecords = studentRecords.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+        const sortedRecords = filteredRecords.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
   
         let runningBalance = 0;
         const ledger = sortedRecords.map(rec => {
@@ -775,12 +785,13 @@ export default function AccountsPage() {
           balance,
           hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
           ledger: ledger.reverse(),
+          summary: { totalBilled, totalPaid, balance }
         };
       }).filter(sf => 
           (sf.ledger.length > 0 || searchTerm) && 
           searchStudent(sf.student, searchTerm)
       );
-    }, [records, students, searchTerm]);
+    }, [records, students, searchTerm, studentDateRange]);
   
   
     if (!canAccess) {
@@ -844,7 +855,7 @@ export default function AccountsPage() {
           <CardContent>
               {isLoading ? <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div> : (
                   <div className="space-y-4">
-                      {studentFinancials.map(({ student, balance, hasOverdue, ledger }) => (
+                      {studentFinancials.map(({ student, balance, hasOverdue, ledger, summary }) => (
                            <Collapsible key={student.uid} className="border rounded-lg">
                               <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 rounded-lg flex justify-between items-center group">
                                   <StudentDisplay student={student} variant="full" showAvatar />
@@ -857,6 +868,12 @@ export default function AccountsPage() {
                                   </div>
                               </CollapsibleTrigger>
                                <CollapsibleContent className="p-4 bg-slate-50/50 border-t">
+                                  <div className="flex justify-end mb-4">
+                                    <DatePickerWithRange 
+                                        date={studentDateRange[student.uid]}
+                                        onDateChange={(range) => setStudentDateRange(prev => ({ ...prev, [student.uid]: range }))}
+                                    />
+                                  </div>
                                   <div className="border rounded-md overflow-hidden bg-white">
                                    <Table>
                                       <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Description</TableHead><TableHead className="text-right">Debit</TableHead><TableHead className="text-right">Credit</TableHead><TableHead className="text-right">Run. Bal</TableHead><TableHead className="w-[120px] text-right">Actions</TableHead></TableRow></TableHeader>
@@ -887,6 +904,14 @@ export default function AccountsPage() {
                                       </TableBody>
                                   </Table>
                                   </div>
+                                   <div className="mt-4">
+                                    <GenerateStatement 
+                                        student={student}
+                                        records={ledger.reverse()} // Use filtered and sorted records
+                                        dateRange={studentDateRange[student.uid]}
+                                        summary={summary}
+                                    />
+                                </div>
                               </CollapsibleContent>
                           </Collapsible>
                       ))}
@@ -929,4 +954,3 @@ export default function AccountsPage() {
       </div>
     );
   }
-

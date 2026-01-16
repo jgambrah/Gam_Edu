@@ -13,37 +13,45 @@ import { FinancialRecord, Student } from '@/lib/types';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { DateRange } from 'react-day-picker';
 import { StudentDisplay } from '@/components/student-display';
+import { DateRange } from 'react-day-picker';
+import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
+import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
+
 
 function StudentBillView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
     const recordsQuery = useMemoFirebase(() => {
-        if (!firestore) return null;
-        let q = query(collection(firestore, 'financialRecords'), where('studentId', '==', studentId));
-        if (dateRange?.from) {
-            q = query(q, where('dueDate', '>=', Timestamp.fromDate(startOfDay(dateRange.from))));
-        }
-        if (dateRange?.to) {
-            q = query(q, where('dueDate', '<=', Timestamp.fromDate(endOfDay(dateRange.to))));
-        }
-        return q;
-    }, [firestore, studentId, dateRange]);
+        if (!firestore || !studentId) return null;
+        return query(collection(firestore, 'financialRecords'), where('studentId', '==', studentId));
+    }, [firestore, studentId]);
     const { data: records, isLoading } = useCollection<FinancialRecord>(recordsQuery);
 
+    const filteredRecords = useMemo(() => {
+        if (!records) return [];
+        if (!dateRange || !dateRange.from) return records;
+        
+        return records.filter(rec => {
+            if (!rec.dueDate?.toDate) return false;
+            const recDate = rec.dueDate.toDate();
+            const from = startOfDay(dateRange.from!);
+            const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from!);
+            return recDate >= from && recDate <= to;
+        }).sort((a,b) => b.createdAt.seconds - a.createdAt.seconds);
+    }, [records, dateRange]);
+
+
     const summary = useMemo(() => {
-        if (!records) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
-        const totalBilled = records.reduce((acc, r) => acc + r.billedAmount, 0);
-        const totalPaid = records.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
-        const totalWaivers = records.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
+        if (!filteredRecords) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
+        const totalBilled = filteredRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+        const totalPaid = filteredRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
+        const totalWaivers = filteredRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
         const balance = totalBilled - totalPaid - totalWaivers;
         return { totalBilled, totalPaid, totalWaivers, balance };
-    }, [records]);
+    }, [filteredRecords]);
 
     const getStatusVariant = (status: FinancialRecord['status']) => {
         switch (status) {
@@ -65,21 +73,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
     return (
         <div className="space-y-4">
             <div className="flex justify-end">
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        id="date"
-                        variant={"outline"}
-                        className={cn("w-[300px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Filter by Due Date</span>)}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
-                        <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
-                    </PopoverContent>
-                </Popover>
+                <DatePickerWithRange date={dateRange} onDateChange={setDateRange} />
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                  <Card>
@@ -103,7 +97,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
                 <Table>
                     <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead>Due Date</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
                     <TableBody>
-                        {records.map(rec => (
+                        {filteredRecords.map(rec => (
                             <TableRow key={rec.id}>
                                 <TableCell>{rec.description}</TableCell>
                                 <TableCell>GH₵{rec.billedAmount.toFixed(2)}</TableCell>
@@ -114,21 +108,26 @@ function StudentBillView({ studentId }: { studentId: string }) {
                     </TableBody>
                 </Table>
             </div>
+            <div className="mt-4">
+                <GenerateStatement 
+                    student={students.find(s => s.id === studentId)}
+                    records={filteredRecords}
+                    dateRange={dateRange}
+                    summary={summary}
+                />
+            </div>
         </div>
     );
 }
 
-// ✅ FIXED: Query student by UID instead of document ID
 function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     const firestore = useFirestore();
     
-    // ✅ FIX: Fetch directly by Document ID to be 100% accurate
     const studentDocRef = useMemoFirebase(
         () => firestore ? doc(firestore, 'students', studentUid) : null,
         [firestore, studentUid]
     );
     
-    // ✅ Use useDoc instead of useCollection
     const { data: student, isLoading } = useDoc<Student>(studentDocRef);
 
     if (isLoading) {
@@ -143,10 +142,8 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     if (!student) {
         return (
              <div className="p-4 border-b text-red-500 bg-red-50 rounded-md my-2">
-                <div className="flex items-center gap-2">
-                    <ShieldAlert className="h-4 w-4" />
-                    <span>Student Record ({studentUid}) not found in the database.</span>
-                </div>
+                <ShieldAlert className="h-4 w-4 inline mr-2" />
+                <span>Student Record ({studentUid}) not found in the database.</span>
             </div>
         );
     }
@@ -163,6 +160,7 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     );
 }
 
+const students: Student[] = [];
 
 export default function MyBillsPage() {
     const { user, isUserLoading } = useUser();
@@ -231,7 +229,9 @@ export default function MyBillsPage() {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><FileText /> My Bills</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+                        <FileText className="text-primary" /> My Children's Bills
+                    </CardTitle>
                     <CardDescription>
                         Financial records for {studentIds.length} {studentIds.length === 1 ? 'child' : 'children'}.
                     </CardDescription>
