@@ -13,9 +13,10 @@ const nextConfig: NextConfig = {
     // 1. Force heavy libraries to Server
     serverExternalPackages: [
         "genkit", 
-        "@genkit-ai", 
-        "@genkit-ai/googleai", 
-        "@google-cloud/vertexai"
+        "@genkit-ai/firebase",
+        "@genkit-ai/google-genai",
+        "@genkit-ai/next",
+        "firebase-admin"
     ],
 
     // 2. Webpack Config (Standard Bundler)
