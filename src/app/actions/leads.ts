@@ -1,9 +1,36 @@
+
 'use server';
 
 import { Resend } from 'resend';
+import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// 1. Initialize Admin SDK (Reuse this logic)
+function getAdminApp() {
+  const existingApp = getApps().find(app => app.name === 'admin');
+  if (existingApp) return existingApp;
 
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+  if (!projectId || !clientEmail || !privateKey) {
+    throw new Error("Missing Firebase Admin credentials.");
+  }
+
+  return initializeApp({
+    credential: cert({
+      projectId,
+      clientEmail,
+      privateKey: privateKey.replace(/\\n/g, '\n'),
+    }),
+  }, 'admin');
+}
+
+const apiKey = process.env.RESEND_API_KEY;
+const resend = apiKey ? new Resend(apiKey) : null;
+
+// 2. Main Function
 export async function submitSchoolLead(formData: FormData) {
   const schoolName = formData.get('schoolName') as string;
   const contactName = formData.get('contactName') as string;
@@ -16,41 +43,54 @@ export async function submitSchoolLead(formData: FormData) {
   }
 
   try {
-    // 1. Send Email to YOU (The CEO)
-    await resend.emails.send({
-      from: 'GAM Sales <info@gam-it-service.app>', // Must be your verified domain
-      to: 'jamesgambrah@gmail.com', // Your personal email
-      subject: `🚀 New Lead: ${schoolName}`,
-      html: `
-        <h1>New School Registration Request</h1>
-        <p><strong>School:</strong> ${schoolName}</p>
-        <p><strong>Contact Person:</strong> ${contactName}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Est. Students:</strong> ${studentCount}</p>
-        <br/>
-        <p><i>Go to your CEO Portal to create this school if approved.</i></p>
-      `
+    // A. Save to Firestore 'leads' collection
+    const adminApp = getAdminApp();
+    const db = getFirestore(adminApp);
+    
+    await db.collection('leads').add({
+      schoolName,
+      contactName,
+      email,
+      phone,
+      studentCount,
+      status: 'pending', // pending, approved, rejected
+      createdAt: new Date()
     });
 
-    // 2. (Optional) Send Confirmation to the Client
-    await resend.emails.send({
-      from: 'GAM Edu <info@gam-it-service.app>',
-      to: email,
-      subject: 'We received your request - GAM Edu',
-      html: `
-        <p>Hi ${contactName},</p>
-        <p>Thank you for your interest in GAM Edu for <strong>${schoolName}</strong>.</p>
-        <p>Our team will review your details and contact you shortly to set up your school's portal.</p>
-        <br/>
-        <p>Best regards,<br/>The GAM Edu Team</p>
-      `
-    });
+    // B. Send Email Notification
+    if (resend) {
+      await resend.emails.send({
+        from: 'GAM Sales <info@gam-it-service.app>',
+        to: 'jamesgambrah@gmail.com',
+        subject: `🚀 New Lead: ${schoolName}`,
+        html: `
+          <h1>New School Lead</h1>
+          <p><strong>School:</strong> ${schoolName}</p>
+          <p><strong>Contact:</strong> ${contactName}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          <p><i>Log in to your CEO Portal to approve this lead.</i></p>
+        `
+      });
+    }
 
     return { success: true };
 
-  } catch (error) {
-    console.error('Lead Email Failed:', error);
-    return { error: 'Failed to submit request. Please try again.' };
+  } catch (error: any) {
+    console.error('Lead Submission Failed:', error);
+    return { error: 'Failed to submit request.' };
   }
+}
+
+// ... keep your sendSchoolCredentialsEmail function here too ...
+export async function sendSchoolCredentialsEmail(email: string, name: string, schoolName: string, password: string) {
+    // ... (Keep existing code) ...
+    if(resend) {
+         await resend.emails.send({
+            from: 'GAM Edu <info@gam-it-service.app>',
+            to: email,
+            subject: `Welcome to GAM Edu - ${schoolName} Portal Access`,
+            html: `... (Your HTML) ...` 
+         });
+    }
 }
