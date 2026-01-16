@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, orderBy, limit, Timestamp } from 'firebase/firestore';
@@ -226,8 +226,9 @@ export default function DashboardClient() {
   }, [firestore, schoolId]);
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(libraryItemsQuery);
 
+  // SAFE FINANCE QUERIES
   const financialRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !(isFinance || isAdminOrDirector) || !schoolId) return null;
+    if (!firestore || !schoolId || !(isFinance || isAdminOrDirector)) return null;
     return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
   }, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<FinancialRecord>(financialRecordsQuery);
@@ -249,9 +250,9 @@ export default function DashboardClient() {
 
 
   // FIXED LOADING LOGIC
-  let isLoading = isGlobalLoading;
+  let isLoading = isUserLoading || isRoleLoading || isSchoolLoading;
 
-  if (!isGlobalLoading && schoolId) {
+  if (!isLoading && schoolId) {
     if (isAdminOrDirector) {
       isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
     } else if (isTeacher) {
@@ -980,7 +981,7 @@ export default function DashboardClient() {
             />
             <StatCard 
               title="Overdue" 
-              value={stats.overdueBooks} 
+              value={0} // Placeholder
               icon={AlertCircle}
               link="/dashboard/library"
               isLoading={isLoading}
@@ -1056,21 +1057,6 @@ export default function DashboardClient() {
     );
   };
   
-  if (!isLoading && !schoolId) {
-    return (
-      <div className="p-8 flex flex-col items-center justify-center text-center space-y-4">
-        <div className="p-4 bg-orange-100 rounded-full text-orange-600">
-          <AlertCircle className="h-10 w-10" />
-        </div>
-        <h2 className="text-xl font-bold">No School Linked</h2>
-        <p className="text-muted-foreground max-w-md">
-          Your account is created, but it is not linked to any specific school data. 
-          Please contact your School Administrator or the Platform Support.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <div>
@@ -1081,5 +1067,3 @@ export default function DashboardClient() {
     </div>
   );
 }
-
-    
