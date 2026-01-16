@@ -317,7 +317,7 @@ export default function DashboardClient() {
         activities.push(...students.map(s => ({
             type: 'New Student',
             title: 'New Student Enrolled',
-            description: `${s.firstName} ${s.lastName} was added.`,
+            description: `${s.firstName} ${s.lastName}`,
             time: s.createdAt,
             icon: UserCheck,
             iconColor: 'text-green-600'
