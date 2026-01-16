@@ -214,6 +214,10 @@ function Leaderboard() {
                         <TableCell className="font-bold">{index + 1}</TableCell>
                         <TableCell>
                             <div className="flex items-center gap-3">
+                                {/* <Avatar>
+                                    <AvatarImage src={entry.profilePictureUrl} />
+                                    <AvatarFallback>{entry.userName.charAt(0)}</AvatarFallback>
+                                </Avatar> */}
                                 <span>{entry.userName}</span>
                             </div>
                         </TableCell>
@@ -594,6 +598,5 @@ export default function ScienceClubPage() {
     </div>
   );
 }
-
 
     
