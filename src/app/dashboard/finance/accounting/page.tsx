@@ -7,7 +7,7 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, where, doc, addDoc, runTransaction, serverTimestamp, increment } from 'firebase/firestore';
 import { 
   Book, Scale, CreditCard, FileText, Plus, Landmark, 
-  Save, Loader2, CornerDownRight, Trash2, Receipt
+  Save, Loader2, CornerDownRight, Trash2, Receipt, BarChart, TrendingUp, BookOpen
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -543,5 +543,3 @@ export default function AccountingPage() {
         </div>
     );
 }
-
-    
