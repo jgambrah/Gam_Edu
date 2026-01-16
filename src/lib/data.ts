@@ -52,6 +52,7 @@ import {
   Calculator,
   Building2,
   Rabbit,
+  Rocket,
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -213,6 +214,12 @@ export const navItems: NavItem[] = [
             path: '/dashboard/junior-academy',
             title: 'Junior Campus',
             icon: GraduationCap,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/senior-academy',
+            title: 'Senior Academy',
+            icon: Rocket,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
         },
         {
