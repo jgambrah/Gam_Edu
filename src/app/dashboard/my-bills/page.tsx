@@ -1,13 +1,12 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { useRole } from '@/context/role-context';
 import { collection, doc, query, where, Timestamp, documentId } from 'firebase/firestore';
-import { FinancialRecord, Student } from '@/lib/types';
+import { Student, FinancialRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, FileText, User, CalendarIcon, ShieldAlert } from 'lucide-react';
+import { Loader2, FileText, ShieldAlert } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -18,6 +17,7 @@ import { StudentDisplay } from '@/components/student-display';
 import { DateRange } from 'react-day-picker';
 import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
+import { useRole } from '@/context/role-context';
 
 function StudentBillView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
@@ -163,31 +163,21 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     );
 }
 
-export default function MyBillsPage() {
-    const { user, isUserLoading } = useUser();
+
+function MyBillsPageContent() {
+    const { user } = useUser();
     const { role } = useRole();
     const firestore = useFirestore();
 
     const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user?.uid, role]);
-    const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds: string[] }>(parentDocRef);
+    const { data: parentData } = useDoc<{ studentIds: string[] }>(parentDocRef);
     
-    const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
+    const { data: studentForStudentRole } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
     
     const studentIds = useMemo(() => parentData?.studentIds || [], [parentData]);
-    const isLoading = isUserLoading || isParentLoading || isStudentLoading;
-
-    if (isLoading) {
-        return (
-            <Card>
-                <CardContent className="flex justify-center p-8">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                </CardContent>
-            </Card>
-        );
-    }
-
+    
     if (role === 'Student') {
         const student = studentForStudentRole?.[0];
         if (!student) {
@@ -247,7 +237,8 @@ export default function MyBillsPage() {
             </Card>
         );
     }
-    
+
+    // Fallback for other roles
     return (
         <Card>
             <CardHeader>
@@ -258,4 +249,21 @@ export default function MyBillsPage() {
     );
 }
 
+export default function MyBillsPage() {
+    const { isUserLoading } = useUser();
+    const { loading: isRoleLoading } = useRole();
+
+    const isLoading = isUserLoading || isRoleLoading;
     
+    return (
+      <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin" />}>
+        {isLoading ? (
+          <Card className="min-h-[300px] flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </Card>
+        ) : (
+          <MyBillsPageContent />
+        )}
+      </Suspense>
+    );
+}
