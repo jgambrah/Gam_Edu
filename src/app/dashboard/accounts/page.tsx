@@ -756,8 +756,22 @@ export default function AccountsPage() {
       return students.map(student => {
         const studentRecords = records.filter(r => r.studentId === student.uid);
 
+        // Calculate OVERALL summary from ALL records
+        const overallBilled = studentRecords.reduce((acc, r) => acc + r.billedAmount, 0);
+        const overallPaid = studentRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
+        const overallWaivers = studentRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
+        const overallBalance = overallBilled - overallPaid - overallWaivers;
+        
+        const overallSummary = {
+            totalBilled: overallBilled,
+            totalPaid: overallPaid + overallWaivers, // Combined for display
+            balance: overallBalance,
+        };
+
+        // Filter records for display based on date range
         const dateRange = studentDateRange[student.uid];
         const filteredRecords = dateRange?.from ? studentRecords.filter(rec => {
+            if (!rec.createdAt || !rec.createdAt.toDate) return false;
             const recDate = rec.createdAt.toDate();
             const from = startOfDay(dateRange.from!);
             const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from!);
@@ -765,11 +779,6 @@ export default function AccountsPage() {
         }) : studentRecords;
 
 
-        const totalBilled = filteredRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const totalPaid = filteredRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
-        const totalWaivers = filteredRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
-        const balance = totalBilled - totalPaid - totalWaivers;
-        
         const sortedRecords = filteredRecords.sort((a,b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
   
         let runningBalance = 0;
@@ -782,10 +791,10 @@ export default function AccountsPage() {
   
         return {
           student,
-          balance,
+          balance: overallBalance, // Use the true overall balance
           hasOverdue: studentRecords.some(r => r.status === 'Overdue'),
           ledger: ledger.reverse(),
-          summary: { totalBilled, totalPaid, balance }
+          summary: overallSummary // Pass the overall summary
         };
       }).filter(sf => 
           (sf.ledger.length > 0 || searchTerm) && 
@@ -907,7 +916,7 @@ export default function AccountsPage() {
                                    <div className="mt-4">
                                     <GenerateStatement 
                                         student={student}
-                                        records={ledger.reverse()} // Use filtered and sorted records
+                                        records={ledger.reverse()}
                                         dateRange={studentDateRange[student.uid]}
                                         summary={summary}
                                     />
@@ -954,3 +963,5 @@ export default function AccountsPage() {
       </div>
     );
   }
+
+    

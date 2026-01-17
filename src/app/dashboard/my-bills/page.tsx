@@ -5,20 +5,19 @@ import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, query, where, Timestamp, documentId } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, User, CalendarIcon, ShieldAlert } from 'lucide-react';
 import { FinancialRecord, Student } from '@/lib/types';
-import { format, startOfDay, endOfDay } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, FileText, User, CalendarIcon, ShieldAlert } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { format, startOfDay, endOfDay } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { StudentDisplay } from '@/components/student-display';
 import { DateRange } from 'react-day-picker';
 import { DatePickerWithRange } from '@/components/ui/date-picker-with-range';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
-
 
 function StudentBillView({ studentId }: { studentId: string }) {
     const firestore = useFirestore();
@@ -30,28 +29,32 @@ function StudentBillView({ studentId }: { studentId: string }) {
     }, [firestore, studentId]);
     const { data: records, isLoading } = useCollection<FinancialRecord>(recordsQuery);
 
+    const { data: student } = useDoc<Student>(useMemoFirebase(() => firestore && studentId ? doc(firestore, 'students', studentId) : null, [firestore, studentId]));
+
+    const overallSummary = useMemo(() => {
+        if (!records) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
+        const totalBilled = records.reduce((acc, r) => acc + r.billedAmount, 0);
+        const totalPaid = records.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
+        const totalWaivers = records.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
+        const balance = totalBilled - totalPaid - totalWaivers;
+        return { totalBilled, totalPaid: totalPaid + totalWaivers, totalWaivers, balance };
+    }, [records]);
+
     const filteredRecords = useMemo(() => {
         if (!records) return [];
-        if (!dateRange || !dateRange.from) return records;
+        let sortedRecords = [...records].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         
-        return records.filter(rec => {
+        if (!dateRange || !dateRange.from) return sortedRecords;
+        
+        return sortedRecords.filter(rec => {
             if (!rec.dueDate?.toDate) return false;
             const recDate = rec.dueDate.toDate();
             const from = startOfDay(dateRange.from!);
             const to = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from!);
             return recDate >= from && recDate <= to;
-        }).sort((a,b) => b.createdAt.seconds - a.createdAt.seconds);
+        });
     }, [records, dateRange]);
 
-
-    const summary = useMemo(() => {
-        if (!filteredRecords) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
-        const totalBilled = filteredRecords.reduce((acc, r) => acc + r.billedAmount, 0);
-        const totalPaid = filteredRecords.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
-        const totalWaivers = filteredRecords.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
-        const balance = totalBilled - totalPaid - totalWaivers;
-        return { totalBilled, totalPaid, totalWaivers, balance };
-    }, [filteredRecords]);
 
     const getStatusVariant = (status: FinancialRecord['status']) => {
         switch (status) {
@@ -78,19 +81,19 @@ function StudentBillView({ studentId }: { studentId: string }) {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                  <Card>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Total Billed</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">GH₵{summary.totalBilled.toFixed(2)}</p></CardContent>
+                    <CardContent><p className="text-2xl font-bold">GH₵{overallSummary.totalBilled.toFixed(2)}</p></CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Total Paid</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold text-green-600">GH₵{summary.totalPaid.toFixed(2)}</p></CardContent>
+                    <CardContent><p className="text-2xl font-bold text-green-600">GH₵{overallSummary.totalPaid.toFixed(2)}</p></CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Waivers</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">GH₵{summary.totalWaivers.toFixed(2)}</p></CardContent>
+                    <CardContent><p className="text-2xl font-bold">GH₵{overallSummary.totalWaivers.toFixed(2)}</p></CardContent>
                 </Card>
-                 <Card className={cn(summary.balance > 0 ? "border-destructive" : "border-green-500")}>
+                 <Card className={cn(overallSummary.balance > 0 ? "border-destructive" : "border-green-500")}>
                     <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Outstanding Balance</CardTitle></CardHeader>
-                    <CardContent><p className="text-2xl font-bold">GH₵{summary.balance.toFixed(2)}</p></CardContent>
+                    <CardContent><p className="text-2xl font-bold">GH₵{overallSummary.balance.toFixed(2)}</p></CardContent>
                 </Card>
             </div>
             <div className="overflow-x-auto w-full">
@@ -110,10 +113,10 @@ function StudentBillView({ studentId }: { studentId: string }) {
             </div>
             <div className="mt-4">
                 <GenerateStatement 
-                    student={students.find(s => s.id === studentId)}
+                    student={student}
                     records={filteredRecords}
                     dateRange={dateRange}
-                    summary={summary}
+                    summary={overallSummary}
                 />
             </div>
         </div>
@@ -159,8 +162,6 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
         </AccordionItem>
     );
 }
-
-const students: Student[] = [];
 
 export default function MyBillsPage() {
     const { user, isUserLoading } = useUser();
@@ -256,3 +257,5 @@ export default function MyBillsPage() {
         </Card>
     );
 }
+
+    

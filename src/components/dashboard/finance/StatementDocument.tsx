@@ -6,12 +6,13 @@ import { format } from 'date-fns';
 import { FinancialRecord, Student } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
 import { DateRange } from 'react-day-picker';
+import { useMemo } from 'react';
 
 interface StatementDocumentProps {
   student?: Student;
   records: FinancialRecord[];
   dateRange?: DateRange;
-  summary: {
+  summary: { // This is now the OVERALL summary
     totalBilled: number;
     totalPaid: number;
     balance: number;
@@ -20,7 +21,24 @@ interface StatementDocumentProps {
 }
 
 export function StatementDocument({ student, records, dateRange, summary, schoolProfile }: StatementDocumentProps) {
-  let runningBalance = 0;
+  
+  // Calculate summary for the PERIOD being displayed
+  const periodSummary = useMemo(() => {
+    if (!records) return { totalBilled: 0, totalPaid: 0 };
+    const totalBilled = records.reduce((acc, r) => acc + r.billedAmount, 0);
+    const totalPaid = records.reduce((acc, r) => acc + (r.amountPaid || 0) + (r.waiverAmount || 0), 0);
+    return { totalBilled, totalPaid };
+  }, [records]);
+  
+  // Running balance calculation needs to account for the starting balance of the period
+  const balanceBroughtForward = useMemo(() => {
+    // The overall balance minus the net change of the filtered period gives us the starting balance.
+    const periodNetChange = periodSummary.totalBilled - periodSummary.totalPaid;
+    return summary.balance - periodNetChange;
+  }, [summary, periodSummary]);
+
+
+  let runningBalance = balanceBroughtForward;
 
   return (
     <div 
@@ -83,6 +101,10 @@ export function StatementDocument({ student, records, dateRange, summary, school
             </tr>
           </thead>
           <tbody>
+            <tr className="border-b border-gray-200 bg-slate-50">
+                <td colSpan={3} className="p-3 font-bold">Balance Brought Forward</td>
+                <td className="text-right p-3 font-mono font-bold">GH₵{balanceBroughtForward.toFixed(2)}</td>
+            </tr>
             {records.map(rec => {
               const debit = rec.billedAmount;
               const credit = (rec.amountPaid || 0) + (rec.waiverAmount || 0);
@@ -107,15 +129,15 @@ export function StatementDocument({ student, records, dateRange, summary, school
       <section className="flex justify-end mt-8">
         <div className="w-1/2">
           <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Total Charges</span>
-            <span className="font-mono">GH₵ {summary.totalBilled.toFixed(2)}</span>
+            <span className="font-medium">Charges this Period</span>
+            <span className="font-mono">GH₵ {periodSummary.totalBilled.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-2 border-b">
-            <span className="font-medium">Total Payments</span>
-            <span className="font-mono text-green-600">GH₵ {summary.totalPaid.toFixed(2)}</span>
+            <span className="font-medium">Payments this Period</span>
+            <span className="font-mono text-green-600">GH₵ {periodSummary.totalPaid.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-4 bg-gray-100 px-4 rounded-b-lg text-lg">
-            <span className="font-bold">Balance Due</span>
+            <span className="font-bold">Total Outstanding Balance</span>
             <span className="font-bold">GH₵ {summary.balance.toFixed(2)}</span>
           </div>
         </div>
@@ -136,3 +158,5 @@ export function StatementDocument({ student, records, dateRange, summary, school
     </div>
   );
 }
+
+    

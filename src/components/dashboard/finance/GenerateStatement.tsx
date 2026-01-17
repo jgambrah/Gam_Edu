@@ -19,7 +19,11 @@ interface GenerateStatementProps {
     student?: Student;
     records: FinancialRecord[];
     dateRange?: DateRange;
-    summary: { totalBilled: number; totalPaid: number; balance: number; };
+    summary: { // This is now the OVERALL summary
+        totalBilled: number;
+        totalPaid: number;
+        balance: number;
+    };
 }
 
 export function GenerateStatement({ student, records, dateRange, summary }: GenerateStatementProps) {
@@ -103,3 +107,4 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
     );
 }
 
+    
