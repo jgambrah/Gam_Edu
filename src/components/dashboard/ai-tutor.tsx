@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 import { useUser } from '@/firebase'; 
 import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { checkAndSpendCredits } from '@/app/actions/credits';
 
 // Types
 type MessageRole = 'user' | 'model';
