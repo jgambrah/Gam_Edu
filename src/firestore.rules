@@ -24,6 +24,11 @@ service cloud.firestore {
       if (staffRole != null) {
         return staffRole;
       }
+      // Check the generic users collection
+      let userRole = get(/databases/$(database)/documents/users/$(userId)).data.role;
+      if (userRole != null) {
+        return userRole;
+      }
       // Check if user is in students collection
       if (exists(/databases/$(database)/documents/students/$(userId))) {
         return 'Student';
@@ -41,7 +46,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isOneOfRoles(request.auth.uid, ['Administrator', 'Director']);
+      return isOneOfRoles(request.auth.uid, ['Administrator', 'Director', 'Admin']);
     }
 
     function isAccountant() {
@@ -321,6 +326,9 @@ service cloud.firestore {
     
     match /direct_messages/{chatId} {
         allow read, update: if request.auth.uid in resource.data.participants;
+        // FIX: Added a rule to allow users to LIST the chats they are part of.
+        // The client-side query MUST include `where('participants', 'array-contains', currentUserId)`
+        allow list: if isSignedIn();
         allow create: if request.auth.uid in request.resource.data.participants;
         
         match /messages/{messageId} {
@@ -341,9 +349,19 @@ service cloud.firestore {
       }
     }
 
+    // This must come before the final catch-all
+    match /users/{userId} {
+      allow read, write: if isSignedIn();
+    }
+
     // Catch-all for remaining collections (adjust as needed)
+    // NOTE: Several errors are happening because the logged-in user does not have an Admin/Director role
+    // in the /staff/{userId} document. This is a DATA issue, not a rules issue.
+    // The rules for /lesson-plans, /timeSlots, /school_calendar fall back to this rule.
     match /{document=**} {
       allow read, write: if isAdmin();
     }
   }
 }
+
+    
