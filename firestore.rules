@@ -123,8 +123,14 @@ service cloud.firestore {
     // =========================================================
 
     match /tills/{tillId} { 
-      allow read, write, list: if true; 
-      match /transactions/{transactionId} { allow read, write, list: if true; } 
+      allow read, write, list: if isFinanceStaff() || isAdmin(); 
+      match /transactions/{transactionId} { allow read, write, list: if isFinanceStaff() || isAdmin(); } 
+    }
+
+    match /bank_transactions/{transactionId} {
+        allow read, list: if isFinanceStaff() || isAdmin();
+        allow create: if isFinanceStaff();
+        allow update: if isAdmin();
     }
 
     match /financialRecords/{recordId} { allow read, list: if request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" || isFinanceStaff() || isAdmin() || isTeacher(); allow write: if isFinanceStaff() || isAdmin() || isTeacher(); }
@@ -136,7 +142,6 @@ service cloud.firestore {
         allow write: if isFinanceStaff() || isAdmin() || isDirector(); 
     }
     
-    match /bank_transactions/{id} { allow read, write, list: if isFinanceStaff() || isAdmin(); }
     match /suppliers/{id} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
     match /purchase_orders/{id} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
     match /vendor_bills/{id} { allow read, list: if isSignedIn(); allow write: if isFinanceStaff() || isAdmin(); }
