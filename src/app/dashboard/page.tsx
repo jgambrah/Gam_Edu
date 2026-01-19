@@ -1,25 +1,25 @@
-
 'use client';
 
 import { Suspense } from 'react';
 import DashboardClient from './dashboard-client';
 import DashboardLoading from './loading';
 import { useRole } from '@/context/role-context';
-import { useAuth } from '@/firebase'; // Import useAuth to check email
+import { useUser } from '@/firebase'; // Corrected hook
 import SystemRepair from '@/components/SystemRepair'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShieldAlert } from 'lucide-react';
 
 function DashboardPageContent() {
-  const { role, loading, refreshRole } = useRole();
-  const { user } = useAuth(); // Get the current user to check email
+  const { role, loading: isRoleLoading } = useRole();
+  const { user, isUserLoading } = useUser(); // Corrected hook usage
 
-  if (loading) {
+  const isLoading = isRoleLoading || isUserLoading;
+
+  if (isLoading) {
     return <DashboardLoading />;
   }
 
   // --- SAFETY CHECK ---
-  // If loading is done but NO ROLE is found:
   if (!role) {
     
     // 1. If it is YOU (The CEO), show the Repair Tool
@@ -34,7 +34,6 @@ function DashboardPageContent() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {/* We reload page after repair to force refresh */}
                         <SystemRepair onRepair={() => window.location.reload()} />
                     </CardContent>
                 </Card>
