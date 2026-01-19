@@ -11,15 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Loader2, Send, Users, Filter } from 'lucide-react';
+import { Loader2, Send, Users, Filter, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { FinancialRecord, Student, Class } from '@/lib/types';
 import { generateSMSDraftAction } from '@/app/actions/sms-ai';
 import { Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { FinancialRecord, Student, Class } from '@/lib/types';
 
 export default function BulkSMSPage() {
   const { schoolId } = useCurrentSchool();
@@ -28,26 +28,24 @@ export default function BulkSMSPage() {
   
   const [message, setMessage] = useState('');
   const [targetGroup, setTargetGroup] = useState('all'); 
-  const [selectedParents, setSelectedParents] = useState<string[]>([]);
+  const [selectedParents, setSelectedParents] = useState<string[]>([]); // Array of Parent IDs
   const [sending, setSending] = useState(false);
-  const [mode, setMode] = useState('bulk');
+  const [mode, setMode] = useState('bulk'); // 'bulk' or 'manual'
 
+  // AI Dialog State
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [aiTone, setAiTone] = useState<'formal' | 'urgent' | 'friendly'>('formal');
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Manual Selection Search State
+  const [manualSearch, setManualSearch] = useState('');
+
   // Data Fetching
-  const parentsQuery = useMemoFirebase(
-    () => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
+  const parentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: parents } = useCollection(parentsQuery);
 
-  const studentsQuery = useMemoFirebase(
-    () => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: students } = useCollection<Student>(studentsQuery);
   
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -56,9 +54,8 @@ export default function BulkSMSPage() {
   const financialRecordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('status', 'in', ['Unpaid', 'Overdue'])) : null, [firestore, schoolId]);
   const { data: financialRecords } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-
   // Filter Logic (Bulk)
-  const targetedParents = useMemo(() => {
+  const bulkTargets = useMemo(() => {
     if (!parents || !students) return [];
 
     if (targetGroup === 'all') return parents;
@@ -66,7 +63,9 @@ export default function BulkSMSPage() {
     if (targetGroup === 'debtors') {
         if (!financialRecords) return [];
         
-        const debtorStudentIds = new Set(financialRecords.map(r => r.studentId));
+        const debtorStudentIds = new Set(financialRecords
+            .filter(r => r.status === 'Unpaid' || r.status === 'Overdue')
+            .map(r => r.studentId));
             
         return parents.filter(p => 
             (p as any).studentIds?.some((sid: string) => debtorStudentIds.has(sid))
@@ -80,10 +79,21 @@ export default function BulkSMSPage() {
     }
     
     return [];
-  }, [parents, students, financialRecords, targetGroup]);
+  }, [parents, students, targetGroup, financialRecords]);
+
+  const filteredManualParents = useMemo(() => {
+    if (!parents) return [];
+    if (!manualSearch.trim()) return parents;
+    const searchTerm = manualSearch.toLowerCase();
+    return parents.filter(p =>
+      ((p as any).firstName?.toLowerCase() || '').includes(searchTerm) ||
+      ((p as any).lastName?.toLowerCase() || '').includes(searchTerm) ||
+      ((p as any).phone || '').includes(searchTerm)
+    );
+  }, [parents, manualSearch]);
 
   // Final Recipient List
-  const finalRecipients = mode === 'bulk' ? targetedParents : parents?.filter(p => selectedParents.includes((p as any).id)) || [];
+  const finalRecipients = mode === 'bulk' ? bulkTargets : parents?.filter(p => selectedParents.includes((p as any).id)) || [];
 
   const handleSend = async () => {
     if (finalRecipients.length === 0) return;
@@ -109,14 +119,14 @@ export default function BulkSMSPage() {
     setIsGenerating(true);
     const res = await generateSMSDraftAction(aiTopic, aiTone);
     if (res.success && res.text) {
-        setMessage(res.text); // Puts the AI text into the main box for editing
+        setMessage(res.text);
         setIsAiOpen(false);
     } else {
         toast({ variant: 'destructive', title: 'AI Error', description: 'Could not generate draft.' });
     }
     setIsGenerating(false);
   };
-
+  
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
         <div>
@@ -138,7 +148,7 @@ export default function BulkSMSPage() {
 
                         <TabsContent value="bulk" className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium flex items-center gap-2"><Filter className="h-4 w-4"/> Filter By</label>
+                                <label className="text-sm font-medium flex items-center gap-2"><Filter className="h-4 w-4"/> Target Audience</label>
                                 <Select value={targetGroup} onValueChange={setTargetGroup}>
                                     <SelectTrigger><SelectValue/></SelectTrigger>
                                     <SelectContent>
@@ -151,8 +161,17 @@ export default function BulkSMSPage() {
                         </TabsContent>
 
                         <TabsContent value="manual" className="space-y-4">
+                            <div className="relative">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search by name or phone..."
+                                    value={manualSearch}
+                                    onChange={(e) => setManualSearch(e.target.value)}
+                                    className="pl-8"
+                                />
+                            </div>
                             <div className="border rounded-md h-[300px] overflow-y-auto p-2 space-y-1">
-                                {parents?.map(p => (
+                                {filteredManualParents.map(p => (
                                     <div key={(p as any).id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded cursor-pointer" onClick={() => toggleParent((p as any).id)}>
                                         <Checkbox checked={selectedParents.includes((p as any).id)} />
                                         <div>
