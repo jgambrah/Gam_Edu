@@ -534,8 +534,8 @@ export default function DashboardClient() {
                   {myStudents.map(student => (<Link href="/dashboard/my-children" key={student.uid}><div className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50"><StudentDisplay student={student} variant="list" showAvatar /><ChevronRight className="h-5 w-5 text-muted-foreground" /></div></Link>))}
                   {myStudents.length === 0 && <p className="text-muted-foreground">No children linked to this account.</p>}
              </CardContent></Card>
-            <Card><CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader><CardContent>
-                  {announcements?.slice(0, 3).map(a => (<ActivityItem key={a.id} title={a.title} description={a.content.substring(0, 100) + '...'} time={a.publishedAt?.toDate().toLocaleDateString()} icon={Bell} iconColor='text-purple-600'/>)))}
+            <Card className="lg:col-span-2"><CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader><CardContent>
+                  {announcementsLoading ? <Loader2 className="animate-spin"/> : (announcements || []).slice(0, 3).map(a => (<ActivityItem key={a.id} title={a.title} description={a.content.substring(0, 100) + '...'} time={a.publishedAt?.toDate().toLocaleDateString()} icon={Bell} iconColor='text-purple-600'/>))}
             </CardContent></Card>
           </div>
            <div className="space-y-6"><Card><CardHeader><CardTitle>Student Bills</CardTitle><CardDescription>View financial records for your children.</CardDescription></CardHeader><CardContent className="space-y-3">
@@ -608,5 +608,3 @@ export default function DashboardClient() {
     </div>
   );
 }
-
-    
