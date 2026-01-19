@@ -29,13 +29,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils } from 'lucide-react';
+import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
 import { MigrateStudentIds } from './migrate-student-ids';
 import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, formatStudentId, generateNextStudentId } from '@/lib/student-utils';
+import { sendSMSAction } from '@/app/actions/sms';
 
 
 export default function StudentsV3Page() {
@@ -123,7 +124,7 @@ export default function StudentsV3Page() {
       loadData();
   }, [loadData]);
   
-  // --- 3. ADD STUDENT LOGIC (With ID Generation) ---
+  // --- ADD STUDENT LOGIC (With ID Generation) ---
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       
@@ -234,6 +235,35 @@ export default function StudentsV3Page() {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
+
+  const handleSendBill = async (student: Student) => {
+    // In a real app, you would fetch the parent's phone number and the student's balance.
+    // For this demonstration, we'll use placeholder data.
+    
+    // To implement this fully, you would:
+    // 1. Query the 'parents' collection where 'studentIds' array-contains student.uid
+    // 2. Get the 'phone' field from the parent document.
+    const parentPhone = "0240000000"; // Replace with actual logic
+    if (!parentPhone) {
+        toast({ variant: 'destructive', title: "No Parent Linked", description: "Cannot send SMS. No phone number found for this student's parent." });
+        return;
+    }
+
+    // 3. Query the 'financialRecords' collection for this student's balance.
+    const amountDue = 500; // Placeholder
+    const schoolName = "GAM Edu"; // Placeholder for school name
+
+    if (confirm(`Send SMS bill reminder of GHS ${amountDue} to ${student.firstName}'s parent?`)) {
+        const msg = `Dear Parent, fees of GHS ${amountDue} for ${student.firstName} are due. Please pay via MoMo to 0550000000. - ${schoolName}`;
+        
+        const res = await sendSMSAction(parentPhone, msg);
+        if (res.success) {
+            toast({ title: "SMS Sent!", description: "The bill reminder has been sent." });
+        } else {
+            toast({ variant: 'destructive', title: "SMS Failed", description: res.error });
+        }
+    }
+  };
   
   const filteredStudents = students.filter(s => {
     const term = searchTerm.toLowerCase().trim();
@@ -317,14 +347,24 @@ export default function StudentsV3Page() {
                                         <div>{s.firstName} {s.lastName}</div>
                                     </TableCell>
                                     <TableCell className="font-mono text-xs">
-                                        {/* @ts-ignore */}
-                                        {s.studentId || <span className="text-orange-500 italic">ID Pending</span>}
+                                        {formatStudentId(s)}
                                     </TableCell>
                                     <TableCell>{s.email}</TableCell>
                                     <TableCell><Badge variant="secondary">{classes.find(c => c.id === s.classId)?.name || 'N/A'}</Badge></TableCell>
-                                    <TableCell>{s.gender || '-'}</TableCell>
+                                    <TableCell>
+                                        <div className="flex gap-2">
+                                            {s.usesCanteen !== false && <Utensils className="h-4 w-4 text-orange-500" title="Canteen Subscriber"/>}
+                                            {s.usesBusService && <Bus className="h-4 w-4 text-blue-500" title="Bus Subscriber" />}
+                                        </div>
+                                    </TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                        <div className="flex justify-end gap-1">
+                                            <Button variant="outline" size="sm" onClick={() => handleSendBill(s)}>
+                                                <MessageSquare className="h-4 w-4" />
+                                            </Button>
+                                            <Button variant="ghost" size="sm" onClick={() => setEditingStudent(s)}><Edit className="h-4 w-4 text-blue-600"/></Button>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -339,7 +379,7 @@ export default function StudentsV3Page() {
 
       {/* ADD MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Add New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
+        <DialogContent className="sm:max-w-[600px]"><DialogHeader><DialogTitle>Enrol New Student</DialogTitle><DialogDescription>Enter student details.</DialogDescription></DialogHeader>
             <form onSubmit={handleAddStudent} className="space-y-4 mt-2">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2"><Label>First Name *</Label><Input name="firstName" required placeholder="John"/></div>
