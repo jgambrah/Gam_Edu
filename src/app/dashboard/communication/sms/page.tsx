@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Loader2, Send, Users, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { FinancialRecord, Student } from '@/lib/types';
 
 export default function BulkSMSPage() {
   const { schoolId } = useCurrentSchool();
@@ -34,30 +35,47 @@ export default function BulkSMSPage() {
     () => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
     [firestore, schoolId]
   );
-  const { data: students } = useCollection(studentsQuery);
+  const { data: students } = useCollection<Student>(studentsQuery);
 
-  // 3. Filter Logic
+  // 3. Fetch Financial Records for Debtors filter
+  const financialRecordsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('status', 'in', ['Unpaid', 'Overdue'])) : null,
+    [firestore, schoolId]
+  );
+  const { data: financialRecords } = useCollection<FinancialRecord>(financialRecordsQuery);
+
+  // 4. Filter Logic
   const targetedParents = useMemo(() => {
     if (!parents || !students) return [];
 
     if (targetGroup === 'all') return parents;
+    
+    if (targetGroup === 'debtors') {
+        if (!financialRecords) return [];
+        
+        const debtorStudentIds = new Set(financialRecords.map(r => r.studentId));
+            
+        return parents.filter(p => 
+            (p as any).studentIds?.some((sid: string) => debtorStudentIds.has(sid))
+        );
+    }
 
     // Filter by Class (Example: Grade 1)
     if (targetGroup.startsWith('class_')) {
         const className = targetGroup.replace('class_', '');
         // Find students in this class
         const studentIdsInClass = students
-            .filter(s => s.grade === className)
+            .filter(s => s.classId === className) // Assuming grade is stored in classId for now
             .map(s => s.uid);
         
         // Find parents linked to these students
         return parents.filter(p => 
-            p.studentIds?.some(sid => studentIdsInClass.includes(sid))
+            (p as any).studentIds?.some((sid: string) => studentIdsInClass.includes(sid))
         );
     }
     
     return [];
-  }, [parents, students, targetGroup]);
+  }, [parents, students, targetGroup, financialRecords]);
 
 
   const handleSendBulk = async () => {
@@ -67,9 +85,9 @@ export default function BulkSMSPage() {
     let count = 0;
     // In production, send this array to backend for bulk processing
     for (const parent of targetedParents) {
-        if (parent.phone) {
+        if ((parent as any).phone) {
             // Mock send for now
-            console.log(`Sending to ${parent.phone}: ${message}`);
+            console.log(`Sending to ${(parent as any).phone}: ${message}`);
             // await sendSMSAction(parent.phone, message);
             count++;
         }
@@ -83,8 +101,19 @@ export default function BulkSMSPage() {
     setMessage('');
   };
 
-  // Extract unique grades for dropdown
-  const grades = Array.from(new Set(students?.map(s => s.grade).filter(Boolean))).sort();
+  // Extract unique classes for dropdown
+  const classes = useMemo(() => {
+    if (!students) return [];
+    const classMap = new Map<string, string>();
+    students.forEach(s => {
+        if(s.classId) {
+            // This is a simplification. A 'classes' collection would be better.
+            classMap.set(s.classId, s.classId); 
+        }
+    });
+    return Array.from(classMap.values()).sort();
+  }, [students]);
+
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
@@ -112,9 +141,9 @@ export default function BulkSMSPage() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Parents ({parents?.length || 0})</SelectItem>
-                            <SelectItem value="debtors" disabled>Parents Owing Fees (Coming Soon)</SelectItem>
-                            {grades.map(g => (
-                                <SelectItem key={g} value={`class_${g}`}>Parents of {g}</SelectItem>
+                            <SelectItem value="debtors">Parents Owing Fees</SelectItem>
+                            {classes.map(c => (
+                                <SelectItem key={c} value={`class_${c}`}>Parents of {c}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
