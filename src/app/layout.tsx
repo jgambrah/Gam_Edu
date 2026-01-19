@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
+import Providers from './providers'; // Import the new client-side provider component
 
 // 1. Viewport Settings (Color, Scale, etc.)
 export const viewport: Viewport = {
@@ -42,10 +41,9 @@ export default function RootLayout({
       <head>
       </head>
       <body className="antialiased">
-        <FirebaseClientProvider>
+        <Providers>
             {children}
-            <Toaster />
-        </FirebaseClientProvider>
+        </Providers>
       </body>
     </html>
   );

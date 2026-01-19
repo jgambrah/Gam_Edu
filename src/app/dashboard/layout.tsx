@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -9,7 +8,6 @@ import { AiChat } from '@/components/ai-chat';
 import { useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import AppSidebar from '@/components/navigation/sidebar';
-import { RoleProvider } from '@/context/role-context';
 import SchoolSetupWizard from '@/components/onboarding/SchoolSetupWizard'; 
 import TrialBanner from '@/components/TrialBanner';
 
@@ -55,8 +53,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <RoleProvider>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
-    </RoleProvider>
+    <DashboardLayoutContent>{children}</DashboardLayoutContent>
   );
 }
