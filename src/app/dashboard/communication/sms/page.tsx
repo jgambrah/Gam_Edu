@@ -8,7 +8,9 @@ import { sendSMSAction } from '@/app/actions/sms';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Loader2, Send, Users, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FinancialRecord, Student, Class } from '@/lib/types';
@@ -19,65 +21,56 @@ export default function BulkSMSPage() {
   const { toast } = useToast();
   
   const [message, setMessage] = useState('');
-  const [targetGroup, setTargetGroup] = useState('all'); // all, class_someId, debtors
+  const [targetGroup, setTargetGroup] = useState('all'); 
+  const [selectedParents, setSelectedParents] = useState<string[]>([]); // Array of Parent IDs
   const [sending, setSending] = useState(false);
+  const [mode, setMode] = useState('bulk'); // 'bulk' or 'manual'
 
-  // 1. Fetch All Parents
+  // Data Fetching
   const parentsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null,
     [firestore, schoolId]
   );
   const { data: parents } = useCollection(parentsQuery);
 
-  // 2. Fetch All Students (Needed for Class filtering)
   const studentsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
     [firestore, schoolId]
   );
   const { data: students } = useCollection<Student>(studentsQuery);
   
-  // 3. Fetch all Classes for the dropdown
   const classesQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null,
     [firestore, schoolId]
   );
   const { data: classes } = useCollection<Class>(classesQuery);
 
-  // 4. Fetch Financial Records for Debtors filter
   const financialRecordsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('status', 'in', ['Unpaid', 'Overdue'])) : null,
     [firestore, schoolId]
   );
   const { data: financialRecords } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-
-  // 5. Filter Logic
-  const targetedParents = useMemo(() => {
+  // Filter Logic (Bulk)
+  const bulkTargets = useMemo(() => {
     if (!parents || !students) return [];
-
+    
     if (targetGroup === 'all') return parents;
     
     if (targetGroup === 'debtors') {
         if (!financialRecords) return [];
-        
-        // Create a Set of student IDs who have outstanding bills for efficient lookup
         const debtorStudentIds = new Set(financialRecords.map(r => r.studentId));
-            
-        // Filter parents who have at least one child in the debtor list
         return parents.filter(p => 
             (p as any).studentIds?.some((sid: string) => debtorStudentIds.has(sid))
         );
     }
-
-    // Filter by Class ID
+    
     if (targetGroup.startsWith('class_')) {
         const classId = targetGroup.replace('class_', '');
-        // Find students in this class
         const studentIdsInClass = students
             .filter(s => s.classId === classId)
             .map(s => s.uid);
         
-        // Find parents linked to these students
         return parents.filter(p => 
             (p as any).studentIds?.some((sid: string) => studentIdsInClass.includes(sid))
         );
@@ -86,104 +79,107 @@ export default function BulkSMSPage() {
     return [];
   }, [parents, students, financialRecords, targetGroup]);
 
+  // Final Recipient List
+  const finalRecipients = mode === 'bulk' ? bulkTargets : parents?.filter(p => selectedParents.includes((p as any).id)) || [];
 
-  const handleSendBulk = async () => {
-    if (targetedParents.length === 0) {
-        toast({ variant: 'destructive', title: "No Recipients", description: "The selected group has no parents with phone numbers." });
-        return;
-    }
+  const handleSend = async () => {
+    if (finalRecipients.length === 0) return;
     setSending(true);
-
     let count = 0;
-    // In production, send this array to backend for bulk processing
-    for (const parent of targetedParents) {
+    for (const parent of finalRecipients) {
         if ((parent as any).phone) {
-            console.log(`Sending to ${(parent as any).phone}: ${message}`);
-            // This is a mock send for now. Uncomment to enable real sending.
-            // await sendSMSAction((parent as any).phone, message);
+            await sendSMSAction((parent as any).phone, message);
             count++;
         }
     }
-
-    // Simulate network delay
-    await new Promise(r => setTimeout(r, 1000));
-
+    
     setSending(false);
     toast({ title: "Broadcast Sent", description: `Message sent to ${count} parents.` });
     setMessage('');
+    setSelectedParents([]);
+  };
+
+  const toggleParent = (id: string) => {
+      setSelectedParents(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-6">
+    <div className="p-6 max-w-4xl mx-auto space-y-6">
         <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
-                <Send className="h-8 w-8 text-blue-600" /> SMS Broadcast
+                <Send className="h-8 w-8 text-blue-600" /> SMS Center
             </h1>
-            <p className="text-slate-600">Send announcements, reminders, and alerts to parents instantly.</p>
         </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Compose Message</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                
-                {/* TARGET SELECTOR */}
-                <div className="space-y-2">
-                    <label className="text-sm font-medium flex items-center gap-2">
-                        <Filter className="h-4 w-4"/> Target Audience
-                    </label>
-                    <Select value={targetGroup} onValueChange={setTargetGroup}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select Group" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Parents ({parents?.length || 0})</SelectItem>
-                            <SelectItem value="debtors">Parents Owing Fees</SelectItem>
-                            {classes?.map(c => (
-                                <SelectItem key={c.id} value={`class_${c.id}`}>{c.name} Parents</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* LEFT: SELECTION */}
+            <Card className="md:col-span-2">
+                <CardHeader><CardTitle>Recipients</CardTitle></CardHeader>
+                <CardContent>
+                    <Tabs value={mode} onValueChange={(value) => setMode(value as 'bulk' | 'manual')} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 mb-4">
+                            <TabsTrigger value="bulk">Bulk Groups</TabsTrigger>
+                            <TabsTrigger value="manual">Select Individuals</TabsTrigger>
+                        </TabsList>
 
-                {/* COUNT INDICATOR */}
-                <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex items-center gap-3">
-                    <div className="bg-blue-200 p-2 rounded-full">
-                        <Users className="h-5 w-5 text-blue-700" />
-                    </div>
-                    <div>
-                        <p className="text-sm font-bold text-blue-900">Recipient Count</p>
-                        <p className="text-xs text-blue-700">
-                            This message will be sent to <strong>{targetedParents.length}</strong> numbers.
-                        </p>
-                    </div>
-                </div>
+                        <TabsContent value="bulk" className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium flex items-center gap-2"><Filter className="h-4 w-4"/> Filter By</label>
+                                <Select value={targetGroup} onValueChange={setTargetGroup}>
+                                    <SelectTrigger><SelectValue/></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Parents</SelectItem>
+                                        <SelectItem value="debtors">Parents Owing Fees</SelectItem>
+                                        {classes?.map(c => (
+                                            <SelectItem key={c.id} value={`class_${c.id}`}>Parents of {c.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </TabsContent>
 
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">Message Body</label>
+                        <TabsContent value="manual" className="space-y-4">
+                            <div className="border rounded-md h-[300px] overflow-y-auto p-2 space-y-1">
+                                {parents?.map(p => (
+                                    <div key={(p as any).id} className="flex items-center space-x-3 p-2 hover:bg-slate-50 rounded cursor-pointer" onClick={() => toggleParent((p as any).id)}>
+                                        <Checkbox checked={selectedParents.includes((p as any).id)} />
+                                        <div>
+                                            <p className="text-sm font-medium">{(p as any).firstName} {(p as any).lastName}</p>
+                                            <p className="text-xs text-muted-foreground">{(p as any).phone}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-xs text-right text-muted-foreground">{selectedParents.length} selected</p>
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
+
+            {/* RIGHT: MESSAGE */}
+            <Card className="h-fit">
+                <CardHeader><CardTitle>Message</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="bg-blue-50 p-3 rounded text-xs text-blue-700 font-medium flex justify-between">
+                        <span>Recipients:</span>
+                        <span className="font-bold">{finalRecipients.length}</span>
+                    </div>
+                    
                     <Textarea 
-                        placeholder="Dear Parent, please be informed that..." 
+                        placeholder="Type message..." 
                         value={message}
                         onChange={e => setMessage(e.target.value)}
-                        rows={5}
+                        rows={6}
                         className="resize-none"
                     />
-                    <p className="text-xs text-right text-muted-foreground">
-                        {message.length} characters ({(Math.ceil(message.length / 160))} SMS units)
-                    </p>
-                </div>
-
-                <Button 
-                    onClick={handleSendBulk} 
-                    disabled={sending || !message || targetedParents.length === 0} 
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                >
-                    {sending ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2 h-4 w-4"/>}
-                    Send to {targetedParents.length} Parents
-                </Button>
-            </CardContent>
-        </Card>
+                    
+                    <Button onClick={handleSend} disabled={sending || !message || finalRecipients.length === 0} className="w-full bg-blue-600">
+                        {sending ? <Loader2 className="animate-spin mr-2"/> : <Send className="mr-2 h-4 w-4"/>}
+                        Send SMS
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
     </div>
   );
 }
