@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useDoc, useFirestore, useMemoFirebase, useUser, useCollection } from '@/firebase';
-import { collection, doc, query, where, Timestamp, orderBy } from 'firebase/firestore';
+import { Suspense, useState, useMemo } from 'react';
+import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, query, where, Timestamp } from 'firebase/firestore';
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2 } from 'lucide-react';
@@ -29,7 +29,6 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
     });
 
     const attendanceQuery = useMemoFirebase(() => {
-        // ✅ Ensure we have a valid studentId before querying
         if (!firestore || !dateRange?.from || !studentId) return null;
         
         const start = Timestamp.fromDate(startOfDay(dateRange.from));
@@ -137,7 +136,6 @@ function BehavioralHistory({ studentId }: { studentId: string }) {
 }
 
 function StudentDetailView({ student }: { student: Student }) {
-    // ✅ FIX: Fallback to student.id if student.uid is missing
     const studentId = student.id || student.uid;
 
     return (
@@ -169,7 +167,6 @@ function StudentDetailView({ student }: { student: Student }) {
 function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     const firestore = useFirestore();
     
-    // ✅ FIX: Fetch directly by Document ID to be 100% accurate
     const studentDocRef = useMemoFirebase(
         () => firestore ? doc(firestore, 'students', studentUid) : null,
         [firestore, studentUid]
@@ -190,7 +187,7 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
         return (
              <div className="p-4 border-b text-red-500 bg-red-50 rounded-md my-2">
                 <ShieldAlert className="h-4 w-4 inline mr-2" />
-                <span>Student record ({studentUid}) missing from database.</span>
+                <span>Student record ({studentUid}) could not be found.</span>
             </div>
         );
     }
@@ -207,22 +204,29 @@ function StudentAccordionItem({ studentUid }: { studentUid: string }) {
     );
 }
 
-
-export default function MyChildrenPage() {
+function MyChildrenPageContent() {
     const { user, isUserLoading } = useUser();
-    const { role } = useRole();
+    const { role, isRoleLoading } = useRole();
     const firestore = useFirestore();
 
     const parentDocRef = useMemoFirebase(() => (role === 'Parent' && user && firestore) ? doc(firestore, 'parents', user.uid) : null, [firestore, user?.uid, role]);
     const { data: parentData, isLoading: isParentLoading } = useDoc<{ studentIds?: string[] }>(parentDocRef);
     
-    // For students viewing their own profile
     const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
     
     const studentIds = useMemo(() => parentData?.studentIds || [], [parentData]);
-    const isLoading = isUserLoading || isParentLoading || isStudentLoading;
+    
+    const isLoading = isUserLoading || isRoleLoading || isParentLoading || isStudentLoading;
+
+    if (isLoading) {
+        return (
+          <Card className="min-h-[400px] flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </Card>
+        );
+    }
 
     if (role !== 'Parent' && role !== 'Student') {
         return (
@@ -235,39 +239,61 @@ export default function MyChildrenPage() {
         );
     }
     
-    if (isLoading) {
-        return (
-            <Card className="min-h-[400px] flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </Card>
-        );
-    }
-
-    if(role === 'Student') {
+    if (role === 'Student') {
         const student = studentForStudentRole?.[0];
-        if (!student) return <div className="p-8 text-center text-muted-foreground">Student profile not found.</div>;
+        if (!student) {
+            return (
+                <Card>
+                    <CardContent className="p-8 text-center text-muted-foreground">
+                        Your student profile could not be loaded.
+                    </CardContent>
+                </Card>
+            );
+        }
         return <StudentDetailView student={student} />
     }
 
-    return (
-        <Card className="shadow-md">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-2xl font-bold"><User className="text-primary" /> My Children</CardTitle>
-                <CardDescription>Select a child to view their academic and behavioral logs.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {(studentIds && studentIds.length > 0) ? (
+    if (role === 'Parent') {
+        if (!studentIds || studentIds.length === 0) {
+            return (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-2xl font-bold"><User className="text-primary" /> My Children</CardTitle>
+                        <CardDescription>Select a child to view their academic and behavioral logs.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-8 text-center text-muted-foreground">
+                        No children linked to your account.
+                    </CardContent>
+                </Card>
+            );
+        }
+        
+        return (
+            <Card className="shadow-md">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-2xl font-bold"><User className="text-primary" /> My Children</CardTitle>
+                    <CardDescription>Select a child to view their academic and behavioral logs.</CardDescription>
+                </CardHeader>
+                <CardContent>
                     <Accordion type="single" collapsible defaultValue={studentIds[0]}>
                         {studentIds.map(uid => (
                             <StudentAccordionItem key={uid} studentUid={uid} />
                         ))}
                     </Accordion>
-                ) : (
-                    <div className="text-center p-12 text-muted-foreground border-2 border-dashed rounded-lg">
-                        No children linked to your account. Please contact the school administration.
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    // Default fallback
+    return <p>An unexpected error occurred.</p>;
+}
+
+export default function MyChildrenPage() {
+    return (
+      <Suspense fallback={<Loader2 className="mx-auto my-8 h-16 w-16 animate-spin" />}>
+        <MyChildrenPageContent />
+      </Suspense>
     );
 }
+
