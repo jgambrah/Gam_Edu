@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase'; 
+import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
 import { collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, writeBatch, where, getDocs, runTransaction, increment } from 'firebase/firestore';
 import { 
@@ -10,6 +10,7 @@ import {
   FileText, Loader2, Save, Printer, DollarSign, Landmark 
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 // UI
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -19,7 +20,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Staff, StaffPayrollConfig, PayrollSettings, PayrollRecord } from '@/lib/types';
 import { PayslipDialog } from './payslip-dialog';
@@ -167,11 +168,13 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [month, setMonth] = useState(format(new Date(), 'yyyy-MM'));
     const [previewData, setPreviewData] = useState<any[]>([]);
+    const { schoolId } = useCurrentSchool();
 
     // Generate Preview
     const handlePreview = async () => {
+        if (!firestore || !schoolId) return;
         setIsProcessing(true);
-        const existingRecordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', month));
+        const existingRecordsQuery = query(collection(firestore, 'payrollRecords'), where('period', '==', month), where('schoolId', '==', schoolId));
         const existingRecordsSnapshot = await getDocs(existingRecordsQuery);
         if (!existingRecordsSnapshot.empty) {
             toast({ variant: 'destructive', title: 'Payroll Already Run', description: `Payroll for ${month} has already been processed. View in "Reports".`});
@@ -197,7 +200,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
     };
 
     const handleCommit = async () => {
-        if (!firestore || !user || previewData.length === 0) return;
+        if (!firestore || !user || !schoolId || previewData.length === 0) return;
         setIsProcessing(true);
         const batch = writeBatch(firestore);
 
@@ -211,6 +214,7 @@ function RunPayroll({ staff, config }: { staff: any[], config: any }) {
                     ...payslipData,
                     createdAt: serverTimestamp(),
                     generatedBy: user.uid,
+                    schoolId: schoolId,
                 });
             });
 
@@ -469,3 +473,5 @@ export default function PayrollPage() {
       </div>
     );
   }
+
+    
