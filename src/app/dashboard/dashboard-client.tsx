@@ -147,7 +147,7 @@ export default function DashboardClient() {
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
-  const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
+  const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const isSuperAdmin = user?.uid === 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2';
   const isAdminOrDirector = role === 'Administrator' || role === 'Director';
@@ -257,7 +257,7 @@ export default function DashboardClient() {
   }, [financialRecords, accountsPayable]);
   
   // --- 2. CONSOLIDATED LOADING CHECK (after hooks) ---
-  let isLoading = isUserLoading || isRoleLoading || isLoadingSchool || 
+  const isLoading = isUserLoading || isRoleLoading || isLoadingSchool || 
                   (isAdminOrDirector && (studentsLoading || staffLoading || classesLoading || paymentsLoading)) || 
                   (isTeacher && (classesLoading || assignmentsLoading)) ||
                   (isFinance && (paymentsLoading || payablesLoading)) ||
@@ -519,7 +519,7 @@ export default function DashboardClient() {
                 <QuickActionCard title="My Grades" description="Check your report card" icon={Award} link="/dashboard/report-cards" />
             </CardContent></Card>
             <Card className="lg:col-span-2"><CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader><CardContent>
-                {announcementsLoading ? <Loader2 className="animate-spin"/> : ((announcements || []).slice(0, 3).map(a => (<ActivityItem key={a.id} title={a.title} description={a.content.substring(0, 100) + '...'} time={a.publishedAt?.toDate().toLocaleDateString()} icon={Bell} iconColor='text-purple-600'/>)))}
+                {announcementsLoading ? <Loader2 className="animate-spin"/> : (announcements || []).slice(0, 3).map(a => (<ActivityItem key={a.id} title={a.title} description={a.content.substring(0, 100) + '...'} time={a.publishedAt?.toDate().toLocaleDateString()} icon={Bell} iconColor='text-purple-600'/>))}
             </CardContent></Card>
           </div>
         </>
