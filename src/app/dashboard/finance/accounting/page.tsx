@@ -26,477 +26,338 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Account, JournalEntry, JournalLine, journalEntrySchema, AccountType } from '@/lib/types';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { CalendarIcon } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
 
+// --- HELPER: Report Logic ---
+type AccountBalance = {
+    id: string;
+    code: string;
+    name: string;
+    type: string;
+    debit: number;
+    credit: number;
+    net: number; // Positive = Debit Balance, Negative = Credit Balance
+};
 
-// --- COMPONENT: Chart of Accounts Manager ---
-function ChartOfAccounts({ accounts, schoolId }: { accounts: Account[] | undefined, schoolId: string }) {
-    const firestore = useFirestore();
-    const { toast } = useToast();
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+// --- COMPONENT: Detailed Ledger ---
+function GeneralLedger({ 
+    accounts, 
+    journals 
+}: { 
+    accounts: Account[], 
+    journals: JournalEntry[] 
+}) {
+    const [selectedAccountId, setSelectedAccountId] = useState<string>('all');
 
-    // Form State
-    const [code, setCode] = useState('');
-    const [name, setName] = useState('');
-    const [type, setType] = useState<AccountType>('Expense');
-    const [isSubAccount, setIsSubAccount] = useState(false);
-    const [parentId, setParentId] = useState<string>('');
+    // Filter journals to find lines affecting specific account
+    const ledgerData = useMemo(() => {
+        if (!journals || !accounts) return [];
+        
+        if (selectedAccountId === 'all') return [];
 
-    useEffect(() => {
-        if (isSubAccount && parentId && accounts) {
-            const parent = accounts.find(a => a.id === parentId);
-            if (parent) setType(parent.type);
-        }
-    }, [parentId, isSubAccount, accounts]);
+        const account = accounts.find(a => a.id === selectedAccountId);
+        if (!account) return [];
 
-    const handleCreate = async () => {
-        if (!code || !name || !schoolId) return;
-        setIsSubmitting(true);
-        try {
-            await addDoc(collection(firestore, 'accounts'), {
-                code, name, type, balance: 0, 
-                parentId: isSubAccount ? parentId : null,
-                createdAt: serverTimestamp(),
-                schoolId: schoolId,
-            });
-            toast({ title: "Account Created" });
-            setIsFormOpen(false);
-            setCode(''); setName(''); setIsSubAccount(false); setParentId('');
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error", description: "Could not create account." });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+        const lines: any[] = [];
+        let runningBalance = 0;
 
-    const organizedAccounts = useMemo(() => {
-        if (!accounts) return [];
-        const parents = accounts.filter(a => !a.parentId).sort((a,b) => a.code.localeCompare(b.code));
-        let displayList: (Account & { depth: number })[] = [];
-        parents.forEach(parent => {
-            displayList.push({ ...parent, depth: 0 });
-            const children = accounts.filter(a => a.parentId === parent.id).sort((a,b) => a.code.localeCompare(b.code));
-            children.forEach(child => displayList.push({ ...child, depth: 1 }));
+        const sortedJournals = [...journals].sort((a,b) => a.date.seconds - b.date.seconds);
+
+        sortedJournals.forEach(journal => {
+            const line = journal.lines.find(l => l.accountId === selectedAccountId);
+            if (line) {
+                let change = 0;
+                if (['Asset', 'Expense'].includes(account.type)) {
+                    change = line.debit - line.credit;
+                } else {
+                    change = line.credit - line.debit;
+                }
+                runningBalance += change;
+
+                lines.push({
+                    id: journal.id,
+                    date: journal.date,
+                    description: journal.description,
+                    debit: line.debit,
+                    credit: line.credit,
+                    balance: runningBalance,
+                    ref: journal.reference || '-'
+                });
+            }
         });
-        return displayList;
-    }, [accounts]);
+
+        return lines;
+    }, [journals, selectedAccountId, accounts]);
+
+    const selectedAccount = accounts.find(a => a.id === selectedAccountId);
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">General Ledger Accounts</h3>
-                <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                    <DialogTrigger asChild><Button><Plus className="mr-2 h-4 w-4"/> New Account</Button></DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader><DialogTitle>Add Ledger Account</DialogTitle></DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div className="flex items-center space-x-2 border p-3 rounded bg-slate-50">
-                                <Checkbox id="subLedger" checked={isSubAccount} onCheckedChange={(c) => { setIsSubAccount(!!c); if(!c) setParentId(''); }}/>
-                                <label htmlFor="subLedger" className="text-sm font-medium cursor-pointer">Make this a Sub-Ledger</label>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2"><Label>Code</Label><Input value={code} onChange={e => setCode(e.target.value)} placeholder="e.g. 1001" /></div>
-                                <div className="space-y-2"><Label>Type</Label>
-                                    <Select value={type} onValueChange={(v: AccountType) => setType(v)} disabled={isSubAccount}>
-                                        <SelectTrigger><SelectValue/></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Asset">Asset</SelectItem><SelectItem value="Liability">Liability</SelectItem><SelectItem value="Equity">Equity</SelectItem><SelectItem value="Revenue">Revenue</SelectItem><SelectItem value="Expense">Expense</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            {isSubAccount && (
-                                <div className="space-y-2">
-                                    <Label>Parent Account</Label>
-                                    <Select value={parentId} onValueChange={setParentId}>
-                                        <SelectTrigger><SelectValue placeholder="Select Main Ledger" /></SelectTrigger>
-                                        <SelectContent>{accounts?.filter(a => !a.parentId).map(a => <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>)}</SelectContent>
-                                    </Select>
-                                </div>
-                            )}
-                            <div className="space-y-2"><Label>Account Name</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. GCB Bank" /></div>
-                            <Button onClick={handleCreate} disabled={isSubmitting} className="w-full">Save Account</Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
-            </div>
-            <div className="border rounded-md bg-white">
-                <Table>
-                    <TableHeader><TableRow><TableHead>Code</TableHead><TableHead>Account Name</TableHead><TableHead>Type</TableHead><TableHead className="text-right">Balance (GH₵)</TableHead></TableRow></TableHeader>
-                    <TableBody>
-                        {organizedAccounts.map(acc => (
-                            <TableRow key={acc.id} className={acc.depth > 0 ? "bg-slate-50" : ""}>
-                                <TableCell className="font-mono text-xs text-slate-500">{acc.code}</TableCell>
-                                <TableCell className="font-medium"><div className="flex items-center">{acc.depth > 0 && <CornerDownRight className="h-4 w-4 mr-2 text-slate-400" />}<span className={acc.depth > 0 ? "text-slate-700" : "font-bold text-slate-900"}>{acc.name}</span></div></TableCell>
-                                <TableCell><Badge variant="outline">{acc.type}</Badge></TableCell>
-                                <TableCell className="text-right font-bold">{acc.balance.toFixed(2)}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
-        </div>
-    );
-}
-
-// --- COMPONENT: Payment Voucher (With Bill Integration) ---
-function PaymentVoucherForm({ accounts, schoolId }: { accounts: Account[] | undefined, schoolId: string }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
-    
-    const [payee, setPayee] = useState('');
-    const [desc, setDesc] = useState('');
-    const [grossAmount, setGrossAmount] = useState('');
-    const [expenseAcc, setExpenseAcc] = useState('');
-    const [paymentAcc, setPaymentAcc] = useState('');
-    const [whtLiabilityAcc, setWhtLiabilityAcc] = useState('');
-    const [method, setMethod] = useState('Bank Transfer');
-    const [refNumber, setRefNumber] = useState('');
-    const [whtRate, setWhtRate] = useState('0'); 
-    const [vatScheme, setVatScheme] = useState('Exempt');
-    
-    const [selectedBillId, setSelectedBillId] = useState('');
-    const billsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accountsPayable'), where('status', '==', 'Unpaid'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: bills } = useCollection<any>(billsQuery);
-
-    useEffect(() => {
-        if(selectedBillId && bills) {
-            const bill = bills.find(b => b.id === selectedBillId);
-            if(bill) {
-                setPayee(bill.vendorName);
-                setGrossAmount(bill.amount.toString());
-                setDesc(`Payment for Bill: ${bill.description}`);
-            }
-        }
-    }, [selectedBillId, bills]);
-    
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const { baseAmount, whtAmount, netPayable, vatAmount } = useMemo(() => {
-        const gross = parseFloat(grossAmount) || 0;
-        const whtPercent = parseFloat(whtRate) / 100;
-        
-        let taxableBase = gross;
-        let taxes = 0;
-
-        if (vatScheme === 'Standard Rated') {
-            taxableBase = gross / 1.21925; 
-            taxes = gross - taxableBase;
-        } 
-        else if (vatScheme === 'Flat Rate (3%)') {
-            taxableBase = gross / 1.03;
-            taxes = gross - taxableBase;
-        }
-        else if (vatScheme === 'Flat Rate (4%)') {
-            taxableBase = gross / 1.04;
-            taxes = gross - taxableBase;
-        }
-
-        const calculatedWht = taxableBase * whtPercent;
-        const payable = gross - calculatedWht;
-
-        return {
-            baseAmount: taxableBase,
-            vatAmount: taxes,
-            whtAmount: calculatedWht,
-            netPayable: payable
-        };
-    }, [grossAmount, whtRate, vatScheme]);
-
-    const expenseAccounts = accounts?.filter(a => a.type === 'Expense' || a.type === 'Asset' || a.type === 'Liability').sort((a,b) => a.code.localeCompare(b.code));
-    const paymentAccounts = accounts?.filter(a => a.type === 'Asset').sort((a,b) => a.code.localeCompare(b.code));
-    const liabilityAccounts = accounts?.filter(a => a.type === 'Liability').sort((a,b) => a.code.localeCompare(b.code));
-
-    const handleCreatePV = async () => {
-        if (!firestore || !user || !schoolId) return;
-        setIsSubmitting(true);
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const pvRef = doc(collection(firestore, 'payment_vouchers'));
-                transaction.set(pvRef, {
-                    payee, description: desc, grossAmount: parseFloat(grossAmount),
-                    whtAmount, netAmount: netPayable, paymentMethod: method, referenceNumber: refNumber,
-                    expenseAccountId: expenseAcc, paymentAccountId: paymentAcc, whtLiabilityAccountId: whtLiabilityAcc || null,
-                    status: 'Paid', date: serverTimestamp(), createdBy: user.uid, linkedBillId: selectedBillId || null, schoolId
-                });
-                
-                const journalRef = doc(collection(firestore, 'journal_entries'));
-                const expName = accounts?.find(a => a.id === expenseAcc)?.name || '';
-                const bankName = accounts?.find(a => a.id === paymentAcc)?.name || '';
-                const whtName = accounts?.find(a => a.id === whtLiabilityAcc)?.name || '';
-
-                const lines = [
-                    { accountId: expenseAcc, accountName: expName, debit: parseFloat(grossAmount), credit: 0 },
-                    { accountId: paymentAcc, accountName: bankName, debit: 0, credit: netPayable }
-                ];
-                if (whtAmount > 0) {
-                    lines.push({ accountId: whtLiabilityAcc, accountName: whtName, debit: 0, credit: whtAmount });
-                }
-                transaction.set(journalRef, {
-                    date: new Date(),
-                    description: `PV: ${desc} - ${payee}`,
-                    totalAmount: parseFloat(grossAmount),
-                    createdBy: user.uid,
-                    createdAt: serverTimestamp(),
-                    lines: lines,
-                    schoolId
-                });
-
-                transaction.update(doc(firestore, 'accounts', expenseAcc), { balance: increment(parseFloat(grossAmount)) });
-                transaction.update(doc(firestore, 'accounts', paymentAcc), { balance: increment(-netPayable) });
-                if (whtAmount > 0 && whtLiabilityAcc) {
-                    transaction.update(doc(firestore, 'accounts', whtLiabilityAcc), { balance: increment(whtAmount) });
-                }
-
-                if (selectedBillId) {
-                    const billRef = doc(firestore, 'accountsPayable', selectedBillId);
-                    transaction.update(billRef, { status: 'Paid', amountPaid: parseFloat(grossAmount) });
-                }
-            });
-
-            toast({ title: "Paid", description: `Paid GH₵${netPayable.toFixed(2)}` });
-            setPayee(''); setGrossAmount(''); setSelectedBillId('');
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: "Error", description: e.message });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    return (
-        <Card className="border-t-4 border-t-indigo-500">
-            <CardHeader><CardTitle>Payment Voucher</CardTitle></CardHeader>
-            <CardContent className="space-y-6">
-                
-                <div className="bg-slate-50 p-4 rounded border border-slate-200">
-                    <Label className="text-xs uppercase text-slate-500">Pay Outstanding Bill (Optional)</Label>
-                    <Select value={selectedBillId} onValueChange={(v) => setSelectedBillId(v === 'none' ? '' : v)}>
-                        <SelectTrigger className="bg-white"><SelectValue placeholder="Select Bill to Pay..."/></SelectTrigger>
+            <div className="flex gap-4 items-center print:hidden">
+                <div className="w-[300px]">
+                    <Select value={selectedAccountId} onValueChange={setSelectedAccountId}>
+                        <SelectTrigger><SelectValue placeholder="Select Account to View" /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="none">-- None (Direct Expense) --</SelectItem>
-                            {bills?.map((b: any) => (
-                                <SelectItem key={b.id} value={b.id}>
-                                    {b.vendorName} - GH₵{b.amount} (Due: {b.dueDate?.toDate ? format(b.dueDate.toDate(), 'PP') : 'N/A'})
-                                </SelectItem>
+                            {accounts.sort((a,b) => a.code.localeCompare(b.code)).map(a => (
+                                <SelectItem key={a.id} value={a.id}>{a.code} - {a.name}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
                 </div>
+                <Button variant="outline" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print Ledger</Button>
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Payee / Vendor</Label><Input value={payee} onChange={e => setPayee(e.target.value)} placeholder="e.g. Service Provider Ltd" /></div>
-                    <div className="space-y-2">
-                        <Label>Payment Method</Label>
-                        <div className="flex gap-2">
-                            <Select value={method} onValueChange={setMethod}>
-                                <SelectTrigger className="w-[140px]"><SelectValue/></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
-                                    <SelectItem value="Cheque">Cheque</SelectItem>
-                                    <SelectItem value="Cash">Cash</SelectItem>
-                                    <SelectItem value="MoMo">Mobile Money</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Input value={refNumber} onChange={e => setRefNumber(e.target.value)} placeholder={method === 'Cheque' ? "Cheque No." : "Ref ID"} className="flex-1" />
-                        </div>
-                    </div>
+            {selectedAccountId !== 'all' && selectedAccount ? (
+                <Card>
+                    <CardHeader className="pb-2">
+                        <CardTitle>Ledger: {selectedAccount.code} - {selectedAccount.name}</CardTitle>
+                        <CardDescription>Type: {selectedAccount.type}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Description</TableHead>
+                                    <TableHead className="text-right">Debit</TableHead>
+                                    <TableHead className="text-right">Credit</TableHead>
+                                    <TableHead className="text-right">Balance</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {ledgerData.length === 0 ? (
+                                    <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">No transactions in this period.</TableCell></TableRow>
+                                ) : (
+                                    ledgerData.map((row) => (
+                                        <TableRow key={row.id}>
+                                            <TableCell>{format(row.date.toDate(), 'dd/MM/yyyy')}</TableCell>
+                                            <TableCell>{row.description}</TableCell>
+                                            <TableCell className="text-right text-slate-600">{row.debit > 0 ? row.debit.toFixed(2) : '-'}</TableCell>
+                                            <TableCell className="text-right text-slate-600">{row.credit > 0 ? row.credit.toFixed(2) : '-'}</TableCell>
+                                            <TableCell className="text-right font-bold">GH₵{row.balance.toFixed(2)}</TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="text-center py-12 border-2 border-dashed rounded-lg">
+                    <p className="text-muted-foreground">Select an account above to view its transaction history.</p>
                 </div>
+            )}
+        </div>
+    );
+}
 
-                <div className="space-y-2"><Label>Description</Label><Input value={desc} onChange={e => setDesc(e.target.value)} placeholder="e.g. Repair of School Bus" /></div>
+// --- COMPONENT: Trial Balance ---
+function TrialBalance({ data }: { data: AccountBalance[] }) {
+    const totalDebit = data.reduce((sum, a) => sum + a.debit, 0);
+    const totalCredit = data.reduce((sum, a) => sum + a.credit, 0);
+    const isBalanced = Math.abs(totalDebit - totalCredit) < 0.1;
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded border">
-                    <div className="space-y-2">
-                        <Label>Invoice Total (Gross)</Label>
-                        <div className="relative">
-                            <span className="absolute left-3 top-2.5 text-slate-500">GH₵</span>
-                            <Input type="number" value={grossAmount} onChange={e => setGrossAmount(e.target.value)} className="pl-12 font-bold" placeholder="0.00"/>
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Vendor VAT Type</Label>
-                        <Select value={vatScheme} onValueChange={setVatScheme}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Exempt">Exempt / None</SelectItem>
-                                <SelectItem value="Standard Rated">Standard Rated (15% + Levies)</SelectItem>
-                                <SelectItem value="Flat Rate (3%)">Flat Rate (3%)</SelectItem>
-                                <SelectItem value="Flat Rate (4%)">Flat Rate (4%)</SelectItem>
-                                <SelectItem value="Zero Rated">Zero Rated (0%)</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <p className="text-[10px] text-slate-500">Used to calculate Taxable Base for WHT.</p>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>WHT Rate (%)</Label>
-                        <Select value={whtRate} onValueChange={setWhtRate}>
-                            <SelectTrigger><SelectValue/></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="0">0% (None)</SelectItem>
-                                <SelectItem value="3">3% (Supply of Goods)</SelectItem>
-                                <SelectItem value="5">5% (Works/Construction)</SelectItem>
-                                <SelectItem value="7.5">7.5% (Services/Consultancy)</SelectItem>
-                                <SelectItem value="15">15% (Rent/Director Fees)</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                
-                {parseFloat(grossAmount) > 0 && (
-                    <div className="bg-slate-100 p-4 rounded-lg text-sm space-y-2 border border-slate-200">
-                        <div className="flex justify-between">
-                            <span className="text-slate-500">Gross Invoice:</span>
-                            <span className="font-medium">GH₵ {parseFloat(grossAmount).toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-slate-500">Less VAT/Levies ({vatScheme}):</span>
-                            <span>- GH₵ {vatAmount.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between border-b pb-2">
-                            <span className="text-slate-500">Taxable Base Amount:</span>
-                            <span className="font-medium">GH₵ {baseAmount.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-red-600">
-                            <span>Withholding Tax ({whtRate}% on Base):</span>
-                            <span>- GH₵ {whtAmount.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-lg pt-2 text-indigo-700">
-                            <span>Net Payable to Vendor:</span>
-                            <span>GH₵ {netPayable.toFixed(2)}</span>
-                        </div>
+    return (
+        <Card>
+            <CardHeader className="flex flex-row justify-between">
+                <div><CardTitle>Trial Balance</CardTitle><CardDescription>As of {new Date().toLocaleDateString()}</CardDescription></div>
+                <Button variant="outline" onClick={() => window.print()} className="print:hidden"><Printer className="mr-2 h-4 w-4"/> Print</Button>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Code</TableHead>
+                            <TableHead>Account</TableHead>
+                            <TableHead className="text-right">Debit</TableHead>
+                            <TableHead className="text-right">Credit</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {data.sort((a,b) => a.code.localeCompare(b.code)).map(account => {
+                            const balance = account.net;
+                            const isDebitNature = ['Asset', 'Expense'].includes(account.type);
+                            
+                            let debit = 0;
+                            let credit = 0;
+
+                            if (isDebitNature) {
+                                debit = balance;
+                            } else {
+                                credit = -balance;
+                            }
+
+                            return (
+                                <TableRow key={account.id}>
+                                    <TableCell className="font-mono text-xs">{account.code}</TableCell>
+                                    <TableCell>{account.name}</TableCell>
+                                    <TableCell className="text-right">{debit > 0 ? `GH₵${debit.toFixed(2)}` : '-'}</TableCell>
+                                    <TableCell className="text-right">{credit > 0 ? `GH₵${credit.toFixed(2)}` : '-'}</TableCell>
+                                </TableRow>
+                            );
+                        })}
+                        <TableRow className="bg-slate-100 font-bold border-t-2 border-slate-300">
+                            <TableCell colSpan={2}>Totals</TableCell>
+                            <TableCell className="text-right">GH₵{totalDebit.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">GH₵{totalCredit.toFixed(2)}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+                {!isBalanced && (
+                    <div className="mt-4 p-2 bg-red-100 text-red-700 text-center rounded font-bold">
+                        ⚠️ TRIAL BALANCE NOT BALANCED
                     </div>
                 )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label>Expense Account (Debit)</Label>
-                        <Select value={expenseAcc} onValueChange={setExpenseAcc}>
-                            <SelectTrigger><SelectValue placeholder="Select Expense Category"/></SelectTrigger>
-                            <SelectContent>{expenseAccounts?.map(a => <SelectItem key={a.id} value={a.id}>{a.parentId ? '↳ ' : ''}{a.name}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Bank/Cash Account (Credit)</Label>
-                        <Select value={paymentAcc} onValueChange={setPaymentAcc}>
-                            <SelectTrigger><SelectValue placeholder="Select Source of Funds"/></SelectTrigger>
-                            <SelectContent>{paymentAccounts?.map(a => <SelectItem key={a.id} value={a.id}>{a.parentId ? '↳ ' : ''}{a.name}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                {whtAmount > 0 && (
-                    <div className="space-y-2 bg-yellow-50 p-3 rounded border border-yellow-200">
-                        <Label className="text-yellow-800">WHT Liability Account (Credit)</Label>
-                        <Select value={whtLiabilityAcc} onValueChange={setWhtLiabilityAcc}>
-                            <SelectTrigger className="bg-white"><SelectValue placeholder="Select Tax Payable Account"/></SelectTrigger>
-                            <SelectContent>{liabilityAccounts?.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}</SelectContent>
-                        </Select>
-                    </div>
-                )}
-                <Button onClick={handleCreatePV} disabled={isSubmitting} className="w-full h-12 text-lg bg-indigo-600 hover:bg-indigo-700">
-                    {isSubmitting ? <Loader2 className="animate-spin"/> : <FileText className="mr-2 h-5 w-5"/>} 
-                    Process Payment
-                </Button>
             </CardContent>
         </Card>
     );
 }
 
-// --- JOURNAL ENTRY COMPONENT (Unchanged but included for completeness) ---
-function JournalEntryForm({ accounts, schoolId }: { accounts: Account[] | undefined, schoolId: string }) {
-    const firestore = useFirestore();
-    const { user } = useUser();
-    const { toast } = useToast();
+// --- COMPONENT: Income Statement (P&L) ---
+function IncomeStatement({ data }: { data: AccountBalance[] }) {
+    const revenue = data.filter(a => a.type === 'Revenue');
+    const expenses = data.filter(a => a.type === 'Expense');
+
+    const totalRevenue = Math.abs(revenue.reduce((sum, a) => sum + (a.net < 0 ? a.net : 0), 0));
+    const totalExpense = expenses.reduce((sum, a) => sum + (a.net > 0 ? a.net : 0), 0);
     
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-    const [desc, setDesc] = useState('');
-    const [lines, setLines] = useState([{ accountId: '', debit: 0, credit: 0 }, { accountId: '', debit: 0, credit: 0 }]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const totalDebit = lines.reduce((sum, line) => sum + (line.debit || 0), 0);
-    const totalCredit = lines.reduce((sum, line) => sum + (line.credit || 0), 0);
-    const isBalanced = Math.abs(totalDebit - totalCredit) < 0.01 && totalDebit > 0;
-
-    const addLine = () => setLines([...lines, { accountId: '', debit: 0, credit: 0 }]);
-    const removeLine = (idx: number) => setLines(lines.filter((_, i) => i !== idx));
-
-    const updateLine = (idx: number, field: string, value: any) => {
-        const newLines = [...lines];
-        (newLines[idx] as any)[field] = value;
-        if(field === 'debit' && value > 0) newLines[idx].credit = 0;
-        if(field === 'credit' && value > 0) newLines[idx].debit = 0;
-        setLines(newLines);
-    };
-
-    const handlePost = async () => {
-        if (!firestore || !user || !schoolId) return;
-        if (!isBalanced) {
-            toast({ variant: 'destructive', title: "Unbalanced", description: "Debits must equal Credits." });
-            return;
-        }
-        setIsSubmitting(true);
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const journalRef = doc(collection(firestore, 'journal_entries'));
-                const finalLines = lines.map(line => ({
-                    ...line,
-                    accountName: accounts?.find(a => a.id === line.accountId)?.name || 'Unknown'
-                }));
-                transaction.set(journalRef, {
-                    date: new Date(date), description: desc, lines: finalLines,
-                    totalAmount: totalDebit, createdBy: user.uid, createdAt: serverTimestamp(), schoolId
-                });
-                for (const line of lines) {
-                    const accRef = doc(firestore, 'accounts', line.accountId);
-                    const accDoc = await transaction.get(accRef);
-                    if (!accDoc.exists()) throw "Account not found";
-                    const accData = accDoc.data() as Account;
-                    let change = 0;
-                    if (['Asset', 'Expense'].includes(accData.type)) change = line.debit - line.credit;
-                    else change = line.credit - line.debit;
-                    transaction.update(accRef, { balance: increment(change) });
-                }
-            });
-            toast({ title: "Posted", description: "Journal Entry successful." });
-            setDesc(''); setLines([{ accountId: '', debit: 0, credit: 0 }, { accountId: '', debit: 0, credit: 0 }]);
-        } catch (e) {
-            toast({ variant: 'destructive', title: "Error", description: "Transaction failed." });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-    
-    // Sort accounts helper
-    const sortedAccounts = useMemo(() => {
-        return accounts?.sort((a,b) => a.code.localeCompare(b.code)) || [];
-    }, [accounts]);
+    const netIncome = totalRevenue - totalExpense;
 
     return (
         <Card>
-            <CardHeader><CardTitle>Manual Journal Entry</CardTitle><CardDescription>Record complex adjustments or transfers.</CardDescription></CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                    <div><Label>Date</Label><Input type="date" value={date} onChange={e => setDate(e.target.value)} /></div>
-                    <div className="col-span-2"><Label>Narration</Label><Input value={desc} onChange={e => setDesc(e.target.value)} placeholder="e.g. Opening Balance" /></div>
+            <CardHeader><CardTitle>Income Statement (P&L)</CardTitle></CardHeader>
+            <CardContent className="space-y-6">
+                
+                {/* Revenue Section */}
+                <div>
+                    <h3 className="font-bold text-lg text-green-700 border-b pb-2 mb-2">Revenue</h3>
+                    <Table>
+                        <TableBody>
+                            {revenue.map(r => (
+                                <TableRow key={r.id}>
+                                    <TableCell>{r.name}</TableCell>
+                                    <TableCell className="text-right">GH₵{Math.abs(r.net).toFixed(2)}</TableCell>
+                                </TableRow>
+                            ))}
+                            <TableRow className="font-bold bg-green-50">
+                                <TableCell>Total Revenue</TableCell>
+                                <TableCell className="text-right">GH₵{totalRevenue.toFixed(2)}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
                 </div>
-                <div className="border rounded-md p-2 bg-slate-50 space-y-2">
-                    {lines.map((line, idx) => (
-                        <div key={idx} className="flex gap-2 items-center">
-                            <Select value={line.accountId} onValueChange={(v) => updateLine(idx, 'accountId', v)}>
-                                <SelectTrigger className="flex-1"><SelectValue placeholder="Select Account" /></SelectTrigger>
-                                <SelectContent>{sortedAccounts.map(a => <SelectItem key={a.id} value={a.id}>{a.parentId ? `↳ ${a.name}` : a.name} ({a.code})</SelectItem>)}</SelectContent>
-                            </Select>
-                            <div className="w-24"><Input type="number" placeholder="Dr" value={line.debit || ''} onChange={e => updateLine(idx, 'debit', parseFloat(e.target.value))} /></div>
-                            <div className="w-24"><Input type="number" placeholder="Cr" value={line.credit || ''} onChange={e => updateLine(idx, 'credit', parseFloat(e.target.value))} /></div>
-                            <Button variant="ghost" size="icon" onClick={() => removeLine(idx)}><Trash2 className="h-4 w-4 text-red-500"/></Button>
-                        </div>
-                    ))}
-                    <Button variant="outline" size="sm" onClick={addLine}><Plus className="mr-2 h-4 w-4"/> Add Line</Button>
+
+                {/* Expense Section */}
+                <div>
+                    <h3 className="font-bold text-lg text-red-700 border-b pb-2 mb-2">Expenses</h3>
+                    <Table>
+                        <TableBody>
+                            {expenses.map(e => (
+                                <TableRow key={e.id}>
+                                    <TableCell>{e.name}</TableCell>
+                                    <TableCell className="text-right">GH₵{Math.abs(e.net).toFixed(2)}</TableCell>
+                                </TableRow>
+                            ))}
+                            <TableRow className="font-bold bg-red-50">
+                                <TableCell>Total Expenses</TableCell>
+                                <TableCell className="text-right">GH₵{totalExpense.toFixed(2)}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
                 </div>
-                <div className="flex justify-between items-center pt-2 border-t">
-                    <div className="text-sm">Total Dr: <b>₵{totalDebit.toFixed(2)}</b> | Total Cr: <b>₵{totalCredit.toFixed(2)}</b></div>
-                    <Button onClick={handlePost} disabled={!isBalanced || isSubmitting || totalDebit === 0}>{isSubmitting ? <Loader2 className="animate-spin mr-2"/> : <Save className="mr-2 h-4 w-4"/>} Post Entry</Button>
+
+                {/* Net Income */}
+                <div className={`p-4 rounded-lg flex justify-between items-center text-xl font-bold border ${netIncome >= 0 ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'}`}>
+                    <span>Net Income / (Loss)</span>
+                    <span>GH₵{netIncome.toFixed(2)}</span>
                 </div>
+
+            </CardContent>
+        </Card>
+    );
+}
+
+// --- COMPONENT: Balance Sheet ---
+function BalanceSheet({ data, netIncome }: { data: AccountBalance[], netIncome: number }) {
+    const assets = data.filter(a => a.type === 'Asset');
+    const liabilities = data.filter(a => a.type === 'Liability');
+    const equity = data.filter(a => a.type === 'Equity');
+
+    const totalAssets = assets.reduce((sum, a) => sum + a.net, 0);
+    const totalLiabilities = Math.abs(liabilities.reduce((sum, a) => sum + a.net, 0));
+    const totalEquity = Math.abs(equity.reduce((sum, a) => sum + a.net, 0));
+    
+    const totalEquityAndLiabilities = totalLiabilities + totalEquity + netIncome;
+
+    return (
+        <Card>
+            <CardHeader><CardTitle>Statement of Financial Position</CardTitle></CardHeader>
+            <CardContent className="grid md:grid-cols-2 gap-8">
+                
+                {/* Assets */}
+                <div>
+                    <h3 className="font-bold text-lg text-blue-700 border-b pb-2 mb-2">Assets</h3>
+                     <Table>
+                        <TableBody>
+                            {assets.map(a => (
+                                <TableRow key={a.id}>
+                                    <TableCell>{a.name}</TableCell>
+                                    <TableCell className="text-right">GH₵{a.net.toFixed(2)}</TableCell>
+                                </TableRow>
+                            ))}
+                             <TableRow className="font-bold bg-blue-50">
+                                <TableCell>Total Assets</TableCell>
+                                <TableCell className="text-right">GH₵{totalAssets.toFixed(2)}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
+
+                {/* Liabilities & Equity */}
+                <div>
+                    <h3 className="font-bold text-lg text-slate-700 border-b pb-2 mb-2">Liabilities</h3>
+                     <Table>
+                        <TableHeader><TableRow><TableHead colSpan={2}>Liabilities</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                            {liabilities.map(l => (
+                                <TableRow key={l.id}>
+                                    <TableCell>{l.name}</TableCell>
+                                    <TableCell className="text-right">GH₵{Math.abs(l.net).toFixed(2)}</TableCell>
+                                </TableRow>
+                            ))}
+                             <TableRow className="font-semibold bg-slate-100">
+                                <TableCell>Total Liabilities</TableCell>
+                                <TableCell className="text-right">GH₵{totalLiabilities.toFixed(2)}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                        <TableHeader><TableRow><TableHead colSpan={2}>Equity</TableHead></TableRow></TableHeader>
+                        <TableBody>
+                             {equity.map(e => (
+                                <TableRow key={e.id}>
+                                    <TableCell>{e.name}</TableCell>
+                                    <TableCell className="text-right">GH₵{Math.abs(e.net).toFixed(2)}</TableCell>
+                                </TableRow>
+                            ))}
+                             <TableRow>
+                                <TableCell className="italic text-green-700">Retained Earnings (Net Income)</TableCell>
+                                <TableCell className="text-right font-bold text-green-700">GH₵{netIncome.toFixed(2)}</TableCell>
+                            </TableRow>
+                             <TableRow className="font-semibold bg-slate-100">
+                                <TableCell>Total Equity</TableCell>
+                                <TableCell className="text-right">GH₵{(totalEquity + netIncome).toFixed(2)}</TableCell>
+                            </TableRow>
+                             <TableRow className="font-bold bg-slate-200">
+                                <TableCell>Total Liabilities & Equity</TableCell>
+                                <TableCell className="text-right">GH₵{(totalLiabilities + totalEquity).toFixed(2)}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </div>
+
             </CardContent>
         </Card>
     );
