@@ -290,6 +290,12 @@ export const navItems: NavItem[] = [
             icon: MessageCircle,
             roles: 'all',
         },
+        {
+            path: '/dashboard/communication/sms',
+            title: 'Bulk SMS',
+            icon: MessageSquare,
+            roles: ['Director', 'Administrator'],
+        }
     ]
   },
    {
