@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, Building2 as School, UserPlus, Calculator, ClipboardCheck, BookCopy } from 'lucide-react';
+import { BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, Building2 as School, UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, MessageSquare, UserCog, Activity } from 'lucide-react';
 
 export default function HelpPage() {
   return (
@@ -38,7 +38,7 @@ export default function HelpPage() {
                     steps={[
                         "Navigate to System > School Profile to set your school's name, address, and upload a logo. This information appears on all official documents.",
                         "Navigate to Academics > Subjects to create the subjects taught at your school (e.g., Mathematics, Integrated Science).",
-                        "Navigate to Academics > Classes to create your classrooms (e.g., JHS 1, Grade 5A)."
+                        "Navigate to Academics > Classes to create your classrooms (e.g., JHS 1, Grade 5A) and assign teachers."
                     ]}
                 />
               </AccordionContent>
@@ -49,20 +49,22 @@ export default function HelpPage() {
               <AccordionContent className="pt-4 space-y-6">
                 <GuideCard 
                     icon={UserPlus} 
-                    title="Adding Staff & Students" 
-                    desc="Onboard your team and students to the platform."
+                    title="Onboarding Staff & Students" 
+                    desc="Add users to the platform and manage their roles."
                     steps={[
                         "Go to People > Staff Management and click 'Add Staff'. Fill in their details and assign a role (e.g., Teacher, Accountant). An email with login credentials will be sent automatically.",
                         "Go to People > Students and click 'Add Student'. Fill in their details and assign them to a class. This also creates a parent account if the email is new.",
+                        "Go to People > Parents to link existing students to their parents or guardians."
                     ]}
                 />
                  <GuideCard 
-                    icon={Users} 
-                    title="Managing Parents & Linking Students" 
-                    desc="Connect parents to their children's accounts."
+                    icon={UserCog} 
+                    title="Admissions & Alumni" 
+                    desc="Manage the full student lifecycle from application to graduation."
                     steps={[
-                        "When adding a student, if the parent's email already exists, the student will be automatically linked.",
-                        "To manually link students, go to People > Parents, click 'Edit' on a parent, and use the 'Link Students' search to find and add their children.",
+                        "Parents can apply for admission via the 'Apply for Admission' tab. Administrators review these in People > Admissions.",
+                        "Approve applications to automatically create student profiles and enroll them in a class.",
+                        "Once a student completes their final year, use the Alumni module to graduate them, moving them to the alumni directory."
                     ]}
                 />
               </AccordionContent>
@@ -76,9 +78,9 @@ export default function HelpPage() {
                     title="Assignments, Quizzes & Grading" 
                     desc="Manage classwork and evaluate student performance."
                     steps={[
-                        "As a teacher, go to Assignments and use the 'Create Assignment' button to set tasks for your class.",
-                        "Use the 'Generate with AI' option within the assignment form to quickly create quizzes on any topic.",
-                        "To grade, open the Gradebook, select your class, and click 'Enter Grades' to input scores from your physical records."
+                        "As a teacher, go to Academics > Assignments & Quizzes. Use 'Create Assignment' for manual tasks or 'Generate with AI' for quick quizzes.",
+                        "Students submit work through their portal. Teachers can view submissions by expanding the assignment and grade them.",
+                        "For formal assessments, go to Academics > Gradebook, select your class, and click 'Enter Grades' to input scores from your physical records."
                     ]}
                 />
                 <GuideCard 
@@ -89,6 +91,15 @@ export default function HelpPage() {
                         "From the Gradebook, teachers can enter comments for each student by subject.",
                         "Once all comments and grades are in, teachers submit the report card for final approval.",
                         "The Administrator or Director can then 'Publish' the report card, which notifies parents and makes it visible in their portal."
+                    ]}
+                />
+                 <GuideCard 
+                    icon={BookCopy} 
+                    title="Lesson Planning & Materials" 
+                    desc="Organize your curriculum and share resources with students."
+                    steps={[
+                        "Go to Academics > Lesson Planning to create detailed daily lesson plans. Use the AI Assistant to generate ideas for objectives and activities.",
+                        "Navigate to Academics > Learning Materials to upload course content, videos, and documents organized by subject and topic.",
                     ]}
                 />
               </AccordionContent>
@@ -102,9 +113,10 @@ export default function HelpPage() {
                     title="Student Billing & Payments" 
                     desc="Manage student fees and record payments."
                     steps={[
-                        "Go to Financials > Student Billing. Use 'Bulk Bill' to apply tuition fees to an entire class.",
-                        "Use 'Single Bill' for individual charges like library fines or damages.",
-                        "The Accountant can use the 'Cash Till' page to record cash payments received for fees."
+                        "Go to Financials > Settings to set daily rates for services like Canteen and Transport.",
+                        "Use Financials > Student Billing to apply bulk fees (e.g., Tuition) or single charges (e.g., Library Fines).",
+                        "The Accountant can use the 'Cash Till' page to record cash payments received for fees.",
+                        "Parents can view and pay bills online via the 'My Bills' page."
                     ]}
                 />
                  <GuideCard 
@@ -119,7 +131,44 @@ export default function HelpPage() {
                 />
               </AccordionContent>
             </AccordionItem>
-             <AccordionItem value="item-5">
+
+            <AccordionItem value="item-5">
+              <AccordionTrigger className="text-lg font-bold">Operations</AccordionTrigger>
+              <AccordionContent className="pt-4 space-y-6">
+                 <GuideCard 
+                    icon={Library} 
+                    title="Library Management" 
+                    desc="Catalog books and manage borrowing and returns."
+                    steps={[
+                        "The Librarian adds books to the system via Operations > Library > Add New Item.",
+                        "Students can browse the catalog and request to borrow a book.",
+                        "The Librarian approves requests, which marks the book as 'Borrowed' and sets a due date."
+                    ]}
+                />
+                 <GuideCard 
+                    icon={Bus} 
+                    title="Transport Management" 
+                    desc="Manage bus routes, stops, and assign students."
+                    steps={[
+                        "First, add buses and drivers (staff with 'Transport' role) in the 'Manage Buses' section.",
+                        "Create routes and define the stops for each route.",
+                        "Finally, assign students who use the bus service to their specific stop on a route."
+                    ]}
+                />
+                 <GuideCard 
+                    icon={Boxes} 
+                    title="Inventory" 
+                    desc="Track school assets like laptops, furniture, and projectors."
+                    steps={[
+                        "Add new assets to the system via Operations > Inventory > Add New Item.",
+                        "Check out items to staff members to track who has what.",
+                        "View the transaction history for any item to see its movement."
+                    ]}
+                />
+              </AccordionContent>
+            </AccordionItem>
+
+             <AccordionItem value="item-6">
               <AccordionTrigger className="text-lg font-bold">AI Features</AccordionTrigger>
               <AccordionContent className="pt-4 space-y-6">
                  <GuideCard 
@@ -127,7 +176,7 @@ export default function HelpPage() {
                     title="AI Tutor & Assistant" 
                     desc="Leverage the power of AI for learning and productivity."
                     steps={[
-                        "The purple robot icon in the bottom-right opens the AI Assistant. It can answer questions about how to use the app or help draft documents.",
+                        "The purple robot icon in the bottom-right opens the AI Assistant. It can answer questions about how to use the app or help you draft documents.",
                         "Students can access the AI Tutor in the 'Study Club' to get personalized help with their homework on any subject.",
                         "Your school's AI Credit balance is shown in the header. Each AI action consumes credits."
                     ]}
