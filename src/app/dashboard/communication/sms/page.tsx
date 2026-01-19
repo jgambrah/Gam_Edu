@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -12,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Loader2, Send, Users, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { FinancialRecord, Student } from '@/lib/types';
+import { FinancialRecord, Student, Class } from '@/lib/types';
 
 export default function BulkSMSPage() {
   const { schoolId } = useCurrentSchool();
@@ -20,7 +19,7 @@ export default function BulkSMSPage() {
   const { toast } = useToast();
   
   const [message, setMessage] = useState('');
-  const [targetGroup, setTargetGroup] = useState('all'); // all, grade1, debtors
+  const [targetGroup, setTargetGroup] = useState('all'); // all, class_someId, debtors
   const [sending, setSending] = useState(false);
 
   // 1. Fetch All Parents
@@ -36,15 +35,23 @@ export default function BulkSMSPage() {
     [firestore, schoolId]
   );
   const { data: students } = useCollection<Student>(studentsQuery);
+  
+  // 3. Fetch all Classes for the dropdown
+  const classesQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
+  );
+  const { data: classes } = useCollection<Class>(classesQuery);
 
-  // 3. Fetch Financial Records for Debtors filter
+  // 4. Fetch Financial Records for Debtors filter
   const financialRecordsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('status', 'in', ['Unpaid', 'Overdue'])) : null,
     [firestore, schoolId]
   );
   const { data: financialRecords } = useCollection<FinancialRecord>(financialRecordsQuery);
 
-  // 4. Filter Logic
+
+  // 5. Filter Logic
   const targetedParents = useMemo(() => {
     if (!parents || !students) return [];
 
@@ -53,19 +60,21 @@ export default function BulkSMSPage() {
     if (targetGroup === 'debtors') {
         if (!financialRecords) return [];
         
+        // Create a Set of student IDs who have outstanding bills for efficient lookup
         const debtorStudentIds = new Set(financialRecords.map(r => r.studentId));
             
+        // Filter parents who have at least one child in the debtor list
         return parents.filter(p => 
             (p as any).studentIds?.some((sid: string) => debtorStudentIds.has(sid))
         );
     }
 
-    // Filter by Class (Example: Grade 1)
+    // Filter by Class ID
     if (targetGroup.startsWith('class_')) {
-        const className = targetGroup.replace('class_', '');
+        const classId = targetGroup.replace('class_', '');
         // Find students in this class
         const studentIdsInClass = students
-            .filter(s => s.classId === className) // Assuming grade is stored in classId for now
+            .filter(s => s.classId === classId)
             .map(s => s.uid);
         
         // Find parents linked to these students
@@ -75,45 +84,34 @@ export default function BulkSMSPage() {
     }
     
     return [];
-  }, [parents, students, targetGroup, financialRecords]);
+  }, [parents, students, financialRecords, targetGroup]);
 
 
   const handleSendBulk = async () => {
-    if (targetedParents.length === 0) return;
+    if (targetedParents.length === 0) {
+        toast({ variant: 'destructive', title: "No Recipients", description: "The selected group has no parents with phone numbers." });
+        return;
+    }
     setSending(true);
 
     let count = 0;
     // In production, send this array to backend for bulk processing
     for (const parent of targetedParents) {
         if ((parent as any).phone) {
-            // Mock send for now
             console.log(`Sending to ${(parent as any).phone}: ${message}`);
-            // await sendSMSAction(parent.phone, message);
+            // This is a mock send for now. Uncomment to enable real sending.
+            // await sendSMSAction((parent as any).phone, message);
             count++;
         }
     }
 
-    // Simulate delay
+    // Simulate network delay
     await new Promise(r => setTimeout(r, 1000));
 
     setSending(false);
     toast({ title: "Broadcast Sent", description: `Message sent to ${count} parents.` });
     setMessage('');
   };
-
-  // Extract unique classes for dropdown
-  const classes = useMemo(() => {
-    if (!students) return [];
-    const classMap = new Map<string, string>();
-    students.forEach(s => {
-        if(s.classId) {
-            // This is a simplification. A 'classes' collection would be better.
-            classMap.set(s.classId, s.classId); 
-        }
-    });
-    return Array.from(classMap.values()).sort();
-  }, [students]);
-
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
@@ -142,8 +140,8 @@ export default function BulkSMSPage() {
                         <SelectContent>
                             <SelectItem value="all">All Parents ({parents?.length || 0})</SelectItem>
                             <SelectItem value="debtors">Parents Owing Fees</SelectItem>
-                            {classes.map(c => (
-                                <SelectItem key={c} value={`class_${c}`}>Parents of {c}</SelectItem>
+                            {classes?.map(c => (
+                                <SelectItem key={c.id} value={`class_${c.id}`}>{c.name} Parents</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
