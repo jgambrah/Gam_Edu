@@ -53,6 +53,7 @@ import {
   Building2,
   Rabbit,
   Rocket,
+  FileQuestion
 } from 'lucide-react';
 
 export const navItems: NavItem[] = [
@@ -449,6 +450,12 @@ export const navItems: NavItem[] = [
             title: 'School Profile',
             icon: Building2,
             roles: ['Director', 'Administrator'],
+        },
+        {
+            path: '/dashboard/help',
+            title: 'Help & Documentation',
+            icon: FileQuestion,
+            roles: ['Director', 'Administrator', 'Teacher', 'Accountant', 'Student', 'Parent', 'Librarian', 'Cook', 'Transport Staff'],
         },
     ]
   },
