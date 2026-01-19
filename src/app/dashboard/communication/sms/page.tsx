@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useState } from 'react';
-import { useFirestore, useCollection } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { sendSMSAction } from '@/app/actions/sms';
@@ -21,9 +20,11 @@ export default function BulkSMSPage() {
   const [sending, setSending] = useState(false);
 
   // Fetch all parents to get phone numbers
-  const { data: parents } = useCollection(
-    (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null
+  const parentsQuery = useMemoFirebase(
+    () => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null,
+    [firestore, schoolId]
   );
+  const { data: parents } = useCollection(parentsQuery);
 
   const handleSendBulk = async () => {
     if (!parents || parents.length === 0) return alert("No parents found.");
