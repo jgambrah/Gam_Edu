@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { 
     BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, 
     UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, 
-    MessageSquare, Activity, FileText 
+    MessageSquare, Activity, FileText, UserCog
 } from 'lucide-react';
 
 
@@ -73,7 +73,7 @@ export default function HelpPage() {
            <Accordion type="single" collapsible defaultValue="item-1">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-lg font-bold">Getting Started</AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-6">
+              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                 <GuideCard 
                     icon={School} 
                     title="Setting Up Your School" 
@@ -89,7 +89,7 @@ export default function HelpPage() {
             
             <AccordionItem value="item-2">
               <AccordionTrigger className="text-lg font-bold">People Management</AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-6">
+              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                 <GuideCard 
                     icon={UserPlus} 
                     title="Onboarding Staff & Students" 
@@ -115,7 +115,7 @@ export default function HelpPage() {
             
             <AccordionItem value="item-3">
               <AccordionTrigger className="text-lg font-bold">Academics</AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-6">
+              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                 <GuideCard 
                     icon={ClipboardCheck} 
                     title="Assignments, Quizzes & Grading" 
@@ -150,7 +150,7 @@ export default function HelpPage() {
             
             <AccordionItem value="item-4">
               <AccordionTrigger className="text-lg font-bold">Financials</AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-6">
+              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                 <GuideCard 
                     icon={Banknote} 
                     title="Student Billing & Payments" 
@@ -177,7 +177,7 @@ export default function HelpPage() {
 
             <AccordionItem value="item-5">
               <AccordionTrigger className="text-lg font-bold">Operations</AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-6">
+              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                  <GuideCard 
                     icon={Library} 
                     title="Library Management" 
@@ -210,25 +210,10 @@ export default function HelpPage() {
                 />
               </AccordionContent>
             </AccordionItem>
-
-             <AccordionItem value="item-6">
-              <AccordionTrigger className="text-lg font-bold">AI Features</AccordionTrigger>
-              <AccordionContent className="pt-4 space-y-6">
-                 <GuideCard 
-                    icon={Brain} 
-                    title="AI Tutor & Assistant" 
-                    desc="Leverage the power of AI for learning and productivity."
-                    steps={[
-                        "The purple robot icon in the bottom-right opens the AI Assistant. It can answer questions about how to use the app or help you draft documents.",
-                        "Students can access the AI Tutor in the 'Study Club' to get personalized help with their homework on any subject.",
-                        "Your school's AI Credit balance is shown in the dashboard header. Each AI action consumes credits."
-                    ]}
-                />
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-7">
+            
+            <AccordionItem value="item-6">
                 <AccordionTrigger className="text-lg font-bold">Clubs & Activities</AccordionTrigger>
-                <AccordionContent className="pt-4 space-y-6">
+                <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                     <GuideCard 
                         icon={Activity} 
                         title="Engaging Students" 
@@ -242,9 +227,10 @@ export default function HelpPage() {
                     />
                 </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-8">
+            
+            <AccordionItem value="item-7">
                 <AccordionTrigger className="text-lg font-bold">Communication</AccordionTrigger>
-                <AccordionContent className="pt-4 space-y-6">
+                <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                     <GuideCard 
                         icon={MessageSquare} 
                         title="Connecting the Community" 
@@ -257,9 +243,10 @@ export default function HelpPage() {
                     />
                 </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-9">
+            
+            <AccordionItem value="item-8">
                 <AccordionTrigger className="text-lg font-bold">Reporting & Analytics</AccordionTrigger>
-                <AccordionContent className="pt-4 space-y-6">
+                <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
                     <GuideCard 
                         icon={BarChart} 
                         title="Data-Driven Insights" 
@@ -273,6 +260,23 @@ export default function HelpPage() {
                     />
                 </AccordionContent>
             </AccordionItem>
+
+             <AccordionItem value="item-9">
+              <AccordionTrigger className="text-lg font-bold">AI Features</AccordionTrigger>
+              <AccordionContent className="pt-4 grid md:grid-cols-2 gap-6">
+                 <GuideCard 
+                    icon={Brain} 
+                    title="AI Tutor & Assistant" 
+                    desc="Leverage the power of AI for learning and productivity."
+                    steps={[
+                        "The purple robot icon in the bottom-right opens the AI Assistant. It can answer questions about how to use the app or help you draft documents.",
+                        "Students can access the AI Tutor in the 'Study Club' to get personalized help with their homework on any subject.",
+                        "Your school's AI Credit balance is shown in the dashboard header. Each AI action consumes credits."
+                    ]}
+                />
+              </AccordionContent>
+            </AccordionItem>
+
           </Accordion>
         </TabsContent>
 
