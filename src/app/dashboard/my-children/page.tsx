@@ -3,7 +3,7 @@
 
 import { Suspense, useState, useMemo } from 'react';
 import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, Timestamp } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, Timestamp } from 'firebase/firestore'; // ✅ Added orderBy
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2 } from 'lucide-react';
@@ -296,4 +296,3 @@ export default function MyChildrenPage() {
       </Suspense>
     );
 }
-
