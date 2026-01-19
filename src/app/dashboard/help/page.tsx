@@ -4,7 +4,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, MessageSquare, UserCog, Activity, FileText } from 'lucide-react';
+import { 
+    BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, 
+    UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, 
+    MessageSquare, Activity, FileText 
+} from 'lucide-react';
 
 
 function VideoEmbed({ videoId, title }: { videoId: string, title: string }) {
@@ -93,7 +97,7 @@ export default function HelpPage() {
                     steps={[
                         "Go to People > Staff Management and click 'Add Staff'. Fill in their details and assign a role (e.g., Teacher, Accountant). An email with login credentials will be sent automatically.",
                         "Go to People > Students and click 'Add Student'. Fill in their details and assign them to a class. This also creates a parent account if the email is new.",
-                        "Go to People > Parents to link existing students to their parents or guardians."
+                        "Use People > Parents to link existing students to their parents or guardians."
                     ]}
                 />
                  <GuideCard 
@@ -222,6 +226,53 @@ export default function HelpPage() {
                 />
               </AccordionContent>
             </AccordionItem>
+            <AccordionItem value="item-7">
+                <AccordionTrigger className="text-lg font-bold">Clubs & Activities</AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-6">
+                    <GuideCard 
+                        icon={Activity} 
+                        title="Engaging Students" 
+                        desc="Explore various clubs designed to make learning interactive and fun."
+                        steps={[
+                            "The Maths Club offers practice problems and a leaderboard to encourage competition.",
+                            "The Science Club provides daily facts and AI-led lessons to spark curiosity.",
+                            "The ELA Club helps improve grammar and reading comprehension through drills and challenges.",
+                            "The Coding Club introduces programming concepts with visual blocks and Python puzzles."
+                        ]}
+                    />
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-8">
+                <AccordionTrigger className="text-lg font-bold">Communication</AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-6">
+                    <GuideCard 
+                        icon={MessageSquare} 
+                        title="Connecting the Community" 
+                        desc="Tools for seamless communication between staff, students, and parents."
+                        steps={[
+                            "Use the Forum to start school-wide discussions on various topics.",
+                            "Direct Messages allow for private, one-on-one conversations between users.",
+                            "Post official news and updates through the Announcements module on the main dashboard."
+                        ]}
+                    />
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-9">
+                <AccordionTrigger className="text-lg font-bold">Reporting & Analytics</AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-6">
+                    <GuideCard 
+                        icon={BarChart} 
+                        title="Data-Driven Insights" 
+                        desc="Generate reports to monitor school performance and make informed decisions."
+                        steps={[
+                            "Academic Reports provide insights into student performance by class and subject.",
+                            "Analyze attendance trends and identify at-risk students with Attendance Reports.",
+                            "View demographic data and enrollment statistics in the Enrollment Reports section.",
+                            "Track inventory and financial statements for comprehensive school management."
+                        ]}
+                    />
+                </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </TabsContent>
 
@@ -234,7 +285,7 @@ export default function HelpPage() {
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-6">
                 <VideoEmbed videoId="m6UOo2YGbIE" title="How To Onboard Your School" />
-                <VideoEmbed videoId="qW1d34A2s1A" title="Using The AI Quiz Generator" />
+                <VideoEmbed videoId="qW1d34A2s1A" title="Using the AI Quiz Generator" />
                 <VideoEmbed videoId="yG-Ua_9mI_0" title="Managing Staff & Payroll" />
                 <VideoEmbed videoId="dQw4w9WgXcQ" title="Parent & Student Portal Overview" />
             </CardContent>
