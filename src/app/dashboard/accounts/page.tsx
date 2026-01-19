@@ -558,7 +558,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                             </FormItem>
                         )}/>
                         <FormField control={form.control} name="method" render={({ field }) => (
-                            <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Payment Method</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl><SelectContent>{['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other'].map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                         )}/>
                         <FormField control={form.control} name="notes" render={({ field }) => (
                             <FormItem><FormLabel>Notes (Optional)</FormLabel><FormControl><Textarea {...field}/></FormControl><FormMessage /></FormItem>
@@ -963,5 +963,7 @@ export default function AccountsPage() {
       </div>
     );
   }
+
+    
 
     
