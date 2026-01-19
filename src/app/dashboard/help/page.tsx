@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, Building2 as School, UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, MessageSquare, UserCog, Activity } from 'lucide-react';
+import { BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, Building2 as School, UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, MessageSquare, UserCog, Activity, FileText } from 'lucide-react';
 
 export default function HelpPage() {
   return (
@@ -178,7 +178,7 @@ export default function HelpPage() {
                     steps={[
                         "The purple robot icon in the bottom-right opens the AI Assistant. It can answer questions about how to use the app or help you draft documents.",
                         "Students can access the AI Tutor in the 'Study Club' to get personalized help with their homework on any subject.",
-                        "Your school's AI Credit balance is shown in the header. Each AI action consumes credits."
+                        "Your school's AI Credit balance is shown in the dashboard header. Each AI action consumes credits."
                     ]}
                 />
               </AccordionContent>
@@ -250,7 +250,7 @@ function GuideCard({ icon: Icon, title, desc, steps }: any) {
                 <CardDescription>{desc}</CardDescription>
             </CardHeader>
             <CardContent>
-                <ul className="list-decimal pl-5 space-y-2 text-sm text-slate-600">
+                <ul className="list-disc pl-5 space-y-2 text-sm text-slate-600">
                     {steps.map((step: string, i: number) => <li key={i}>{step}</li>)}
                 </ul>
             </CardContent>
