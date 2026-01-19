@@ -9,8 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, DollarSign, Check, X, Building, User, History } from 'lucide-react';
-import { Till, TillTransaction, Staff, Class } from '@/lib/types';
+import { Loader2, DollarSign, Check, X, Building, User, History, Banknote } from 'lucide-react';
+import { Till, TillTransaction, Staff, Class, BankTransaction } from '@/lib/types';
 import { format } from 'date-fns';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -140,6 +140,68 @@ function AccountantTillView() {
     );
 }
 
+// --- Director's View: Bank Transactions Approval ---
+function DirectorBankTransactionsView() {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const { schoolId } = useCurrentSchool();
+    
+    const pendingBankTxQuery = useMemoFirebase(() => (schoolId && firestore) ? query(collection(firestore, 'bank_transactions'), where('schoolId', '==', schoolId), where('status', '==', 'Pending'), orderBy('recordedAt', 'desc')) : null, [firestore, schoolId]);
+    const { data: pendingTxs, isLoading, forceRefetch } = useCollection<BankTransaction>(pendingBankTxQuery);
+
+    const handleApprove = async (txId: string) => {
+        if (!user) return;
+        await updateDoc(doc(firestore, 'bank_transactions', txId), {
+            status: 'Approved',
+            approverId: user.uid,
+            approverName: user.displayName || user.email,
+            approvedAt: serverTimestamp(),
+        });
+        toast({ title: 'Approved', description: 'Transaction has been approved.' });
+        forceRefetch();
+    };
+
+    // Placeholder for reject logic
+    const handleReject = (txId: string) => {
+        toast({ title: 'Rejected (Not Implemented)', description: 'Rejection logic needs to be built.' });
+    };
+
+    return (
+        <div className="mt-4">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Date Recorded</TableHead>
+                        <TableHead>Recorded By</TableHead>
+                        <TableHead>Student</TableHead>
+                        <TableHead>Method</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {isLoading && <TableRow><TableCell colSpan={6} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow>}
+                    {!isLoading && pendingTxs?.map(tx => (
+                        <TableRow key={tx.id}>
+                            <TableCell>{tx.recordedAt ? format(tx.recordedAt.toDate(), 'PPP p') : 'N/A'}</TableCell>
+                            <TableCell>{tx.recordedByName}</TableCell>
+                            <TableCell>{tx.studentName}</TableCell>
+                            <TableCell><Badge variant="outline">{tx.paymentMethod}</Badge></TableCell>
+                            <TableCell className="text-right font-bold">GH₵{tx.amount.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">
+                                <Button size="sm" onClick={() => handleApprove(tx.id)}>Approve</Button>
+                                {/* <Button size="sm" variant="destructive" className="ml-2" onClick={() => handleReject(tx.id)}>Reject</Button> */}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            {!isLoading && pendingTxs?.length === 0 && <p className="text-center text-muted-foreground p-8">No pending bank or mobile money payments to review.</p>}
+        </div>
+    );
+}
+
 // --- Director's View: Approve/Reject Tills ---
 function DirectorTillView() {
     const { user } = useUser();
@@ -208,65 +270,76 @@ function DirectorTillView() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Till Submissions</CardTitle>
-                <CardDescription>Review and approve or reject end-of-day till submissions from accountants.</CardDescription>
+                <CardTitle>Financial Approvals</CardTitle>
+                <CardDescription>Review and approve end-of-day till submissions and other digital payments.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Tabs defaultValue="pending">
+                <Tabs defaultValue="tills">
                     <TabsList>
-                        <TabsTrigger value="pending">Pending Approval</TabsTrigger>
-                        <TabsTrigger value="history">Approval History</TabsTrigger>
+                        <TabsTrigger value="tills">Till Submissions</TabsTrigger>
+                        <TabsTrigger value="bank">Bank & MoMo Transactions</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="pending" className="mt-4">
-                        <Table>
-                            <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Closing Balance</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {isLoadingPending ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
-                                : sortedPending?.map(till => (
-                                    <TableRow key={till.id}>
-                                        <TableCell>{till.accountantName}</TableCell>
-                                        <TableCell>{till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}</TableCell>
-                                        <TableCell className="text-right font-bold">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
-                                        <TableCell className="text-right">
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild><Button variant="destructive" size="sm" onClick={() => setSelectedTill(till)}>Reject</Button></AlertDialogTrigger>
-                                                {selectedTill?.id === till.id && (
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader><AlertDialogTitle>Reject Till?</AlertDialogTitle><AlertDialogDescription>This will reopen the till for the accountant to make corrections. Please provide a reason.</AlertDialogDescription></AlertDialogHeader>
-                                                        <Textarea placeholder="Reason for rejection..." value={rejectionReason} onChange={e => setRejectionReason(e.target.value)} />
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDecision(till, 'Reject')} disabled={isProcessing}>{isProcessing && <Loader2 className="mr-2 h-4"/>}Confirm Rejection</AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                )}
-                                            </AlertDialog>
-                                            <Button size="sm" className="ml-2" onClick={() => handleDecision(till, 'Approve')} disabled={isProcessing}>
-                                                {isProcessing && selectedTill?.id === till.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Check className="mr-2 h-4 w-4"/>} Approve
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                         {!isLoadingPending && sortedPending?.length === 0 && <p className="text-center text-muted-foreground p-8">No tills are currently pending approval.</p>}
+                    <TabsContent value="tills" className="mt-4">
+                        <Tabs defaultValue="pending">
+                            <TabsList>
+                                <TabsTrigger value="pending">Pending Approval</TabsTrigger>
+                                <TabsTrigger value="history">Approval History</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="pending" className="mt-4">
+                                <Table>
+                                    <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Closing Balance</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {isLoadingPending ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
+                                        : sortedPending?.map(till => (
+                                            <TableRow key={till.id}>
+                                                <TableCell>{till.accountantName}</TableCell>
+                                                <TableCell>{till.dateOpened ? format(till.dateOpened.toDate(), 'PPP') : 'N/A'}</TableCell>
+                                                <TableCell className="text-right font-bold">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild><Button variant="destructive" size="sm" onClick={() => setSelectedTill(till)}>Reject</Button></AlertDialogTrigger>
+                                                        {selectedTill?.id === till.id && (
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader><AlertDialogTitle>Reject Till?</AlertDialogTitle><AlertDialogDescription>This will reopen the till for the accountant to make corrections. Please provide a reason.</AlertDialogDescription></AlertDialogHeader>
+                                                                <Textarea placeholder="Reason for rejection..." value={rejectionReason} onChange={e => setRejectionReason(e.target.value)} />
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleDecision(till, 'Reject')} disabled={isProcessing}>{isProcessing && <Loader2 className="mr-2 h-4"/>}Confirm Rejection</AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        )}
+                                                    </AlertDialog>
+                                                    <Button size="sm" className="ml-2" onClick={() => handleDecision(till, 'Approve')} disabled={isProcessing}>
+                                                        {isProcessing && selectedTill?.id === till.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Check className="mr-2 h-4 w-4"/>} Approve
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                {!isLoadingPending && sortedPending?.length === 0 && <p className="text-center text-muted-foreground p-8">No tills are currently pending approval.</p>}
+                            </TabsContent>
+                            <TabsContent value="history" className="mt-4">
+                                <Table>
+                                    <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date Closed</TableHead><TableHead>Balance</TableHead><TableHead>Approved By</TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {isLoadingClosed ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
+                                        : sortedClosed?.map(till => (
+                                            <TableRow key={till.id}>
+                                                <TableCell>{till.accountantName}</TableCell>
+                                                <TableCell>{till.dateClosed ? format(till.dateClosed.toDate(), 'PPP p') : 'N/A'}</TableCell>
+                                                <TableCell className="font-medium">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
+                                                <TableCell>{till.directorApproval?.directorName}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                {!isLoadingClosed && sortedClosed?.length === 0 && <p className="text-center text-muted-foreground p-8">No approved tills in history.</p>}
+                            </TabsContent>
+                        </Tabs>
                     </TabsContent>
-                    <TabsContent value="history" className="mt-4">
-                         <Table>
-                            <TableHeader><TableRow><TableHead>Accountant</TableHead><TableHead>Date Closed</TableHead><TableHead>Balance</TableHead><TableHead>Approved By</TableHead></TableRow></TableHeader>
-                            <TableBody>
-                                {isLoadingClosed ? <TableRow><TableCell colSpan={4} className="text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto"/></TableCell></TableRow> 
-                                : sortedClosed?.map(till => (
-                                    <TableRow key={till.id}>
-                                        <TableCell>{till.accountantName}</TableCell>
-                                        <TableCell>{till.dateClosed ? format(till.dateClosed.toDate(), 'PPP p') : 'N/A'}</TableCell>
-                                        <TableCell className="font-medium">GH₵{till.closingBalance?.toFixed(2)}</TableCell>
-                                        <TableCell>{till.directorApproval?.directorName}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                         {!isLoadingClosed && sortedClosed?.length === 0 && <p className="text-center text-muted-foreground p-8">No approved tills in history.</p>}
+                    <TabsContent value="bank">
+                        <DirectorBankTransactionsView />
                     </TabsContent>
                 </Tabs>
             </CardContent>
@@ -294,7 +367,7 @@ export default function CashTillPage() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold">Cash Till Management</h1>
+            <h1 className="text-3xl font-bold">Financial Submissions</h1>
             {isDirector && <DirectorTillView />}
             {isAccountant && <AccountantTillView />}
         </div>

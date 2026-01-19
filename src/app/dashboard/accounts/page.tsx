@@ -512,6 +512,22 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 batch.update(doc(firestore, 'tills', activeTill.id), {
                     currentBalance: increment(values.amount)
                 });
+            } else {
+                // Log non-cash payments for director approval
+                const bankTransactionRef = doc(collection(firestore, 'bank_transactions'));
+                batch.set(bankTransactionRef, {
+                    amount: values.amount,
+                    paymentMethod: values.method,
+                    notes: values.notes || '',
+                    studentId: record.studentId,
+                    studentName: record.studentName,
+                    financialRecordId: record.id,
+                    recordedById: user.uid,
+                    recordedByName: user.displayName || user.email,
+                    recordedAt: serverTimestamp(),
+                    status: 'Pending',
+                    schoolId: schoolId,
+                });
             }
 
             await batch.commit();

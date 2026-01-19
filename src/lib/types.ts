@@ -1,5 +1,4 @@
 
-
 import type { LucideIcon } from 'lucide-react';
 import { z } from 'zod';
 
@@ -481,7 +480,7 @@ export const bulkBillingSchema = z.object({
 
 export const recordPaymentSchema = z.object({
     amount: z.coerce.number().min(0.01, "Payment amount must be positive."),
-    method: z.enum(['Cash', 'Card', 'Bank Transfer', 'Other']),
+    method: z.enum(['Cash', 'Card', 'Bank Transfer', 'Mobile Money', 'Other']),
     notes: z.string().optional(),
 });
 
@@ -1000,6 +999,30 @@ export type TillTransaction = {
     timestamp: any;
     description: string; // For POS, "Sale of: Book"
 };
+
+// --- BANK TRANSACTION APPROVAL ---
+export const bankTransactionSchema = z.object({
+  amount: z.number(),
+  paymentMethod: z.enum(['Card', 'Bank Transfer', 'Mobile Money', 'Other']),
+  notes: z.string().optional(),
+  studentId: z.string(),
+  studentName: z.string(),
+  financialRecordId: z.string(),
+  recordedById: z.string(),
+  recordedByName: z.string(),
+  status: z.enum(['Pending', 'Approved', 'Rejected']),
+  schoolId: z.string(),
+  approverId: z.string().optional(),
+  approverName: z.string().optional(),
+  rejectionReason: z.string().optional(),
+});
+
+export type BankTransaction = z.infer<typeof bankTransactionSchema> & {
+    id: string;
+    recordedAt: any;
+    approvedAt?: any;
+};
+
 
 // --- THINK TANK MODULE ---
 export interface Paradox {
