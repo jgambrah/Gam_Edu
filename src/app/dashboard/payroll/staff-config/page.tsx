@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, setDoc, query, getDocs } from 'firebase/firestore';
+import { collection, doc, setDoc, query, getDocs, where } from 'firebase/firestore';
 import { Loader2, PlusCircle, Trash2, Users } from 'lucide-react';
 import { Staff, StaffPayrollConfig, staffPayrollConfigSchema } from '@/lib/types';
 import { useRole } from '@/context/role-context';
@@ -197,3 +197,5 @@ export default function StaffPayrollConfigPage() {
         </div>
     );
 }
+
+    
