@@ -4,7 +4,46 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, Building2 as School, UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, MessageSquare, UserCog, Activity, FileText } from 'lucide-react';
+import { BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, MessageSquare, UserCog, Activity, FileText } from 'lucide-react';
+
+
+function VideoEmbed({ videoId, title }: { videoId: string, title: string }) {
+  return (
+    <div className="space-y-2">
+      <div className="rounded-xl overflow-hidden shadow-lg border border-slate-200 aspect-video">
+        <iframe 
+            width="100%" 
+            height="100%" 
+            src={`https://www.youtube.com/embed/${videoId}?rel=0`} 
+            title={title}
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowFullScreen
+        ></iframe>
+      </div>
+      <p className="font-medium text-center text-sm text-slate-700">{title}</p>
+    </div>
+  );
+}
+
+function GuideCard({ icon: Icon, title, desc, steps }: any) {
+    return (
+        <Card className="hover:shadow-lg transition-all border-t-4 border-t-blue-500">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><Icon className="h-5 w-5"/></div>
+                    {title}
+                </CardTitle>
+                <CardDescription>{desc}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ul className="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    {steps.map((step: string, i: number) => <li key={i}>{step}</li>)}
+                </ul>
+            </CardContent>
+        </Card>
+    );
+}
 
 export default function HelpPage() {
   return (
@@ -186,7 +225,7 @@ export default function HelpPage() {
           </Accordion>
         </TabsContent>
 
-        {/* TAB 2: VIDEOS (Placeholders for now) */}
+        {/* TAB 2: VIDEOS */}
         <TabsContent value="videos">
           <Card>
             <CardHeader>
@@ -194,10 +233,10 @@ export default function HelpPage() {
                 <CardDescription>Watch step-by-step walkthroughs of key features.</CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-6">
-                <VideoPlaceholder title="Platform Overview (5 min)" />
-                <VideoPlaceholder title="How to Run Payroll (3 min)" />
-                <VideoPlaceholder title="Using the AI Quiz Generator (2 min)" />
-                <VideoPlaceholder title="Director's Guide to Reports (4 min)" />
+                <VideoEmbed videoId="m6UOo2YGbIE" title="How To Onboard Your School" />
+                <VideoEmbed videoId="qW1d34A2s1A" title="Using The AI Quiz Generator" />
+                <VideoEmbed videoId="yG-Ua_9mI_0" title="Managing Staff & Payroll" />
+                <VideoEmbed videoId="dQw4w9WgXcQ" title="Parent & Student Portal Overview" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -235,36 +274,4 @@ export default function HelpPage() {
       </Tabs>
     </div>
   );
-}
-
-// --- HELPER COMPONENTS ---
-
-function GuideCard({ icon: Icon, title, desc, steps }: any) {
-    return (
-        <Card className="hover:shadow-lg transition-all border-t-4 border-t-blue-500">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-lg">
-                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><Icon className="h-5 w-5"/></div>
-                    {title}
-                </CardTitle>
-                <CardDescription>{desc}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ul className="list-disc pl-5 space-y-2 text-sm text-slate-600">
-                    {steps.map((step: string, i: number) => <li key={i}>{step}</li>)}
-                </ul>
-            </CardContent>
-        </Card>
-    );
-}
-
-function VideoPlaceholder({ title }: { title: string }) {
-    return (
-        <div className="bg-slate-100 rounded-xl aspect-video flex flex-col items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors group">
-            <div className="bg-white p-4 rounded-full shadow-lg mb-3 group-hover:scale-110 transition-transform">
-                <Video className="h-8 w-8 text-blue-600" />
-            </div>
-            <p className="font-medium text-slate-700">{title}</p>
-        </div>
-    );
 }
