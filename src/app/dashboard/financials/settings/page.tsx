@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
+// 🔥 FIXED: Added useDoc to imports
 import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, doc, setDoc, writeBatch, query, where, getDocs, serverTimestamp, Timestamp, increment, getDoc } from 'firebase/firestore';
 import { Loader2, PlusCircle, Trash2, FileText, Utensils, Bus, RefreshCw } from 'lucide-react';
@@ -28,6 +29,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
 import { format, startOfDay, endOfDay, getYear, getMonth } from 'date-fns';
+// Ensure this path is correct for your project
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
@@ -303,7 +305,7 @@ export default function FinancialSettingsPage() {
   const { role } = useRole();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   
-  if (!['Administrator', 'Director', 'Accountant'].includes(role)) {
+  if (!['Administrator', 'Director', 'Accountant'].includes(role || '')) {
     return <Card><CardHeader><CardTitle>Access Denied</CardTitle><CardDescription>This module is restricted.</CardDescription></CardHeader></Card>;
   }
 
@@ -327,5 +329,3 @@ export default function FinancialSettingsPage() {
     </div>
   );
 }
-
-    
