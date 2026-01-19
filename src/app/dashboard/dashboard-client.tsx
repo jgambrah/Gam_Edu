@@ -22,6 +22,7 @@ import { FinancialRecord, AccountsPayableRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import DashboardLoading from './loading';
 
 
 // Simple Stat Card Component
@@ -142,132 +143,44 @@ function ActivityItem({
 
 // The Enhanced Dashboard
 export default function DashboardClient() {
+  // --- 1. ALL HOOKS AT THE TOP ---
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
   const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
 
-  // --- 1. GLOBAL LOADING GATE ---
-  // Do not run ANY queries until we know who the user is and what school they belong to.
-  if (isUserLoading || isRoleLoading || isSchoolLoading) {
-      return (
-        <div className="flex h-[50vh] w-full items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-            <span className="ml-3 text-muted-foreground">Loading your workspace...</span>
-        </div>
-      );
-  }
-
-  // --- 2. MISSING DATA GATE ---
-  if (!schoolId) {
-      return (
-        <div className="p-8 text-center border-2 border-dashed border-red-200 bg-red-50 rounded-lg">
-            <h2 className="text-xl font-bold text-red-700">Account Setup Incomplete</h2>
-            <p className="text-red-600 mt-2">
-                We could not link your account to a school. Please contact support or your administrator.
-            </p>
-            <p className="text-xs text-muted-foreground mt-4">Debug: UID: {user?.uid}</p>
-        </div>
-      );
-  }
-
-  // --- 3. SAFE QUERIES (Only run now that schoolId is guaranteed) ---
+  const isSuperAdmin = user?.uid === 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2';
   const isAdminOrDirector = role === 'Administrator' || role === 'Director';
   const isTeacher = role === 'Teacher';
   const isStudent = role === 'Student';
   const isParent = role === 'Parent';
   const isFinance = role === 'Accountant';
   const isLibrarian = role === 'Librarian';
-  const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian || ['Cook', 'Transport Staff'].includes(role || '');
-  const isSuperAdmin = user?.uid === 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2';
-  
-  // --- SAFE DATA FETCHING ---
-  const studentsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
-    return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-  }, [firestore, schoolId]);
+  const isStaffUser = isSuperAdmin || isAdminOrDirector || isTeacher || isFinance || isLibrarian || ['Cook', 'Transport Staff'].includes(role || '');
+
+  // Define ALL queries, passing null if dependencies aren't ready
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const assignmentsQuery = useMemoFirebase(() => (user && firestore && schoolId) ? query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId)) : null, [firestore, user, schoolId]);
+  const announcementsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'announcements_v2'), where('schoolId', '==', schoolId), orderBy('publishedAt', 'desc'), limit(5)) : null, [firestore, schoolId]);
+  const leaveRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5)) : null, [firestore, schoolId]);
+  const libraryItemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'library'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  const financialRecordsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+  const accountsPayableQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
+
+  // Execute all collections
   const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
-
-  const staffQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
-    return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId));
-  }, [firestore, schoolId]);
   const { data: staff, isLoading: staffLoading } = useCollection(staffQuery);
-
-  const classesQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
-    return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-  }, [firestore, schoolId]);
   const { data: classes, isLoading: classesLoading } = useCollection(classesQuery);
-  
-  const assignmentsQuery = useMemoFirebase(() => {
-    if (!user || !firestore || !schoolId) return null;
-    let q = query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId));
-    if(isTeacher) q = query(q, where('teacherId', '==', user.uid));
-    return q;
-  }, [firestore, user, isTeacher, schoolId]);
   const { data: assignments, isLoading: assignmentsLoading } = useCollection(assignmentsQuery);
-
-  const announcementsQuery = useMemoFirebase(() => {
-    if(!firestore || !schoolId) return null;
-    return query(collection(firestore, 'announcements_v2'), where('schoolId', '==', schoolId), orderBy('publishedAt', 'desc'), limit(5))
-  }, [firestore, schoolId]);
   const { data: announcements, isLoading: announcementsLoading } = useCollection(announcementsQuery);
-  
-  const leaveRequestsQuery = useMemoFirebase(() => {
-    if (!firestore || !isStaffUser || !schoolId) return null;
-    return query(collection(firestore, 'leaveRequests'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(5));
-  }, [firestore, isStaffUser, schoolId]);
   const { data: leaveRequests, isLoading: leaveLoading } = useCollection(leaveRequestsQuery);
-  
-  const libraryItemsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
-    return query(collection(firestore, 'library'), where('schoolId', '==', schoolId));
-  }, [firestore, schoolId]);
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(libraryItemsQuery);
-
-  // SAFE FINANCE QUERIES
-  const financialRecordsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !(isFinance || isAdminOrDirector)) return null;
-    return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
-  }, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: financialRecords, isLoading: paymentsLoading } = useCollection<FinancialRecord>(financialRecordsQuery);
-  
-  const accountsPayableQuery = useMemoFirebase(() => {
-    if (!firestore || !(isFinance || isAdminOrDirector)) return null;
-
-    if (isSuperAdmin) {
-      return query(collection(firestore, 'accountsPayable'), orderBy('createdAt', 'desc'));
-    }
-
-    if (schoolId) {
-      return query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
-    }
-
-    return null;
-  }, [firestore, isFinance, isAdminOrDirector, schoolId, isSuperAdmin]);
   const { data: accountsPayable, isLoading: payablesLoading } = useCollection<AccountsPayableRecord>(accountsPayableQuery);
-
-
-  // FIXED LOADING LOGIC
-  let isLoading = isUserLoading || isRoleLoading || isSchoolLoading;
-
-  if (!isLoading && schoolId) {
-    if (isAdminOrDirector) {
-      isLoading = studentsLoading || staffLoading || classesLoading || paymentsLoading;
-    } else if (isTeacher) {
-      isLoading = classesLoading || assignmentsLoading;
-    } else if (isStudent) {
-      isLoading = classesLoading || assignmentsLoading || announcementsLoading;
-    } else if (isFinance) {
-      isLoading = paymentsLoading || payablesLoading;
-    } else if (isLibrarian) {
-      isLoading = libraryLoading;
-    }
-  }
-
-
-  // --- STATS CALCULATIONS ---
+  
+  // All useMemo calls
   const stats = useMemo(() => {
     const pendingLeave = leaveRequests?.filter(l => l.status === 'Pending').length || 0;
     const todayAssignments = assignments?.filter(a => {
@@ -279,7 +192,6 @@ export default function DashboardClient() {
     const availableBooks = libraryItems?.reduce((sum, item) => item.status === 'Available' ? sum + (item.quantity || 0) : sum, 0) || 0;
     const overdueBooks = libraryItems?.filter(l => l.status === 'Borrowed' && l.dueDate?.toDate?.() < new Date()).length || 0;
     
-    // Student Growth Calculation
     const newStudentsThisMonth = students?.filter(s => {
         // @ts-ignore
         const createdAt = s.createdAt?.toDate();
@@ -296,132 +208,83 @@ export default function DashboardClient() {
     if (previousTotal > 0) {
         studentTrend = parseFloat(((newStudentsThisMonth / previousTotal) * 100).toFixed(1));
     } else if (newStudentsThisMonth > 0) {
-        studentTrend = 100; // If started from 0, it's 100% growth
+        studentTrend = 100;
     }
 
     return {
-      pendingLeave,
-      todayAssignments,
-      totalBooks,
-      availableBooks,
-      overdueBooks,
-      studentTrend
+      pendingLeave, todayAssignments, totalBooks, availableBooks, overdueBooks, studentTrend
     };
   }, [leaveRequests, assignments, libraryItems, students]);
 
-  // --- LIVE ACTIVITY FEED ---
   const recentActivity = useMemo(() => {
     const activities = [];
-    if (students) {
-        // @ts-ignore
-        activities.push(...students.map(s => ({
-            type: 'New Student',
-            title: 'New Student Enrolled',
-            description: `${s.firstName} ${s.lastName}`,
-            time: s.createdAt,
-            icon: UserCheck,
-            iconColor: 'text-green-600'
-        })));
-    }
-    if (leaveRequests) {
-        activities.push(...leaveRequests.map(r => ({
-            type: 'Leave Request',
-            title: `Leave Request from ${r.staffName}`,
-            description: `${r.leaveType} for reason: ${r.reason.substring(0,30)}...`,
-            time: r.createdAt,
-            icon: Calendar,
-            iconColor: 'text-blue-600'
-        })));
-    }
-    if (announcements) {
-        activities.push(...announcements.map(a => ({
-            type: 'Announcement',
-            title: 'New Announcement Posted',
-            description: a.title,
-            time: a.publishedAt,
-            icon: Bell,
-            iconColor: 'text-purple-600'
-        })));
-    }
-    if (financialRecords) {
-        activities.push(...financialRecords.map(p => ({
-            type: 'Payment',
-            title: 'Payment Received',
-            description: `GH₵${(p.amountPaid || 0).toFixed(2)} from ${p.studentName} for ${p.type}`,
-            time: p.createdAt, 
-            icon: CheckCircle2,
-            iconColor: 'text-emerald-600'
-        })));
-    }
+    if (students) activities.push(...students.map(s => ({ type: 'New Student', title: 'New Student Enrolled', description: `${s.firstName} ${s.lastName}`, time: s.createdAt, icon: UserCheck, iconColor: 'text-green-600' })));
+    if (leaveRequests) activities.push(...leaveRequests.map(r => ({ type: 'Leave Request', title: `Leave Request from ${r.staffName}`, description: `${r.leaveType} for reason: ${r.reason.substring(0,30)}...`, time: r.createdAt, icon: Calendar, iconColor: 'text-blue-600' })));
+    if (announcements) activities.push(...announcements.map(a => ({ type: 'Announcement', title: 'New Announcement Posted', description: a.title, time: a.publishedAt, icon: Bell, iconColor: 'text-purple-600' })));
+    if (financialRecords) activities.push(...financialRecords.map(p => ({ type: 'Payment', title: 'Payment Received', description: `GH₵${(p.amountPaid || 0).toFixed(2)} from ${p.studentName} for ${p.type}`, time: p.createdAt, icon: CheckCircle2, iconColor: 'text-emerald-600' })));
     
     // @ts-ignore
     return activities.sort((a,b) => (b.time?.seconds || 0) - (a.time?.seconds || 0)).slice(0, 5);
-
   }, [students, leaveRequests, announcements, financialRecords]);
 
   const enrollmentData = useMemo(() => {
     if (!classes || !students) return [];
-    return classes.map(c => ({
-      name: c.name,
-      // @ts-ignore
-      students: students.filter(s => s.classId === c.id).length
-    })).sort((a, b) => b.students - a.students);
+    return classes.map(c => ({ name: c.name, students: students.filter(s => s.classId === c.id).length })).sort((a, b) => b.students - a.students);
   }, [classes, students]);
 
   const staffByRole = useMemo(() => {
     if (!staff) return [];
-    const roles = staff.reduce((acc, s) => {
-      // @ts-ignore
-      acc[s.role] = (acc[s.role] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const roles = staff.reduce((acc, s) => { acc[s.role] = (acc[s.role] || 0) + 1; return acc; }, {} as Record<string, number>);
     return Object.entries(roles).map(([name, value]) => ({ name, value }));
   }, [staff]);
   
-  // --- NEW: FINANCIAL STATS ---
   const financeStats = useMemo(() => {
     if (!financialRecords || !accountsPayable) return { monthlyRevenue: 0, pendingPayments: 0, monthlyExpenses: 0, outstandingInvoices: 0, chartData: [] };
     
-    let monthlyRevenue = 0;
-    let monthlyExpenses = 0;
-    const revenueByDay: Record<string, number> = {};
-    const expensesByDay: Record<string, number> = {};
+    let monthlyRevenue = 0, monthlyExpenses = 0;
+    const revenueByDay: Record<string, number> = {}, expensesByDay: Record<string, number> = {};
 
-    financialRecords.forEach(rec => {
-        if (rec.createdAt && isThisMonth(rec.createdAt.toDate())) {
-            monthlyRevenue += (rec.amountPaid || 0);
-            const day = format(rec.createdAt.toDate(), 'MMM dd');
-            revenueByDay[day] = (revenueByDay[day] || 0) + (rec.amountPaid || 0);
-        }
-    });
-
-    accountsPayable.forEach(bill => {
-        if (bill.paidAt && isThisMonth(bill.paidAt.toDate())) {
-            monthlyExpenses += bill.amount;
-            const day = format(bill.paidAt.toDate(), 'MMM dd');
-            expensesByDay[day] = (expensesByDay[day] || 0) + bill.amount;
-        }
-    });
+    financialRecords.forEach(rec => { if (rec.createdAt && isThisMonth(rec.createdAt.toDate())) { monthlyRevenue += (rec.amountPaid || 0); const day = format(rec.createdAt.toDate(), 'MMM dd'); revenueByDay[day] = (revenueByDay[day] || 0) + (rec.amountPaid || 0); } });
+    accountsPayable.forEach(bill => { if (bill.paidAt && isThisMonth(bill.paidAt.toDate())) { monthlyExpenses += bill.amount; const day = format(bill.paidAt.toDate(), 'MMM dd'); expensesByDay[day] = (expensesByDay[day] || 0) + bill.amount; } });
     
     const pendingPayments = financialRecords.filter(r => r.status === 'Unpaid' || r.status === 'Overdue').length;
     const outstandingInvoices = accountsPayable.filter(b => b.status === 'Unpaid').length;
 
-    // Combine data for chart
     const allDays = new Set([...Object.keys(revenueByDay), ...Object.keys(expensesByDay)]);
-    const chartData = Array.from(allDays).sort().map(day => ({
-        month: day,
-        revenue: revenueByDay[day] || 0,
-        expenses: expensesByDay[day] || 0,
-    }));
+    const chartData = Array.from(allDays).sort().map(day => ({ month: day, revenue: revenueByDay[day] || 0, expenses: expensesByDay[day] || 0, }));
 
     return { monthlyRevenue, pendingPayments, monthlyExpenses, outstandingInvoices, chartData };
   }, [financialRecords, accountsPayable]);
+  
+  // --- 2. CONSOLIDATED LOADING CHECK (after hooks) ---
+  let isLoading = isUserLoading || isRoleLoading || isLoadingSchool || 
+                  (isAdminOrDirector && (studentsLoading || staffLoading || classesLoading || paymentsLoading)) || 
+                  (isTeacher && (classesLoading || assignmentsLoading)) ||
+                  (isFinance && (paymentsLoading || payablesLoading)) ||
+                  (isLibrarian && libraryLoading) ||
+                  (isStudent && (assignmentsLoading || announcementsLoading));
 
+
+  // --- 3. EARLY RETURNS (after hooks) ---
+  if (isLoading) {
+    return <DashboardLoading />;
+  }
+
+  if (!schoolId && !isSuperAdmin) {
+    return (
+      <div className="p-8 text-center border-2 border-dashed border-red-200 bg-red-50 rounded-lg">
+          <h2 className="text-xl font-bold text-red-700">Account Configuration Error</h2>
+          <p className="text-red-600 mt-2">Could not link your account to a school. Please contact your administrator.</p>
+          <p className="text-xs text-muted-foreground mt-4">Debug: UID: {user?.uid}</p>
+      </div>
+    );
+  }
+
+  // --- 4. RENDER LOGIC ---
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-  // Role-based dashboard content
   const renderDashboardByRole = () => {
-    // ADMIN/DIRECTOR DASHBOARD
+    // ... (rest of the component's render logic, which is already correctly placed after hooks)
     if (isAdminOrDirector) {
       return (
         <>
@@ -497,12 +360,7 @@ export default function DashboardClient() {
                 <CardTitle>Enrollment Overview</CardTitle>
               </CardHeader>
               <CardContent className="h-[350px]">
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-full">
-                    <Loader2 className="animate-spin"/>
-                  </div>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={enrollmentData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" fontSize={12} />
@@ -515,7 +373,6 @@ export default function DashboardClient() {
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                )}
               </CardContent>
             </Card>
           </div>
@@ -526,11 +383,6 @@ export default function DashboardClient() {
                 <CardTitle>Staff Distribution</CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-full">
-                    <Loader2 className="animate-spin"/>
-                  </div>
-                ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -550,7 +402,6 @@ export default function DashboardClient() {
                       <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
-                )}
               </CardContent>
             </Card>
 
@@ -578,15 +429,12 @@ export default function DashboardClient() {
         </>
       );
     }
-
-    // TEACHER DASHBOARD
     if (isTeacher) {
       return (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard 
               title="My Classes" 
-              // @ts-ignore
               value={classes?.filter(c => c.teacherId === user?.uid).length || 0} 
               icon={School} 
               link="/dashboard/academics"
@@ -594,7 +442,6 @@ export default function DashboardClient() {
             />
             <StatCard 
               title="My Students" 
-              // @ts-ignore
               value={students?.filter(s => classes?.find(c => c.id === s.classId && c.teacherId === user?.uid)).length || 0} 
               icon={GraduationCap}
               link="/dashboard/students-v3"
@@ -602,7 +449,6 @@ export default function DashboardClient() {
             />
             <StatCard 
               title="Active Assignments" 
-              // @ts-ignore
               value={assignments?.filter(a => a.teacherId === user?.uid).length || 0} 
               icon={FileText}
               link="/dashboard/assignments"
@@ -625,30 +471,10 @@ export default function DashboardClient() {
                 <CardDescription>Manage your teaching activities</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <QuickActionCard 
-                  title="Create Assignment" 
-                  description="Add new homework or task"
-                  icon={FilePen} 
-                  link="/dashboard/assignments"
-                />
-                <QuickActionCard 
-                  title="Mark Attendance" 
-                  description="Record student attendance"
-                  icon={ClipboardCheck} 
-                  link="/dashboard/attendance"
-                />
-                <QuickActionCard 
-                  title="Grade Submissions" 
-                  description="Review student work"
-                  icon={Award} 
-                  link="/dashboard/assignments"
-                />
-                 <QuickActionCard 
-                  title="Lesson Planning" 
-                  description="Create and view lesson plans"
-                  icon={BookOpen} 
-                  link="/dashboard/lesson-planning"
-                />
+                <QuickActionCard title="Create Assignment" description="Add new homework or task" icon={FilePen} link="/dashboard/assignments" />
+                <QuickActionCard title="Mark Attendance" description="Record student attendance" icon={ClipboardCheck} link="/dashboard/attendance" />
+                <QuickActionCard title="Grade Submissions" description="Review student work" icon={Award} link="/dashboard/assignments" />
+                 <QuickActionCard title="Lesson Planning" description="Create and view lesson plans" icon={BookOpen} link="/dashboard/lesson-planning" />
               </CardContent>
             </Card>
 
@@ -657,19 +483,12 @@ export default function DashboardClient() {
                 <CardTitle>My Classes Overview</CardTitle>
               </CardHeader>
               <CardContent className="h-[350px]">
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-full">
-                    <Loader2 className="animate-spin"/>
-                  </div>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    {/* @ts-ignore */}
+                <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={enrollmentData.filter(e => classes?.find(c => c.name === e.name && c.teacherId === user?.uid))}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" fontSize={12} />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
-                      {/* @ts-ignore */}
                       <Bar dataKey="students" radius={[4, 4, 0, 0]}>
                         {enrollmentData.filter(e => classes?.find(c => c.name === e.name && c.teacherId === user?.uid)).map((entry, index) => (
                           <Cell key={`cell-${index}`} fill="hsl(var(--primary))" />
@@ -677,383 +496,105 @@ export default function DashboardClient() {
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                )}
               </CardContent>
             </Card>
           </div>
         </>
       );
     }
-
-    // STUDENT DASHBOARD
     if (isStudent) {
       return (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <StatCard 
-              title="My Assignments" 
-              // @ts-ignore
-              value={assignments?.filter(a => a.classId === profile?.classId).length || 0} 
-              icon={FileText} 
-              link="/dashboard/assignments"
-              isLoading={isLoading}
-            />
-            <StatCard 
-              title="Due This Week" 
-              // @ts-ignore
-              value={assignments?.filter(a => {
-                const dueDate = a.dueDate?.toDate?.();
-                const weekFromNow = new Date();
-                weekFromNow.setDate(weekFromNow.getDate() + 7);
-                return dueDate && dueDate <= weekFromNow;
-              }).length || 0} 
-              icon={Clock}
-              link="/dashboard/assignments"
-              isLoading={isLoading}
-              badge="Upcoming"
-            />
-            <StatCard 
-              title="My Class" 
-              // @ts-ignore
-              value={classes?.find(c => c.id === profile?.classId)?.name || "N/A"} 
-              icon={School}
-              link="/dashboard/academics"
-              isLoading={isLoading}
-            />
-            <StatCard 
-              title="Report Card" 
-              value={"View"} 
-              icon={TrendingUp}
-              link="/dashboard/report-cards"
-              isLoading={isLoading}
-            />
+            <StatCard title="My Assignments" value={assignments?.filter(a => a.classId === profile?.classId).length || 0} icon={FileText} link="/dashboard/assignments" isLoading={isLoading} />
+            <StatCard title="Due This Week" value={assignments?.filter(a => { const dueDate = a.dueDate?.toDate?.(); const weekFromNow = new Date(); weekFromNow.setDate(weekFromNow.getDate() + 7); return dueDate && dueDate <= weekFromNow; }).length || 0} icon={Clock} link="/dashboard/assignments" isLoading={isLoading} badge="Upcoming" />
+            <StatCard title="My Class" value={classes?.find(c => c.id === profile?.classId)?.name || "N/A"} icon={School} link="/dashboard/academics" isLoading={isLoading} />
+            <StatCard title="Report Card" value={"View"} icon={TrendingUp} link="/dashboard/report-cards" isLoading={isLoading} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>My Hub</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <QuickActionCard 
-                  title="My Assignments" 
-                  description="View and submit work"
-                  icon={FileText} 
-                  link="/dashboard/assignments"
-                />
-                <QuickActionCard 
-                  title="Learning Materials" 
-                  description="Access course content"
-                  icon={BookOpen} 
-                  link="/dashboard/academics/learning-materials"
-                />
-                <QuickActionCard 
-                  title="My Grades" 
-                  description="Check your report card"
-                  icon={Award} 
-                  link="/dashboard/report-cards"
-                />
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Recent Announcements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {announcementsLoading ? <Loader2 className="animate-spin"/> : (
-                  (announcements || []).slice(0, 3).map(a => (
-                    <ActivityItem 
-                      key={a.id}
-                      title={a.title}
-                      description={a.content.substring(0, 100) + '...'}
-                      // @ts-ignore
-                      time={a.publishedAt?.toDate().toLocaleDateString()}
-                      icon={Bell}
-                      iconColor='text-purple-600'
-                    />
-                  ))
-                )}
-              </CardContent>
-            </Card>
+            <Card><CardHeader><CardTitle>My Hub</CardTitle></CardHeader><CardContent className="space-y-3">
+                <QuickActionCard title="My Assignments" description="View and submit work" icon={FileText} link="/dashboard/assignments" />
+                <QuickActionCard title="Learning Materials" description="Access course content" icon={BookOpen} link="/dashboard/academics/learning-materials" />
+                <QuickActionCard title="My Grades" description="Check your report card" icon={Award} link="/dashboard/report-cards" />
+            </CardContent></Card>
+            <Card className="lg:col-span-2"><CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader><CardContent>
+                {announcementsLoading ? <Loader2 className="animate-spin"/> : ((announcements || []).slice(0, 3).map(a => (<ActivityItem key={a.id} title={a.title} description={a.content.substring(0, 100) + '...'} time={a.publishedAt?.toDate().toLocaleDateString()} icon={Bell} iconColor='text-purple-600'/>)))}
+            </CardContent></Card>
           </div>
         </>
       );
     }
-    
-    // PARENT DASHBOARD
     if (isParent) {
-      // @ts-ignore
       const myStudents = students?.filter(s => profile?.studentIds?.includes(s.uid)) || [];
-      
       return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-             <Card>
-                <CardHeader>
-                    <CardTitle>My Children</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {myStudents.map(student => (
-                    <Link href="/dashboard/my-children" key={student.uid}>
-                      <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
-                        <StudentDisplay student={student} variant="list" showAvatar />
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                    </Link>
-                  ))}
+             <Card><CardHeader><CardTitle>My Children</CardTitle></CardHeader><CardContent className="space-y-4">
+                  {myStudents.map(student => (<Link href="/dashboard/my-children" key={student.uid}><div className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50"><StudentDisplay student={student} variant="list" showAvatar /><ChevronRight className="h-5 w-5 text-muted-foreground" /></div></Link>))}
                   {myStudents.length === 0 && <p className="text-muted-foreground">No children linked to this account.</p>}
-                </CardContent>
-            </Card>
-            
-            <Card>
-                <CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader>
-                <CardContent>
-                  {announcements?.slice(0, 3).map(a => (
-                     <ActivityItem 
-                      key={a.id}
-                      title={a.title}
-                      description={a.content.substring(0, 100) + '...'}
-                      // @ts-ignore
-                      time={a.publishedAt?.toDate().toLocaleDateString()}
-                      icon={Bell}
-                      iconColor='text-purple-600'
-                    />
-                  ))}
-                </CardContent>
-            </Card>
+             </CardContent></Card>
+            <Card><CardHeader><CardTitle>Recent Announcements</CardTitle></CardHeader><CardContent>
+                  {announcements?.slice(0, 3).map(a => (<ActivityItem key={a.id} title={a.title} description={a.content.substring(0, 100) + '...'} time={a.publishedAt?.toDate().toLocaleDateString()} icon={Bell} iconColor='text-purple-600'/>)))}
+            </CardContent></Card>
           </div>
-           <div className="space-y-6">
-              <Card>
-                  <CardHeader>
-                      <CardTitle>Student Bills</CardTitle>
-                      <CardDescription>View financial records for your children.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                      {myStudents.map(student => (
-                          <Link href="/dashboard/my-bills" key={student.uid}>
-                              <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50">
-                                  <span className="font-medium text-sm">{student.firstName} {student.lastName}'s Bills</span>
-                                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                              </div>
-                          </Link>
-                      ))}
+           <div className="space-y-6"><Card><CardHeader><CardTitle>Student Bills</CardTitle><CardDescription>View financial records for your children.</CardDescription></CardHeader><CardContent className="space-y-3">
+                      {myStudents.map(student => (<Link href="/dashboard/my-bills" key={student.uid}><div className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50"><span className="font-medium text-sm">{student.firstName} {student.lastName}'s Bills</span><ChevronRight className="h-5 w-5 text-muted-foreground" /></div></Link>))}
                       {myStudents.length === 0 && <p className="text-muted-foreground text-sm">No children linked.</p>}
-                  </CardContent>
-              </Card>
-           </div>
+            </CardContent></Card></div>
         </div>
       )
     }
-
-    // FINANCE STAFF DASHBOARD
     if (isFinance) {
       return (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <StatCard 
-              title="Monthly Revenue" 
-              value={`GH₵ ${financeStats.monthlyRevenue.toFixed(2)}`}
-              icon={DollarSign} 
-              link="/dashboard/finance/accounting"
-              isLoading={isLoading}
-              trend={{ value: 12.3, isPositive: true }}
-            />
-            <StatCard 
-              title="Pending Student Payments" 
-              value={financeStats.pendingPayments} 
-              icon={CreditCard}
-              link="/dashboard/accounts"
-              isLoading={isLoading}
-              badge={financeStats.pendingPayments > 0 ? "Action Required" : undefined}
-            />
-            <StatCard 
-              title="Expenses This Month" 
-              value={`GH₵ ${financeStats.monthlyExpenses.toFixed(2)}`} 
-              icon={Receipt}
-              link="/dashboard/finance/accounting"
-              isLoading={isLoading}
-            />
-            <StatCard 
-              title="Outstanding Vendor Bills" 
-              value={financeStats.outstandingInvoices}
-              icon={FileText}
-              link="/dashboard/finance/procurement"
-              isLoading={isLoading}
-            />
+            <StatCard title="Monthly Revenue" value={`GH₵ ${financeStats.monthlyRevenue.toFixed(2)}`} icon={DollarSign} link="/dashboard/finance/accounting" isLoading={isLoading} trend={{ value: 12.3, isPositive: true }} />
+            <StatCard title="Pending Student Payments" value={financeStats.pendingPayments} icon={CreditCard} link="/dashboard/accounts" isLoading={isLoading} badge={financeStats.pendingPayments > 0 ? "Action Required" : undefined}/>
+            <StatCard title="Expenses This Month" value={`GH₵ ${financeStats.monthlyExpenses.toFixed(2)}`} icon={Receipt} link="/dashboard/finance/accounting" isLoading={isLoading}/>
+            <StatCard title="Outstanding Vendor Bills" value={financeStats.outstandingInvoices} icon={FileText} link="/dashboard/finance/procurement" isLoading={isLoading}/>
           </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Financial management tools</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <QuickActionCard 
-                  title="Record Payment" 
-                  description="Process student fee payment"
-                  icon={CreditCard} 
-                  link="/dashboard/accounts"
-                />
-                <QuickActionCard 
-                  title="Pay Vendor Bill" 
-                  description="Process accounts payable"
-                  icon={Landmark} 
-                  link="/dashboard/finance/accounting"
-                />
-                <QuickActionCard 
-                  title="Manage Payroll" 
-                  description="Process staff salaries"
-                  icon={Banknote} 
-                  link="/dashboard/finance/payroll"
-                />
-              </CardContent>
-            </Card>
-
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Cash Flow This Month</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={financeStats.chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" fontSize={12} />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="#22c55e" name="Revenue" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="expenses" fill="#ef4444" name="Expenses" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+            <Card><CardHeader><CardTitle>Quick Actions</CardTitle><CardDescription>Financial management tools</CardDescription></CardHeader><CardContent className="space-y-3">
+                <QuickActionCard title="Record Payment" description="Process student fee payment" icon={CreditCard} link="/dashboard/accounts"/>
+                <QuickActionCard title="Pay Vendor Bill" description="Process accounts payable" icon={Landmark} link="/dashboard/finance/accounting"/>
+                <QuickActionCard title="Manage Payroll" description="Process staff salaries" icon={Banknote} link="/dashboard/finance/payroll"/>
+            </CardContent></Card>
+            <Card className="lg:col-span-2"><CardHeader><CardTitle>Cash Flow This Month</CardTitle></CardHeader><CardContent className="h-[350px]">
+                <ResponsiveContainer width="100%" height="100%"><BarChart data={financeStats.chartData}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" fontSize={12} /><YAxis /><Tooltip /><Legend /><Bar dataKey="revenue" fill="#22c55e" name="Revenue" radius={[4, 4, 0, 0]} /><Bar dataKey="expenses" fill="#ef4444" name="Expenses" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
+            </CardContent></Card>
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {recentActivity.filter(a => a.type === 'Payment').slice(0,3).map((item, index) => (
-                <ActivityItem 
-                  key={index}
-                  title={item.title}
-                  description={item.description}
-                   // @ts-ignore
-                  time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : 'Just now'}
-                  icon={item.icon}
-                  iconColor={item.iconColor}
-                />
-              ))}
-            </CardContent>
-          </Card>
+          <Card><CardHeader><CardTitle>Recent Transactions</CardTitle></CardHeader><CardContent className="space-y-4">
+              {recentActivity.filter(a => a.type === 'Payment').slice(0,3).map((item, index) => (<ActivityItem key={index} title={item.title} description={item.description} time={item.time ? formatDistanceToNow(item.time.toDate(), { addSuffix: true }) : 'Just now'} icon={item.icon} iconColor={item.iconColor}/>))}
+          </CardContent></Card>
         </>
       );
     }
-
-    // LIBRARIAN DASHBOARD
     if (isLibrarian) {
       return (
         <>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <StatCard 
-              title="Total Items" 
-              value={stats.totalBooks} 
-              icon={BookMarked} 
-              link="/dashboard/library"
-              isLoading={isLoading}
-            />
-            <StatCard 
-              title="Available" 
-              value={stats.availableBooks} 
-              icon={CheckCircle2}
-              link="/dashboard/library"
-              isLoading={isLoading}
-            />
-            <StatCard 
-              title="Currently Borrowed" 
-               // @ts-ignore
-              value={libraryItems?.filter(l => l.status === 'Borrowed').reduce((acc, item) => acc + item.quantity, 0) || 0} 
-              icon={BookOpen}
-              link="/dashboard/library"
-              isLoading={isLoading}
-            />
-            <StatCard 
-              title="Overdue" 
-              value={0} // Placeholder
-              icon={AlertCircle}
-              link="/dashboard/library"
-              isLoading={isLoading}
-              badge={stats.overdueBooks > 0 ? "Action Required" : undefined}
-            />
+            <StatCard title="Total Items" value={stats.totalBooks} icon={BookMarked} link="/dashboard/library" isLoading={isLoading} />
+            <StatCard title="Available" value={stats.availableBooks} icon={CheckCircle2} link="/dashboard/library" isLoading={isLoading} />
+            <StatCard title="Currently Borrowed" value={libraryItems?.filter(l => l.status === 'Borrowed').reduce((acc, item) => acc + item.quantity, 0) || 0} icon={BookOpen} link="/dashboard/library" isLoading={isLoading} />
+            <StatCard title="Overdue" value={0} icon={AlertCircle} link="/dashboard/library" isLoading={isLoading} badge={stats.overdueBooks > 0 ? "Action Required" : undefined} />
           </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Library management tools</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <QuickActionCard 
-                  title="Add Book" 
-                  description="Register new book"
-                  icon={PlusCircle} 
-                  link="/dashboard/library"
-                />
-                <QuickActionCard 
-                  title="Issue Book" 
-                  description="Lend to student"
-                  icon={BookOpen} 
-                  link="/dashboard/library"
-                />
-                <QuickActionCard 
-                  title="Receive Book" 
-                  description="Check-in returned book"
-                  icon={Package} 
-                  link="/dashboard/library"
-                />
-              </CardContent>
-            </Card>
-
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ActivityItem 
-                    title="Book Borrowed"
-                    description="'The Great Gatsby' by Student A"
-                    time="1 hour ago"
-                    icon={BookOpen}
-                    iconColor="text-blue-600"
-                />
-                 <ActivityItem 
-                    title="Book Returned"
-                    description="'1984' by Student B"
-                    time="3 hours ago"
-                    icon={CheckCircle2}
-                    iconColor="text-green-600"
-                />
-              </CardContent>
-            </Card>
+            <Card><CardHeader><CardTitle>Quick Actions</CardTitle><CardDescription>Library management tools</CardDescription></CardHeader><CardContent className="space-y-3">
+                <QuickActionCard title="Add Book" description="Register new book" icon={PlusCircle} link="/dashboard/library" />
+                <QuickActionCard title="Issue Book" description="Lend to student" icon={BookOpen} link="/dashboard/library" />
+                <QuickActionCard title="Receive Book" description="Check-in returned book" icon={Package} link="/dashboard/library" />
+            </CardContent></Card>
+            <Card className="lg:col-span-2"><CardHeader><CardTitle>Recent Activity</CardTitle></CardHeader><CardContent className="space-y-4">
+                <ActivityItem title="Book Borrowed" description="'The Great Gatsby' by Student A" time="1 hour ago" icon={BookOpen} iconColor="text-blue-600" />
+                 <ActivityItem title="Book Returned" description="'1984' by Student B" time="3 hours ago" icon={CheckCircle2} iconColor="text-green-600" />
+            </CardContent></Card>
           </div>
         </>
       );
     }
-    
-    // DEFAULT/FALLBACK DASHBOARD
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Welcome to CampusConnect</CardTitle>
-                <CardDescription>Your role-specific dashboard is loading or you have a custom role.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p>Use the navigation on the left to explore the app.</p>
-            </CardContent>
-        </Card>
+        <Card><CardHeader><CardTitle>Welcome to CampusConnect</CardTitle><CardDescription>Your role-specific dashboard is loading or you have a custom role.</CardDescription></CardHeader><CardContent><p>Use the navigation on the left to explore the app.</p></CardContent></Card>
     );
   };
   
@@ -1067,3 +608,5 @@ export default function DashboardClient() {
     </div>
   );
 }
+
+    
