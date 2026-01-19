@@ -93,7 +93,6 @@ export default function DashboardClient() {
   const { user, isUserLoading } = useUser();
   const { role, profile, loading: isRoleLoading } = useRole();
   const firestore = useFirestore();
-  // 🔥 FIX: Destructure correctly
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   // Role checks
@@ -105,7 +104,7 @@ export default function DashboardClient() {
   const isLibrarian = role === 'Librarian';
   const isStaffUser = isAdminOrDirector || isTeacher || isFinance || isLibrarian;
 
-  // --- 1. SAFE DATA FETCHING (Only runs if schoolId exists) ---
+  // --- 1. HOOKS: DATA FETCHING (All hooks are now at the top level) ---
   
   const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: students, isLoading: studentsLoading } = useCollection(studentsQuery);
@@ -136,7 +135,6 @@ export default function DashboardClient() {
   const libraryItemsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'library')) : null, [firestore]);
   const { data: libraryItems, isLoading: libraryLoading } = useCollection(libraryItemsQuery);
 
-  // SAFE FINANCE QUERIES
   const financialRecordsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !(isFinance || isAdminOrDirector)) return null;
     return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
@@ -149,34 +147,8 @@ export default function DashboardClient() {
   }, [firestore, isFinance, isAdminOrDirector, schoolId]);
   const { data: accountsPayable, isLoading: payablesLoading } = useCollection<any>(accountsPayableQuery);
 
-  // --- 2. LOADING STATE ---
-  
-  // Wait for Auth and School ID check
-  if (isUserLoading || isRoleLoading || isLoadingSchool) {
-      return (
-        <div className="flex h-[50vh] w-full items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-            <span className="ml-3 text-muted-foreground">Loading your workspace...</span>
-        </div>
-      );
-  }
 
-  // Handle Missing School ID (Stops queries from running with undefined)
-  if (!schoolId && role !== 'Director') { // Allow Director/CEO to pass even if schoolId logic is weird, but usually blocked.
-      // If CEO, render normally (handled in rules). If normal user, block.
-      if (user?.email !== 'jamesgambrah@gmail.com') {
-        return (
-            <div className="p-8 text-center bg-red-50 border border-red-200 rounded-lg">
-                <h2 className="text-xl font-bold text-red-700">Account Configuration Error</h2>
-                <p className="text-red-600">Your account is not linked to a valid school ID.</p>
-            </div>
-        );
-      }
-  }
-
-  const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading;
-
-  // --- 3. DATA PROCESSING ---
+  // --- 2. HOOKS: DATA PROCESSING ---
 
   const recentActivity = useMemo(() => {
     const activities = [];
@@ -251,7 +223,6 @@ export default function DashboardClient() {
     const pendingPayments = financialRecords.filter(r => r.status === 'Unpaid' || r.status === 'Overdue').length;
     const outstandingInvoices = accountsPayable.filter(b => b.status === 'Unpaid').length;
 
-    // Combine data for chart
     const allDays = new Set([...Object.keys(revenueByDay), ...Object.keys(expensesByDay)]);
     const chartData = Array.from(allDays).sort().map(day => ({
         month: day,
@@ -261,8 +232,32 @@ export default function DashboardClient() {
 
     return { monthlyRevenue, pendingPayments, monthlyExpenses, outstandingInvoices, chartData };
   }, [financialRecords, accountsPayable]);
-
+  
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+
+  // --- 3. LOADING & GUARD CLAUSES (Moved after hooks) ---
+
+  const isLoading = studentsLoading || staffLoading || classesLoading || leaveLoading || announcementsLoading || assignmentsLoading;
+  
+  if (isUserLoading || isRoleLoading || isLoadingSchool) {
+      return (
+        <div className="flex h-[50vh] w-full items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+            <span className="ml-3 text-muted-foreground">Loading your workspace...</span>
+        </div>
+      );
+  }
+
+  if (!schoolId && role !== 'Director') { 
+      if (user?.email !== 'jamesgambrah@gmail.com') {
+        return (
+            <div className="p-8 text-center bg-red-50 border border-red-200 rounded-lg">
+                <h2 className="text-xl font-bold text-red-700">Account Configuration Error</h2>
+                <p className="text-red-600">Your account is not linked to a valid school ID.</p>
+            </div>
+        );
+      }
+  }
 
   // --- 4. RENDER BY ROLE ---
 
