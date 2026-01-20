@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -33,7 +32,7 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
     const printRef = useRef<HTMLDivElement>(null);
 
     const schoolProfileRef = useMemoFirebase(
-        () => (firestore && schoolId ? doc(firestore, 'schoolSettings', schoolId) : null),
+        () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
         [firestore, schoolId]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
@@ -106,5 +105,3 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
         </Dialog>
     );
 }
-
-    

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -9,19 +8,21 @@ import { FileDown, Loader2 } from 'lucide-react';
 import { HTMLReportCard } from './HTMLReportCard'; 
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 export function GenerateReportCard(props: any) {
     const [loading, setLoading] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
     const firestore = useFirestore();
+    const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const schoolProfileRef = useMemoFirebase(
-        () => (firestore ? doc(firestore, 'schoolSettings', 'profile') : null),
-        [firestore]
+        () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
+        [firestore, schoolId]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
     
-    const isReady = !isLoadingProfile;
+    const isReady = !isLoadingProfile && !isLoadingSchool;
 
     const handleDownloadPdf = async () => {
         if (!printRef.current || !isReady) return;
@@ -78,5 +79,3 @@ export function GenerateReportCard(props: any) {
         </>
     );
 }
-
-    

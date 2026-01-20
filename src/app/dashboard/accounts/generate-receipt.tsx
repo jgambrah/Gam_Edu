@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ export function GenerateReceipt({ transaction }: { transaction: FinancialRecord 
     const printRef = useRef<HTMLDivElement>(null);
 
     const schoolProfileRef = useMemoFirebase(
-        () => (firestore && schoolId ? doc(firestore, 'schoolSettings', schoolId) : null),
+        () => (firestore && schoolId ? doc(firestore, 'schools', schoolId) : null),
         [firestore, schoolId]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
