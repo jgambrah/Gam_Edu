@@ -86,6 +86,7 @@ export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
     `;
 
     const response = await ai.generate({
+      model: 'googleai/gemini-pro',
       prompt: prompt,
       config: { 
         temperature: 0.3, 
