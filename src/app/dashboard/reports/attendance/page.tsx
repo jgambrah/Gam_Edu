@@ -3,15 +3,14 @@
 
 import { useState, useMemo } from 'react';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase, useAuth } from '@/firebase';
-import { collection, query, where, Timestamp, orderBy } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase, useAuth } from '@/firebase'; 
+import { collection, query, where, Timestamp, orderBy } from 'firebase/firestore'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Users, Loader2, AlertCircle } from 'lucide-react';
-import { Class, AttendanceRecord, Student } from '@/lib/types';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { FileText, Printer, BarChart as BarChartIcon, Calendar as CalendarIcon, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -19,7 +18,6 @@ import { cn } from '@/lib/utils';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
-import { StudentDisplay } from '@/components/student-display';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
 const COLORS = {
@@ -28,26 +26,6 @@ const COLORS = {
     Late: '#f97316',
     Excused: '#64748b'
 };
-
-// Helper component for when student data is missing
-function StudentCell({ student, studentId }: { student?: Student; studentId: string }) {
-    if (student) {
-        return <StudentDisplay student={student} variant="list" />;
-    }
-    
-    // Fallback when student not found
-    return (
-        <div className="flex flex-col">
-            <span className="font-medium text-red-600 flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                Unknown Student
-            </span>
-            <span className="text-xs text-muted-foreground font-mono">
-                UID: {studentId ? studentId.slice(0, 8) : 'N/A'}...
-            </span>
-        </div>
-    );
-}
 
 export default function AttendanceReportsPage() {
     const { role } = useRole();
@@ -62,19 +40,13 @@ export default function AttendanceReportsPage() {
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
-    const canAccess = ['Administrator', 'Director', 'Teacher'].includes(role);
-
     // 1. Fetch Classes (School-Aware)
     const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !schoolId) return null;
-        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-        if (role === 'Teacher') {
-            q = query(q, where('teacherId', '==', user.uid));
-        }
-        return q;
-    }, [firestore, user, role, schoolId]);
-
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+        if (!firestore || !schoolId) return null;
+        // Simple query: Get all classes for this school
+        return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
+    }, [firestore, schoolId]);
+    const { data: classes, isLoading: isLoadingClasses } = useCollection(classesQuery);
 
     // 2. Fetch Attendance (School-Aware)
     const attendanceQuery = useMemoFirebase(() => {
@@ -87,34 +59,27 @@ export default function AttendanceReportsPage() {
             where('schoolId', '==', schoolId)
         );
     }, [firestore, user, schoolId]);
-    const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
+    const { data: rawAttendance, isLoading: isLoadingAttendance } = useCollection(attendanceQuery);
     
-    // 3. Fetch Students (School-Aware)
+    // 3. Fetch Students (For Names)
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId) return null;
         return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
     }, [firestore, schoolId]);
-    
-    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+    const { data: students, isLoading: isLoadingStudents } = useCollection(studentsQuery);
 
-    const isLoading = isLoadingSchool || isLoadingClasses || isLoadingAttendance || isLoadingStudents;
-
-    // --- DATA PROCESSING & FILTERING ---
+    // --- DATA PROCESSING ---
     const filteredData = useMemo(() => {
-        if (!attendanceRecords || !students || !classes) return [];
-    
-        const studentMap = new Map(students.map(s => [s.uid, s]));
+        if (!rawAttendance || !students || !classes) return [];
+        
+        const studentMap = new Map(students.map(s => [s.id, s]));
         const classMap = new Map(classes.map(c => [c.id, c.name]));
-    
-        let data = attendanceRecords.map(record => {
-            const student = studentMap.get(record.studentId);
-            
-            return {
+
+        let data = rawAttendance.map(record => ({
                 ...record,
-                student: student, // This can be undefined if student is deleted
+                student: studentMap.get(record.studentId),
                 className: classMap.get(record.classId) || 'Unknown Class'
-            };
-        });
+            }));
 
         // MANUAL DATE FILTER
         if (dateRange?.from) {
@@ -122,218 +87,127 @@ export default function AttendanceReportsPage() {
              const end = dateRange.to ? endOfDay(dateRange.to).getTime() : endOfDay(dateRange.from).getTime();
              
              data = data.filter(record => {
-                 const recordTime = record.date.toDate().getTime();
-                 return recordTime >= start && recordTime <= end;
+                 if (!record.date) return false;
+                 const recordDate = record.date.toDate ? record.date.toDate().getTime() : new Date(record.date).getTime();
+                 return recordDate >= start && recordDate <= end;
              });
         }
-    
+        
+        // CLASS & STATUS FILTER
         if (selectedClassId !== 'all') {
             data = data.filter(record => record.classId === selectedClassId);
         }
         if (selectedStatus !== 'all') {
             data = data.filter(record => record.status === selectedStatus);
         }
-        
-        return data.sort((a, b) => b.date.seconds - a.date.seconds);
-    
-    }, [attendanceRecords, selectedClassId, selectedStatus, students, classes, dateRange]);
 
-    const missingStudentsCount = useMemo(() => {
-        return filteredData.filter(record => !record.student).length;
-    }, [filteredData]);
+        return data.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+
+    }, [rawAttendance, students, classes, dateRange, selectedClassId, selectedStatus]);
 
     const summaryData = useMemo(() => {
-        const dataForSummary = filteredData; 
+        const total = filteredData.length;
+        if (total === 0) return { rate: 0, absent: 0, late: 0, pie: [] };
 
-        const totalRecords = dataForSummary.length;
-        if (totalRecords === 0) {
-            return {
-                attendanceRate: 0,
-                totalAbsences: 0,
-                totalLate: 0,
-                pieData: []
-            };
-        }
+        const counts: any = {};
+        filteredData.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
 
-        const statusCounts = dataForSummary.reduce((acc, record) => {
-            acc[record.status] = (acc[record.status] || 0) + 1;
-            return acc;
-        }, {} as Record<string, number>);
+        const rate = ((counts['Present'] || 0) + (counts['Excused'] || 0)) / total * 100;
+        const pie = Object.keys(counts).map(key => ({ name: key, value: counts[key] }));
 
-        const totalPresentOrExcused = (statusCounts['Present'] || 0) + (statusCounts['Excused'] || 0);
-        const attendanceRate = totalRecords > 0 ? (totalPresentOrExcused / totalRecords) * 100 : 0;
-        
-        const pieData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
-
-        return {
-            attendanceRate: parseFloat(attendanceRate.toFixed(1)),
-            totalAbsences: statusCounts['Absent'] || 0,
-            totalLate: statusCounts['Late'] || 0,
-            pieData,
-        };
-
+        return { rate: rate.toFixed(1), absent: counts['Absent'] || 0, late: counts['Late'] || 0, pie };
     }, [filteredData]);
-    
 
-    if (!canAccess) {
-        return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>Access Denied</CardTitle>
-                    <CardDescription>This module is restricted to Administrators, Directors, and Teachers.</CardDescription>
-                </CardHeader>
-            </Card>
-        );
-    }
-    
+    const isLoading = isLoadingSchool || isLoadingClasses || isLoadingAttendance || isLoadingStudents;
+
     return (
-        <div className="space-y-6 print:absolute print:left-0 print:top-0 print:w-full print:bg-white print:z-50" id="report-content">
-            <div className="flex items-center justify-between print:hidden">
-                <div>
-                    <h1 className="text-3xl font-bold flex items-center gap-2"><BarChartIcon /> Attendance Reports</h1>
-                    <p className="text-muted-foreground">Analyze student attendance patterns and trends.</p>
-                </div>
-                <div className="flex gap-2">
-                    <Button asChild variant="outline"><Link href="/dashboard/reports/academics">Academics</Link></Button>
-                    <Button asChild variant="outline"><Link href="/dashboard/reports/enrollment">Enrollment</Link></Button>
-                    <Button asChild variant="outline"><Link href="#">Financials</Link></Button>
-                    <Button onClick={() => window.print()}><Printer className="mr-2"/>Print</Button>
-                </div>
+        <div className="space-y-6 p-6">
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold flex gap-2"><BarChartIcon/> Attendance Report</h1>
+                <Button onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> Print Report</Button>
             </div>
 
-            <Card className="print:hidden">
-                <CardHeader>
-                    <CardTitle>Filters</CardTitle>
-                    <CardDescription>Select a date range, class, and status to generate a report.</CardDescription>
-                </CardHeader>
+            <Card>
+                <CardHeader><CardTitle>Filters</CardTitle></CardHeader>
                 <CardContent className="flex flex-wrap gap-4">
+                     {/* DATE PICKER */}
                      <Popover>
                         <PopoverTrigger asChild>
-                        <Button
-                            id="date"
-                            variant={"outline"}
-                            className={cn("w-[300px] justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
-                        >
+                        <Button variant="outline" className={cn("w-[260px] justify-start text-left font-normal")}>
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {dateRange?.from ? (dateRange.to ? (<>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</>) : (format(dateRange.from, "LLL dd, y"))) : (<span>Pick a date</span>)}
+                            {dateRange?.from ? (dateRange.to ? <>{format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}</> : format(dateRange.from, "LLL dd, y")) : <span>Pick a date</span>}
                         </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar initialFocus mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
+                            <Calendar mode="range" selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
                         </PopoverContent>
                     </Popover>
-                    <Select onValueChange={setSelectedClassId} defaultValue="all" disabled={isLoadingClasses}>
-                        <SelectTrigger className="w-[280px]"><SelectValue placeholder="All Classes" /></SelectTrigger>
+
+                    {/* CLASS SELECTOR */}
+                    <Select onValueChange={setSelectedClassId} value={selectedClassId}>
+                        <SelectTrigger className="w-[200px]"><SelectValue placeholder="All Classes" /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Classes</SelectItem>
-                            {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            {classes?.map((c: any) => (
+                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
-                    <Select onValueChange={setSelectedStatus} defaultValue="all">
-                        <SelectTrigger className="w-[280px]"><SelectValue placeholder="All Statuses" /></SelectTrigger>
+
+                    {/* STATUS SELECTOR */}
+                    <Select onValueChange={setSelectedStatus} value={selectedStatus}>
+                        <SelectTrigger className="w-[150px]"><SelectValue placeholder="Status" /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Statuses</SelectItem>
+                            <SelectItem value="all">All Status</SelectItem>
                             <SelectItem value="Present">Present</SelectItem>
                             <SelectItem value="Absent">Absent</SelectItem>
                             <SelectItem value="Late">Late</SelectItem>
-                            <SelectItem value="Excused">Excused</SelectItem>
                         </SelectContent>
                     </Select>
                 </CardContent>
             </Card>
 
-            {/* Warning for missing students */}
-            {!isLoading && missingStudentsCount > 0 && (
-                <Card className="border-orange-300 bg-orange-50 print:hidden">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-2 text-orange-800">
-                            <AlertCircle className="h-5 w-5" />
-                            <p className="text-sm font-medium">
-                                Warning: {missingStudentsCount} attendance record(s) reference students that no longer exist or have been deleted.
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+            {isLoading ? <div className="p-10 flex justify-center"><Loader2 className="animate-spin"/></div> : (
+                <div className="space-y-6">
+                    {/* STATS */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Attendance Rate</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{summaryData.rate}%</div></CardContent></Card>
+                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Total Absences</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-red-600">{summaryData.absent}</div></CardContent></Card>
+                        <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Late Arrivals</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-orange-600">{summaryData.late}</div></CardContent></Card>
+                    </div>
 
-            {isLoading ? <div className="py-20 flex justify-center items-center"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
-                (filteredData.length === 0) ? (
-                     <div className="text-center py-20 bg-muted rounded-lg">
-                        <p className="text-muted-foreground">No attendance records found for this period.</p>
-                    </div>
-                ) : (
-                <>
-                    <div className="grid gap-4 md:grid-cols-3">
-                        <Card>
-                            <CardHeader><CardTitle>Attendance Rate</CardTitle></CardHeader>
-                            <CardContent><p className="text-3xl font-bold text-green-600">{summaryData.attendanceRate}%</p></CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader><CardTitle>Total Absences</CardTitle></CardHeader>
-                            <CardContent><p className="text-3xl font-bold text-red-600">{summaryData.totalAbsences}</p></CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader><CardTitle>Total Late Arrivals</CardTitle></CardHeader>
-                            <CardContent><p className="text-3xl font-bold text-orange-500">{summaryData.totalLate}</p></CardContent>
-                        </Card>
-                    </div>
-                    
-                    <div className="grid md:grid-cols-5 gap-6">
-                        <Card className="md:col-span-2">
-                            <CardHeader><CardTitle>Attendance Distribution</CardTitle></CardHeader>
-                            <CardContent>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie data={summaryData.pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                                            {summaryData.pieData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[entry.name as keyof typeof COLORS] || '#8884d8'} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-                        <Card className="md:col-span-3">
-                            <CardHeader><CardTitle>Detailed Log ({filteredData.length} records)</CardTitle></CardHeader>
-                            <CardContent>
-                                <div className="max-h-[500px] overflow-y-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Student</TableHead>
-                                                <TableHead>Class</TableHead>
-                                                <TableHead>Date</TableHead>
-                                                <TableHead>Status</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredData.map(record => (
-                                                <TableRow key={record.id}>
-                                                    <TableCell>
-                                                        <StudentCell 
-                                                            student={record.student} 
-                                                            studentId={record.studentId} 
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>{record.className}</TableCell>
-                                                    <TableCell>{format(record.date.toDate(), 'PPP')}</TableCell>
-                                                    <TableCell>
-                                                        <Badge style={{ backgroundColor: COLORS[record.status as keyof typeof COLORS], color: 'white' }}>
-                                                            {record.status}
-                                                        </Badge>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </>
-            ))}
+                    {/* LIST */}
+                    <Card>
+                        <CardHeader><CardTitle>Detailed Logs</CardTitle></CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Student</TableHead>
+                                        <TableHead>Class</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Status</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredData.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-8">No records found for this period.</TableCell></TableRow>}
+                                    {filteredData.map((record: any) => (
+                                        <TableRow key={record.id}>
+                                            <TableCell>
+                                                <div className="font-medium">{record.student?.firstName} {record.student?.lastName}</div>
+                                                <div className="text-xs text-muted-foreground">{record.student?.email}</div>
+                                            </TableCell>
+                                            <TableCell>{record.className}</TableCell>
+                                            <TableCell>{format(record.date.toDate(), 'PPP')}</TableCell>
+                                            <TableCell><Badge variant={record.status === 'Present' ? 'default' : 'destructive'}>{record.status}</Badge></TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 }
