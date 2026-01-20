@@ -52,7 +52,7 @@ function StudentCell({ student, studentId }: { student?: Student; studentId: str
 export default function AttendanceReportsPage() {
     const { role } = useRole();
     const firestore = useFirestore();
-    const { user } = useAuth();
+    const { user } = useAuth(); // Use consistent auth hook
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -73,23 +73,20 @@ export default function AttendanceReportsPage() {
         }
         return q;
     }, [firestore, user, role, schoolId]);
+
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     // 2. Fetch Attendance (School-Aware)
     const attendanceQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !dateRange?.from || !schoolId) return null;
+        if (!user || !firestore || !schoolId) return null;
         
-        const start = startOfDay(dateRange.from);
-        const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
-
+        // TEMPORARY: Fetch ALL attendance for the school
+        // We will filter by date in Javascript (memory) to debug
         return query(
             collection(firestore, 'attendance'),
-            where('schoolId', '==', schoolId),
-            where('date', '>=', Timestamp.fromDate(start)),
-            where('date', '<=', Timestamp.fromDate(end)),
-            orderBy('date', 'desc')
+            where('schoolId', '==', schoolId)
         );
-    }, [firestore, user, dateRange, schoolId]);
+    }, [firestore, user, schoolId]);
     const { data: attendanceRecords, isLoading: isLoadingAttendance } = useCollection<AttendanceRecord>(attendanceQuery);
     
     // 3. Fetch Students (School-Aware)
@@ -118,6 +115,17 @@ export default function AttendanceReportsPage() {
                 className: classMap.get(record.classId) || 'Unknown Class'
             };
         });
+
+        // MANUAL DATE FILTER
+        if (dateRange?.from) {
+             const start = startOfDay(dateRange.from).getTime();
+             const end = dateRange.to ? endOfDay(dateRange.to).getTime() : endOfDay(dateRange.from).getTime();
+             
+             data = data.filter(record => {
+                 const recordTime = record.date.toDate().getTime();
+                 return recordTime >= start && recordTime <= end;
+             });
+        }
     
         if (selectedClassId !== 'all') {
             data = data.filter(record => record.classId === selectedClassId);
@@ -128,7 +136,7 @@ export default function AttendanceReportsPage() {
         
         return data.sort((a, b) => b.date.seconds - a.date.seconds);
     
-    }, [attendanceRecords, selectedClassId, selectedStatus, students, classes]);
+    }, [attendanceRecords, selectedClassId, selectedStatus, students, classes, dateRange]);
 
     const missingStudentsCount = useMemo(() => {
         return filteredData.filter(record => !record.student).length;
@@ -327,7 +335,7 @@ export default function AttendanceReportsPage() {
                 </>
             ))}
 
-            <style jsx global>{`
+            <style jsx global>{\`
                 @media print {
                     body * {
                         visibility: hidden;
@@ -345,9 +353,7 @@ export default function AttendanceReportsPage() {
                         width: 100%;
                     }
                 }
-            `}</style>
+            \`}</style>
         </div>
     );
 }
-
-    
