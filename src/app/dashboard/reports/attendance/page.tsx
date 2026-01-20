@@ -106,24 +106,15 @@ export default function AttendanceReportsPage() {
     const filteredData = useMemo(() => {
         if (!attendanceRecords || !students || !classes) return [];
     
-        const studentMapByUid = new Map(students.map(s => [s.uid, s]));
-        const studentMapById = new Map(students.map(s => [s.id, s]));
+        const studentMap = new Map(students.map(s => [s.id, s]));
         const classMap = new Map(classes.map(c => [c.id, c.name]));
     
         let data = attendanceRecords.map(record => {
-            let student = studentMapByUid.get(record.studentId) || studentMapById.get(record.studentId);
-            
-            if (!student) {
-                student = students.find(s => 
-                    s.uid === record.studentId || 
-                    s.id === record.studentId ||
-                    s.studentId === record.studentId
-                );
-            }
+            const student = studentMap.get(record.studentId);
             
             return {
                 ...record,
-                student: student,
+                student: student, // This can be undefined if student is deleted
                 className: classMap.get(record.classId) || 'Unknown Class'
             };
         });
