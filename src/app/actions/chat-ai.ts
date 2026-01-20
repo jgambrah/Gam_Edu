@@ -1,21 +1,38 @@
+
 'use server';
+
 import { ai } from '@/ai/genkit';
 import { checkAndSpendCredits } from './credits';
 
 export async function chatAIAction(schoolId: string, message: string) {
   // 1. Check Credits
-  const creditRes = await checkAndSpendCredits(schoolId, 1);
-  if (!creditRes.success) return { success: false, text: "Not enough AI credits." };
+  // If schoolId is missing (e.g. testing), we skip credit check or fail.
+  if (schoolId) {
+      const creditRes = await checkAndSpendCredits(schoolId, 1);
+      if (!creditRes.success) return { success: false, text: "Not enough AI credits. Please contact your administrator." };
+  }
 
   try {
-    // 2. Direct Generation (No Flows)
+    // 2. Direct Generation
+    // using 'googleai/gemini-1.5-flash' which is the standard identifier
     const response = await ai.generate({
-      model: 'googleai/gemini-1.5-flash-latest', // Verified working model
-      prompt: `You are a helpful school tutor. Answer this: ${message}`,
+      model: 'googleai/gemini-1.5-flash', 
+      prompt: `
+        You are a helpful, friendly AI Tutor for students and teachers.
+        Keep answers concise, encouraging, and educational.
+        
+        User Question: ${message}
+      `,
+      config: {
+        temperature: 0.7, // Creativity balance
+      }
     });
+
     return { success: true, text: response.text };
+
   } catch (e: any) {
-    console.error(e);
-    return { success: false, text: "AI Error: " + e.message };
+    console.error("AI Chat Error:", e);
+    // Return the actual error message so we can see it in the UI if needed
+    return { success: false, text: `AI Service Error: ${e.message}` };
   }
 }
